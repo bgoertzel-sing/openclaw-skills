@@ -28,6 +28,8 @@ projects/*/.venv/
 projects/*/.venv-*/
 projects/*/venv/
 projects/*/local/
+projects/*/build-src/
+projects/*/toolchains/
 projects/*/experiments/*/.venv/
 projects/*/experiments/*/venv/
 
@@ -35,3 +37,5 @@ projects/*/experiments/*/venv/
 .DS_Store
 *.swp
 *~
+
+bin/tectonic

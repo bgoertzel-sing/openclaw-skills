@@ -1,0 +1,52 @@
+{
+  "artifact_final": [
+    1.0,
+    1.0,
+    0.9230625301525311
+  ],
+  "compression_ratio": 0.13617021276595745,
+  "embedded_shape": [
+    118,
+    87
+  ],
+  "field_minmax": [
+    0.0,
+    0.7643792434795807
+  ],
+  "field_shape": [
+    120,
+    8
+  ],
+  "latent_shape": [
+    120,
+    8,
+    8
+  ],
+  "mean_fatigue_final": 1.0,
+  "mean_threshold_final": 0.4179393080137578,
+  "n_lobes": 4,
+  "nonlinear_forecastability": 0.6210536766646134,
+  "observable_shape": [
+    120,
+    29
+  ],
+  "pca_explained": [
+    0.6173311157473748,
+    0.07469476033265196,
+    0.05734835971851626
+  ],
+  "perturbation_recovery_proxy": 1.0,
+  "recurrence": 0.07943119793162884,
+  "residual_shape": [
+    120,
+    29
+  ],
+  "timesteps": 120,
+  "transition_grammar": {
+    "0->1": 2,
+    "1->0": 2,
+    "1->3": 2,
+    "2->3": 1,
+    "3->1": 2
+  }
+}

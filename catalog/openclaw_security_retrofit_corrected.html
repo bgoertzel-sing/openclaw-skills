@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OpenClaw Dedicated-Laptop Security Retrofit: Corrected Runbook</title>
+  <style>
+    @page {
+      margin: 0.75in;
+    }
+    body {
+      color: #111;
+      font-family: "Liberation Sans", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.42;
+      max-width: 8in;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      color: #162033;
+      line-height: 1.18;
+      margin: 1.15em 0 0.45em;
+    }
+    h1 {
+      border-bottom: 2px solid #44546a;
+      font-size: 20pt;
+      padding-bottom: 0.25em;
+    }
+    h2 {
+      border-bottom: 1px solid #bcc4d0;
+      font-size: 15pt;
+      padding-bottom: 0.18em;
+    }
+    h3 {
+      font-size: 12pt;
+    }
+    p {
+      margin: 0.45em 0;
+    }
+    ul, ol {
+      margin: 0.4em 0 0.7em 1.3em;
+      padding: 0;
+    }
+    li {
+      margin: 0.22em 0;
+    }
+    code {
+      font-family: "Liberation Mono", Consolas, monospace;
+      font-size: 9.4pt;
+      background: #f2f4f7;
+      padding: 0.04em 0.18em;
+    }
+    pre {
+      background: #f7f8fa;
+      border: 1px solid #d6dbe3;
+      border-radius: 4px;
+      font-family: "Liberation Mono", Consolas, monospace;
+      font-size: 8.6pt;
+      line-height: 1.28;
+      margin: 0.55em 0 0.9em;
+      overflow-wrap: anywhere;
+      padding: 0.55em 0.7em;
+      white-space: pre-wrap;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 0.55em 0 0.9em;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #c8ced8;
+      padding: 0.38em 0.5em;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #eef1f5;
+      font-weight: 700;
+    }
+    .box {
+      border-left: 4px solid #44546a;
+      background: #f7f8fa;
+      margin: 0.75em 0;
+      padding: 0.55em 0.75em;
+    }
+    .warn {
+      border-left-color: #9b3a2e;
+      background: #fff7f5;
+    }
+    .ok {
+      border-left-color: #2f6b3f;
+      background: #f4fbf5;
+    }
+    .small {
+      color: #454b55;
+      font-size: 9.2pt;
+    }
+  </style>
+</head>
+<body>
+  <h1>OpenClaw Dedicated-Laptop Security Retrofit: Corrected Runbook</h1>
+
+  <p><strong>Prepared for:</strong> Ben's Pop!_OS laptop running OpenClaw / ZeroBot</p>
+  <p><strong>Date:</strong> 2026-06-25</p>
+  <p><strong>Purpose:</strong> Convert the current OpenClaw installation from a convenient same-user setup into a more secure split-user setup, while preserving the research-agent workspace and Telegram access.</p>
+
+  <div class="box">
+    <strong>Short version.</strong> The earlier security plan is directionally right: run OpenClaw as a dedicated low-privilege Linux user and keep browser/password-manager/Gmail/ChatGPT state under a separate human GUI user. This corrected version adapts the steps to the current install, fixes handoff-folder permissions, avoids overly broad process kills, and accounts for the fact that the OpenClaw executable currently lives under <code>/home/ben/.npm-global</code>.
+  </div>
+
+  <h2>0. Current Known State</h2>
+  <p>These assumptions were verified before writing this runbook:</p>
+  <ul>
+    <li>Host: Pop!_OS 22.04 LTS.</li>
+    <li>OpenClaw version: <code>2026.6.10</code>.</li>
+    <li>Current OpenClaw user: <code>ben</code>.</li>
+    <li>Current OpenClaw executable: <code>/home/ben/.npm-global/bin/openclaw</code>.</li>
+    <li>Current OpenClaw config: <code>/home/ben/.openclaw/openclaw.json</code>.</li>
+    <li>Research workspace: <code>/home/ben/research-agent</code>.</li>
+    <li>Gateway: loopback-only, port <code>18789</code>.</li>
+    <li>Telegram: enabled, polling, direct-message allowlist, groups disabled.</li>
+    <li>Exec policy: approval-backed allowlist with ask-on-miss.</li>
+    <li>Current issue: because OpenClaw runs as <code>ben</code>, it can potentially access files and session handles available to the normal human account, including browser profiles, SSH agent sockets, keyring/session bus paths, and Downloads.</li>
+  </ul>
+
+  <h2>1. Threat Model and Target Architecture</h2>
+  <p>This is a practical local hardening plan, not a mathematically sealed sandbox. It is meant to reduce accidental overreach, prompt-injection damage, and casual access to human browser/password/session material.</p>
+
+  <table>
+    <tr>
+      <th>Account or Path</th>
+      <th>Role</th>
+      <th>Access Rule</th>
+    </tr>
+    <tr>
+      <td><code>ben</code> or a future human GUI user</td>
+      <td>Human browser, email, ChatGPT, password manager, Downloads, normal desktop</td>
+      <td>OpenClaw should not read this account's private home or GUI/session sockets.</td>
+    </tr>
+    <tr>
+      <td><code>openclaw</code></td>
+      <td>Agent account: OpenClaw state, memory, research workspace, project logs, local experiments</td>
+      <td>No sudo, no Docker group, no browser profile, no SSH agent, no GUI session.</td>
+    </tr>
+    <tr>
+      <td><code>/srv/openclaw/handoff/from-human</code></td>
+      <td>Files intentionally given to the agent</td>
+      <td>Human writes; agent reads.</td>
+    </tr>
+    <tr>
+      <td><code>/srv/openclaw/handoff/to-human</code></td>
+      <td>Files intentionally returned by the agent</td>
+      <td>Agent writes; human reads.</td>
+    </tr>
+  </table>
+
+  <div class="warn">
+    <strong>Important:</strong> Do not give the <code>openclaw</code> user sudo, membership in <code>docker</code>, access to <code>/var/run/docker.sock</code>, access to your browser profile, access to your password manager/keyring, or access to your GUI session environment.
+  </div>
+
+  <h2>2. Migration Style</h2>
+  <p>Use a staged migration, with verification after each stage. Do not use broad destructive commands. Do not delete the original <code>ben</code> setup until the new <code>openclaw</code> setup has survived a restart and a Telegram test.</p>
+
+  <p>Recommended stages:</p>
+  <ol>
+    <li>Create a timestamped backup.</li>
+    <li>Create the <code>openclaw</code> user and shared handoff group/directories.</li>
+    <li>Install or expose the OpenClaw executable for the <code>openclaw</code> user.</li>
+    <li>Copy only OpenClaw state and the research workspace into <code>/home/openclaw</code>.</li>
+    <li>Test OpenClaw manually as <code>openclaw</code>.</li>
+    <li>Install a system service running as <code>openclaw</code>.</li>
+    <li>Verify Telegram, gateway binding, exec policy, memory/QMD, and file boundaries.</li>
+    <li>Only later, retire the old user-level gateway service under <code>ben</code>.</li>
+  </ol>
+
+  <h2>3. Preflight Read-Only Checks</h2>
+  <p>Run these as <code>ben</code>. Save the output if anything looks surprising.</p>
+
+  <pre>date -u +"%Y%m%dT%H%M%SZ"
+whoami
+id
+command -v openclaw
+openclaw --version
+openclaw gateway status --deep
+openclaw channels status --probe
+openclaw exec-policy show
+systemctl --user status openclaw-gateway --no-pager 2&gt;/dev/null || true
+ps -eo user,pid,ppid,cmd | grep -i openclaw | grep -v grep || true
+ss -ltnp | grep 18789 || true</pre>
+
+  <p>Expected current shape before migration:</p>
+  <ul>
+    <li>Gateway listens only on <code>127.0.0.1:18789</code> and <code>[::1]:18789</code>.</li>
+    <li>Telegram probe works.</li>
+    <li>Exec policy shows allowlist / ask-on-miss.</li>
+    <li>Processes are still owned by <code>ben</code> before the migration.</li>
+  </ul>
+
+  <h2>4. Backup Before Any Change</h2>
+  <p>Create a recoverable backup of the existing OpenClaw and research-agent state. This does not include all of <code>/home/ben</code>; it targets the relevant state.</p>
+
+  <pre>STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+BACKUP="/home/ben/openclaw-security-backups/$STAMP"
+mkdir -p "$BACKUP"
+
+rsync -aH --info=progress2 /home/ben/.openclaw/ "$BACKUP/.openclaw/"
+rsync -aH --info=progress2 /home/ben/research-agent/ "$BACKUP/research-agent/"
+rsync -aH --info=progress2 /home/ben/.npm-global/lib/node_modules/openclaw/ "$BACKUP/openclaw-node-module/" 2&gt;/dev/null || true
+
+printf 'Backup created at %s\n' "$BACKUP"</pre>
+
+  <p>Do not store this backup in a world-readable directory. The OpenClaw state may contain tokens or local auth material.</p>
+
+  <h2>5. Create the Dedicated Agent User</h2>
+  <p>Create the <code>openclaw</code> Linux account with no password login. These commands require sudo.</p>
+
+  <pre>sudo adduser --disabled-password --gecos "" openclaw
+sudo chmod 700 /home/openclaw
+
+# Make sure the account is not in privilege-bearing groups.
+sudo deluser openclaw sudo 2&gt;/dev/null || true
+sudo deluser openclaw docker 2&gt;/dev/null || true
+sudo deluser openclaw adm 2&gt;/dev/null || true
+sudo deluser openclaw plugdev 2&gt;/dev/null || true
+sudo deluser openclaw lpadmin 2&gt;/dev/null || true
+
+id openclaw</pre>
+
+  <p>Expected: <code>openclaw</code> should be in its own low-privilege group, not in <code>sudo</code>, <code>docker</code>, <code>adm</code>, <code>plugdev</code>, or <code>lpadmin</code>.</p>
+
+  <h2>6. Create Corrected Handoff Directories</h2>
+  <p>The original plan used <code>chmod 730</code>, which is awkward because the group cannot list/read the directory and new files may not inherit a useful group. Use a shared group plus setgid directories and default ACLs instead.</p>
+
+  <pre># Create a shared handoff group if it does not already exist.
+sudo groupadd --force openclaw-handoff
+
+# Add both the human user and agent user to the handoff group.
+sudo usermod -aG openclaw-handoff ben
+sudo usermod -aG openclaw-handoff openclaw
+
+# Create the handoff tree.
+sudo mkdir -p /srv/openclaw/handoff/from-human
+sudo mkdir -p /srv/openclaw/handoff/to-human
+
+# Shared ownership: root owns the dirs; group controls handoff access.
+sudo chown -R root:openclaw-handoff /srv/openclaw
+
+# 2770 = rwx for owner/group, none for others, setgid for group inheritance.
+sudo chmod 2770 /srv/openclaw
+sudo chmod 2770 /srv/openclaw/handoff
+sudo chmod 2770 /srv/openclaw/handoff/from-human
+sudo chmod 2770 /srv/openclaw/handoff/to-human
+
+# Default ACLs make newly created files/directories group-readable/writable.
+sudo setfacl -m g:openclaw-handoff:rwx /srv/openclaw/handoff/from-human /srv/openclaw/handoff/to-human
+sudo setfacl -d -m g:openclaw-handoff:rwx /srv/openclaw/handoff/from-human /srv/openclaw/handoff/to-human
+sudo setfacl -d -m m::rwx /srv/openclaw/handoff/from-human /srv/openclaw/handoff/to-human
+
+ls -ld /srv/openclaw /srv/openclaw/handoff /srv/openclaw/handoff/from-human /srv/openclaw/handoff/to-human
+getfacl /srv/openclaw/handoff/from-human /srv/openclaw/handoff/to-human</pre>
+
+  <div class="box">
+    <strong>Group membership note:</strong> after <code>usermod -aG</code>, Ben may need to log out and back in before the new group appears in desktop terminals. For immediate terminal testing, use <code>newgrp openclaw-handoff</code> or test via sudo.
+  </div>
+
+  <h2>7. Make OpenClaw Executable Available to the Agent User</h2>
+  <p>The current OpenClaw executable is under <code>/home/ben/.npm-global</code>. The <code>openclaw</code> user should not depend on access to <code>/home/ben</code>. Choose one of these approaches.</p>
+
+  <h3>Preferred Option: Install OpenClaw for the openclaw User</h3>
+  <p>If the OpenClaw npm package can be installed without needing Ben's home directory, install it while logged in as <code>openclaw</code>.</p>
+
+  <pre>sudo -iu openclaw
+mkdir -p ~/.npm-global
+npm config set prefix "$HOME/.npm-global"
+printf '\nexport PATH="$HOME/.npm-global/bin:$PATH"\n' &gt;&gt; ~/.profile
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Install the same OpenClaw package/version used by this machine.
+# If this exact package name/version differs, inspect the current install first.
+npm install -g openclaw@2026.6.10
+
+command -v openclaw
+openclaw --version
+exit</pre>
+
+  <h3>Fallback Option: Install Under /opt/openclaw</h3>
+  <p>If user-local npm install is not desirable, install OpenClaw into a root-owned shared location and expose only the executable, not Ben's home directory.</p>
+
+  <pre>sudo mkdir -p /opt/openclaw
+sudo chown root:root /opt/openclaw
+sudo chmod 755 /opt/openclaw
+
+# Example only. Adapt to the exact package/install method if needed.
+sudo npm install -g --prefix /opt/openclaw openclaw@2026.6.10
+sudo ln -sf /opt/openclaw/bin/openclaw /usr/local/bin/openclaw
+
+sudo -iu openclaw command -v openclaw
+sudo -iu openclaw openclaw --version</pre>
+
+  <p>Do not make <code>/home/ben/.npm-global</code> world-readable just to make this work.</p>
+
+  <h2>8. Stop the Old User-Level Gateway Carefully</h2>
+  <p>Do not use <code>pkill -f openclaw</code> as the default. Stop the known user-level service first, then inspect.</p>
+
+  <pre># As ben:
+systemctl --user status openclaw-gateway --no-pager 2&gt;/dev/null || true
+systemctl --user stop openclaw-gateway 2&gt;/dev/null || true
+
+# Check what remains.
+ps -eo user,pid,ppid,cmd | grep -i openclaw | grep -v grep || true
+ss -ltnp | grep 18789 || true</pre>
+
+  <p>If a foreground OpenClaw TUI/session is running, close it normally. Only kill specific leftover PIDs after reading the command line.</p>
+
+  <h2>9. Copy State to /home/openclaw</h2>
+  <p>Copy only the OpenClaw state and research workspace. Do not copy all of <code>/home/ben</code>, Downloads, browser profiles, SSH keys, password stores, or GUI config.</p>
+
+  <pre>sudo mkdir -p /home/openclaw/migration-import
+sudo rsync -aH --info=progress2 /home/ben/.openclaw/ /home/openclaw/migration-import/.openclaw/
+sudo rsync -aH --info=progress2 /home/ben/research-agent/ /home/openclaw/migration-import/research-agent/
+sudo chown -R openclaw:openclaw /home/openclaw/migration-import
+
+sudo -iu openclaw bash -lc '
+set -euo pipefail
+cp -a ~/migration-import/.openclaw ~/.openclaw
+cp -a ~/migration-import/research-agent ~/research-agent
+chmod 700 ~/.openclaw ~/research-agent
+find ~/.openclaw -type d -exec chmod 700 {} +
+'
+
+sudo -iu openclaw ls -ld /home/openclaw/.openclaw /home/openclaw/research-agent</pre>
+
+  <h2>10. Adapt OpenClaw Config for the New Home</h2>
+  <p>As <code>openclaw</code>, inspect the copied config. The goal is to preserve the known secure posture:</p>
+  <ul>
+    <li>Workspace: <code>/home/openclaw/research-agent</code>.</li>
+    <li>Gateway bind: <code>loopback</code>.</li>
+    <li>Gateway auth token source: local secrets file, not plaintext in JSON.</li>
+    <li>Telegram bot token source: local secrets file, not plaintext in JSON.</li>
+    <li>Telegram DM allowlist retained.</li>
+    <li>Telegram groups disabled.</li>
+    <li>Exec mode: <code>ask</code>.</li>
+    <li>Elevated execution disabled.</li>
+  </ul>
+
+  <pre>sudo -iu openclaw bash -lc '
+set -euo pipefail
+node - &lt;&lt;"NODE"
+const fs = require("fs");
+const p = process.env.HOME + "/.openclaw/openclaw.json";
+const c = JSON.parse(fs.readFileSync(p, "utf8"));
+c.workspace = process.env.HOME + "/research-agent";
+c.gateway = c.gateway || {};
+c.gateway.mode = "local";
+c.gateway.bind = "loopback";
+c.gateway.port = 18789;
+c.channels = c.channels || {};
+c.channels.telegram = c.channels.telegram || {};
+c.channels.telegram.enabled = true;
+c.channels.telegram.dmPolicy = "allowlist";
+c.channels.telegram.groupPolicy = "disabled";
+c.tools = c.tools || {};
+c.tools.exec = c.tools.exec || {};
+c.tools.exec.mode = "ask";
+c.tools.elevated = c.tools.elevated || {};
+c.tools.elevated.enabled = false;
+fs.writeFileSync(p, JSON.stringify(c, null, 2) + "\n");
+NODE
+chmod 600 ~/.openclaw/openclaw.json
+openclaw exec-policy show
+'</pre>
+
+  <div class="warn">
+    <strong>Do not print secrets.</strong> If you inspect <code>~/.openclaw/secrets.json</code>, check only file mode and key presence, not token values.
+  </div>
+
+  <h2>11. Manual Gateway Test as openclaw</h2>
+  <p>Before installing a system service, start the gateway as <code>openclaw</code> in a test shell.</p>
+
+  <pre>sudo -iu openclaw
+export PATH="$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+openclaw gateway --port 18789</pre>
+
+  <p>In a second terminal, verify:</p>
+
+  <pre>sudo -iu openclaw openclaw gateway status --deep
+sudo -iu openclaw openclaw channels status --probe
+ss -ltnp | grep 18789 || true
+ps -eo user,pid,ppid,cmd | grep -i openclaw | grep -v grep || true</pre>
+
+  <p>Expected:</p>
+  <ul>
+    <li>Gateway is reachable.</li>
+    <li>Gateway listens on loopback only.</li>
+    <li>Telegram probe works.</li>
+    <li>The gateway process is owned by <code>openclaw</code>, not <code>ben</code>.</li>
+  </ul>
+
+  <p>After the manual test, stop the foreground gateway with Ctrl-C.</p>
+
+  <h2>12. Install a System Service</h2>
+  <p>Create a system-level service owned by <code>openclaw</code>. Adjust <code>PATH</code> if the executable path differs.</p>
+
+  <pre>sudo tee /etc/systemd/system/openclaw-agent.service &gt;/dev/null &lt;&lt;'UNIT'
+[Unit]
+Description=OpenClaw Agent Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=openclaw
+Group=openclaw
+WorkingDirectory=/home/openclaw
+Environment=HOME=/home/openclaw
+Environment=PATH=/home/openclaw/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/home/openclaw /srv/openclaw /tmp/openclaw
+ExecStart=/usr/bin/bash -lc 'exec openclaw gateway --port 18789'
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+sudo systemctl daemon-reload
+sudo systemctl enable openclaw-agent
+sudo systemctl start openclaw-agent
+sudo systemctl status openclaw-agent --no-pager</pre>
+
+  <p>If the service fails, inspect logs without printing secrets:</p>
+
+  <pre>journalctl -u openclaw-agent -n 120 --no-pager</pre>
+
+  <h2>13. Disable the Old ben User Gateway Service</h2>
+  <p>Only after the <code>openclaw-agent</code> system service works, disable the old user-level service under <code>ben</code>.</p>
+
+  <pre>systemctl --user disable --now openclaw-gateway 2&gt;/dev/null || true
+systemctl --user status openclaw-gateway --no-pager 2&gt;/dev/null || true
+systemctl status openclaw-agent --no-pager
+ps -eo user,pid,ppid,cmd | grep -i openclaw | grep -v grep || true</pre>
+
+  <p>Expected: the durable gateway should be the system service owned by <code>openclaw</code>.</p>
+
+  <h2>14. Boundary Verification</h2>
+  <p>Run these tests after the system service is live.</p>
+
+  <h3>Account and Group Boundary</h3>
+  <pre>id openclaw
+sudo -iu openclaw id
+sudo -iu openclaw bash -lc 'groups'</pre>
+
+  <p>Expected: no <code>sudo</code>, <code>docker</code>, <code>adm</code>, <code>plugdev</code>, or <code>lpadmin</code>.</p>
+
+  <h3>Human Home Boundary</h3>
+  <pre>sudo -iu openclaw bash -lc '
+ls /home/ben 2&gt;&amp;1 | head
+ls /home/ben/.mozilla 2&gt;&amp;1 | head
+ls /home/ben/.config/google-chrome 2&gt;&amp;1 | head
+ls /home/ben/Downloads 2&gt;&amp;1 | head
+'</pre>
+
+  <p>Expected: permission denied or inaccessible. If <code>openclaw</code> can read human browser profiles or Downloads, tighten permissions before continuing.</p>
+
+  <h3>Session Handle Boundary</h3>
+  <pre>sudo systemctl show openclaw-agent -p Environment
+sudo tr '\0' '\n' &lt; /proc/$(pgrep -u openclaw -f 'openclaw gateway' | head -n1)/environ | grep -E 'DISPLAY|WAYLAND|XAUTHORITY|DBUS|SSH_AUTH_SOCK|GNOME_KEYRING' || true</pre>
+
+  <p>Expected: no GUI display, session bus, keyring, or SSH agent variables.</p>
+
+  <h3>Docker Boundary</h3>
+  <pre>ls -l /var/run/docker.sock 2&gt;/dev/null || true
+sudo -iu openclaw bash -lc 'test -r /var/run/docker.sock &amp;&amp; echo "BAD: docker socket readable" || echo "OK: docker socket not readable"'</pre>
+
+  <p>Expected: <code>OK: docker socket not readable</code>, or Docker not installed.</p>
+
+  <h3>Gateway Boundary</h3>
+  <pre>sudo -iu openclaw openclaw gateway status --deep
+sudo -iu openclaw openclaw channels status --probe
+ss -ltnp | grep 18789 || true</pre>
+
+  <p>Expected: loopback-only gateway, Telegram works, process owned by <code>openclaw</code>.</p>
+
+  <h3>Exec Policy</h3>
+  <pre>sudo -iu openclaw openclaw exec-policy show</pre>
+
+  <p>Expected: allowlist-backed / ask-on-miss; elevated execution disabled in config.</p>
+
+  <h3>Handoff Test</h3>
+  <pre># As ben:
+echo "hello from human" &gt; /srv/openclaw/handoff/from-human/test-from-human.txt
+ls -l /srv/openclaw/handoff/from-human/test-from-human.txt
+
+# As openclaw:
+sudo -iu openclaw cat /srv/openclaw/handoff/from-human/test-from-human.txt
+sudo -iu openclaw bash -lc 'echo "hello from agent" &gt; /srv/openclaw/handoff/to-human/test-from-agent.txt'
+
+# As ben:
+cat /srv/openclaw/handoff/to-human/test-from-agent.txt</pre>
+
+  <h2>15. Research Workspace Verification</h2>
+  <p>Verify the research-agent materials still work under the new account.</p>
+
+  <pre>sudo -iu openclaw bash -lc '
+cd ~/research-agent
+openclaw memory status --index --agent main || true
+qmd search "research project decisions" || true
+qmd vsearch "research project decisions" || true
+cd ~/research-agent/projects/openclaw-smoke
+bash experiments/2026-06-25-tiny-python-test/command.sh
+'</pre>
+
+  <p>If QMD model cache was under <code>/home/ben</code>, the <code>openclaw</code> user may need to rebuild or redownload local model caches. That is expected.</p>
+
+  <h2>16. Telegram Test</h2>
+  <ol>
+    <li>Send a direct message to <code>@Protocosmobot</code>.</li>
+    <li>Confirm the agent receives it.</li>
+    <li>Run <code>sudo -iu openclaw openclaw channels status --probe</code>.</li>
+    <li>Confirm groups remain disabled unless explicitly changed later.</li>
+  </ol>
+
+  <h2>17. Optional: Separate Human Browser Account</h2>
+  <p>The strongest version of this plan uses a separate human GUI account for browser/password-manager activity. That is more disruptive, so treat it as phase two.</p>
+
+  <pre>sudo adduser benhuman
+sudo chmod 700 /home/benhuman
+sudo usermod -aG openclaw-handoff benhuman</pre>
+
+  <p>If you move browsing to <code>benhuman</code>, do not copy browser profiles into the <code>openclaw</code> account. Use the handoff folders for explicit file exchange.</p>
+
+  <h2>18. Rollback Plan</h2>
+  <p>If the new service fails and you need to return to the previous setup:</p>
+
+  <pre>sudo systemctl disable --now openclaw-agent 2&gt;/dev/null || true
+
+# Re-enable the old user-level gateway as ben, if it still exists.
+systemctl --user enable --now openclaw-gateway 2&gt;/dev/null || true
+openclaw gateway status --deep
+openclaw channels status --probe</pre>
+
+  <p>If state was corrupted, restore from the backup created in Section 4. Do not delete <code>/home/ben/.openclaw</code> or <code>/home/ben/research-agent</code> until the new setup has been stable for several days.</p>
+
+  <h2>19. Operating Rules After Migration</h2>
+  <ul>
+    <li>OpenClaw runs as <code>openclaw</code>, not as <code>ben</code>.</li>
+    <li>Files for the agent go in <code>/srv/openclaw/handoff/from-human</code>.</li>
+    <li>Files from the agent go in <code>/srv/openclaw/handoff/to-human</code>.</li>
+    <li>The agent should not browse human home directories, browser profiles, password stores, keyrings, SSH agents, GUI sessions, Docker sockets, or other users' private files.</li>
+    <li>Use explicit approval for package installs, GitHub writes, cloud/paid compute, Docker/Podman, credential setup, <code>chmod</code>/<code>chown</code>, <code>systemctl</code>, SSH key changes, and broad deletions.</li>
+    <li>Keep Telegram in direct-message allowlist mode unless there is a specific reason to change it.</li>
+    <li>Keep the gateway loopback-only unless you deliberately add a tailnet/reverse-proxy design.</li>
+  </ul>
+
+  <h2>20. Completion Checklist</h2>
+  <table>
+    <tr>
+      <th>Check</th>
+      <th>Expected Result</th>
+    </tr>
+    <tr>
+      <td>Gateway owner</td>
+      <td><code>ps</code> shows gateway process owned by <code>openclaw</code>.</td>
+    </tr>
+    <tr>
+      <td>Gateway bind</td>
+      <td><code>ss</code> shows only <code>127.0.0.1:18789</code> and <code>[::1]:18789</code>.</td>
+    </tr>
+    <tr>
+      <td>Telegram</td>
+      <td><code>openclaw channels status --probe</code> reports connected and works.</td>
+    </tr>
+    <tr>
+      <td>Human home</td>
+      <td><code>openclaw</code> cannot read browser profiles or human Downloads.</td>
+    </tr>
+    <tr>
+      <td>Session handles</td>
+      <td>No <code>DISPLAY</code>, <code>DBUS_SESSION_BUS_ADDRESS</code>, <code>SSH_AUTH_SOCK</code>, or keyring variables in gateway environment.</td>
+    </tr>
+    <tr>
+      <td>Docker</td>
+      <td><code>openclaw</code> is not in <code>docker</code> and cannot read <code>/var/run/docker.sock</code>.</td>
+    </tr>
+    <tr>
+      <td>Exec policy</td>
+      <td>Allowlist / ask-on-miss; elevated execution disabled.</td>
+    </tr>
+    <tr>
+      <td>Handoff</td>
+      <td>Human-to-agent and agent-to-human test files work through <code>/srv/openclaw/handoff</code>.</td>
+    </tr>
+    <tr>
+      <td>Research workspace</td>
+      <td>Memory/QMD/smoke test work under <code>/home/openclaw/research-agent</code>.</td>
+    </tr>
+  </table>
+
+  <div class="ok">
+    <strong>Done state:</strong> OpenClaw is no longer casually co-resident with the human browser/password/session environment. It still remains a powerful local agent within its own account, so approvals and operating discipline continue to matter.
+  </div>
+</body>
+</html>

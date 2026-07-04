@@ -1,0 +1,9 @@
+a55d4fd3ec6209be706ed43c6865c71363206687c49b61f676d16322f0f05949  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-accuracy-weakness_v1.pdf
+84167b824e05a7e30cb3c14cb52d0fda748a6b1353ad14a288c3fe3abe5ed021  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-Evolution.pdf
+a7d2d4d5d8670b1e54c472fd25e25b61b9ca098ee0a517d325eee86aa7c59e30  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-for-regime-change-detection.pdf
+09123c5d26127e79293fb435db98597e21e9f038230613027e421c4bd43d4026  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-for-regime-change-detection.tex
+c66fed4198b7f181464f84c588d44a7cc5016f14fa5fa6d5f8b9d17b62f53a97  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-Goal-Stability_v4.pdf
+f2348c8c42faa5110cff78d56ccaabdab2e119c24a0010e05ce21bcf9a03762b  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-Semantics-v2.pdf
+5f9b60ee0c10c734c4fa805b2a6083aa178b60e2024fa1e2bd312d33909c05f5  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/SLT-SubRep-v5.pdf
+54d91b2d407a6c1c825ab54888bb311e9660a1bb109a195573d1cf545331675d  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/source.zip
+55703d39ce2651a6d9eab9f710bc199469661a91a4069ac69f0a480bc5760171  /home/openclaw/research-agent/library/slt-hyperseed-synthesis/source/Weakness-Singular-Learning.pdf

@@ -1,0 +1,85 @@
+{
+  "config": {
+    "condition_id": 1,
+    "timesteps": 120,
+    "seed": 20260701,
+    "field_dim": 8,
+    "coupling_slope_k": 2.0,
+    "threshold_percentile_theta": 50.0,
+    "delay_tau": null,
+    "memory_rho": null,
+    "fatigue_gain": 0.03,
+    "prediction_cost": 0.03,
+    "noise": 0.01,
+    "coupling_gain": 0.35,
+    "field_leak": 0.08,
+    "role_decay": 0.05,
+    "temperature": 0.28
+  },
+  "condition": {
+    "id": 1,
+    "name": "no_cross_role_coupling",
+    "description": "Roles evolve only from shared field, noise, and self-state.",
+    "coupling_mode": "none",
+    "coupling_gain": 1.0,
+    "logistic_slope": 2.0,
+    "delay_tau": 0,
+    "hysteresis_rho": 0.0,
+    "adaptive_thresholds": false,
+    "costly_prediction": false
+  },
+  "roles": [
+    "explorer",
+    "synthesizer",
+    "formalizer",
+    "implementer",
+    "reviewer",
+    "coordinator",
+    "maintainer",
+    "communicator"
+  ],
+  "state_vars": [
+    "activation",
+    "arousal",
+    "focus",
+    "resolution",
+    "risk_sensitivity",
+    "novelty_appetite",
+    "fatigue",
+    "threshold"
+  ],
+  "actions_set": [
+    "explore",
+    "message",
+    "create_task",
+    "work_task",
+    "synthesize",
+    "review",
+    "formalize",
+    "delegate",
+    "predict",
+    "escalate",
+    "maintain",
+    "pause"
+  ],
+  "field_dims": [
+    "research_novelty",
+    "theorem_proof_salience",
+    "implementation_salience",
+    "external_comm_salience",
+    "risk_provenance_debt",
+    "synthesis_coherence",
+    "contradiction_tension",
+    "maintenance_entropy"
+  ],
+  "appraisals": [
+    "semantic_novelty",
+    "artifact_readiness",
+    "unresolved_contradiction",
+    "proof_failure_burst",
+    "review_criticism",
+    "risk_signal",
+    "trust_weighted_import",
+    "prediction_error"
+  ]
+}

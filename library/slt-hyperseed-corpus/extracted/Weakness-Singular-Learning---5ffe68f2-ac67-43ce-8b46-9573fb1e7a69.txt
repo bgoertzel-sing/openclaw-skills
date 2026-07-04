@@ -1,0 +1,1437 @@
+Weakness as Local Evidence:
+A Systems Theory for Degeneracy,
+Refinement DAGs, and Continual Adaptation,
+with Transformers as a Case Study
+Ben Goertzel
+December 6, 2025
+
+Abstract
+We propose a systems-level formalism for continual learning in nonstationary environments
+that unifies three themes: (1) the local-learning-coefficient (LLC) view of degeneracy from singular
+learning theory (SLT); (2) “weakness” as an Occam-like bias formalized in thermodynamic
+quantales; and (3) causal-coding style modularization that makes continual learning robust by
+enforcing approximate commutativity of context-conditioned updates.
+The core technical insight is that it can be effective to define weakness to be the (local)
+Bayesian evidence/volume object that SLT already analyzes. Under this definition, the LLC is
+literally the asymptotic invariant of weakness in the large-sample (or low-temperature) limit. We
+then show how tropicalization (log-sum-exp dominance) yields a min-plus semiring in which MAP
+selection over a DAG of candidate factorizations becomes shortest-path dynamic programming.
+This yields a clean mathematical model of “updating many approximate factorizations per
+context”: quantale-message-passing over a refinement DAG.
+We apply the framework to (i) stagewise degeneracy changes observed during standard
+backprop Transformer training, interpreted as posterior switching between neighborhoods with
+different LLCs, and to (ii) predictive/causal-coding Transformers, where causal gates and clarity
+regularizers maintain a modular factorization that stabilizes continual learning under distribution
+shift. Finally, we connect this to incremental compression: the refinement DAG can be viewed as
+a DAG of compression programs, while causal-coding NNs implement those compressors. There
+is also a connection to the TransWeave framework, which can be used to assist in adapting the
+solutions to the dynamic-programming problem related to factorization as distributions shift.
+
+Contents
+1 Introduction
+
+3
+
+2 A Systems Architecture: Base Learner + Structure Controller + Meta-Controller 4
+2.1 The three loops (and why they are distinct) . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2 Formal system model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3 Singular Learning Theory: Local Evidence, Free Energy, and LLC
+3.1 Why local evidence (not global risk) is the right basic object . . . . . . . . . . . . .
+3.2 Definitions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3.3 Watanabe’s local free energy expansion . . . . . . . . . . . . . . . . . . . . . . . . .
+1
+
+5
+5
+5
+5
+
+4 Weakness as Local Evidence in a Thermodynamic Quantale
+4.1 Why quantales? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4.2 Thermodynamic semiring and quantale . . . . . . . . . . . . . . . . . . . . . . . . . .
+4.3 Kernel-valued Schrödinger-bridge quantale (for compositional structure) . . . . . . .
+4.4 The key identification: weakness = (local) evidence . . . . . . . . . . . . . . . . . . .
+
+6
+6
+6
+7
+7
+
+5 Compositionality: How LLC Decomposes Under (Exact) Factorization
+5.1 Why compositionality matters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+8
+8
+
+6 Refinement DAGs: Many Approximate Factorizations and Context-Dependent
+Selection
+8
+6.1 Why a refinement DAG captures “emergent causal/Bayesian structure” . . . . . . . 8
+6.2 Scoring a factorization by weakness/evidence . . . . . . . . . . . . . . . . . . . . . . 8
+6.3 Tropicalization and the “piecewise-constant map” theorem . . . . . . . . . . . . . . . 9
+7 Dynamic Programming View: Refinement-DAG MAP as Shortest Path in MinPlus
+9
+7.1 Why dynamic programming emerges . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+8 TransWeave and Bootstrapped Multi-Stratum Transfer for Causal Factorization
+DAGs
+10
+8.1 Why TransWeave belongs in this story . . . . . . . . . . . . . . . . . . . . . . . . . 10
+8.2 TransWeave in one paragraph (mathematical sketch) . . . . . . . . . . . . . . . . . . 11
+8.3 Refinement-DAG dynamic programming as a TransWeave task . . . . . . . . . . . . 11
+8.4 Bootstrapped Multi-Stratum TransWeave for Causal Factorization DAGs (BMSTW-CF) 12
+8.5 Role of BMSTW-CF in handling distribution shifts . . . . . . . . . . . . . . . . . . . 13
+9 Causal Coding as Maintaining a Refinement DAG in a Continual-Learning Regime 14
+9.1 Why causal coding belongs in the structure controller . . . . . . . . . . . . . . . . . 14
+9.2 Abstract commutator control (CCL viewpoint) . . . . . . . . . . . . . . . . . . . . . 14
+9.2.1 Meta-objectives for staying in the small-commutator, sufficient-LLC regime
+under shift . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+9.3 Distribution shift and meta-learning as “keeping the premise errors small” . . . . . . 17
+10 Transformers as a Key Application
+17
+10.1 Backprop Transformers: degeneracy stages as posterior switching . . . . . . . . . . . 17
+10.2 PC/CC Transformers: modules, gates, and clarity penalties . . . . . . . . . . . . . . 18
+11 Incremental Compression View: Learning the Refinement DAG as Incremental
+Structure Learning
+18
+11.1 Why incremental compression helps . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+12 Computational Scaling and an Implementation Sketch (Neural + Symbolic Kernel)
+19
+12.1 How big are refinement DAGs likely to be? . . . . . . . . . . . . . . . . . . . . . . . 19
+12.2 Why split implementation (e.g. JAX for NN, MeTTa/MORK for DAG control)? . . 19
+13 Discussion and Open Problems
+
+19
+
+2
+
+A Perturbation theory for the local learning coefficient under approximate factorization
+20
+A.1 Why LLC is the right invariant to perturb . . . . . . . . . . . . . . . . . . . . . . . . 20
+A.2 Approximate factorization as a controlled interaction remainder . . . . . . . . . . . . 21
+A.3 Exact identity: the interaction remainder is a mixed-Hessian integral . . . . . . . . . 21
+A.4 Core domination lemma: when R is dominated, LLC does not change . . . . . . . . 21
+A.5 A computable sufficient condition using mixed Hessian blocks (quadratic regime) . . 22
+A.6 Beyond quadratic: order-of-vanishing (Newton) criterion . . . . . . . . . . . . . . . . 23
+A.7 Connection to commutator surrogates (causal coding) and what is computable . . . 24
+
+1
+
+Introduction
+
+To approach AGI one must not be restricted to training models in one stationary regime. AGI
+models or systems must continuously adapt across shifting domains, tasks, and user intents. A useful
+theory should therefore describe not just a parametric model class, but a system: a coupling of (i) a
+base learner, (ii) a structure controller that maintains a modular causal/factorized world-model,
+and (iii) a meta-learner that keeps the whole mechanism stable under distribution shift.
+The empirical clue: degeneracy changes. Recent work tracks a quantity called the "local
+learning constant" (LLC) during Transformer training process and finds stage boundaries at critical
+points of the LLC curve; these stages align with changes in internal structure and behavior. Their
+SLT framing uses local free energy
+∗
+
+Fn (W ) = − log
+
+Z
+W∗
+
+exp(−n`n (w))φ(w) dw
+
+and the asymptotic expansion
+Fn (W ∗ ) = n`n (w∗ ) + λ(w∗ ) log n + Op (log log n),
+with posterior concentration approximated by a log-sum-exp dominance over neighborhoods. This
+is the first pillar: LLC as degeneracy / complexity penalty in learning dynamics.
+The conceptual gap. LLC is usually computed as a geometric invariant of a singular statistical
+model. Weakness, in contrast, is often introduced as an Occam-like preference for “indistinct”
+hypotheses, sometimes formalized using quantales with soft inf-convolution. The gap in many
+discussions is that weakness and LLC look related but live in different languages.
+The main move. We define weakness to be exactly (local) evidence, i.e. the same integral
+appearing in SLT. Then LLC is not approximated by weakness: it is the asymptotic log-volume
+exponent of weakness. To study composition and control, we place this evidence object in a
+thermodynamic quantale whose tropical (zero-temperature) limit becomes the min-plus semiring.
+In that semiring, MAP over a refinement DAG of candidate factorizations is shortest-path dynamic
+programming.
+What this buys you.
+• A single mathematical object (weakness as evidence) whose asymptotics yields LLC, and whose
+algebra yields compositional control laws.
+3
+
+• A rigorous model of “many approximate factorizations per context” as inference over a refinement
+DAG.
+• A clean bridge between: stagewise degeneracy changes in backprop Transformers; and the design
+logic of causal-coding systems that maintain modularity and resist catastrophic forgetting under
+shift.
+
+2
+2.1
+
+A Systems Architecture: Base Learner + Structure Controller
++ Meta-Controller
+The three loops (and why they are distinct)
+
+Informal picture.
+
+We separate three time scales.
+
+1. Inference loop (fast): infer latent activities given input and current parameters. In predictive
+coding this is a relaxation dynamics that reduces free energy.
+2. Learning loop (medium): update neural parameters (or program library) using local errors
+and gates.
+3. Structure/Meta loop (slow): update modular factorization, gating policies, clarity strengths,
+and shift segmentation so as to keep the system in a regime where continual-learning guarantees
+hold.
+The thesis of this paper is that (3) can be formalized as inference and control on a refinement DAG,
+and that LLC/weakness provides a quantitative signal for when refactorization is needed.
+
+2.2
+
+Formal system model
+
+Definition 1 (Contexts and data streams). Let C be a set of contexts (domains/tasks/interaction
+regimes). A nonstationary training process produces a time-indexed stream (ct , xt )t≥1 with ct ∈ C
+and xt ∼ Pct .
+Definition 2 (Modular learner state). The learner state is modularized as
+Θ∼
+= Θ(1) ⊗ · · · ⊗ Θ(K)
+where Θ(k) is the parameter/state of module k (e.g. attention head, channel group, or program-block).
+Definition 3 (Structure objects and refinement DAG). A factorization f is a choice of modular
+decomposition of the learner’s internal representation and/or parameters (not necessarily equal to
+the fixed physical module partition). Let F be a collection of candidate factorizations and let
+G = (F, E)
+be a directed acyclic graph (DAG) whose edges represent refinement moves (e.g. splitting a module,
+introducing a gating separation, or adding a sparse interaction edge). We call G the refinement
+DAG.
+
+4
+
+Why multiple factorizations? A large model can represent many incompatible but locally-useful
+ways of factorizing data. Different contexts may prefer different factorizations. Also, distribution
+shift can render a previously good factorization unstable. Hence we maintain a distribution over
+factorizations and update it online.
+Definition 4 (System components). A system consists of:
+• a base update rule Uc : Θ → Θ (neural or programmatic) for each context c;
+• a structure controller that maintains a posterior (or score function) over f ∈ F;
+• a meta-controller Φ that adjusts estimation/calibration/regularization/segmentation knobs so
+as to keep the system stable under shift. (This is where TransWeave or other sophisticated AI
+methodologies can help on the adaptive learning side.)
+
+3
+
+Singular Learning Theory: Local Evidence, Free Energy, and
+LLC
+
+3.1
+
+Why local evidence (not global risk) is the right basic object
+
+SLT explains generalization and learning dynamics in singular models by tracking how much
+posterior mass sits near different neighborhoods of the parameter space. This is fundamentally a
+volume computation, not a Hessian computation. Local evidence captures both loss (energy) and
+degeneracy (entropy-like volume in parameter space). LLC appears as the exponent governing the
+polynomial decay of evidence with sample size.
+
+3.2
+
+Definitions
+
+Definition 5 (Empirical and population losses). Fix a context c ∈ C. Let `c (w) be the population
+loss (e.g. negative log-likelihood risk), and `n,c (w) the empirical loss from n samples from Pc .
+Definition 6 (Local evidence and local free energy). Let W ⊂ Rd be a measurable neighborhood
+and φ(w) a prior density positive on W . Define the local evidence and local free energy by
+Z
+
+Zn,c (W ) :=
+
+exp(−n `n,c (w)) φ(w) dw,
+
+(1)
+
+W
+
+Fn,c (W ) := − log Zn,c (W ).
+
+(2)
+
+Definition 7 (Local learning coefficient (LLC)). Informally, the LLC λ(w∗ ) is the coefficient of log n
+in the asymptotic expansion of Fn,c (W ∗ ) around a neighborhood W ∗ of a (population) minimizer
+w∗ . A precise
+definition can be given in terms of the largest pole of the associated zeta function
+R
+ζ(z) = (`c (w) − `c (w∗ ))z φ(w) dw after analytic continuation.
+
+3.3
+
+Watanabe’s local free energy expansion
+
+For regular models, Laplace’s method yields Fn ≈ n`(ŵ) + d2 log n. For singular models, the “ d2 ”
+becomes a rational number λ determined by the singular geometry. This λ is the LLC.
+Theorem 8 (Local free energy expansion (SLT)). Under standard SLT regularity conditions
+(analyticity, proper prior, etc.), for a neighborhood W ∗ containing a local minimum w∗ of the
+population loss, there exist constants λ(w∗ ) ∈ R>0 and m(w∗ ) ∈ N such that
+Fn,c (W ∗ ) = n `n,c (w∗ ) + λ(w∗ ) log n − (m(w∗ ) − 1) log log n + Op (1).
+5
+
+Remark 9 (Stage transitions as posterior switching). When multiple neighborhoods compete, the
+posterior mass is approximately concentrated in the neighborhood(s) with smallest Fn,c (W ∗ ), by a
+log-sum-exp dominance principle. As n increases, the tradeoff between the n` term and the λ log n
+term can cause abrupt switching between neighborhoods with different degeneracies.
+
+4
+
+Weakness as Local Evidence in a Thermodynamic Quantale
+
+4.1
+
+Why quantales?
+
+A system perspective needs a compositional algebra: how do modules compose, how do alternatives
+compete, and how does “best explanation” emerge? Quantales provide exactly this: a lattice
+of alternatives (joins) together with a notion of sequential composition (monoidal product) that
+distributes over joins. Thermodynamic (soft-min) quantales model log-sum-exp dominance; their
+tropical limit models hard-min composition.
+
+4.2
+
+Thermodynamic semiring and quantale
+
+A scalar warm-up. Before defining kernel-valued quantales, it helps to see the scalar case:
+evidence sums over alternatives and multiplies over independent compositions. Taking negative logs
+turns multiplication into addition and sums into log-sum-exp.
+Definition 10 (Thermodynamic addition and tropical limit). Fix ε > 0. For a, b ∈ [0, ∞], define
+a ⊕ε b := −ε log e−a/ε + e−b/ε ,
+
+
+a ⊗ b := a + b,
+
+with the conventions e−∞/ε = 0 and −ε log 0 = +∞.
+Lemma 11 (Soft-min bounds and tropicalization). For all a, b ∈ [0, ∞],
+min{a, b} − ε log 2 ≤ a ⊕ε b ≤ min{a, b}.
+In particular, limε→0+ (a ⊕ε b) = min{a, b}.
+Proof. Assume a ≤ b (the other case is symmetric). Then
+a ⊕ε b = −ε log e−a/ε (1 + e−(b−a)/ε ) = a − ε log(1 + e−(b−a)/ε ).
+
+
+Since log(1 + e−(b−a)/ε ) ∈ (0, log 2], the bound follows.
+Proposition 12 (Semiring/quantale structure). ([0, ∞], ⊕ε , ⊗) is a commutative semiring with
+additive unit +∞ and multiplicative unit 0. Moreover, extending ⊕ε to arbitrary (countable) joins by
+M
+
+ai := −ε log
+
+ε,i
+
+X
+
+
+
+e−ai /ε ,
+
+i
+
+one obtains a complete distributive structure (a commutative quantale) in the standard measurable
+setting. The tropical limit ε → 0 yields the idempotent min-plus quantale ([0, ∞], min, +).
+
+6
+
+4.3
+
+Kernel-valued Schrödinger-bridge quantale (for compositional structure)
+
+To model composition of multi-step mechanisms, we need costs between states, not just scalars.
+Thermodynamic (entropic) inf-convolution provides the correct “soft path composition”: sequential
+composition sums costs along a path and then aggregates over intermediate states via log-sum-exp.
+This is precisely the operator/heat-kernel view that underlies both optimal transport and many
+“weakness” formalisms.
+Definition 13 (Schrodinger-bridge cost quantale). Let (X, µ) be a σ-finite measure space and let
+QSB (ε) be the set of measurable kernels C : X × X → [0, ∞]. Define, for ε > 0:
+(C ⊕ D)(x, z) := min{C(x, z), D(x, z)},
+Z
+ C(x, y) + D(y, z) 
+(C ⊗ε D)(x, z) := −ε log
+exp −
+dµ(y).
+ε
+X
+
+(3)
+(4)
+
+Then (QSB (ε), ⊕, ⊗ε ) is a quantale; its ε → 0 limit is the classical “min-plus” inf-convolution:
+
+
+(C ⊗0 D)(x, z) := inf C(x, y) + D(y, z) .
+y∈X
+
+Remark 14 (Gibbs operator view). Define the integral operator (KC ϕ)(x) = e−C(x,y)/ε ϕ(y) dµ(y).
+Then KC⊗ε D = KC KD , i.e. composition of costs corresponds to composition of positive operators.
+This is the cleanest compositional semantics for “weakness as thermodynamic volume.”
+R
+
+4.4
+
+The key identification: weakness = (local) evidence
+
+At this point, we can make the promised identification. Evidence is a partition function for the
+empirical loss. Weakness should therefore be defined as that partition function (globally or locally),
+not as an external proxy such as a margin-like quantity. LLC is then the asymptotic exponent of
+weakness.
+Definition 15 (Weakness as (local) evidence). Given context c and neighborhood W ⊂ Rd , define
+the weakness of W by
+Wn,c (W ) := Zn,c (W ) =
+
+Z
+
+exp(−n `n,c (w)) φ(w) dw.
+W
+
+Equivalently, define the weakness cost by its negative log
+En,c (W ) := − log Wn,c (W ) = Fn,c (W ).
+Proposition 16 (LLC is the log-volume exponent of weakness). Under the SLT assumptions of
+Theorem 1, for a neighborhood W ∗ around w∗ ,
+∗
+
+∗
+
+Wn,c (W ∗ ) = exp − n`n,c (w∗ ) · n−λ(w ) · (log n)m(w )−1 · exp(Op (1)).
+
+
+In particular, λ(w∗ ) is the asymptotic exponent governing polynomial decay in n of weakness.
+Proof. Exponentiate the expansion of Fn,c (W ∗ ) = − log Wn,c (W ∗ ).
+
+7
+
+5
+
+Compositionality: How LLC Decomposes Under (Exact) Factorization
+
+5.1
+
+Why compositionality matters
+
+A systems theory should say how complexity/degeneracy decomposes across modules. If a model
+factorizes exactly into independent pieces, the evidence factorizes: volumes multiply and free energies
+add. This implies that LLC should add across independent modules. This is the foundational case;
+later sections treat approximate factorization and sparse interactions.
+Assumption 17 (Exact factorization). Suppose w = (w(1) , . . . , w(K) ) and, in a neighborhood
+Q
+W ∗ = k Wk∗ ,
+`n,c (w) =
+
+K
+X
+
+(k)
+`(k)
+),
+n,c (w
+
+φ(w) =
+
+k=1
+
+K
+Y
+
+φk (w(k) ).
+
+k=1
+
+Proposition 18 (Evidence, free energy, and LLC add under exact factorization). Under Assumption
+1,
+Zn,c (W ∗ ) =
+
+K
+Y
+
+(k)
+Zn,c
+(Wk∗ ),
+
+Fn,c (W ∗ ) =
+
+k=1
+
+K
+X
+
+(k)
+Fn,c
+(Wk∗ ).
+
+k=1
+
+If each factor has an SLT expansion with LLC λk , then the global LLC is
+λ=
+
+K
+X
+
+λk ,
+
+k=1
+
+and similarly multiplicities add in the expected way.
+Proof. Factorization of Z follows from Fubini/Tonelli and the product form of the exponent and
+prior. Then F = − log Z gives additivity, and the log n coefficients add termwise.
+
+6
+
+Refinement DAGs: Many Approximate Factorizations and ContextDependent Selection
+
+6.1
+
+Why a refinement DAG captures “emergent causal/Bayesian structure”
+
+A single static factorization is too rigid. A large learner can represent many decompositions;
+contexts select among them. We represent the space of decompositions as a refinement DAG: edges
+correspond to safer, incremental refactorizations (split a module; add a sparse interaction edge; etc.).
+A prior over this DAG encourages simplicity (fewer edges, sparser cliques).
+
+6.2
+
+Scoring a factorization by weakness/evidence
+
+Definition 19 (Factorization-dependent evidence). Let f ∈ F index a candidate factorization. We
+write w = (wf , ηf ) where wf are base parameters and ηf are factorization-specific structural/gating
+parameters. Define the (local) evidence under f by
+Z
+
+Zn,c (f ; W ) :=
+W
+
+
+
+exp − n `n,c (wf , ηf ) φf (wf , ηf ) dwf dηf ,
+
+and the free energy by Fn,c (f ; W ) := − log Zn,c (f ; W ).
+8
+
+Definition 20 (Refinement-DAG prior). Let π(f ) be a prior over F (e.g. penalize refinement depth
+or edge count). Define the posterior score by
+Jn,c (f ) := Fn,c (f ; Wf∗ ) − log π(f ),
+where Wf∗ is a chosen neighborhood around the fitted point for factorization f .
+Active factorization map. Define the MAP-selected factorization
+f ∗ (c; n) ∈ arg min Jn,c (f ).
+f ∈F
+
+This map can be highly non-smooth as a function of c and n. The goal of causal coding (and
+meta-control) is to keep it mostly stable and to make its jump set interpretable.
+
+6.3
+
+Tropicalization and the “piecewise-constant map” theorem
+
+Because Jn,c (f ) is a negative log-evidence, it is a log-sum-exp object. When n is large (or temperature
+small), it tropicalizes: the best term dominates. Thus selection becomes min-plus algebra, and
+the map c 7→ f ∗ (c; n) becomes piecewise constant, with explicit inequality boundaries where two
+candidates tie.
+Assumption 21 (Asymptotic expansion per factorization). Assume each factorization has an
+SLT-like expansion
+Fn,c (f ; Wf∗ ) = n `ˆc (f ) + λc (f ) log n + Oc (1),
+where `ˆc (f ) is the achieved empirical loss level and λc (f ) the effective LLC.
+Proposition 22 (Jump-set characterization). Fix n. For any two candidates f1 , f2 , the region of
+contexts where f1 is preferred over f2 is
+n
+
+o
+
+c ∈ C : Jn,c (f1 ) ≤ Jn,c (f2 ) .
+
+Under Assumption 2, ignoring O(1) terms, this inequality is approximately
+
+
+π(f1 )
+n `ˆc (f1 ) − `ˆc (f2 ) + λc (f1 ) − λc (f2 ) log n . log
+.
+π(f2 )
+
+Hence the jump set is approximately the union of codimension-1 surfaces where the left-hand side is
+equal.
+
+7
+
+Dynamic Programming View: Refinement-DAG MAP as Shortest Path in Min-Plus
+
+7.1
+
+Why dynamic programming emerges
+
+If every refinement step adds a local structural change (a “micro-compiler pass”) whose cost is
+additive, then the total score of a factorization is a sum over edges along a path in the refinement
+DAG. Minimizing a sum over paths is exactly a shortest-path problem. Over the thermodynamic
+(soft) semiring it becomes log-sum-exp message passing; in the tropical limit it becomes min-plus
+DP.
+9
+
+Assumption 23 (Path-decomposable factorization scores). Assume each f ∈ F corresponds to a
+path p = (e1 , . . . , em ) from a root f0 in a refinement DAG, and that for each context c and sample
+size n,
+Jn,c (f ) = Jn,c (f0 ) +
+
+m
+X
+
+κn,c (ei ),
+
+i=1
+
+where κn,c (e) is the incremental cost of refinement edge e (including prior penalty).
+Theorem 24 (Refinement-DAG MAP is shortest path (tropical limit)). Under Assumption 3, MAP
+selection equals the shortest path in the min-plus semiring:
+f ∗ (c; n) ∈ arg min
+
+X
+
+κn,c (e).
+
+p:f0 →f e∈p
+
+Because G is acyclic, the argmin can be computed exactly by dynamic programming in topological
+order.
+Proof. In a DAG, every node’s optimal cost satisfies the Bellman recursion
+
+
+Cost(v) = min Cost(u) + κ(u → v) ,
+u→v
+
+which is min-plus distributivity. This yields the shortest-path cost to each node and thus the MAP
+node(s).
+Remark 25 (Thermodynamic (soft) DP as quantale-message-passing). At finite temperature ε > 0,
+the min is replaced by ⊕ε :
+Costε (v) =
+
+M
+
+
+
+Costε (u) + κ(u → v) ,
+
+ε, u→v
+
+which is exactly log-sum-exp message passing (soft shortest path).
+
+8
+
+TransWeave and Bootstrapped Multi-Stratum Transfer for Causal
+Factorization DAGs
+
+8.1
+
+Why TransWeave belongs in this story
+
+TransWeave was originally developed as a general framework for transferring solutions between
+structured dynamic-programming (DP) or Bellman problems. Each task is specified by a state space,
+a Bellman operator, and a value function; transfer then amounts to learning an intertwining map
+that approximately commutes with the Bellman operators of two tasks. The same mathematical
+pattern appears naturally in our refinement-DAG picture:
+• each distribution P or Q induces a DP problem over the refinement DAG
+• the Bellman operator encodes the one-step refinement cost
+• under distribution shift, we want to transfer structure from the “old” DP problem to the “new”
+DP problem, using a map that approximately intertwines their Bellman operators.
+This is exactly the niche TransWeave is designed to fill. In particular, the “Bootstrapped MultiStratum TransWeave” (BMS-TransWeave) algorithm provides a way to start from a coarse, lowquality mapping between the two DP problems and iteratively improve both the mapping and the
+target solutions.
+10
+
+8.2
+
+TransWeave in one paragraph (mathematical sketch)
+
+At a high level, TransWeave treats each task T as a Bellman system (XT , BT ):
+• XT is a space of value functions or policies (depending on the formulation);
+• BT : XT → XT is a Bellman operator, e.g. (BT V )(s) = mina {cT (s, a) + γV (s0 )} or a min-plus
+convolution on a graph.
+A transfer map between two tasks T1 and T2 is an operator
+T : XT1 → XT2
+that approximately satisfies a Bellman–Darboux (BD) intertwining condition
+T ◦ BT1 ≈ BT2 ◦ T .
+
+(5)
+
+Ideally, (5) ensures that if V1∗ is a (near-)fixed point of BT1 , then T V1∗ is a good approximate
+fixed point of BT2 . TransWeave algorithms construct T by minimizing a BD loss derived from (5),
+optionally combined with direct supervision on pairs of known solutions.
+
+8.3
+
+Refinement-DAG dynamic programming as a TransWeave task
+
+In our refinement-DAG framework, each distribution over contexts induces a DP problem over the
+DAG:
+• nodes f ∈ F are candidate factorizations;
+• directed edges e : f → f 0 are refinement moves (splitting modules, adding or removing sparse
+interaction edges, changing gating structures);
+• costs on edges encode the incremental change in the SLT-aligned score Sn (c, f ) = nL∗c,f +
+λc,f log n + κ(f );
+• the Bellman operator B is the min-plus DP update that propagates these costs forward along
+the DAG .
+For a given distribution P over contexts, let (F, BP ) be the corresponding DP problem, and VP (f )
+its (approximate) value function over factorizations. For a shifted distribution Q, let (F, BQ ) and
+VQ (f ) be defined analogously, with task-dependent costs reflecting L∗c,f and λc,f evaluated under Q
+rather than P .
+Under this identification, TransWeave’s BD map becomes a structure-transfer operator
+T : XP → XQ
+between value-function spaces over the same refinement DAG, satisfying
+T ◦ BP ≈ BQ ◦ T .
+
+11
+
+8.4
+
+Bootstrapped Multi-Stratum TransWeave for Causal Factorization DAGs
+(BMSTW-CF)
+
+Informal goal.
+
+Under distribution shift from P to Q, we often have:
+
+• high-quality refinement policies and value functions for (F, BP ),
+• only low-quality or partially-trained policies/value functions for (F, BQ ).
+The goal of BMSTW-CF is to iteratively improve both the transfer map T and the target-side value
+function VQ by:
+1. bootstrapping from low-stratum (weak) solutions on Q and better solutions on P ,
+2. learning a BD map that fits these strata,
+3. using this map to propose better initializations for Q and refine them with DP,
+4. and repeating across strata until both T and VQ are of high quality.
+Strata over the refinement DAG. We stratify factorization nodes f ∈ F by quality under the
+new distribution Q. For instance, define a scalar score
+qQ (f ) := −Sn (Q, f )
+and partition F into strata such as “barely acceptable”, “OK”, and “good” based on quantiles of
+qQ (f ). Early in training on Q, most nodes are in the “barely acceptable” or unknown strata.
+Initial approximate transfer map. Causal coding plus meta-control already provide a rough
+structural alignment between P and Q:
+• modules that retain high do-influence under Q are likely to correspond to modules that were
+important under P ;
+• mixed-Hessian/commutator surrogates identify interaction edges that survive vs those that
+vanish under Q.
+We use this information to define an initial coarse map
+T0 : F → F,
+for example by “copying” a factorization f from P to its closest structural analog under Q (same
+module partitions, edges, and gates, where possible) and adjusting only obviously broken connections.
+Bootstrapped BD-map learning. BMSTW-CF proceeds in strata:
+1. Low-stratum phase.
+• Select a set of low-quality factorizations f ∈ F under Q and their parents/siblings.
+• For each such f , use T0 to define a source-side partner fP that is good under P (value
+VP (fP ) known).
+
+12
+
+• Fit a preliminary map T1 by minimizing a BD loss
+kT1 (BP VP ) − BQ (T1 VP )k
+plus a supervised term encouraging T1 (VP )(fP ) ≈ VQapprox (f ).
+2. Transfer and refinement.
+• Use T1 to transfer better source-side value estimates VP down to Q: for higher-quality
+fP , propose initial VQseed (f ) as T1 (VP )(fP ).
+• Run a few DP refinement passes using BQ to locally improve VQ near these seeds.
+3. Re-stratify and iterate.
+• Recompute qQ (f ) and update strata.
+• Restrict attention to higher strata, learn a refined T2 with stricter BD error tolerance.
+• Repeat the transfer-and-refinement step across strata until convergence.
+We call this overall procedure Bootstrapped Multi-Stratum TransWeave for Causal Factorization
+DAGs (BMSTW-CF).
+
+8.5
+
+Role of BMSTW-CF in handling distribution shifts
+
+Upgrading a rough mapping to a high-quality one. Above we have argued that causal
+coding plus meta-learning naturally produce a coarse, evolving picture of which factorizations in
+the refinement DAG remain good under shift (small leakage, small commutators, small interaction
+LLC corrections ∆λ). However, this picture is noisy and local. BMSTW-CF offers a principled way
+to turn that coarse picture into a high-quality mapping and refined target-side policies:
+• treat the DP problems induced by P and Q as Bellman systems (F, BP ) and (F, BQ );
+• treat the causal-coding-induced correspondence as an initialization T0 between their valuefunction spaces;
+• use BMS-TransWeave to learn an intertwiner T satisfying T ◦BP ≈ BQ ◦T while bootstrapping
+better value functions on Q;
+• thereby systematically upgrade the rough initial mapping into a better one that respects the
+DP structure and the refined SLT/weakness scores.
+Architectural placement. From the systems viewpoint we’ve outlined, BMSTW-CF lives in
+the slow structure/metacontrol loop:
+• the fast neural loop (in JAX or similar) performs predictive/causal coding inside whichever
+factorization node is currently active;
+• the medium loop updates parameters and local gates based on context-specific errors;
+• the slow loop, implemented in a symbolic graph engine (e.g. MeTTa/MORK), maintains the
+refinement DAG, runs DP over it, and uses BMSTW-CF to transfer and upgrade structures
+as the distribution drifts.
+This allows the system to reconcile the causal-coding local view (supports, leakage, commutators)
+with the SLT/global view (LLC, weakness) in a computationally tractable way, across multiple
+distributions and over time.
+13
+
+9
+
+Causal Coding as Maintaining a Refinement DAG in a ContinualLearning Regime
+
+9.1
+
+Why causal coding belongs in the structure controller
+
+Causal coding (CC) introduces two families of mechanisms: (i) causal gates that suppress updates
+on edges with low do-influence, and (ii) clarity/pruning terms that remove redundant paths. From a
+systems viewpoint, these are not just local heuristics; they are the operations that realize refinement
+steps in the refinement DAG, and keep the model near a factorization state where context-conditioned
+updates commute (or almost commute).
+
+9.2
+
+Abstract commutator control (CCL viewpoint)
+
+Reminder of the commutator goal. The continual-learning theorems in causal-coding work
+can be read as: If updates are local to supports (small leakage) and cross-support interactions are
+sparse/small, then sequential training approximates joint training and catastrophic forgetting is
+bounded.
+Definition 26 (Approximate locality and commutator defects (schematic)). Fix a metric/enrichment
+dΘ on endomorphisms of Θ. For each context c, let Uc : Θ → Θ be the realized update and Vc
+an ideal support-local update. Define locality error εc := dΘ (Uc , Vc ). For a pair (c, c0 ), define
+commutator defect ∆c,c0 := dΘ (Vc ◦ Vc0 , Vc0 ◦ Vc ).
+Why this matters for the refinement DAG. Factorization states f determine support sets
+and routing paths. Good factorizations make most pairs (c, c0 ) have small overlap and thus small
+commutators. Distribution shifts threaten this by changing which modules matter, or by corrupting
+influence estimation.
+9.2.1
+
+Meta-objectives for staying in the small-commutator, sufficient-LLC regime
+under shift
+
+The commutator calculus says: if context-conditioned updates are (approximately) local to causal
+modules, and if the remaining cross-context interactions are sparse, then continual learning is
+stable and path dependence is controlled by a sparse confusion graph. In practice, the difficult
+part is not the algebra downstream of these assumptions, but maintaining the assumptions online
+under distribution shift: influence estimates drift, gates flip, leakage cascades across depth, and
+the confusion graph can densify. A principled cure is to make the relevant knobs meta-learned
+with an explicit objective that punishes the very quantities that break the theorems: locality error
+and commutator/confusion defects. This is exactly the move advocated in the distribution-shift
+addendum, which proposes learning calibration/thresholds/clarity/segmentation policies so as to
+keep εc and ∆c,c0 small for most contexts/pairs while controlling compute. [?] [?]
+Mathematical setting (recap). We work with a modularized learner state Θ ' Θ1 ⊗· · ·⊗ΘK and
+a family of context-conditioned update operators Uc : Θ → Θ. The approximate categorical causalcontinual-learning (CCL) viewpoint treats continual-learning stability as a problem of controlling
+two types of errors: (i) per-context locality error εc := dΘ (Uc , Vc ) to an ideal support-local update
+Vc , and (ii) per-pair commutator defect ∆c,c0 := dΘ (Vc ◦ Vc0 , Vc0 ◦ Vc ). These combine as the per-pair
+confusion cost
+δc,c0 := 2(εc + εc0 ) + ∆c,c0 .
+(6)
+14
+
+When the set of “confusing pairs” is sparse, global path dependence scales (essentially) linearly in
+P
+{i,j}∈Econf (Σ) δci ,cj rather than quadratically in the number of contexts. [?]
+What to meta-optimize (informal). A meta-controller should be rewarded for (a) good current
+performance, (b) low forgetting on a small anchor set, (c) keeping updates local (low leakage outside
+estimated supports), and (d) keeping commutator/confusion small on sampled context pairs, all
+under a compute/latency budget. The shift note spells this out as a direct meta-objective connected
+to (εc , ∆c,c0 ) and the confusion graph. [?]
+Meta-parameterization. Let ω denote “control” parameters used by causal coding / predictivecoding (PC) implementations, e.g.:
+• gating thresholds τc ;
+• uncertainty radii / calibration factors βc,k for per-module influence estimates;
+• clarity/anti-overlap regularization strengths;
+• exploration rates (to avoid frozen-gate failure modes);
+• segmentation / change-point thresholds controlling context prototypes and module allocation.
+This matches the architectural sketch in which a meta-controller learns calibration, confidence-aware
+gating, clarity strengths, and shift-detection/segmentation policies. [?]
+Observed proxies for the theorem quantities. Because Vc and ∆c,c0 are idealized, we use
+measurable proxies.
+(1) Leakage proxy for locality error. Given an estimated support Ŝc (from confidence-aware
+gating), define a measured leakage proxy ε̂c as the magnitude of update outside Ŝc ; e.g. in a
+continuous neural setting,
+X
+ε̂c :=
+k∆θ(k) k,
+(7)
+k∈
+/ Ŝc
+
+as suggested in the stability-map discussion. [?]
+(2) Commutator/confusion proxy. Exact computation of dΘ (Uc ◦ Uc0 , Uc0 ◦ Uc ) is expensive, so we
+estimate it sparsely and/or via cheap proxies. In smooth neural systems one proxy is the first-order
+commutator approximation based on gradients and Hessian-vector products,
+b 0 ≈
+∆
+c,c
+
+∇2 Lc (θ) ∇Lc0 (θ) − ∇2 Lc0 (θ) ∇Lc (θ) ,
+
+(8)
+
+or a blockwise proxy based on cross-module gradient/Hessian overlaps. [?]
+(3) Confusion-cost proxy. Define
+b 0.
+δ̂c,c0 := 2(ε̂c + ε̂c0 ) + ∆
+c,c
+
+(9)
+
+b 0 and supports maintaining an approximate
+This mirrors the note’s schematic δ̂c,c0 := 2(ε̂c + ε̂c0 ) + ∆
+c,c
+confusion graph by sampled estimates. [?]
+
+15
+
+From estimation error to locality error: the stability map. Under distribution shift, the
+upstream failure mode is misestimation of influence/support, producing leakage that cascades. The
+shift note proposes explicitly learning a stability map from influence estimation uncertainty (and
+drift features, thresholds, compute budget) to observed leakage ε̂c , and using this map to tune ω to
+keep ε̂c below target. [?]
+Formally, let an influence estimator return for each module k a mean/uncertainty (µc,k , σc,k )
+and let confidence-aware gating form supports from lower confidence bounds (LCBs), e.g.
+LCBc,k := µc,k − βc,k ,
+
+Ŝc := {k : LCBc,k ≥ τc },
+
+(10)
+
+with optional exploratory mixing to avoid frozen gates. [?] A (learned) stability map is then a
+function Sψ such that, operationally,
+
+
+
+
+ε̂c ≈ Sψ {σc,k }K
+k=1 , τc , drift stats, compute budget ,
+
+(11)
+
+and the meta-controller uses Sψ to adjust (τc , βc,k ) to keep ε̂c small. [?]
+A concrete meta-objective (rigorous statement). Let A be an “anchor” distribution over
+past contexts used to monitor forgetting, and let P be a sampling scheme over context pairs used to
+estimate confusion/commutator proxies. Define the meta-objective
+J(ω) := E[CurrLoss] + α Ec∼A [AnchorForget(c)] + β E(c,c0 )∼P [δ̂c,c0 ] + γ E[ExtraCompute],
+
+(12)
+
+where δ̂c,c0 is as above. This is the explicit schematic objective proposed in the shift note. [?]
+Interpretation: “stay in the theorem regime”. Minimizing (12) targets precisely the premises
+that make the approximate categorical theorem useful: (i) small per-context locality error (via
+leakage penalties and stability-map tuning), and (ii) small commutator/confusion on most pairs (via
+sampled commutator proxies and confusion-graph maintenance), with explicit compute awareness.
+[?] This turns the CCL theorem from a post-hoc analysis tool into a control principle for a continual
+learner.
+Connection to mixed-Hessian / commutator surrogates (why this is computable). In
+the smooth setting, commutators of context gradient flows can be bounded in terms of mixed
+Hessian blocks and (out-of-support) gradients. Concretely, causal modularity is defined by small
+residual gradient outside support and small cross-Hessian blocks between support and non-support
+modules; these quantities control contributions to the Lie bracket (commutator) of gradient vector
+fields. [?] This justifies using mixed-Hessian/HVP proxies (and blockwise overlaps) as inexpensive
+b 0 inside (12). [?]
+estimates of ∆
+c,c
+Where this meets “AGI cognitive architecture”. The architectural lesson is that “causal
+coding” is not only a base-learning rule (gated local updates); it is also a self-regulation problem
+over nonstationary environments. The meta-controller is responsible for:
+1. maintaining calibrated uncertainty and confidence-aware gating (to prevent cascades),
+2. allocating exploration/probes to avoid frozen gates and discover re-emergent relevance,
+3. detecting mechanism shifts and re-segmenting contexts / expanding modules,
+16
+
+4. keeping the confusion graph sparse by directing replay and clarity increases to persistent edges.
+These design requirements are explicitly motivated as the practical route for robust causal estimation
+under shift and for preserving the linear-in-confusing-pairs regime. [?]
+Remark (how this interfaces with SLT/LLC in the broader paper). In the main text,
+you can now identify an SLT-aligned “weakness/evidence” quantity (whose tropical asymptotics
+yield LLC) as an additional term in the control objective: the controller should maintain not
+only low commutator/leakage but also sufficient local evidence volume (to avoid collapse into an
+over-constrained, brittle subspace). This subsection is the right place to introduce that additional
+regularizer once your paper has defined weakness in SLT terms.
+
+9.3
+
+Distribution shift and meta-learning as “keeping the premise errors small”
+
+Under shift, influence estimates can become wrong and gating can leak updates into non-support
+modules. In deep networks, small leakage can cascade, densifying the confusion graph and violating
+the premises needed for commutator control. This motivates a meta-controller that learns calibration,
+thresholds, and segmentation to maintain small locality errors and small commutator defects with
+high probability.
+b k) an
+Definition 27 (Stability map (schematic)). Let I(c, k) be the true influence profile and I(c,
+online estimate. Assume a gate-stability condition for the update map:
+
+
+b Uc (I) ≤ Lgate kIb − Ik + εalg .
+dΘ Uc (I),
+
+Then estimation error propagates to locality error εc .
+
+10
+
+Transformers as a Key Application
+
+10.1
+
+Backprop Transformers: degeneracy stages as posterior switching
+
+In standard backprop training, we can still interpret SGD as a noisy optimizer that explores regions
+of the loss surface. The degeneracy-stage picture says: as training progresses and effective sample
+size grows, the system may switch between “modes” (neighborhoods) with different loss and different
+LLC, because the local free energy tradeoff changes. This is exactly a log-sum-exp / tropicalization
+story: posterior mass concentrates at the best free-energy region.
+Definition 28 (Neighborhood competition model). Let {Wi∗ }i∈I be candidate neighborhoods
+around minima (or effective minima). Define Fn (Wi∗ ) and say the active neighborhood is
+i∗ (n) ∈ arg min Fn (Wi∗ ).
+i
+
+Remark 29 (Why stage boundaries occur). If Fn (Wi∗ ) = n`i + λi log n + O(1), then differences
+Fn (W2∗ ) − Fn (W1∗ ) = n(`2 − `1 ) + (λ2 − λ1 ) log n + O(1)
+can change sign at a critical n, causing abrupt switches. This is the mathematically clean version of
+“developmental stage transitions” in the degeneracy-based picture.
+
+17
+
+10.2
+
+PC/CC Transformers: modules, gates, and clarity penalties
+
+A Transformer already has natural modularity: attention heads and MLP channels. A predictivecoding Transformer adds activity variables and local error signals. Causal coding then uses
+do-influence to gate which heads/channels update for a given context, and uses clarity penalties
+to prune redundant routes. In our systems view, these mechanisms implement refinement moves
+(splits/pruning/routing changes) that update the refinement DAG and keep commutators small.
+Definition 30 (Transformer module index set). Let modules be indexed by k ∈ {1, . . . , K}, where
+a module may be an attention head (`, h), an MLP channel group (`, j), etc. A factorization f can
+group these modules differently (e.g. by task-routing partitions).
+Weakness/LLC signal for “useful degeneracy”. Over-pruning can collapse the effective
+parameter space into a too-skinny subspace (loss of adaptive slack); under-pruning yields dense
+coupling and catastrophic interference. This paper’s quantitative proposal is: track module-wise and
+factorization-wise weakness (evidence) and LLC, and meta-control the clarity/gating to maintain a
+target regime:
+• most contexts have small supports and small leakage εc ;
+• most context pairs have small commutator defects ∆c,c0 ;
+• the active factorization has enough degeneracy (LLC) to adapt under shifts, without collapsing.
+
+11
+
+Incremental Compression View: Learning the Refinement DAG
+as Incremental Structure Learning
+
+11.1
+
+Why incremental compression helps
+
+Neural nets are one kind of compressor. Incremental compression offers a complementary lens: a
+learner maintains a library of reusable “features” (programs) organized into modules. Contexts have
+supports defined by compression gaps under interventions (disable a module). This is exactly the
+causal-coding support notion, but in bits rather than gradients. The refinement DAG then becomes
+a DAG of compression-program refinements.
+Definition 31 (Incremental decomposition and code length). Given an input string x of length
+N , an incremental decomposition is a sequence of features F = (f1 , . . . , fs ) and residual rs with
+two-part code length
+Ls (F ; x) :=
+
+s
+X
+
+K(fi ) + K(rs ).
+
+i=1
+
+A global library Θ = (F (1) , . . . , F (K) ) stores features in modules.
+Definition 32 (Do-influence as compression gap and context support). For a context c, let Lc (Θ)
+be expected code length under an incremental compressor that uses Θ. Let Θ \ k be Θ with module
+k disabled. Define
+I(c, k; Θ) := Lc (Θ \ k) − Lc (Θ),
+
+Sc (Θ) := {k : I(c, k; Θ) ≥ τ }.
+
+Connection to refinement DAG. A refinement edge corresponds to adding/splitting a feature
+module, or changing reuse policies. The refinement-DAG DP decides which library structure is best
+for the current stream segment.
+18
+
+12
+
+Computational Scaling and an Implementation Sketch (Neural
++ Symbolic Kernel)
+
+12.1
+
+How big are refinement DAGs likely to be?
+
+The space of all partitions/graphs over K modules is enormous (super-exponential). A workable
+system must represent only a sparse, structured subset: hierarchical refinements, sparse interaction
+edges, and per-context gating patterns. In that regime, the refinement DAG can be polynomial in
+K.
+A simple scaling model. Let K be the number of physical modules we expose (heads, channel
+groups, etc.). Assume: (i) each module participates in at most d interaction edges in the sparse
+interaction graph; (ii) refinements are hierarchical splits with branching factor at most b; (iii) we
+keep at most M candidate factorizations per “region” of context space. Then nodes scale like
+|F| ≈ O(M K) to O(M K log K) in typical hierarchical schemes, and edges |E| ≈ O(|F|b).
+Toy to frontier-scale orders of magnitude. For toy Transformers, K can be ∼ 102 ; keeping
+M ∼ 102 candidates gives |F| ∼ 104 . For medium systems, K ∼ 103 and M ∼ 103 yields |F| ∼ 106 .
+For frontier-scale systems, K depends on granularity (heads vs head-groups vs block-level); coarser
+granularity keeps K in the low thousands, making |F| in the 106 -107 range plausible.
+
+12.2
+
+Why split implementation (e.g. JAX for NN, MeTTa/MORK for DAG
+control)?
+
+The refinement DAG controller is symbolic/graphical: dynamic programming, min-plus message
+passing, discrete segmentation, and constraint propagation. This is naturally expressed in a
+reduction-kernel / logic substrate. The base learner is differentiable and batched: natural for
+JAX/accelerators. Hence a split architecture:
+• JAX: PC inference, gated weight updates, influence estimation (or its surrogates), LLC
+estimators.
+• MeTTa/MORK: maintain refinement DAG, run tropical/thermodynamic DP, manage priors
+and segmentation policies, store and update the sparse confusion graph.
+
+13
+
+Discussion and Open Problems
+
+What remains to be proven (beyond this draft).
+• A fully explicit perturbation theory for how LLC changes under approximate factorization,
+with computable bounds in terms of mixed Hessian blocks / commutator surrogates.
+• Empirical protocols for estimating module-wise weakness and LLC online with acceptable
+overhead.
+• Design of meta-objectives that directly optimize “stay in the small-commutator, sufficient-LLC
+regime” under realistic shift patterns.
+
+19
+
+Why this should matter. The governing message is: treat “structure” (factorizations, modularity, pruning) as a first-class inferential object, not as a static inductive bias. Weakness-as-evidence
+gives a quantitative, compositional signal for structure control, and tropicalization provides the
+correct algebra in which that control becomes dynamic programming.
+
+References
+[1] J. Hoogland, G. Wang, M. Farrugia-Roberts, L. Carroll, S. Wei, D. Murfet. Loss Landscape
+Degeneracy and Stagewise Development in Transformers. arXiv:2402.02364v3, 2025.
+[2] B. Goertzel. Causal Coding and the General Causal-Continual-Learning Theorem. 2025.
+[3] B. Goertzel. Brief Note: Handling Distribution Shifts in Causal Coding via Meta-Learning.
+2025.
+[4] B. Goertzel. Quantale Weakness: A Unifying Occam-Like Bias for AGI. AGI-25 keynote slides,
+2025.
+[5] S. Watanabe. Mathematical Theory of Bayesian Statistics. CRC Press, 2018.
+
+A
+
+Perturbation theory for the local learning coefficient under approximate factorization
+
+A.1
+
+Why LLC is the right invariant to perturb
+
+Singular learning theory (SLT) studies the local asymptotics of Bayesian evidence integrals. Given
+a nonnegative analytic excess loss (or energy)
+K(θ) = L(θ) − L(θ? ) ≥ 0,
+a prior density ϕ(θ), and a neighborhood U of the minimizing set, the local evidence is
+Z
+
+Zn (U ) :=
+
+exp(−nK(θ)) ϕ(θ) dθ.
+U
+
+Under standard SLT hypotheses (analyticity; ϕ smooth and strictly positive on U ), there exist
+numbers λ > 0 and m ∈ N such that
+− log Zn (U ) = λ log n − (m − 1) log log n + O(1)
+
+(n → ∞).
+
+(13)
+
+We call λ the local learning coefficient (LLC), i.e. the local RLCT.
+A convenient equivalent characterization uses the sublevel-set volume
+Z
+
+VK (ε) :=
+
+ϕ(θ) dθ.
+U ∩{K(θ)≤ε}
+
+Then, for some continuous v(ε) with 0 < v(0) < ∞,
+VK (ε) = ελ (log(1/ε))m−1 v(ε)
+
+(ε ↓ 0).
+
+Thus λ is the sharp exponent controlling local posterior volume near minima.
+20
+
+(14)
+
+A.2
+
+Approximate factorization as a controlled interaction remainder
+
+To talk about “module-wise factorization” we split parameters into blocks and isolate an interaction
+remainder R measuring coupling between blocks. The main technical fact we exploit is this: if R is
+dominated by the factorized baseline, then the LLC is unchanged. This makes LLC perturbation
+theory largely a problem of bounding R.
+Setup . For clarity start with a two-block split θ = (u, v) with u ∈ Rdu , v ∈ Rdv , and assume K is
+C 2 in a neighborhood of (0, 0) after translating a reference minimizer to the origin (so K(0, 0) = 0).
+Define one-block “axis restrictions”
+Ku (u) := K(u, 0),
+
+Kv (v) := K(0, v),
+
+the factorized baseline
+K0 (u, v) := Ku (u) + Kv (v),
+and the interaction remainder
+R(u, v) := K(u, v) − Ku (u) − Kv (v).
+
+(15)
+
+By construction R(u, 0) = R(0, v) = 0.
+
+A.3
+
+Exact identity: the interaction remainder is a mixed-Hessian integral
+
+In causal-coding work, “residual couplings” are measured by mixed Hessian blocks. Here is the
+bridge: the interaction remainder R is exactly an integral of those mixed blocks, so any computable
+bound on mixed blocks yields a computable bound on R.
+Exact identity . Let K be C 2 near (0, 0). Then for all (u, v) close enough to 0,
+Z 1Z 1
+
+R(u, v) =
+0
+
+0
+
+u> ∇2uv K (su, tv) v dt ds.
+
+
+(16)
+
+Proof. Define F (s, t) := K(su, tv). Then
+R(u, v) = F (1, 1) − F (1, 0) − F (0, 1) =
+
+Z 1
+
+
+
+∂t F (1, t) − ∂t F (0, t) dt.
+
+0
+
+By the fundamental theorem of calculus in s, ∂t F (1, t) − ∂t F (0, t) =
+computation gives ∂s ∂t F (s, t) = u> (∇2uv K)(su, tv) v, yielding (16).
+
+R1
+
+0 ∂s ∂t F (s, t) ds. A chain-rule
+
+Norm bound. Let k · k be the Euclidean norm and k · kop the induced operator norm. If
+sup(su,tv)∈U k∇2uv K(su, tv)kop ≤ ρ on a neighborhood U , then (16) implies
+|R(u, v)| ≤ ρ kuk kvk ≤
+
+A.4
+
+
+ρ
+kuk2 + kvk2 .
+2
+
+(17)
+
+Core domination lemma: when R is dominated, LLC does not change
+
+SLT’s λ is an asymptotic/scale invariant. Multiplying K by a constant or perturbing it by a term
+that is everywhere a small fraction of K cannot change the exponent in (14). The following lemma
+formalizes this “bi-Lipschitz equivalence”.
+21
+
+f be nonnegative
+Lemma A.1 (multiplicative equivalence preserves LLC). Let K and K
+functions on U and suppose there exist constants 0 < c1 ≤ c2 < ∞ and a neighborhood U0 ⊆ U of
+the minimizing set such that
+f
+c1 K(θ) ≤ K(θ)
+≤ c2 K(θ)
+
+for all θ ∈ U0 .
+
+(18)
+
+f have the same LLC λ and the same multiplicity m in the asymptotics (13)-(14).
+Then K and K
+Proof. From (18),
+f
+{θ : K(θ) ≤ ε/c2 } ∩ U0 ⊆ {θ : K(θ)
+≤ ε} ∩ U0 ⊆ {θ : K(θ) ≤ ε/c1 } ∩ U0 .
+
+Integrating ϕ over these sets gives the corresponding sandwich for VK and VK
+e . A constant rescaling
+λ
+m−1
+of ε does not change the leading ε (log(1/ε))
+exponents in (14), hence λ, m coincide.
+Corollary A.2 (dominated interaction implies ∆λ = 0). If K = K0 + R with K0 ≥ 0 and
+there exists η ∈ [0, 1) and a neighborhood U0 such that
+|R(θ)| ≤ η K0 (θ)
+
+(θ ∈ U0 ),
+
+(19)
+
+then K and K0 have the same LLC. In particular, the “interaction LLC” ∆λ := λ(K) − λ(K0 )
+equals 0.
+Proof. (19) implies (1 − η)K0 ≤ K ≤ (1 + η)K0 on U0 , so Lemma A.1 applies.
+
+A.5
+
+A computable sufficient condition using mixed Hessian blocks (quadratic
+regime)
+
+In the “quadratic regime” (each module has nondegenerate local curvature), the domination condition
+(19) can be certified purely from within-block curvature lower bounds and mixed-block Hessian upper
+bounds. Both are standard, computable quantities.
+Assumption (local quadratic lower bounds). Assume there exist µu , µv > 0 and a neighborhood U0 such that
+Ku (u) ≥
+
+µu
+kuk2 ,
+2
+
+µv
+kvk2
+2
+
+Kv (v) ≥
+
+for all (u, v) ∈ U0 .
+
+(20)
+
+Let µ := min(µu , µv ).
+Proposition A.3 (mixed-Hessian domination test). Suppose K is C 2 on U0 and
+sup k∇2uv K(u, v)kop ≤ ρ.
+
+(21)
+
+(u,v)∈U0
+
+Then for all (u, v) ∈ U0 ,
+|R(u, v)| ≤
+
+ρ
+K0 (u, v).
+µ
+
+(22)
+
+Consequently, if ρ < µ then ∆λ = 0.
+Proof. By (17), |R(u, v)| ≤ ρ2 (kuk2 + kvk2 ). By (20), K0 (u, v) = Ku (u) + Kv (v) ≥ µ2 (kuk2 + kvk2 ).
+Combining yields (22). If ρ < µ then (19) holds with η = ρ/µ < 1, so Corollary A.2 gives
+∆λ = 0.
+
+22
+
+Multi-module extension (pairwise couplings). Let θ = (θ(1) , . . . , θ(M ) ) and suppose we
+P
+(m) ) satisfying K (θ (m) ) ≥ µm kθ (m) k2 locally. Assume the
+have a baseline K0 (θ) = M
+m
+m=1 Km (θ
+2
+interaction remainder admits the bound
+X
+
+|R(θ)| ≤
+
+ρmn kθ(m) k kθ(n) k.
+
+1≤m<n≤M
+
+Then by ab ≤ (a2 + b2 )/2,
+|R(θ)| ≤
+
+M X
+
+1 X
+ρmn kθ(m) k2 .
+2 m=1 n6=m
+
+Hence if there exists η ∈ [0, 1) such that for all m,
+X
+
+ρmn ≤ η µm ,
+
+(23)
+
+n6=m
+
+then |R(θ)| ≤ ηK0 (θ) locally and therefore ∆λ = 0.
+
+A.6
+
+Beyond quadratic: order-of-vanishing (Newton) criterion
+
+If some module directions are flat (singular), “small mixed Hessian” is not enough: a lower-order
+cross term can dominate at sufficiently small scale even with tiny coefficient. In that setting, what
+matters is the order of vanishing of the interaction term relative to the modules’ own leading orders.
+This is exactly the Newton-polyhedron logic behind SLT.
+Lemma A.4 (weighted Young domination). Fix exponents p, q > 1 and a, b > 0. If a/p +
+b/q > 1, then for every η > 0 there exists δ > 0 such that
+xa y b ≤ η (xp + y q )
+
+for all x, y ∈ [0, δ].
+
+(24)
+
+for all x, y ≥ 0.
+
+(25)
+
+If a/p + b/q = 1, then the global inequality holds:
+xa y b ≤
+
+a p b q
+x + y
+p
+q
+
+Proof sketch. For a/p + b/q = 1, (25) is the weighted AM-GM inequality. For a/p + b/q > 1, write
+a/p = α, b/q = β so α + β = 1 + γ with γ > 0. Then xa y b = (xαp y βq ) xγp y 0 up to relabeling, and
+the extra factor xγp (or y γq ) makes the bound arbitrarily small on a small neighborhood; a standard
+compactness argument yields (24).
+Proposition A.5 (singular-safe interaction criterion). Assume there exist constants cu , cv , C >
+0 and exponents p, q > 1, a, b > 0 such that locally
+Ku (u) ≥ cu kukp ,
+
+Kv (v) ≥ cv kvkq ,
+
+|R(u, v)| ≤ Ckuka kvkb .
+
+If a/p + b/q > 1, then |R(u, v)| ≤ ηK0 (u, v) on a sufficiently small neighborhood for any chosen
+η ∈ (0, 1), hence ∆λ = 0.
+Proof. Apply Lemma A.4 to x = kuk, y = kvk and absorb constants cu , cv , C by shrinking the
+neighborhood. Then (19) holds and Corollary A.2 applies.
+
+23
+
+A.7
+
+Connection to commutator surrogates (causal coding) and what is computable
+
+Causal-coding theory controls mixed Hessian blocks and out-of-support gradients to make contextgradient flows nearly commuting. Those same mixed blocks are exactly what enters the interaction
+remainder bound above. Thus the same quantities that certify “small commutators” also certify
+“stable LLC decomposition” when within-module curvature dominates.
+Link to Lie-bracket / commutator surrogates . For gradient vector fields Xt = −∇Lt , the
+Lie bracket can be written as
+[Xi , Xj ](θ) = −∇2 Lj (θ)∇Li (θ) + ∇2 Li (θ)∇Lj (θ),
+(t)
+
+and in block coordinates θ = (u, v) this contains terms in which mixed Hessian blocks Huv
+(t)
+(and Hvu ) are multiplied by gradient blocks. A concrete bound used in the CCL analysis is: if
+(t)
+(t)
+(t)
+kHuv k, kHvu k ≤ εh and kgv k ≤ εg , then
+k[Xi , Xj ](θ)k ≤ 2H εg + 2Gmax εh ,
+with H bounding within-block Hessians and Gmax bounding gradient norms. This makes εh (a
+mixed-block Hessian norm) and εg (out-of-support gradient size) directly estimable via commutator
+surrogates under mild boundedness assumptions.
+How to use this for LLC perturbation (text). Given a modularization and a context t,
+use either: (i) direct mixed-Hessian measurements (exact Hessian blocks, Gauss-Newton/Fisher
+surrogates), or (ii) commutator surrogates calibrated by bounds on within-block Hessians and
+gradient norms, to upper bound ρ (or the ρmn ). Separately, estimate within-module curvature
+lower bounds µm (or a PL/strong-convexity proxy restricted to each module). If the computable
+dominance condition (23) holds with some η < 1, then the interaction remainder is dominated and
+the LLC is unchanged, i.e. ∆λ = 0.
+Remark (distribution shift trigger). Under distribution shift, the same monitoring quantities
+(mixed blocks / commutator surrogates) can move so that (23) fails. In the systems picture, that
+is a precise, checkable condition for “approximate factorization has broken” and thus for when a
+refactorization (or re-gating / re-pruning) step is provably needed.
+
+24
+
+

@@ -1,0 +1,160 @@
+# SpecAtom-HS Plain-to-MeTTa Compiler
+
+- Slug: `specatom-hs`
+- Status: `active`
+- Created: `2026-06-29`
+- Last reviewed: `2026-07-02`
+- Owner: Benjamin Goertzel
+
+## Purpose
+
+Build a conservative compiler pipeline from Plain software specifications into SpecAtom-HS, a typed, source-preserving, context-indexed, evidence-bearing Atomspace-style intermediate representation, then project that IR first to PeTTa/MeTTa reified atoms and later to executable skeletons, MeTTa-IL, Rholang, and PLN reasoning workflows.
+
+The seed design is Benjamin's 2026-06-29/30 PDF *SpecAtom-HS: A Hyperseed-Compatible Intermediate Representation for Plain-to-MeTTa Compilation, PeTTa Execution, Logical Validation, and PLN Reasoning* and its coding-agent appendices, plus earlier local design notes in `projects/hyperseed-formalizations/repos/hyperseed-formalizations/papers/0005-plain-metta-rholang-spec-compiler/` and `papers/0006-plain-metta-rholang-spec-ir/`.
+
+## Success criteria
+
+Initial milestone:
+
+> Given a small Plain-like input, emit inspectable SpecAtom-HS atoms with stable IDs, source spans, roles, concepts, requirements, tests, evidence wrappers, validation obligations, and a PeTTa reified projection; run structural validation checks and report Pass/Fail/Unknown diagnostics without hallucinating executable semantics.
+
+Observable criteria:
+
+- Source indexer preserves file, section, item, raw text, and source spans for every emitted object.
+- PlainAST parser recognizes core Plain sections, bullet nesting, concept references, and acceptance-test attachment.
+- SpecAtom-HS core emits object roles, semantic levels, contexts, claims/propositions, evidence, interpretations, bridge suggestions, and validation objects.
+- MVP facets cover concepts/types, requirements/obligations, actions, tests/validation experiments, witnesses/backend artifacts, process/resource placeholders, questions, and revisions.
+- PeTTa target profile emits reified atoms only from supported facets and marks TODO/unknown witnesses rather than inventing code.
+- Validator emits validation obligations and check records for schema integrity, source provenance, undefined concepts, uncovered obligations, TODO witnesses, raw-text-only skeleton violations, and selected information-flow/time checks.
+- Tests demonstrate malformed/underspecified inputs produce structured diagnostics/questions rather than silent success.
+
+## Scope
+
+### In scope
+
+- Local project notebook and implementation planning.
+- Local prototype repository under `projects/specatom-hs/repos/specatom-hs`.
+- Parser and IR schema for a practical Plain subset.
+- JSON and PeTTa/MeTTa reified backends.
+- Validation obligation generation and crisp structural validators.
+- SUMO, EXPO, and Hyperseed bridge records as graded contextual correspondences, not identity mappings.
+- Test-run representation as EXPO-like validation experiments with measurements and p-bit evidence.
+- Python or another host language for the compiler implementation, as long as emitted target atoms and validation outputs are inspectable.
+
+### Out of scope for now
+
+- Full natural-language understanding of arbitrary English.
+- Direct generation of production code from raw Plain text.
+- Remote repository creation/push until explicitly requested.
+- Paid compute.
+- Full SUMO/EXPO import, full Hyperseed ontology import, or full PLN execution in the MVP.
+- Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
+
+## Current state
+
+On 2026-06-29, Benjamin uploaded the revised SpecAtom-HS design PDF and requested a bounded subagent lane. Existing related formalization notes live in `hyperseed-formalizations` and should be treated as design context, not the software implementation home. This project notebook tracks the compiler/prototype itself.
+
+A local-only Python stdlib MVP now exists at `projects/specatom-hs/repos/specatom-hs`. It parses a Plain-like subset, preserves source spans and file digests, emits SpecAtom-HS JSON plus MeTTa-ish S-expressions, and runs initial crisp validators. The recommended minimal `specatom_hs` scaffold modules are also present (`schema.py`, `passes.py`, `source_indexer.py`, `validators.py`, `backends/petta.py`) with tests for source indexing, validation records, PeTTa refusal gates, and safe reified emission. A first conservative concept-table/validation pass now distinguishes explicit local definitions, external links, unresolved references, exact-span concept reference occurrence atoms, conservative aliases (`[def:]`, `[ref:]`, `[concept:]`, and bare glossary definitions), and multi-line bullet continuations while keeping nested acceptance-test bullets separate. Concept occurrence spans now also preserve exact marker line numbers for references found on continuation lines, not just exact byte slices. A shallow requirement/test coverage pass now creates requirement and acceptance-test objects, emits `requirement-has-acceptance-test` obligations with Pass/Unknown checks, asks missing-test questions, and exports supported object facts/validation records through the PeTTa reified profile. The validator now also emits scaffold fact-arity and declared-reference checks for supported predicates (`Covers`, `SourceItem`, `Blocks`, `RefersToConcept`, etc.), producing Fail diagnostics for malformed arity or dangling targets and Unknown for predicates outside the current schema. Unknown fact predicates now also create explicit `QuestionObject` records with `UnsupportedFactPredicate` and `Blocks` facts, so profile gaps are reviewable rather than only buried in check text. Unresolved concept questions now also block their exact `concept-reference-resolved` Unknown obligations, and question records are self-validated for non-empty review text plus known blocked obligations. The PeTTa backend filters object facts by the supported predicate/arity/subject profile instead of exporting unknown, malformed, or wrong-subject facts, while preserving validation rationales, check-obligation links, and check evidence as reified atoms. Validation-layer self-checks now ensure Plain file digests reproduce from preserved source text, source spans cite indexed files with in-bounds byte ranges and byte-offset-derived line numbers, sections/items link back to indexed PlainFiles/source spans with matching file IDs, validation obligations cite known source spans/targets where available, and each check record cites a known obligation, uses a declared status, preserves non-empty evidence, and matches its declared property/target, catching malformed source/provenance/diagnostic records as first-class failures. The PeTTa reified profile now also emits a source provenance manifest (`plain-file`, `source-span`, `section`, `plain-item`, and `derived-from`) with regression tests comparing generated atoms to indexed ground truth, plus grouped `.metta` output sections for source, object, validation, and refusal review. PeTTa reified-profile semantic-level support is now explicit in validation: unsupported levels such as `RawTextOnly` create `object-supported-by-petta-reified-profile` Unknown checks and blocking `QuestionObject`s instead of being left only to backend refusals. Requirement/test coverage now supports document-scoped explicit requirement labels (`[id:...]`) and acceptance-test coverage claims (`[covers:...]`), exports `RequirementLabel`/`CoverageClaim` atoms, avoids proximity-only misattachment when labels resolve (including forward references to later requirement sections), turns unresolved coverage labels into Unknown checks plus blocking questions, refuses ambiguous duplicate-label coverage by emitting `requirement-label-is-unique` / `coverage-claim-target-resolved` Unknown checks plus duplicate/ambiguous target questions, and flags orphan acceptance tests with `acceptance-test-covers-requirement` Unknown checks plus exported `OrphanAcceptanceTest` blocking questions. The v0.2 methodology slice now detects ML/time-series-like specs and emits conservative obligations for evaluation metric declaration, metric/task appropriateness review, horizon/frequency declaration, reproducibility evidence, train-only preprocessing fit scope, explicit preprocess-then-split leakage review, future/label-as-feature leakage review, prediction-time feature availability review, temporal split-order review, baseline comparison, named baseline-comparator review, uncertainty/error-bar reporting, and named uncertainty-method review; missing evidence becomes `MissingMethodologyEvidence` blocking questions and supported PeTTa atoms. A first v0.2 security/privacy slice now detects secrets, PII/personal data, access/auth/role boundaries, and destructive-action wording, emitting Unknown checks plus `MissingSecurityPrivacyEvidence` blocking questions when handling evidence is absent and exporting supported review/question atoms through the PeTTa profile. It now also requires explicit data/sensitivity classification evidence for PII/personal-data specs via `privacy-data-classification-declared`, lawful-basis/consent evidence via `privacy-lawful-basis-reviewed`, retention/deletion/minimization evidence via `privacy-retention-deletion-reviewed`, purpose-limitation/use-limitation/secondary-use-review evidence via `privacy-purpose-limitation-reviewed`, data-subject/access/correction/portability/opt-out/privacy-rights evidence via `privacy-data-subject-rights-reviewed`, identity/authentication evidence for rights/access/deletion/erasure requests via `privacy-rights-request-authentication-reviewed`, access audit/logging/monitoring evidence via `privacy-pii-access-audit-reviewed` when PII appears with access/admin/role wording, data-residency/cross-border transfer policy evidence via `privacy-data-residency-reviewed` when PII appears with region/country/jurisdiction/cross-border wording, third-party/vendor/processor sharing evidence via `privacy-third-party-sharing-reviewed` when PII appears with vendor/processor/partner/external-service/export/upload/share wording, and privilege-escalation review evidence for access/auth/admin/role specs via `security-privilege-escalation-reviewed`, defaulting to Unknown blocking questions when absent. The next step is deeper Appendix N/P methodology/security semantics, broader information-flow/temporal availability checks, and richer profile-aware projection beyond the current scaffold predicates/source manifest.
+
+## Repositories
+
+| Role | Remote | Local path | Branch/default | Pinned/reference commit |
+|---|---|---|---|---|
+| design context | `https://github.com/bgoertzel-sing/hyperseed-formalizations` | `projects/hyperseed-formalizations/repos/hyperseed-formalizations` | `agent/protomegatron-formalization-0002` | contains notes 0005/0006; no changes made by this task |
+| implementation prototype / backup | private `https://github.com/bgoertzel-sing/specatom-hs` | `projects/specatom-hs/repos/specatom-hs` | `main` | latest local tested commit `c11b7d1` (PII access audit/logging review); latest pushed backup `7a94c2a`; pushing follows Ben's approved private backup policy when checks pass |
+
+## Environments
+
+- Workspace: `/home/openclaw/research-agent`.
+- No paid compute approved.
+- No compiler implementation environment exists yet.
+- PeTTa/SWI-Prolog runtime may later reuse the local PeTTa/SWI stack already validated for `petta-chem`, but the first SpecAtom-HS compiler prototype can be host-language based.
+
+## Key results
+
+- 2026-06-29: Created project notebook and source-plan summary at `projects/specatom-hs/docs/source-summary.md`.
+- 2026-06-29: Created local-only Python stdlib MVP in `projects/specatom-hs/repos/specatom-hs`; 5 unit tests pass and two examples generate JSON/MeTTa-ish outputs.
+- 2026-06-30: Added conservative `specatom_hs` concept-table pass with `ConceptObject`/`ConceptStatus`, external-link recognition, unresolved-question records, and `concept-reference-resolved` validation checks; 14 unit tests pass.
+- 2026-06-30: Added exact-span `ConceptReferenceObject` occurrence atoms for definitions/references/external markers and occurrence-targeted validation checks; 15 unit tests pass.
+- 2026-06-30: Added `specatom_hs.source_indexer` support for multi-line bullet continuations that extend source spans/raw text without swallowing nested bullets; 16 unit tests pass.
+- 2026-06-30: Added conservative concept grammar aliases (`[def:]`, `[ref:]`, `[concept:]`) plus bare definition/glossary bullets and raw-text-to-source span alignment; 17 unit tests pass.
+- 2026-06-30: Added shallow requirement/test coverage pass plus PeTTa reified export of supported object facts and validation records; 19 unit tests pass.
+- 2026-07-01: Added scaffold fact-arity and declared-reference validation with regression tests for good facts, malformed arity, and dangling references; 21 unit tests pass.
+- 2026-07-01: Tightened `petta_reified_v0` profile filtering so unsupported/malformed object facts produce backend refusals instead of exported atoms, and validation rationales/evidence are preserved in the reified projection; 23 unit tests pass.
+- 2026-07-01: Added Unknown-to-question handling for unsupported object-fact predicates, emitting `QuestionObject` records that block the relevant profile/arity obligation; 24 unit tests pass.
+- 2026-07-01: Added validation-layer self-checks for check records (`check-links-known-obligation`, `check-target-matches-obligation`) with malformed-diagnostic regression coverage; 25 unit tests pass.
+- 2026-07-01: Added validation-obligation provenance/target self-checks (`obligation-has-source-provenance`, `obligation-target-is-declared`) with malformed-obligation regression coverage; 28 unit tests pass.
+- 2026-07-01: Added PeTTa source provenance manifest export with exact source/index atoms and ground-truth regression coverage; 26 unit tests pass.
+- 2026-07-01: Tightened concept occurrence spans to preserve exact marker line numbers for references found on multi-line bullet continuations; 27 unit tests pass.
+- 2026-07-01: Added PeTTa reified-profile semantic-level validation with blocking questions for unsupported levels such as `RawTextOnly`; 29 unit tests pass.
+- 2026-07-01: Added explicit requirement coverage labels (`[id:...]` / `[covers:...]`) with `RequirementLabel`/`CoverageClaim` export and Unknown questions for unresolved coverage targets; 31 unit tests pass.
+- 2026-07-01: Added duplicate requirement-label ambiguity handling so explicit coverage claims require exactly one target label; 32 unit tests pass.
+- 2026-07-01: Added orphan acceptance-test coverage obligations/questions and `OrphanAcceptanceTest` profile export; 33 unit tests pass.
+- 2026-07-01: Added object-scoped fact subject validation plus PeTTa subject-mismatch refusals; 33 unit tests pass.
+- 2026-07-02: Made explicit requirement coverage labels document-scoped so `[covers:...]` can resolve forward to later requirement sections; 34 unit tests pass.
+- 2026-07-02: Added validation-layer status self-checks (`check-status-is-known`) so malformed check records with non-declared statuses fail crisply before backend export; PeTTa check export now preserves malformed status text without crashing; 34 unit tests pass.
+- 2026-07-02: Added validation-layer evidence self-checks (`check-has-evidence`) so empty diagnostic evidence fails crisply before backend export; 34 unit tests pass.
+- 2026-07-02: Added source-span byte/line self-validation (`source-span-within-file-bounds`, `source-span-lines-match-byte-offsets`) so malformed indexed spans fail crisply before backend export; 35 unit tests pass.
+- 2026-07-02: Added Plain file digest self-validation (`plain-file-digest-matches-content`) so corrupted source manifests fail crisply before source-span/backend export review; 36 unit tests pass.
+- 2026-07-02: Added section/item PlainFile link validation (`section-file-is-indexed`, `section-has-source-span`, `item-file-is-indexed`) so malformed source-index records fail before backend provenance export; 37 unit tests pass.
+- 2026-07-02: Tightened source-index provenance consistency with section/item/span file-ID cross-checks (`section-span-file-matches-section-file`, `item-file-matches-section-file`, `item-span-file-matches-item-file`); 37 unit tests pass.
+- 2026-07-02: Added CLI/demo tooling for SpecAtom-HS JSON, grouped PeTTa `.metta`, and Markdown diagnostics reports; added an `auth_service.plain` fixture that surfaces duplicate coverage labels, unresolved coverage targets, unresolved concepts, and backend refusals as reviewable questions; optimized validation record de-duplication by stable IDs; 46 unit tests pass.
+- 2026-07-02: Added question-object blocker validation: unresolved concept questions now carry `Blocks` links to their exact Unknown obligations, and `QuestionObject` records self-check for non-empty review text plus known blocked obligations; 47 unit tests pass.
+- 2026-07-02: Added first v0.2 ML/time-series methodology validator slice (`ml-evaluation-metric-declared`, `ml-horizon-or-frequency-declared`, `ml-reproducibility-evidence-declared`, `ml-preprocessing-fit-scope-declared`) with `MLTimeSeriesExperiment`/`MissingMethodologyEvidence` atoms and blocking questions; 49 unit tests pass.
+- 2026-07-02: Extended the ML/time-series methodology slice with `ml-baseline-comparison-declared` and `ml-uncertainty-reporting-declared` obligations, MissingMethodologyEvidence questions, and regression coverage in the existing methodology tests; 49 unit tests pass.
+- 2026-07-02: Added explicit preprocess-then-split leakage review via `ml-preprocessing-order-reviewed` obligations/questions; 50 unit tests pass.
+- 2026-07-03: Added explicit future/label-as-feature leakage review via `ml-future-label-leakage-reviewed` obligations/questions; 51 unit tests pass.
+- 2026-07-03: Added conservative ML metric/task appropriateness review via `ml-metric-task-appropriateness-reviewed`; forecast/regression-like specs with classification-style metrics now produce Unknown blocking questions unless classification-task wording is present; 52 unit tests pass.
+- 2026-07-03: Added conservative ML temporal split-order review via `ml-temporal-split-order-reviewed`; random/shuffled time-series split wording without chronological/walk-forward/out-of-time evidence now produces Unknown blocking questions; 54 unit tests pass.
+- 2026-07-03: Added conservative named baseline/uncertainty review via `ml-baseline-comparator-named` and `ml-uncertainty-method-named`; generic `baseline`/`uncertainty` mentions now pass declaration checks but produce Unknown blocking questions until a concrete comparator/method is named; 55 unit tests pass.
+- 2026-07-03: Added conservative prediction-time feature availability review via `ml-feature-availability-reviewed`; ML/time-series specs with declared features/inputs/predictors/covariates now produce Unknown blocking questions unless availability is described as prediction-time, point-in-time/as-of, lagged, historical, or equivalent; 57 unit tests pass.
+- 2026-07-03: Added first conservative security/privacy obligation scaffolding (`security-secrets-handling-reviewed`, `privacy-pii-handling-reviewed`, `security-access-boundary-declared`, `security-destructive-action-safety-reviewed`) with `SecurityPrivacyReview`/`MissingSecurityPrivacyEvidence` export and blocking questions for missing evidence; 59 unit tests pass.
+- 2026-07-03: Deepened the security/privacy slice with `security-secret-log-exposure-reviewed`, requiring secret/token/password specs to state redaction/masking/no-logging evidence or produce Unknown blocking questions; 59 unit tests pass.
+- 2026-07-03: Added `privacy-data-classification-declared` to require explicit data/sensitivity classification evidence for PII/personal-data specs, with Unknown blocking questions when absent; 59 unit tests pass.
+- 2026-07-03: Added `security-privilege-escalation-reviewed` to require access/auth/admin/role specs to state least-privilege, approval, audit, admin-only, or self-grant-prevention evidence; 59 unit tests pass.
+- 2026-07-03: Added `privacy-retention-deletion-reviewed` to require PII/personal-data specs to state retention, deletion/erasure, expiry, or minimization evidence; 60 unit tests pass.
+- 2026-07-03: Added `privacy-data-residency-reviewed` to require data-residency/cross-border transfer policy evidence when PII/personal-data specs mention regions, countries, jurisdictions, residency, or cross-border context; 61 unit tests pass.
+- 2026-07-03: Added `privacy-third-party-sharing-reviewed` to require DPA/vendor-review/data-sharing policy evidence when PII/personal-data specs mention vendors, processors, partners, external services, exports, uploads, or sharing; 62 unit tests pass.
+- 2026-07-04: Added `privacy-lawful-basis-reviewed` to require consent, lawful/legal basis, contract, legal-obligation, legitimate-interest, or similar evidence for PII/personal-data specs; 63 unit tests pass.
+- 2026-07-04: Added `privacy-purpose-limitation-reviewed` to require purpose limitation, use limitation, specific-purpose, or secondary-use-review evidence for PII/personal-data specs; 64 unit tests pass.
+- 2026-07-04: Added `privacy-pii-access-audit-reviewed` to require access audit/logging/monitoring evidence when PII/personal-data specs also mention access/admin/role wording; 67 unit tests pass.
+
+## Open questions
+
+- Which Plain grammar source should be treated as authoritative for the MVP parser?
+- Should the first target emit pure PeTTa-readable `.metta`, JSON plus `.metta`, or both from the start?
+- How much of SUMO/EXPO should be hand-seeded as bridge tables versus linked as external ontology references?
+- Which validation domain should be implemented first after generic structural checks: time-series ML methodology, process/resource discipline, or security/privacy obligations?
+
+## Related projects and concepts
+
+- `hyperseed-formalizations`: design notes 0005 and 0006, plus broader Hyperseed formalization work.
+- `petta-memory`: p-bit/PLN-ready atom storage patterns may be reusable for SpecAtom-HS journals or memory views.
+- `petta-chem`: computational-experiment records can later be represented through the EXPO/Hyperseed validation facet.
+- SUMO typed MeTTa bridge and EXPO experiment ontology PDFs uploaded by Benjamin on 2026-06-29.
+- OSLF, TyLA, Curry-Howard, MeTTa-IL, Rholang, PeTTa.
+
+## Risks
+
+- **False semantic precision:** shallow English extraction may look more formal than it is. Mitigation: semantic levels, interpretation evidence, questions, and TODO witnesses.
+- **Ontology overbuild:** importing too much SUMO/EXPO/Hyperseed can stall the MVP. Mitigation: bridge tables with graded correspondences and small curated slices.
+- **Backend capture:** PeTTa details could distort the IR. Mitigation: target profiles and reified facts before executable skeletons.
+- **Validation theater:** checks might produce superficial pass/fail labels. Mitigation: every check needs provenance, status, evidence, and counterexample/question when relevant.
+- **Security/codegen risk:** never generate positive operational code from negative/security obligations or raw text alone.
+
+## 2026-06-29 implementation update
+
+Created local-only prototype repo `projects/specatom-hs/repos/specatom-hs` (no remote). Implemented a Python stdlib MVP for Appendix H / recommended early phases:
+
+- source indexer with SHA-256 file digests, deterministic IDs, and byte/line `SourceSpan` atoms;
+- Plain-like parser for `***section***` headings and nested bullet items;
+- SpecAtom-HS subset emitter for source atoms, concepts, requirements, propositions/claims, obligations, shallow action templates, acceptance tests, undefined predicate questions, context/TV assertions, and validation checks;
+- JSON and MeTTa-ish S-expression output;
+- Appendix G compact task-manager fixture and Appendix O compact ML time-series fixture;
+- crisp validator checks for exactly-one primary role, source/generated provenance, obligation propositions, and assertion context/TV.
+
+Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 5 tests. Example generation commands for `examples/task_manager.plain` and `examples/ml_timeseries.plain` succeeded.
+
+## 2026-06-29 scaffold update
+
+Added the PDF-recommended minimal `specatom_hs` package alongside the earlier `plain_to_metta` MVP. It includes source indexing with file/section/item/source spans, first-class validation obligations/check records, a conservative pass registry, and PeTTa backend gates that refuse RawTextOnly/unsupported executable skeleton generation while allowing only safe reified atom stubs. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 12 tests.

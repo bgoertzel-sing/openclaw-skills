@@ -1,0 +1,4 @@
+repo: /home/openclaw/research-agent/projects/omegasim/repos/omegasim
+branch: main
+commit: 463a2de0af84e01dc8d73a11e8cf8d85908440e0
+status:

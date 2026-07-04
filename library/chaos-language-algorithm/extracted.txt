@@ -1,0 +1,524 @@
+                         The Chaos Language Algorithm:
+                     An Implementation-Oriented Specification
+                                    Ben Goertzel w/ GPT-5.5-Pro
+
+
+                                                  Abstract
+           The Chaos Language Algorithm (CLA) converts a continuous chaotic trajectory into a sym-
+       bolic string and then induces a compact grammar for that string. The crucial distinction in
+       this specification is between chunks and meta-symbols. A chunk is a repeated sequential block,
+       represented by a nonterminal rule such as A → β. A meta-symbol is not a block. A meta-symbol
+       is a grammatical category: a set of tokens that are substitutable in similar contexts. The algo-
+       rithm therefore searches over two orthogonal forms of compression: sequential compression by
+       chunking, and categorical compression by grouping contextually interchangeable tokens.
+
+
+1      Purpose
+Given a scalar or vector time series produced by a deterministic or stochastic dynamical system,
+the goal is to infer a grammar G∗ that compactly describes the observed symbolic trajectory
+and generalizes it in a controlled way. The induced grammar is selected by a two-part minimum
+description length (MDL) objective:
+
+                                     G∗ = arg min [L(G) + L(S | G)] ,                                     (1)
+                                              G
+
+where L(G) is the code length of the grammar and L(S | G) is the code length of the observed string
+given that grammar. All accepted operations must preserve exact reconstruction of the observed
+string, unless an explicit noise or exception model is added.
+
+
+2      Objects and Notation
+U                The observed continuous trajectory. For a scalar series, U = (u1 , . . . , uT ).
+
+d, τ             The embedding dimension and delay used for time-delay reconstruction.
+
+xt               The reconstructed state vector
+
+                                            xt = (ut , ut−τ , . . . , ut−(d−1)τ ) ∈ Rd .                  (2)
+
+P                A finite partition of reconstructed state space:
+
+                                                      P = {C1 , . . . , Ck }.                             (3)
+
+Σ0               The base alphabet, with one base symbol for each partition cell:
+
+                                                      Σ0 = {σ1 , . . . , σk }.                            (4)
+
+                                                       1
+φ              The cell-labeling map φ : Cj 7→ σj .
+
+S0             The raw symbolic trajectory:
+
+                                            S0 = s1 s2 · · · sn ,       si ∈ Σ0 .                    (5)
+
+V              The working vocabulary. During induction,
+
+                                                  V = Σ0 ∪ N ∪ M,                                    (6)
+
+               where N is the set of nonterminals created by chunking, and M is the set of meta-
+               symbols created by categorization.
+
+A∈N            A nonterminal naming a repeated sequence. A chunk rule has the form
+
+                                                 A → β,             β ∈ V +.                         (7)
+
+               A nonterminal abbreviates a string. It is syntagmatic: it captures “and-then”
+               structure.
+
+M ∈M           A meta-symbol. It has an extension
+
+                                                       Ext(M ) ⊆ V.                                  (8)
+
+               A meta-symbol abbreviates a choice among substitutable tokens. It is paradigmatic:
+               it captures “one-of-these” structure. It is a category, not a sequential block.
+
+G              The current grammar, containing chunk rules, category definitions, and any start
+               or parse rules needed to reproduce the observed string.
+
+
+3    Semantic Distinction: Chunks Versus Meta-Symbols
+The algorithm uses two different representational moves.
+
+Chunking.     If a sequence β = v1 · · · vm recurs often enough, introduce a nonterminal
+
+                                            A → v1 · · · vm                                          (9)
+
+and rewrite selected non-overlapping occurrences of β as A. This reduces repeated sequential
+material.
+
+Categorization.     If tokens v1 , . . . , vm occur in similar left and right contexts, introduce a meta-
+symbol
+                                         M = {v1 , . . . , vm }.                                    (10)
+Then a rule or parse expression containing M abbreviates alternatives. For example,
+
+                                              A → aM b                                              (11)
+
+stands for the family
+                                     {A → avb : v ∈ Ext(M )}.                                       (12)
+To preserve exact reconstruction, each occurrence of M in the parse must either point to the
+observed member v ∈ Ext(M ) or be encoded with a conditional member code − log2 p(v | M ).
+
+                                                   2
+4     Phase 1: Symbolic Dynamics
+4.1     Embedding
+If the input is scalar, reconstruct the attractor with time-delay embedding. Practical implemen-
+tations may choose τ by the first minimum of average mutual information and d by false nearest
+neighbors, but CLA itself only requires a fixed embedding map.
+
+4.2     Partitioning
+Partition the reconstructed state space into cells P = {C1 , . . . , Ck }. The partition may be a
+grid, clustering partition, learned decision tree, Voronoi tessellation, or a problem-specific symbolic
+dynamics partition. A generating partition is ideal, but the later grammar induction stage is
+designed to compensate for crude initial partitions.
+
+4.3     Labeling
+Assign each point xt the symbol of the cell it occupies:
+                                                st = φ(xt ).                                      (13)
+The result is the base string S0 = s1 · · · sn over Σ0 .
+
+
+5     Phase 2: Joint Chunk and Category Induction
+Phase 2 searches over two classes of grammar edits.
+
+5.1     Chunk Edit
+A chunk edit is specified by a repeated block β ∈ V + and a new nonterminal A. It adds a rule
+A → β and rewrites selected non-overlapping occurrences of β as A. A chunk edit is valid only if
+it preserves exact expansion back to the previous stream.
+    A practical implementation should enforce two Re-Pair/SEQUITUR-like invariants:
+    (i) Rule utility: every chunk nonterminal is used at least twice, unless it is the start symbol.
+ (ii) No dead rules: if a rule’s use count drops below two, inline it and remove it.
+
+5.2     Category Edit
+A category edit is specified by a set C ⊆ V , usually obtained by clustering tokens with similar
+context distributions. It introduces a meta-symbol M with Ext(M ) = C.
+   For each token v ∈ V , define a context vector c(v). The simplest usable context vector uses
+immediate left and right neighbors:
+                                 c(v) = (P (` | v), P (r | v))`,r∈V ∪{⊥,>} ,                      (14)
+where ⊥ and > mark beginning and end of stream. Wider context windows may be used. Two
+tokens are categorically similar when their context distributions are close, for example when
+                                            JS(c(v), c(w)) ≤ θ.                                   (15)
+    A category edit is accepted only when the resulting grammar and parse reduce the MDL ob-
+jective. This prevents arbitrary clustering from inflating the grammar.
+
+                                                     3
+5.3   Renormalization
+After an accepted chunk or category edit, the current stream, parse, rule uses, and context statistics
+are updated. The next round operates on the new vocabulary. Thus a later chunk may contain
+earlier chunks, and a later category may group base symbols, chunk nonterminals, or previously
+created category-bearing parse atoms when the implementation allows it.
+
+
+6     Phase 3: MDL Selection
+The induced grammar is selected by minimizing a computable code length. A recommended exact-
+reconstruction objective is
+                              L(G, S) = Lmodel (G) + Ldata (S | G).                     (16)
+
+6.1   Model Cost
+The model cost includes the bits needed to encode all rule definitions and all category extensions.
+One simple implementation is:
+                      X                                      X            
+                                                                                 |V |
+                                                                                       
+                                    ∗
+       Lmodel (G) =        [cR + log2 |β| + |β| log2 |V |] +     cM + log2                ,    (17)
+                                                                             | Ext(M )|
+                      A→β∈R                                     M ∈M
+
+where cR and cM are fixed overhead constants and log∗2 is a universal integer code. Other prefix-code
+choices are acceptable if they are used consistently.
+
+6.2   Data Cost
+The data cost is the number of bits needed to reproduce the observed stream from the grammar.
+For an exact parse stream P = e1 · · · em , one simple coding scheme is
+                                                        m
+                                                        X
+                                      Ldata (S | G) =         L(ei ),                            (18)
+                                                        i=1
+
+where terminals and nonterminals use a token code, while a category occurrence M [v] uses a code
+for M plus a member code:
+                              L(M [v]) = L(M ) − log2 p(v | M ).                            (19)
+The member distribution p(v | M ) may be uniform, empirical, or smoothed empirical. Uniform
+coding is simpler; empirical coding is often more compressive but must include the cost of encoding
+its parameters.
+
+6.3   Acceptance Rule
+A proposed edit q is accepted when
+
+                                 ∆L(q) = L(Gq , S) − L(G, S) < 0.                                (20)
+
+A greedy implementation accepts the best negative-∆L edit at each iteration. A stronger imple-
+mentation may use beam search, simulated annealing, or reversible-jump search over edit sequences.
+
+
+
+
+                                                  4
+7   Pseudocode
+
+Algorithm 1 Chaos Language Algorithm (CLA)
+Require: Trajectory U ; embedding parameters d, τ ; partition routine Π; maximum chunk length
+    nmax ; context width w; category threshold θ; maximum iterations Imax .
+Ensure: Grammar G∗ , parse P ∗ , compressed stream S ∗ .
+ 1: X ← Embed(U, d, τ )
+ 2: P ← Partition(X, Π)
+ 3: (S, Σ0 ) ← LabelTrajectory(X, P)
+ 4: G ← InitializeGrammar(Σ0 )
+ 5: P ← S
+ 6: L ← MDL(G, P )
+ 7: for i = 1 to Imax do
+ 8:     Qc ← ChunkProposals(S, G, nmax )
+ 9:     Qm ← CategoryProposals(S, G, w, θ)
+10:     Q ← Qc ∪ Qm
+11:     (q ∗ , L∗ ) ← BestAcceptedEdit(Q, G, S, P, L)
+12:     if q ∗ = ∅ then
+13:           break
+14:     end if
+15:     (G, S, P ) ← ApplyEdit(q ∗ , G, S, P )
+16:     (G, S, P ) ← PruneDeadRules(G, S, P )
+17:     L ← L∗
+18: end for
+19: return (G, S, P )
+
+
+
+Algorithm 2 ChunkProposals
+Require: Current stream S; grammar G; maximum length nmax .
+Ensure: Set of candidate chunk edits.
+ 1: Q ← ∅
+ 2: for n = 2 to nmax do
+ 3:    C ← CountNgrams(S, n)
+ 4:    for all β with C[β] ≥ 2 do
+ 5:       O ← NonOverlappingOccurrences(S, β)
+ 6:       if |O| ≥ 2 then
+ 7:           A ← FreshNonterminal
+ 8:           q ← MakeChunkEdit(A, β, O)
+ 9:           Q ← Q ∪ {q}
+10:       end if
+11:    end for
+12: end for
+13: return Q
+
+
+
+
+                                             5
+Algorithm 3 CategoryProposals
+Require: Current stream S; grammar G; context width w; threshold θ.
+Ensure: Set of candidate category edits.
+ 1: Q ← ∅
+ 2: V ← WorkingVocabulary(G, S)
+ 3: for all v ∈ V do
+ 4:    hv ← ContextHistogram(S, v, w)
+ 5:    cv ← SmoothAndNormalize(hv )
+ 6: end for
+ 7: C ← ClusterByContextSimilarity({cv : v ∈ V }, JS, θ)
+ 8: for all C ∈ C with |C| ≥ 2 do
+ 9:    M ← FreshMetaSymbol
+10:    F ← FindFrames(S, C, w)             . frames are contexts where members of C appear
+11:    if HasUsefulFrame(F ) then
+12:        q ← MakeCategoryEdit(M, C, F )
+13:        Q ← Q ∪ {q}
+14:    end if
+15: end for
+16: return Q
+
+
+
+Algorithm 4 BestAcceptedEdit
+Require: Candidate edits Q; grammar G; stream S; parse P ; current length L.
+Ensure: Best edit with negative MDL change, or ∅.
+ 1: q ∗ ← ∅
+ 2: L∗ ← L
+ 3: for all q ∈ Q do
+ 4:     (G,  b Pb) ← PreviewEdit(q, G, S, P )
+          b S,
+ 5:     if not ExactReconstructs(G,  b Pb, S0 ) then
+ 6:         continue
+ 7:     end if
+ 8:     b ← MDL(G,
+        L              b Pb)
+ 9:        b      ∗
+        if L < L then
+10:         q∗ ← q
+11:         L∗ ← L  b
+12:     end if
+13: end for
+14: return (q ∗ , L∗ )
+
+
+
+8    Output
+The final output is a tuple
+                                          (G∗ , S ∗ , P ∗ )                                 (21)
+where G∗ is the induced grammar, S ∗ is the compressed working stream, and P ∗ is the exact parse
+or derivation data required to reconstruct the original symbolic trajectory S0 .
+    A useful textual output format is:
+
+
+                                                 6
+Base alphabet:
+  sigma_1, sigma_2, ..., sigma_k
+
+Chunk rules:
+  A_1 -> sigma_2 sigma_5 sigma_1
+  A_2 -> A_1 sigma_3
+
+Meta-symbols:
+  M_1 = {sigma_4, sigma_7, A_1}
+  M_2 = {sigma_2, sigma_9}
+
+Grammar templates:
+  B_1 -> sigma_1 M_1 sigma_3
+
+Parse stream:
+  A_2 M_1[sigma_7] A_2 M_1[A_1] ...
+
+   The bracketed member in M [v] is not optional if exact reconstruction is required. It records
+which member of the category actually occurred.
+
+
+9     Workflow Diagram
+[Continuous trajectory U]
+          |
+          | Phase 1: embed, partition, label
+          v
+[Raw symbolic string S_0 over Sigma_0]
+          |
+          | Phase 2a: chunk repeated sequences -> nonterminals A -> beta
+          | Phase 2b: categorize substitutable tokens -> meta-symbols M={v_i}
+          | Phase 2c: renormalize and repeat under MDL
+          v
+[Hierarchical grammar over symbols, chunks, and categories]
+          |
+          | Phase 3: select G minimizing L(G)+L(S|G)
+          v
+[Predictive grammar G^* plus exact parse data]
+
+
+A     Appendix: Guidance for Coding Agents
+A.1    Non-Negotiable Semantic Constraints
+A coding agent implementing CLA must preserve the following distinctions.
+
+    C1. A chunk is a sequence abbreviation. Implement it as a nonterminal rule A → β.
+
+    C2. A meta-symbol is a category. Implement it as a set-valued object M with Ext(M ) ⊆ V .
+
+
+
+                                               7
+   C3. Do not implement a meta-symbol as a compressed n-gram. The edit that replaces abc by
+       a new token is a chunk edit, not a category edit.
+
+   C4. A category occurrence must preserve the identity of the observed member. Store it as M [v]
+       or store an equivalent side table mapping parse positions to members.
+
+   C5. Every accepted edit must reduce the same MDL objective used by the rest of the program.
+       Do not use frequency alone as an acceptance rule.
+
+   C6. The implementation must be able to expand G and P back to the original raw string S0
+       after every accepted edit.
+
+A.2    Recommended Data Model
+The following type sketch is intentionally language-neutral.
+
+TokenId          = integer
+RuleId           = integer
+CategoryId       = integer
+Position         = integer
+
+Atom =
+    Terminal(TokenId)
+  | Nonterminal(RuleId)
+  | CategoryUse(CategoryId, chosen_member=TokenId)
+
+Rule = {
+    id: RuleId,
+    rhs: list[Atom],
+    use_count: integer
+}
+
+Category = {
+    id: CategoryId,
+    members: set[TokenId],
+    member_code: dict[TokenId, float],
+    context_signature: optional vector
+}
+
+Grammar = {
+    base_alphabet: set[TokenId],
+    rules: dict[RuleId, Rule],
+    categories: dict[CategoryId, Category],
+    start: optional RuleId
+}
+
+State = {
+    original_stream: list[TokenId],
+    current_stream: list[Atom],
+
+
+                                                 8
+       parse: list[Atom],
+       grammar: Grammar,
+       mdl_score: float
+}
+
+Proposal = {
+    kind: "chunk" or "category",
+    payload: kind-specific data,
+    predicted_delta: optional float,
+    inverse_patch: optional data
+}
+
+A.3      Minimal Milestone Plan
+A robust implementation can be built in five milestones.
+
+     M1. Symbolization only. Convert a trajectory to S0 using a fixed partition. Unit test that
+         the same point always maps to the same symbol.
+
+     M2. Chunk-only grammar. Implement repeated n-gram proposals, non-overlapping replace-
+         ment, rule expansion, rule use counts, and exact reconstruction.
+
+     M3. MDL scoring. Replace frequency thresholds with a bit-based objective. Unit test that
+         an edit is rejected when its model overhead exceeds its data savings.
+
+     M4. Hard category induction. Compute context histograms, cluster tokens by context sim-
+         ilarity, create disjoint meta-symbols, and store category occurrences as M [v].
+
+     M5. Unified search. Put chunk and category proposals into the same priority queue and
+         accept the proposal with the largest negative ∆L.
+
+A.4      Context Distribution Details
+For a first implementation, use a context width of w = 1. For every occurrence of token v at
+position i, count
+                                   (si−1 , ) and (, si+1 ),                           (22)
+using boundary symbols at the beginning and end of the stream. Smooth counts with a small
+constant α > 0 before normalizing. Compare context vectors with Jensen-Shannon divergence or
+cosine distance.
+    A category candidate C should usually satisfy:
+    (i) |C| ≥ 2;
+
+    (ii) each member has a minimum occurrence count;
+
+(iii) average pairwise context distance is below threshold θ;
+
+(iv) the candidate reduces L(G, S) after member choices are encoded.
+
+A.5      Replacement Semantics
+Use different replacement semantics for chunks and categories.
+
+                                                9
+Chunk replacement.        A chunk replacement rewrites contiguous substrings:
+a b c a b c d     ->    A A d         with rule A -> a b c
+The parse expands A back to abc.
+
+Category replacement.         A category replacement rewrites choices inside equivalent frames:
+a x b a y b      a x b   ->     a M[x] b   a M[y] b    a M[x] b
+M = {x, y}
+The parse expands M [x] to x and M [y] to y. The grammar may now represent the generalized
+frame aM b.
+
+A.6    Acceptance Tests
+A coding agent should include at least the following tests.
+
+   T1. Exact expansion. After every accepted edit, expanding the parse returns exactly S0 .
+   T2. Chunk identity. If A → abc, then every A expands to abc and never to a set of alterna-
+       tives.
+   T3. Category identity. If M = {x, y}, then M is not expanded as xy or yx; it expands to
+       exactly one chosen member at each occurrence.
+   T4. Frame generalization. From
+
+        a x b   a y b    a x b
+
+        the system may propose M = {x, y} in the frame a b.
+   T5. MDL rejection. A proposed category containing unrelated rare symbols must be rejected
+       when its extension cost is larger than its compression savings.
+   T6. Rule pruning. If a chunk rule’s use count falls below two, it is inlined or removed.
+   T7. Determinism. With the same random seed and input, the same sequence of accepted
+       edits is produced.
+
+A.7    Common Failure Modes
+   F1. Conflating chunks and categories. This is the main error to avoid. Repeated string
+       abc implies a possible chunk. Similar contexts for x and y imply a possible category.
+   F2. Accepting by frequency only. A frequent block or cluster is not useful unless it reduces
+       total description length.
+   F3. Losing exact reconstruction. If category occurrences do not store chosen members, the
+       algorithm cannot reconstruct the observed trajectory.
+   F4. Overlapping category ambiguity. Start with hard, disjoint categories. Allow overlap-
+       ping categories only after the parse stores which category sense is used at each position.
+   F5. Unstable indices after rewriting. Chunk replacements change stream length. Recom-
+       pute or incrementally update occurrence indices rather than reusing stale positions.
+
+                                                 10
+A.8   Recommended Defaults
+partition:              equal-frequency bins or k-means cells
+n_max:                  4 to 8 for first implementation
+min_chunk_uses:         2
+context_width:          1 initially, then 2
+smoothing_alpha:        0.1 or 1.0
+category_distance:      Jensen-Shannon divergence
+category_policy:        hard/disjoint initially
+search:                 greedy best negative delta-L
+reconstruction:         exact, no noise model at first
+random_seed:            fixed in tests
+
+A.9   Instruction Block for an Automated Coding Agent
+The following block may be pasted directly into an implementation task.
+
+Implement the Chaos Language Algorithm from the attached specification.
+Preserve the distinction between chunks and meta-symbols. A chunk is a
+nonterminal rule A -> beta where beta is a contiguous sequence. A
+meta-symbol M is a category with Ext(M) = {v_1, ..., v_k}; each occurrence
+must record the chosen member as M[v]. Implement exact reconstruction
+checks after every accepted edit. Use a computable MDL objective, not raw
+frequency, as the acceptance criterion. Build in this order: symbolizer,
+chunk proposals, expansion/reconstruction tests, MDL scoring, context
+histograms, hard category proposals, then unified greedy search. Include
+unit tests for exact expansion, category member recovery, rule pruning,
+and rejection of MDL-worsening edits.
+
+
+
+
+                                              11
+

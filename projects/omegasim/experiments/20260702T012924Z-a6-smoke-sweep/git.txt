@@ -1,0 +1,17 @@
+# Git State
+Captured UTC: 2026-07-02T01:29:24Z
+Working directory: /home/openclaw/research-agent/projects/omegasim/repos/omegasim
+Commit: HEAD
+Branch: main
+Remote names: 
+
+## Status
+## No commits yet on main
+?? README.md
+?? scripts/
+?? src/
+?? tests/
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

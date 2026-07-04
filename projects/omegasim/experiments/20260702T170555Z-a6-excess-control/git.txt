@@ -1,0 +1,8 @@
+ M scripts/run_a6_sweep.py
+ M src/omegasim/a6_model.py
+ M tests/test_a6_model.py
+1a1a2776ba55a4b19371c569158895eb66b22a21
+ scripts/run_a6_sweep.py  |  32 ++++++++---
+ src/omegasim/a6_model.py | 142 +++++++++++++++++++++++++++++++++++++++++++++++
+ tests/test_a6_model.py   |  64 ++++++++++++++++++++-
+ 3 files changed, 230 insertions(+), 8 deletions(-)

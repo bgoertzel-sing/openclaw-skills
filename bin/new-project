@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: new-project <slug> <title>
+
+Creates a project notebook under $RESEARCH_AGENT_ROOT/projects (default
+~/research-agent/projects) and adds it to catalog/PROJECTS.md.
+USAGE
+}
+
+[[ $# -eq 2 ]] || { usage >&2; exit 2; }
+slug="$1"
+title="$2"
+
+[[ "$slug" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
+  echo "Slug must be lowercase letters, digits, and hyphens." >&2
+  exit 2
+}
+
+root="${RESEARCH_AGENT_ROOT:-$HOME/research-agent}"
+templates="$root/templates"
+project="$root/projects/$slug"
+today="$(date +%F)"
+
+[[ -d "$templates" ]] || { echo "Missing templates directory: $templates" >&2; exit 1; }
+[[ ! -e "$project" ]] || { echo "Project already exists: $project" >&2; exit 1; }
+
+mkdir -p "$project"/{repos,worktrees,experiments,artifacts,docs}
+
+sed -e "s/<Project title>/$title/g" \
+    -e "s/<slug>/$slug/g" \
+    -e "s/<YYYY-MM-DD>/$today/g" \
+    "$templates/PROJECT.md" > "$project/PROJECT.md"
+cp "$templates/TASKS.md" "$project/TASKS.md"
+cp "$templates/DECISIONS.md" "$project/DECISIONS.md"
+cp "$templates/NOTES.md" "$project/NOTES.md"
+
+cat > "$project/.gitignore" <<'GITIGNORE'
+# Independent source repositories and worktrees
+repos/
+worktrees/
+
+# Credentials and local configuration
+.env
+.env.*
+secrets/
+*.pem
+*.key
+
+# Language/build outputs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+target/
+build/
+dist/
+node_modules/
+
+# Potentially large run output; keep RUN.md, command, env, metrics, and status
+experiments/*/stdout.log
+experiments/*/stderr.log
+experiments/*/artifacts/
+
+# Large project artifacts are catalogued separately
+artifacts/*
+!artifacts/README.md
+GITIGNORE
+
+cat > "$project/artifacts/README.md" <<EOF2
+# Artifacts for $title
+
+Large or binary artifacts live here or in approved external storage. Every important artifact should be referenced from an experiment or result record with provenance and a hash when practical.
+EOF2
+
+catalog="$root/catalog/PROJECTS.md"
+if [[ -f "$catalog" ]]; then
+  if ! grep -Fq "| $slug |" "$catalog"; then
+    printf '| %s | %s | idea |  | define scope and first test | %s |\n' "$slug" "$title" "$today" >> "$catalog"
+  fi
+else
+  mkdir -p "$(dirname "$catalog")"
+  cat > "$catalog" <<EOF2
+# Research Project Catalog
+
+| Slug | Title | Status | Primary repository | Current focus | Last reviewed |
+|---|---|---|---|---|---|
+| $slug | $title | idea |  | define scope and first test | $today |
+EOF2
+fi
+
+printf 'Created project: %s\n' "$project"
+printf 'Next: edit PROJECT.md and TASKS.md before substantial work.\n'

@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+output="${1:-/dev/stdout}"
+
+emit_cmd() {
+  local label="$1"; shift
+  printf '\n## %s\n' "$label"
+  if command -v "$1" >/dev/null 2>&1; then
+    "$@" 2>&1 || true
+  else
+    printf 'not installed\n'
+  fi
+}
+
+{
+  printf '# Environment Capture\n'
+  printf 'Captured UTC: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf 'Working directory: %s\n' "$PWD"
+
+  printf '\n## Operating system\n'
+  uname -a
+  if [[ -r /etc/os-release ]]; then cat /etc/os-release; fi
+
+  if command -v lscpu >/dev/null 2>&1; then
+    printf '\n## CPU\n'
+    lscpu | grep -E '^(Architecture|Model name|CPU\(s\)|Thread|Core|Socket|Virtualization):' || true
+  fi
+
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    printf '\n## NVIDIA GPU\n'
+    nvidia-smi --query-gpu=name,uuid,driver_version,memory.total --format=csv,noheader 2>&1 || true
+  fi
+
+  emit_cmd "OpenClaw" openclaw --version
+  emit_cmd "QMD" qmd --version
+  emit_cmd "Git" git --version
+  emit_cmd "GitHub CLI" gh --version
+  emit_cmd "Python" python3 --version
+  emit_cmd "Node" node --version
+  emit_cmd "npm" npm --version
+  emit_cmd "Rust compiler" rustc --version
+  emit_cmd "Cargo" cargo --version
+  emit_cmd "Rustup" rustup show active-toolchain
+  emit_cmd "SWI-Prolog" swipl --version
+  emit_cmd "CMake" cmake --version
+  emit_cmd "C compiler" gcc --version
+  emit_cmd "Docker" docker --version
+  emit_cmd "Runpod CLI" runpodctl version
+
+  if command -v python3 >/dev/null 2>&1; then
+    printf '\n## Python packages (names and versions only)\n'
+    python3 - <<'PY' 2>&1 || true
+from importlib import metadata
+for dist in sorted(metadata.distributions(), key=lambda d: (d.metadata.get("Name") or "").lower()):
+    name = dist.metadata.get("Name") or "unknown"
+    print(f"{name}=={dist.version}")
+PY
+  fi
+
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf '\n## Git worktree state\n'
+    printf 'Commit: %s\n' "$(git rev-parse HEAD 2>/dev/null || true)"
+    printf 'Branch: %s\n' "$(git branch --show-current 2>/dev/null || true)"
+    printf 'Remote names: %s\n' "$(git remote 2>/dev/null | paste -sd, - || true)"
+    git status --short --branch 2>&1 || true
+    printf '\nDiff summary:\n'
+    git diff --stat 2>&1 || true
+    git diff --cached --stat 2>&1 || true
+  fi
+
+  printf '\n## Safety note\n'
+  printf 'Environment variables and remote URLs were intentionally omitted to avoid credential leakage.\n'
+} > "$output"
+
+if [[ "$output" != "/dev/stdout" ]]; then
+  chmod 600 "$output" 2>/dev/null || true
+  printf 'Wrote environment capture: %s\n' "$output"
+fi

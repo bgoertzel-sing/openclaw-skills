@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: new-experiment <project-slug> <run-slug> [--cwd DIR] -- command [args...]
+
+Creates a timestamped experiment directory, captures a sanitized environment,
+runs the command, and stores stdout, stderr, exit status, and an initial RUN.md.
+Do not put credentials in command arguments or expected output.
+USAGE
+}
+
+[[ $# -ge 4 ]] || { usage >&2; exit 2; }
+project_slug="$1"
+run_slug="$2"
+shift 2
+cwd="$PWD"
+
+if [[ "${1:-}" == "--cwd" ]]; then
+  [[ $# -ge 3 ]] || { usage >&2; exit 2; }
+  cwd="$2"
+  shift 2
+fi
+
+[[ "${1:-}" == "--" ]] || { usage >&2; exit 2; }
+shift
+[[ $# -gt 0 ]] || { usage >&2; exit 2; }
+
+[[ "$project_slug" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "Invalid project slug" >&2; exit 2; }
+[[ "$run_slug" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "Invalid run slug" >&2; exit 2; }
+[[ -d "$cwd" ]] || { echo "Working directory does not exist: $cwd" >&2; exit 2; }
+
+root="${RESEARCH_AGENT_ROOT:-$HOME/research-agent}"
+project="$root/projects/$project_slug"
+[[ -d "$project" ]] || { echo "Project does not exist: $project" >&2; exit 1; }
+
+start_iso="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+run_id="$(date -u +%Y%m%dT%H%M%SZ)-$run_slug"
+run_dir="$project/experiments/$run_id"
+mkdir -p "$run_dir/artifacts"
+chmod 700 "$run_dir" "$run_dir/artifacts"
+
+{
+  printf '#!/usr/bin/env bash\nset -euo pipefail\ncd %q\n' "$cwd"
+  printf '%q ' "$@"
+  printf '\n'
+} > "$run_dir/command.sh"
+chmod 700 "$run_dir/command.sh"
+
+(
+  cd "$cwd"
+  "$root/bin/capture-environment" "$run_dir/env.txt" >/dev/null
+)
+
+{
+  printf '# Git State\n'
+  printf 'Captured UTC: %s\n' "$start_iso"
+  printf 'Working directory: %s\n' "$cwd"
+  if git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'Commit: %s\n' "$(git -C "$cwd" rev-parse HEAD 2>/dev/null || true)"
+    printf 'Branch: %s\n' "$(git -C "$cwd" branch --show-current 2>/dev/null || true)"
+    printf 'Remote names: %s\n' "$(git -C "$cwd" remote 2>/dev/null | paste -sd, - || true)"
+    printf '\n## Status\n'
+    git -C "$cwd" status --short --branch || true
+    printf '\n## Diff summary\n'
+    git -C "$cwd" diff --stat || true
+    git -C "$cwd" diff --cached --stat || true
+  else
+    printf 'Not a Git worktree.\n'
+  fi
+  printf '\nRemote URLs and full diffs are omitted to reduce credential leakage.\n'
+} > "$run_dir/git.txt"
+chmod 600 "$run_dir/git.txt"
+
+cat > "$run_dir/RUN.md" <<EOF2
+# Run $run_id: $run_slug
+
+- Project: \`$project_slug\`
+- Started: \`$start_iso\`
+- Finished: \`running\`
+- Status: \`running\`
+- Local or remote: \`local\`
+- Working directory: \`$cwd\`
+
+## Question
+
+Fill in the precise question this run answers.
+
+## Hypothesis or expected behavior
+
+Fill in before interpreting the result.
+
+## Inputs
+
+- Git state: \`git.txt\`
+- Environment: \`env.txt\`
+- Command: \`command.sh\`
+- Random seeds/data identifiers: record here when relevant.
+
+## Results
+
+- Exit status: pending
+- Standard output: \`stdout.log\`
+- Standard error: \`stderr.log\`
+- Machine status: \`status.json\`
+- Artifacts: \`artifacts/\`
+
+## Interpretation
+
+Separate observations from inference. Fill in after the run.
+
+## Reproduction
+
+Run \`command.sh\` in the recorded environment after reviewing it.
+
+## Follow-up
+EOF2
+chmod 600 "$run_dir/RUN.md"
+
+printf 'Run directory: %s\n' "$run_dir"
+printf 'Executing:'
+printf ' %q' "$@"
+printf '\n'
+
+set +e
+(
+  cd "$cwd"
+  "$@" > >(tee "$run_dir/stdout.log") 2> >(tee "$run_dir/stderr.log" >&2)
+)
+status=$?
+set -e
+
+finish_iso="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+if [[ $status -eq 0 ]]; then final_status="succeeded"; else final_status="failed"; fi
+
+cat > "$run_dir/status.json" <<EOF2
+{
+  "run_id": "$run_id",
+  "started_utc": "$start_iso",
+  "finished_utc": "$finish_iso",
+  "exit_status": $status,
+  "status": "$final_status"
+}
+EOF2
+chmod 600 "$run_dir/status.json" "$run_dir/stdout.log" "$run_dir/stderr.log" 2>/dev/null || true
+
+python3 - "$run_dir/RUN.md" "$finish_iso" "$final_status" "$status" <<'PY'
+from pathlib import Path
+import sys
+path = Path(sys.argv[1])
+text = path.read_text()
+text = text.replace("- Finished: `running`", f"- Finished: `{sys.argv[2]}`", 1)
+text = text.replace("- Status: `running`", f"- Status: `{sys.argv[3]}`", 1)
+text = text.replace("- Exit status: pending", f"- Exit status: {sys.argv[4]}", 1)
+path.write_text(text)
+PY
+
+printf 'Finished with exit status %d. Complete the interpretation in %s/RUN.md\n' "$status" "$run_dir"
+exit "$status"

@@ -1,0 +1,96 @@
+// Conservative base proposal for the current OpenClaw schema.
+// Merge field by field after checking `openclaw config schema`.
+// Do not replace a working config wholesale.
+{
+  agents: {
+    defaults: {
+      workspace: "~/research-agent",
+      model: {
+        primary: "openai/gpt-5.5",
+      },
+      sandbox: {
+        // Main/owner workflow remains convenient; non-main sessions are isolated.
+        // Inspect the actual Telegram session with `openclaw sandbox explain`.
+        mode: "non-main",
+        scope: "agent",
+        workspaceAccess: "rw",
+      },
+      skills: [
+        "github",
+        "coding-agent",
+        "healthcheck",
+        "session-logs",
+        "tmux",
+        "summarize",
+        "skill-creator",
+        "research-projects",
+        "experiment-ledger",
+        "repository-operations",
+        "remote-compute-guardrails",
+        "hyperon-workbench",
+        "knowledge-curation",
+        "research-library",
+      ],
+    },
+    list: [
+      {
+        id: "main",
+        name: "Research Prototyping Agent",
+      },
+    ],
+  },
+
+  plugins: {
+    entries: {
+      codex: {
+        enabled: true,
+      },
+    },
+  },
+
+  tools: {
+    exec: {
+      // Normalized current policy: allowlisted commands run; misses require approval.
+      // A missing approval UI fails closed by default.
+      mode: "ask",
+    },
+    elevated: {
+      enabled: false,
+    },
+  },
+
+  skills: {
+    allowBundled: [
+      "github",
+      "coding-agent",
+      "healthcheck",
+      "session-logs",
+      "tmux",
+      "summarize",
+      "skill-creator",
+    ],
+    load: {
+      watch: true,
+      watchDebounceMs: 250,
+    },
+    install: {
+      nodeManager: "npm",
+      allowUploadedArchives: false,
+    },
+    workshop: {
+      autonomous: {
+        enabled: false,
+      },
+      approvalPolicy: "pending",
+    },
+    entries: {
+      "coding-agent": {
+        enabled: true,
+      },
+    },
+  },
+
+  gateway: {
+    bind: "loopback",
+  },
+}

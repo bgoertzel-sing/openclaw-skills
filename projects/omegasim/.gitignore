@@ -1,0 +1,29 @@
+# Independent source repositories and worktrees
+repos/
+worktrees/
+
+# Credentials and local configuration
+.env
+.env.*
+secrets/
+*.pem
+*.key
+
+# Language/build outputs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+target/
+build/
+dist/
+node_modules/
+
+# Potentially large run output; keep RUN.md, command, env, metrics, and status
+experiments/*/stdout.log
+experiments/*/stderr.log
+experiments/*/artifacts/
+
+# Large project artifacts are catalogued separately
+artifacts/*
+!artifacts/README.md

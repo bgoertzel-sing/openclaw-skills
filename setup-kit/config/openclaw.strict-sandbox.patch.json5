@@ -1,0 +1,22 @@
+// Optional stricter profile for periods involving substantial untrusted input.
+// This may require additional sandbox image/package setup and explicit host
+// approvals for local commands.
+{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: "all",
+        scope: "session",
+        workspaceAccess: "rw",
+      },
+    },
+  },
+  tools: {
+    exec: {
+      mode: "ask",
+    },
+    elevated: {
+      enabled: false,
+    },
+  },
+}

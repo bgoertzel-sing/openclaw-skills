@@ -1,0 +1,600 @@
+         From Singular Learning Theory to Predictive Accuracy
+                 By Way of “Weakness as Evidence”
+                                              Ben Goertzel
+
+                                           December 9, 2025
+
+
+                                                Abstract
+          Singular Learning Theory (SLT) provides geometric invariants—most notably the local learn-
+      ing coefficient (LLC), also called the real log canonical threshold (RLCT), denoted λ—that gov-
+      ern the behavior of Bayesian evidence near singular minima. In a separate line of work, weakness
+      theory establishes monotone relationships between a model’s “weakness” and its expected pre-
+      dictive accuracy in withheld-link or withheld-truth evaluation protocols. This paper unifies
+      these two frameworks. The key observation is that weakness, when defined as the posterior-
+      predictive mass on a truth set, can be identified with a Bayesian evidence ratio. This identifi-
+      cation allows SLT’s asymptotic machinery to propagate into statements about “soft accuracy”
+      (posterior-predictive mass on truth), yielding characteristic O(λ/n) finite-sample corrections.
+      We establish conditions under which these soft-accuracy results transfer to hard (0-1) accuracy,
+      and argue that these conditions are typically satisfied in practical machine learning settings
+      where models are designed to produce well-separated predictions. The framework provides a
+      probabilistic, accuracy-facing interpretation of SLT quantities that complements standard log-
+      loss formulations.
+
+
+1     Introduction and Main Result
+1.1   The problem: connecting geometry to accuracy
+Singular Learning Theory (SLT) has emerged as a powerful framework for understanding Bayesian
+learning in models whose parameter-to-prediction map has singularities—that is, models where
+the Fisher information matrix degenerates at certain parameter values. Such singularities are
+ubiquitous in modern machine learning: neural networks with redundant hidden units, mixture
+models at boundaries of their parameter spaces, and many other commonly used architectures all
+exhibit singular behavior.
+    The central achievement of SLT is to characterize how these singularities affect learning. The
+key quantity is the local learning coefficient λ (also known as the real log canonical threshold or
+RLCT), a geometric invariant that measures the “effective dimension” of the model near a singular
+point. SLT shows that λ controls the asymptotic behavior of the Bayesian evidence (marginal
+likelihood) and, consequently, the expected generalization error—but traditionally, these results
+are stated in terms of log loss (KL divergence).
+    In many practical applications, however, the quantity of direct interest is not log loss but
+rather an accuracy-like metric: link prediction accuracy in knowledge graphs, retrieval hit-rate
+in recommendation systems, or the probability of correctly predicting withheld ground truths.
+The question this paper addresses is: To what extent do SLT’s geometric invariants manifest in
+accuracy-based evaluation metrics?
+
+
+                                                     1
+1.2   The challenge: from smooth to discrete
+A fundamental tension underlies any attempt to connect SLT to accuracy. The quantities native
+to SLT—free energy, KL divergence, log loss—are smooth and differentiable. Accuracy (0-1 loss),
+by contrast, is a step function: it is discontinuous at decision boundaries. Improving the predicted
+probability of the correct class from 0.6 to 0.9 dramatically improves log loss but leaves accuracy
+unchanged (correct in both cases). Conversely, moving from 0.49 to 0.51 flips accuracy but barely
+affects log loss.
+    This discontinuity means that O(λ/n) scaling, which SLT establishes for smooth quantities,
+cannot transfer directly to hard accuracy without additional structure. The relationship between
+surrogate losses (like log loss) and 0-1 loss is mediated by inequalities (e.g., Pinsker’s inequality),
+not equalities.
+    Our approach addresses this challenge by working with an intermediate quantity: soft accuracy,
+defined as the posterior-predictive mass on the truth set. This quantity is smooth (like log loss)
+but accuracy-adjacent (it measures probability mass on correct answers). We show that SLT’s λ/n
+scaling applies directly to soft accuracy. We then establish conditions—margin conditions—under
+which soft accuracy controls hard accuracy, and argue that these conditions are generically satisfied
+in practical settings.
+
+1.3   The solution: weakness as a bridge
+Our approach leverages weakness theory, which provides general results relating a quantity called
+“weakness” to expected predictive performance. The central observation is that if we define weak-
+ness as a posterior-predictive expectation—specifically, the posterior-predictive mass assigned to
+a “truth set” H—then weakness becomes identifiable with a ratio of Bayesian evidence integrals.
+Once this identification is made, SLT’s asymptotic expansions for evidence integrals yield corre-
+sponding expansions for weakness.
+   The logical chain proceeds as follows:
+  1. Define a weakness quantity w(H) as the posterior-predictive mass on a truth set H (this is
+     “soft accuracy”).
+
+  2. In evaluation protocols where predictions are sampled from the model distribution, establish
+     that expected accuracy equals soft accuracy.
+
+  3. Identify weakness with a Bayesian evidence ratio via the posterior predictive distribution.
+
+  4. Apply SLT evidence asymptotics to derive the scaling behavior of weakness.
+
+  5. Conclude that soft accuracy corrections scale as λ/n (up to lower-order terms).
+
+  6. Establish conditions under which soft accuracy controls hard accuracy, and argue these hold
+     in practice.
+
+1.4   Statement of the main result
+To orient the reader, we state our main theorem here; the concepts and notation will be developed
+rigorously in subsequent sections.
+Theorem 1 (Main Result: From SLT to Soft Accuracy Scaling). Fix training data Dn of size n
+and a Bayesian model with likelihood p(z | w) and prior ϕ(w). Assume the following conditions
+hold:
+
+                                                  2
+    1. (Posterior-predictive weakness) For a truth set H ⊆ Z, the soft accuracy (weakness) is
+       defined as                           Z
+                                         wn (H) =           p(z | Dn ) dz,
+                                                        H
+      where p(z | Dn ) is the posterior predictive distribution.
+
+    2. (Sampling-based evaluation) The evaluation protocol samples predictions from the model’s
+       distribution, so that expected accuracy equals the soft accuracy wn (H).
+
+    3. (Evidence valuation) The posterior predictive satisfies
+                                                    Z
+                            µn (z)
+               p(z | Dn ) =        , where µn (z) = p(z | w) exp(−n`n (w))ϕ(w) dw.
+                             Zn
+
+    4. (SLT asymptotics) The relevant evidence integrals admit SLT expansions with local learning
+       coefficient λ.
+
+    Then the soft accuracy wn (H) admits a large-n expansion whose leading finite-sample correc-
+tion is O(λ/n), possibly multiplied by protocol-dependent constants. Lower-order corrections of
+O(log log n/n) and O(1/n2 ) arise from multiplicity terms and finer geometric structure.
+
+Remark 1 (Soft accuracy vs. hard accuracy). Theorem 1 applies directly to soft accuracy (posterior-
+predictive mass). For hard accuracy (0-1 loss under argmax prediction), the result extends under
+margin conditions that we argue are typically satisfied; see Section 7.
+Remark 2 (On the rate O(1/n)). The O(λ/n) rate is a “fast rate” in statistical learning parlance.
+                                                                            √
+Standard VC-theoretic bounds for classification error typically yield O(1/ n) rates. The faster
+O(1/n) rate here arises from Bayesian averaging (which smooths the prediction landscape) and
+applies to the soft accuracy functional. The transfer to hard accuracy at this rate requires margin
+conditions, which we discuss in Section 7.
+
+1.5    Scope of the results
+To be precise about what this framework establishes:
+    Direct result: SLT’s λ controls the finite-sample behavior of posterior-predictive mass on
+truth sets (soft accuracy). This provides an accuracy-adjacent interpretation of λ.
+    Conditional extension: The transfer from soft accuracy to hard accuracy (0-1 loss) requires
+margin conditions—that predictions be bounded away from decision thresholds. We argue in Sec-
+tion 7 that these conditions are generically satisfied in well-designed machine learning systems.
+    Scope limitation: In adversarial or pathological settings where predictions cluster near de-
+                                                                          √
+cision boundaries, the soft-to-hard transfer may fail, and standard O(1/ n) rates would apply to
+hard accuracy.
+
+
+2     Weakness and Expected Predictive Performance
+We begin by establishing the weakness-theoretic foundation. The goal of this section is to clarify
+the relationship between weakness (soft accuracy) and expected accuracy under various evaluation
+protocols.
+
+
+
+
+                                                    3
+2.1   The withheld-link evaluation paradigm
+Consider the following common evaluation scenario. We have a set of objects U and a relation
+H ⊆ U × U representing “true links” (or true positive pairs). Examples include:
+
+   • In a knowledge graph, U is the set of entities and H is the set of true relations.
+
+   • In a recommendation system, U is the set of users and items, and H encodes user-item
+     preferences.
+
+   • In a social network, U is the set of users and H encodes friendships or connections.
+
+   A model is trained on a subset of the true links and evaluated on its ability to predict the
+withheld links.
+
+2.2   Generalized weakness on a relation
+The key quantity is the total “weight” that the model assigns to the true links.
+
+Definition 1 (Generalized weakness on a relation). Let µ : U × U → R≥0 be a valuation function
+assigning nonnegative weights to candidate pairs. The generalized weakness (or soft accuracy) of
+a relation H is defined as                      X
+                                    w(H) :=         µ(u, v).
+                                                  (u,v)∈H
+
+The normalizing constant is                      X
+                                          Z :=           µ(x, y).
+                                                 x,y∈U
+                                P
+When µ is normalized so that x,y µ(x, y)/Z = 1, the quantity w(H)/Z represents the total prob-
+ability mass assigned to the truth set.
+
+Remark 3 (On the role of this definition). Defining weakness as posterior-predictive mass might
+seem to make subsequent results trivial (“accuracy scales like probability mass”). The substantive
+content comes from two sources: (1) the identification of this probability mass with evidence ratios,
+which connects to SLT’s geometric machinery and yields the specific λ/n scaling, and (2) the
+characterization of evaluation protocols under which expected hard accuracy equals soft accuracy.
+The definition serves as a bridge between the accuracy question we care about and the evidence
+integrals that SLT can analyze.
+
+2.3   Evaluation protocols: when does soft accuracy equal expected hard accu-
+      racy?
+The relationship between soft accuracy w(H)/Z and expected hard accuracy depends on the eval-
+uation protocol.
+
+Assumption 1 (Sampling-based evaluation protocol). A training subset Htrain ⊂ H is revealed to
+the model. At test time, predictions are generated by sampling from the model’s distribution: a pair
+(u, v) is predicted as a link with probability p̂(u, v) = µ(u, v)/Z. A test subset Htest = H \ Htrain of
+fixed size M is withheld, sampled uniformly among all M -subsets of H.
+
+   Under this protocol, the expected accuracy on a single test pair (u, v) ∈ H is exactly p̂(u, v),
+and linearity of expectation yields:
+
+                                                    4
+Theorem 2 (Expected accuracy under sampling-based evaluation). Under Assumption 1, the
+expected accuracy on Htest is
+
+                                                  w(H)      1 X
+                           E[Accuracy] =                 =      p̂(u, v).
+                                                 |H| · Z   |H|
+                                                                   (u,v)∈H
+
+Proof. Because Htest is a uniform random size-M subset of H, and accuracy for each pair equals
+the predicted probability under sampling,
+
+                              1      X                         1 M X             w(H)
+              E[Accuracy] =                     p̂(u, v) =      ·    p̂(u, v) =         .
+                              M                                M |H|            |H| · Z
+                                  (u,v)∈Htest                         (u,v)∈H
+
+
+
+
+Remark 4 (Contrast with argmax evaluation). Under argmax (Top-1) evaluation, the model pre-
+dicts the single pair (u, v) maximizing µ(u, v). Expected accuracy then depends on whether this
+maximizer lies in H—a discrete event that soft accuracy does not directly control. See Section 7.
+
+2.4    The significance of the sampling-based setting
+Theorem 2 establishes that in sampling-based evaluation protocols, expected hard accuracy exactly
+equals soft accuracy. Many practical settings approximate this:
+
+    • Retrieval systems that return items sampled according to predicted relevance scores.
+
+    • Generative models evaluated on the quality of samples drawn from the model distribution.
+
+    • Link prediction with probabilistic thresholding.
+
+   For these settings, SLT’s control over soft accuracy translates directly to control over expected
+hard accuracy.
+
+
+3     SLT Preliminaries: Evidence, Free Energy, and the LLC
+Singular Learning Theory provides the asymptotic machinery we need to analyze how the weakness
+w(H) behaves as a function of sample size. This section presents the essential SLT concepts.
+
+3.1    The Bayesian setup
+Let w ∈ W ⊆ Rd denote the model parameters, and let ϕ(w) be a prior density over W. Given a
+dataset Dn = (z1 , . . . , zn ), define the empirical loss as
+                                                           n
+                                                      1X
+                                        `n (w) :=        `(zi ; w),
+                                                      n
+                                                        i=1
+
+where `(z; w) is the negative log-likelihood for observation z under parameters w.
+
+
+
+
+                                                       5
+3.2      Evidence and free energy
+The evidence (or marginal likelihood) is the integral of the likelihood over the prior:
+
+Definition 2 (Evidence and free energy). The evidence and free energy are defined by
+                         Z
+                                           
+                   Zn :=     exp − n`n (w) ϕ(w) dw,       Fn := − log Zn .
+                             W
+
+One may also define local versions Zn (W ) and Fn (W ) by restricting the integration to a neighbor-
+hood W ⊆ W.
+
+   The evidence Zn quantifies how well the model (integrated over all parameter values) explains
+the observed data. The free energy Fn is its negative logarithm.
+
+3.3      The role of singularities
+In regular statistical models—where the Fisher information matrix is positive definite everywhere—
+the evidence has well-known Laplace approximation asymptotics with effective dimension d/2.
+However, many models of practical interest are singular : the Fisher information degenerates at
+certain parameter values, and the standard Laplace approximation breaks down.
+    SLT addresses this by using tools from algebraic geometry to analyze the structure of the
+singularities. The key insight is that even when the parameter-to-prediction map has complex
+singular structure, the evidence integral still admits a controlled asymptotic expansion, but with a
+modified effective dimension.
+
+3.4      The local learning coefficient
+The central quantity in SLT is the local learning coefficient λ, also known as the real log canonical
+threshold (RLCT).
+
+Theorem 3 (SLT local free-energy expansion (informal statement)). Under standard SLT regu-
+larity hypotheses (analyticity of the loss function, proper prior, etc.), near a (possibly singular)
+minimizing set, the free energy admits an asymptotic expansion of the form
+
+                        Fn = n`n (w∗ ) + λ log n − (m − 1) log log n + Op (1),
+
+where:
+
+   • w∗ denotes a minimizer of the expected loss,
+
+   • λ > 0 is the local learning coefficient (LLC/RLCT),
+
+   • m ∈ N is a multiplicity term arising from the geometry of the singular set.
+
+   Exponentiating this expansion yields a corresponding form for the evidence:
+
+               Zn ≈ exp − n`n (w∗ ) n−λ (log n)m−1 × (bounded random factor).
+                                    
+
+
+    The LLC λ plays the role of an “effective dimension”: for regular models, λ = d/2 where d
+is the parameter dimension. For singular models, λ can be much smaller, reflecting the reduced
+effective complexity near the singularity.
+
+
+                                                  6
+4     Building the Bridge: Posterior-Predictive Weakness
+We now construct the connection between weakness theory and SLT by expressing the posterior
+predictive as a ratio of evidence integrals.
+
+4.1   The posterior predictive distribution
+Given training data Dn , the Bayesian posterior over parameters is
+                                                exp(−n`n (w)) ϕ(w)
+                                 p(w | Dn ) =                      .
+                                                       Zn
+For a candidate test item z, the posterior predictive distribution is
+                                           Z
+                               p(z | Dn ) = p(z | w) p(w | Dn ) dw.
+
+
+4.2   Posterior predictive as an evidence ratio
+In the log-likelihood setting where p(z | w) = exp(−`(z; w)), the posterior predictive can be written
+as:
+                                      Z
+                                    1
+                      p(z | Dn ) =       exp(−n`n (w)) exp(−`(z; w)) ϕ(w) dw.
+                                   Zn
+Definition 3 (Evidence-augmented valuation). Define the unnormalized predictive valuation by
+                               Z
+                      µn (z) := exp(−n`n (w)) exp(−`(z; w)) ϕ(w) dw.
+
+This is the evidence integral for the augmented dataset Dn ∪ {z}, so we write µn (z) = Zn+1 (z).
+The posterior predictive is the ratio
+                                                  µn (z)   Zn+1 (z)
+                                   p(z | Dn ) =          =          .
+                                                   Zn        Zn
+    This representation is crucial: it expresses the posterior predictive as a ratio of evidence inte-
+grals, both amenable to SLT analysis.
+
+4.3   Weakness as posterior-predictive mass
+Let Z denote the space of candidate test items, and let H ⊆ Z be a truth set.
+
+Definition 4 (Posterior-predictive weakness (soft accuracy)). The posterior-predictive weakness of
+a truth set H is                    Z                     Z
+                                                        1
+                         wn (H) :=     p(z | Dn ) dz =        µn (z) dz.
+                                     H                 Zn H
+   With the choice µ = µn (·) = Zn+1 (·), the generalized weakness becomes the posterior-predictive
+mass of H—exactly the soft accuracy quantity.
+
+
+5     From SLT Evidence Asymptotics to Soft Accuracy Scaling
+We now propagate SLT asymptotics through the posterior predictive.
+
+                                                    7
+5.1   The one-step expansion
+Consider a single typical test item z. We have
+
+                           log p(z | Dn ) = log µn (z) − log Zn = −Fn+1 (z) + Fn .
+
+  If both Fn+1 (z) and Fn admit SLT expansions with the same dominant stratum and the same
+LLC λ, we can compute:
+
+                   Fn+1 − Fn ≈ `(w∗ ) + λ log(n + 1) − log n + (lower order)
+                                                            
+                                                   
+                                  ∗               1
+                             = `(w ) + λ log 1 +      + ···
+                                                  n
+                                               
+                                  ∗     λ       1
+                             = `(w ) + + O 2 .
+                                        n       n
+
+    Therefore,                                                  
+                                                          ∗λ    1
+                                  log p(z | Dn ) ≈ −`(w ) − + O 2 .
+                                                           n    n
+
+5.2   Soft accuracy scaling
+                 R
+Since wn (H) =       H p(z | Dn ) dz, if p(z | Dn ) has a multiplicative perturbation of the form
+                                                                
+                                                           λ     1
+                                  p(z | Dn ) = p∞ (z) 1 − c + o
+                                                           n     n
+
+uniformly over z ∈ H, then
+                                                            
+                                                       λ     1
+                                  wn (H) = w∞ (H) 1 − c + o      .
+                                                       n     n
+
+    This establishes the O(λ/n) scaling for soft accuracy.
+
+
+6     The Complete Argument
+Proof of Theorem 1. Step 1: By Theorem 2, under sampling-based evaluation, expected hard
+accuracy equals soft accuracy wn (H)/(|H| · Zn ).
+   Step 2: By the evidence-augmented valuation construction, wn (H) = Zn−1 H µn (z) dz.
+                                                                            R
+
+   Step 3: Each µn (z) = Zn+1 (z) and Zn admit SLT expansions. The ratio satisfies
+                                                                     
+                                          ∗    λ    1         log log n
+                     log p(z | Dn ) = −`(w ) − + O 2 + O                  .
+                                               n   n              n
+
+    Step 4: Integrating over H yields
+                                                                  
+                                                     λ
+                                wn (H) = w∞ (H) 1 − c + lower order .
+                                                     n
+
+   Step 5: Under sampling-based evaluation, this directly yields the O(λ/n) correction for ex-
+pected accuracy.
+
+
+
+                                                      8
+7     Extension to Hard Accuracy
+Theorem 1 applies to soft accuracy and to expected hard accuracy under sampling-based evaluation.
+This section addresses hard accuracy under argmax (Top-k) evaluation.
+
+7.1   The decision boundary problem
+Under argmax evaluation, the model predicts the item(s) with highest µ(z). Accuracy is 1 if the
+argmax lies in H, and 0 otherwise. This is a discontinuous function of the model parameters: small
+changes in µ that shift the argmax across the boundary of H cause discontinuous jumps in accuracy.
+    Soft accuracy wn (H) does not directly control whether the argmax lies in H. A model with
+wn (H) = 0.9 might have its argmax outside H (if the remaining 0.1 mass is concentrated on a
+single high-scoring false positive).
+
+7.2   Margin conditions
+The transfer from soft to hard accuracy requires a margin condition: the posterior predictive must
+be bounded away from 0.5 (or more generally, from the decision threshold) on the truth set.
+
+Definition 5 (Margin condition). A model satisfies a margin condition with parameter γ > 0 if,
+for all z ∈ H,
+                                                  1
+                                    p(z | Dn ) ≥ + γ.
+                                                  2
+    Under such a condition, improvements in soft accuracy translate to improvements in hard
+accuracy, and the O(λ/n) rate can transfer. This is analogous to the Tsybakov margin condition
+in statistical learning theory, which enables fast O(1/n) rates for classification.
+
+Proposition 1 (Soft-to-hard transfer under margin conditions). If the margin condition holds
+uniformly over H with parameter γ > cλ/n for all sufficiently large n, then the O(λ/n) scaling of
+soft accuracy implies O(λ/n) scaling of hard accuracy.
+
+7.3   Why margin conditions typically hold in practice
+While margin conditions are not guaranteed by SLT alone, there are several reasons to expect they
+will be satisfied in practical machine learning settings.
+
+1. Posterior concentration in well-specified models. In Bayesian inference, when the model
+is well-specified (i.e., the true data-generating process lies within the model class), the posterior
+concentrates around the true parameters as n → ∞. This concentration implies that posterior-
+predictive probabilities for true items converge to their true probabilities, which are bounded away
+from decision thresholds by definition. More precisely, if the true probability of item z ∈ H is
+p∗ (z) > 1/2 + δ for some δ > 0, then posterior concentration ensures p(z | Dn ) > 1/2 + δ/2 for
+sufficiently large n.
+
+2. The structure of link prediction and retrieval tasks. In link prediction, the truth set
+H consists of actual relationships (e.g., real friendships, verified facts, observed interactions), while
+the complement consists of non-relationships. Models are specifically designed to exploit features
+that distinguish true links from false ones—co-occurrence patterns, structural properties, semantic
+similarity, etc. By construction, these features create a substantial gap between scores for true and
+
+
+                                                   9
+false items. A model that did not produce such separation would be useless for the task and would
+not be deployed.
+    Quantitatively, if a link prediction model achieves (say) 80% ranking accuracy, then for a typical
+true link (u, v) ∈ H, the model scores (u, v) higher than 80% of false candidates. This ranking
+separation implies a corresponding gap in probability space after normalization.
+
+
+R Bayesian averaging smooths borderline cases. The posterior predictive p(z | Dn ) =
+3.
+  p(z | w)p(w | Dn ) dw averages predictions over the posterior distribution of parameters. This
+averaging tends to smooth out extreme predictions: if some parameter values yield p(z | w) ≈ 0.5
+while others yield confident predictions, the average will typically be pulled toward the confident
+majority (assuming the posterior concentrates on good parameter regions). This smoothing effect
+reduces the fraction of test items near the decision boundary.
+
+4. Hard cases are typically rare. Even when some items in H violate the margin condition,
+these “hard cases” are typically a small fraction of the test set. Let Hhard ⊆ H be the set of items
+with |p(z | Dn ) − 1/2| < γ, and let Heasy = H \ Hhard . If |Hhard |/|H| = o(1) as n → ∞, then the
+overall accuracy is dominated by Heasy , on which the O(λ/n) scaling applies.
+    Empirically, calibration studies of modern machine learning models consistently find that confi-
+dent predictions (far from 0.5) substantially outnumber uncertain predictions (near 0.5) on typical
+test sets. This is not coincidental: it reflects the fact that most test examples are “typical” instances
+well-represented in training data, while only a minority are genuinely ambiguous.
+
+5. The margin itself improves with n. As sample size increases, the posterior concentrates,
+and margin parameters γ typically grow (or at least remain bounded away from zero). The condition
+γ > cλ/n in Proposition 1 becomes easier to satisfy as n → ∞, since the right-hand side shrinks.
+Thus, even if margins are small for finite n, they eventually dominate the λ/n correction term.
+Remark 5 (When margins fail). Margin conditions can fail in adversarial settings: if an adversary
+constructs test items specifically chosen to lie near decision boundaries, or if the truth set H is
+defined to include only ambiguous cases. They can also fail in severely misspecified models where
+the true data distribution places substantial mass near decision boundaries. These pathological
+cases are important for worst-case analysis but are not representative of typical machine learning
+deployments.
+
+7.4   A refined statement
+Combining Theorem 1 with the margin analysis yields:
+
+Corollary 1 (Hard accuracy scaling under typical conditions). Under the hypotheses of Theorem 1,
+if additionally:
+
+  (i) The model is approximately well-specified, or
+
+ (ii) The task structure ensures separation between true and false items, or
+
+(iii) The fraction of test items near decision boundaries is o(1),
+
+then expected hard accuracy under argmax evaluation admits O(λ/n) finite-sample corrections on
+the “easy” subset of the test set, and overall accuracy corrections are O(λ/n) + o(1).
+
+
+
+                                                   10
+8    Discussion
+                                                                                          √
+1. The role of Bayesian averaging. The O(1/n) rate—faster than the typical O(1/ n) of
+VC theory—arises from Bayesian averaging. The posterior predictive integrates over all parameter
+values, smoothing the prediction landscape. This smoothing is what allows SLT’s analysis (which
+targets smooth functionals) to apply. Empirical risk minimization with a fixed parameter estimate
+                                                          √
+would not enjoy the same smoothness, and standard O(1/ n) rates would apply.
+
+2. Soft accuracy as the natural SLT target. Soft accuracy (posterior-predictive mass) is
+the natural accuracy-like quantity for SLT analysis. It is smooth, it equals expected hard accuracy
+under sampling-based evaluation, and it admits direct SLT asymptotics. Hard accuracy under
+argmax evaluation is a derived quantity that requires additional (margin) conditions—but as argued
+above, these conditions are typically satisfied.
+
+3. Multiple strata and phase transitions. When multiple singular strata compete, SLT
+predicts switching behavior driven by the tradeoff between the leading n` term and the subleading
+λ log n term. In such cases, soft accuracy can exhibit stage-like transitions rather than smooth 1/n
+decay. The O(λ/n) scaling applies within each regime but may not capture inter-regime transitions.
+
+4. Connection to scaling laws. Modern deep learning research emphasizes scaling laws where
+loss decreases as N −α with data or model size. The λ/n correction is consistent with this picture,
+with the added nuance that λ is not constant—it depends on which singular stratum the model
+occupies. A model finding a flatter minimum (lower λ) will have a smaller coefficient in front of
+1/n, generalizing faster for the same data.
+
+5. Weakness as an Occam’s Razor formalization. Identifying weakness with evidence ratios
+connects to algorithmic information theory: the model seeks the lowest-complexity (λ) explanation
+of the data. Lower λ implies both better compression (in the information-theoretic sense) and
+higher soft accuracy on withheld truths.
+
+
+9    Conclusion
+By defining weakness as the posterior-predictive mass on a truth set H and identifying this with
+a Bayesian evidence ratio, we have shown that SLT’s λ log n term propagates into soft accuracy,
+yielding characteristic O(λ/n) finite-sample corrections. The framework establishes a clear chain
+from SLT’s geometric invariants to accuracy-like quantities:
+
+    • Direct: λ controls soft accuracy (posterior-predictive mass on truth).
+
+    • Under sampling evaluation: Soft accuracy equals expected hard accuracy.
+
+    • Under argmax evaluation: Soft accuracy controls hard accuracy when margin conditions
+      hold—and we have argued these conditions are typically satisfied in practical settings where
+      models are designed to produce well-separated predictions.
+
+   This provides an accuracy-facing interpretation of SLT: the local learning coefficient λ governs
+not only log-loss generalization but also, under typical conditions, the rate at which predictive
+accuracy improves with sample size.
+
+
+                                                11
+References
+[1] S. Watanabe. Algebraic Geometry and Statistical Learning Theory. Cambridge University Press,
+    2009.
+
+[2] S. Watanabe. Mathematical Theory of Bayesian Statistics. CRC Press, 2018.
+
+[3] A. Tsybakov. Optimal aggregation of classifiers in statistical learning. Annals of Statistics,
+    32(1):135–166, 2004.
+
+[4] B. Goertzel. Weakness as evidence: Monotone links between model confidence and predictive
+    accuracy. Working paper, 2025.
+
+[5] B. Goertzel. Weakness as local evidence: A systems theory for degeneracy, refinement DAGs,
+    and continual adaptation. Working paper, 2025.
+
+
+
+
+                                               12
+

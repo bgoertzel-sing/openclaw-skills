@@ -1,0 +1,595 @@
+                       Weakness, Singular Learning Theory,
+                           and Punctuated Equilibrium
+                      in Evolutionary Algorithms and EDAs
+                                              Ben Goertzel
+
+                                           December 6, 2025
+
+
+                                                 Abstract
+         We develop a conceptual and technical link between weakness-based schema theorems, singular
+     learning theory (SLT), and the dynamics of evolutionary algorithms (EAs) and estimation of
+     distribution algorithms (EDAs). Weakness is used as a compositional fitness/Occam measure;
+     SLT provides the local learning coefficient (LLC) that quantifies degeneracy of minima via the
+     exponent of local evidence. In the infinite-population limit, we interpret evolutionary dynamics as
+     gradient flows of a free-energy functional, i.e. minimal-free-energy (minimal-weakness) geodesics
+     in population or parameter space. We then show how qualitative “stages” of evolution, including
+     punctuated-equilibrium-like behaviour, can be interpreted as SLT phase changes between different
+     singular strata, each with its own LLC.
+         We apply this viewpoint to genetic algorithms (GAs) and EDAs on deceptive trap landscapes.
+     For a factorized (univariate) EDA on a simple 2-bit trap, we explicitly compute the free energy
+     and examine the Hessian near deceptive and global optima. We then discuss a 4-bit trap for
+     both factorized and block-factor (dependency-aware) EDAs, explaining how the latter changes
+     the SLT free-energy landscape so that the global basin becomes thermodynamically preferred.
+     This provides a geometric SLT explanation of why dependency-aware EDAs are less susceptible
+     to deception. Finally, we discuss the large-but-finite population case and identify conditions
+     under which infinite-population SLT/weakness conclusions remain qualitatively valid.
+
+
+Contents
+1 Introduction                                                                                             2
+
+2 Background                                                                                               3
+  2.1 Evolutionary algorithms and EDAs . . . . . . . . . . . . . . . . . . . . . . . . . . . .             3
+  2.2 Weakness and schema theorems . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             3
+  2.3 Singular learning theory and local learning coefficient . . . . . . . . . . . . . . . . . .          4
+
+3 Weakness and Evolution as Free-Energy Geodesics                                                          4
+  3.1 Infinite-population GA as a gradient flow . . . . . . . . . . . . . . . . . . . . . . . .            4
+  3.2 Weakness schema theorem as a discrete SLT shadow . . . . . . . . . . . . . . . . . .                 5
+
+4 SLT for Evolutionary Attractors and Punctuated Equilibrium                                               5
+  4.1 Population-as-parameter SLT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            6
+  4.2 Stage transitions as SLT phase flips . . . . . . . . . . . . . . . . . . . . . . . . . . . .         6
+
+
+
+                                                     1
+5 Factorized EDA on Deceptive Traps: A Concrete Analysis                                              6
+  5.1 Univariate EDA on a 2-bit deceptive trap . . . . . . . . . . . . . . . . . . . . . . . .        6
+  5.2 Factorized EDA on a 4-bit trap (qualitative) . . . . . . . . . . . . . . . . . . . . . .        9
+
+6 Dependency-Aware EDAs: Phase Flip in the SLT Landscape                                         9
+  6.1 Block-factor EDA on a 4-bit trap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  6.2 SLT/weakness perspective: a phase flip . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+7 Finite Population Effects: When Do Infinite-Pop Conclusions Hold?                                 10
+  7.1 Noise scaling in finite populations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+  7.2 Selection vs drift and SLT basins . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+8 Discussion                                                                                         11
+
+9 Conclusion                                                                                         12
+
+
+1     Introduction
+The aim of this paper is to connect three strands of theory that are usually studied separately:
+
+    • Evolutionary algorithms and EDAs, which evolve large populations of candidate solutions by
+      selection, mutation, crossover, and probabilistic modeling.
+
+    • Weakness, a compositional Occam-like evaluation combining fitness and simplicity in a way
+      that interacts well with schema theorems.
+
+    • Singular learning theory (SLT), which characterizes how Bayesian evidence behaves near singular
+      minima and introduces the local learning coefficient (LLC) as a measure of degeneracy.
+
+    At an intuitive level, evolutionary search in a large population is a process that finds and refines
+families of solutions, not isolated points. There is typically a large amount of redundancy: many
+distinct genotypes have essentially the same phenotypic effect or fitness. This redundancy is exactly
+the sort of degeneracy that SLT studies. At the same time, weakness supplies an Occam bias
+favoring more compressible, more reusable patterns.
+    Our guiding slogan is:
+
+       Infinite-population evolutionary learning of weak models follows minimal-free-energy
+       (minimal-weakness) geodesics, and its developmental stages correspond to SLT phase
+       transitions between singular strata with different LLC, giving a mathematically grounded
+       version of punctuated equilibrium.
+
+    We explore this in two concrete settings: a bitstring genetic algorithm (GA) with selection,
+mutation, and crossover; and simple EDAs in both factorized and dependency-aware forms. On
+deceptive trap landscapes, we show how the SLT/weakness geometry of the free-energy landscape
+differs between factorized and block-factor EDAs, and why the latter are structurally better at
+escaping deception.
+    We begin with a brief review of evolutionary algorithms, weakness, and SLT, then construct
+a free-energy picture of evolution, and finally work through deceptive-trap examples for EDAs in
+some detail.
+
+
+
+                                                   2
+2     Background
+The goal of this section is to spell out the basic ingredients we will use later: evolutionary algorithms
+and EDAs, the weakness perspective on schema theorems, and the SLT notion of local evidence and
+LLC.
+
+2.1     Evolutionary algorithms and EDAs
+We consider bitstring genotypes x ∈ {0, 1}N . A simple GA evolves a population of Npop individuals
+over discrete generations:
+
+    • Selection: choose parents with probability proportional to a fitness (or weakness) score w(x).
+
+    • Crossover: recombine parent bitstrings using k-point crossover.
+
+    • Mutation: flip each bit with probability µ.
+
+     In the infinite-population limit, the population can be represented by a frequency distribution
+pt (x) over genotypes, and the dynamics become deterministic. Under suitable scaling, this can
+be approximated by a replicator–mutator equation, which we will view as a gradient flow of a
+free-energy functional.
+     An estimation-of-distribution algorithm (EDA) maintains and updates a parametric distribution
+qθ (x) over genotypes. At each generation:
+
+ 1. Sample a population x(1) , . . . , x(M ) from qθ .
+
+ 2. Select individuals based on w(x) (e.g. top-α or stochastic selection).
+
+ 3. Fit a new parameter θ0 (e.g. maximum likelihood) to the selected set.
+
+In the infinite-sample limit, the θ-update becomes a deterministic mapping that we can describe as
+gradient descent on a suitable free-energy functional.
+    We will use two EDA families:
+                                                             QN     xi         1−xi .
+    • Factorized EDA: assumes independent bits, qθ (x) =       i=1 θi (1 − θi )
+
+    • Block-factor EDA: groups bits into blocks b and models each block distribution qb (xb ), so
+              Q
+      qΘ (x) = b qb (xb ).
+
+2.2     Weakness and schema theorems
+Weakness is a way of assigning a real-valued cost or “badness” to a program or genotype that is
+compatible with compositional structures and schema theorems. For this paper we do not need the
+full categorical formalism; it suffices to note that we can:
+
+    • treat w(x) as a weakness score, lower is better or higher is better depending on convention;
+
+    • interpret schemata as coarse descriptors of bit patterns;
+
+    • and reason about expected schema frequencies over generations under selection, mutation, and
+      crossover.
+
+
+
+
+                                                         3
+     Classical schema theorems state that certain schemata with above-average fitness proliferate
+exponentially in expectation, if crossover and mutation do not disrupt them too much. When
+weakness is used as the fitness signal, similar results hold: schemata representing more compressible,
+more reusable patterns are favoured.
+     From the SLT perspective, the size of a schema class (how many concrete genotypes instantiate
+it) is a discrete proxy for the volume of near-optimal parameters. In the continuous analysis that
+follows, we will replace schema counts with actual volume integrals in parameter space.
+
+2.3     Singular learning theory and local learning coefficient
+SLT focuses on the behavior of Bayesian evidence in singular models. Given a loss (or negative
+log-likelihood) `(θ), a prior density φ(θ), and n data points, the (local) evidence integral is
+                                           Z
+                                    Zn =       exp(−n`n (θ)) φ(θ) dθ,
+
+where `n is the empirical loss. Near a minimizer θ∗ , and under analyticity assumptions, SLT shows
+that
+                           − log Zn = n`n (θ∗ ) + λ(θ∗ ) log n + O(log log n).                  (1)
+The coefficient λ(θ∗ ) is called the local learning coefficient (LLC). It plays the role of an effective
+model complexity:
+
+    • in regular models of dimension d, λ = d/2;
+
+    • in singular models, λ may be fractional and is determined by the singularity structure (e.g.
+      manifolds of minima, symmetries).
+
+    Equivalently, one can look at sublevel sets of the excess loss K(θ) = `(θ) − `(θ∗ ) ≥ 0. Define the
+local volume                                   Z
+                                     VK (ε) =            φ(θ) dθ.
+                                                  {K(θ)≤ε}
+
+Then there exist λ > 0 and m ∈ N such that
+
+                           VK (ε) = ελ (log(1/ε))m−1 (c + o(1)),        (ε ↓ 0),                    (2)
+
+so λ describes how quickly the volume of near-optimal parameters shrinks with tolerance.
+    In this paper we use LLC qualitatively: lower λ means a fatter basin with more degeneracy;
+higher λ means a stiffer, less degenerate minimum.
+
+
+3     Weakness and Evolution as Free-Energy Geodesics
+Before diving into SLT details, it is helpful to adopt a free-energy viewpoint on evolution. This is a
+standard trick in evolutionary dynamics, but here we connect it explicitly to weakness.
+
+3.1     Infinite-population GA as a gradient flow
+Let pt (x) be the population distribution over genotypes at generation t in the infinite-population
+limit. Under selection and mutation (and with a simple recombination model), one can often write
+the dynamics as
+                             ∂t pt (x) = S[pt ](x) + M[pt ](x) + R[pt ](x),                     (3)
+
+                                                     4
+where S, M, and R are selection, mutation, and recombination operators respectively. In the weak-
+mutation/weak-selection limit, this can be approximated by a Fokker–Planck or replicator–mutator
+PDE.
+   To connect this to weakness, we define:
+
+    • a potential (energy) V (x) = − log w(x), so high weakness corresponds to low energy (if w is
+      large when fitness is good);
+
+    • a free-energy functional on distributions p:
+                                        Z                         Z
+                              F [p] =       V (x)p(x) dx + β −1       p(x) log p(x) dx,
+
+      where the first term is expected energy and the second term is an entropy-like regularizer
+      weighted by β −1 .
+
+    Under appropriate choices of metric (e.g. Wasserstein-2 or a replicator geometry), the evolution
+of pt can be written as a gradient flow
+
+                                              ∂t pt = −∇G F [pt ],                                 (4)
+
+i.e. the population distribution follows the steepest descent of free energy. We do not need the
+metric details here; the key idea is that:
+
+       Infinite-population evolution follows minimal-free-energy geodesics in the space of prob-
+       ability distributions.
+
+3.2     Weakness schema theorem as a discrete SLT shadow
+In a weakness-based schema theorem, one tracks counts ms (t) of individuals matching a schema s,
+and shows that under selection and modest mutation and crossover, schemata with above-average
+weakness score ws proliferate exponentially in expectation. Schematically,
+                                                       ws
+                               ms (t + 1) ≈ ms (t)          (1 − disruption),
+                                                      w̄(t)
+
+where w̄(t) is the population-average weakness and the disruption term depends on mutation and
+crossover.
+     From the SLT viewpoint, the class of genotypes matching schema s has a certain size |s| (number
+of concrete genotypes). The fact that evolution concentrates on schemata with large ws and large
+|s| is a discrete analogue of concentrating posterior mass on regions of parameter space that have
+both low loss and large volume. Passing from discrete schemas to continuous parameter volumes is
+a natural step if we wish to apply SLT to evolutionary attractors.
+
+
+4     SLT for Evolutionary Attractors and Punctuated Equilibrium
+In this section we interpret evolutionary attractors as minima of a free-energy functional and
+qualitatively import SLT’s notion of LLC to them. We then connect evolutionary stage changes to
+phase flips between basins.
+
+
+
+
+                                                       5
+4.1     Population-as-parameter SLT
+Instead of treating θ as parameters, we can treat the population distribution p itself as an unknown
+element of a manifold P, e.g. the simplex of distributions over a finite space. The free-energy
+functional F [p] plays the role of loss.
+    In principle, one can apply SLT to F [p] just as to F (θ): consider a parameterization of P (for
+instance, via sufficient statistics) and analyse the local volume of distributions near a minimizer p∗ ,
+                                        {p : F [p] ≤ F [p∗ ] + ε}.
+If the minimizer is regular and isolated, the local geometry is quadratic and the corresponding
+LLC is (d/2), where d is the dimension of the parameterization. If there are neutral directions
+(continuous families of equally good distributions), the LLC is smaller, reflecting degeneracy.
+    Thus, in an evo-dynamics context, one can interpret:
+    • lower LLC at p∗ as a broader, more redundant attractor, with many almost-equivalent population
+      states;
+    • higher LLC as a stiffer attractor with fewer neutral directions.
+
+4.2     Stage transitions as SLT phase flips
+Suppose there are multiple local minima p∗i of F [p], corresponding to different evolutionary “macro-
+organizations” (different ecotypes, modes, or modular structures). In SLT, the contribution of each
+minimum to evidence involves both the free energy and the LLC. If one had an effective sample size
+n (for example, interpreting n as the amount of fitness information or the length of an evolutionary
+episode), one could write a schematic expansion
+                                      Fi (n) ≈ nF [p∗i ] + λi log n.
+As n increases, the tradeoff between the leading term nFi and the subleading λi log n can cause the
+identity of the most thermodynamically favourable basin to change. At moderate scales, a slightly
+worse free-energy minimum with very low LLC (fat basin) may dominate; at large scales, a slightly
+better free-energy minimum with higher LLC may take over.
+    In evolutionary terms, this is reminiscent of punctuated equilibrium: long periods where the
+population fluctuates near one attractor, followed by relatively rapid transitions to a different
+attractor when the balance of fit vs degeneracy changes due to environmental change or internal
+structural discovery. The SLT language clarifies this as a phase flip between singular strata.
+
+
+5     Factorized EDA on Deceptive Traps: A Concrete Analysis
+We now step into a concrete setting where we can write formulas explicitly: a univariate (factorized)
+EDA on a deceptive trap landscape. We first work out a 2-bit case in detail and then discuss the
+4-bit trap qualitatively.
+
+5.1     Univariate EDA on a 2-bit deceptive trap
+We consider bitstrings x = (x1 , x2 ) ∈ {0, 1}2 and a simple deceptive trap function. Define the trap
+via the number of ones u(x) = x1 + x2 :
+                                             (
+                                             2         if u = 2,
+                                   f (u) =
+                                             2 − 1 − u if u = 0, 1.
+
+                                                    6
+Thus
+                            f (00) = 1,     f (01) = 0,       f (10) = 0,    f (11) = 2.
+We take w(x) := f (x) as the selection weight.
+
+EDA model and evidence. A univariate EDA assumes an independent-bit model
+
+                               qθ (x1 , x2 ) = θ1x1 (1 − θ1 )1−x1 θ2x2 (1 − θ2 )1−x2 ,
+
+with θ = (θ1 , θ2 ) ∈ (0, 1)2 . The selection-reweighted evidence is
+                                                      X
+                                           Z(θ) =              w(x)qθ (x).
+                                                    x∈{0,1}2
+
+Enumerating:
+
+                                           q(00) = (1 − θ1 )(1 − θ2 ),
+                                           q(01) = (1 − θ1 )θ2 ,
+                                           q(10) = θ1 (1 − θ2 ),
+                                           q(11) = θ1 θ2 ,
+
+so
+
+                             Z(θ) = 1 · q(00) + 0 · q(01) + 0 · q(10) + 2 · q(11)
+                                  = (1 − θ1 )(1 − θ2 ) + 2θ1 θ2
+                                  = 1 − θ1 − θ2 + 3θ1 θ2 .
+
+We define the free energy
+                                              F (θ) := − log Z(θ).
+
+Global optimum and deceptive corner. On the domain [0, 1]2 , critical points and optima of
+F correspond to critical points and extrema of Z(θ). At the corners:
+
+                                          Z(0, 0) = 1,
+                                          Z(1, 0) = 1 − 1 − 0 + 0 = 0,
+                                          Z(0, 1) = 1 − 0 − 1 + 0 = 0,
+                                          Z(1, 1) = 1 − 1 − 1 + 3 = 2.
+
+Thus:
+
+     • (θ1 , θ2 ) = (1, 1) is the global maximizer of Z, hence global minimizer of F ;
+
+     • (0, 0) is better than (1, 0) and (0, 1) but not globally optimal.
+
+The global optimum (1, 1) corresponds to the true global genotype optimum 11. The corner (0, 0) is
+a local attractor for many EDA dynamics because each bit, considered in isolation, sees that setting
+it to 1 tends to reduce fitness, due to the deceptive shape of f .
+
+
+
+
+                                                          7
+Hessian analysis. To study degeneracy at (1, 1) and (0, 0), we compute the gradient and Hessian
+of F .
+    We have
+                                                         "        #                   "   #
+                                                     −1 + 3θ2             2    0 3
+             Z(θ) = 1 − θ1 − θ2 + 3θ1 θ2 ,   ∇Z(θ) =          ,       ∇ Z(θ) =     .
+                                                     −1 + 3θ1                  3 0
+Using F = − log Z and the chain rule,
+                                                     1
+                                       ∇F (θ) = −        ∇Z(θ),
+                                                    Z(θ)
+                                         1                   1
+                          ∇2 F (θ) =        2
+                                              ∇Z(θ)∇Z(θ)> −      ∇2 Z(θ).
+                                       Z(θ)                 Z(θ)
+   At the global optimum (1, 1):
+                                                   " #                    "       #
+                                                  2           2          0 3
+                       Z(1, 1) = 2,    ∇Z(1, 1) =   ,        ∇ Z(1, 1) =     .
+                                                  2                      3 0
+Thus                         "     #     "     #    "                 #       "           #
+                           1 4 4   1 0 3      1    1 − 1.5    1   −0.5
+             ∇2 F (1, 1) =       −       =                 =           .
+                           4 4 4   2 3 0   1 − 1.5    1      −0.5  1
+The eigenvalues of this symmetric matrix are 1 ± 0.5, i.e. 1.5 and 0.5, both positive. So F is locally
+strictly convex at (1, 1): a regular, non-degenerate minimum.
+    At (0, 0):                                    " #                   "    #
+                                                   −1       2            0 3
+                       Z(0, 0) = 1, ∇Z(0, 0) =        , ∇ Z(0, 0) =            ,
+                                                   −1                    3 0
+so                                         "     # "     # "           #
+                               2             1 1     0 3        1 −2
+                              ∇ F (0, 0) =        −        =             ,
+                                             1 1     3 0       −2 1
+with eigenvalues 3 and −1. Thus (0, 0) is a saddle point in the unconstrained continuous domain
+R2 , with one stable and one unstable direction.
+    However, in the actual EDA parameter domain [0, 1]2 with clipping at the boundaries, the
+unstable direction may be effectively obstructed: once both θi are near 0, selection tends to keep
+them near zero, and mutation / noise may be too weak to push them back into the interior. From a
+dynamical standpoint, (0, 0) behaves like a deceptive attractor.
+
+SLT/weakness interpretation. In this tiny 2-bit example, the global basin around (1, 1) is
+regular and non-singular; the local geometry is well captured by the Hessian. If we consider many
+independent 2-bit traps concatenated into a higher-dimensional problem, we get:
+  • A global basin where each pair’s (θ1 , θ2 ) block is near (1, 1). This basin is relatively small in
+    parameter volume because each coordinate is tightly constrained.
+  • A deceptive basin where each pair’s parameters are near (0, 0). Because this is a corner of the
+    domain, many nearby (θ1 , θ2 ) configurations are nearly as bad, and the combinatorial number
+    of such configurations grows rapidly with the number of blocks.
+On such multi-block problems, the deceptive basin can have a much larger volume (and lower LLC)
+than the global basin, making it thermodynamically attractive in SLT terms despite worse expected
+fitness. This is a free-energy/degeneracy restatement of the familiar fact that univariate EDAs can
+get stuck in deceptive traps.
+
+                                                   8
+5.2     Factorized EDA on a 4-bit trap (qualitative)
+For a 4-bit deceptive trap, each block xb = (xb,1 , . . . , xb,4 ) has fitness fb (u) defined in terms of
+     P
+u = i xb,i , with a high reward at u = 4 and deceptively higher values near u = 0 than near
+intermediate values. Global fitness is a sum over blocks.
+    A univariate EDA still assumes independent bits, with parameters θ ∈ (0, 1)N . The free energy
+                                                       X
+                                       F (θ) = − log           f (x) qθ (x)
+                                                          x
+
+now has the following features:
+
+    • The model class cannot represent block-level correlations. This smears the true elite distributions
+      across many bit patterns.
+
+    • There is a broad deceptive basin in θ-space where each block’s bits have marginals biased
+      toward the deceptive patterns.
+
+    • The global basin near correct 4-bit patterns (each block’s bits near 1) exists but is narrower:
+      many small changes in marginals reduce the chance of sampling the exact optimal pattern.
+
+From an SLT/weakness perspective, the deceptive basin is supported by combinatorial degeneracy
+in θ-space: many different marginal parameter settings give similar behaviour. In higher dimensions,
+this translates into smaller LLC (fatter basin), and the SLT free-energy expansion F (n) ≈ nF ∗ +
+λ log n may favour the deceptive basin up to large n.
+
+
+6     Dependency-Aware EDAs: Phase Flip in the SLT Landscape
+We now consider a dependency-aware EDA that can model 4-bit blocks directly, and explain how
+this changes the SLT free-energy geometry on the same deceptive trap landscape.
+
+6.1     Block-factor EDA on a 4-bit trap
+Suppose we group bits into 4-bit blocks b, and define an EDA model
+                                                       Y
+                                           qΘ (x) =           qb (xb ),
+                                                       b
+
+where each qb is a full distribution on {0, 1}4 (or an equivalent small Bayesian network). For the
+4-bit trap, this model can represent the exact elite distributions for each block: high mass on
+(1, 1, 1, 1) and low mass on other patterns.
+     The free energy in this parameter space is
+                                                       X
+                                      F (Θ) = − log           f (x) qΘ (x).
+                                                          x
+
+Qualitatively, this landscape has:
+
+    • A global basin where each block qb is concentrated near the true optimal configuration.
+
+    • Much weaker deceptive basins: because the model can distinguish between different (4-bit)
+      patterns, it does not need to smear probability mass across deceptive and non-deceptive
+      genotypes.
+
+                                                      9
+6.2     SLT/weakness perspective: a phase flip
+In the factorized EDA, the deceptive basin was supported by strong degeneracy in parameter space:
+many different marginal patterns approximate the deceptive attractor. The global basin was less
+degenerate.
+    In the block-factor EDA:
+
+    • The global basin becomes thermodynamically dominant: the block model can place probability
+      mass on the true optimum with little spillover, lowering the free energy F substantially.
+
+    • The deceptive configurations no longer benefit from the same degree of degeneracy: the model
+      can explicitly represent and penalize them.
+
+This is naturally described as a phase flip in the SLT landscape: when the model class is enriched
+from independent bits to block factors, the local minima and their LLCs change in such a way that
+the global basin overtakes the deceptive basin.
+   From an evolutionary stage perspective:
+
+    • In the early factorized regime, EDAs behave similarly to univariate models, with stage-like
+      behaviour dominated by deceptive basins.
+
+    • Once enough structure is observed to warrant block factors (structure learning), the landscape
+      changes qualitatively, and the EDA enters a new stage where convergence to the global optimum
+      is much more robust.
+
+
+7     Finite Population Effects: When Do Infinite-Pop Conclusions
+      Hold?
+So far we have mostly spoken about infinite populations and infinite sample sizes. In practical
+evolutionary algorithms and EDAs, populations are finite. Here we outline how finite-population
+noise interacts with the infinite-pop SLT/weakness picture.
+
+7.1     Noise scaling in finite populations
+Consider a bitwise marginal θi estimated from a population or selected subpopulation of size M .
+Then
+                                                      M
+                                                   1 X    (j)
+                                             θ̂i =      x
+                                                   M j=1 i
+                                                                                                 √
+has variance Var(θ̂i ) = θi (1 − θi )/M . Thus the estimation noise per coordinate is of order 1/ M .
+   In both GA and EDA:
+
+    • Infinite-pop (or infinite-sample) dynamics correspond to a deterministic update θ 7→ θ0 or
+      p 7→ p0 .
+                                                        p
+    • Finite-pop dynamics add a noise term of order 1/ Npop per coordinate per generation.
+
+Over time, this noise can accumulate and cause the population to drift between basins of attraction.
+
+
+
+
+                                                 10
+7.2     Selection vs drift and SLT basins
+A classical rule of thumb in population genetics is that selection dominates drift when N s  1,
+where s is a selection coefficient and N is population size. The SLT/weakness version can be
+expressed in terms of:
+
+    • free-energy difference between basins, ∆F ;
+
+    • curvature (or more generally, local Lipschitz) of F around minima;
+
+    • noise scale σ 2 ∼ 1/N in the relevant coarse-grained coordinates.
+
+Qualitatively, the infinite-pop SLT picture (geodesics and phase flips between basins) is a good
+qualitative guide when:
+                                                 1
+                           N ∆Fstage  1,       √  typical basin scale,
+                                                 N
+so that random fluctuations are too small to constantly push the system across SLT basin boundaries.
+    In this regime, finite populations spend most of their time near the same attractors as in
+the infinite-pop limit, and the stage structure predicted by the SLT/weakness analysis remains
+qualitatively valid.
+
+
+8     Discussion
+We have argued that:
+
+    • Evolutionary algorithms and EDAs can be understood as gradient flows of free-energy functionals,
+      with weakness as the “energy” term.
+
+    • Singular learning theory provides a way to quantify degeneracy of evolutionary attractors via
+      the local learning coefficient, λ.
+
+    • Stage-like behaviour (often described as punctuated equilibrium) can be viewed as SLT phase
+      changes between basins with different free-energy and degeneracy profiles.
+
+    • On deceptive trap landscapes, factorized EDAs possess a free-energy landscape where deceptive
+      basins are thermodynamically favoured over substantial ranges, whereas dependency-aware
+      EDAs change the SLT geometry so that the global basin is structurally favoured.
+
+     Conceptually, this suggests that:
+
+    • Redundancy and neutral directions in large evolving populations are not just “noise”, but an
+      essential part of the geometry of learning.
+
+    • Designing evolutionary algorithms and EDAs with richer dependence models can be seen as
+      changing the singularity structure (and LLCs) so that deceptive basins lose their advantage.
+
+    • SLT/weakness tools could, in principle, be used to predict when a given evolutionary system is
+      likely to undergo a qualitative stage transition, and to tune algorithm parameters to exploit or
+      avoid such transitions.
+
+
+
+
+                                                    11
+9    Conclusion
+We have outlined a connection between weakness-based schema theorems, singular learning theory,
+and the dynamics of evolutionary algorithms and EDAs. Infinite-population GA and EDA dynamics
+can be viewed as minimal-free-energy geodesics in population or parameter space, with SLT LLCs
+quantifying the degeneracy of attractors. On deceptive landscapes, factorized EDAs and dependency-
+aware EDAs differ sharply in their SLT/weakness geometry, providing a principled explanation of
+the practical observation that dependency-aware EDAs handle deception more robustly.
+   We view this as a first step toward a more systematic use of SLT and weakness in the analysis
+and design of evolutionary learners, and as a bridge between ideas from statistical learning theory,
+evolutionary computation, and the study of punctuated equilibrium in complex adaptive systems.
+
+
+References
+[1] S. Watanabe. Algebraic Geometry and Statistical Learning Theory. Cambridge University Press,
+    2009.
+
+[2] P. Larrañaga and J. A. Lozano. Estimation of Distribution Algorithms: A New Tool for
+    Evolutionary Computation. Kluwer Academic Publishers, 2001.
+
+[3] J. H. Holland. Adaptation in Natural and Artificial Systems. University of Michigan Press, 1975.
+
+
+
+
+                                                12
+

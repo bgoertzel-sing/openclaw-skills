@@ -1,0 +1,53 @@
+{
+  "artifact_dir": "/home/openclaw/research-agent/projects/omegasim/artifacts/a6-matched-excess-20260702T100000Z",
+  "artifact_hashes_sha256": {
+    "matched_excess_summary.csv": "e482808897eb559b5948f240e8157e9f8d6af184aff078a2379694d452252707",
+    "matched_excess_summary.json": "c44ea8464d9f719ff30d3e921a28bd7b2290c79a780feb198bcdc2a740f29910",
+    "summary.csv": "b138a25001d2ccf027f613b61a43a1438583b2e026d9cef3f6aeadbbd6421975",
+    "summary.json": "d871707c012c36edebc3fe99469b147ca8a9b2343befa899f661b3bbbfdfdf46"
+  },
+  "candidate_parameter_counts": {
+    "coupling": {
+      "0.35": 2,
+      "0.6": 5
+    },
+    "delay": {
+      "0": 4,
+      "3": 3
+    },
+    "gain": {
+      "5.0": 7
+    },
+    "seed": {
+      "11": 3,
+      "17": 3,
+      "7": 1
+    }
+  },
+  "functional_candidates_by_control": {
+    "appraisal": 24,
+    "linear": 37,
+    "shuffled": 2
+  },
+  "matched_excess_candidate_runs": [
+    "appraisal_seed7_g5_d0_c0p6",
+    "appraisal_seed11_g5_d0_c0p35",
+    "appraisal_seed11_g5_d0_c0p6",
+    "appraisal_seed11_g5_d3_c0p6",
+    "appraisal_seed17_g5_d0_c0p6",
+    "appraisal_seed17_g5_d3_c0p35",
+    "appraisal_seed17_g5_d3_c0p6"
+  ],
+  "matched_excess_candidates": 7,
+  "matched_excess_reason_counts": {
+    "absolute_or_excess_gate_failed": 2,
+    "appraisal_exceeds_matched_controls": 7,
+    "matched_control_dominates_or_ties": 72
+  },
+  "max_artifact_excess_over_control": 0.09889069606056189,
+  "max_functional_excess_over_control": 0.3459015184257235,
+  "mean_artifact_excess_over_control": -0.04069995799864116,
+  "mean_functional_excess_over_control": -0.2593527727830062,
+  "n_appraisal_matched_rows": 81,
+  "n_runs": 243
+}

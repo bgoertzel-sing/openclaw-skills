@@ -1,0 +1,9 @@
+a55d4fd3ec6209be706ed43c6865c71363206687c49b61f676d16322f0f05949  library/slt-hyperseed-corpus/originals/SLT-accuracy-weakness_v1---37523078-4f84-4bdf-9fd5-2850afbdaa99.pdf
+84167b824e05a7e30cb3c14cb52d0fda748a6b1353ad14a288c3fe3abe5ed021  library/slt-hyperseed-corpus/originals/SLT-Evolution---e67654bc-5e0c-4c98-b1e4-f1d3337b946d.pdf
+09123c5d26127e79293fb435db98597e21e9f038230613027e421c4bd43d4026  library/slt-hyperseed-corpus/originals/SLT-for-regime-change-detection---4e9f5ac3-fb94-4858-86ec-4062d1cd57f5.tex
+a7d2d4d5d8670b1e54c472fd25e25b61b9ca098ee0a517d325eee86aa7c59e30  library/slt-hyperseed-corpus/originals/SLT-for-regime-change-detection---dfb0422f-6982-44ec-b577-234518fb3d15.pdf
+c66fed4198b7f181464f84c588d44a7cc5016f14fa5fa6d5f8b9d17b62f53a97  library/slt-hyperseed-corpus/originals/SLT-Goal-Stability_v4---b1e6aa67-eed7-4728-817b-9e9dba5a10f9.pdf
+f2348c8c42faa5110cff78d56ccaabdab2e119c24a0010e05ce21bcf9a03762b  library/slt-hyperseed-corpus/originals/SLT-Semantics-v2---e960aa82-036c-4c26-8246-bd8e64253655.pdf
+5f9b60ee0c10c734c4fa805b2a6083aa178b60e2024fa1e2bd312d33909c05f5  library/slt-hyperseed-corpus/originals/SLT-SubRep-v5---511f89f1-b08c-4ca1-918e-a501d646e32a.pdf
+54d91b2d407a6c1c825ab54888bb311e9660a1bb109a195573d1cf545331675d  library/slt-hyperseed-corpus/originals/source---ba15f342-10aa-45ef-9b74-6b9da40343e7.zip
+55703d39ce2651a6d9eab9f710bc199469661a91a4069ac69f0a480bc5760171  library/slt-hyperseed-corpus/originals/Weakness-Singular-Learning---5ffe68f2-ac67-43ce-8b46-9573fb1e7a69.pdf

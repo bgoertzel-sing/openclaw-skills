@@ -1,0 +1,4 @@
+## main
+ M scripts/run_a6_sweep.py
+ M src/omegasim/a6_model.py
+ M tests/test_a6_model.py

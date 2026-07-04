@@ -1,0 +1,699 @@
+                  Detecting Regime Changes
+                 in Hierarchical Data Streams
+    via Singular Learning Theory and Quantale Weakness
+                    (applied to Incremental Compression and
+                    Causal/Predictive Coding Neural Models
+                      in Hierarchical Lévy Jump Regimes)
+
+                                             Ben Goertzel
+
+                                           December 8, 2025
+
+
+                                                Abstract
+         Incremental compression (IC) and causal-coding / predictive-coding (CC/PC) neural mod-
+     els both try to exploit hierarchical structure in data by building reusable modules (features,
+     submodels, or parameter blocks) plus residual coupling. In stationary settings, refitting-based
+     IC can recover one feature per hierarchical level and achieve near-optimal two-part description
+     length; similarly, CC/PC with causal gates and pruning can drive a network toward a causally
+     modular parameterization where context updates almost commute, mitigating catastrophic for-
+     getting.
+         In streaming settings, however, the underlying hierarchical generator can switch regimes.
+     This paper proposes a regime-change detector and adaptation rule using singular learning theory
+     (SLT) parameters—especially per-module local learning coefficients (LLCs)—as diagnostics for
+     when the source distribution has changed and at which hierarchical levels. We use quantale
+     weakness as compositional “glue” by identifying weakness with (local) evidence / partition
+     functions, so that module-wise evidence multiplies (free energies add) and LLCs add under
+     a dominated-interaction approximate-factorization condition, enabling level-localizing change
+     hypotheses to be composed algebraically.
+         We present (i) a unified regime signature for IC and CC/PC that tracks per-module LLCs,
+     gain/cost profiles, and (for CC/PC) locality/commutator proxies; (ii) an SLT-aware MDL
+     change-point test with an interpretable λ log n complexity penalty; (iii) a weakness-compositional
+     localization rule selecting which modules changed; and (iv) selective-refit / selective-gate adap-
+     tation policies. As a concrete example, we treat hierarchical generative sources built from Lévy
+     processes with jumps (e.g. stable or compound-Poisson components) and show how transi-
+     tions between Lévy triplets can be interpreted as multi-level regime changes (e.g. financial
+     market regime shifts). We also argue that these SLT based signals give indication of whether
+     TransWeave-based transfer learning of RL models from one regime to another is likely to succeed
+     or fail, in the strong (near-isomorphic) sense.
+
+
+1    Motivation
+Incremental compression is attractive when data exhibits compositional structure: edges compose
+into textures, textures into objects, objects into scenes; characters into words into phrases into
+
+                                                     1
+sentences. Predictive-coding style hierarchies are attractive for similar reasons: inference learns
+layered latent representations and error signals.
+    In a streaming setting, the key failure mode is regime change: data starts coming from a different
+hierarchical generator (or mixture), so that some modules become mismatched. We ask:
+    1. Can SLT provide reliable indicators of regime change, beyond heuristic drift signals?
+    2. Can the indicators be level-specific in hierarchical settings?
+    3. Can weakness provide a compositional language for combining module-wise evidence, so that
+       we both detect and localize changes?
+    4. Can the same machinery cover both (a) incremental compression algorithms and (b) CC/PC
+       neural learners that implement causal modularization?
+    5. Can we use this sort of regime change indicator to tell us whether RL-based models trained
+       on one regime can be viably transfer-learned to another?
+
+
+2     Background
+2.1     Incremental compression (IC)
+We view IC as producing a two-part code: a list of feature programs plus a final residual.
+Definition 1 (Feature and incremental decomposition). Fix a string x ∈ {0, 1}N . A feature is an
+invertible, length-preserving program f . A length-s incremental decomposition is a feature sequence
+F = (f1 , . . . , fs ) with residuals r0 := x, ri := fi (ri−1 ) such that
+                      x = f1 ◦ · · · ◦ fs (rs ),      K(x | f1 , . . . , fs , rs ) = O(log N ).
+Define per-step normalized compression and cost
+                                   K(ri−1 ) − K(ri )                        K(fi )
+                             γi :=                   ,              τi :=          ,
+                                          N                                  N
+                              Ps
+and the two-part length Ls := i=1 K(fi ) + K(rs ).
+    Because K(·) is uncomputable, in practice one substitutes a concrete description language and
+uses a code length CL(·) in place of K(·). Weakness theory (Section 2.4) provides a principled way
+to do so while preserving composition laws.
+Definition 2 (Decomposition quality metrics). Define efficiency
+                                                       N − Ls
+                                        η(F ; x) :=            ∈ [0, 1],
+                                                      N − K(x)
+local margin µ := mini γiγ−τ
+                           i
+                             i                    mini γi
+                               , and balance β := maxi γi
+                                                          .
+
+2.1.1    Hierarchical sources and refitting
+A short-feature hierarchical generative model (SF-HGM) is a stylized assumption under which IC
+can succeed: each level contributes a nontrivial fraction of compressible bits, features remain short
+(logarithmic description), and cross-level interactions (mutual information overlap) are bounded.
+The key algorithmic lesson is: refitting prevents early features from absorbing higher-level structure
+by allowing earlier features to relinquish cross-level fragments when a later feature arrives. This
+suggests a natural streaming adaptation rule: reuse what is stable, refit what changes.
+
+                                                         2
+2.2     CC/PC neural models: causal-coding predictive networks
+We summarize a CC/PC viewpoint in which predictive coding provides hierarchical inference, while
+“causal coding” encourages modularity by gating and pruning updates based on causal influence.
+
+2.2.1    PC/CC architecture and inference
+Consider a multilayer predictive-coding network with observed input x ∈ Rdx and latent layers
+z 1 , . . . , z L with vertical weights W `+1,` and lateral weights L` . Inference runs a bounded discrete-
+time dynamics
+                              z ` (t + 1) = Φ` (z 1 (t), . . . , z L (t), x; θ), ` = 1, . . . , L,
+often derived from gradient descent on a free-energy functional F (x, z; θ).
+
+2.2.2    Vertical/lateral gating and pruning
+A natural modularization treats each vertical or lateral weight block (matrix, head, channel, kernel)
+as a module θ(m) . Introduce multiplicative vertical gates G`+1,` [j, i] ∈ [0, 1] and effective weights
+                                  `+1,`
+                                 Weff   [j, i] = G`+1,` [j, i] W `+1,` [j, i].
+
+For lateral edges, a diffusion-based “clarity” penalty shrinks edges whose influence is largely repro-
+duced by multi-hop paths in the lateral graph (via a Laplacian/heat-kernel redundancy test). A
+typical total training objective has the form
+                                               X (`)
+                   Ltotal (θ, G) = Lbase (θ) +  Ldiff (L` ) + Lmatch (G) + Lsparse (G),
+                                                `
+
+with periodic re-estimation of importance scores from inference trajectories.
+
+2.2.3    Continual learning as (approximate) commutativity
+In nonstationary streams, contexts induce context-conditioned losses Lc (θ) and gradient vector
+fields Xc (θ) = −∇Lc (θ). Sequential training composes context flows; joint training corresponds to
+the flow of the combined field. The difference is governed by commutators (Lie brackets)
+
+                            [Xc , Xc0 ](θ) = DXc0 (θ)Xc (θ) − DXc (θ)Xc0 (θ),
+
+and in gradient systems can be expressed via mixed Hessian blocks. Causal gates and pruning aim
+to suppress cross-module couplings, shrinking mixed blocks and hence commutators.
+    A discrete abstract formulation uses context updates Uc : Θ → Θ on a modularized parameter
+space, support sets Sc (modules touched by context c), and locality errors controlling leakage outside
+support. Approximate locality plus small commutator defects imply bounded path dependence and
+bounded forgetting.
+
+Why this matters for regime change. A “regime” in the data stream corresponds to a context
+or mixture of contexts. A regime shift is then visible as (i) a change in which modules/edges are
+causally active (support/gates), (ii) an increase in leakage/commutator proxies, and (iii) a change
+in SLT compressibility geometry (LLCs) of the modules that must now fit different data.
+
+
+
+
+                                                      3
+2.3   Singular learning theory (SLT), MDL, and compressibility
+SLT explains why model complexity is not simply parameter count in singular (non-regular) models.
+Its central geometric object is the volume of low-loss (or low-KL) neighborhoods.
+Definition 3 (Sublevel-set volume law and LLC). Let K(w) ≥ 0 be a nonnegative analytic “excess
+loss” around a local minimum w∗ . Define the sublevel-set volume
+                                    V (ε) := Vol{w : K(w) ≤ ε}.
+Under SLT assumptions,
+                                           ∗             ∗
+                             V (ε) ∼ c ελ(w ) (− log ε)m(w )−1   as ε → 0,
+for rational λ(w∗ ) and integer multiplicity m(w∗ ). We call λ(w∗ ) the local learning coefficient
+(LLC).
+
+Quantization/compressibility link. In simple grid quantization, the critical per-coordinate
+bit budget required to keep a whole cell within a tolerated-loss basin obeys
+                          λ(w∗ )      1
+                  b∗ (ε) ≈       log2    (up to lower-order log log(1/ε) terms),
+                             d        ε
+where d is parameter dimension. Thus, increases in LLC correspond to less geometric degeneracy
+and more bits needed for a fixed tolerance.
+
+SLT-MDL redundancy form. SLT yields an MDL-style redundancy term of the form λ log n
+(with multiplicity corrections), suggesting an SLT-aware change-point penalty that is neither too
+small (over-segmentation) nor too large (missed changes).
+
+2.4   Weakness theory and quantale compositionality
+Weakness theory proposes a semantics-first Occam principle: among explanations that fit, prefer
+the one that leaves the most possibilities open (i.e., makes the fewest commitments). In many
+settings weakness values live in a commutative quantale.
+
+Two “proxy” weakness instances in Q = ([0, 1], ≤, ×, 1).
+   • Mutual-information weakness: Winfo (E) := 2−I(E) .
+   • MDL weakness: WL (E) := 2−CL(E) .
+Both are lax monoidal under appropriate subadditivity: composing explanations/modules corre-
+sponds to multiplying weakness scores up to controlled slack.
+
+Weakness as evidence (thermodynamic view). A particularly tight interface to SLT is to
+identify weakness with evidence (a partition function) for the empirical loss. For data window size
+n and context c, define local evidence over a neighborhood W ⊂ Rd by
+                                                Z
+                      Wn,c (W ) := Zn,c (W ) :=     exp(−n `n,c (w)) φ(w) dw,
+                                                   W
+
+and free energy by Fn,c (W ) := − log Wn,c (W ). Then LLC is the polynomial-decay exponent of
+weakness:
+                                                      ∗              ∗
+              Wn,c (W ∗ ) = exp(−n `n,c (w∗ )) · n−λ(w ) · (log n)m(w )−1 · exp(Op (1)).
+
+                                                   4
+Compositionality (exact factorization case). If the model factorizes into independent mod-
+ules w = (w(1) , . . . , w(K) ) and the localized loss and prior factorize in a neighborhood, then evidence
+multiplies and free energies add:
+                                    K
+                                    Y                                      K
+                                                                           X
+                              ∗
+                      Zn,c (W ) =          (k)
+                                          Zn,c (Wk∗ ),             ∗
+                                                             Fn,c (W ) =          (k)
+                                                                                 Fn,c (Wk∗ ),
+                                    k=1                                    k=1
+                                    P
+implying additivity of LLCs λ =       k λk . This is the core “plug-in compositional algebra” we exploit
+for regime localization.
+
+
+3     Problem setting: streaming hierarchical data with regime changes
+We observe a stream of samples z1 , z2 , . . . (strings, token windows, patches, or time-series blocks).
+Assume the stream is piecewise stationary: there exist change points 1 < τ1 < τ2 < · · · such that
+
+                                        zt ∼ q (r)   for τr−1 < t ≤ τr ,
+
+where each q (r) is a hierarchical source satisfying an SF-HGM-like structure: levels contribute
+additively to compressibility up to bounded cross-information.
+   A regime change may affect only some levels. Example: in language, character-level statistics
+and syntax may remain stable while topic/semantics changes; in vision, edge statistics stay stable
+while object categories change.
+   We want a detector that is:
+
+    1. sensitive to real changes,
+
+    2. conservative against false alarms,
+
+    3. localizing (identifies which modules/levels changed),
+
+    4. actionable (suggests how to adapt IC or CC/PC).
+
+3.1    A concrete example family: hierarchical Lévy jump sources
+To model financial-like streams (returns, volatilities, order-flow), a natural family is Lévy processes
+with jumps. We use them as a worked example of hierarchical regime changes.
+
+Level-0: increments with stationary independent increments. Let Xt be a Lévy process
+with characteristic triplet (b, Σ, ν): drift b ∈ R, Brownian covariance Σ ≥ 0, and Lévy measure ν
+describing jumps. Discrete-time observations are increments ∆Xt = Xt − Xt−1 .
+
+Level-1: jump component families.               Common choices include:
+
+    • Compound-Poisson jumps: intensity λJ and jump-size distribution J.
+
+    • Stable-law jumps: tail index α ∈ (0, 2) controlling heavy tails.
+
+These are naturally “compressible” in SLT terms because parameters can become singular at bound-
+aries (e.g. λJ → 0 makes jump-size parameters non-identifiable).
+
+
+
+                                                         5
+Level-2: volatility and mean-reversion as slow latent state. Let σt be a slow process (e.g.
+OU / mean-reverting, or piecewise constant) that modulates the Brownian and/or jump scale. This
+yields volatility clustering.
+
+Level-3: regime switching over Lévy triplets. Let Rt be a slow regime variable (e.g. hidden
+Markov chain) taking values in {1, . . . , R}. Conditional on Rt = r, increments follow a Lévy model
+with parameters
+               (br , Σr , νr )   and possibly a regime-specific volatility state law for σt .
+A regime shift is then a change in which triplet (or mixture) generates the data, and it can occur
+at different levels: drift, diffusion volatility, jump intensity, jump tail index, etc.
+
+Quantale/weakness viewpoint (optional). If one works in a “financial quantale” with ⊕
+aggregating shocks and ⊗ compounding, one can model heavy tails and jumps via a quantale-Lévy
+noise Q(t) specified by a calibrated exponent Ψ(u) (stable or compound-Poisson). We do not need
+this structure for the SLT detector, but it provides an interpretation of “compositional aggregation”
+that matches the weakness algebra.
+
+
+4     SLT regime signatures for modular learners (IC and CC/PC)
+4.1   Module-wise LLCs
+Assume a system consists of K modules aligned (approximately) with hierarchical levels. Module
+k has parameters θk ∈ Θk and contributes a loss (or code length) `k (θk ; z).
+   For a window of n samples Dn = {zt−n+1 , . . . , zt } define empirical loss
+                                  1 X                     ∗
+                    Lk,n (θk ) :=     `k (θk ; z),       θk,n := arg min Lk,n (θk ).
+                                  n                                   θk
+                                          z∈Dn
+
+Define a population excess loss Kk (θk ) := Lk (θk ) − Lk (θk∗ ) in regime r.
+   Under analytic assumptions, SLT yields a module-wise sublevel volume law
+                           Vk (ε) := Vol{θk : Kk (θk ) ≤ ε} ∼ ck ελk (− log ε)mk −1 .
+We call λk the module LLC.
+Proposition 1 (Additivity under dominated approximate factorization). If the full parameter
+space factorizes Θ = Θ1 × · · · × ΘK and, in a neighborhood of a (local) minimizer, the excess loss
+can be written as
+                                XK                               K
+                                                                 X
+                      K(θ) =       Kk (θk ) + R(θ),    K0 (θ) :=    Kk (θk ),
+                                    k=1                                    k=1
+and there exist a neighborhood U0 and a constant η ∈ [0, 1) such that the interaction remainder is
+dominated by the factorized baseline:
+                                        |R(θ)| ≤ η K0 (θ)     (θ ∈ U0 ),
+and the local prior factorizes up to bounded multiplicative constants on U0 , then the local evidence
+is multiplicatively equivalent to the factorized evidence, so free energies add up to O(1) and LLCs
+add:
+                     K                 K                           K
+                                                                         !
+                     X                X                           Y
+                λ=      λk ,     F=       Fk + O(1),      W=         Wk · exp(O(1)).
+                     k=1                  k=1                         k=1
+
+
+                                                       6
+Remark 1 (Why the domination condition is not optional). LLC is a singular-geometry invariant
+and can jump discontinuously if the coupling term R has a lower order of vanishing than K0 at
+the singularity, even when the coupling is “small” in parameter magnitude. Thus, “approximate
+factorization” must be understood in the dominated-interaction sense above if one wants stable LLC
+additivity; otherwise, coupling
+                             P spikes should be treated explicitly via the coupling indicator ĉt and
+one should not assume λ ≈ k λk .
+
+4.2    A unified regime signature
+Define a regime signature at time t (window size n) as
+                                                                                          
+                                 St := λ̂1,t , . . . , λ̂K,t ; â1,t , . . . , âK,t ; ĉt ,
+where:
+    • λ̂k,t estimates the module LLC over the current window.
+    • âk,t measures module “mass” or contribution:
+          – IC: per-step gains/costs (γ̂k , τ̂k ) or attributed compressible-bit share.
+          – CC/PC: fraction of gradient norm, gate mass, or effective parameter update within
+            module k.
+    • ĉt is a coupling indicator:
+          – IC: refit-overlap or cross-information proxy.
+          – CC/PC: leakage outside estimated support or commutator/confusion proxies.
+    Intuition:
+    • ak says how much structure is currently attributed to level/module k.
+    • λk says how geometrically degenerate the best fit is (hence how many bits are needed to
+      encode it at a fixed tolerance).
+    • ct says how factorized the system currently is; regime shifts often cause temporary coupling
+      spikes.
+
+4.3    Estimating LLCs online
+Two conceptually distinct routes.
+
+(A) Evidence/free-energy route (Gibbs posterior). Estimate module evidence Zk,t (possi-
+bly localized) and fit the SLT asymptotic
+                        Fk,t (n) ≈ n L̂k,n (θ̂k,n ) + λ̂k,t log n − (m̂k,t − 1) log log n.
+
+(B) Quantization-threshold route. Measure the smallest bit budget b∗k,t (ε) that keeps loss
+increase below tolerance ε. Then use the SLT scaling law
+                                                              λk,t      1
+                                                b∗k,t (ε) ≈        log2
+                                                              dk        ε
+to recover λ̂k,t .
+
+                                                              7
+(C) Practical note: cheap proxies and triggered estimation. Accurate LLC estimation
+via (A) or repeated quantization sweeps in (B) can be expensive in a tight online loop. A practical
+implementation can maintain a cheap per-module proxy (e.g. a Hessian-trace/diagonal-Fisher
+proxy, a gradient-noise covariance proxy, or a small “probe” quantization sensitivity) and trigger
+the expensive LLC estimation only when the proxy (or ĉt ) spikes, or when the SLT-MDL change-
+point score ∆t suggests a candidate split.
+
+
+5     Regime-change detection
+We describe two complementary detectors: a global SLT-MDL change-point test and a weakness-
+compositional localizing test.
+
+5.1   An SLT-MDL change-point test
+Fix a window Dn ending at time t and consider candidate split points s:
+
+                 Dnleft (s) = {zt−n+1 , . . . , zt−n+s },       Dnright (s) = {zt−n+s+1 , . . . , zt }.
+
+Let F(D) denote an estimated free energy / two-part code length:
+
+                      F(D) := nD L̂D (θ̂D ) + λ̂D log nD − (m̂D − 1) log log nD .
+
+Define best split improvement
+                                   h                                       i
+                          ∆t := max F(Dn ) − F(Dnleft (s)) − F(Dnright (s)) .
+                                   s∈S
+
+Declare a regime change near s∗ if ∆t > τMDL .
+
+5.2   Weakness-based localization: which modules changed?
+Define a per-module change evidence score
+
+                     ek,t := λ̂k,t − λ̂k,t−1 + ca âk,t − âk,t−1 + cc ĉk,t − ĉk,t−1 .
+
+Convert to weakness (any monotone map works; exponential is natural):
+
+                                          Wk (t) := 2−ek,t ∈ (0, 1].
+
+For a candidate explanation HS of the form “the changed modules are exactly S ⊆ {1, . . . , K}”,
+define aggregated weakness                     Y
+                                    W(HS ) :=     Wk (t).
+                                                            k∈S
+
+Select the weakest useful explanation:
+
+         S ∗ := arg max W(HS )       subject to S explains at least ∆t bits of improvement.
+                     S
+
+
+
+
+                                                            8
+6     Adapting after a detected regime change
+6.1    Adaptation policy for incremental compression (IC)
+Given a change point and changed set S ∗ :
+
+                                             / S ∗ (reuse stable structure).
+    1. Freeze libraries/features at levels k ∈
+
+    2. Reinitialize and refit levels k ∈ S ∗ using recent data only.
+
+    3. Run IC with refitting on changed levels to prevent entanglement with stable features.
+
+Use LLC shifts to adapt per-module compression budgets:
+
+                                                        λ̂k,t     1
+                                          b∗k,t (ε) ≈         log2 .
+                                                         dk       ε
+
+6.2    Adaptation policy for CC/PC neural models
+In CC/PC, a regime shift typically appears as a gate/support shift and/or a spike in leakage/commutator
+proxies. A natural response is:
+
+                                                           / S ∗ fixed or strongly regularized.
+    1. Freeze stable modules: hold parameters of modules k ∈
+
+    2. Open / allocate capacity: relax gates on modules k ∈ S ∗ (or allocate new modules if none
+       fit).
+
+    3. Increase modularity pressure: temporarily strengthen sparsity and clarity/diffusion penal-
+       ties to suppress spurious cross-module couplings during adaptation.
+
+    4. Control forgetting via commutator proxies: if confusion costs are large, reduce step
+       sizes, or explicitly penalize measured commutator/leakage proxies on a small anchor buffer.
+
+Why LLC is useful here. If λ̂k,t increases, the module becomes less geometrically degenerate, so
+(for fixed tolerance) it needs more bits to represent; equivalently, its effective parameter posterior
+concentrates more sharply. This suggests allocating more precision (or more capacity) to that
+module, or tolerating larger loss in its encoding. A decreasing λ̂k,t suggests more degeneracy and
+potentially more aggressive compression/pruning.
+
+
+7     Worked example: hierarchical Lévy jump regimes and market
+      regime shifts
+We illustrate how “multi-level regime change” occurs in a Lévy-jump hierarchy.
+
+7.1    Two regimes: calm vs. jump-dominated
+Assume increments ∆Xt are modeled by:
+                                                            (r)
+                              ∆Xt = br + σr ∆Wt + ∆Jt ,                r ∈ {A, B},
+           (r)
+where ∆Jt        is either:
+
+
+                                                        9
+                                         (r)
+    • (compound-Poisson) intensity λJ with jump-size law π (r) , or
+
+    • (stable) tail index α(r) with scale C (r) .
+Regime A (calm): small σA and near-zero or low-intensity jumps. Regime B (stress): larger σB
+and higher jump intensity / heavier tails.
+
+7.2    What changes at which levels?
+    • Level “diffusion” module: (b, σ) changes moderately.
+
+    • Level “jump” module: (λJ , π) or (α, C) changes strongly.
+
+    • Level “volatility state” module: if σt is itself latent, its dynamics parameters change.
+
+Thus the changed set S ∗ should include the jump module and possibly the volatility-state module.
+
+7.3    Why LLCs can flag a regime shift
+When λJ ≈ 0, jump-size parameters become non-identifiable (a boundary/singularity), creating a
+larger low-loss basin in jump-parameter space, hence smaller effective LLC for that module. When
+the regime switches to λJ > 0, the jump parameters become identifiable and the basin shrinks,
+raising the module LLC. Therefore:
+
+                                          λ̂jump,t and b∗jump,t (ε)
+
+can provide an interpretable signature of regime change: more bits needed to encode the jump
+module at fixed predictive tolerance.
+
+7.4    IC vs. CC/PC behavior in this example
+IC. An IC system with modules corresponding to “diffusion” and “jump” patterns will see a
+drop in net gain for outdated jump features after the shift; refitting on the jump module restores
+efficiency while preserving diffusion-level structure.
+
+CC/PC. A CC/PC predictor of returns may activate different attention heads / channels under
+jump regimes. Gate patterns and support sets shift; leakage/commutator proxies can spike when
+the model initially tries to reuse calm-regime modules for stress-regime data. The detector localizes
+the shift to jump-related modules, then adapts by opening those gates, strengthening modularity
+regularizers, and updating only the implicated blocks.
+
+
+8     Discussion and open problems
+1) Formal guarantees. Under piecewise-stationary SF-HGM (or regime-switching Lévy hier-
+archies) and consistent LLC estimates, prove asymptotic consistency of the SLT-MDL test and
+bounds on detection delay.
+                                                         P              Q
+2) Approximate factorization. Quantify slack in λ ≈ k λk and W ≈ k Wk in terms of over-
+lap/coupling proxies (IC refit overlap; CC/PC commutator/leakage), including explicit dominated-
+interaction conditions under which ∆λ = 0 and explicit failure modes when dominated-interaction
+fails.
+
+                                                     10
+3) Regime libraries and recurrence. Maintain a library of previously seen regimes (IC feature
+libraries or CC/PC context prototypes). Upon detection, score each candidate by SLT-MDL free
+energy on a recent window and switch or create a new regime.
+
+
+9     TransWeave-ability and SLT certificates of when transfer must
+      fail
+A related application of these ideas is to use SLT based regime change detection to identify when
+transferring an RL process from one regime to another is likely to fail due to excessive differences.
+
+9.1    TransWeave in one page: intertwining Bellman systems
+TransWeave treats each learning/decision problem as a Bellman system
+
+                                              T = (X, B),
+
+where X is a space of objects of interest (value functions, policies, factorization scores, or compression-
+library scores) and B : X → X is a Bellman-style operator (a DP backup, min-plus convolution on
+a graph, or any contraction-like update).
+    Given two tasks/regimes Ta = (Xa , Ba ) and Tb = (Xb , Bb ), a TransWeave map is an operator
+T : Xa → Xb that approximately satisfies the Bellman–Darboux (BD) intertwining condition
+
+                                            T ◦ Ba ≈ Bb ◦ T.                                           (1)
+
+If Va∗ is a (near-)fixed point of Ba (e.g. an optimal value function or an optimal factorization score),
+then (1) implies that T (Va∗ ) is a good initialization for the b-task fixed point Vb∗ , and can be refined
+with a few Bb updates.
+    In this paper’s setting, (1) appears in two closely related ways:
+
+    1. Refinement-DAG DP. Each regime induces edge costs (loss + SLT complexity) on a re-
+       finement DAG of modules/programs, and the Bellman operator B is the min-plus DP update
+       propagating those costs.
+
+    2. Streaming predictors/strategies. For a predictive model (PC/CC NN or IC-based), B
+       can be a control-theoretic or decision-theoretic backup derived from the model’s predictive
+       distribution (e.g. risk-sensitive control / trading decision DP).
+
+    A useful scalar diagnostic is the BD-commutator (intertwining defect)
+
+                                       εT := kT ◦ Ba − Bb ◦ T k,                                       (2)
+
+for a task-appropriate operator norm. Smaller εT means the transfer map respects the dynamic
+consistency of the target task; large εT means transferred solutions will be “dynamically wrong”
+and require heavy re-optimization.
+
+9.2    Transweaving as a near-isomorphism of solution neighborhoods
+The BD condition is an operator statement. To relate it to SLT, we connect it to the geometry of
+near-optimal solution sets.
+
+
+
+                                                    11
+    Fix a regime r ∈ {a, b} and a parametric family p(· | w) used by a predictor (or by a module
+inside a predictor). Let `r (w) be the population loss (e.g. expected NLL) under regime-r data, and
+let wr∗ be a minimizer. Define the (local) excess loss
+
+                                   Kr (w) := `r (w) − `r (wr∗ ) ≥ 0.
+
+For a neighborhood Ur of wr∗ , define the sublevel volume
+
+                                 Vr () := Vol{w ∈ Ur : Kr (w) ≤ }.
+
+SLT implies an asymptotic law
+
+                               Vr () ∼ cr λr (− log )mr −1       ( ↓ 0),                     (3)
+
+where (λr , mr ) are the regime-r local learning coefficient (LLC) and multiplicity.
+
+Definition 4 (Near-isomorphic transweaving of solution neighborhoods). We say regimes a and b
+admit near-isomorphic transweaving (within a fixed model class) if there exist neighborhoods Ua , Ub
+of wa∗ , wb∗ and a bijection ψ : Ua → Ub such that:
+
+  1. Bounded distortion (Jacobian control). There exists J ≥ 1 with
+
+                                  J −1 ≤ | det Dψ(w)| ≤ J           ∀w ∈ Ua .
+
+  2. Loss-shape equivalence (multiplicative comparison). There exist constants 0 < c1 ≤
+     c2 < ∞ such that
+                        c1 Ka (w) ≤ Kb (ψ(w)) ≤ c2 Ka (w) ∀w ∈ Ua .                  (4)
+
+Intuitively: ψ is a near-isomorphism between low-loss neighborhoods that preserves the order-of-
+vanishing structure of the loss, up to constant rescaling.
+
+    This is the “most principled” mathematical version of: transweaving is a near-isomorphism of
+solution neighborhoods. It is stronger than merely “some transfer works”; but it is exactly the
+regime in which one expects tight transfer bounds, small BD defect, and rapid adaptation.
+
+9.3   LLC/multiplicity mismatch obstructs near-isomorphic TransWeave
+Proposition 2 (LLC/multiplicity mismatch is a certificate of non-near-isomorphic transweave-
+ability). If near-isomorphic transweaving (Definition 4) holds, then the SLT invariants match:
+
+                                         (λa , ma ) = (λb , mb ).
+
+Equivalently (contrapositive): if (λa , ma ) 6= (λb , mb ), then there does not exist any bounded-
+distortion bijection ψ that makes the two regimes’ local loss neighborhoods multiplicatively equiva-
+lent. In that case, transfer within the fixed model class cannot behave like a near-isomorphism of
+solution neighborhoods; an attempted transfer must instead do at least one of:
+
+  1. pay heavy distortion (large Jacobian/Lipschitz constants, producing a large BD defect εT
+     and poor transfer bounds), or
+
+  2. change the model class / add latent structure so that the target regime’s low-loss set
+     lives in a different (expanded) parameterization where invariants can match, or
+
+                                                   12
+  3. relax bijectivity (e.g. use an injection/projection between neighborhoods), which may still
+     give a useful initialization but forfeits the near-isomorphism guarantees and typically requires
+     substantial refinement in the target-specific degrees of freedom.
+Proof sketch. Assume Definition 4. Consider Vb () in (3). By change-of-variables u = ψ(w) and
+Jacobian control, volume in Ub is comparable (up to J) to volume in Ua of the preimage set. By
+(4), the preimage of {u : Kb (u) ≤ } is sandwiched between sublevel sets of Ka at thresholds /c2
+and /c1 . Therefore Vb () is sandwiched between constant multiples of Va (/c2 ) and Va (/c1 ), which
+forces the same leading λ (− log )m−1 exponents. Hence (λa , ma ) = (λb , mb ).
+
+Remark 2 (Nuance: one-way (injective) transfer is not ruled out). Proposition 2 is a statement
+about the bijective near-isomorphism regime (Definition 4). It does not assert that all transfer is
+impossible under mismatch; rather, it says the “good” case (bounded-distortion isomorphism of low-
+loss neighborhoods) is impossible within the current model class. In particular, one-way transfer can
+still be useful as an initialization even when invariants differ, but it should be expected to require
+major additional optimization and to have weaker guarantees. A sharp version of “directionality”
+can be phrased by comparing sublevel-set volumes: a bounded-distortion embedding of a low-loss
+neighborhood of a into a low-loss neighborhood of b can only be plausible when the target sublevel
+volume is asymptotically at least as large, i.e. heuristically λb ≤ λa (and, if λb = λa , then typically
+mb ≥ ma ).
+Remark 3 (Interpretation: “topological dissimilarity” of regimes). The pair (λ, m) is an asymp-
+totic invariant of the local geometry of near-optimal solutions (equivalently, of evidence/volume
+decay). When these invariants differ between regimes, the low-loss neighborhoods are not equivalent
+under bounded-distortion bijections that preserve loss shape. This is a precise sense in which the
+regimes are “too topologically dissimilar” for transweaving to behave like a near-isomorphism.
+
+9.4   Operational test: an SLT transweaveability score (global or per-module)
+In practice we estimate (λr , mr ) (globally or module-wise) using the same primitives already present
+in our framework (Section on LLC estimation): Gibbs-perturbation estimators or quantization-
+threshold estimators.
+    Define a simple mismatch score
+                                dTW (a, b) := |λ̂a − λ̂b | + κm |m̂a − m̂b |
+(or the corresponding vector version per module/level). Then:
+   • If dTW is small: near-isomorphic transweaving is plausible; attempt TransWeave and expect
+     small BD defect after mild refinement.
+   • If dTW is large: Proposition 2 says the “good” regime of TransWeave (near-isomorphism
+     of solution neighborhoods) is impossible within the current model class. Expect either high
+     distortion (bad transfer bounds), or the need to expand structure (new modules, new la-
+     tent states, new jump components, etc.), or (at best) a one-way initialization that requires
+     substantial retraining to adapt.
+
+9.5   Why this matters for IC and PC/CC models in trading regimes
+For IC-based rule learners and PC/CC neural predictors trained on market regime a, the natural
+question under a detected regime shift is: should we transfer (transweave) or restart?
+   The SLT answer is:
+
+                                                    13
+  1. Estimate regime-a and regime-b LLC/multiplicity signatures (globally and/or by module).
+
+  2. If the signatures match (or mismatch only in a few high-level modules), then transweave:
+     reuse stable modules, transfer a refinement-DAG value function/policy, and refit only changed
+     parts.
+
+  3. If the signatures significantly mismatch, then treat this as a certificate that the new regime
+     has a qualitatively different low-loss geometry: either accept that near-isomorphic transfer is
+     impossible and that any transfer will be heavily distorted or one-way (and thus not reliably
+     bounded), or explicitly change the model class (e.g. add new latent structure, new jump
+     components, new causal modules) and relearn.
+
+   In short: the LLC/multiplicity signature is a principled “green light / red light” for whether
+TransWeave-style transfer can be expected to behave like a near-isomorphism, which is exactly the
+transfer regime one wants for robust adaptation of trading rules across market regime shifts.
+
+
+10     Conclusion
+We proposed a unified SLT + weakness framework for detecting and localizing regime changes in
+streaming hierarchical data, with two concrete interfaces: (i) incremental compression with refitting,
+and (ii) CC/PC neural models with causal gates and pruning. The core idea is to treat per-module
+SLT complexity (LLCs) and module contributions as a regime signature, detect changes via an
+SLT-aware MDL split test, localize via multiplicative weakness aggregation, and adapt by selective
+refit / selective gating. Hierarchical Lévy processes with jumps provide a concrete example family
+where regime shifts correspond to changes in jump intensity/tails/volatility, and LLCs can supply
+interpretable signals of those changes. These change signals give one a variety of practical data,
+including indication whether transfer learning of RL-based rules from one regime to another may
+be likely to succeed or fail.
+
+
+References
+[1] “Compressibility Measures Complexity: Minimum Description Length Meets Singular Learning
+    Theory” ( Einar Urdshals, Edmund Lau, Jesse Hoogland, Stan van Wingerden, Daniel Murfet)
+
+[2] “Incremental Compression” (Ben Goertzel, technical report, 2025).
+
+[3] “Weakness Theory” (Ben Goertzel, technical report, 2025).
+
+[4] “Causal-Continual-Learning Theorem” (Ben Goertzel, technical report, 2025).
+
+[5] “Vertical-Lateral Causal Pruning for Causal Coding Predictive Coding Networks” (Ben Go-
+    ertzel, technical report, 2025).
+
+[6] “Weakness-Singular-Learning” (Ben Goertzel, technical report, 2025).
+
+
+
+
+                                                 14
+

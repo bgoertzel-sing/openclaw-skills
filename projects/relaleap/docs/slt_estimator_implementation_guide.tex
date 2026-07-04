@@ -1,0 +1,713 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+
+\title{RelaLeap WBIC/SGLD/LLC Estimator Implementation Guide}
+\author{RelaLeap technical implementation note}
+\date{2026-07-03}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document is a practical implementation guide for coding agents who need to implement finite-sample singular learning theory (SLT) estimators for RelaLeap from scratch.  It specifies how to implement stochastic gradient Langevin dynamics (SGLD), widely applicable Bayesian information criterion (WBIC) estimation, local learning coefficient (LLC) proxies, block-wise interaction information, calibration benchmarks, and diagnostics.  It is not a research paper and it does not claim that the resulting numbers are exact real log canonical thresholds (RLCTs).  In RelaLeap reports these numbers must be called finite-sample WBIC/SGLD proxies for RLCT/LLC unless an analytic proof is available.
+\end{abstract}
+
+\tableofcontents
+
+\section{Purpose and scope}
+
+RelaLeap needs SLT estimators because its residual-column learner is meant to find modular residual mechanisms, not merely low reconstruction loss.  The implementation must answer questions such as:
+\begin{enumerate}[(1)]
+\item Is a trained residual adapter locally simple in the Bayesian evidence sense?
+\item Are two columns approximately independent, redundant, or synergistic?
+\item Do the SLT diagnostics distinguish known calibration regimes before being trusted on real RelaLeap regimes?
+\end{enumerate}
+
+The estimators described here must operate over the actual trainable parameter blocks of a RelaLeap residual adapter: atom directions, output directions, amplitudes, gates, routers, memberships, shared cores, and declared joint blocks.  A sampler over frozen output amplitudes only is a smoke-test proxy and must not be promoted as SLT evidence.
+
+\paragraph{Core rule.}  The output of this package is a calibrated diagnostic panel.  It is not a certificate that a discovered column is causal.  Promotion still requires causal audits, null controls, bootstrap uncertainty, and finite-sample caveats.
+
+\section{Notation and mathematical foundations}
+
+\subsection{Data, loss, energy, and parameters}
+
+Let
+\begin{itemize}
+\item $D_n = \{(x_i,y_i)\}_{i=1}^n$ be the estimation set;
+\item $\theta \in \Theta \subseteq \mathbb{R}^p$ be a chosen parameter block or union of blocks;
+\item $\hat\theta$ be the trained solution, usually the MAP or final trained adapter parameters;
+\item $\ell_i(\theta)$ be the per-example negative log-likelihood, cross entropy, or residual Gaussian NLL;
+\item $L_n(\theta) = n^{-1}\sum_{i=1}^n \ell_i(\theta)$ be the mean loss;
+\item $E_n(\theta) = n L_n(\theta) = \sum_{i=1}^n \ell_i(\theta)$ be the total energy;
+\item $U(\theta) = -\log \pi(\theta)$ be the negative log prior.
+\end{itemize}
+
+For RelaLeap residual adapters, $\theta$ is not the frozen base model.  The base transformer and frozen tail may be used to evaluate the loss, but the sampled parameter vector should be the live adapter block under study.
+
+\subsection{Tempered local posterior}
+
+The local tempered target distribution is
+\begin{equation}
+  p_\beta(\theta \mid D_n)
+  \propto
+  \exp\{-\beta E_n(\theta) - U(\theta)\}
+  \mathbf{1}\{\theta \in \mathcal{N}(\hat\theta)\},
+\end{equation}
+where $\mathcal{N}(\hat\theta)$ is the local basin being probed.  In code this basin is usually enforced softly by initialization near $\hat\theta$, priors, divergence checks, and optional trust-region rejection, not by a hard indicator.
+
+\paragraph{Temperature convention.}  Watanabe's WBIC uses inverse temperature
+\begin{equation}
+  \beta_{\rm WBIC} = \frac{1}{\log n}
+\end{equation}
+when the exponent multiplies the total energy $E_n=nL_n$.  Some RelaLeap checklists store a per-example or API-level temperature as
+\begin{equation}
+  \beta_{\rm api} = \frac{1}{n\log n}.
+\end{equation}
+This is only equivalent if the sampler's internal energy is scaled consistently.  Therefore every implementation must record both:
+\begin{equation}
+  \texttt{energy\_definition} \in \{\texttt{mean\_loss},\texttt{total\_nll}\},
+  \qquad
+  \texttt{coefficient\_on\_total\_nll}.
+\end{equation}
+The intended WBIC target is always
+\begin{equation}
+  p(\theta) \propto \exp\left\{-\frac{E_n(\theta)}{\log n} - U(\theta)\right\}.
+\end{equation}
+If a code path says $\beta=1/(n\log n)$ while also multiplying by total NLL, it is too hot by a factor of $n$ and must fail validation.  If a project report requires the checklist field $\beta=1/(n\log n)$, store it as the per-example convention and also report the effective coefficient on $E_n$.
+
+\subsection{SGLD update rule}
+
+For target density $p(\theta) \propto \exp\{-\Phi(\theta)\}$ with
+\begin{equation}
+  \Phi(\theta) = \beta E_n(\theta) + U(\theta),
+\end{equation}
+SGLD uses
+\begin{equation}
+  \theta_{t+1}
+  = \theta_t
+  - \frac{\eta_t}{2}\nabla_\theta \Phi(\theta_t)
+  + \sqrt{\eta_t}\,\xi_t,
+  \qquad
+  \xi_t \sim \mathcal{N}(0,I).
+\end{equation}
+With minibatches $B_t$ of size $m$, estimate
+\begin{equation}
+  \nabla E_n(\theta)
+  = \sum_{i=1}^n \nabla \ell_i(\theta)
+  \approx
+  \frac{n}{m}\sum_{i\in B_t}\nabla \ell_i(\theta).
+\end{equation}
+The implemented update is therefore
+\begin{equation}
+  \theta_{t+1}
+  = \theta_t
+  - \frac{\eta_t}{2}
+  \left[\beta\frac{n}{m}\sum_{i\in B_t}\nabla\ell_i(\theta_t)
+        + \nabla U(\theta_t)\right]
+  + \sqrt{\eta_t}\,\xi_t.
+\end{equation}
+
+\subsection{WBIC and Watanabe free energy}
+
+In singular models the usual BIC penalty $p\log n/2$ is wrong.  Watanabe's asymptotic expansion for Bayesian free energy has the form
+\begin{equation}
+  F_n
+  = n L_n(w_0) + \lambda \log n - (m-1)\log\log n + O_p(1),
+\end{equation}
+where $\lambda$ is the RLCT and $m$ is its multiplicity.  For regular identifiable models, $\lambda=p/2$.  For singular models, $\lambda$ may be smaller, and it reflects the local geometry of the loss landscape rather than parameter count.
+
+WBIC estimates the free energy using a tempered posterior at inverse temperature $1/\log n$:
+\begin{equation}
+  \operatorname{WBIC}(n)
+  = \mathbb{E}_{\theta\sim p_{1/\log n}}
+    [E_n(\theta)].
+\end{equation}
+A local finite-sample LLC/RLCT proxy is then
+\begin{equation}
+  \hat\lambda
+  = \frac{\mathbb{E}_{\beta_{\rm WBIC}}[E_n(\theta)] - E_n(\hat\theta)}{\log n}.
+\end{equation}
+This $\hat\lambda$ is not ``the RLCT.''  It is a finite-sample proxy whose bias depends on $n$, prior, local basin, optimization quality, temperature convention, sampler mixing, and omitted $-(m-1)\log\log n$ terms.
+
+\subsection{LLC and interaction information}
+
+For a block $A$, estimate $\hat\lambda_A$ by sampling only block $A$ while holding the rest of the adapter fixed at trained values, unless a full-adapter conditioning protocol is explicitly registered.  For a joint block $A\cup B$, sample the union.  Define the LLC interaction information proxy
+\begin{equation}
+  I_\lambda(A;B)
+  = \hat\lambda_A + \hat\lambda_B - \hat\lambda_{A\cup B}.
+\end{equation}
+Interpretation:
+\begin{itemize}
+\item $I_\lambda(A;B) \approx 0$: approximately additive or independent local evidence;
+\item $I_\lambda(A;B) > 0$: redundancy or shared singular structure, because the joint block is simpler than the sum;
+\item $I_\lambda(A;B) < 0$: synergy or emergent joint structure, because the joint block is more complex than separate blocks.
+\end{itemize}
+Only trust this sign after calibration, null normalization, and uncertainty checks.
+
+\section{SGLD sampler implementation}
+
+\subsection{Required inputs}
+
+The SGLD module should accept:
+\begin{enumerate}[(1)]
+\item a PyTorch module or functional loss closure;
+\item a parameter mask or named list of sampled parameters;
+\item frozen parameter values for all non-sampled blocks;
+\item dataset or minibatch iterator;
+\item prior specification $U(\theta)$;
+\item trained reference $\hat\theta$;
+\item temperature convention and effective coefficient on total NLL;
+\item chain settings: seed, steps, burn-in, thinning, initial step size, schedule, divergence thresholds.
+\end{enumerate}
+
+\subsection{Pseudocode}
+
+\begin{verbatim}
+def run_sgld(loss_fn, params, theta_hat, data, prior, cfg):
+    set_seed(cfg.seed)
+    theta = initialize(theta_hat, cfg.initialization)
+    samples = []
+    energy_trace = []
+    accept_trace = []  # for optional MALA/trust-region rejection
+
+    for t in range(cfg.num_steps):
+        batch = next_minibatch(data)
+        loss_mean = loss_fn(theta, batch)       # mean over batch
+        grad_loss = grad(loss_mean, params)
+
+        # Unbiased total-energy gradient.
+        grad_total = cfg.n_data * grad_loss
+
+        grad_phi = cfg.beta_total_nll * grad_total + prior.grad(theta)
+
+        eta = step_size(t, cfg)
+        noise = normal_like(theta, std=sqrt(eta))
+        proposal = theta - 0.5 * eta * grad_phi + noise
+
+        if cfg.use_trust_region:
+            if is_divergent(proposal) or too_far(proposal, theta_hat, cfg):
+                theta = shrink_toward(theta, theta_hat, cfg)
+                accept = 0
+            else:
+                theta = proposal
+                accept = 1
+        else:
+            theta = proposal
+            accept = 1
+
+        if t % cfg.energy_eval_interval == 0:
+            e = total_energy(loss_fn, theta, full_data_or_fixed_probe)
+            energy_trace.append(e)
+            check_nan_inf_and_jumps(e, theta)
+
+        if t >= cfg.burn_in and ((t - cfg.burn_in) % cfg.thin == 0):
+            samples.append(copy_sampled_params(theta))
+
+        adapt_step_size_if_in_adaptation_window()
+
+    return ChainResult(samples, energy_trace, accept_trace, diagnostics)
+\end{verbatim}
+
+\subsection{Initialization}
+
+Use the trained MAP/final adapter state as the default initialization.  WBIC/LLC is a local evidence diagnostic around a fitted solution.  Starting from random parameters answers a different question and often leaves the relevant basin.
+
+Recommended initializations:
+\begin{itemize}
+\item Default: $\theta_0 = \hat\theta + \sigma_{\rm init}\epsilon$, with small $\sigma_{\rm init}$ such as $10^{-4}$ to $10^{-2}$ times parameter RMS.
+\item Multi-chain robustness: four or more seeds with independent perturbations around $\hat\theta$.
+\item Random initialization: only for a separate global-basin sensitivity experiment, not the main WBIC estimate.
+\end{itemize}
+
+\subsection{Step size tuning}
+
+Plain SGLD has no exact accept/reject step, so ``acceptance rate'' should be interpreted as either an optional MALA-style acceptance rate or a trust-region stability rate.  RelaLeap diagnostics may still report an acceptance/stability rate with target range $0.5$--$0.9$.
+
+Practical schedule:
+\begin{equation}
+  \eta_t = \eta_0 (1+t/t_0)^{-\gamma}, \qquad \gamma \in [0.5,0.75].
+\end{equation}
+For finite-temperature sampling, a small constant step after adaptation is often more useful than a rapidly vanishing step.  A recommended implementation is:
+\begin{enumerate}[(1)]
+\item adaptation phase: tune $\eta_0$ for stability rate $0.5$--$0.9$ and no NaNs;
+\item burn-in phase: fixed or slowly decaying step;
+\item sampling phase: fixed small step, record actual value.
+\end{enumerate}
+
+If the chain diverges:
+\begin{enumerate}[(a)]
+\item halve the step size and restart the chain from $\hat\theta$;
+\item strengthen the local prior or trust-region radius;
+\item check whether the loss is using total instead of mean scaling twice;
+\item check for unconstrained gates, logits, or amplitudes with extreme curvature;
+\item split heterogeneous parameter blocks and tune separate preconditioners.
+\end{enumerate}
+
+\subsection{Heterogeneous parameter blocks}
+
+RelaLeap adapters have heterogeneous geometry:
+\begin{itemize}
+\item atom input directions $a_g$ and output directions $b_g$ may live naturally on normalized spheres;
+\item amplitudes $\beta_g$ are scalar and often sharp near zero;
+\item gates and router logits can have saturation and scale symmetries;
+\item memberships $q_{kg}$ may live on a simplex;
+\item shared-core parameters can create singular ridges.
+\end{itemize}
+
+Do not use one global step size blindly.  Implement block-wise preconditioning:
+\begin{equation}
+  \theta^{(b)}_{t+1}
+  = \theta^{(b)}_t
+  - \frac{\eta^{(b)}_t}{2}P_b \nabla_b\Phi(\theta_t)
+  + \sqrt{\eta^{(b)}_t}\,P_b^{1/2}\xi^{(b)}_t,
+\end{equation}
+where $P_b$ may be diagonal RMS, Adam-style second moment frozen during sampling, Fisher diagonal, or a simple scale based on parameter RMS.  Record all preconditioners.
+
+For constrained blocks, prefer unconstrained internal parameters plus transforms:
+\begin{itemize}
+\item normalized directions: sample raw vector $v$, use $a=v/(\|v\|+\epsilon)$;
+\item positive scales: sample $\rho$, use $\sigma=\operatorname{softplus}(\rho)$;
+\item simplex memberships: sample logits and apply softmax or sparsemax.
+\end{itemize}
+Include the log-Jacobian in the prior only if the target density is meant to be over the constrained parameter.  For a first implementation, document the unconstrained prior and treat transformed geometry as part of the model parameterization.
+
+\subsection{Burn-in and thinning}
+
+Minimum RelaLeap synthetic settings:
+\begin{itemize}
+\item at least 4 chains;
+\item at least 10,000 steps per chain for small CPU benchmarks;
+\item burn-in at least 20 percent;
+\item thinning only for storage, never as a substitute for ESS.
+\end{itemize}
+For larger adapters, 50,000 or more steps may be required.  Save post-burn-in energy traces even when parameter samples are thinned.
+
+\section{Effective sample size}
+
+\subsection{Autocorrelation and ESS}
+
+For each chain, compute ESS for the scalar statistic used in WBIC, usually total energy $E_n(\theta)$.  Given post-burn-in values $z_1,\ldots,z_T$, estimate autocorrelation
+\begin{equation}
+  \hat\rho_k
+  = \frac{\sum_{t=1}^{T-k}(z_t-\bar z)(z_{t+k}-\bar z)}
+         {\sum_{t=1}^{T}(z_t-\bar z)^2}.
+\end{equation}
+The integrated autocorrelation time is
+\begin{equation}
+  \hat\tau = 1 + 2\sum_{k=1}^{K}\hat\rho_k,
+\end{equation}
+where $K$ is chosen by an initial-positive-sequence or initial-monotone-sequence rule.  Then
+\begin{equation}
+  \operatorname{ESS} = \frac{T}{\hat\tau}.
+\end{equation}
+
+Also compute split-chain $\hat R$ for energy when possible.  Energy ESS is the mandatory gate; parameter-wise ESS is useful but not sufficient.
+
+\subsection{Meaning of ESS at least 200}
+
+ESS $\geq 200$ per chain for energy means the Monte Carlo mean of $E_n(\theta)$ is based on roughly 200 independent energy draws after accounting for autocorrelation.  It does not guarantee correct basin coverage or unbiased RLCT estimation.  It only says that the chain's scalar energy average is not obviously dominated by serial correlation.
+
+If ESS is too low:
+\begin{enumerate}[(1)]
+\item run longer chains;
+\item reduce step size if traces show jumps or instability;
+\item increase step size cautiously if traces are sticky and stable;
+\item improve preconditioning by parameter block;
+\item reparameterize saturated gates or normalized directions;
+\item split a joint block into smaller diagnostic blocks;
+\item compare SGLD with NUTS/HMC on tiny calibration models if available.
+\end{enumerate}
+If ESS remains below 200, mark the estimate diagnostic only and set \texttt{slt\_evidence\_status = uncalibrated}.
+
+\section{WBIC estimation protocol}
+
+\subsection{Concrete recipe}
+
+For each model, block, data split, and temperature:
+\begin{enumerate}[(1)]
+\item Train or load the adapter and record $\hat\theta$.
+\item Freeze non-sampled blocks at trained values.
+\item Compute $E_n(\hat\theta)$ on the estimation set.
+\item Run at least 4 independent SGLD chains at WBIC temperature.
+\item Discard burn-in, compute energy samples $E_n(\theta_s)$ on a fixed full-data or deterministic probe set.
+\item Estimate
+\begin{equation}
+  \widehat{\operatorname{WBIC}} = \bar E = \frac{1}{S}\sum_{s=1}^S E_n(\theta_s).
+\end{equation}
+\item Estimate
+\begin{equation}
+  \hat\lambda = \frac{\bar E - E_n(\hat\theta)}{\log n}.
+\end{equation}
+\item Report chain-wise $\hat\lambda_c$, pooled $\hat\lambda$, standard error, bootstrap confidence interval, ESS, trend tests, divergence counts, and coefficient of variation across seeds.
+\end{enumerate}
+
+Uncertainty should include chain variability and Monte Carlo autocorrelation.  A simple first implementation can report:
+\begin{equation}
+  \operatorname{SE}(\hat\lambda)
+  = \frac{\operatorname{SE}_{\rm chains}(\bar E_c)}{\log n},
+\end{equation}
+plus a block bootstrap over post-burn-in energy traces.  For final gates, also resample input examples.
+
+\subsection{Temperature sensitivity}
+
+Run at three effective total-energy coefficients:
+\begin{equation}
+  \beta/4,\qquad \beta,\qquad 4\beta,
+\end{equation}
+where $\beta=1/\log n$ in the total-energy convention.  If the checklist API convention is used, the recorded per-example temperatures are $1/(4n\log n)$, $1/(n\log n)$, and $4/(n\log n)$, but the effective total-energy target must still be clear.
+
+The central estimate should be finite and stable.  The energy mean should change monotonically in the sensible direction: colder posterior (larger inverse temperature) should concentrate nearer $\hat\theta$ and typically reduce sampled energy; hotter posterior should explore higher energy.  Wild nonmonotonicity, divergence at the central temperature, or disagreement of signs in $I_\lambda$ means diagnostic only.
+
+\subsection{Convergence expectations}
+
+A converged WBIC run usually has:
+\begin{itemize}
+\item post-burn-in energy trace without significant monotone trend;
+\item no NaN or Inf samples;
+\item no single-step post-burn-in energy jumps above $5$ empirical standard deviations unless explained and filtered;
+\item ESS $\geq 200$ per chain for energy;
+\item seed CV of $\hat\lambda$ below $0.25$;
+\item central temperature estimate bracketed by sensitivity runs;
+\item agreement with calibration benchmark expectations.
+\end{itemize}
+
+\section{LLC interaction information}
+
+\subsection{Single block, joint block, and interaction}
+
+For each declared pair $(A,B)$:
+\begin{enumerate}[(1)]
+\item Estimate $\hat\lambda_A$ by sampling only block $A$.
+\item Estimate $\hat\lambda_B$ by sampling only block $B$.
+\item Estimate $\hat\lambda_{AB}$ by sampling the union $A\cup B$.
+\item Use identical data split, loss, prior family, temperature convention, chain count, burn-in, ESS gate, and input batches.
+\item Compute $I_\lambda(A;B)=\hat\lambda_A+\hat\lambda_B-\hat\lambda_{AB}$.
+\item Compute uncertainty by pairing bootstrap samples of the three estimates.
+\end{enumerate}
+
+\subsection{Block-wise versus full-adapter sampling}
+
+\paragraph{Block-wise sampling.}  Cheap, interpretable, and appropriate for calibration and routine audits.  It can miss singularities that require other blocks to move jointly.
+
+\paragraph{Full-adapter sampling with projections.}  More faithful to global local evidence, but expensive and harder to attribute.  Use for at least one full-adapter run after block-wise estimates pass diagnostics.
+
+\paragraph{Recommended RelaLeap policy.}  Run block-wise estimates for all columns and declared pairs, plus one full-adapter estimate.  If block-wise $I_\lambda$ suggests sparse structure but full-adapter sampling shows diffuse all-to-all interaction, the columnar interpretation is blocked.
+
+\section{Calibration benchmarks}
+
+All benchmarks should be CPU-sized: $n\in\{256,512,1024\}$, dimensions $2$--$16$, four chains, 10k steps per chain initially.  Use Gaussian NLL with known noise variance unless otherwise specified.
+
+\subsection{Benchmark 1: regular identifiable linear regression}
+
+Specification:
+\begin{equation}
+  x_i\sim\mathcal{N}(0,I_d),\qquad
+  y_i = x_i^T w^\star + \epsilon_i,
+  \qquad \epsilon_i\sim\mathcal{N}(0,\sigma^2),
+\end{equation}
+with parameter $w\in\mathbb{R}^d$, $d=4$ or $8$.
+
+Known behavior: regular identifiable model with RLCT $\lambda=d/2$.
+
+Pass criterion: $\hat\lambda$ within about $\pm20\%$ of $d/2$, stable across seeds, ESS pass.
+
+Why: verifies scaling, temperature convention, Gaussian prior, and WBIC formula in the easiest case.
+
+\subsection{Benchmark 2: rank-deficient linear regression}
+
+Specification:
+\begin{equation}
+  y_i = z_i^T u^\star + \epsilon_i,
+  \qquad x_i = R z_i,
+\end{equation}
+where $z_i\in\mathbb{R}^r$, $x_i\in\mathbb{R}^d$, $R\in\mathbb{R}^{d\times r}$ has rank $r<d$, and the fitted parameter is $w\in\mathbb{R}^d$ with prediction $x_i^T w$.  Use $d=8$, $r=3$.
+
+Expected behavior: only $r$ identifiable directions affect predictions, so the effective regular contribution is approximately $r/2$; null directions should not contribute like full parameters.
+
+Pass criterion: $\hat\lambda$ closer to $r/2$ than to $d/2$, within rough tolerance.  Report caveat that priors and finite ridge width can perturb the estimate.
+
+Why: catches implementations that merely return parameter count over two.
+
+\subsection{Benchmark 3: overparameterized mixture}
+
+Specification: one-dimensional two-component Gaussian mixture fitted to data generated by one component:
+\begin{equation}
+  p(y\mid\theta)
+  = \alpha\mathcal{N}(y;\mu_1,\sigma^2)
+  + (1-\alpha)\mathcal{N}(y;\mu_2,\sigma^2),
+\end{equation}
+with data $y_i\sim\mathcal{N}(0,\sigma^2)$, parameters $(\operatorname{logit}\alpha,\mu_1,\mu_2)$, and fixed $\sigma$.
+
+Expected behavior: singular due to permutation symmetry and component redundancy; $\lambda < p/2$ where $p=3$.
+
+Pass criterion: estimator detects singularity by producing $\hat\lambda$ clearly below $1.5$ and stable enough for sign/magnitude classification.
+
+Why: verifies that the estimator can see a classic singular model.
+
+\subsection{Benchmark 4: independent composition}
+
+Specification:
+\begin{equation}
+  y_i = f_A(x_{iA};\theta_A) + f_B(x_{iB};\theta_B) + \epsilon_i,
+\end{equation}
+where $x_{iA}$ and $x_{iB}$ are independent, $f_A$ and $f_B$ are small regular linear or one-hidden-unit modules with disjoint parameters.
+
+Expected behavior:
+\begin{equation}
+  \lambda_{A\cup B} \approx \lambda_A + \lambda_B,
+  \qquad I_\lambda(A;B)\approx 0.
+\end{equation}
+
+Pass criterion: additivity within about $15\%$ and confidence interval for $I_\lambda$ includes zero.
+
+Why: catches false interaction caused by inconsistent splits, priors, or sampler settings.
+
+\subsection{Benchmark 5: redundant composition}
+
+Specification:
+\begin{equation}
+  y_i = c\,[a(x_i)+b(x_i)] + \epsilon_i
+\end{equation}
+or a shared-core residual model where two columns use the same latent scalar $c$ or same direction $u$:
+\begin{equation}
+  r_A(h)=\alpha_A u\,s(h),\qquad r_B(h)=\alpha_B u\,s(h).
+\end{equation}
+Sample blocks $A=(\alpha_A)$, $B=(\alpha_B)$, and joint $AB=(\alpha_A,\alpha_B)$ or include the shared core in a declared shared block.
+
+Expected behavior:
+\begin{equation}
+  \lambda_{A\cup B} < \lambda_A + \lambda_B,
+  \qquad I_\lambda(A;B)>0.
+\end{equation}
+
+Pass criterion: positive $I_\lambda$ with CI mostly above zero.
+
+Why: verifies that shared singular structure appears as redundancy.
+
+\subsection{Benchmark 6: synergistic composition}
+
+Specification: target depends on a product or gated pair that cannot be represented by either block alone:
+\begin{equation}
+  y_i = \theta_A\theta_B\,s(x_i) + \epsilon_i,
+\end{equation}
+with trained solution near nonzero product, or a residual pair where a gate in $A$ activates a direction in $B$.  A more RelaLeap-like version is
+\begin{equation}
+  r(h,c)=m_A(c)m_B(c)\,v\,\phi(u^T h).
+\end{equation}
+
+Expected behavior: joint movement reveals structure not present in separate block probes.  Depending on exact generator and conditioning, $I_\lambda(A;B)<0$ or at least significantly nonzero in the preregistered synergistic direction.
+
+Pass criterion: correct sign under the chosen generator and a CI excluding the independent near-zero band.
+
+Why: verifies that the estimator does not force additivity and can flag emergent joint structure.
+
+\subsection{Calibration suite pass rule}
+
+At least 5 of 6 benchmarks must show correct sign and rough magnitude.  Regular and independent benchmarks are mandatory.  If fewer than 5 pass, no RelaLeap LLC/WBIC number may be treated as calibrated evidence.
+
+\section{Diagnostics and failure modes}
+
+\subsection{Energy trend: Mann--Kendall test}
+
+For each post-burn-in energy trace, run a Mann--Kendall monotone trend test.  Requirement: $p>0.05$ for no significant trend.  If the trend test fails, the chain is still warming up, drifting between basins, or numerically unstable.  Increase burn-in, reduce step size, strengthen local prior, or split blocks.
+
+\subsection{Divergence and NaN handling}
+
+Flag divergence if any of the following occurs:
+\begin{itemize}
+\item NaN or Inf loss, gradient, parameter, or energy;
+\item post-burn-in energy jump greater than $5$ standard deviations;
+\item parameter norm exceeds a configured multiple of trained norm;
+\item trust-region rejection/stability rate outside $0.5$--$0.9$;
+\item loss exceeds a hard ceiling based on baseline loss.
+\end{itemize}
+Do not silently drop bad samples.  Count them, mark the chain failed if they recur, and restart with smaller step size.  If any central-temperature chain repeatedly fails, mark the estimate uncalibrated.
+
+\subsection{Chains disagree or high CV}
+
+If chain-wise $\hat\lambda$ has coefficient of variation $\geq0.25$:
+\begin{enumerate}[(1)]
+\item inspect whether chains occupy different basins;
+\item rerun with smaller initialization perturbation;
+\item increase chain length and burn-in;
+\item check exact temperature scaling;
+\item compare block-wise and full-block curvature;
+\item report diagnostic only if disagreement persists.
+\end{enumerate}
+
+\subsection{Calibration fails}
+
+When calibration fails, do not tune on RelaLeap outcomes.  Fix in this order:
+\begin{enumerate}[(1)]
+\item regular linear benchmark: temperature/loss scaling bug likely;
+\item rank-deficient benchmark: prior, ridge, or block mask bug likely;
+\item mixture benchmark: sampler not exploring singular ridge or label symmetry;
+\item independent composition: inconsistent data, prior, or temperature across block and joint runs;
+\item redundant/synergistic composition: block definition or interpretation mismatch.
+\end{enumerate}
+
+\subsection{Common pitfalls}
+
+\begin{itemize}
+\item using $1/(n\log n)$ on total NLL and accidentally sampling a much hotter target;
+\item sampling frozen scalar knobs instead of actual adapter parameters;
+\item forgetting prior gradients;
+\item including frozen base model parameters in the sampled block;
+\item using train mini-batch noise but evaluating $E_n$ on changing batches;
+\item interpreting low ESS as success because many raw samples were saved;
+\item comparing $\lambda_A$, $\lambda_B$, and $\lambda_{AB}$ with different priors or data splits;
+\item forcing all interactions toward zero and thereby hiding true synergy;
+\item reporting exact RLCT language for finite-sample proxies.
+\end{itemize}
+
+\section{Concrete implementation plan}
+
+\subsection{Suggested modules}
+
+\begin{verbatim}
+relaleap/slt/__init__.py
+relaleap/slt/parameter_blocks.py      # block discovery, masks, flatten/unflatten
+relaleap/slt/priors.py                # Gaussian, scale-aware, transformed priors
+relaleap/slt/sgld.py                  # SGLD kernel, schedules, diagnostics
+relaleap/slt/wbic.py                  # WBIC orchestration and lambda estimates
+relaleap/slt/ess.py                   # autocorrelation, ESS, R-hat
+relaleap/slt/trend.py                 # Mann-Kendall and jump tests
+relaleap/slt/llc_interactions.py      # block, joint, I_lambda matrix
+relaleap/slt/calibration_benchmarks.py# six benchmark generators
+relaleap/slt/reports.py               # JSON/CSV/Markdown report writers
+tests/test_slt_scaling.py
+tests/test_slt_calibration.py
+tests/test_llc_interactions.py
+\end{verbatim}
+
+\subsection{Estimated size}
+
+A clean first implementation should be about:
+\begin{itemize}
+\item parameter block utilities: 200--350 lines;
+\item priors and transforms: 150--300 lines;
+\item SGLD kernel: 300--500 lines;
+\item diagnostics ESS/trend/R-hat: 250--400 lines;
+\item WBIC orchestration: 250--450 lines;
+\item LLC interaction orchestration: 200--350 lines;
+\item calibration benchmarks: 500--900 lines;
+\item tests and fixtures: 500--1000 lines.
+\end{itemize}
+
+\subsection{Compute budget}
+
+No GPU or paid compute is needed for calibration.  CPU target:
+\begin{itemize}
+\item one small benchmark: 4 chains $\times$ 10k steps in minutes;
+\item full six-benchmark suite: under about one hour for small dimensions;
+\item RelaLeap synthetic block-wise audit: minutes to tens of minutes depending on adapter size;
+\item real transformer residual caches: only after synthetic gates pass.
+\end{itemize}
+
+\subsection{Testing strategy}
+
+Unit tests:
+\begin{itemize}
+\item flatten/unflatten round trip preserves parameters and gradients;
+\item block masks update only selected parameters;
+\item SGLD noise variance equals step size;
+\item prior gradients match finite differences;
+\item ESS returns near $T$ for iid noise and much smaller values for AR(1) traces;
+\item temperature convention test verifies effective coefficient on total NLL.
+\end{itemize}
+
+Integration tests:
+\begin{itemize}
+\item regular linear $\hat\lambda\approx d/2$;
+\item rank-deficient estimate closer to $r/2$ than $d/2$;
+\item independent composition $I_\lambda\approx0$;
+\item redundant composition $I_\lambda>0$;
+\item synergistic composition correct sign;
+\item NaN injection causes chain failure, not silent success.
+\end{itemize}
+
+Every run should write:
+\begin{verbatim}
+runs/slt/<run_id>/config.yaml
+runs/slt/<run_id>/summary.json
+runs/slt/<run_id>/chain_diagnostics.csv
+runs/slt/<run_id>/energy_traces.npy
+runs/slt/<run_id>/lambda_estimates.csv
+runs/slt/<run_id>/decision.md
+\end{verbatim}
+
+\section{Finite-sample caveats}
+
+The estimator can support statements such as:
+\begin{quote}
+At this sample size, with this prior, block definition, temperature convention, sampler, and calibration suite, the finite-sample WBIC/SGLD proxy suggests lower local evidence complexity for model A than model B.
+\end{quote}
+
+It cannot by itself prove:
+\begin{itemize}
+\item the exact RLCT of a neural adapter;
+\item that a learned residual column is causal;
+\item that an interaction sign is stable outside the sampled basin;
+\item that a finite-data WBIC proxy equals asymptotic local free energy;
+\item that a failed estimate means no singular structure exists.
+\end{itemize}
+
+Trust the estimates only when:
+\begin{enumerate}[(1)]
+\item calibration passes;
+\item ESS, trend, divergence, and seed CV gates pass;
+\item temperature sensitivity is sensible;
+\item matched null controls are beaten with uncertainty;
+\item sample-size sensitivity is stable;
+\item conclusions use finite-sample proxy wording.
+\end{enumerate}
+
+If any gate fails, report \texttt{slt\_evidence\_status = uncalibrated} and fail closed for scientific promotion.
+
+\section{Minimum report schema}
+
+Each RelaLeap SLT report must include:
+\begin{verbatim}
+estimator_type: WBIC_SGLD
+estimator_status: finite_sample_wbic_proxy_not_exact_rlct
+energy_definition: total_nll | mean_loss
+coefficient_on_total_nll: <float>
+checklist_beta_per_example: <float or null>
+n_data: <int>
+parameter_blocks: [names]
+chain_count: <int>
+steps_per_chain: <int>
+burn_in: <int>
+thin: <int>
+ess_energy_per_chain: [floats]
+mann_kendall_p_per_chain: [floats]
+divergence_or_nan_count: <int>
+seed_lambda_values: [floats]
+seed_cv: <float>
+temperature_sensitivity: [beta_over_4, beta, four_beta]
+lambda_hat: <float>
+lambda_ci95: [lo, hi]
+calibration_benchmarks_passed: <int>/6
+null_normalized_margin: <float>
+finite_sample_caveat: "These are finite-sample WBIC/SGLD proxies, not exact RLCTs."
+\end{verbatim}
+
+\section{Implementation checklist}
+
+Before a coding agent marks the estimator complete:
+\begin{enumerate}[(1)]
+\item regular linear benchmark passes;
+\item all six calibration generators exist and run on CPU;
+\item SGLD samples actual live parameter blocks;
+\item WBIC records effective coefficient on total NLL and avoids temperature ambiguity;
+\item ESS, Mann--Kendall, divergence, NaN, jump, and seed-CV diagnostics are automatic;
+\item $I_\lambda$ uses matched block, joint, data, prior, and temperature settings;
+\item failed diagnostics automatically downgrade evidence status;
+\item reports use finite-sample proxy language.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,2282 @@
+Singular Learning Theory for SubRep:
+Goal–Subgoal LLC Relations in Hierarchical Planning
+with Functional Coupling and Shared Representations
+Ben Goertzel
+December 10, 2025
+
+Abstract
+SubRep is a framework for compositional goal pursuit in which options export expectation
+models (r̂, n̂) and are admitted into a planner-facing library via cone-dominant (CDS) or Paretodominant (PDS) tests over a motive geometry. This paper develops a rigorous singular learning
+theory (SLT) analysis of SubRep systems, addressing the question: how do the local learning
+coefficients (LLCs) of a goal-level system relate to those of its subgoal modules?
+We extend previous work in six directions. First, we introduce explicit functional coupling
+terms arising from planner–option composition and derive sufficient conditions under which such
+coupling remains dominated, preserving approximate LLC additivity. Second, we analyze shared
+representation architectures where options and planners share feature extractors, showing how
+the shared block’s LLC contributes once (not per-module) to the total complexity. Third, we
+address the non-analyticity introduced by hard CDS/PDS admission tests by introducing soft
+relaxations and proving convergence of the relaxed LLC to a well-defined stratified limit. Fourth,
+we develop a comprehensive treatment of non-convex motive geometries, decomposing general
+motive spaces into convex cells, analyzing the tropical/piecewise-linear structure that emerges,
+and characterizing singularities at cell boundaries via a double stratification. Fifth, we analyze
+the robustness of additivity, proving quantitative bounds on the “additivity gap” as conditions
+degrade, and characterizing graceful versus catastrophic failure modes. Sixth, and most significantly, we move beyond additivity by introducing LLC interaction complexity—an analog of
+mutual information that captures how subgoal complexities combine non-additively. This leads
+to an inclusion-exclusion decomposition where pairwise, three-way, and higher-order interaction
+terms replace the naive additive model, with positive interactions indicating redundant complexity (shared singular structure) and negative interactions indicating synergistic complexity
+(emergent singularities from combination). Together, these results provide a complete framework for understanding goal–subgoal LLC relationships in hierarchical planning systems.
+
+Contents
+1 Introduction
+
+1
+
+2 SLT Background
+2.1 Setup and notation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.2 Local evidence and free energy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.3 Local learning coefficient (LLC) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.4 Standard additivity under independence . . . . . . . . . . . . . . . . . . . . . . . . .
+
+2
+2
+3
+3
+3
+
+1
+
+3 SubRep Formalization
+3.1 Architecture and parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3.2 Loss decomposition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3.3 CDS and PDS admission . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+4
+4
+4
+4
+
+4 Functional Coupling Analysis
+4.1 Coupling structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4.2 Coupling strength measure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4.3 Domination conditions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4.4 Sufficient conditions on SubRep architecture . . . . . . . . . . . . . . . . . . . . . . .
+
+5
+5
+5
+5
+6
+
+5 Shared Representations
+5.1 Shared parameter structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5.2 Loss structure with sharing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5.3 Intersection of singular structures . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5.4 LLC for shared architectures . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+7
+7
+7
+7
+7
+
+6 Soft CDS/PDS and Stratified Analysis
+6.1 Non-analyticity in hard CDS/PDS . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6.2 Soft relaxation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6.3 LLC for soft systems . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6.4 Stratification structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6.5 LLC jumps at stratum boundaries . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+8
+8
+8
+9
+9
+9
+
+7 Non-Convex Motive Geometries
+7.1 Motivation: Why non-convexity matters . . . . . . . . . . . . . . . . . . . . . . . . .
+7.2 Convex decomposition of motive geometries . . . . . . . . . . . . . . . . . . . . . . .
+7.3 Per-cell CDS and the piecewise margin function . . . . . . . . . . . . . . . . . . . . .
+7.4 Tropical structure and min-plus algebra . . . . . . . . . . . . . . . . . . . . . . . . .
+7.5 Double stratification: options × cells . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.6 LLC on double strata . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.7 Cell boundary singularities . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.8 Soft relaxation for non-convex geometries . . . . . . . . . . . . . . . . . . . . . . . .
+7.9 Tropical LLC and Bergman fans . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.10 Bounds on tropical correction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.11 Example: Two-cell motive geometry . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7.12 Computational considerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+10
+10
+10
+11
+11
+12
+12
+13
+13
+14
+14
+15
+15
+
+8 Main Decomposition Theorems
+
+16
+
+9 Robustness and Degradation Analysis
+9.1 The additivity gap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9.2 Coupling-induced deviation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9.3 Phase transition at the dominated boundary . . . . . . . . . . . . . . . . . . . . . . .
+9.4 Intersection correction growth . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9.5 Tropical correction growth . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9.6 Stratum boundary effects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9.7 Combined degradation: A unified bound . . . . . . . . . . . . . . . . . . . . . . . . .
+9.8 Graceful vs. catastrophic degradation . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+17
+17
+18
+18
+19
+19
+20
+21
+21
+
+2
+
+9.9
+
+Empirical signatures of degradation . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+
+10 Beyond Additivity: LLC Interaction Information
+10.1 Motivation: From error to structure . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10.2 LLC interaction complexity: Two modules . . . . . . . . . . . . . . . . . . . . . . . .
+10.3 Sign and interpretation of Iλ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10.4 Inclusion-exclusion decomposition . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10.5 SubRep-specific interaction structure . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10.6 Three-way and higher interactions in SubRep . . . . . . . . . . . . . . . . . . . . . .
+10.7 Partial information decomposition for LLC . . . . . . . . . . . . . . . . . . . . . . .
+10.8 Interaction complexity and the additivity gap . . . . . . . . . . . . . . . . . . . . . .
+10.9 Estimating interaction complexity . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10.10Geometric interpretation: Intersection multiplicities . . . . . . . . . . . . . . . . . .
+10.11Design implications: Interaction-aware architecture . . . . . . . . . . . . . . . . . . .
+10.12The synergy–stability tradeoff . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+22
+22
+23
+23
+24
+24
+25
+25
+27
+27
+27
+28
+28
+
+11 Implications for SubRep Design
+11.1 Architectural conditions for tractable decomposition . . . . . . . . . . . . . . . . . .
+11.2 Motive geometry design principles . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11.3 Diagnostic signatures . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11.4 Training with non-convex geometries . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11.5 Soft vs. hard admission tradeoffs . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11.6 Limitations and extensions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+29
+30
+30
+30
+31
+31
+31
+
+12 Conclusion
+
+32
+
+A Proof Details
+33
+A.1 Proof of Lemma ?? (full) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+A.2 LLC additivity via Laplace-Stieltjes transform . . . . . . . . . . . . . . . . . . . . . . 34
+B Comparison with Previous Work
+
+1
+
+34
+
+Introduction
+
+SubRep decomposes complex goals into subgoals (options) by combining expectation models (r̂, n̂)
+for options, a motive geometry (cone W or finite weight cover Wref ), cone-dominant (CDS) or
+Pareto-dominant (PDS) admission tests, and a Motive Decomposition Network (MDN) that colearns motive factors and weight structure. The result is a library of subgoals with planner-facing
+certificates: each admitted option is guaranteed (up to margins and model error) to improve backedup values on a motive slice.
+Singular learning theory (SLT) characterizes the geometry of low-loss regions via local evidence
+integrals and the local learning coefficient (LLC) λ. In modular systems, understanding how λ
+decomposes across modules is central to analyzing learned representations and model complexity.
+Previous treatments of LLC additivity in modular systems assume independence or weak coupling between modules. However, SubRep systems exhibit four features that complicate this picture:
+1. Functional coupling. The planner module takes option outputs as inputs; option quality
+directly affects planner loss gradients.
+
+3
+
+2. Shared representations. Modern implementations often share feature extractors across
+options and planners.
+3. Discrete admission tests. CDS and PDS involve hard thresholds that introduce nonanalytic boundaries in the loss landscape.
+4. Non-convex motive geometries. Real motive spaces arising from learned MDNs are typically non-convex, creating piecewise-linear structure in the margin functions and additional
+singularities at cell boundaries.
+This paper addresses all four issues. Section 2 reviews SLT and establishes notation. Section 3
+formalizes SubRep in loss-based language. Section 4 analyzes functional coupling and derives domination conditions. Section 5 treats shared representations. Section 6 introduces soft CDS/PDS and
+develops stratified SLT analysis. Section 7 develops the theory for non-convex motive geometries,
+including convex decomposition, tropical structure, and double stratification. Section 8 states our
+main decomposition theorems. Section 9 analyzes how additivity degrades as conditions weaken,
+characterizing graceful versus catastrophic failure modes. Section 10 moves beyond additivity entirely, introducing LLC interaction complexity as an analog of mutual information and deriving an
+inclusion-exclusion decomposition that treats non-additive effects as meaningful structure rather
+than error. Section 11 discusses implications for SubRep design.
+
+2
+
+SLT Background
+
+We summarize the SLT machinery needed for our purposes, following Watanabe’s foundational
+treatment.
+
+2.1
+
+Setup and notation
+
+Let Θ ⊂ Rd be a parameter space with prior density φ(θ). Given data Dn = {x1 , . . . , xn } drawn
+i.i.d. from true distribution q(x), define the empirical loss
+n
+
+`n (θ) := −
+
+1X
+log p(xi | θ),
+n
+i=1
+
+where p(x | θ) is the model likelihood. The population loss is `(θ) := −Eq [log p(x | θ)]. Let θ∗
+denote a (possibly non-unique) minimizer of `, and define the excess loss:
+K(θ) := `(θ) − `(θ∗ ) = DKL (qkpθ ) − DKL (qkpθ∗ ).
+This is the KL gap relative to the best approximation in the model. In the realizable case where
+q = pθ∗ for some θ∗ , we have K(θ) = DKL (qkpθ ).
+
+2.2
+
+Local evidence and free energy
+
+For a neighborhood W ⊂ Θ around θ∗ , define the local evidence and free energy:
+Z
+
+Zn (W ) :=
+exp − n`n (θ) φ(θ) dθ,
+
+(1)
+
+W
+
+Fn (W ) := − log Zn (W ).
+
+4
+
+(2)
+
+2.3
+
+Local learning coefficient (LLC)
+
+The central object in SLT is the real log canonical threshold (RLCT), which we call the local learning
+coefficient (LLC).
+Definition 1 (LLC via zeta function). For K(θ) ≥ 0 analytic near θ∗ with K(θ∗ ) = 0, define the
+zeta function
+Z
+K(θ)z φ(θ) dθ
+
+ζ(z) :=
+W
+
+for Re(z) > 0. This extends meromorphically to C with poles on the negative real axis. The LLC
+is λ := − (largest pole), and the multiplicity m is the order of this pole.
+Under standard regularity conditions (analyticity of K, positivity of φ near θ∗ ), SLT yields the
+asymptotic expansion:
+Fn (W ) = n`n (θ∗ ) + λ log n − (m − 1) log log n + Op (1).
+
+(3)
+
+Equivalently, the sublevel-set volume satisfies
+V (ε) := Vol{θ ∈ W : K(θ) ≤ ε} ∼ c ελ (− log ε)m−1
+
+2.4
+
+as ε → 0+ .
+
+(4)
+
+Standard additivity under independence
+
+The following classical result motivates our development.
+(k)
+Proposition 1 (Additivity under
+Suppose θ = (θ(1) , . . . , θ(K) ) with each
+Θk ,
+Q independence).
+P θ ∈ (k)
+(k)
+the prior factorizes
+as
+φ(θ)
+=
+φ
+(θ
+),
+and
+the
+excess
+loss
+decomposes
+as
+K(θ)
+=
+K
+(θ
+).
+k
+k
+k
+k
+P
+Then λ = k λk , where λk is the LLC computed from Kk alone.
+Q
+P
+Proof. We use sublevel-set volumes rather than direct zeta factorization (note: ( k Kk )z 6= k Kkz ,
+so the zeta function does not directly factor for sum losses).
+The sublevel-set volume for the sum is
+P
+V (ε) = Vol{θ : k Kk (θ(k) ) ≤ ε}.
+
+With independent parameters and factorized prior, this becomes a convolution: if Vk (ε) ∼ ck ελk | log ε|mk −1
+for each block, then
+Z
+P
+Y
+V (ε) = P
+dVk (εk ) ∼ c ε k λk | log ε|M −1 ,
+k εk =ε
+
+k
+
+P
+
+where M = k mk + (K − 1) accounts for the convolution. The Laplace-Stieltjes transform of
+V factors,
+and Tauberian theorems relate the transform’s behavior to the volume scaling, yielding
+P
+λ = k λk .
+
+3
+
+SubRep Formalization
+
+We formalize SubRep in loss-based language compatible with SLT.
+
+5
+
+3.1
+
+Architecture and parameters
+
+A SubRep system consists of the following parameterized components:
+1. Shared representation fψ : X → Z with parameters ψ ∈ Ψ, mapping raw observations to
+features.
+2. Option models {(r̂o , n̂o )}o∈O with parameters θo ∈ Θo . Given features z = fψ (x):
+• r̂o (z; θo ): predicted immediate contribution to objective J;
+• n̂o (z; θo ): predicted successor features.
+3. MDN with parameters θMDN , producing motive geometry (cone W or finite cover Wref ).
+4. Planner with parameters θplan , selecting options based on backed-up values.
+The full parameter vector is
+Ω := (ψ, {θo }o∈Olib , θMDN , θplan ).
+
+3.2
+
+Loss decomposition
+
+The total loss `(Ω) naturally decomposes as:
+X
+`(Ω) = `rep (ψ) +
+`o (ψ, θo ) + `MDN (θMDN ) + `plan (ψ, {θo }, θMDN , θplan ),
+
+(5)
+
+o∈Olib
+
+where:
+• `rep (ψ): representation learning loss (e.g., reconstruction, contrastive);
+• `o (ψ, θo ): option-o prediction loss (depends on shared features);
+• `MDN : MDN auxiliary loss;
+• `plan : planning loss (depends on all upstream components).
+Remark 1 (Functional composition). The planner loss `plan depends on option outputs r̂o , n̂o , which
+in turn depend on ψ, θo . This creates functional coupling: gradients ∇θo `plan flow through the
+composition. This coupling is the primary obstacle to naive LLC additivity.
+
+3.3
+
+CDS and PDS admission
+
+Given weight vector w and features z, the backed-up value is
+Bo (z; w) := r̂o (z) + w> n̂o (z).
+
+(6)
+
+Definition 2 (Cone-dominant subtask (CDS)). Option o is CDS-admitted at margin ε ≥ 0 if
+
+inf Bo (z; w) − max Bb (z; w) ≥ ε
+w∈W
+
+b∈B
+
+over a suitable distribution of states z.
+Definition 3 (Pareto-dominant subtask (PDS)). Given reference weights Wref = {w(1) , . . . , w(K) },
+option o is PDS-admitted if the vector (Bo (z; w(1) ), . . . , Bo (z; w(K) )) Pareto-dominates the baseline
+vector.
+These tests involve inf, max, and inequality comparisons—all operations that introduce nondifferentiability into the loss landscape.
+6
+
+4
+
+Functional Coupling Analysis
+
+We now analyze how functional coupling between planner and options affects LLC decomposition.
+
+4.1
+
+Coupling structure
+
+Write the excess loss as
+K(Ω) = Krep (ψ) +
+
+X
+
+Ko (ψ, θo ) + KMDN (θMDN ) + Kplan (Ω) + R(Ω),
+
+(7)
+
+o
+
+where R(Ω) captures cross-terms not assignable to individual modules.
+The planner loss Kplan depends on option outputs. Expand around the optimum Ω∗ :
+(0)
+
+Kplan (Ω) = Kplan (θplan ) +
+
+X
+
+Co (θo , θplan ) + h.o.t.,
+
+o
+
+where Co captures the coupling between option o and the planner.
+
+4.2
+
+Coupling strength measure
+
+Definition 4 (Coupling strength). The coupling strength of option o to the planner is
+κo :=
+
+|Co (θo , θplan )|
+
+lim sup
+
+(0)
+Ω→Ω∗ ,Ω6=Ω∗ Ko (ψ, θo ) + K
+plan (θplan )
+
+,
+
+the limiting ratio as parameters approach the optimum along paths where the denominator is
+nonzero. This captures the relative magnitude of coupling near the singular locus.
+Definition 5 (Total coupling ratio). The total coupling ratio is
+|R(Ω)|
+,
+Ω∈U K0 (Ω)
+
+η := sup
+
+where K0 (Ω) is the sum of individual module excess losses.
+
+4.3
+
+Domination conditions
+
+Assumption 1 (Dominated coupling). In a neighborhood U of Ω∗ :
+(a) η < 1: the remainder is dominated by the sum of module losses.
+P
+(b)
+o κo < 1 − η: coupling strengths are collectively bounded.
+Q
+Q
+(c) The prior φ(Ω) factorizes up to bounded factors: c1 k φk (θ(k) ) ≤ φ(Ω) ≤ c2 k φk (θ(k) ) for
+constants 0 < c1 ≤ c2 < ∞.
+Lemma 1 (Volume bound under dominated coupling). Under Assumption 1, the sublevel-set volume satisfies
+Y
+Y
+c−
+Vk (ε) ≤ V (ε) ≤ c+
+Vk (ε)
+k
+
+k
+
+for constants c− , c+ > 0 independent of ε, where Vk (ε) := Vol{θ(k) : Kk (θ(k) ) ≤ ε}.
+7
+
+Proof. Under (a), (1 − η)K0 ≤ K ≤ (1 + η)K0 . Thus {K ≤ ε} ⊆ {K0 ≤ ε/(1 − η)} and {K0 ≤
+ε/(1 + η)} ⊆ {K ≤ ε}.
+For the upper bound:
+V (ε) ≤ Vol{K0 ≤ ε/(1 − η)}
+X
+= Vol
+Kk ≤ ε/(1 − η)
+k
+
+≤
+
+Y
+
+
+Vk ε/(1 − η)
+
+k
+
+by inclusion-exclusion. The lower bound follows similarly. Since each Vk (ε) ∼ ck ελk | log ε|mk −1 , the
+product scaling is preserved up to constants.
+
+4.4
+
+Sufficient conditions on SubRep architecture
+
+We now identify architectural conditions ensuring dominated coupling.
+Proposition 2 (Conditions for dominated coupling in SubRep). The following conditions jointly
+imply Assumption 1:
+1. Option accuracy. Each option model (r̂o , n̂o ) achieves loss Ko ≤ opt for small opt .
+2. Planner smoothness. The planner loss `plan is Lipschitz in option outputs with constant
+Lplan .
+3. Output sensitivity. Option outputs are Lipschitz in parameters: kr̂o (θo )−r̂o (θo0 )k ≤ Lo kθo −
+θo0 k.
+4. Separation. Options operate on distinct aspects of the task, limiting cross-option gradients:
+k∇θo `o0 k ≤ γk∇θo `o k for o 6= o0 with γ < 1/(|O| − 1).
+√
+Under these conditions, η ≤ Lplan · Lmax · opt + |O|γ < 1 for sufficiently small opt and γ.
+Proof sketch. The planner coupling term Co arises from the composition of planner loss with option
+outputs. A key observation is that the leading linear coupling typically vanishes at the joint
+optimum (by first-order conditions), leaving Co as a second-order cross-term.
+Specifically, expand `plan around the optimum:
+`plan (r̂o (θo ), θplan ) = `∗plan +
+
+1
+∇` · ∆r̂o + ∆r̂o> H∆r̂o + · · ·
+| {z }
+2
+
+=0 at optimum
+
+The linear term vanishes by optimality. The quadratic term gives |Co | = O(k∆r̂o k2 ) = O(L2o kθo −
+θo∗ k2 ).
+In regular directions where Ko ∼ kθo − θo∗ k2 , this yields |Co | = O(Ko ), ensuring domination. In
+singular directions where Ko vanishes faster, the coupling ratio |Co |/Ko may grow, but Assumption 1 bounds this uniformly.
+The separation condition bounds cross-module terms similarly. Combining these yields the
+stated bound on η.
+
+8
+
+5
+
+Shared Representations
+
+Modern SubRep implementations typically share a feature extractor across options and planners.
+We analyze how this affects LLC decomposition.
+
+5.1
+
+Shared parameter structure
+
+With shared representation fψ , the parameter space is not a product. Instead:
+Ω = (ψ, θhead )
+
+where
+
+head
+θhead := ({θohead }o , θMDN , θplan
+).
+
+Here θohead are option-specific heads operating on features z = fψ (x).
+
+5.2
+
+Loss structure with sharing
+
+The total loss becomes
+`(Ω) = `rep (ψ) +
+
+X
+
+head
+`head
+(θohead ; fψ ) + `head
+o
+plan (θplan ; fψ , {r̂o , n̂o }).
+
+o
+
+Crucially, ψ enters every term.
+
+5.3
+
+Intersection of singular structures
+
+The singularity of K(Ω) at Ω∗ is determined by the intersection of singularities from each loss
+component. This is more complex than the additive case.
+Definition 6 (Singular variety). The singular variety of the excess loss is
+S := {Ω : K(Ω) = 0} = K −1 (0).
+With shared parameters, S is determined by the intersection:
+\
+S=
+{Kc = 0},
+components c
+
+where the intersection is taken in the full parameter space (not a product).
+
+5.4
+
+LLC for shared architectures
+
+Theorem 1 (LLC with shared representations). Suppose the shared representation fψ satisfies:
+(a) Non-degenerate features. The feature map fψ has full rank Jacobian at ψ ∗ .
+(b) Head separability. Conditioned on features z = fψ (x), the head losses `head
+are independent
+o
+across options.
+Then the goal-level LLC satisfies
+λgoal = λψ +
+
+X
+
+λhead
++ λMDN + λhead
+o
+plan + λint ,
+
+(8)
+
+o
+
+where λψ is the LLC of the representation block, λhead
+are the head LLCs computed with frozen
+o
+features, and λint ≥ 0 is an intersection correction that vanishes when the singular varieties intersect
+transversally.
+9
+
+Proof outline. Under (a), near ψ ∗ we can locally parameterize by (z⊥ , zk ) where z⊥ spans directions
+in feature space and zk are redundant parameters. The Jacobian condition ensures this reparameterization is valid.
+Under (b), given fixed features, the head losses are conditionally independent. We useP
+a stratified
+sublevel-set analysis: the total excess loss near the optimum can be written as K = Kψ + o Kohead +
+head + R , where R
+KMDN + Kplan
+int
+int captures cross-terms from non-transverse intersection of singular
+varieties.
+When singular varieties intersect transversally (the generic case), Rint is higher-order dominated
+and contributes λint = 0. By the sublevel-set convolution argument of Proposition 1, the LLCs
+add. Non-transverse intersections (tangencies) make Rint contribute at leading order, increasing
+λint > 0.
+Remark 2. The key insight is that with sharing, the representation block’s LLC λψ contributes
+once to the total, not once per module. This differs from naive summation over modules.
+
+6
+
+Soft CDS/PDS and Stratified Analysis
+
+CDS and PDS tests involve inf, max, and hard inequalities, introducing non-differentiable boundaries. Standard SLT requires analyticity. We address this via soft relaxations and stratified analysis.
+
+6.1
+
+Non-analyticity in hard CDS/PDS
+
+The CDS margin function
+mo (z) := inf
+
+w∈W
+
+Bo (z; w) − max Bb (z; w)
+
+
+
+b∈B
+
+involves inf over w and max over b. Both operations introduce kinks (non-differentiable points) in
+the loss landscape.
+If CDS admission affects the loss (e.g., by gating which options receive gradient signal), then
+K(Ω) inherits these non-analyticities.
+
+6.2
+
+Soft relaxation
+
+We introduce temperature-parameterized soft versions.
+Definition 7 (Soft CDS). For temperature τ > 0, define the soft margin
+
+(τ )
+)
+m(τ
+o (z) := −τ log Ew∼µW exp − [Bo (z; w) − LSEb Bb (z; w)]/τ ,
+(τ )
+
+where µW is a measure on W and LSE(τ ) is the log-sum-exp (soft max): LSEb ab := τ log
+Lemma 2 (Soft-to-hard convergence). As τ → 0+ :
+(τ )
+
+1. LSEb ab → maxb ab pointwise.
+(τ )
+
+2. mo (z) → mo (z) pointwise.
+3. If K (τ ) denotes the excess loss with soft CDS/PDS, then K (τ ) → K pointwise.
+Proof. Standard properties of log-sum-exp approximations.
+10
+
+P
+
+b exp(ab /τ ).
+
+6.3
+
+LLC for soft systems
+
+For τ > 0, the soft loss K (τ ) (Ω) is analytic (assuming the underlying models are analytic). Thus
+SLT applies, yielding a well-defined LLC λ(τ ) .
+Definition 8 (Stratified LLC). The stratified LLC of the hard system is
+λ := lim λ(τ ) ,
+τ →0+
+
+provided the limit exists.
+
+6.4
+
+Stratification structure
+
+The hard CDS/PDS conditions partition parameter space into strata based on the active set of
+admitted options and active constraints.
+
+Definition 9 (CDS/PDS stratification). Define the active set function A(Ω) := {o ∈ O : o is CDS/PDS admitted a
+The parameter space stratifies as
+G
+Θ=
+ΣS , ΣS := {Ω : A(Ω) = S}.
+S⊆O
+
+Theorem 2 (Existence of stratified LLC). Assume:
+(a) On each stratum ΣS , the loss K|ΣS is analytic.
+(b) Strata boundaries are semi-algebraic (defined by polynomial inequalities).
+(c) The prior φ is positive and analytic.
+Then:
+1. The limit λ = limτ →0+ λ(τ ) exists.
+2. λ equals the LLC computed on the stratum ΣS ∗ containing Ω∗ , provided Ω∗ is in the interior
+of ΣS ∗ .
+3. If Ω∗ lies on a stratum boundary, λ is determined by the resolution of singularities accounting
+for the boundary.
+Proof sketch. Under (b), the stratification is a Whitney stratification of a semi-algebraic set. Resolution of singularities (Hironaka) provides a principalization where the loss becomes monomial-like
+in local coordinates. The zeta function method extends to this setting, yielding a well-defined LLC.
+The soft approximation K (τ ) smooths across strata. As τ → 0, the dominant contribution to
+the zeta integral concentrates on the stratum containing Ω∗ . Standard arguments (Laplace method)
+show λ(τ ) → λ.
+
+6.5
+
+LLC jumps at stratum boundaries
+
+Proposition 3 (Discontinuity structure). Consider a path Ω(t) crossing from stratum ΣS1 to ΣS2
+at t = t0 . If the singular varieties on the two strata have different dimensions or intersection
+structures, then the LLC function t 7→ λ(Ω(t)) is discontinuous at t0 .
+
+11
+
+Proof. The LLC is determined by the dimension and intersection multiplicity of the singular variety.
+At a stratum boundary, the loss function changes (different options are active), potentially altering
+these geometric quantities. The LLC inherits this discontinuity.
+Example 1 (Option admission boundary). Suppose at Ω∗ , option o is exactly at the CDS admission
+threshold: mo (z) = 0. For Ω slightly perturbed:
+• If mo > 0: option o is admitted, contributing λo to the total.
+• If mo < 0: option o is excluded, and its λo does not contribute.
+Thus λgoal jumps by ±λo across the boundary.
+
+7
+
+Non-Convex Motive Geometries
+
+The preceding analysis assumed convex motive cones W . However, motive geometries learned by
+MDNs are typically non-convex. This section develops SLT for general motive geometries, revealing
+rich structure connecting to tropical geometry and polyhedral combinatorics.
+
+7.1
+
+Motivation: Why non-convexity matters
+
+In practice, motive geometries arise from:
+1. Learned MDN outputs. Neural networks produce non-convex sublevel sets and decision
+boundaries.
+2. Compositional motives. Combining multiple motive factors via nonlinear operations
+(products, mins, maxes) destroys convexity.
+3. Constraint satisfaction. Hard constraints on acceptable trade-offs create non-convex feasible regions.
+4. Multi-modal preferences. Agents with distinct “preference modes” have disconnected or
+non-convex motive regions.
+Non-convexity fundamentally changes the CDS margin function mo (z) = inf w∈W (Bo (z; w) −
+Bbase (z; w)): the infimum over a non-convex set can have multiple local minima, creating additional
+non-smoothness beyond the max over baselines.
+
+7.2
+
+Convex decomposition of motive geometries
+
+We begin by decomposing a general motive geometry into convex pieces.
+Definition 10 (Convex decomposition). A convex decomposition of a compact set W ⊂ Rd is a
+finite collection {Wα }α∈A of closed convex sets such that:
+S
+1. W = α Wα (coverage);
+2. int(Wα ) ∩ int(Wβ ) = ∅ for α 6= β (interior disjointness);
+3. Each Wα is a convex polytope (or more generally, a convex body).
+The cell complex C(W ) consists of the cells {Wα } together with their faces.
+12
+
+Definition 11 (Boundary complex). The boundary complex ∂C(W ) consists of all faces of dimension < d in C(W ). A point w ∈ W is a boundary point if w ∈ |∂C(W )|, where | · | denotes the
+underlying point set.
+Remark 3 (Existence of convex decompositions). For semi-algebraic W (definable by polynomial
+inequalities), a convex decomposition always exists by triangulation. For general compact W , approximate convex decompositions exist to arbitrary precision. In practice, MDN-induced geometries
+are piecewise-defined and admit natural decompositions.
+
+7.3
+
+Per-cell CDS and the piecewise margin function
+
+With a convex decomposition {Wα }, define per-cell margins:
+Definition 12 (Cell-restricted margin). For cell Wα , the cell-restricted margin is
+
+mαo (z) := inf Bo (z; w) − Bbase (z; w) .
+w∈Wα
+
+Since each Wα is convex, Proposition 2 and the soft CDS analysis apply per-cell.
+Proposition 4 (Piecewise structure of global margin). The global margin function satisfies
+mo (z) = min mαo (z).
+
+(9)
+
+α∈A
+
+This is a piecewise function: for each z, there exists an active cell α∗ (z) := arg minα mαo (z) (possibly
+non-unique) achieving the minimum.
+S
+Proof. By definition, mo (z) = inf w∈W (· · · ). Since W = α Wα :
+inf f (w) = inf inf f (w) = min mαo (z).
+
+w∈W
+
+7.4
+
+α w∈Wα
+
+α
+
+Tropical structure and min-plus algebra
+
+The piecewise-min structure (9) connects to tropical geometry, the geometry of piecewise-linear
+functions under (min, +) operations.
+Definition 13 (Tropical margin). View the margin as a function mo : Z → R ∪ {+∞} in the
+tropical semiring (R ∪ {+∞}, min, +). The global margin is the tropical sum (pointwise minimum):
+M
+mo =
+mαo := min mαo .
+α
+
+α
+
+Definition 14 (Tropical hypersurface). The tropical hypersurface To ⊂ Z of option o is the set of
+points where the minimum in (9) is achieved by multiple cells:
+To := {z ∈ Z : | arg min mαo (z)| ≥ 2}.
+α
+
+The tropical hypersurface is where the margin function is non-smooth due to cell transitions.
+Proposition 5 (Structure of tropical hypersurface). If each mαo (z) is piecewise-affine in z, then
+To is a polyhedral complex of codimension ≥ 1.
+Proof. Each mαo is piecewise-affine, hence minα mαo is piecewise-affine. The non-smooth locus of a
+piecewise-affine function is a polyhedral complex where pieces meet. By genericity (distinct affine
+pieces), this has codimension ≥ 1.
+13
+
+7.5
+
+Double stratification: options × cells
+
+Non-convex motive geometry introduces a double stratification: the parameter space stratifies by
+both (i) which options are admitted and (ii) which motive cells are active.
+Definition 15 (Active cell function). For parameter Ω and state distribution, define the active cell
+set
+C(Ω) := {α ∈ A : α = α∗ (z) for z in the support}.
+This is the set of cells that are “active” (achieve the margin minimum) somewhere in the state
+distribution.
+Definition 16 (Double stratification). The double stratification of parameter space is
+G
+ΣS,B ,
+Θ=
+(S,B)
+
+where:
+• S ⊆ O is the set of admitted options;
+• B ⊆ A is the set of active cells;
+• ΣS,B := {Ω : A(Ω) = S, C(Ω) = B}.
+Remark 4. The double stratification is finer than the option-only stratification of Section 6. The
+number of strata is bounded by 2|O| × 2|A| , though many combinations may be empty.
+
+7.6
+
+LLC on double strata
+
+On each double stratum ΣS,B , the effective loss has a specific structure determined by (S, B).
+Definition 17 (Stratum-restricted loss). On stratum ΣS,B , define the effective excess loss
+X
+S,B
+(Ω),
+KS,B (Ω) := Krep (ψ) +
+Ko (ψ, θo ) + KMDN (θMDN ) + Kplan
+o∈S
+S,B
+is the planning loss restricted to admitted options S and active cells B.
+where Kplan
+
+Theorem 3 (LLC on double strata). Assume:
+(a) On each double stratum ΣS,B , the loss KS,B is analytic.
+(b) Double stratum boundaries are semi-algebraic.
+(c) Dominated coupling holds within each stratum.
+Then the LLC on stratum ΣS,B satisfies
+X
+S,B
+λS,B = λψ +
+λhead
++ λMDN + λS,B
+o
+plan + λint ,
+
+(10)
+
+o∈S
+S,B
+where λS,B
+plan depends on the specific combination of admitted options and active cells, and λint is
+the intersection correction.
+
+Proof. Apply Theorem 2 to the double stratification. The semi-algebraic condition ensures the
+stratification is Whitney. Per-stratum analyticity and dominated coupling give the decomposition
+by Theorem 1.
+14
+
+7.7
+
+Cell boundary singularities
+
+Transitions between active cells create additional singularities beyond option admission boundaries.
+Definition 18 (Cell transition boundary). A cell transition boundary is a codimension-1 subset
+of parameter space where the active cell set changes:
+∂cell := {Ω : C(Ω) changes under infinitesimal perturbation}.
+Proposition 6 (Singularity at cell boundaries). At a cell transition boundary where the active set
+changes from B1 to B2 = B1 ∪ {α0 } (a single cell α0 becomes active):
+1. The margin function mo (z) has a kink (non-differentiable point) at the boundary.
+2. If the planning loss depends on margin gradients, the loss K(Ω) inherits this non-smoothness.
+3. The LLC may jump: λS,B2 − λS,B1 = ∆λα0 , where ∆λα0 is the LLC contribution from cell α0 .
+0
+
+0
+
+Proof. (1) At the boundary, mαo (z) = mαo (z) for some α ∈ B1 . The function min(mαo , mαo ) has a
+kink where the two terms are equal.
+(2) If Kplan involves ∇θ mo , the non-differentiability propagates.
+(3) The singular variety geometry changes when a new cell becomes active, potentially altering
+the LLC. The jump magnitude depends on how cell α0 contributes to the singularity structure.
+
+7.8
+
+Soft relaxation for non-convex geometries
+
+We extend the soft CDS/PDS construction to non-convex geometries.
+Definition 19 (Soft non-convex margin). For temperature τ > 0, define the soft margin over
+non-convex W :
+X
+
+)
+m(τ
+exp − mαo (z)/τ .
+o (z) := −τ log
+α∈A
+
+This is a soft-min (log-sum-exp) over cells.
+Proposition 7 (Soft-to-hard convergence for non-convex). As τ → 0+ :
+(τ )
+
+1. mo (z) → minα mαo (z) = mo (z) pointwise.
+(τ )
+
+2. mo
+
+is smooth for τ > 0.
+(τ )
+
+3. The gradient ∇θ mo
+
+is a convex combination of per-cell gradients:
+X
+)
+)
+α
+∇θ m(τ
+p(τ
+o =
+α (z)∇θ mo ,
+α
+
+(τ )
+
+where pα (z) ∝ exp(−mαo (z)/τ ) are softmax weights.
+Proof. P
+Standard properties of log-sum-exp.
+−τ log α exp(−mαo /τ ).
+
+The gradient formula follows from differentiating
+
+Corollary 1 (Soft double-stratum LLC). For τ > 0, the soft loss K (τ ) is analytic, with LLC λ(τ ) .
+As τ → 0:
+λ(τ ) → λS ∗ ,B∗ ,
+the LLC of the double stratum containing the optimum Ω∗ .
+15
+
+7.9
+
+Tropical LLC and Bergman fans
+
+For piecewise-linear margins, the LLC structure connects to tropical intersection theory.
+S
+Definition 20 (Tropical LLC contribution). Consider the tropical hypersurface T = o To (union
+over options). The tropical LLC contribution is
+X
+λtrop :=
+µ(σ) · λσ ,
+σ∈T
+
+where the sum is over cells σ of T , µ(σ) is the multiplicity (number of affine pieces meeting at σ),
+and λσ is the LLC contribution from singularities along σ.
+Theorem 4 (Tropical correction to LLC). Under the conditions of Theorem 3, the goal-level LLC
+satisfies
+λgoal = λbase + λtrop ,
+(11)
+where λbase is the LLC computed ignoring tropical singularities (as if the geometry were convex),
+and λtrop ≥ 0 is the tropical correction from cell boundary singularities.
+Proof sketch. The singular variety of K(Ω) is stratified by the tropical hypersurface. On the complement of T , the loss is smooth and contributes λbase . Along each stratum of T , additional
+singularities from the piecewise structure contribute λtrop .
+By resolution of singularities, the total LLC is the sum of contributions from all strata of the
+exceptional divisor. The tropical structure provides a combinatorial indexing of these strata.
+Remark 5 (Connection to Bergman fans). For matroids and linear spaces, the tropical variety is
+the Bergman fan, whose structure is well-understood combinatorially. When the motive geometry
+arises from matroid-like structures (e.g., submodular motives), the tropical LLC contribution can
+be computed from matroid invariants.
+
+7.10
+
+Bounds on tropical correction
+
+Proposition 8 (Upper bound on λtrop ). Assume:
+(i) The convex decomposition {Wα } has a tree-like adjacency structure (i.e., the dual graph is a
+tree, so there are no cycles of adjacent cells).
+(ii) Cell boundaries intersect transversally (generically).
+Then the tropical correction satisfies
+λtrop ≤ (|A| − 1) ·
+
+dW − 1
+,
+2
+
+where |A| is the number of convex cells and dW is the dimension of the weight space. Equality holds
+only in highly degenerate cases where the optimum lies on multiple cell boundaries simultaneously.
+Proof sketch. Under (ii), each cell boundary (a codimension-1 interface) contributes at most dW2−1
+to the LLC—the RLCT of a generic fold singularity in dW dimensions.
+Under (i), a tree on |A| vertices has exactly |A| − 1 edges, hence at most |A| − 1 cell boundaries.
+Summing contributions gives the bound.
+If assumption (i) fails (the cell complex has cycles), additional boundaries exist and the bound
+increases. If assumption (ii) fails (tangent boundaries), individual contributions can exceed dW2−1 .
+
+16
+
+Corollary 2 (Negligibility condition). The tropical correction is negligible (λtrop  λbase ) when:
+1. The number of cells |A| is small.
+2. Cell boundaries are transverse (non-degenerate intersections).
+3. The optimum Ω∗ is far from cell boundaries.
+Under these conditions, the convex analysis is a good approximation.
+
+7.11
+
+Example: Two-cell motive geometry
+
+Example 2 (Binary motive structure). Consider W = W1 ∪ W2 with two convex cells meeting along
+a hyperplane H = W1 ∩ W2 . Suppose an option o has:
+• Cell-1 margin: m1o (z) = a>
+1 z + b1 ;
+• Cell-2 margin: m2o (z) = a>
+2 z + b2 .
+The global margin is mo (z) = min(m1o (z), m2o (z)), with tropical hypersurface To = {z : a>
+1 z + b1 =
+>
+a2 z + b2 }.
+LLC structure:
+• Away from To : LLC decomposes per the active cell.
+• On To : Additional singularity from the kink. If a1 6= a2 , this is a generic fold with LLC
+contribution λfold = 21 .
+The total LLC decomposes as:
+λgoal = λbase +
+
+1
+· 1[Ω∗ on To ],
+2
+
+where 1[·] is an indicator. When Ω∗ is strictly off the tropical hypersurface, the LLC is exactly
+λbase , not approximately. The jump of 1/2 occurs precisely when Ω∗ lies on To .
+
+7.12
+
+Computational considerations
+
+Remark 6 (Practical computation for non-convex geometries). Computing the LLC for non-convex
+motive geometries requires:
+1. Cell decomposition. Compute or approximate a convex decomposition of W . For neural
+MDNs, this can be done by linearizing around operating points.
+2. Per-cell LLC. Compute λα for each cell using the convex analysis.
+3. Tropical structure. Identify the tropical hypersurface and compute its contribution.
+4. Active cell determination. For given Ω, determine which cells are active to identify the
+relevant stratum.
+In practice, if the number of cells is moderate and the optimum is not near cell boundaries, the
+convex approximation (λ ≈ λbase ) is often adequate.
+
+17
+
+8
+
+Main Decomposition Theorems
+
+We now state our main results combining the preceding analyses, including non-convex motive
+geometries.
+
+Theorem 5 (LLC decomposition for SubRep: General case).
+Consider a SubRep system with
+S
+head
+shared representation and non-convex motive geometry W = α Wα , parameterized by Ω = (ψ, {θohead }o , θMDN , θplan
+Assume:
+1. Dominated coupling (Assumption 1).
+2. Non-degenerate shared features and head separability (Theorem 1).
+3. Per-double-stratum analyticity and semi-algebraic boundaries (Theorem 3).
+4. The optimum Ω∗ lies in the interior of a double stratum ΣS ∗ ,B∗ .
+Then the goal-level LLC satisfies
+λgoal = λψ +
+
+X
+
+∗
+
+∗
+
+,B
+λhead
++ λMDN + λSplan
++ λint + λtrop ,
+o
+
+(12)
+
+o∈S ∗
+
+where:
+• λψ is the LLC of the shared representation block;
+• S ∗ = A(Ω∗ ) is the active set of admitted options;
+• B ∗ = C(Ω∗ ) is the active set of motive cells;
+• λhead
+is the LLC of option o’s head (computed with frozen features);
+o
+∗
+
+∗
+
+S ,B
+is the planner LLC on the active stratum;
+• λplan
+
+• λint ≥ 0 is the intersection correction (zero under transverse intersection);
+• λtrop ≥ 0 is the tropical correction from non-convex cell boundaries (zero if Ω∗ is away from
+cell transitions).
+Proof. Combine Lemma 1, Theorem 1, Theorem 3, and Theorem 4. The dominated coupling
+ensures the remainder R does not affect the LLC order. The shared representation analysis accounts
+for parameter sharing. The double stratification analysis handles both option admission and motive
+cell transitions. The tropical correction captures singularities from piecewise motive geometry.
+Corollary 3 (Convex case recovery). If the motive geometry W is convex (a single cell, |A| = 1),
+then B ∗ = {W }, λtrop = 0, and Theorem 5 reduces to:
+X
+λgoal = λψ +
+λhead
++ λMDN + λplan + λint .
+o
+o∈S ∗
+
+Corollary 4 (Per-weight LLC vectors with non-convex geometry). For PDS with reference weights
+Wref = {w(1) , . . . , w(K) } drawn from a non-convex motive geometry, define per-weight losses K (k)
+by restricting to weight w(k) . Under the conditions of Theorem 5 applied per-weight:
+(1)
+
+(K)
+
+Λgoal := (λgoal , . . . , λgoal )
+(k)
+
+with each component decomposing as in (12). The tropical correction λtrop depends on which cell
+contains w(k) and its proximity to cell boundaries.
+18
+
+Theorem 6 (Robust decomposition bounds). Even when dominated coupling fails, the goal-level
+LLC satisfies
+X
+max λk ≤ λgoal ≤
+λk + λR ,
+k
+
+k
+
+where λR is the LLC of the remainder term R(Ω) when it creates independent singularities. The
+upper bound holds when R ≥ 0 and the losses are “separable enough” (see proof ).
+Proof. Lower bound: For any k, the total loss satisfies K(Ω) ≥ Kk (θ(k) ) when all Kj ≥ 0 and
+R ≥ 0. Thus {K ≤ ε} ⊆ {Kk ≤ ε}, giving V (ε) ≤ Vk (ε). Since Vk (ε) ∼ ck ελk , we have λ ≥ λk for
+each k.
+Upper bound: This requires care. When R creates singularities independent of P
+the Kk , we
+can decompose the singular variety: S = {K = 0} ⊆ {K0 = 0} ∪ {R P
+= 0} where K0 = k Kk . By
+the additivity of LLC for independent losses (Proposition 1), λK0 = k λk .
+If R has singular variety SR disjoint from S0 , the total singularity is the union, and λgoal ≤
+λK0 + λR by subadditivity of LLC over unions of singular varieties.
+If SR ∩ S0 6= ∅, the intersection can reduce the total (redundancy) or increase it (if intersection creates higher-order tangencies). The bound λR is then an upper bound on the additional
+contribution, not necessarily tight.
+Caveat: When R shares parameters with the Kk and creates correlated singularities, the upper
+bound may not be tight. In such cases, the interaction framework of Section 10 provides the correct
+decomposition.
+
+9
+
+Robustness and Degradation Analysis
+
+The preceding sections establish LLC additivity under “nice” conditions. This section addresses
+the critical practical question: how quickly and severely does additivity break down as conditions
+degrade? We characterize both gradual degradation (continuous deviation from additivity) and
+catastrophic failure (sharp phase transitions).
+
+9.1
+
+The additivity gap
+
+Definition 21 (Additivity gap). The additivity gap is the deviation of the goal-level LLC from
+the sum of module LLCs:
+X
+∆λ := λgoal −
+λk ,
+(13)
+k
+
+where the sum is over all modules (shared representation, option heads, MDN, planner). Under
+exact additivity, ∆λ = 0.
+From Theorem 5, under ideal conditions:
+∆λ = λint + λtrop ≥ 0,
+with both corrections small (often zero) under transversality and convexity assumptions. When
+conditions fail, ∆λ can grow substantially.
+
+19
+
+9.2
+
+Coupling-induced deviation
+
+We analyze how coupling affects the LLC. A key distinction is between multiplicative perturbations
+(which preserve LLC) and structural perturbations (which can change LLC).
+Theorem 7 (LLC invariance under dominated coupling). Suppose the coupling ratio η satisfies
+0 ≤ η < 1 and the remainder R(Ω) is structurally subordinate to K0 :
+(i) R vanishes on S0 := {K0 = 0}, and
+(ii) R/K0 extends continuously to S0 .
+Then the asymptotic LLC satisfies λ =
+constant, not the exponent.
+
+P
+
+k λk exactly. The coupling affects only the multiplicative
+
+Proof. From dominated coupling, (1 − η)K0 ≤ K ≤ (1 + η)K0 . For sublevel-set volumes:
+V0 (ε/(1 + η)) ≤ V (ε) ≤ V0 (ε/(1 − η)).
+P
+
+Since V0 (ε) ∼ cε k λk | log ε|Pm−1 , scaling ε by a constant
+factor changes
+P
+P the prefactor but not the
+exponent. Thus V (ε) ∼ c0 ε k λk with c0 ∈ [c(1 + η)− k λk , c(1 − η)− k λk ].
+Remark 7 (When does LLC actually change?). The LLC changes only when the remainder R
+modifies the singular structure—specifically, when R has a different vanishing order than K0 in
+some direction, or when R creates new singularities not present in K0 . This corresponds to Iλ 6= 0
+in the interaction framework of Section 10.
+P
+Theorem 8 (Additivity gap characterization). The additivity gap ∆λ = λgoal − k λk satisfies:
+1. ∆λ = 0 if the remainder R is structurally subordinate.
+2. |∆λ| ≤ λR where λR is the LLC contribution from R treated as an independent loss (if R
+creates new singularities).
+3. ∆λ < 0 is possible if modules share singular structure (redundancy, Iλ > 0).
+4. ∆λ > 0 is possible if coupling creates new singularities (synergy, Iλ < 0).
+Remark 8 (Finite-sample effective LLC). In practice, with finite samples n, the effective LLC
+λ̂n estimated from evidence or WBIC can vary with coupling even when the asymptotic LLC is
+unchanged. Finite-sample corrections scale as O(1/ log n) and can be affected by the couplingmodified prefactor. The “linear degradation” intuition applies to these finite-sample estimates, not
+to the true asymptotic LLC.
+
+9.3
+
+Phase transition at the dominated boundary
+
+When the remainder R transitions from structurally subordinate to structurally significant, the
+LLC can change discontinuously.
+Theorem 9 (Phase transition in LLC). Consider a family of losses Kη (Ω) = K0 (Ω) + ηR(Ω)
+parameterized by coupling strength η ≥ 0. Define λ(η) := LLC of Kη . Then:
+P
+1. For η < 1 with R structurally subordinate to K0 : λ(η) = k λk exactly (Theorem 7).
+2. At η = 1: If R has singularities not present in K0 , then λ(η) can jump discontinuously.
+20
+
+3. For η > 1: The LLCPis determined by the combined singular geometry of K0 and R, potentially
+differing from both k λk and λR .
+Proof sketch. (1) Follows from Theorem 7.
+(2) At η = 1, the remainder R contributes at the same order as K0 . If R vanishes on a
+different variety than K0 , the intersection of these varieties determines the new singular locus.
+This intersection can have different dimension, changing the LLC discontinuously.
+(3) For η > 1, the remainder dominates: Kη ≈ ηR for large η. The LLC approaches λR , the
+LLC of R alone.
+Example 3 (Sharp transition). Let K0 (θ) = θ12 +θ22 (smooth, λ0 = 1) and R(θ) = (θ1 −θ2 )2 (singular
+along θ1 = θ2 , λR = 1/2).
+For Kη = K0 + ηR = θ12 + θ22 + η(θ1 − θ2 )2 :
+• η < 1: λ(η) = 1 (the K0 structure dominates).
+• η = 1: K1 = 2θ12 + 2θ22 − 2θ1 θ2 , still smooth, λ(1) = 1.
+• η  1: Kη ≈ η(θ1 − θ2 )2 , so λ(η) → 1/2.
+In this case, the transition is gradual. But if R had a more complex singularity (e.g., R = θ12 θ22 ),
+sharp jumps can occur.
+
+9.4
+
+Intersection correction growth
+
+The intersection correction λint from shared representations can also grow as conditions degrade.
+Proposition 9 (Intersection correction bounds). Let dψ = dim(ψ) be the shared representation
+dimension. The intersection correction satisfies:
+1. Transverse case: λint = 0.
+2. Tangent intersection: λint ≤ dψ /2.
+3. Worst case (full degeneracy): λint ≤ min(dψ ,
+
+head ).
+o do ), where do = dim(θo
+
+P
+
+Proof. (1) Transverse intersections contribute no additional singularity.
+(2) A tangent intersection of two hypersurfaces in dψ dimensions has LLC at most dψ /2 (the
+LLC of a fold singularity).
+(3) In the worst case, all singular varieties coincide on a subspace, giving LLC bounded by the
+smaller of the two dimensions involved.
+Remark 9 (Jacobian rank and intersection). When the shared representation Jacobian ∂fψ /∂ψ
+drops rank, the intersection becomes non-transverse. If rank drops by r, expect λint ≈ r/2.
+
+9.5
+
+Tropical correction growth
+
+The tropical correction λtrop from non-convex motive geometry also exhibits characteristic growth
+patterns.
+Proposition 10 (Tropical correction scaling). Let |A| be the number of convex cells in the motive
+geometry and dW = dim(W ) the weight space dimension.
+1. Few cells, transverse boundaries: λtrop = O(|A|) with small constant.
+21
+
+2. Many cells: λtrop = O(|A| · dW ) in the worst case.
+3. Degenerate boundaries (tangencies): Each k-fold tangency adds O(k · dW ) to λtrop .
+Proof. (1) From Proposition 8, transverse boundaries contribute ≤ (dW − 1)/2 each, with |A| − 1
+boundaries.
+(2) Non-transverse boundaries can contribute up to dW each.
+(3) A k-fold tangency (where k cells meet tangentially) amplifies the contribution by factor
+k.
+Corollary 5 (Cell count threshold). For λtrop . 0.1λbase (tropical correction under 10% of base),
+require
+0.2λbase
+|A| .
+.
+dW − 1
+For a system with λbase = 10 and dW = 5, this gives |A| . 0.5, i.e., the geometry must be essentially
+convex for small tropical corrections.
+
+9.6
+
+Stratum boundary effects
+
+Proximity to stratum boundaries (option admission or cell transitions) creates additional deviation
+from smooth additivity.
+Definition 22 (Boundary distance). For parameter Ω in stratum ΣS,B , define the boundary distance
+δ(Ω) := 0 inf kΩ − Ω0 k,
+Ω ∈∂ΣS,B
+
+the distance to the nearest stratum boundary.
+Proposition 11 (Boundary proximity effects). Assume the loss is locally regular near the stratum
+boundary (i.e., K ∼ ckΩ − Ω∗ k2 in the relevant directions). Then the effective LLC near a stratum
+boundary satisfies:
+1. For δ(Ω)  ε1/2 (far from boundary): The LLC equals the interior value λS,B .
+2. For δ(Ω) ∼ ε1/2 (near boundary): Finite-sample LLC estimates show increased variance,
+scaling as Var(λ̂) ∼ δ(Ω)−1 .
+3. For δ(Ω)  ε1/2 (very near boundary): The effective LLC interpolates between adjacent strata
+values.
+Proof sketch. Under local regularity, the sublevel set {K ≤ ε} has diameter O(ε1/2 ) in the regular
+directions. When this diameter exceeds δ(Ω), the sublevel set crosses stratum boundaries, mixing
+contributions from multiple strata.
+Caveat: In singular directions where K vanishes faster than quadratically, the scaling ε1/2 is
+replaced by ε1/r for the appropriate vanishing order r. The qualitative behavior (crossing threshold
+at comparable scales) persists.
+
+22
+
+9.7
+
+Combined degradation: A unified bound
+
+We now combine all degradation effects into a unified bound.
+Theorem 10 (Unified degradation bound). Consider a SubRep system with:
+• Coupling where R may create independent singularities with LLC λR ;
+• Jacobian rank deficiency r ≥ 0 in shared representation;
+• |A| convex cells with at most τ tangencies;
+• Boundary distance δ > 0 from stratum boundaries.
+The additivity gap satisfies
+|∆λ| ≤
+
+λR +
+|{z}
+
+coupling
+
+r
+2
+|{z}
+
+intersection
+
++ (|A| − 1 + τ )
+|
+{z
+
+dW − 1
+.
+2 }
+
+(14)
+
+tropical
+
+When the remainder R is structurally subordinate (no new singularities), λR = 0. The boundary
+distance affects finite-sample estimates but not the asymptotic LLC.
+Proof. The coupling contribution follows from Theorem 8. Intersection and tropical contributions
+follow from Propositions 9 and 10. The terms combine (approximately) additively since they arise
+from geometrically independent effects.
+Corollary 6 (Conditions for exact additivity). The additivity gap ∆λ = 0 exactly when:
+1. R is structurally subordinate (λR = 0);
+2. r = 0 (transverse intersection);
+3. |A| = 1 (convex motive geometry);
+4. τ = 0 (no tangencies).
+
+9.8
+
+Graceful vs. catastrophic degradation
+
+The degradation bound (14) reveals two regimes:
+Definition 23 (Degradation regimes).
+1. Graceful degradation: |∆λ| varies continuously as
+geometric parameters change (e.g., as singular varieties move transversely).
+2. Catastrophic degradation: |∆λ| jumps discontinuously (e.g., at stratum boundaries or
+when new singularities appear).
+Proposition 12 (Characterization of regimes).
+1. Within a stratum with subordinate coupling: ∆λ is determined by geometric terms (intersection, tropical) and varies continuously.
+2. At stratum boundaries: Catastrophic jumps by |λS1 ,B1 − λS2 ,B2 | when crossing strata.
+3. When R creates new singularities: Catastrophic if the new singularities have different
+vanishing order than K0 .
+Example 4 (Graceful regime). A SubRep system with:
+23
+
+• Structurally subordinate coupling (λR = 0);
+• Full-rank Jacobian (r = 0);
+• Nearly convex motive geometry (|A| = 2, τ = 0);
+• Optimum in stratum interior.
+Bound: |∆λ| ≤ 0 + 0 + (dW − 1)/2 = (dW − 1)/2. For dW = 3: |∆λ| ≤ 1, a modest contribution
+from the single cell boundary.
+Example 5 (Catastrophic regime). A SubRep system with:
+• Coupling R that creates independent singularities (λR = 3);
+• Rank-2 deficiency (r = 2);
+• Highly non-convex geometry (|A| = 20, τ = 5).
+Bound: |∆λ| ≤ 3 + 1 + 24 · (dW − 1)/2. For dW = 5: |∆λ| ≤ 3 + 1 + 48 = 52. The non-convex
+geometry dominates, making modular decomposition essentially meaningless.
+
+9.9
+
+Empirical signatures of degradation
+
+Remark 10 (Detecting degradation empirically). The following empirical signatures indicate departure from the graceful regime:
+1. LLC variance: High variance in LLC estimates across training runs suggests proximity to
+stratum boundaries.
+2. LLC drift: Monotonic drift in LLC during training suggests the system is traversing strata
+or approaching η = 1.
+P
+3. Discrepancy: Large gap between λ̂goal and k λ̂k directly measures |∆λ|.
+4. Sensitivity: If small hyperparameter changes cause large LLC changes, the system is near
+a phase transition.
+
+10
+
+Beyond Additivity: LLC Interaction Information
+
+The preceding sections treated non-additivity as deviation from an ideal. This section develops an
+alternative perspective: rather than viewing ∆λ as error, we interpret it as meaningful structure
+capturing how subgoal complexities interact. This leads to an inclusion-exclusion decomposition
+analogous to mutual information in information theory.
+
+10.1
+
+Motivation: From error to structure
+
+In information theory, the joint entropy H(X, Y ) does not equal H(X) + H(Y ) in general. Rather
+than treating this as failure of additivity, Shannon introduced mutual information I(X; Y ) =
+H(X) + H(Y ) − H(X, Y ) as a fundamental quantity capturing statistical dependence.
+We propose an analogous
+P reframing for SLT: the joint LLC λ(θtotal ) generally differs from the
+sum of marginal LLCs
+k λ(θk ), and this difference is not error but interaction complexity—a
+measure of how singular structures combine.
+24
+
+10.2
+
+LLC interaction complexity: Two modules
+
+Definition 24 (LLC interaction complexity). For two parameter blocks θA and θB with joint
+parameters θAB = (θA , θB ), define the LLC interaction complexity:
+Iλ (A; B) := λ(θA ) + λ(θB ) − λ(θAB ),
+
+(15)
+
+where:
+• λ(θA ) is the LLC of module A with B frozen at its optimum;
+• λ(θB ) is the LLC of module B with A frozen;
+• λ(θAB ) is the LLC of the joint system.
+Remark 11 (Analogy to mutual information). This mirrors the mutual information formula I(X; Y ) =
+H(X) + H(Y ) − H(X, Y ). However, a crucial difference is that Iλ can be negative, unlike Shannon
+mutual information.
+
+10.3
+
+Sign and interpretation of Iλ
+
+The sign of Iλ (A; B) has geometric meaning.
+Proposition 13 (Interpretation of Iλ sign).
+1. Iλ (A; B) = 0: Modules are SLT-independent.
+Their singular varieties do not interact; the joint singularity is the product of individual
+singularities.
+2. Iλ (A; B) > 0: Redundant complexity. The modules share singular structure; jointly they are
+“simpler” than the sum of parts. This occurs when singular varieties intersect non-trivially.
+3. Iλ (A; B) < 0: Synergistic complexity. The joint system has singularities that neither module
+has alone. This occurs when the coupling creates new singular directions.
+Proof. (1) Under exact factorization KAB = KA + KB with independent parameters, sublevel-set
+volumes convolve and LLCs add (Proposition 1), giving Iλ = 0.
+(2) If modules share structure, the joint singular variety SAB = {KAB = 0} has higher codimension than expected from independent intersection: codim(SAB ) > codim(SA ) + codim(SB ). By
+the LLC-codimension relationship, this gives λAB < λA + λB .
+2,
+(3) Coupling can create singularities absent in either marginal. For example, if KA = θA
+2
+2
+2
+2
+KB = θB , but KAB = (θA − θB ) + (θA + θB ) for small , the joint system has a singular direction
+θA = θB not present in either marginal.
+Example 6 (Shared representation induces Iλ > 0). Consider options A and B sharing a feature
+head
+extractor ψ. Each option’s head has LLC λhead
+A , λB . If we compute “marginal” LLCs by freezing
+the other:
+λ(θA ) = λψ + λhead
+A ,
+λ(θB ) = λψ + λhead
+B .
+But the joint system has λ(θAB ) = λψ + λhead
++ λhead
+(the shared ψ contributes once). Thus:
+A
+B
+Iλ (A; B) = λψ > 0.
+The shared representation creates redundant complexity.
+25
+
+2 and K (θ ) = θ 2 , both smooth with
+Example 7 (Coupling creates Iλ < 0). Let KA (θA ) = θA
+B B
+B
+λA = λB = 1/2 (standard Gaussian).
+2 + θ 2 + c(θ θ )2 for c > 0. The
+Now suppose the joint loss has a coupling term: KAB = θA
+A B
+B
+additional term creates a singularity along θA = 0 or θB = 0 axes that is “sharper” than either
+marginal. Computing (via resolution of singularities): λAB > 1 = λA + λB , so Iλ (A; B) < 0.
+This represents synergistic complexity: the coupling creates singular structure absent in either
+module alone.
+
+10.4
+
+Inclusion-exclusion decomposition
+
+For multiple modules, we obtain an inclusion-exclusion formula.
+Definition 25 (Higher-order LLC interaction). For modules {1, . . . , K}, define the k-th order
+interaction:
+X
+Iλ (S) :=
+(−1)|S|−|T | λ(θT )
+(16)
+T ⊆S
+
+for any subset S ⊆ {1, . . . , K}, where λ(θT ) is the LLC of the subsystem containing modules in T .
+This is the LLC analog of interaction information (also called co-information) in information
+theory.
+Theorem 11 (Inclusion-exclusion for LLC). The total LLC decomposes as:
+λtotal =
+
+K
+X
+
+λk −
+
+X
+
+Iλ (i; j) +
+
+i<j
+
+k=1
+
+X
+
+Iλ (i; j; k) − · · · + (−1)K+1 Iλ (1; . . . ; K).
+
+(17)
+
+i<j<k
+
+Equivalently, inverting:
+λtotal =
+
+X
+
+(|S|)
+
+(−1)|S|+1 Iλ
+
+(S),
+
+(18)
+
+∅6=S⊆{1,...,K}
+(1)
+
+where Iλ (k) := λk and higher orders are defined recursively.
+Proof. This is the
+formula applied to the lattice of subsets. Define f (S)
+P Möbius inversion
+P := λ(θS ).
+|S|−|T | f (T ) is the Möbius transform. Inverting: f (S) =
+Then Iλ (S) =
+(−1)
+T ⊆S
+T ⊆S Iλ (T ),
+which for S = {1, . . . , K} gives (17).
+
+10.5
+
+SubRep-specific interaction structure
+
+For SubRep systems, the interaction terms have interpretable meanings.
+Definition 26 (SubRep interaction decomposition). For a SubRep system with shared representation ψ, options {o1 , . . . , on }, MDN, and planner, define:
+Iλrep (oi ; oj ) := interaction via shared ψ,
+
+(19)
+
+Iλfunc (oi ; plan) := functional coupling interaction,
+
+(20)
+
+Iλmotive (oi ; oj ) := interaction via motive geometry,
+Iλtrop (oi ; oj ) := tropical (cell boundary) interaction.
+
+(21)
+
+26
+
+(22)
+
+Proposition 14 (Decomposition of pairwise interaction). For options oi , oj in a SubRep system:
+Iλ (oi ; oj ) = Iλrep (oi ; oj ) + Iλfunc (oi ; oj ) + Iλmotive (oi ; oj ) + Iλtrop (oi ; oj ).
+
+(23)
+
+Each term has a characteristic sign:
+• Iλrep ≥ 0 always (shared structure ⇒ redundancy).
+• Iλfunc can have either sign (depends on coupling type).
+• Iλmotive ≥ 0 typically (overlapping motive regions).
+• Iλtrop can have either sign (cell boundary effects).
+Proof sketch. Decompose the joint singular variety into contributions from each source of interaction. Shared representations always reduce joint complexity (same parameters, counted once vs.
+twice). Functional coupling can create or destroy singularities depending on whether compositions are transverse. Motive overlap typically creates redundancy. Tropical effects depend on cell
+boundary geometry.
+
+10.6
+
+Three-way and higher interactions in SubRep
+
+Higher-order interactions capture non-pairwise effects.
+Definition 27 (Three-way LLC interaction). For modules A, B, C:
+Iλ (A; B; C) := Iλ (A; B)+Iλ (A; C)+Iλ (B; C)−Iλ (A; BC)−Iλ (B; AC)−Iλ (C; AB)+Iλ (A; B; C)pure ,
+(24)
+where Iλ (A; B; C)pure is the irreducible three-way contribution.
+Proposition 15 (Interpretation of three-way interaction).
+1. Iλ (A; B; C) > 0: Redundant synergy. The three-way combination reveals shared structure not visible in pairs.
+2. Iλ (A; B; C) < 0: Synergistic emergence. The three-way combination creates singularities
+absent in any pair.
+3. Iλ (A; B; C) = 0: Three-way effects reduce to pairwise.
+Example 8 (Three-option interaction in SubRep). Consider three options o1 , o2 , o3 covering complementary aspects of a task (e.g., navigation, manipulation, communication for a robot).
+If the planner composes them sequentially, each pair has functional coupling: Iλ (oi ; oj ) < 0
+(synergy from composition).
+But if all three together enable a capability none can achieve in pairs (e.g., coordinated behavior), then Iλ (o1 ; o2 ; o3 ) < 0 represents emergent complexity from the triad.
+Conversely, if all three share a common bottleneck (e.g., all require the same perceptual feature),
+then Iλ (o1 ; o2 ; o3 ) > 0 represents triple-redundancy beyond pairwise sharing.
+
+10.7
+
+Partial information decomposition for LLC
+
+Drawing further on information theory, we can decompose interactions into redundancy, synergy,
+and unique contributions.
+
+27
+
+Definition 28 (LLC-PID decomposition). For target T and source modules A, B, decompose:
+λ(T ) = Uniqλ (T ; A) + Uniqλ (T ; B)
++ Redλ (T ; A, B) + Synλ (T ; A, B),
+
+(25)
+(26)
+
+where:
+• Uniqλ (T ; A): complexity of T attributable uniquely to A;
+• Uniqλ (T ; B): complexity attributable uniquely to B;
+• Redλ (T ; A, B): redundant complexity (shared by A and B);
+• Synλ (T ; A, B): synergistic complexity (arising only from A and B together).
+Proposition 16 (Constraints on LLC-PID). The LLC-PID satisfies:
+λ(T | A) = Uniqλ (T ; B) + Synλ (T ; A, B),
+
+(27)
+
+λ(T | B) = Uniqλ (T ; A) + Synλ (T ; A, B),
+
+(28)
+
+Iλ (A; B) = Redλ (T ; A, B) − Synλ (T ; A, B),
+
+(29)
+
+where λ(T | A) := λ(T, A) − λ(A) is the “conditional LLC.”
+Remark 12 (Operational meaning for SubRep). In SubRep:
+• Uniqλ (goal; oi ): complexity contribution unique to option oi .
+• Redλ (goal; oi , oj ): complexity that either oi or oj could provide (substitutable options).
+• Synλ (goal; oi , oj ): complexity requiring both options together (complementary options).
+This provides a principled basis for option library design: maximize unique and synergistic contributions, minimize redundancy.
+Remark 13 (SLT advantage over Shannon PID). In standard information theory, Partial Information Decomposition (PID) is notoriously ill-defined: there is no universally accepted way to
+decompose mutual information into unique, redundant, and synergistic components because the
+lattice of redundancy admits multiple consistent measures.
+SLT may offer a cleaner PID than Shannon entropy. The reason is geometric: LLC is determined by intersection multiplicities of algebraic varieties (Proposition 14), and algebraic intersection
+theory provides unambiguous definitions of how varieties overlap. Unlike probability distributions,
+where “shared information” is ambiguous, singular varieties either intersect or they don’t, and
+intersection multiplicities are well-defined integers.
+Specifically:
+• Redλ corresponds to the LLC contribution from SA ∩ SB (shared singular locus).
+• Uniqλ (A) corresponds to the LLC from SA \ SB (singular directions unique to A).
+• Synλ corresponds to singularities in SAB not present in SA ∪SB (emergent singular directions).
+The geometric definitions are unambiguous, suggesting SLT-PID may be better-behaved than
+Shannon-PID.
+
+28
+
+10.8
+
+Interaction complexity and the additivity gap
+
+We can now reinterpret the additivity gap.
+Proposition 17 (Additivity gap as total interaction). The additivity gap equals the alternating
+sum of all interactions:
+X
+X
+X
+(−1)|S| Iλ (S) = −
+Iλ (i; j) +
+Iλ (i; j; k) − · · ·
+(30)
+∆λ = −
+|S|≥2
+
+i<j
+
+i<j<k
+
+Note the signs: positive pairwise interaction (redundancy, Iλ > 0) decreases ∆λ, while negative
+pairwise interaction (synergy, Iλ < 0) increases ∆λ.
+P
+Proof. Direct consequence of Theorem 11: ∆λ = λtotal − k λk and substituting the inclusionexclusion expansion.
+Corollary 7 (Dominant pairwise approximation). If higher-order interactions are small relative
+to pairwise:
+X
+∆λ ≈
+Iλ (i; j).
+(31)
+i<j
+
+This approximation is accurate when modules interact primarily in pairs.
+
+10.9
+
+Estimating interaction complexity
+
+Remark 14 (Empirical estimation). To estimate Iλ (A; B) empirically:
+1. Estimate λ̂A by freezing B at its optimum and computing the LLC of A via standard methods
+(WBIC, evidence, etc.).
+2. Estimate λ̂B similarly.
+3. Estimate λ̂AB for the joint system.
+4. Compute Iˆλ (A; B) = λ̂A + λ̂B − λ̂AB .
+Variance of Iˆλ combines variances of the three estimates.
+Remark 15 (Computational cost). For K modules, estimating all pairwise interactions requires
+O(K 2 ) LLC estimates. Higher-order interactions require O(2K ) estimates in general, but sparse
+interaction structures (e.g., tree-structured dependencies) can reduce this.
+
+10.10
+
+Geometric interpretation: Intersection multiplicities
+
+The interaction complexity has a geometric interpretation in terms of intersection theory.
+Proposition 18 (Interaction as intersection multiplicity). Let SA , SB be the singular varieties of
+modules A, B. Then:
+Iλ (A; B) = λA + λB − λAB = µ(SA ∩ SB ) − µtransverse ,
+
+(32)
+
+where µ(SA ∩ SB ) is the intersection multiplicity and µtransverse is the expected multiplicity under
+transverse intersection.
+
+29
+
+Proof sketch. Under transverse intersection, λAB = λA + λB and Iλ = 0. Non-transverse intersection (tangency, containment) increases or decreases the intersection multiplicity, reflected in λAB .
+The difference measures departure from transversality.
+Corollary 8 (Tropical interaction). For non-convex motive geometries, the tropical correction λtrop
+contributes to interaction complexity:
+X
+Iλtrop (A; B) =
+µ(σ) · λσ ,
+σ∈TA ∩TB
+
+the sum over cells where tropical hypersurfaces of A and B intersect.
+
+10.11
+
+Design implications: Interaction-aware architecture
+
+The interaction framework suggests new design principles.
+1. Minimize unintended redundancy. Large positive Iλ (oi ; oj ) indicates options oi , oj share
+structure unnecessarily. Consider factoring out shared components explicitly.
+2. Exploit intentional synergy. Negative Iλ (oi ; oj ) indicates options create emergent capability. Design option libraries to maximize beneficial synergies.
+3. Monitor interaction spectrum. Track pairwise Iλ during training. Changes indicate
+restructuring of how options relate.
+4. Sparse interaction structure. If most Iλ (oi ; oj ) ≈ 0, the system is approximately modular.
+Target architectures with sparse interaction graphs.
+5. Bound higher-order interactions. If pairwise interactions dominate, the inclusion-exclusion
+truncates early and complexity is predictable. Many-body interactions indicate highly entangled systems.
+
+10.12
+
+The synergy–stability tradeoff
+
+There is a fundamental tension between the “synergy” of Section 10 and the “stability” of Section 9.
+This subsection makes the connection explicit.
+Proposition 19 (Synergy–stability duality). Let Iλ (A; B) < 0 indicate synergistic complexity
+(emergent singularities from coupling). Then:
+1. The coupling ratio η satisfies η ≥ |Iλ (A; B)|/(λA + λB ).
+2. If |Iλ (A; B)| ≥ λA + λB , then η ≥ 1 and the system is in the catastrophic degradation regime
+of Section 9.
+Proof. Synergistic complexity means λAB > λA + λB , i.e., the joint system has more singular
+structure than the sum of parts. This excess singularity arises from the coupling term R(θ). The
+coupling ratio η = |R|/K0 must be large enough to create this additional singularity. Quantitatively,
+η ≥ (λAB − λA − λB )/(λA + λB ) = |Iλ |/(λA + λB ).
+Remark 16 (Two faces of the same phenomenon). The “synergy” of Section 10 and the “catastrophic
+degradation” of Section 9 are two perspectives on the same mathematical phenomenon:
+
+30
+
+• Capability perspective (Section 10): Strong negative Iλ means emergent capabilities—
+the combined system can do things neither module can do alone.
+• Stability perspective (Section 9): Strong coupling (η → 1) means the additive approximation fails and LLC becomes unpredictable under perturbations.
+Neither perspective is “correct”—they capture complementary aspects of the same underlying geometry.
+Definition 29 (Synergy–stability frontier). For a family of architectures, the synergy–stability
+frontier is the Pareto-optimal set in the space of (total synergy, stability margin), where:
+X
+Total synergy := −
+min(Iλ (oi ; oj ), 0),
+(33)
+i<j
+
+Stability margin := 1 − η.
+
+(34)
+
+Architectures on the frontier achieve maximal emergent capability for a given level of modularity
+(and vice versa).
+Proposition 20 (Architectural tradeoffs on the frontier).
+1. Fully modular: Iλ ≈ 0 for all
+pairs. High stability (η ≈ 0), zero synergy. The system is predictable but has no emergent
+capabilities.
+2. Fully entangled: Large negative Iλ for all pairs. High synergy, low stability (η → 1). The
+system has strong emergent capabilities but is fragile and hard to analyze.
+3. Hierarchical structure: Cluster options into groups with high within-group synergy and
+low between-group interaction. This achieves local emergence with global modularity.
+Remark 17 (Design heuristic). A practical design heuristic is to maximize local synergy while minimizing global synergy:
+• Within a subgoal cluster: Allow strong coupling (Iλ  0) to enable emergent capabilities.
+• Between clusters: Enforce weak coupling (Iλ ≈ 0) to preserve modularity and trainability.
+This hierarchical structure places the system on the synergy–stability frontier with favorable properties: emergent capabilities within functional units, predictable composition across units.
+Example 9 (Robot task decomposition). Consider a robot with options for navigation, manipulation, and communication.
+• Within navigation: Options for path-planning, obstacle avoidance, and localization may
+have Iλ < 0 (synergy)—together they enable robust navigation neither achieves alone.
+• Between navigation and manipulation: Ideally Iλ ≈ 0—the navigation module’s complexity should be independent of whether the robot is carrying an object.
+• Pathological case: If navigation and manipulation have Iλ  0, changes to manipulation
+affect navigation unpredictably. The system is powerful but fragile.
+
+11
+
+Implications for SubRep Design
+
+Our theoretical development suggests several principles for SubRep system design and diagnostics.
+31
+
+11.1
+
+Architectural conditions for tractable decomposition
+
+Theorem 5 identifies conditions ensuring LLC additivity:
+1. Accurate option models. Low option prediction error ensures dominated coupling (Proposition 2).
+2. Smooth planner. Lipschitz planner objectives reduce coupling strength.
+3. Option separation. Options should address distinct task aspects, minimizing cross-gradients.
+4. Non-degenerate representations. The shared feature extractor should have full-rank
+Jacobian.
+5. Simple motive geometry. Fewer convex cells and transverse cell boundaries minimize
+tropical corrections.
+
+11.2
+
+Motive geometry design principles
+
+The non-convex analysis (Section 7) suggests:
+1. Prefer convex or nearly-convex geometries. If the motive space can be approximated
+by a single convex cone, λtrop = 0 and the analysis simplifies.
+2. Minimize cell count. Use the coarsest convex decomposition consistent with task requirements. Fine decompositions increase λtrop and stratification complexity.
+3. Avoid degenerate cell boundaries. Ensure cell boundaries intersect transversely (generically). Tangent or high-multiplicity intersections create larger tropical corrections.
+4. Keep optima away from boundaries. If Ω∗ is far from cell transition boundaries (in the
+interior of a double stratum), λtrop ≈ 0 effectively.
+5. Use soft cell transitions. The soft relaxation (Proposition 7) smooths cell boundaries,
+reducing singularities during training.
+
+11.3
+
+Diagnostic signatures
+
+The SLT framework provides diagnostic tools:
+1. Stability detection. Stable LLC values (estimated empirically) indicate the system is in a
+consistent decompositional regime within a single double stratum.
+2. Option phase transitions. Sudden LLC changes when options are admitted or removed
+suggest stratum boundary crossings.
+3. Motive phase transitions. LLC changes without option changes suggest motive cell
+transitions—the active region of the motive geometry has shifted.
+P
+4. Coupling detection. If λgoal  o λo + λψ + . . ., coupling terms are significant, and the
+factorization assumptions should be revisited.
+5. Tropical signature. Large λtrop (estimated via proximity to cell boundaries) suggests the
+motive geometry is too finely decomposed or has degenerate structure.
+32
+
+11.4
+
+Training with non-convex geometries
+
+1. Temperature annealing. Begin training with high temperature (soft cell transitions) and
+anneal toward hard boundaries. This smooths the loss landscape early and allows the optimizer to find good basins before encountering cell boundary singularities.
+2. Cell-aware initialization. Initialize parameters so Ω0 is in the interior of a single cell,
+avoiding immediate exposure to cell boundary singularities.
+3. Adaptive cell refinement. Start with a coarse convex decomposition and refine only where
+needed. Monitor LLC to detect when refinement causes problematic singularities.
+4. Regularization toward convexity. Add regularization terms encouraging the MDN to
+produce more convex motive geometries, trading expressiveness for simpler LLC structure.
+
+11.5
+
+Soft vs. hard admission tradeoffs
+
+Our analysis suggests practical benefits to soft CDS/PDS:
+• Gradient flow. Soft margins allow gradients to flow through admission decisions, improving
+trainability.
+• Smooth LLC landscape. The LLC varies continuously with parameters, avoiding jumps.
+• Annealing. Training can begin with high temperature (soft) and anneal toward hard decisions, tracking LLC evolution.
+
+11.6
+
+Limitations and extensions
+
+Our analysis has limitations that suggest directions for future work:
+1. Finite-sample estimation. We have characterized population quantities; practical LLC
+estimation requires careful finite-sample analysis, including variance bounds and convergence
+rates for empirical LLC estimators.
+2. Infinite cell decompositions. Our non-convex analysis assumes finitely many cells. Continuous parameterizations of motive geometry (e.g., smooth manifolds) require extending the
+tropical framework to infinite-dimensional settings.
+3. Dynamic option libraries. Our stratification is static; online option discovery with continuous option addition/removal requires a dynamic stratification theory with moving boundaries.
+4. Explicit computation. Computing LLCs for specific SubRep architectures (e.g., with neural network components) requires resolving singularities of neural network loss landscapes,
+which remains challenging.
+5. Higher-order tropical corrections. Our tropical LLC analysis captures leading-order contributions. Higher-order corrections from complex cell boundary intersections (triple points,
+etc.) may be significant in highly non-convex geometries.
+6. Non-semi-algebraic geometries. Some MDN outputs may produce non-semi-algebraic
+motive geometries (e.g., involving transcendental functions). Extension to o-minimal structures may be necessary.
+33
+
+12
+
+Conclusion
+
+We have developed a rigorous SLT analysis of SubRep systems, addressing functional coupling,
+shared representations, non-analytic CDS/PDS boundaries, non-convex motive geometries, robustness of additivity, and—most significantly—moving beyond additivity to an interaction-theoretic
+framework. Our main contributions are:
+1. Coupling analysis. We identified sufficient conditions (option accuracy, planner smoothness, option separation) under which functional coupling remains dominated, preserving approximate LLC additivity (Proposition 2, Lemma 1).
+2. Shared representation theory. We showed how shared feature extractors contribute their
+LLC once (not per-module) to the total, with an intersection correction for non-transverse
+singular varieties (Theorem 1).
+3. Stratified SLT. We introduced soft CDS/PDS relaxations and proved existence of a welldefined stratified LLC for hard systems, characterizing discontinuities at stratum boundaries
+(Theorem 2, Proposition 3).
+4. Non-convex motive geometries. We developed a complete theory for non-convex motive
+spaces via convex decomposition, double stratification over options and cells, and tropical
+geometry. The tropical LLC correction λtrop quantifies singularities from piecewise motive
+structure (Theorem 3, Theorem 4, Proposition 8).
+5. Robustness and degradation analysis. We characterized when the additivity gap ∆λ
+is zero (structurally subordinate coupling, transverse intersection, convex geometry) versus
+when it is nonzero (Theorems 7, 8, 10). We distinguished graceful degradation (continuous
+variation) from catastrophic failure (discontinuous jumps at stratum boundaries or when new
+singularities appear) (Proposition 12).
+6. LLC interaction complexity. We introduced Iλ (A; B) = λA + λB − λAB as the SLT analog
+of mutual information, with positive values indicating redundant complexity (shared singular
+structure) and negative values indicating synergistic complexity (emergent singularities). The
+inclusion-exclusion formula (Theorem 11) decomposes total LLC via pairwise, three-way, and
+higher-order interactions, reinterpreting the additivity gap as total interaction rather than
+error. We also identified the synergy–stability tradeoff (Section 10.12): synergistic complexity (Iλ < 0) enables emergent capabilities but is mathematically equivalent to the strong
+coupling that causes catastrophic degradation. This duality suggests designing hierarchical
+architectures with local synergy and global modularity.
+7. Main decomposition theorem. We combined these elements into a comprehensive decomposition result (Theorem 5) with robust bounds even when coupling is strong (Theorem 6).
+The interaction-theoretic perspective (Section 10) represents a conceptual shift: rather than
+asking “when does additivity hold?” we ask “what is the interaction structure?” This reframing
+has several advantages:
+• Non-additivity becomes informative rather than problematic. Iλ (oi ; oj ) > 0 reveals shared
+structure; Iλ < 0 reveals emergent capabilities.
+• The inclusion-exclusion formula provides a complete decomposition, not an approximation
+with error bounds.
+34
+
+• Design guidance shifts from “minimize coupling” to “design beneficial interactions”—maximize
+synergy within functional clusters, minimize coupling between clusters.
+• The geometric foundation of SLT may yield cleaner PID than Shannon information theory,
+since intersection multiplicities are unambiguous.
+• The synergy–stability frontier provides a framework for understanding architectural tradeoffs
+between capability and predictability.
+For practical SubRep systems, our results suggest:
+1. Additivity as baseline. When interactions are small (|Iλ |  λk ), the additive approximation suffices.
+P
+P
+2. Pairwise correction. When higher-order interactions are small, λtotal ≈ k λk − i<j Iλ (i; j)
+captures most structure.
+3. Full interaction analysis. For highly entangled systems, the complete inclusion-exclusion
+is necessary.
+4. Interaction-aware design. Monitor Iλ during training to detect option redundancy (split
+or merge options) and synergy (preserve beneficial couplings).
+These results provide a principled foundation for understanding complexity in hierarchical goal
+decomposition systems, moving from a naive additive model to a rich interaction-theoretic framework that embraces the non-linear combination of subgoal complexities as meaningful structure.
+
+A
+
+Proof Details
+
+A.1
+
+Proof of Lemma 1 (full)
+
+We provide the complete argument for the volume bound under dominated coupling.
+P
+Proof. Let K0 (Ω) := k Kk (θ(k) ) denote the sum of module excess losses. Under Assumption 1(a):
+(1 − η)K0 (Ω) ≤ K(Ω) ≤ (1 + η)K0 (Ω)
+
+(35)
+
+for all Ω ∈ U .
+Upper bound on V (ε):
+From the left inequality in (35):
+{K(Ω) ≤ ε} ⊆ {K0 (Ω) ≤ ε/(1 − η)}.
+For the sum K0 =
+
+P
+
+k Kk , we use the convolution structure. Define ε
+
+0 := ε/(1 − η). Then:
+
+VK0 (ε0 ) := Vol{K0 ≤ ε0 }
+Z
+Y
+= P
+Vk0 (εk ) dε1 · · · dεK−1 ,
+0
+k εk ≤ε
+
+k
+
+where Vk0 (ε) := dVk /dε.
+For each Vk (ε) ∼ ck ελk | log ε|mk −1 , we have Vk0 (ε) ∼ ck λk ελk −1 | log ε|mk −1 .
+
+35
+
+The convolution integral yields (by standard asymptotic analysis):
+VK0 (ε0 ) ∼ Cε0
+
+P
+
+k λk
+
+P
+
+| log ε0 |
+
+k (mk −1)+K−1
+
+.
+
+Up to multiplicative constants and logarithmic corrections, this establishes V (ε) ≤ c+
+Lower bound on V (ε):
+From the right inequality in (35):
+
+Q
+
+0
+k Vk (ε ).
+
+{K0 (Ω) ≤ ε/(1 + η)} ⊆ {K(Ω) ≤ ε}.
+Q
+The same convolution analysis gives V (ε) ≥ c− k Vk (ε00 ) for ε00 := ε/(1 + η).
+Prior factorization:
+Under Assumption 1(c), the prior contributes bounded multiplicative factors c1 , c2 that absorb
+into c− , c+ .
+
+A.2
+
+LLC additivity via Laplace-Stieltjes transform
+
+For completeness, we sketch why LLCs add under independence, using the correct sublevel-set
+argument (not direct zeta factorization).
+P
+Q
+Proof of Proposition 1. With K(θ) = k Kk (θ(k) ) and φ(θ) = k φk (θ(k) ):
+Z
+ζ(s) =
+K(θ)s φ(θ) dθ
+Θ
+Z X
+s Y
+φk (θ(k) ) dθ.
+Kk (θ(k) )
+=
+Θ
+
+k
+
+k
+
+This does not directly factorize due to the power of a sum. However, we use the Mellin transform
+representation. For a single block:
+Z
+ζk (s) :=
+Kk (θ(k) )s φk (θ(k) ) dθ(k) .
+Θk
+
+The pole structure of ζk at s = −λk determines the volume scaling. P
+For independent blocks, the total volume satisfies V (ε) = Vol{ k Kk ≤ ε}. The LaplaceStieltjes transform of V factors:
+Z ∞
+YZ ∞
+−tε
+e dV (ε) =
+e−tεk dVk (εk ).
+0
+
+k
+
+0
+
+Tauberian
+theorems relate the transform’s behavior as t → ∞ to V (ε) as ε → 0, yielding λ =
+P
+k λk .
+
+B
+
+Comparison with Previous Work
+
+Our treatment extends previous theoretical notes on SubRep-SLT connections in several ways:
+1. Coupling. Previous work assumed exact factorization or asserted dominated interaction
+without proof. We provide explicit conditions (Proposition 2) under which SubRep architectures satisfy these conditions.
+36
+
+2. Shared parameters. Previous work assumed disjoint parameter blocks. Theorem 1 handles
+shared representations, showing the shared block contributes once.
+3. Non-analyticity. Previous work noted LLC “jumps” without rigorous foundation. Theorem 2 and Proposition 3 provide the stratified analysis justifying these phenomena.
+4. Non-convex geometries. Previous work assumed convex motive cones. Section 7 develops
+the complete theory for non-convex geometries via convex decomposition, double stratification, and tropical geometry, with explicit bounds on the tropical correction (Proposition 8).
+5. Robustness analysis. Previous work gave no indication of how additivity degrades when
+assumptions weaken. Section 9 provides quantitative bounds on the additivity gap (Theorem 10), characterizes graceful versus catastrophic degradation regimes (Proposition 12), and
+identifies the phase transition at η = 1 (Theorem 9).
+6. Beyond additivity. Previous work treated non-additivity as error to be bounded. Section 10
+reframes non-additivity as meaningful structure via LLC interaction complexity Iλ , the SLT
+analog of mutual information. The inclusion-exclusion decomposition (Theorem 11) provides
+a complete characterization rather than error bounds. This connects SLT to informationtheoretic concepts (mutual information, interaction information, partial information decomposition) not previously explored.
+7. Proofs. Previous work asserted results without proof. We provide complete proofs (some
+relegated to Appendix A).
+
+37
+
+

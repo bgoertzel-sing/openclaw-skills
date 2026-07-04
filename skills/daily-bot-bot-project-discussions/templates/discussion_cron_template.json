@@ -1,0 +1,13 @@
+{
+  "name": "botbot daily discussion: <slug>",
+  "schedule": { "kind": "cron", "expr": "0 <hour> * * *", "tz": "America/Vancouver" },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Scheduled daily bot-bot project discussion for `<slug>` in ProtoBots-BotBotChats. Follow the daily-bot-bot-project-discussions skill. Inspect project files and recent memory. If there has already been a pivot/major-status/major-problem discussion for `<slug>` within the last 24h, reply only NO_REPLY. Otherwise post a concise discussion starter addressed to @Protomegabot.",
+    "timeoutSeconds": 900,
+    "lightContext": true,
+    "toolsAllow": ["read", "cron", "session_status", "memory_search", "memory_get"]
+  },
+  "sessionTarget": "isolated",
+  "delivery": { "mode": "announce", "channel": "telegram", "to": "telegram:-5459676079", "bestEffort": true }
+}

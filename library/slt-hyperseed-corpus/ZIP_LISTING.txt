@@ -1,0 +1,11 @@
+Archive:  library/slt-hyperseed-corpus/originals/source---ba15f342-10aa-45ef-9b74-6b9da40343e7.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+    32740  2025-12-09 21:07   source/SLT-accuracy-weakness_v1.tex
+    32217  2025-12-11 14:39   source/SLT-Semantics-v2.tex
+    29683  2025-12-06 21:29   source/SLT-Evolution.tex
+    66062  2025-12-06 15:10   source/Weakness-Singular-Learning.tex
+   105780  2025-12-10 13:42   source/SLT-SubRep-v5.tex
+    51713  2025-12-10 13:32   source/SLT-Goal-Stability_v4.tex
+---------                     -------
+   318195                     6 files

@@ -1,0 +1,6 @@
+# Git State
+Captured UTC: 2026-06-27T06:35:59Z
+Working directory: /home/openclaw/research-agent
+Not a Git worktree.
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

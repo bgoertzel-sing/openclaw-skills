@@ -1,0 +1,673 @@
+Connecting Goal Semantics to Learning Geometry:
+        Distinctions, Symmetry Breaking,
+              and Singularity Types
+                                 Ben Goertzel
+
+                             December 11, 2025
+
+
+                                    Abstract
+         How can we detect when an AI agent’s goals have semantically
+     changed? Singular learning theory (SLT) offers geometric diagnostics,
+     but geometry is not semantics: goals can drift without obvious changes
+     in complexity measures. This paper develops a mechanism connecting
+     the two.
+         The key insight: semantics are implemented through distinctions.
+     Distinctions induce partitions; partitions determine symmetries; sym-
+     metries cause singularities. We prove a template theorem showing that
+     coarsening distinctions monotonically enlarges symmetry groups, while
+     refining distinctions breaks symmetries. Combined with standard SLT
+     results linking symmetries to singularity structure, this provides a con-
+     crete pathway from semantic change to detectable geometric change.
+         We formalize the “faithfulness” assumption (distinct semantic equi-
+     libria yield non-equivalent singularity types), identify sufficient con-
+     ditions via the distinction-symmetry mechanism, and instantiate the
+     template in three AI architectures: causal-coding networks, incremen-
+     tal compression, and probabilistic logic.
+
+
+Contents
+1 Introduction: The Gap Between Geometry and Semantics                           3
+  1.1 The goal stability problem . . . . . . . . . . . . . . . . . . . .         3
+  1.2 The faithfulness question . . . . . . . . . . . . . . . . . . . .          3
+  1.3 This paper’s contribution . . . . . . . . . . . . . . . . . . . .          3
+  1.4 Paper structure . . . . . . . . . . . . . . . . . . . . . . . . . .        4
+
+
+
+                                        1
+2 Conceptual Overview                                                         4
+  2.1 The distinction-symmetry-singularity chain . . . . . . . . . .          4
+  2.2 A toy example: the full chain in action . . . . . . . . . . . . .       5
+  2.3 Symmetry and RLCT: an SLT connection . . . . . . . . . . .              5
+
+3 Formalizing Semantics, Partitions, and Faithfulness                         6
+  3.1 Semantic states via probes . . . . . . . . . . . . . . . . . . . .      6
+  3.2 From semantic states to partitions: the key bridge . . . . . .          7
+  3.3 Singularity types in SLT . . . . . . . . . . . . . . . . . . . . .      7
+  3.4 The faithfulness assumption . . . . . . . . . . . . . . . . . . .       8
+  3.5 The detection theorem . . . . . . . . . . . . . . . . . . . . . .       8
+
+4 The Partition Template Theorem                                              8
+  4.1 Definitions . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+  4.2 The template theorem . . . . . . . . . . . . . . . . . . . . . .        9
+
+5 Three Instantiations                                                  10
+  5.1 Causal-Coding Neural Networks . . . . . . . . . . . . . . . . . 10
+      5.1.1 Setting . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+      5.1.2 Semantic-partition map . . . . . . . . . . . . . . . . . 11
+      5.1.3 Symmetry and overlap . . . . . . . . . . . . . . . . . . 11
+      5.1.4 Coarsening theorem . . . . . . . . . . . . . . . . . . . 11
+      5.1.5 Refinement via regularization . . . . . . . . . . . . . . 12
+  5.2 Incremental Compression . . . . . . . . . . . . . . . . . . . . 12
+      5.2.1 Setting . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+      5.2.2 Semantic-partition map . . . . . . . . . . . . . . . . . 12
+      5.2.3 Coarsening theorem . . . . . . . . . . . . . . . . . . . 12
+      5.2.4 Refinement via refitting . . . . . . . . . . . . . . . . . 13
+  5.3 PLN Inference (Logic Quantale View) . . . . . . . . . . . . . 13
+      5.3.1 Setting . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+      5.3.2 Semantic-partition map . . . . . . . . . . . . . . . . . 13
+      5.3.3 Overlap as collision probability . . . . . . . . . . . . . 13
+      5.3.4 Template instantiation . . . . . . . . . . . . . . . . . . 14
+
+6 Discussion                                                               14
+  6.1 When is faithfulness justified? . . . . . . . . . . . . . . . . . . 14
+  6.2 Partial faithfulness . . . . . . . . . . . . . . . . . . . . . . . . 14
+  6.3 Limitations . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+  6.4 Failure modes . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+
+
+
+                                       2
+7 Conclusion                                                               15
+
+
+1     Introduction: The Gap Between Geometry and
+      Semantics
+1.1   The goal stability problem
+Consider an AI agent capable of modifying its own objectives or represen-
+tations. A central question in AI safety is: when do such modifications pre-
+serve the semantic content of the agent’s goals, and when do they constitute
+genuine goal drift?
+    Singular learning theory (SLT) offers a promising approach: monitor geo-
+metric invariants of the learning landscape—the real log canonical threshold
+(RLCT), local learning coefficients, or related quantities—and use changes
+in these diagnostics to detect structural shifts. We assume basic famil-
+iarity with SLT; recall that the RLCT λ controls the leading term in the
+asymptotics of the Bayesian marginal likelihood (Watanabe 2009), and that
+singularities arise from non-identifiabilities in the model parameterization.
+    However, there is a fundamental gap: geometry is not semantics.
+Many distinct representational states can share similar global diagnostics.
+An agent might drift from “maximize human flourishing” to “maximize re-
+ported satisfaction scores” while the coarse geometric signature of its loss
+landscape remains unchanged.
+
+1.2   The faithfulness question
+To bridge this gap, one needs a stronger structural assumption:
+
+      Distinct semantic goal equilibria correspond to non-equivalent
+      singularity types.
+
+If this “faithfulness” condition holds, then detecting a change in singularity
+type implies a semantic change. But when is such an assumption justified?
+
+1.3   This paper’s contribution
+We provide a concrete mechanism linking semantics to singularities, built
+on a simple observation: semantics are implemented through distinctions—
+what the agent treats as equivalent vs. different. Distinctions induce par-
+titions; partitions determine symmetry groups; symmetries cause singulari-
+ties.
+
+                                      3
+    Our main technical contribution is a template theorem (Theorem 4.5)
+showing that coarsening distinctions always enlarges the symmetry group
+and increases redundancy, while refining distinctions always shrinks symme-
+tries. Combined with standard results connecting symmetries to RLCT (Ex-
+ample 2.2), this provides a falsifiable mechanism by which semantic changes
+propagate to geometric changes.
+    This paper addresses detection of semantic changes via geometry, not
+prevention of goal drift. Even with perfect detection, additional mechanisms
+would be needed to halt or reverse drift.
+
+1.4   Paper structure
+Section 2 provides conceptual overview with a concrete toy example. Sec-
+tion 3 formalizes semantic states and the faithfulness assumption, including
+the explicit map from semantics to partitions. Section 4 develops the par-
+tition template theorem. Section 5 gives three instantiations. Section 6
+discusses implications and limitations.
+
+
+2     Conceptual Overview
+2.1   The distinction-symmetry-singularity chain
+The mechanism linking semantics to geometry proceeds in steps:
+    Step 1: Semantics as distinctions. A semantic state determines
+which situations the agent treats as equivalent (same goal-relevant features)
+vs. different. A paperclip maximizer distinguishes by paperclip count; a
+welfare maximizer distinguishes by wellbeing indicators.
+    Step 2: Distinctions induce partitions. Given a distinction pattern,
+we obtain a partition: items treated as equivalent fall in the same block.
+Coarser distinctions yield coarser partitions (fewer, larger blocks).
+    Step 3: Partitions determine symmetries. The automorphism
+group Aut(Π) consists of permutations preserving block membership. Coarser
+partitions have larger automorphism groups: merging blocks of sizes j and
+k replaces Sym(j) × Sym(k) with Sym(j + k).
+    Step 4: Symmetries cause singularities. In learning, symmetries
+manifest as non-identifiabilities: multiple parameter settings achieving the
+same loss. This creates flat directions, non-isolated minima, and degenerate
+Fisher information—precisely what SLT’s singularity analysis captures.
+
+
+
+
+                                     4
+2.2   A toy example: the full chain in action
+Before proceeding to formal development, we illustrate the complete chain
+with a minimal example.
+Example 2.1 (Two-hidden-unit network). Consider a neural network f (x; w1 , w2 ) =
+σ(w1 x) + σ(w2 x) with two hidden units and weights w1 , w2 ∈ R.
+    Semantic state: Suppose the agent’s “semantics” are defined by which
+input regions it distinguishes. If the agent treats inputs symmetrically (no
+distinction between “w1 -relevant” and “w2 -relevant” structure), the two hid-
+den units are semantically interchangeable.
+    Partition: The parameter space is Θ = R2 . Under the symmetric se-
+mantics, the partition on parameters is Πcoarse = {{w1 , w2 }}—both weights
+in one block (interchangeable).
+    Symmetry: Aut(Πcoarse ) = Sym({w1 , w2 }) ∼       = Z2 , the swap symmetry
+(w1 , w2 ) 7→ (w2 , w1 ).
+    Singularity: The loss landscape L(w1 , w2 ) is invariant under this swap.
+Any minimum (w1∗ , w2∗ ) has a “twin” (w2∗ , w1∗ ) at the same loss value. Along
+the diagonal w1 = w2 , this swap is trivial, creating a line of equivalent
+minima (a singularity).
+    Now suppose the agent refines its semantics to distinguish the two input
+channels:
+    Refined partition: Πfine = {{w1 }, {w2 }}—each weight in its own
+block.
+    Broken symmetry: Aut(Πfine ) = {e} (trivial group). The swap is no
+longer a symmetry.
+    Changed singularity: If the refined semantics are implemented (e.g.,
+via different regularization, task structure, or architectural constraints that
+treat w1 and w2 differently), the loss landscape loses its swap invariance.
+The diagonal is no longer special; minima become isolated.
+    This illustrates how semantic refinement (distinguishing the two chan-
+nels) breaks a symmetry and changes the singularity structure.
+
+2.3   Symmetry and RLCT: an SLT connection
+The previous example showed symmetry creating a singularity qualitatively.
+We now make the RLCT connection explicit.
+Example 2.2 (RLCT and symmetry breaking). Consider a loss function
+K(w1 , w2 ) = (w1 − w2 )2 near the minimum set {w1 = w2 } (a line). This
+has:
+   • Swap symmetry: K(w1 , w2 ) = K(w2 , w1 ).
+
+                                     5
+    • RLCT λ = 1/2 (the minimum is a 1-dimensional manifold in 2-
+      dimensional space; standard SLT calculation).
+
+    Now break the symmetry by adding a term that distinguishes the weights:
+
+                      K (w1 , w2 ) = (w1 − w2 )2 + w12 .
+
+For  > 0:
+
+    • The swap symmetry is broken.
+
+    • The minimum is now isolated at (0, 0).
+
+    • RLCT λ = 1 (isolated non-degenerate minimum in 2D).
+
+   The RLCT jumped from 1/2 to 1 when the symmetry was broken. In
+SLT, lower RLCT indicates more severe singularity (slower posterior con-
+centration, higher model complexity penalty). Symmetry breaking increased
+RLCT by removing the flat direction.
+Remark 2.3 (General principle). More generally, when a k-dimensional group
+G acts on parameter space leaving the loss invariant, minima typically lie on
+G-orbits, creating at least dim(G) flat directions. Breaking the G-symmetry
+removes these flat directions, generically increasing RLCT. This is the mech-
+anism by which partition refinement (which shrinks symmetry groups) can
+increase RLCT and change singularity type.
+
+
+3     Formalizing Semantics, Partitions, and Faithful-
+      ness
+We now make the conceptual chain precise.
+
+3.1   Semantic states via probes
+Definition 3.1 (Semantic probe family and semantic state). Let Q be a
+fixed set of semantic probes—queries or tests interrogating goal-relevant
+behavior. A semantic state is a response function s : Q → Y, where Y is a
+response set.
+    Two semantic states s, s0 are semantically equivalent, written s ∼sem s0 ,
+if s(q) = s0 (q) for all q ∈ Q.
+    A semantic goal equilibrium is an equivalence class e = [s]∼sem .
+
+
+
+                                       6
+3.2   From semantic states to partitions: the key bridge
+The following definition makes explicit how semantics induce partitions on
+underlying degrees of freedom.
+
+Definition 3.2 (Semantic-partition map). Let U be a finite set of under-
+lying elements (parameters, features, states, or other degrees of freedom,
+depending on architecture). A semantic-partition map is a function
+
+                 Φ : {semantic states} → {partitions of U },
+
+where Φ(s) = Πs is defined by: u ∼Πs u0 iff u and u0 are not distinguished
+by the agent’s responses under semantic state s.
+    Concretely, if probes in Q can be evaluated on elements of U (or on
+pairs, or on functions thereof), then:
+
+               u ∼Πs u0    ⇐⇒      ∀q ∈ Q : s(q)(u) = s(q)(u0 ),
+
+where s(q)(u) denotes the probe response at element u.
+
+Remark 3.3 (Architecture-dependence). The set U and the precise form of
+Φ depend on the architecture:
+
+   • For a neural network, U might be edges or hidden units, and Φ(s)
+     partitions them by functional role under semantics s.
+
+   • For a compression scheme, U might be information atoms, partitioned
+     by which feature “owns” them.
+
+   • For a logical reasoner, U might be possible worlds, partitioned by
+     epistemic indistinguishability.
+
+The instantiations in Section 5 make these choices explicit.
+
+Definition 3.4 (Semantic coarsening and refinement). Semantic state s0 is
+a coarsening of s if Φ(s)  Φ(s0 ), i.e., every block of Πs is contained in some
+block of Πs0 . Equivalently, s0 makes fewer distinctions than s.
+    Semantic state s0 is a refinement of s if Φ(s0 )  Φ(s).
+
+3.3   Singularity types in SLT
+Definition 3.5 (Singularity-type equivalence). Let K : Θ ⊆ Rd → R≥0
+be real-analytic with K(θ∗ ) = 0. Two such functions K, K 0 with zeros at
+θ∗ , θ∗0 have equivalent singularity types if there exist neighborhoods U, U 0 ,
+
+                                       7
+an analytic diffeomorphism ϕ : U → U 0 with ϕ(θ∗ ) = θ∗0 , and a positive
+analytic function u : U → (0, ∞) such that
+
+                   K(θ) = u(θ) · K 0 (ϕ(θ))   for all θ ∈ U.
+
+Equivalent singularity types share all SLT invariants (RLCT λ, multiplicity
+m, zeta-function data).
+
+3.4   The faithfulness assumption
+Definition 3.6 (Singularity-type map). Let E be the set of semantic goal
+equilibria. For each e ∈ E, let Ke : Θe → R≥0 be the analytic loss governing
+learning in equilibrium e. Define SingType(e) as the singularity type of Ke
+at a designated representative minimum.
+
+Assumption A1 (Semantic–Singularity Faithfulness). The singularity-type
+map is injective:
+
+                e 6= e0   =⇒    SingType(e) 6∼
+                                             = SingType(e0 ).
+
+Remark 3.7 (Status of faithfulness). Assumption A1 is a structural hypothe-
+sis, not a general theorem. The contribution of this paper is to identify when
+it is plausible via the distinction-symmetry mechanism. Section 6 states a
+genericity conjecture.
+
+3.5   The detection theorem
+Theorem 3.8 (Semantic change detection). Under Assumption A1, if a
+monitoring procedure detects SingType(e(t0 )) ∼
+                                              6 SingType(e(t1 )), then e(t0 ) 6=
+                                               =
+e(t1 ): a semantic change has occurred.
+
+Proof. Contrapositive of injectivity.
+
+Remark 3.9 (Practical detection). In practice, one estimates coarse invari-
+ants like RLCT. A change in RLCT implies a singularity-type change, but
+non-equivalent types may share RLCT. Thus some semantic changes could
+go undetected by RLCT alone.
+
+
+4     The Partition Template Theorem
+We now prove the mathematical core: partitions control symmetries mono-
+tonically.
+
+                                        8
+4.1   Definitions
+Definition 4.1 (Partition and coarsening order). Let U be finite. A par-
+tition Π = {B1 , . . . , Bm } of U is a collection of nonempty, pairwise-disjoint
+blocks covering U .
+     We write Π  Π0 (read: “Π0 is a coarsening of Π” or “Π refines Π0 ”)
+if every block of Π is contained in some block of Π0 . Equivalently, Π0 is
+obtained by merging blocks of Π.
+
+Definition 4.2 (Automorphism group). For partition Π = {B1 , . . . , Bm },
+define
+                                Ym
+                      Aut(Π) :=    Sym(Bj ).
+                                         j=1
+
+Elements of Aut(Π) are permutations of U preserving each block setwise.
+Intuitively, Aut(Π) consists of permutations “invisible” to any function de-
+pending only on block membership.
+
+Definition 4.3 (Overlap functionals). For partition Π = {Bj } and weights
+w : U → [0, ∞):
+                                              2
+                             X       X
+          Ovnode (Π; w) :=              w(u) = k(block masses)k22 .
+                             j    u∈Bj
+
+When  w = p is a probability distribution, this equals the collision probability
+         2
+P
+ j p(B j) .
+   For symmetric weights W : U × U → [0, ∞):
+                                      X X
+                    Ovpair (Π; W ) :=            W (u, v).
+                                          j    u,v∈Bj
+
+
+4.2   The template theorem
+LemmaP 4.4 (Single-merge P  effect). Merging two blocks C, D with masses
+SC = u∈C w(u) and SD = u∈D w(u):
+
+  1. Increases |Aut(Π)| by factor |C|+|D|
+                                          
+                                     |C|
+                                            (from new cross-block permuta-
+     tions).
+
+  2. Increases Ovnode by 2SC SD ≥ 0 (strictly positive if both masses posi-
+     tive).
+
+
+                                         9
+Proof. (1) |Sym(C)| · |Sym(D)| = |C|! · |D|! becomes |Sym(C ∪ D)| = (|C| +
+|D|)!, with ratio |C|+|D|
+                          
+                    |C|
+                            .
+                  2      2
+   (2) (SC + SD ) − (SC + SD  2 ) = 2S S .
+                                      C D
+
+Theorem 4.5 (Coarsening increases symmetry and overlap). Let Π  Π0
+(i.e., Π0 coarsens Π). Then:
+
+    1. (Monotone symmetry) Aut(Π) ⊆ Aut(Π0 ), with strict inclusion if
+       Π0 6= Π.
+
+    2. (Monotone node-overlap) Ovnode (Π; w) ≤ Ovnode (Π0 ; w), strictly
+       if a merge combines positive-mass blocks.
+
+    3. (Monotone pair-overlap) Ovpair (Π; W ) ≤ Ovpair (Π0 ; W ), strictly if
+       a positive-weight pair becomes newly co-blocked.
+
+Proof. Each Π0 -block is a union of Π-blocks. Any Π-preserving permutation
+preserves each union, hence lies in Aut(Π0 ). Strictness: a nontrivial merge
+permits cross-block permutations absent in Aut(Π).
+   Parts (2) and (3) follow by applying Lemma 4.4 iteratively and noting
+that coarsening only adds co-blocked pairs.
+
+Corollary 4.6 (Refinement decreases symmetry and overlap). If Π0 strictly
+refines Π, then Aut(Π0 ) ( Aut(Π) and overlaps decrease (for appropriate
+weights).
+
+Remark 4.7 (The mechanism in summary). Theorem 4.5 plus the SLT con-
+nection (Example 2.2) yields the full chain: semantic coarsening → partition
+coarsening → larger symmetry group → more flat directions → lower RLCT
+/ more severe singularity. Refinement reverses each arrow.
+
+
+5     Three Instantiations
+Each instantiation specifies U , the semantic-partition map Φ, and how coars-
+ening/refinement arise operationally.
+
+5.1     Causal-Coding Neural Networks
+5.1.1    Setting
+Causal-coding architectures use gates or masks to control which edges are
+active for which contexts/tasks. A key challenge is parameter entanglement:
+
+                                     10
+when contexts share edges indiscriminately, many edges become interchange-
+able, creating redundancy and flat loss landscapes.
+
+5.1.2   Semantic-partition map
+Underlying set: U = E (the set of edges/units).
+    Semantic state: The gating pattern D = (gec )e∈E,c∈C encodes which
+edges are active in which contexts. This implements the agent’s seman-
+tic distinctions over contexts: two edges are semantically indistinguishable
+under D iff they have identical context-profiles χD (e) := (gec )c∈C .
+    Partition: Φ(D) = Π(D), where e ∼Π(D) e0 iff χD (e) = χD (e0 ).
+    Interpretation: Semantic coarsening (treating more contexts as equiv-
+alent, or using edges less discriminatively) corresponds to partition coarsen-
+ing. Refining semantic distinctions between contexts corresponds to parti-
+tion refinement.
+
+5.1.3   Symmetry and overlap
+                                             Q
+The automorphism group is Aut(Π(D)) = B∈Π(D) Sym(B): edges with
+identical profiles are interchangeable (permutation symmetry in the loss).
+                                                                          0
+    For overlap, define sharedness weight wD (e) := |{(c, c0 ) : gec = gec = 1}|
+and OvCC (D) := Ovnode (Π(D); wD ).
+
+5.1.4   Coarsening theorem
+Definition 5.1 (Partition coarsening for gating). Gating pattern D0 is a
+coarsening of D if Π(D)  Π(D0 ), i.e., whenever χD (e) = χD (e0 ), we also
+have χD0 (e) = χD0 (e0 ).
+   Equivalently: the equivalence relation induced by D is contained in that
+induced by D0 .
+
+Remark 5.2 (On gate-wise conditions). Note that entry-wise inequality gec0 ≥
+gec is not sufficient for partition coarsening. Activating an edge in additional
+contexts can split equivalence classes (if it creates a new profile). Defini-
+tion 5.1 works directly at the partition level.
+
+Corollary 5.3 (Causal-coding coarsening). If D0 coarsens D (Definition 5.1),
+then
+         Aut(Π(D)) ⊆ Aut(Π(D0 )),       OvCC (D) ≤ OvCC (D0 ).
+
+Proof. Apply Theorem 4.5.
+
+
+
+                                      11
+5.1.5    Refinement via regularization
+Proposition 5.4 (Overlap penalties add curvature). Let J(θ) be the base
+objective and R(θ) ≥ 0 an overlap penalty increasing with OvCC . Consider
+Jλ (θ) := J(θ) + λR(θ).
+    Assume: (i) arg min J is nonempty and compact; (ii) R is nonconstant
+on arg min J; (iii) ∇2 R  νI on a subspace V of “entanglement directions”
+at minimizers.
+    Then minimizers of Jλ have strictly lower R than the worst J-minimizer,
+and ∇2 Jλ has curvature ≥ λν along V .
+
+Proof. Adding λR selects for lower R among J-minimizers (standard regu-
+larization argument). Curvature follows from ∇2 Jλ = ∇2 J + λ∇2 R.
+
+5.2     Incremental Compression
+5.2.1    Setting
+Incremental compression builds representations feature-by-feature. A pathol-
+ogy is level entanglement: early features absorb structure belonging to later
+features. If early features are frozen, this creates redundancy.
+
+5.2.2    Semantic-partition map
+Underlying set: U = information atoms (micro-regularities in the source).
+    Semantic state: A representation F (the current features) determines
+which atoms are “owned” by which feature/level. The semantic distinctions
+are about which structural level handles which patterns: atoms owned by
+the same feature are treated as “same-level structure.”
+    Partition: Φ(F ) = Π(F ), the ownership partition where atoms assigned
+to the same feature are co-blocked.
+    Interpretation: Semantic coarsening occurs when ownership becomes
+less specific (more atoms lumped under one owner)—this is level entangle-
+ment. Semantic refinement occurs when ownership becomes more specific
+(atoms reassigned to their proper levels)—this is disentanglement.
+
+5.2.3    Coarsening theorem
+Corollary 5.5 (Compression coarsening). If Π(F )  Π(F 0 ), then Aut(Π(F )) ⊆
+Aut(Π(F 0 )) and OvIC (F ) ≤ OvIC (F 0 ).
+
+
+
+
+                                     12
+5.2.4    Refinement via refitting
+Definition 5.6 (Refit operator). A refit step re-optimizes all features jointly
+when a new feature is added: Refit(F ) ∈ arg minG L(G) for description-
+length objective L.
+
+Proposition 5.7 (Refitting tends to refine (heuristic)). Assume: (i) the
+source has latent hierarchical structure; (ii) mixed-level ownership strictly
+increases L (formally: for any F and any nontrivial merge of blocks in
+Π(F ) creating mixed-level ownership, L strictly increases).
+    Then refitting yields Π(Frefit )  Π(Ffreeze ) and OvIC (Frefit ) ≤ OvIC (Ffreeze ).
+
+Remark 5.8 (Status of this claim). Proposition 5.7 is stated as a heuristic:
+the conclusion follows from the assumptions, but verifying assumption (ii)
+requires analyzing the specific objective L and source structure. The key
+point is that if L penalizes mixed ownership sufficiently, then joint opti-
+mization refines the partition.
+
+5.3     PLN Inference (Logic Quantale View)
+5.3.1    Setting
+Probabilistic logical reasoning maintains beliefs over possible worlds. A
+knowledge state induces indistinguishability: worlds consistent with current
+evidence are grouped together.
+
+5.3.2    Semantic-partition map
+Underlying set: U = W (possible worlds).
+    Semantic state: The agent’s knowledge/evidence K determines which
+worlds can be distinguished. Two worlds are semantically equivalent iff
+current knowledge cannot tell them apart.
+    Partition: Φ(K) = ΠK , where w ∼ΠK w0 iff w and w0 are epistemically
+indistinguishable given K.
+    Interpretation: This is the most direct case: semantics are the epis-
+temic distinctions. Coarsening (forgetting evidence) merges indistinguisha-
+bility classes. Refinement (gaining evidence) splits them.
+
+5.3.3    Overlap as collision probability
+Let p be a prior on W . Define OvPLN (Π) := j p(Bj )2 , the probability that
+                                           P
+two independent draws land in the same indistinguishability class.
+
+
+                                         13
+5.3.4    Template instantiation
+Corollary 5.9 (PLN coarsening and refinement). If ΠK  ΠK 0 (less evi-
+dence), then Aut(ΠK ) ⊆ Aut(ΠK 0 ) and OvPLN (ΠK ) ≤ OvPLN (ΠK 0 ).
+   Refinement (more evidence) reverses these inequalities.
+
+Remark 5.10 (Logic quantale interpretation). In the quantale framing, pred-
+icates partition W into satisfying/non-satisfying worlds. Adding predicates
+intersects partition blocks, monotonically decreasing collision probability.
+“Making more distinctions” rigorously reduces epistemic redundancy.
+
+
+6     Discussion
+6.1     When is faithfulness justified?
+The distinction-symmetry-singularity chain provides sufficient conditions for
+Assumption A1:
+
+    1. Semantic-partition coupling: The semantic-partition map Φ (Defi-
+       nition 3.2) is well-defined and injective on semantic equivalence classes.
+
+    2. Partition-symmetry coupling: The partition Φ(s) controls sym-
+       metries of the learning objective via parameter equivalences.
+
+    3. Symmetry-singularity coupling: Different symmetry structures
+       yield different singularity types (generically true for non-identifiable
+       models in general position).
+
+Conjecture 6.1 (Genericity of faithfulness). For architectures where se-
+mantics are realized via partitions as in Section 4, and where the param-
+eterization is in general position (no accidental algebraic relations beyond
+those forced by symmetries), distinct semantic equilibria almost surely lead
+to distinct singularity types.
+
+   This conjecture is not proved here, but it sharpens the claim: faithful-
+ness should hold “generically” when the three couplings are tight, and fail
+when they are loose (e.g., when semantics are encoded in discrete choices
+orthogonal to continuous parameter symmetries).
+
+6.2     Partial faithfulness
+In practice, full injectivity may be too strong. A useful relaxation:
+
+
+                                       14
+Definition 6.2 (Partial faithfulness). Let ≈ be a coarse equivalence on
+semantic equilibria (e.g., “same goal family”). The singularity-type map is
+partially faithful mod ≈ if
+
+               e 6≈ e0   =⇒       SingType(e) ∼
+                                              6 SingType(e0 ).
+                                               =
+
+   This allows singularity types to collide within a goal family while still
+detecting cross-family drift.
+
+6.3    Limitations
+Remark 6.3 (Coarse invariants). RLCT and multiplicity may not distinguish
+all non-equivalent singularity types. Comprehensive detection may require
+richer invariants or complementary semantic probes.
+Remark 6.4 (Architecture-specificity). The template theorem is universal,
+but instantiation requires identifying U , Φ, and coarsening/refinement op-
+erations for each architecture.
+Remark 6.5 (Detection vs. prevention). This paper addresses detection only.
+Preventing goal drift requires additional mechanisms beyond monitoring.
+
+6.4    Failure modes
+The faithfulness assumption can fail when:
+
+    • Semantics are encoded in discrete architectural choices (e.g., “which
+      module is active”) rather than continuous parameter structure.
+
+    • The parameterization has accidental symmetries unrelated to seman-
+      tics.
+
+    • Multiple semantic equilibria happen to share loss landscapes up to
+      analytic equivalence (a non-generic but possible coincidence).
+
+
+7     Conclusion
+We developed a mechanism linking semantic changes to geometric changes
+detectable by SLT:
+                              Φ               Thm 4.5
+    Semantic distinctions −
+                          → Partitions −−−−−→ Symmetry groups
+                        SLT
+                       −−→ Singularity types
+
+
+                                       15
+    The template theorem (Theorem 4.5) establishes that coarsening distinc-
+tions monotonically increases symmetries, while refinement breaks them.
+Combined with the SLT principle that symmetries generate singularities
+(Example 2.2), this provides a concrete, falsifiable pathway from semantic
+change to geometric change.
+    We formalized the faithfulness assumption, identified sufficient condi-
+tions via the distinction-symmetry mechanism, stated a genericity conjec-
+ture, and demonstrated the template’s scope across three AI architectures.
+    This work provides theoretical grounding for using SLT diagnostics in
+goal stability monitoring, by clarifying when geometric changes reliably in-
+dicate semantic changes.
+
+
+References
+[1] S. Watanabe, Algebraic Geometry and Statistical Learning Theory, Cam-
+    bridge University Press, 2009.
+
+[2] SLT-Goal-Stability manuscript.
+
+[3] Causal-Continual-Learning manuscripts.
+
+[4] Incremental-compression manuscripts.
+
+[5] PLN Book manuscript.
+
+
+
+
+                                     16
+
