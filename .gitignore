@@ -1,0 +1,37 @@
+# Local OpenClaw/runtime state
+openclaw-workspace-state.json
+.agents/
+.codex/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Temporary/scratch work
+scratch/
+local/
+
+# Virtual environments and dependency/build caches
+.venv/
+.venv-*/
+venv/
+node_modules/
+dist/
+build/
+target/
+
+# Nested source clones and generated project outputs
+projects/*/repos/
+projects/*/repo/
+projects/*/worktrees/
+projects/*/artifacts/
+projects/*/.venv/
+projects/*/.venv-*/
+projects/*/venv/
+projects/*/local/
+projects/*/experiments/*/.venv/
+projects/*/experiments/*/venv/
+
+# Common editor/OS noise
+.DS_Store
+*.swp
+*~
