@@ -1,0 +1,742 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setlist[itemize]{leftmargin=1.4em}
+\setlist[enumerate]{leftmargin=1.7em}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\fpath}[1]{\texttt{#1}}
+\newcommand{\st}{\ensuremath{\mathrm{STV}}}
+\newcommand{\ec}{\ensuremath{\mathrm{EC}}}
+
+\title{PeTTaChainer Codebase Assessment:\\Strengths, Weaknesses, and Repair Directions}
+\author{Prepared for Ben Goertzel and the PeTTaChainer author}
+\date{2026-07-04}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note is an author-facing assessment of the checked-out PeTTaChainer
+codebase used in the petta-memory project.  It is intentionally written as an
+ASCII LaTeX source file so it can be edited, diffed, mailed, and compiled with
+ordinary LaTeX tooling.  The assessment is based on source inspection of
+\fpath{projects/petta-memory/repos/PeTTaChainer} at commit
+\code{e4db5cad60a39c0d3f81a07296d606af6de4d76d}, on the sibling PeTTa checkout
+at commit \code{d8d46920269ced70cd6236a5182d4d2409c1e12b}, and on the local
+petta-memory integration probes through commit \code{cda5cbe}.  The short
+version is: PeTTaChainer has an unusually valuable semantic design for
+contextual, paraconsistent PLN, but the current runtime path has a serious
+materialization/compilation bottleneck that makes it risky as the near-term
+production chainer for petta-memory until the add path is instrumented and
+hardened.
+\end{abstract}
+
+\tableofcontents
+
+\section{Executive summary}
+
+PeTTaChainer is not just a toy wrapper around MeTTa.  It contains several ideas
+that are directly aligned with the requirements of an experiential memory
+system: proof atoms, explicit truth values, evidence-count packets, generated
+local contexts, context-sensitive projection to PLN truth values, forward and
+backward chaining, proof audit machinery, and benchmark/verifier scripts.  In
+particular, the context layer is a good match for pi-PLN style reasoning in
+which evidence is not forced into a single global probability space.
+
+The main concern is operational rather than conceptual.  In local petta-memory
+probes, small statements pass syntax checks and the PeTTa/SWI/Janus runtime can
+initialize, but the public add path reaches \code{compileadd}, whose first
+binding \code{materialize-stmt-lambdas} can time out even on lambda-free tiny
+proof atoms.  The latest narrowed failing shape is a four-field wrapper with
+adjacent arity-two nested sibling payloads, for example a proof-like envelope
+containing a two-argument nested statement type beside a two-argument truth-value
+payload.  This appears to be a generic evaluator/materializer traversal issue,
+not merely a petta-memory token issue or an STV-specific semantic error.
+
+My recommendation is therefore a two-track strategy:
+\begin{enumerate}
+  \item Preserve PeTTaChainer as the semantic reference implementation for
+  pi-PLN context/evidence ideas.
+  \item In parallel, use a more operationally stable PLN chainer for immediate
+  petta-memory experiments, and add PeTTaChainer-compatible evidence/context
+  semantics around it.
+\end{enumerate}
+
+For the PeTTaChainer author, the highest-leverage repair is to isolate and
+benchmark the \code{materialize-stmt-lambdas} and \code{mm2compile} stages on a
+minimal failing term, then add a supported precompiled or bulk-add API so callers
+can load already-normalized facts without passing every insertion through the
+full dynamic compilation path.
+
+\section{Scope and evidence}
+
+\subsection{Repository and commit scope}
+
+This assessment covers the local checkout:
+\begin{itemize}
+  \item \fpath{projects/petta-memory/repos/PeTTaChainer}
+  \item Commit: \code{e4db5cad60a39c0d3f81a07296d606af6de4d76d}
+  \item Commit message: \code{Implement piPLN: paraconsistent contextual reasoning over PeTTaChainer}
+  \item Sibling PeTTa dependency: \fpath{projects/petta-memory/repos/PeTTa}
+  \item Sibling PeTTa commit: \code{d8d46920269ced70cd6236a5182d4d2409c1e12b}
+\end{itemize}
+
+The local checkout is clean at the time of this report.  The PeTTaChainer tree
+contains about 98 Python, MeTTa, Markdown, and Prolog source/documentation files
+under the \fpath{pettachainer/} package tree, plus examples and tests.
+
+\subsection{Integration evidence from petta-memory}
+
+The petta-memory integration branch has accumulated a bounded evidence trail.
+The important observations are:
+\begin{itemize}
+  \item SWI-Prolog 9.3.36 with Janus was installed in user space and verified.
+  \item \code{PeTTa().process\_metta\_string('!(+ 2 3)')} returned \code{5}.
+  \item \code{pettachainer.check\_stmt} accepted a simple statement of the form
+  \code{(: bird\_robin (Bird robin) (STV 1.0 0.99))}.
+  \item \code{PeTTaChainer} construction is relatively fast in the local probe,
+  around half a second after setup.
+  \item \code{check\_stmt} succeeds for generated petta-memory STV statements.
+  \item Public add/query routes through \code{compileadd} or
+  \code{compileadd-mine}; no public precompiled-add/cache API was found by
+  source inspection.
+  \item Bounded probes repeatedly time out inside the add-stage materialization
+  path before reliable \code{mm2compile}, full \code{compileadd}, query, or
+  contextual query gates can be claimed for petta-memory inputs.
+\end{itemize}
+
+The latest local petta-memory gate, at commit \code{cda5cbe}, narrows the
+materializer blocker to adjacent arity-two nested sibling payloads in a
+four-field wrapper.  In the petta-memory repository, \code{PYTHONPATH=src
+python3 -m unittest discover -s tests -v} passes 116 tests, including the
+non-live gates that preserve the boundary between checked handoff evidence and
+claimed inferred beliefs.
+
+\section{Architectural overview}
+
+\subsection{Python surface}
+
+The public Python package is small and useful.  The top-level interface exports:
+\begin{itemize}
+  \item \code{PeTTaChainer}
+  \item \code{ContextualQueryResult}
+  \item \code{check\_stmt}
+  \item \code{check\_query}
+  \item \code{get\_language\_spec}
+\end{itemize}
+
+The main class in \fpath{pettachainer/pettachainer.py} wraps a PeTTa runtime,
+loads \fpath{pettachainer/metta/petta\_chainer.metta}, creates a unique KB name,
+loads a logic config, and exposes methods for adding atoms, querying, forward
+chaining, and contextual querying.  The wrapper also stores added atoms so a
+contextual query can temporarily inject them into \code{\&self} and call the
+context projection heads.
+
+\subsection{MeTTa runtime layout}
+
+The runtime organization is much better than a flat script pile:
+\begin{itemize}
+  \item \fpath{pettachainer/metta/petta\_chainer.metta}: import root and public
+  MeTTa heads such as \code{compileadd}.
+  \item \fpath{pettachainer/metta/chainer/}: compilation, truth-value formulas,
+  distribution formulas, forward and backward chaining, proof-store helpers,
+  query runtime, mining, and proof-structure audit.
+  \item \fpath{pettachainer/metta/context/}: context extraction, context
+  generation, pure-MeTTa and Prolog beam search, and inference-control modules.
+  \item \fpath{pettachainer/metta/logic\_configs/}: selectable logic configs,
+  currently including PLN and predicate-logic variants.
+  \item \fpath{pettachainer/metta/piPLN\_paper\_explained/}: runnable examples
+  and paper-translation cells.
+\end{itemize}
+
+\subsection{Core statement and query model}
+
+The language spec uses proof atoms:
+\begin{verbatim}
+(: proof-id type tv)
+\end{verbatim}
+
+Statements are inserted with:
+\begin{verbatim}
+!(compileadd kb (: proof-id type tv))
+\end{verbatim}
+
+Queries use:
+\begin{verbatim}
+!(query steps kb (: $prf type $tv))
+\end{verbatim}
+
+The explicit \code{proof-id} slot is a strength because it gives proof objects a
+place to live.  The \code{tv} slot currently supports ordinary \code{STV} values
+and several value-distribution forms such as \code{PointMass}, \code{NatDist},
+\code{FloatDist}, and \code{ParticleDist}.  The distinction between truth
+uncertainty and value uncertainty is documented clearly in the language spec.
+
+\section{Major strengths}
+
+\subsection{The pi-PLN semantic idea is the right one for this use case}
+
+The most important strength is conceptual.  PeTTaChainer represents evidence as
+context-indexed positive and negative counts, \code{(EC pos neg)}, and only
+projects these counts to \code{STV} values when a local query context demands it.
+This is a strong fit for experiential memory, where contradictory observations
+should usually remain visible rather than be prematurely averaged away.
+
+The generated-context layer is particularly relevant.  The code enumerates
+candidate guards from evidence-packet features, splits evidence inside/outside a
+guard, scores the split by conflict reduction plus a query-focus bonus and a
+feature penalty, then projects selected evidence to an \code{STV}.  This directly
+supports exception handling such as birds/penguins without assuming a single
+universal distribution.
+
+\subsection{The code is runnable as a package, not only as a notebook}
+
+The repository has been organized as an installable Python package with bundled
+MeTTa runtime data.  The \fpath{pyproject.toml} declares the package, package
+data is selected through \fpath{MANIFEST.in}, and the README gives installation
+instructions.  This matters because many experimental reasoning repositories
+never cross the boundary from demo scripts to importable libraries.
+
+The Python API is also small enough to be intelligible.  A user can construct a
+handler, add atoms, query, forward-chain, or ask for a contextual query without
+learning every internal MeTTa helper first.
+
+\subsection{The repository includes author-facing language documentation}
+
+The files \fpath{pettachainer/LANGUAGE\_SPEC.md} and
+\fpath{pettachainer/LLM\_RULE\_SPEC.md} are useful.  They document the core proof
+atom syntax, rule templates, query patterns, truth/value uncertainty distinction,
+distribution truth values, and contextual-query idea.  This is a practical
+strength for collaboration with LLM agents, because it constrains generated
+rules to a smaller and more checkable language.
+
+\subsection{There is a real validation seam}
+
+\fpath{pettachainer/pln\_validator.py} provides \code{check\_stmt} and
+\code{check\_query}.  They are not deep semantic validators, but they catch
+important shape errors: statement proof IDs must not be variables, query proof
+slots should be variables, and truth-value forms must be in the supported set.
+The local petta-memory integration used this seam successfully to validate
+exported STV proof statements before treating them as PLN-ready handoff inputs.
+
+\subsection{The chainer has both forward and backward capabilities}
+
+The API and tests exercise forward chaining, backward queries, seeded forward
+chaining from selected facts, and logic-config differences.  The query runtime
+compiles a query into a goal plus temporary adds, injects those adds, runs the
+chainer, externalizes proof structure, and cleans up temporary query refs.  The
+cleanup path is important: without it, query compilation can leave confusing
+state behind.
+
+\subsection{Proof and audit concerns are unusually prominent}
+
+The repository contains proof-structure audit modules, showcase verification,
+forensic packets, witness certificates, red-team mutation tests, and replay
+checks.  Even if some of this is heavier than petta-memory needs immediately,
+the orientation is good: the codebase treats proof claims as artifacts that can
+be replayed and attacked, not as opaque strings printed by a demo.
+
+\subsection{Benchmark coverage is broader than usual}
+
+The benchmark suite is not limited to wall-clock timing.  It includes smart
+dispatch, generated context control, complementary evidence, forward/backward
+comparisons, materialized backward queries, particle-vs-exact distributions,
+incident response, showcase verification, and red-team forgeries.  This gives
+the author several places to attach regression tests after fixing the current
+materialization bottleneck.
+
+\subsection{The codebase already separates semantic layers}
+
+There is a meaningful separation between:
+\begin{itemize}
+  \item syntax and validation,
+  \item compilation and internal proof representation,
+  \item forward/backward chaining,
+  \item truth-value and distribution formulas,
+  \item context generation and context projection,
+  \item benchmarks and forensic verification.
+\end{itemize}
+
+This separation is imperfect, but it is far better than putting all semantics in
+one long interpreter file.  It should make targeted repair possible.
+
+\section{Major weaknesses and risks}
+
+\subsection{The public add path is brittle}
+
+The public insertion methods call \code{compileadd} or \code{compileadd-mine}.
+The current \code{compileadd} path is:
+\begin{verbatim}
+(= (compileadd $kb $stmt)
+   (let*
+      (($stmt1 (materialize-stmt-lambdas $stmt))
+        ($atoms (collapse (mm2compile $kb $stmt1)))
+        ($iatoms (list_to_set (map-flat internalize-proof-structure $atoms)))
+        ($eatoms (map-flat externalize-proof-structure $iatoms))
+        ($_index (index-source-implication $kb $stmt1))
+        ($_ (collapse (foreach-flat add-to-kb $iatoms)))
+        ($_ (maybe-process-on-add $kb $stmt1)))
+      (superpose $eatoms)))
+\end{verbatim}
+
+This is a large amount of work for every atom insertion.  For small interactive
+examples it may be fine.  For memory-system ingestion, batch loading, and
+agent-generated evidence packets, it is risky unless each stage has cheap and
+well-bounded behavior.
+
+\subsection{The materializer can time out before real compilation begins}
+
+The most serious observed issue is that \code{materialize-stmt-lambdas} can be
+slow or nonterminating on lambda-free expressions.  Source inspection says the
+materializer should only evaluate a term when the expression head is \code{|->};
+otherwise it recursively rebuilds the term:
+\begin{verbatim}
+(= (materialize-stmt-lambdas $term)
+   (if (is-var $term) $term
+      (if (is-expr $term)
+         (if (== (car-atom $term) |->) (eval $term)
+            (cons (materialize-stmt-lambdas (car-atom $term))
+               (map-flat materialize-stmt-lambdas (cdr-atom $term))))
+         $term)))
+\end{verbatim}
+
+However, local probes show timeouts on lambda-free proof atoms.  The failure has
+been narrowed beyond the original tokens.  Empty and one-argument nested types
+pass; generic two-argument nested expressions inside certain full proof/envelope
+contexts can block.  The latest failing boundary is adjacent arity-two nested
+siblings in a four-field wrapper.
+
+This means that the practical blocker is probably in PeTTa/MeTTa evaluation of
+this recursive traversal pattern, in interaction with list/expression structure,
+not in user lambda execution.
+
+\subsection{No supported precompiled-add or bulk-load API was found}
+
+Source inspection found public add methods routing through \code{compileadd} or
+\code{compileadd-mine}.  No public API was found for adding already-compiled or
+already-normalized facts while preserving the intended indexes/proof semantics.
+This leaves integrators with bad choices:
+\begin{itemize}
+  \item use \code{compileadd} and hit the materialization bottleneck;
+  \item directly assert low-level facts and risk bypassing important indexes;
+  \item keep a non-live handoff cache outside PeTTaChainer, which is safe but
+  does not exercise PeTTaChainer inference.
+\end{itemize}
+
+A supported precompiled/bulk-add interface would make the codebase much more
+usable for systems that already have validated proof atoms.
+
+\subsection{Runtime dependency setup is heavy}
+
+The runtime requires PeTTa, SWI-Prolog 9.3.x, Janus, and in this environment
+careful environment variables such as \code{SWIPL\_HOME}, \code{SWI\_HOME\_DIR},
+\code{LD\_LIBRARY\_PATH}, and sometimes \code{LD\_PRELOAD}.  This is acceptable
+for a research prototype but fragile for collaborator onboarding, CI, and
+agent-run experiments.  The repository documents the requirement, but the cost
+remains real.
+
+\subsection{Timeout protection is incomplete around adds}
+
+The Python \code{query} method has a multiprocessing timeout path when possible,
+but \code{add\_atom} and \code{add\_atoms\_no\_check} call PeTTa directly.  If
+\code{compileadd} stalls, the caller can hang unless the caller independently
+runs it in a subprocess.  The petta-memory probes had to add subprocess isolation
+outside the codebase for this reason.
+
+\subsection{The global runtime load flag may hide lifecycle problems}
+
+\code{LOADEDLIB} and \code{LOADED\_LOCK} avoid repeated library loads in a Python
+process.  This is understandable, but it means that runtime state is partly
+global, while each handler also creates its own KB name and PeTTa instance.  The
+interaction between global MeTTa library load state, SWI/Janus state, spawned
+query workers, and repeated tests deserves careful stress testing.  Bugs here
+could appear only after long-running agent sessions.
+
+\subsection{Contextual query temporarily injects atoms into \&self}
+
+The contextual query path copies stored atoms into \code{\&self}, calls the
+context projection machinery, and removes them in a \code{finally} block.  The
+\code{finally} is good.  But temporary mutation of a shared space is inherently
+more fragile than querying a separate explicit evidence space.  If duplicate
+atoms, removal failures, concurrent calls, or interrupted runtimes occur, context
+projection may see stale evidence.
+
+\subsection{The semantic surface is larger than the validation surface}
+
+The validator checks top-level statement/query shape and supported TV forms.  It
+does not fully validate rule schemas, evidence packet provenance, variable
+safety, context features, distribution payloads, proof IDs, or whether generated
+terms will be safe in downstream compiler stages.  That is acceptable for a thin
+syntax guard, but callers should not mistake it for a semantic type checker.
+
+\subsection{Benchmarks may not isolate the failing micro-stage}
+
+The benchmark suite is broad, but the current petta-memory blocker needs very
+small stage-isolated tests: one term, one materializer, bounded output, bounded
+timeout.  The existing showcases prove many positive paths, but they do not by
+themselves explain why a tiny lambda-free proof atom can time out inside
+\code{materialize-stmt-lambdas}.  A small failing regression test should be added
+near the materializer itself.
+
+\section{Detailed observations by subsystem}
+
+\subsection{Packaging and installation}
+
+\textbf{Strengths.}  The package metadata is clear, the MIT license is present,
+the package name and project URLs are defined, and the README explains that
+PeTTa is a sibling dependency rather than a PyPI dependency.  Bundling the MeTTa
+runtime as package data is the right move for a Python library.
+
+\textbf{Weaknesses.}  The dependency chain remains nontrivial, especially the
+SWI/Janus build.  Continuous integration should explicitly cover clean-venv
+installation and a tiny smoke under the documented SWI version.  If CI cannot
+run the full stack, the README should say exactly which smoke was last run and
+on what platform.
+
+\subsection{Python API}
+
+\textbf{Strengths.}  The API is concise.  \code{ContextualQueryResult.answers}
+puts the generated projection first, then ordinary proofs.  Query timeouts use a
+fresh spawned process when possible, which avoids inheriting live SWI/Janus state
+into a forked child.
+
+\textbf{Weaknesses.}  Adds lack the same timeout isolation as queries.  In
+addition, \code{add\_atoms\_no\_check} batches all additions into a single
+\code{superpose}; if one item triggers the materializer bottleneck, the entire
+batch becomes hard to diagnose.  A safer API would provide per-atom staged
+results and optional subprocess isolation.
+
+\subsection{Compilation path}
+
+\textbf{Strengths.}  The compilation pipeline has named stages: materialization,
+MeTTa-to-compiled conversion, proof internalization/externalization, indexing,
+KB insertion, and on-add processing.  This is good because it gives us stage
+names for profiling and repair.
+
+\textbf{Weaknesses.}  The stages are currently fused into a single public
+operation.  There is no obvious public way to run them individually with trace,
+step budget, timeout, or return structured diagnostics.  For research tooling,
+\code{compileadd-explain} or \code{compileadd-stages} would be very valuable.
+
+\subsection{Query runtime}
+
+\textbf{Strengths.}  The query runtime injects temporary compiled adds, runs the
+chainer, externalizes proofs, pretty-prints, drops empty results, and clears
+temporary query additions before and after.  This is the right overall pattern.
+
+\textbf{Weaknesses.}  The same compiled-query path depends on \code{mm2compileQuery}
+and the broader compiler stack.  If the compiler is brittle for certain nested
+shapes, query reliability will be shape-sensitive too.  The temporary ref cleanup
+should be stress-tested under exceptions and nested queries.
+
+\subsection{Context generation}
+
+\textbf{Strengths.}  The context layer is the strongest part of the codebase for
+AGI research use.  It explicitly encodes evidence packets, guard enumeration,
+conflict measurement, split scoring, focus bonuses, feature penalties, evidence
+selection, STV projection, proof terms, and minimality reports.  It also has both
+pure-MeTTa and Prolog beam variants.
+
+\textbf{Weaknesses.}  The scoring constants and guard-enumeration bounds are
+research choices that need more explicit calibration.  The current pure
+enumerator tops out at depth 3, while beam variants can go deeper.  That is fine,
+but the user-facing API should make the selected search regime and its limits
+obvious in every result.
+
+\subsection{Truth-value and evidence semantics}
+
+\textbf{Strengths.}  The code keeps \code{EC} counts separate from \code{STV}
+projection, and the language spec distinguishes truth uncertainty from value
+uncertainty.  This is exactly the kind of distinction that prevents subtle PLN
+modeling errors.
+
+\textbf{Weaknesses.}  The mapping from raw evidence/provenance to \code{EC}
+counts remains the responsibility of the caller or data source.  That is not a
+bug, but a documentation and API risk.  If users infer \code{EC} counts from
+\code{STV} confidence without a principled rule, the pi-PLN semantics will be
+polluted.
+
+\subsection{Tests and verification}
+
+\textbf{Strengths.}  The Python tests cover forward/backward behavior, contextual
+queries, validators, context showcases, complementary evidence, incident
+response, smart dispatch, and forensic verification.  This is unusually rich
+for a research prototype.
+
+\textbf{Weaknesses.}  The test suite contains heavy showcase tests that may be
+too slow for every edit.  It needs a small, fast ``compiler microtests'' layer
+that isolates specific recursive compiler/materializer shapes.  The current
+petta-memory failing shape should become one such microtest.
+
+\section{Minimal failing shape to hand to the author}
+
+The following is not claimed as the only failing shape, but it captures the
+boundary found by petta-memory instrumentation.
+
+Shapes that tend to pass quickly:
+\begin{itemize}
+  \item a nested type expression alone;
+  \item a full wrapper with an atom type;
+  \item a full wrapper with an empty nested type expression;
+  \item a full wrapper with a one-argument nested type expression;
+  \item generic four-field wrappers where only one relevant nested sibling has
+  arity two.
+\end{itemize}
+
+Shapes that can block under bounded probes:
+\begin{itemize}
+  \item a four-field proof/envelope-like expression containing a two-argument
+  nested type beside an \code{STV}-like two-argument payload;
+  \item the generalized form where adjacent sibling payloads are both nested
+  expressions of arity two.
+\end{itemize}
+
+A representative term family is:
+\begin{verbatim}
+(ProofEnvelope PayloadA (Requires TypeArgSentinel0 TypeArgSentinel1)
+              (RightPayload 1.0 1.0))
+\end{verbatim}
+
+and the petta-memory-relevant proof atom is:
+\begin{verbatim}
+(: b-profile-000 (Requires MemoryTarget0 PLNReadyViews) (STV 1.0 1.0))
+\end{verbatim}
+
+The author should first test \code{materialize-stmt-lambdas} directly on these
+terms, outside the full \code{compileadd} path, with timing and recursion trace.
+If direct materialization is slow, the bug is before \code{mm2compile}.  If it is
+fast in isolation but slow inside \code{compileadd}, then the interaction with
+\code{let*}, \code{collapse}, \code{map-flat}, or runtime evaluation context is
+suspect.
+
+\section{Recommended fixes and improvements}
+
+\subsection{Priority 1: stage-isolated compiler diagnostics}
+
+Add a diagnostic head, or a Python helper, that runs the public add pipeline one
+stage at a time:
+\begin{enumerate}
+  \item validate/evaluate statement;
+  \item materialize lambdas;
+  \item run \code{mm2compile};
+  \item internalize proof structure;
+  \item externalize proof structure;
+  \item index source implication;
+  \item add internalized atoms to the KB;
+  \item run on-add processing.
+\end{enumerate}
+
+Each stage should return structured information: status, elapsed time, output
+size, abbreviated output hash, and error/timeout.  This can be implemented in
+Python with subprocess boundaries if MeTTa-level timeouts are unavailable.
+
+\subsection{Priority 2: repair or replace recursive materialization}
+
+The current recursive definition of \code{materialize-stmt-lambdas} is elegant
+but appears operationally dangerous.  Possible repairs:
+\begin{itemize}
+  \item Add a fast path: if a statement contains no \code{|->}, return it
+  unchanged without recursively rebuilding the whole expression.
+  \item Add a structural scanner that detects lambda forms without invoking
+  expensive expression reconstruction.
+  \item Replace \code{map-flat} traversal with a more predictable list walk if
+  \code{map-flat} interacts badly with nested expression siblings.
+  \item Add a depth/node budget and return an explicit error rather than hanging.
+\end{itemize}
+
+For petta-memory's current statements, a no-lambda fast path should make
+\code{materialize-stmt-lambdas} an identity operation.
+
+\subsection{Priority 3: add a supported precompiled or bulk-add API}
+
+Many integrators will have already-normalized facts and rules.  A supported API
+should let them load those facts while preserving whatever indexes and proof
+structures PeTTaChainer requires.  The API could be named something like:
+\begin{verbatim}
+compileadd-checked
+compileadd-precompiled
+bulk-compileadd
+kb-add-compiled-proof-atoms
+\end{verbatim}
+
+The key is not the name.  The key is that callers should not be forced to use
+private low-level assertions that might bypass indexes.  The API should state
+which invariants it maintains.
+
+\subsection{Priority 4: add timeout-safe add methods to the Python API}
+
+Mirror the query timeout design for \code{add\_atom} and \code{add\_atoms}.  A
+safe method could return a structured object instead of raising raw exceptions:
+\begin{verbatim}
+AddResult(status, stage, elapsed_s, output, error, diagnostics)
+\end{verbatim}
+
+This would make failures much easier for agent systems to report.
+
+\subsection{Priority 5: strengthen semantic validation}
+
+Keep \code{check\_stmt} and \code{check\_query}, but add optional deeper checks:
+\begin{itemize}
+  \item proof-id symbol validity;
+  \item rule variable safety;
+  \item supported implication/premise/conclusion schemas;
+  \item evidence-packet shape and nonnegative counts;
+  \item context feature-list shape;
+  \item distribution payload well-formedness;
+  \item compiler-safety shape checks for known problematic nested forms.
+\end{itemize}
+
+This can be staged.  A thin validator is useful, but a research integration path
+needs a ``strict mode'' validator too.
+
+\subsection{Priority 6: expose context search limits in outputs}
+
+Generated context results should always record which search method was used
+(pure enumeration, pure beam, Prolog beam), maximum depth, beam width, candidate
+count if available, selected guard, runner-up guard, score margin, and evidence
+cap/prior.  This will make context projections more scientifically auditable.
+
+\section{Recommended petta-memory stance}
+
+For petta-memory, I recommend the following boundary until PeTTaChainer add/query
+is fixed:
+\begin{enumerate}
+  \item Continue exporting promotion-eligible beliefs as checked STV proof
+  statements and explicit-count EvidencePackets.
+  \item Keep the handoff cache labelled as input evidence, not inferred belief.
+  \item Do not claim PeTTaChainer inference over petta-memory until a bounded
+  \code{compileadd} or supported equivalent passes on the tiny fixture.
+  \item Use PeTTaChainer semantics as a design reference for pi-PLN evidence and
+  context semantics.
+  \item In parallel, prototype pi-PLN evidence/context wrappers around a more
+  functional PLN chainer, currently \fpath{patham9/PLN}, for near-term experiments.
+\end{enumerate}
+
+This is not a rejection of PeTTaChainer.  It is a way to avoid letting one
+runtime bottleneck block the conceptual and integration progress.
+
+\section{Suggested regression tests for PeTTaChainer}
+
+\subsection{Fast materializer identity tests}
+
+Add direct tests for \code{materialize-stmt-lambdas} on lambda-free terms:
+\begin{verbatim}
+(Requires MemoryTarget0 PLNReadyViews)
+(STV 1.0 1.0)
+(: b-profile-000 (Requires MemoryTarget0 PLNReadyViews) (STV 1.0 1.0))
+(ProofEnvelope PayloadA (Requires TypeArgSentinel0 TypeArgSentinel1)
+              (RightPayload 1.0 1.0))
+\end{verbatim}
+
+Expected result: identity output under a small time bound.
+
+\subsection{Stage timing tests}
+
+For a tiny fact and a tiny one-premise implication, record time for each
+\code{compileadd} stage.  Fail if any stage exceeds a conservative bound in CI,
+or at least mark it as a performance regression.
+
+\subsection{Batch-add diagnostics}
+
+Add a test that loads a list of atoms and returns per-atom status.  The first
+failing atom should be identifiable without bisecting by hand.
+
+\subsection{Context projection reproducibility}
+
+For the bird/penguin example, record not only the final low-STV projection but
+also selected guard, support packets, score trace, and minimality report.  Verify
+that irrelevant noise does not alter the selected guard unless the score margin
+is genuinely near zero.
+
+\section{Strengths and weaknesses table}
+
+\begin{longtable}{p{0.23\linewidth}p{0.34\linewidth}p{0.34\linewidth}}
+\textbf{Area} & \textbf{Strength} & \textbf{Weakness or risk} \\
+\hline
+Semantic model & Context-indexed EC evidence, local STV projection, generated
+contexts, paraconsistent conflict handling. & Needs careful documentation of how
+raw evidence becomes EC counts; users may misuse STV confidence as EC evidence.
+\\
+Python API & Small importable interface; query timeout support; contextual
+query result object. & Add path has no equivalent timeout isolation; temporary
+\&self injection is fragile under concurrency/interruption. \\
+Runtime layout & Clear split into chainer, context, configs, tests, benchmarks,
+and paper examples. & Some critical public behavior still depends on large fused
+MeTTa heads. \\
+Compiler path & Named stages make repair possible. & \code{compileadd} fuses
+all stages; \code{materialize-stmt-lambdas} can block before compilation.
+\\
+Validation & Useful top-level statement/query shape checks. & Not a strict
+semantic type checker; does not catch all rule/evidence/context risks. \\
+Tests & Broad showcase, context, audit, verifier, and red-team coverage. & Needs
+small microtests for compiler/materializer shape regressions. \\
+Packaging & Installable Python package with bundled MeTTa runtime data. & Heavy
+SWI/Janus/PeTTa dependency setup; CI/onboarding remain fragile. \\
+Benchmarks & Covers dispatch, contexts, evidence merge, incident replay, and
+forensic packets. & Current failing petta-memory case needs more stage-isolated
+benchmarks than broad showcases. \\
+\end{longtable}
+
+\section{Conclusion}
+
+PeTTaChainer is semantically promising and unusually close to what an
+OmegaClaw/petta-memory style experiential reasoner wants: context-sensitive,
+paraconsistent, proof-aware PLN over a MeTTa/PeTTa substrate.  Its main weakness
+is that the operational add/compile path is not yet robust enough for dependable
+agent memory integration.  The codebase should not be discarded; it should be
+stabilized around the materialization/compiler boundary and given a safe staged
+or precompiled load API.
+
+Until then, petta-memory should preserve PeTTaChainer-compatible handoff
+artifacts and use the codebase as the semantic reference, while developing the
+near-term pi-PLN chainer path on a more functional substrate.  This keeps the
+research direction intact without overstating current runtime maturity.
+
+\appendix
+\section{Key source paths}
+
+\begin{itemize}
+  \item \fpath{pettachainer/pettachainer.py}: Python handler and API.
+  \item \fpath{pettachainer/pln\_validator.py}: statement/query shape checks.
+  \item \fpath{pettachainer/LANGUAGE\_SPEC.md}: user-facing language spec.
+  \item \fpath{pettachainer/LLM\_RULE\_SPEC.md}: LLM-oriented rule construction spec.
+  \item \fpath{pettachainer/metta/petta\_chainer.metta}: MeTTa entry point,
+  \code{materialize-stmt-lambdas}, \code{compileadd}.
+  \item \fpath{pettachainer/metta/chainer/compile.metta}: compiler logic.
+  \item \fpath{pettachainer/metta/chainer/compiled\_query\_runtime.metta}: query runtime.
+  \item \fpath{pettachainer/metta/context/context\_generation.metta}: generated
+  contexts and EC-to-STV projection.
+  \item \fpath{pettachainer/metta/context/context\_from\_kb.metta}: context
+  evidence extraction from a KB space.
+  \item \fpath{pettachainer/metta/context/context\_inference\_control.metta} and
+  \fpath{context\_inference\_control\_beam.metta}: context-driven branch control.
+  \item \fpath{pettachainer/metta/piPLN\_paper\_explained/}: runnable reading
+  guide and demos.
+  \item \fpath{pettachainer/benchmarks/}: benchmark and verification scripts.
+  \item \fpath{tests/}: Python regression tests.
+\end{itemize}
+
+\section{Petta-memory artifacts informing this report}
+
+The following local artifacts and decisions informed the assessment.  They are
+not all required reading for the PeTTaChainer author, but they record the
+integration evidence trail.
+
+\begin{itemize}
+  \item \fpath{projects/petta-memory/DECISIONS.md}: PeTTaChainer integration,
+  compileadd bottleneck, static-import side path, materializer gates, and pivot
+  to \fpath{patham9/PLN} as a parallel functional chainer base.
+  \item \fpath{projects/petta-memory/TASKS.md}: current tasks and latest status.
+  \item \fpath{projects/petta-memory/repos/petta-memory/artifacts/}:
+  structured JSON outputs from bounded profiling and materializer probes.
+  \item Latest relevant materializer artifact:
+  \fpath{pettachainer\_materialize\_four\_field\_adjacent\_nested\_arity\_gate\_2026-07-05T0400Z.json}.
+\end{itemize}
+
+\end{document}
