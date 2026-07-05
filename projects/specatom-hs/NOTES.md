@@ -938,3 +938,256 @@ git diff --check
 ```
 
 Result: focused security/privacy tests passed (10 tests), full suite passed (67 tests), and `git diff --check` passed. Local commit `c11b7d1` (`Review PII access audit logging`). No executable semantics or RawTextOnly export path was expanded.
+
+## 2026-07-04 PII incident-response/breach-notification review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended `build_security_privacy_validation` with `privacy-incident-response-reviewed`, activated by PII/personal-data signals.
+- The new conservative check requires incident response, breach notification, regulator/affected-user notification, incident escalation, or equivalent runbook evidence before downstream privacy claims are trusted.
+- Missing incident-response evidence remains `Unknown` and emits a blocking `MissingSecurityPrivacyEvidence` question; explicit breach-notification/incident-response wording passes.
+- Updated README and the validator gap audit so the v0.2 security/privacy slice includes incident-response/breach-notification review.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (11 tests), full suite passed (68 tests), and `git diff --check` passed. Local commit `b7cd6d9` (`Review PII incident response`). No executable semantics or RawTextOnly export path was expanded.
+
+## 2026-07-04 PII encryption-scope/key-management review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended `build_security_privacy_validation` with `privacy-encryption-scope-reviewed`, activated by PII/personal-data signals.
+- The new conservative check no longer treats a generic `encryption` mention as enough for scoped protection evidence; it requires encryption-at-rest, transport encryption/TLS/HTTPS, database or field-level encryption, key-management/KMS, key rotation, or equivalent wording.
+- Missing scoped encryption/key-management evidence remains `Unknown` and emits a blocking `MissingSecurityPrivacyEvidence` question; explicit at-rest/TLS/key-rotation evidence passes.
+- Updated README and the validator gap audit so the v0.2 security/privacy slice lists encryption-scope/key-management review alongside data classification, lawful basis, retention/deletion, purpose limitation, rights, audit, incident response, residency, and third-party sharing.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (12 tests), full suite passed (69 tests), and `git diff --check` passed. Local commit `61f4145` (`Review PII encryption scope`). No executable semantics, RawTextOnly export path, paid compute, or remote write was expanded.
+
+## 2026-07-04 authentication/session-management review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended `build_security_privacy_validation` with `security-session-management-reviewed`, triggered by auth/login/sign-in/session wording.
+- The new conservative check requires MFA, session timeout/expiry, idle timeout, token expiry/expiration, refresh-token rotation, session revocation/logout, or reauthentication evidence before auth/session claims are trusted.
+- Missing session-management evidence remains `Unknown` and emits a blocking `MissingSecurityPrivacyEvidence` question; explicit MFA/session-timeout/logout evidence passes.
+- Updated README, validator gap audit, and project records.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (13 tests), full suite passed (70 tests), and `git diff --check` passed. No executable semantics, RawTextOnly export path, paid compute, or remote write was expanded.
+
+## 2026-07-04 — real-time/current feature freshness review
+
+Added `ml-feature-freshness-reviewed` to the conservative ML/time-series methodology slice in `repos/specatom-hs`. The check only becomes blocking when feature/input wording appears together with real-time/live/current/latest/recent/fresh signals; it requires freshness, staleness, latency, max/data age, update cadence, event-time, or as-of timestamp evidence. Missing evidence produces an `Unknown` check plus a blocking `MissingMethodologyEvidence` question; explicit as-of/max-age evidence passes. This advances the Appendix N/P temporal-availability lane without expanding executable semantics or RawTextOnly export.
+
+Verification: `PYTHONPATH=src python3 -m unittest tests.test_specatom_ml_methodology -v` passed 12 tests; `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 72 tests; `git diff --check` passed.
+
+## 2026-07-04 auth/API abuse-protection review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Added `security-auth-abuse-protection-reviewed` to the conservative security/privacy validator slice.
+- The obligation triggers on auth/login/API/password/token wording and requires rate-limit, throttling, brute-force protection, account lockout, login-attempt limits, abuse/bot detection, or CAPTCHA evidence.
+- Missing evidence becomes an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question; explicit rate-limit/brute-force-lockout evidence passes.
+- Updated README and security/privacy regression tests; local implementation commit: `991ef09` (`Review auth abuse protection`).
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (14 tests); full suite passed (73 tests); `git diff --check` produced no whitespace errors.
+
+## 2026-07-04 - credential rotation/expiry/revocation security slice
+
+Added a conservative `security-credential-rotation-reviewed` obligation in `projects/specatom-hs/repos/specatom-hs` for specs that mention secrets, tokens, passwords, or credentials. Missing rotation, expiry, or revocation wording now produces an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question instead of silently treating secret storage/log redaction as enough.
+
+Implementation details:
+
+- `src/specatom_hs/passes.py`: added `SECRET_ROTATION_RE` and a new `check_property(...)` call in `build_security_privacy_validation`.
+- `tests/test_specatom_security_privacy.py`: added a regression where secret-manager plus log-redaction evidence still leaves credential lifecycle Unknown, and extended existing all-gaps/pass fixtures.
+- `README.md` and `docs/validator-gap-audit.md`: documented the new obligation in the supported security/privacy slice.
+
+Verification:
+
+```bash
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Focused security/privacy tests passed (15 tests); full suite passed (74 tests); `git diff --check` produced no whitespace errors.
+
+## 2026-07-04 authentication/API transport-protection review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Added `security-auth-transport-protection-reviewed` to the conservative security/privacy pass.
+- Auth/login/API/password/token wording now requires TLS, HTTPS, mTLS, certificate-pinning, transport-encryption, or secure-channel evidence before the transport-protection check passes.
+- Missing transport-protection evidence becomes an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question, exported through the existing PeTTa reified profile.
+- Updated the security/privacy regression suite plus README and validator-gap audit docs.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed 16 tests; full suite passed 75 tests; `git diff --check` passed. No executable semantics or RawTextOnly export path was expanded.
+
+## 2026-07-05 API authorization/scope review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Added a conservative `security-api-authorization-reviewed` obligation to the security/privacy pass.
+- The obligation triggers only when API/endpoint/webhook/route/request wording appears together with auth/access context, then requires authorization, permission/scope checks, scoped tokens, RBAC/access-control, deny-by-default, or policy-enforcement evidence.
+- Missing evidence produces an Unknown check plus `MissingSecurityPrivacyEvidence` question with a `Blocks` link, matching the existing review/refusal style.
+- Added regression coverage for an authenticated API endpoint that has MFA/rate limits/HTTPS but no authorization/scope evidence, and updated the explicit-controls pass case to include the new property.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (17 tests), full suite passed (76 tests), and `git diff --check` produced no whitespace errors. Local implementation commit: `e422ff8` (`Review API authorization scope`); not pushed.
+
+## 2026-07-05 webhook/callback request-authenticity review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended the conservative security/privacy pass with `security-webhook-request-authenticity-reviewed`, triggered by webhook, callback, incoming external request, or signed-request wording.
+- The check requires request-authenticity/replay-protection evidence such as HMAC, signature verification, webhook secret, request signature, timestamp window/tolerance, nonce, idempotency key, or replay protection.
+- Missing evidence becomes an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question, preserving the existing safe refusal/review style without generating executable handling code.
+- Added regression coverage for a webhook callback over HTTPS that still lacks request signature/replay evidence, and extended the explicit-controls pass fixture.
+- Updated README and validator-gap audit docs.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (18 tests), full suite passed (77 tests), and `git diff --check` passed. Local implementation commit: `f6613be` (`Review webhook request authenticity`); not pushed. No paid compute, executable skeleton expansion, RawTextOnly export expansion, secrets/access changes, merge, force-push, or remote-ref deletion.
+
+## 2026-07-05 API/webhook input-validation review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended the conservative security/privacy pass with `security-api-input-validation-reviewed`, triggered when API/endpoint/route/request/webhook wording appears near input, payload, body, query, parameter, JSON, form, or upload wording.
+- The new check requires reviewable evidence such as input validation, payload/schema/JSON/request-schema validation, parameter validation, sanitization, allow-listing, type checks, or bounds checks before inbound request data is treated as adequately constrained.
+- Missing evidence becomes an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question; explicit schema/payload validation evidence passes in the all-controls fixture.
+- Updated README and validator-gap audit docs.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (19 tests), full suite passed (78 tests), and `git diff --check` passed. Local implementation commit: `e923faf` (`Review API input validation`); not pushed. No paid compute, executable semantics or RawTextOnly export expansion, secrets/access/security setting changes, merge, force-push, or remote-ref deletion.
+
+## 2026-07-05 API/webhook error-disclosure review
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Extended the conservative security/privacy pass with `security-api-error-disclosure-reviewed`, triggered when API/webhook specs mention errors, exceptions, stack traces, tracebacks, debug output, diagnostics, or error/failure responses.
+- The check requires safe response evidence such as generic/redacted/sanitized/opaque errors, no stack traces/debug output, error codes, or correlation IDs before diagnostic response wording is treated as reviewed.
+- Missing evidence becomes an `Unknown` check plus a blocking `MissingSecurityPrivacyEvidence` question, preserving the existing review/refusal style without adding executable error-handling semantics.
+- Added regression coverage for an API endpoint exposing exception diagnostics and extended the explicit-controls fixture with sanitized generic API error responses and no stack traces.
+- Updated README and validator-gap audit docs.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_security_privacy -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused security/privacy tests passed (20 tests), full suite passed (79 tests), and `git diff --check` passed. Local implementation commit: `0446965` (`Review API error disclosure`); not pushed. No paid compute, executable semantics or RawTextOnly export expansion, secrets/access/security setting changes, merge, force-push, or remote-ref deletion.
+
+## 2026-07-05 component-level data-path edge extraction
+
+Concrete repo work in `repos/specatom-hs`:
+
+- Added `DATA_PATH_EDGE_RE` regex to `specatom_hs.passes` that detects explicit component-level data-path patterns: "X reads from Y", "X writes to Y", "X sends to Y", "X consumes Z from Y", "X produces Z to Y", "X depends on Y".
+- Added `_EDGE_STOP_WORDS` filter so conjunctions/articles/common prepositions are not treated as source or target component names.
+- Added `_normalize_direction` helper that converts matched verb phrases to direction strings (e.g., "reads from" -> "reads-from", "consumes input from" -> "consumes-from").
+- Extended `build_information_flow_validation` to extract edges from each candidate item, emit `DataFlowEdge` atoms as `SpecObject` records with `TEMPLATE_PARSED` semantic level, and add an `information-flow-data-path-declared` validation obligation: Pass when at least one explicit edge is found, Unknown when only vague data-flow/dependency wording exists.
+- Added `DataFlowEdge` to `FACT_SCHEMAS` in `specatom_hs.validators` with arity 5 and no subject_pos (it is not an object-scoped fact).
+- Added regression tests in `tests/test_specatom_information_flow.py` for edge extraction ground truth, pass/unknown data-path check behavior, PeTTa export of `DataFlowEdge` atoms, and no-edge behavior for non-flow specs.
+
+Verification:
+
+```bash
+cd projects/specatom-hs/repos/specatom-hs
+PYTHONPATH=src python3 -m unittest tests.test_specatom_information_flow -v
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+git diff --check
+```
+
+Result: focused information-flow tests passed (14 tests), full suite passed (93 tests), and `git diff --check` passed. Local implementation commit: `f0a7fcb` (`Add component-level data-path edge extraction to information-flow validation`); not pushed. No paid compute, executable semantics or RawTextOnly export expansion, secrets/access/security setting changes, merge, force-push, or remote-ref deletion.
+
+### 2026-07-05 (session 2): Transitive dependency chain detection
+
+Context: The information-flow validation slice now extracts explicit component-level `DataFlowEdge` atoms, but does not reason about chains implied by those edges. The gap audit lists "richer data-path inference" and "component-level dependency graphs" as next steps.
+
+Approach: After extracting `DataFlowEdge` atoms in `build_information_flow_validation`, build an adjacency list from the extracted edges and run a bounded BFS (max 10 hops) to find nodes reachable in 2+ hops from each source. If A→B and B→C exist, A transitively depends on C. Emit `information-flow-transitive-dependency-reviewed` obligation:
+- Pass when no transitive chains are detected ("no transitive dependency chains detected").
+- Pass when chains exist and the spec text acknowledges them via 'transitive', 'indirect', 'through', 'via', 'chained', or 'intermediary' wording.
+- Unknown with blocking `MissingInformationFlowEvidence` question when chains exist but are not acknowledged.
+
+Tests added: `test_transitive_dependency_detected_and_unacknowledged` (A→B→C without ack → Unknown + blocking question mentioning both endpoints), `test_transitive_dependency_acknowledged_passes` (same edges + 'indirectly...through' → Pass), `test_no_transitive_dependency_when_no_chains` (disconnected edges → Pass with 'no transitive' evidence).
+
+Result: focused information-flow tests passed (17 tests), full suite passed (96 tests), and `git diff --check` passed. Local implementation commit: `69b865a` (`Add transitive dependency chain detection to information-flow validation`); not pushed. No paid compute, executable semantics or RawTextOnly export expansion, secrets/access/security setting changes, merge, force-push, or remote-ref deletion.
+
+### 2026-07-05 (session 3): Graph-based cycle detection
+
+Context: The information-flow pass extracts explicit `DataFlowEdge` atoms and detects transitive chains, but the existing `information-flow-circular-dependency-reviewed` check is keyword-based only. A graph-based cycle check can detect actual cycles (A→B→A or A→B→C→A) that the spec text may not mention.
+
+Approach: After transitive dependency detection, build a directed adjacency graph from extracted edges and run DFS with white/gray/black coloring to detect back edges. When a back edge is found, extract the cycle path from the DFS stack. Deduplicate cycles by sorted node set. Emit `information-flow-cycle-detected` obligation: Pass when no cycles found, Unknown with blocking `MissingInformationFlowEvidence` question when cycles exist.
+
+Tests added: `test_cycle_detected_from_graph_edges` (A→B + B→A → Unknown + blocking question), `test_no_cycle_when_acyclic_graph` (DAG → Pass with 'no cycles' evidence), `test_three_node_cycle_detected` (A→B→C→A → Unknown mentioning endpoints), `test_no_cycle_when_no_edges` (no DataFlowEdge atoms → no cycle obligation).
+
+Result: focused information-flow tests passed (21 tests), full suite passed (100 tests), and `git diff --check` passed. Local implementation commit: `b7b85d9` (`Add graph-based cycle detection to information-flow validation`); not pushed. No paid compute, executable semantics or RawTextOnly export expansion, secrets/access/security setting changes, merge, force-push, or remote-ref deletion.
