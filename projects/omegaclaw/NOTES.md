@@ -2,6 +2,80 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-07-05 - ThreadKeeper supervisor/provider-boundary smoke
+
+After Ben approved the ThreadKeeper smoke, added and ran a non-live supervisor/provider-boundary gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-supervisor-provider-smoke/`. The harness `local/run-threadkeeper-worker-loop-supervisor-provider-smoke.py` queues one checksum-sidecar task, starts the existing ThreadKeeper worker-loop supervisor as a separate process with `max_tasks=1`, and serves a local fake Ollama-compatible `/api/chat` endpoint so the worker exercises the normal provider-call path without Telegram, OmegaClaw runtime, OpenClaw Gateway, external provider calls, secrets, paid compute, or daemon/scheduler install.
+
+Result: `smoke_passed`; one queued task claimed/completed; zero pending queue tasks; exactly one local fake-provider request; result sidecar status `ok` with summary `supervisor provider-boundary smoke ok`; worker token usage 17 input / 9 output. Verification: harness `py_compile`, supervisor `bash -n`, smoke run, focused ThreadKeeper pytest (`82 passed`), `git diff --check`, and `local/check-ggb-gate-fixtures.py` on the new gate.
+
+
+## 2026-07-05 - GGB roadmap/gate fixture refresh for ThreadKeeper env hardening
+
+Refreshed `GGB_CAPACITIES_ROADMAP.md` and the reusable ThreadKeeper hardening gate artifact after inspecting ThreadKeeper branch `agent/threadkeeper-hardening-next` at head `85145ea` (`Bound worker env file parsing`). The roadmap/gate now map worker-loop runner env-file loading, unsafe process-control key rejection, bounded env-file parsing, and staged supervisor cancellation evidence into capacities 3.2/4.5/5.2.
+
+Closed a fixture-record gap discovered by a broader GGB checker run: added `.metta` sibling fixtures for `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-env-runner/` and `20260705-threadkeeper-worker-loop-one-task/`, which previously had only `RUN.md`/`report.json`.
+
+Checks: ThreadKeeper `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest (`82 passed`); and the GGB fixture checker across ThreadKeeper hardening, petta-memory, petta-chem, GoalChainer, worker-loop smoke, worker-loop one-task, worker-env-runner, @Protomegabot config/one-task, supervisor-boundary, and supervisor-cancelled gates. No live Telegram/OmegaClaw runtime wiring, worker/provider call, secrets/access changes, paid compute, daemon/scheduler install, push, merge, or force-push.
+
+## 2026-07-05 - ThreadKeeper supervisor cancelled queued-task smoke
+
+Completed a non-live supervisor-boundary cancellation gate for the ThreadKeeper bounded async worker loop. Tightened `local/threadkeeper-worker-loop-supervisor.sh` so `start` builds an argv array and invokes `setsid "${cmd[@]}"` directly instead of interpolating env-provided paths/bounds into a `bash -c` command string. Added `local/run-threadkeeper-worker-loop-supervisor-cancel-smoke.py` and archived `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-supervisor-cancelled-task/` with `RUN.md`, `report.json`, non-secret env config, retained queue/run evidence, and `.metta` sibling fixtures.
+
+Result: the harness queued exactly one checksum-sidecar task, created its cancellation token before the supervisor claimed it, launched the supervisor with `max_tasks=1`, and verified the separate worker process returned `worker_drained` with one task attempted/completed, zero remaining queue tasks, `.done`/result/checksum/transcript evidence, and task result `cancelled` before worker LLM/provider use.
+
+Checks: harness `py_compile`; supervisor `bash -n`; cancelled-task smoke; focused ThreadKeeper pytest (`81 passed`); `git diff --check` in ThreadKeeper and research workspace; fixture checker for the new gate. An ad-hoc broader fixture check also exposed that an older gate (`20260705-threadkeeper-worker-loop-one-task`) lacks `.metta` sibling fixtures, so only the new gate's fixture is claimed here. No Telegram/OmegaClaw runtime wiring, model/provider call, secrets, paid compute, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper worker-loop supervisor process-boundary smoke
+
+Added `projects/omegaclaw/local/threadkeeper-worker-loop-supervisor.sh` as a non-live staging supervisor for the ThreadKeeper bounded async worker-loop, modeled on the existing `omegaclaw-telegram-private-supervisor.sh` pattern. It provides `start|stop|status|log` actions, uses `setsid` for process-group management, and launches the worker-loop runner with conservative no-claim defaults (`max_tasks=0`, `max_idle_polls=1`, `max_runtime_s=1`). It does NOT install a daemon, scheduler, cron job, or systemd unit.
+
+Archived the gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-supervisor-boundary/` with `RUN.md`, `protomegabot-worker.env`, `report.json`, and `.metta` sibling fixtures.
+
+Result: supervisor start launched the worker-loop runner, which produced `status=worker_idle` with zero tasks attempted/completed and `stop_reason=max_tasks`. The process exited quickly; supervisor status correctly reported inactive; stop cleaned the stale PID file; log showed the structured JSON result.
+
+Checks: `bash -n`; `python3 -m py_compile` runner; supervisor start/status/stop/log; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`81 passed`); `git diff --check` in ThreadKeeper; GGB fixture checker on the new gate (9 checks, 9 ggb-check atoms) and across all 8 existing gate fixtures. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, scheduler/daemon install, worker LLM call, or queued task claim.
+
+## 2026-07-05 - ThreadKeeper worker-loop env-file key validation
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `9e9dda2` (`Reject unsafe worker env-file keys`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded worker-loop runner's `--env-file` parser now rejects process-control keys before importing `subagent`: `PATH`, `PYTHONPATH`, `PYTHONHOME`, `LD_*`, `DYLD_*`, `BASH_ENV`, `ENV`, `HOME`, `IFS`, and `SHELL`. This keeps operator config files useful for ThreadKeeper/OmegaClaw knobs while fail-closing on env-file attempts to change interpreter/subprocess loading behavior. Added focused subprocess tests and documented the boundary in `docs/reference-skills-subagent.md`.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`81 passed`). No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, scheduler, or live async worker loop.
+
+## 2026-07-05 - ThreadKeeper @Protomegabot-config worker-loop wrapper smoke
+
+Added a conservative non-live wrapper `projects/omegaclaw/local/run-threadkeeper-worker-loop-smoke.sh` for the ThreadKeeper bounded async worker-loop. The wrapper uses `scripts/run-subagent-worker-loop --env-file`, a project-local run directory, and explicit no-claim defaults. Archived the gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-protomegabot-config-smoke/` with non-secret `protomegabot-worker.env`, `report.json`, `RUN.md`, and `.metta` sibling fixtures.
+
+Result: the wrapper returned `worker_idle` with `max_tasks=0`, zero tasks attempted/completed, and zero remaining queued tasks. Verification passed: shell syntax, runner `py_compile`, wrapper smoke, `git diff --check`, focused ThreadKeeper mock pytest (`80 passed`), and the GGB fixture checker for the new gate. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, scheduler/daemon install, worker LLM call, or queued task claim. Next narrow gate is one local queued mock task through the same @Protomegabot-config wrapper boundary.
+
+
+## 2026-07-04 - ThreadKeeper worker-loop one-task artifact smoke
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `4812345` (`Add artifact-local worker loop smoke`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `Autotests/mock/run_worker_loop_one_task_smoke.py`, a deterministic non-live smoke helper that builds an artifact-local persona/workspace/run-dir, queues exactly one task via queue-only dispatch, monkeypatches the worker LLM call to a local `(emit ...)`, and drains it through the real bounded `subagent.run_queued_worker_loop(...)`. Added focused pytest coverage invoking that helper in a subprocess. Archived the staged gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-loop-one-task/` with `RUN.md`, `report.json`, and the local queue/transcript/checksum/index evidence under `smoke/runs/`.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py Autotests/mock/run_worker_loop_one_task_smoke.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`78 passed`); direct artifact smoke passed with `worker_drained`, one task attempted/completed, zero remaining queued tasks, and persisted `.done`/result/checksum/transcript/index evidence. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+
+## 2026-07-04 - ThreadKeeper worker-loop explicit-bound validation
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work.
+
+Pushed commit `10f69bf` (`Validate worker loop explicit bounds`): `subagent.run_queued_worker_loop(...)` now treats direct operator/Python bounds as strict tool-call-like inputs. Malformed explicit bounds (boolean/string/fractional integer task/idle limits, non-finite poll intervals, or negative runtime caps) return structured `worker_config_invalid` before acquiring `.async-worker.lock` or claiming any queued task. Env defaults still parse defensively at import.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`77 passed`). Pushed to `fork/agent/threadkeeper-hardening-next`. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+
+## 2026-07-04 - ThreadKeeper worker loop runner and runtime/error-continuation tests
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work.
+
+Pushed commit `c4ae8a8` (`Add bounded subagent worker loop runner`): added `scripts/run-subagent-worker-loop` as a conservative operator/supervisor entrypoint. It imports `subagent` after applying an optional `--run-dir`, invokes one bounded `run_queued_worker_loop(...)` run, and prints the structured JSON result. `--max-tasks 0` is the intended no-claim smoke for install/supervisor wiring checks. Added a script smoke test to the focused mock suite and updated `docs/reference-skills-subagent.md`.
+
+Pushed commit `bb6c8c7` (`Add worker loop runtime-cap and error-continuation tests`): two new focused tests cover the `max_runtime_s` wall-clock timeout exit path (first task completes, clock jumps past cap, second task remains pending) and the worker-error-continuation path (first queued task raises a simulated exception, loop records `queue_worker_error` and continues to the second task which succeeds).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; direct script invocation (`--max-tasks 0` returns `worker_idle`); focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`75 passed`). Pushed to `fork/agent/threadkeeper-hardening-next`. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+
 ## 2026-07-04 - ThreadKeeper queued-task integer type hardening
 
 Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Added and pushed commit `ac7dfd4` (`Reject coerced queued task integers`) as a narrow strict queue-schema validation slice.
@@ -559,3 +633,88 @@ Refined `GGB_CAPACITY_GATE_TEMPLATE.md` as a narrow roadmap-quality gate improve
 Updated `GGB_CAPACITIES_ROADMAP.md` to mark capacity 2.1 (retrieval/source grounding) and 5.4 (transparency/calibrated uncertainty) as partial passes for future gate records, with the next task being to apply the new fields in the next new capacity-gate artifact.
 
 Checks: `python3 -m py_compile projects/omegaclaw/local/check-ggb-gate-fixtures.py`; `python3 projects/omegaclaw/local/check-ggb-gate-fixtures.py projects/omegaclaw/artifacts/ggb-capacity-gates/20260701-petta-chem-run-contract projects/omegaclaw/artifacts/ggb-capacity-gates/20260701-threadkeeper-hardening projects/omegaclaw/artifacts/ggb-capacity-gates/20260701-petta-memory-omegaclaw-fixture projects/omegaclaw/artifacts/ggb-capacity-gates/20260702-goalchainer-incident-harness` passed. No live OmegaClaw/Telegram/runtime integration, secrets/access/security changes, paid compute, push/merge, daemon, or live async worker loop.
+
+## 2026-07-04 - ThreadKeeper queued cancellation preservation
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Added and pushed commit `c041d24` (`Preserve queued subagent cancellation token`) to `fork/agent/threadkeeper-hardening-next`.
+
+Issue closed: queue-only dispatch persisted `cancel_file` in the durable `queue/*.json` task record, but `subagent.run_queued_dispatch(queue_path)` did not carry that queued cancellation token into the suppressed queue-only synchronous dispatch. A cancellation token created after enqueue but before worker claim could therefore be ignored unless the worker process happened to have matching global cancellation state. The queued-worker primitive now temporarily applies the queued `cancel_file` around the worker dispatch and restores the previous cancellation state afterward, so queued cancellations fail closed before any worker LLM call.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; `/home/openclaw/research-agent/projects/omegaclaw/local/threadkeeper-pytest-venv/bin/python -m pytest Autotests/mock/test_subagent_hardening_mock.py -q` passed (`68 passed`). No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+## 2026-07-04 - GGB roadmap ThreadKeeper queue cancellation refresh
+
+Refreshed `GGB_CAPACITIES_ROADMAP.md` and the reusable ThreadKeeper hardening gate fixture under `artifacts/ggb-capacity-gates/20260701-threadkeeper-hardening/` to current ThreadKeeper branch head `c041d24`. The capacity map now records two narrow queue-integrity follow-ups: `ac7dfd4` rejects checksum-valid queued records whose integer metadata is merely coercible rather than actually JSON-integer typed, and `c041d24` carries queued `cancel_file` metadata into worker execution so cancellation created after enqueue can stop the worker before any worker LLM call. Updated `RUN.md`, `MANIFEST.metta`, `METRICS.metta`, and `SUMMARY.metta` accordingly.
+
+Verification: ThreadKeeper `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest passed (`68 passed`); `python3 -m py_compile projects/omegaclaw/local/check-ggb-gate-fixtures.py`; and the GGB sibling-fixture checker passed across ThreadKeeper, `petta-memory`, `petta-chem`, and GoalChainer gates. No live OmegaClaw/Telegram/runtime integration, secrets/access/security changes, paid compute, push/merge, daemon, or live async worker loop.
+
+## 2026-07-04 - ThreadKeeper supervised async worker loop
+
+Ben explicitly said ThreadKeeper should have a real async worker loop. Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next` and pushed commit `cc3cd1e` (`Add bounded queued worker loop`).
+
+Implemented `subagent.run_queued_worker_loop(...)` as the live queue consumer primitive: it repeatedly polls pending `queue/*.json` records and claims them through the existing checksum-validating `run_queued_dispatch(...)` path until an explicit bound is reached. Bounds: `max_tasks`, `max_idle_polls`, `max_runtime_s`, and optional `stop_file`; defaults are controlled by `OMEGACLAW_SUBAGENT_ASYNC_WORKER_*` env vars. The loop uses a best-effort `.async-worker.lock` under `OMEGACLAW_SUBAGENT_RUN_DIR` to reject concurrent local worker loops when `fcntl` is available. It still does not start itself from parent `dispatch` and is not a service manager; a deployment/supervisor must launch it deliberately.
+
+Focused mock tests added coverage for draining multiple queued tasks until idle while preserving `OMEGACLAW_SUBAGENT_QUEUE_ONLY`, honoring a stop file before any worker LLM call, rejecting a concurrent worker-loop lock, and defensive env parsing for the new async worker knobs. Docs updated in `docs/reference-skills-subagent.md`.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; `/home/openclaw/research-agent/projects/omegaclaw/local/threadkeeper-pytest-venv/bin/python -m pytest Autotests/mock/test_subagent_hardening_mock.py -q` passed (`71 passed`). Pushed to `fork/agent/threadkeeper-hardening-next`. No paid compute, live OmegaClaw/Telegram/runtime install, secrets/access/security settings, force-push, merge, or remote-ref deletion.
+
+## 2026-07-04 - ThreadKeeper async worker lock metadata
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Added and pushed commit `90f42f5` (`Add queued worker loop lock metadata`) as a small observability/audit hardening slice for the newly accepted bounded async worker loop.
+
+`subagent.run_queued_worker_loop(...)` now writes compact JSON metadata into `.async-worker.lock` after acquiring the local worker lock: pid, started_at, status, run_dir, bounds, and stop_file. If another worker-loop invocation finds the lock held, its structured `worker_already_running` return now includes readable `worker_lock` metadata so an operator/supervisor can distinguish an active local worker from a stale/unknown prior run without claiming any queue record. On exit, the loop leaves final `finished`/`stop_reason`/`tasks_attempted` metadata in the same file for cheap audit.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; `/home/openclaw/research-agent/projects/omegaclaw/local/threadkeeper-pytest-venv/bin/python -m pytest Autotests/mock/test_subagent_hardening_mock.py -q` passed (`72 passed`). Pushed to `fork/agent/threadkeeper-hardening-next`. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+
+## 2026-07-04 - GGB roadmap async worker-loop gate refresh
+
+Refreshed the GGB roadmap and ThreadKeeper hardening gate fixture to ThreadKeeper branch head `bb6c8c7` after Ben-approved real async worker-loop work. The roadmap now maps the supervised bounded `subagent.run_queued_worker_loop(...)`, `.async-worker.lock` metadata, `scripts/run-subagent-worker-loop`, runtime-cap behavior, worker-error continuation, stop-file/concurrent-loop protections, and no-claim operator-script smoke into capacities 3.2, 4.5, and 5.2.
+
+Updated `artifacts/ggb-capacity-gates/20260701-threadkeeper-hardening/RUN.md`, `MANIFEST.metta`, `EVENTS.metta`, `METRICS.metta`, and `SUMMARY.metta`: the fixture now records 27 gate checks, 75 focused mock tests, and head `bb6c8c7`. The next non-live gate is a staged @Protomegabot-config worker-loop smoke: first `scripts/run-subagent-worker-loop --max-tasks 0` under the intended run-dir/config, then one local queued mock task; no Telegram/runtime wiring without explicit runtime approval.
+
+Verification: ThreadKeeper `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest (`75 passed`); and `local/check-ggb-gate-fixtures.py` across the ThreadKeeper, `petta-memory`, `petta-chem`, and GoalChainer fixtures all passed. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security changes, force-push, merge, daemon, or live worker-loop launch.
+
+## 2026-07-04 - ThreadKeeper async worker stop-file config validation
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Added and pushed commit `61bce9c` (`Validate worker loop stop file config`) as a narrow async-worker/strict-argument validation follow-up: `subagent.run_queued_worker_loop(...)` now validates explicit/env stop-file values before acquiring `.async-worker.lock` or claiming any queued task, and returns structured `status=worker_config_invalid` for NUL-containing or overlong values. Docs now record the failure mode and stop-file bound.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest from `projects/omegaclaw/local/threadkeeper-pytest-venv` passed (`76 passed`). Pushed to `fork/agent/threadkeeper-hardening-next`. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+
+
+## 2026-07-04 21:02 PDT - GGB ThreadKeeper worker-loop no-claim smoke
+
+Archived `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-loop-smoke/` for the first staged non-live ThreadKeeper async worker-loop install/supervisor check. ThreadKeeper branch `agent/threadkeeper-hardening-next` at `10f69bf` passed `git diff --check`, `py_compile`, and focused mock pytest (`77 passed`). The conservative operator script `scripts/run-subagent-worker-loop --max-tasks 0 --max-idle-polls 1 --poll-interval-s 0 --max-runtime-s 1` returned `worker_idle` with zero tasks attempted/completed and no worker LLM calls or live OmegaClaw/Telegram/runtime behavior changes. An initial typo using `--idle-poll-s` failed with argparse and was corrected to `--poll-interval-s`. Next staged gate: one artifact-local queued mock task before any @Protomegabot runtime wiring.
+
+## 2026-07-05 - ThreadKeeper worker-loop env-file runner smoke
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `120d689` (`Load env files in worker loop runner`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker-loop operator entrypoint `scripts/run-subagent-worker-loop` now accepts repeatable `--env-file` arguments and loads conservative `KEY=VALUE` operator config before importing `subagent`. Parsing is deliberately shell-free: blank/comment lines are ignored, malformed lines or unsafe env keys fail closed, quotes are stripped only as literal matching pairs, and `--run-dir` remains an explicit final override. This prepares the staged @Protomegabot/local-supervisor config path without claiming work or touching Telegram/runtime state.
+
+Archived a non-live env-file runner gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-env-runner/` with `RUN.md`, `worker.env`, and `report.json`. Direct smoke used `--max-tasks 0` and returned `worker_idle` / `stop_reason=max_tasks` with zero tasks attempted and zero remaining queue tasks.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`80 passed`); direct env-file runner smoke. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, force-push, merge, remote-ref deletion, daemon, or live async worker loop.
+## 2026-07-05 02:07 PDT - ThreadKeeper @Protomegabot-config one-task worker-loop smoke
+
+Continued the staged ThreadKeeper async-worker install path after the no-claim @Protomegabot-config wrapper smoke. Added `projects/omegaclaw/local/run-threadkeeper-worker-loop-one-task-smoke.py` and archived `artifacts/ggb-capacity-gates/20260705-threadkeeper-protomegabot-one-task-smoke/`. The harness loads the non-secret staging env file, creates an artifact-local persona/workspace/run-dir, queues exactly one checksum-sidecar mock task, monkeypatches the worker LLM call to a deterministic in-process `(emit ...)`, and drains the task through `subagent.run_queued_worker_loop(max_tasks=1, poll_interval_s=0, max_idle_polls=0, max_runtime_s=30)`.
+
+Result: `report.json` records `status=smoke_passed`; worker status `worker_drained`; one task attempted/completed; zero pending queue tasks; retained `.done` task, `.done.result.json` sidecar, transcript/checksum records, and fake worker token accounting (`4/7/11`). No Telegram, OmegaClaw runtime, OpenClaw Gateway, real provider/model call, secrets, paid compute, daemon, scheduler, force-push, merge, or remote-ref deletion.
+
+Checks: `python3 -m py_compile projects/omegaclaw/local/run-threadkeeper-worker-loop-one-task-smoke.py`; `python3 projects/omegaclaw/local/run-threadkeeper-worker-loop-one-task-smoke.py`; `bash -n projects/omegaclaw/local/run-threadkeeper-worker-loop-smoke.sh`; `python3 -m py_compile projects/omegaclaw/repos/ThreadKeeper/scripts/run-subagent-worker-loop`; focused ThreadKeeper pytest passed (`80 passed`); `git diff --check`; and `check-ggb-gate-fixtures.py` passed for the new gate.
+
+## 2026-07-05 - OmegaClaw runtime hardening plan document
+
+Prepared `docs/omegaclaw_hardening_plan.tex` and built `docs/omegaclaw_hardening_plan.pdf` for Ben/team review. The document proposes OpenClaw-style runtime hardening for ProtoMegaBot/OmegaClaw, grounded in observed failures: SWI/Janus crash during message handling, polluted/oversized history, fixed Gateway session context ballooning, silent backend failure to `()`, supervisor/stale-PID behavior, timeout mismatch, Telegram resolver policy fragility, Gateway restart sensitivity, and wrong-HOME environment inheritance. Build used local `tectonic` because `pdflatex` is not installed; PDF text was smoke-inspected with `pdftotext`.
+
+## 2026-07-05 - ThreadKeeper worker env-file parser bounds
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, after fetching draft PR #1 as `origin/pr-1` and confirming it is still an ancestor of the branch (`merge_base_ancestor=0`). Added and pushed commit `85145ea` (`Bound worker env file parsing`): `scripts/run-subagent-worker-loop --env-file` now fails closed on symlink env files, non-regular files, env files larger than 64 KiB, and overlong env lines/values before applying env or importing `subagent`. Added subprocess regression coverage for symlink and oversized value rejection.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` passed (`82 passed`). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper private/non-group OpenClaw worker smoke
+
+After Ben approved the ThreadKeeper smoke in Protobots message 2724, ran the next controlled private/non-group async-worker gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-private-openclaw-smoke/`. The helper queued exactly one task under artifact-local @Protomegabot-style paths and drained it with `subagent.run_queued_worker_loop(max_tasks=1)`, using a real local OpenClaw Gateway `/v1/chat/completions` worker call via the PeTTa venv.
+
+Result: `report.json` status `smoke_passed`; queued status `queued`; worker status `worker_drained`; tasks attempted/completed `1/1`; remaining queue tasks `0`; final task result `needs_adjudication` per contract; worker token usage `16,756` total. The first system-Python attempt failed closed before provider use because `openai` was not installed; rerunning with the PeTTa venv succeeded. No Telegram group/private message, paid compute, daemon/scheduler install, or broad live enablement.
+
+Checks: `py_compile` for the artifact helper and report assertions over `report.json`.

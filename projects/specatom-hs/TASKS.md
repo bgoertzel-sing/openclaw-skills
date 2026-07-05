@@ -42,7 +42,8 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-03: Added generic-vs-named baseline/uncertainty methodology review (`ml-baseline-comparator-named`, `ml-uncertainty-method-named`) so vague baseline/uncertainty mentions become Unknown blocking questions.
 - [x] 2026-07-03: Added prediction-time feature availability review (`ml-feature-availability-reviewed`) so declared ML inputs/features require point-in-time/as-of, lagged, historical, or equivalent availability evidence.
 - [ ] v0.2 follow-up: deepen ML/time-series methodology validation with richer comparator/uncertainty semantics and stronger metric appropriateness once target/task facets are explicit.
-- [ ] v0.2 candidate: add information-flow and temporal-availability obligations for declared inputs/outputs, freshness/availability assumptions, and temporally impossible claims.
+- [x] 2026-07-04: Added real-time/current feature freshness review (`ml-feature-freshness-reviewed`) so ML/time-series specs with current/live/recent/fresh features require freshness, staleness, latency, update-cadence, data-age, or as-of timestamp evidence.
+- [ ] v0.2 candidate: continue information-flow and temporal-availability obligations for declared inputs/outputs and temporally impossible claims.
 - [x] 2026-07-03: Added first v0.2 security/privacy obligation scaffolding for secrets, PII/privacy handling, access boundaries, and destructive-action safety, defaulting to Unknown/question where evidence is missing.
 - [x] 2026-07-03: Added secret log-exposure review (`security-secret-log-exposure-reviewed`) so secret/token/password specs require redaction, masking, or no-logging evidence.
 - [x] 2026-07-03: Added first data/sensitivity classification declaration review (`privacy-data-classification-declared`) for PII/personal-data specs, with Unknown blocking questions when classification evidence is absent.
@@ -55,6 +56,15 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-04: Added data-subject rights review (`privacy-data-subject-rights-reviewed`) so PII/personal-data specs require access/correction/rectification/portability/opt-out/privacy-rights evidence.
 - [x] 2026-07-04: Added rights-request identity/authentication review (`privacy-rights-request-authentication-reviewed`) so PII/personal-data specs with rights/access/deletion/erasure request wording require identity-verification or authenticated-request evidence.
 - [x] 2026-07-04: Added PII access audit review (`privacy-pii-access-audit-reviewed`) so PII/personal-data specs with access/admin/role wording require access audit, logging, or monitoring evidence.
+- [x] 2026-07-04: Added PII incident-response/breach-notification review (`privacy-incident-response-reviewed`) so PII/personal-data specs require incident response, breach notification, or escalation evidence.
+- [x] 2026-07-04: Added PII encryption-scope/key-management review (`privacy-encryption-scope-reviewed`) so generic encryption mentions no longer satisfy protection evidence unless encryption-at-rest, transport encryption/TLS, database/field encryption, KMS, key rotation, or equivalent scope is stated.
+- [x] 2026-07-04: Added authentication/API abuse-protection review (`security-auth-abuse-protection-reviewed`) so auth/login/API/password/token specs require rate limiting, throttling, brute-force protection, lockouts, abuse detection, bot detection, or CAPTCHA evidence; 73 tests pass.
+- [x] 2026-07-04: Added credential rotation/expiry/revocation review (`security-credential-rotation-reviewed`) so secret/token/password/credential specs require lifecycle evidence; 74 tests pass.
+- [x] 2026-07-04: Added authentication/API transport-protection review (`security-auth-transport-protection-reviewed`) so auth/login/API/password/token specs require TLS, HTTPS, mTLS, certificate-pinning, transport-encryption, or secure-channel evidence; 75 tests pass.
+- [x] 2026-07-05: Added API authorization/scope review (`security-api-authorization-reviewed`) so API/endpoint/request specs in auth/access context require authorization, permission/scope, RBAC/access-control, deny-by-default, or policy-enforcement evidence; 76 tests pass.
+- [x] 2026-07-05: Added webhook/callback request-authenticity review (`security-webhook-request-authenticity-reviewed`) so webhook/callback/external-request specs require HMAC/signature verification, webhook-secret, timestamp-window, nonce, idempotency-key, or replay-protection evidence; 77 tests pass.
+- [x] 2026-07-05: Added API/webhook input-validation review (`security-api-input-validation-reviewed`) so request payload/body/query/parameter/JSON/form/upload specs require input/schema/payload validation, sanitization, allow-listing, type checks, or bounds checks; 78 tests pass.
+- [x] 2026-07-05: Added API/webhook error-disclosure review (`security-api-error-disclosure-reviewed`) so API/webhook error, exception, stack-trace, traceback, debug, or diagnostic response specs require generic/redacted/sanitized/opaque/correlation-ID style safe error evidence; 79 tests pass.
 - [ ] v0.2 follow-up: deepen security/privacy semantics with richer data-classification facets, policy provenance, and stronger access-control checks once Phase 2/3 objects exist.
 - [ ] Extend profile-aware backend projection for `petta_reified_v0` beyond the current source manifest, supported object facts, and validation records, still without mutating the IR.
 - [ ] Preserve the uploaded SpecAtom-HS PDF as a research-library source sidecar if/when desired; current implementation used `/home/openclaw/tmp/omegaclaw-telegram-attachments/1782780878-file_3.pdf.extracted.txt`.
@@ -83,6 +93,19 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Done recently
 
+- [x] 2026-07-05: Added API/webhook error-disclosure review to the conservative security/privacy slice; 79 tests pass.
+- [x] 2026-07-05: Added first v0.2 information-flow validation slice (`information-flow-inputs-declared`, `information-flow-outputs-declared`, `information-flow-dependency-direction-declared`, `information-flow-temporal-availability-reviewed`, `information-flow-circular-dependency-reviewed`) with `InformationFlowReview`/`MissingInformationFlowEvidence` atoms, blocking questions, and PeTTa reified profile export; 88 tests pass.
+- [ ] v0.2 follow-up: deepen information-flow validation with richer data-path inference, component-level dependency graphs, and stronger temporal impossibility checks once Phase 2/3 objects exist.
+- [x] 2026-07-05: Added API/webhook input-validation review to the conservative security/privacy slice; 78 tests pass.
+- [x] 2026-07-05: Added webhook/callback request-authenticity review to the conservative security/privacy slice; 77 tests pass.
+- [x] 2026-07-05: Added API authorization/scope review to the conservative security/privacy slice; 76 tests pass.
+- [x] 2026-07-04: Added authentication/API transport-protection review to the conservative security/privacy slice; 75 tests pass.
+- [x] 2026-07-04: Added credential rotation/expiry/revocation review to the conservative security/privacy slice; 74 tests pass.
+- [x] 2026-07-04: Added authentication/API abuse-protection review to the conservative security/privacy slice; 73 tests pass.
+- [x] 2026-07-04: Added real-time/current feature freshness review to the conservative ML/time-series methodology slice; 72 tests pass.
+- [x] 2026-07-04: Added PII encryption-scope/key-management review to the conservative security/privacy slice; 69 tests pass.
+- [x] 2026-07-04: Added authentication/session-management review (`security-session-management-reviewed`) so auth/login/session specs require MFA, session timeout/expiry, revocation/logout, refresh-token rotation, or reauthentication evidence; 70 tests pass.
+- [x] 2026-07-04: Added PII incident-response/breach-notification review to the conservative security/privacy slice; 68 tests pass.
 - [x] 2026-07-04: Added PII access audit/logging review to the conservative security/privacy slice; 67 tests pass.
 - [x] 2026-07-04: Added rights-request authentication review to the conservative security/privacy slice; 66 tests pass.
 - [x] 2026-07-04: Added data-subject rights review to the conservative security/privacy slice; 65 tests pass.
