@@ -2,6 +2,34 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-07-05 - ThreadKeeper worker loop results bounding and live lock metadata
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `225d441` (`Bound worker loop results and add live lock metadata`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now caps the returned results list via `OMEGACLAW_SUBAGENT_ASYNC_WORKER_MAX_RESULTS` (default 16, 0 disables). When the cap is exceeded, older entries are dropped and the count is reported as `results_truncated` in the structured return. This prevents unbounded structured returns when draining many queued tasks.
+
+The running lock metadata now includes `tasks_attempted`, `tasks_completed`, `consecutive_errors`, and `error_count`, updated after each task for operator visibility while the loop is running.
+
+Added focused tests for results truncation (5 tasks, cap 2, 3 truncated), truncation disabled (cap 0, no truncation), and live lock metadata counters (initial + after-task entries with correct counters).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`89 passed`). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper worker loop consecutive-error cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `d9b9b56` (`Add max_consecutive_errors to worker loop`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now tracks consecutive `queue_worker_error` results and exits early when the cap (`OMEGACLAW_SUBAGENT_ASYNC_WORKER_MAX_CONSECUTIVE_ERRORS`, default 3; explicit `max_consecutive_errors` parameter; `0` disables) is reached, preventing wasted work on a poisoned queue. The structured return and lock metadata now include `consecutive_errors` and `error_count`. Added focused tests for the cap triggering after consecutive failures, error counter reset on success, disabled limit behavior, and malformed-arg rejection.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`86 passed`). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper worker loop consecutive-error cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `d9b9b56` (`Add max_consecutive_errors to worker loop`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now tracks consecutive `queue_worker_error` results and exits early when the cap (`OMEGACLAW_SUBAGENT_ASYNC_WORKER_MAX_CONSECUTIVE_ERRORS`, default 3; explicit `max_consecutive_errors` parameter; `0` disables) is reached, preventing wasted work on a poisoned queue. The structured return and lock metadata now include `consecutive_errors` and `error_count`. Added focused tests for the cap triggering after consecutive failures, error counter reset on success, disabled limit behavior, and malformed-arg rejection.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py scripts/run-subagent-worker-loop`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`86 passed`). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
 ## 2026-07-05 - ThreadKeeper supervisor/provider-boundary smoke
 
 After Ben approved the ThreadKeeper smoke, added and ran a non-live supervisor/provider-boundary gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-worker-supervisor-provider-smoke/`. The harness `local/run-threadkeeper-worker-loop-supervisor-provider-smoke.py` queues one checksum-sidecar task, starts the existing ThreadKeeper worker-loop supervisor as a separate process with `max_tasks=1`, and serves a local fake Ollama-compatible `/api/chat` endpoint so the worker exercises the normal provider-call path without Telegram, OmegaClaw runtime, OpenClaw Gateway, external provider calls, secrets, paid compute, or daemon/scheduler install.
