@@ -1,4 +1,405 @@
+
+- Current progress slice hardens the read-only `live-goal-bridge` GoalChainer decision-status boundary. After validating object-shaped decision entries, the bridge now requires every decision `status` to be a non-empty string from the known GoalChainer review vocabulary (`recommended`, `candidate`, `held`, `weak`, `blocked`) before selecting/emitting the recommended action, preventing malformed or newly invented statuses from crossing into the OmegaClaw-facing bridge artifact. Verification: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 20 tests; local implementation commit `0d376e9`; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 433 tests; `git diff --check` passed. Boundaries preserved: no PeTTaChainer `compileadd`, no memory write, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill/task claim.
+
 # Notes
+
+## 2026-07-10 - Live bridge requires heuristic-memory probe check assertion
+
+Hardened the read-only `live-goal-bridge` GoalChainer heuristic-memory-probe check boundary. When `include_heuristic_memory_probe=True`, the bridge now requires downstream GoalChainer `checks.heuristic_with_memory_path_checked is True` in addition to the validated `heuristic_memory_probe` sidecar before emitting output, and records `checks.heuristic_memory_probe_checked` in the bridge artifact.
+
+Checks: local implementation commit `07e29bc`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 24 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 437 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 21:00 PDT / UTC 2026-07-11 04:00.
+
+## 2026-07-10 - Live bridge requires requested heuristic-memory probe
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so a requested heuristic-with-memory audit probe cannot silently disappear. When `include_heuristic_memory_probe=True`, omitted `heuristic_memory_probe` output now raises `ValidationError` before bridge output is emitted; malformed probe contents are still validated as before, and malformed decision/notes/evidence payloads keep their more specific fail-closed errors.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 23 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 436 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 19:00 PDT / UTC 2026-07-11 02:00.
+
+## 2026-07-10 - Live bridge contextual EvidencePacket finite-number guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence.contextual_evidence` numeric sidecars cannot carry NaN or Infinity. Contextual EC `support`/`opposition` counts must now be finite non-boolean non-negative numbers, and optional `derived_strength`/`derived_confidence` values must be finite non-boolean numbers in `[0,1]`. Malformed finite-number drift now raises `ValidationError` before bridge output is emitted.
+
+Checks: local implementation commit `3d8aa4a`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 17:00 PDT / UTC 2026-07-11 00:00.
+
+
+## 2026-07-10 - Live bridge contextual EvidencePacket truth/provenance guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence.contextual_evidence` sidecars preserve audited truth/provenance shape. When present, `derived_strength` and `derived_confidence` must be non-boolean numeric values in `[0,1]`; each contextual EvidencePacket summary must also carry non-empty string `belief_id`, `cluster_id`, and `promotion_event` provenance. Malformed derived truth values or provenance now raise `ValidationError` before bridge output is emitted.
+
+Checks: local implementation commit `4bda953`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 15:00 PDT / UTC 2026-07-10 22:00.
+
+## 2026-07-10 - Live bridge contextual EvidencePacket EC-count guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence.contextual_evidence` sidecars carry well-formed EC counts. Each contextual-evidence entry must now include numeric non-bool, non-negative `support` and `opposition` values; missing, boolean, non-numeric, or negative EC counts raise `ValidationError` before bridge output is emitted.
+
+Checks: local implementation commit `183b586`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 13:00 PDT / UTC 2026-07-10 20:00.
+
+## 2026-07-10 - Live bridge GoalChainer contextual-evidence guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence.contextual_evidence` sidecars are not copied through with ambiguous shape. If present, `contextual_evidence` must be list-shaped and every entry must be object-shaped; malformed contextual EvidencePacket summaries raise `ValidationError` before bridge output is emitted.
+
+Checks: local implementation commit `477ce0a`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 09:00 PDT / UTC 2026-07-10 16:00.
+
+## 2026-07-10 - Live bridge validates decision evidence before action-id handling
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence` sidecars are validated for every decision record, including candidate/held/weak/blocked records without an `action_id`. Previously the no-action-id path could continue before checking evidence shape; now non-object evidence and non-list `evidence.proofs` fail closed first.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed; local implementation commit `39c52f5`.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 05:00 PDT / UTC 2026-07-10 12:00.
+
+
+## 2026-07-10 - Live bridge GoalChainer decision-evidence guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so optional decision `evidence` sidecars are not copied through unchecked. If present, each decision's `evidence` must be object-shaped, and nested `evidence.proofs` must be list-shaped when present; malformed proof/provenance sidecars raise `ValidationError` before bridge output is emitted.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 22 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 435 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 03:00 PDT / UTC 2026-07-10 10:00.
+
+
+## 2026-07-10 - Live bridge GoalChainer heuristic-memory-probe guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so an optional `heuristic_memory_probe` sidecar is not copied through unchecked. If present, the probe must be object-shaped, carry non-empty string `schema`, `mode`, and `boundary` metadata, confirm `memory_proof_present is True`, and confirm `leak_check_safe is True`; malformed or unsafe probe drift raises `ValidationError` before bridge output is emitted.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 21 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 434 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 01:00 PDT / UTC 2026-07-10 08:00.
+
+
+## 2026-07-09 - Live bridge GoalChainer decision action-id guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so it no longer accepts ambiguous action identifiers in downstream decision records. Any decision record that includes `action_id` must now provide a non-empty string, and duplicate `action_id` values across decisions raise `ValidationError` before bridge output is emitted. This closes a drift case where the same action could appear as both recommended and candidate/blocked in one GoalChainer payload.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 19 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 432 tests; `git diff --check` passed; local implementation commit `9559372` (not pushed).
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 19:00 PDT / UTC 2026-07-10 02:00.
+
+
+## 2026-07-09 - Live bridge rejects multiple GoalChainer recommendations
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so it no longer silently selects the first `status: recommended` decision when a malformed/downstream GoalChainer adapter returns multiple recommendations. The bridge now requires at most one recommended decision and raises `ValidationError` on duplicates before emitting a bridge artifact.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 19 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 432 tests; `git diff --check` passed; local implementation commit `7daf7c3` (not pushed).
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 17:00 PDT / UTC 2026-07-10 00:00.
+
+## 2026-07-09 - Live bridge GoalChainer boundary-check guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so the bridge no longer trusts a merely object-shaped `checks` block. Before emitting a bridge artifact, it now requires downstream GoalChainer checks to explicitly assert `no_memory_write is True` and `no_live_directive_or_task_claim is True`. Missing or false assertions raise `ValidationError`, closing a gap where the bridge could have produced top-level no-write/no-task claims despite incomplete downstream gate metadata.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 18 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 431 tests; `git diff --check` passed; local implementation commit `11e98c8` (not pushed).
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 15:00 PDT / UTC 2026-07-09 22:00.
+
+
+## 2026-07-09 - Live bridge GoalChainer notes/recommended-action guard
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal. Before emitting a bridge artifact, the bridge now requires `decision_payload.notes` to be a list when present and rejects a `status: recommended` decision unless it carries a non-empty string `action_id`. Malformed downstream GoalChainer adapters now fail closed with explicit `ValidationError` instead of producing an ambiguous bridge output with a missing recommended action or non-auditable notes payload.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 17 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 430 tests; `git diff --check` passed; local implementation commit `4d6b1f4` (not pushed).
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 13:00 PDT / UTC 2026-07-09 20:00.
+
+
+## 2026-07-09 - Live bridge patham9 runtime top-level audit guard
+
+Hardened the read-only `live-goal-bridge --run-patham9-runtime` boundary so a patham9 result whose `status` and semantic sidecar claim success still must carry top-level audit metadata in the expected shape. Before GoalChainer appraisal, the bridge now requires a non-empty string result `schema` and exact integer `returncode: 0`; string, boolean, missing, or nonzero returncodes raise `ValidationError`, and the injected GoalChainer runner is not called.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 15 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 428 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 11:00 PDT / UTC 2026-07-09 18:00.
+
+
+## 2026-07-09 - Live bridge patham9 runtime audit-field guard
+
+Hardened the read-only `live-goal-bridge --run-patham9-runtime` boundary so a patham9 result whose top-level status says `passed` is not enough by itself. Before GoalChainer appraisal, the bridge now requires object-shaped `semantic_markers`, `semantic_passed: true`, object-shaped `program`, and a non-empty string program schema. Malformed semantic-marker or program sidecars are converted into explicit `ValidationError` failures and the injected GoalChainer runner is not called.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 14 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 427 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 09:00 PDT / UTC 2026-07-09 16:00.
+
+
+## 2026-07-09 - GoalChainer canary-only evidence does not synthesize PR prerequisite
+
+Fixed the dynamic ThreadKeeper project-control scenario in the GoalChainer smoke path so `reconcile_threadkeeper_pr` is only introduced when PR-reconciliation evidence appears in the PeTTa/GoalChainer handoff. Previously, any ThreadKeeper canary evidence caused the scenario to include a default PR-reconciliation goal/action/obligation, which was correct for the richer ThreadKeeper feedback fixture but too strong for a canary-only admitted patham9 handoff. The new regression builds a minimal canary-only cache plus admitted patham9 handoff and proves GoalChainer recommends `install_threadkeeper_canary_on_protomegabot` directly, with no synthetic `reconcile_threadkeeper_pr` decision.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_goalchainer_smoke -v` passed 8 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 426 tests; `git diff --check` passed.
+
+Boundary: read-only GoalChainer smoke/scenario selection only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 07:00 PDT / UTC 2026-07-09 14:00.
+
+## 2026-07-09 - ThreadKeeper canary live-bridge admission fixture
+
+Added a project-control/ThreadKeeper canary fixture to exercise the read-only live bridge with a different promoted-evidence shape than the incident-response smoke. The regression appends `fixtures/threadkeeper_canary_decision.metta` to a temporary `MediumMemoryStore`, runs `live-goal-bridge` with query relevance for `(Acceptable install_threadkeeper_canary_on_protomegabot)`, injects bounded fake patham9 and GoalChainer runners, and verifies the optional patham9 runtime gate receives exactly one admitted branch: `b-tk-canary-approved`. It also verifies GoalChainer still receives the full promoted handoff cache (`14` items: STV + EC packet records for seven promoted beliefs) and the bridge reports the fake canary install recommendation.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 12 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 424 tests; `git diff --check` passed.
+
+Boundary: read-only bridge test/fixture only; no PeTTaChainer `compileadd`, no memory append beyond a temporary test journal, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 05:00 PDT / UTC 2026-07-09 12:00.
+
+## 2026-07-09 - Live bridge GoalChainer scalar metadata guard
+
+Hardened the read-only `live-goal-bridge` boundary against malformed GoalChainer gate scalar metadata. After validating object-shaped GoalChainer result, `decision_payload`, `checks`, and decisions, the bridge now also requires non-empty string `schema`, `mode`, and `boundary` fields before emitting a bridge artifact. This turns missing/edited downstream-gate metadata into explicit `ValidationError` instead of incidental `KeyError` or ambiguous live-bridge output.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 11 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 423 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 03:00 PDT / UTC 2026-07-09 10:00.
+
+
+## 2026-07-09 - Live bridge GoalChainer decisions container guard
+
+Hardened the read-only `live-goal-bridge` boundary against malformed GoalChainer decision-list drift. After validating object-shaped GoalChainer result, `decision_payload`, and `checks`, the bridge now also requires `decision_payload.decisions` to be a list and every decision entry to be an object before scanning for a recommended action. This prevents malformed downstream-gate artifacts from surfacing as incidental `AttributeError` during recommendation selection.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 10 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 422 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-09 01:00 PDT / UTC 2026-07-09 08:00.
+
+## 2026-07-08 - Live bridge GoalChainer result object guards
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so malformed injected/local GoalChainer runner output fails explicitly before any bridge artifact is emitted. The bridge now requires the GoalChainer gate to return an object-shaped result with object-shaped `decision_payload` and `checks`; non-object drift raises `ValidationError` instead of surfacing as incidental `KeyError` or attribute errors while assembling `goalchainer_gate`.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 8 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 420 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 23:00 PDT / UTC 2026-07-09 06:00.
+
+## 2026-07-08 - Live bridge patham9 runtime result object guard
+
+Hardened the read-only `live-goal-bridge --run-patham9-runtime` path so malformed patham9 runtime runner output fails closed before GoalChainer appraisal. After the prior failed-status guard, this closes the non-object result drift path: an injected/local patham9 runner must return an object-shaped result before the bridge reads `status`, `returncode`, or semantic metadata, otherwise `ValidationError` is raised and GoalChainer is not called.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 5 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 417 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 21:00 PDT / UTC 2026-07-09 04:00.
+
+## 2026-07-08 - Live bridge patham9 runtime fail-closed guard
+
+Hardened the read-only `live-goal-bridge --run-patham9-runtime` boundary so a failed optional patham9/PLN runtime gate raises `ValidationError` before GoalChainer appraisal. The bridge already consumed only the ranked/admitted pi-PLN handoff; this change makes the runtime proof gate fail closed instead of returning a later bridge artifact with `patham9_runtime_passed_or_skipped: false` after GoalChainer had already produced a recommendation. Added `goalchainer_runner` test injection and a regression that simulates patham9 failure and verifies GoalChainer is never called.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 4 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 416 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 19:00 PDT / UTC 2026-07-09 02:00.
+
+## 2026-07-08 - Ranked/admitted handoff integer metadata guard
+
+Hardened the non-live ranked/admitted inference-control gates against boolean/non-integer audit metadata drift. `ranked_inference_control_plan()` now rejects bool/non-integer source `item_count` before estimator/controller dispatch. `ranked_plan_admitted_handoff()` now rejects bool/non-integer top-level counts (`input_count`, `recommended_count`, `held_count`, `candidate_count`) and bool rank/item-index keys before branch-plan mirror checks or admitted premise copying. Focused ranked-plan tests pass 40 cases; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 412 tests; `git diff --check` passed. Boundary remains non-live: no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 17:00 PDT / UTC 2026-07-09 00:00.
+
+## 2026-07-08 - Ranked-plan source handoff count/container guard
+
+Hardened `ranked_inference_control_plan()` so malformed source handoff artifacts are rejected before estimator/controller wrapper dispatch if `items` is not a list or if `item_count` no longer matches the actual item list length. This closes a pre-derive audit gap at the plan-construction boundary, complementing the admitted-handoff validation that checks the reviewed plan against its source handoff before copying recommended premises.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 35 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 407 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 11:00 PDT / UTC 2026-07-08 18:00.
+
+## 2026-07-08 - Admitted-handoff handoff item object guard
+
+Hardened `ranked_plan_admitted_handoff()` so malformed source handoff artifacts are rejected if a referenced `items` entry is not an object. The branch-plan/source mirror pass now validates each referenced handoff item before reading `belief_id`/`term`, closing another pre-derive audit ergonomics gap where malformed item records could otherwise fail with incidental Python attribute errors.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 33 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 405 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 07:00 PDT / UTC 2026-07-08 14:00.
+
+## 2026-07-08 - Admitted-handoff container type guard
+
+Hardened `ranked_plan_admitted_handoff()` so malformed ranked-plan artifacts are rejected if the source handoff `items` field or the reviewed `recommended_branches`/`held_branches`/`branch_plan` partitions are not lists. This closes an audit ergonomics gap where malformed container types could otherwise fail with Python iteration/attribute errors instead of explicit pre-derive validation failures.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 31 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 403 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 03:00 PDT / UTC 2026-07-08 10:00.
+
+## 2026-07-08 - Admitted-handoff contiguous rank guard
+
+Hardened `ranked_plan_admitted_handoff()` so malformed ranked plans are rejected if the audited `branch_plan` ranks are not the contiguous sequence `1..candidate_count`. This closes a pre-derive audit gap where branch ranks could remain unique but be shifted or gapped, changing reviewed admission order semantics before a future separately reviewed `PLN.Derive` gate.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 29 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 401 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 01:00 PDT / UTC 2026-07-08 08:00.
+
+## 2026-07-07 - Admitted-handoff duplicate rank/key guard
+
+Hardened `ranked_plan_admitted_handoff()` so malformed ranked plans are rejected when the audited `branch_plan` reuses a rank for a different item, or when `held_branches` repeats a held rank/item. This closes another pre-derive audit gap where the reviewed branch ordering/partition could drift while counts and rank/item tuple keys still looked superficially consistent.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 27 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 399 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 21:00 PDT / UTC 2026-07-08 04:00.
+
+## 2026-07-07 - Admitted-handoff audit-field mirror guard
+
+Hardened `ranked_plan_admitted_handoff()` so recommended and held branches must mirror the audited `branch_plan` across estimator/audit metadata as well as identity/status/source fields. The mirrored fields now include estimated probability, mean viability, query relevance, controller decision/checks, hold reasons, and deferred-branch metadata before any admitted handoff subset is emitted. This prevents edited recommendation or held-branch audit metadata from diverging from the reviewed full plan before a future separately reviewed `PLN.Derive` gate.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 25 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 397 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 19:00 PDT / UTC 2026-07-08 02:00.
+
+## 2026-07-07 - Admitted-handoff source-handoff consistency guard
+
+Hardened `ranked_plan_admitted_handoff()` so stale or malformed ranked plans are rejected when their `input_count` no longer matches the source handoff item count, or when any `branch_plan` record points outside the handoff or carries a `belief_id`/`term` that no longer matches the source handoff item. This extends the pre-derive audit from recommended-only admission checks to the complete branch plan, including held branches.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 23 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 395 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime invoked by the new gate, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 17:00 PDT / UTC 2026-07-08 00:00.
+
+## 2026-07-07 - Admitted-handoff held-branch mirror guard
+
+Hardened `ranked_plan_admitted_handoff()` so held branches must remain explicit `status: "held"` records and must mirror the audited `branch_plan` by rank, item index, belief id, term, and status before any admitted handoff subset is emitted. This closes the complementary audit gap to the recommended-branch checks: a malformed plan can no longer hide drift in the held partition while still copying only recommendations.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 20 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 392 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 15:00 PDT / UTC 2026-07-07 22:00.
+
+## 2026-07-07 - Admitted-handoff branch-plan status/key guard
+
+Hardened `ranked_plan_admitted_handoff()` so malformed full `branch_plan` records are rejected before any future derive handoff admission. The gate now requires every `branch_plan` entry to use an integer `rank`, integer `item_index`, and a status in the reviewed partition (`recommended` or `held`). This closes a gap where an extra branch with status such as `deferred` could be hidden in `branch_plan` while recommended/held counts still matched.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 18 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 390 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 13:00 PDT / UTC 2026-07-07 20:00.
+
+## 2026-07-07 - Admitted-handoff count and branch-plan mirror guard
+
+Hardened `ranked_plan_admitted_handoff()` so a malformed ranked plan is rejected when `recommended_count` or `held_count` no longer matches the corresponding branch lists, or when a `recommended_branches` item is not mirrored by the same rank/item/status/belief/term in `branch_plan`. This prevents copied/spliced recommendations from bypassing the auditable full branch plan before a future reviewed derive gate.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 13 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 385 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 09:00 PDT / UTC 2026-07-07 16:00.
+
+## 2026-07-07 - Admitted-handoff recommended-status guard
+
+Hardened `ranked_plan_admitted_handoff()` so a malformed ranked plan is rejected if any item placed in `recommended_branches` does not still carry `status: "recommended"`. This prevents a copied/edited held branch from being admitted into the pre-derive handoff subset even if its rank, item index, belief id, and term still match the source handoff.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 11 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 383 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 07:00 PDT / UTC 2026-07-07 14:00.
+
+## 2026-07-07 - Admitted-handoff stale-term guard
+
+Tightened `ranked_plan_admitted_handoff()` so a ranked plan is rejected if a recommended branch's source handoff item still has the same `belief_id` but a different `term`. Admission records now include the admitted term, making the pre-derive artifact easier to audit before any future `PLN.Derive` gate.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 9 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 381 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 03:00 PDT / UTC 2026-07-07 10:00.
+
+## 2026-07-07 - Admitted-handoff CLI gate
+
+Added `pi-pln-admitted-handoff` as the operator-facing CLI for the reviewed pre-derive branch-admission path. The command builds the store handoff (`pettachainer_handoff_cache` -> `patham9_pln_handoff_sentences`), runs `ranked_inference_control_plan()` with the same estimator/controller/query-relevance controls as `pi-pln-ranked-plan`, then emits `ranked_plan_admitted_handoff()` so only recommended branches are copied into an embedded `petta-memory-patham9-pln-handoff-v1` handoff for a future separately reviewed derive gate.
+
+README now documents the admitted subset gate. CLI coverage extends the append-only store round-trip to verify `pi-pln-admitted-handoff` admits only the promoted `b1` branch and preserves the `no PLN.Query/PLN.Derive call` boundary string.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_cli tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 16 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 380 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/CLI only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append beyond temporary test stores, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 01:00 PDT / UTC 2026-07-07 08:00.
+
+## 2026-07-06 - Ranked plan admitted-handoff subset gate
+
+Added `ranked_plan_admitted_handoff()` to turn the non-live ranked inference-control plan into the exact patham9/PLN handoff subset admitted for a future reviewed derive gate. The helper validates both schemas, copies only `recommended_branches` in rank order, checks branch item-index/belief-id consistency to catch stale plans, preserves the original `petta-memory-patham9-pln-handoff-v1` schema inside `admitted_handoff`, and keeps the same no-runtime/no-derive boundary.
+
+Added 3 focused tests covering: recommended-only admission, compatibility with the existing multi-Sentence derivation program builder, and stale-plan mismatch rejection. Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 8 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 380 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-06 23:00 PDT / UTC 2026-07-07 06:00.
+
+## 2026-07-06 - Ranked inference-control plan CLI gate
+
+Extended the non-live ranked inference-control plan into an operator-facing CLI gate: `pi-pln-ranked-plan`. The command builds the store handoff (`pettachainer_handoff_cache` -> `patham9_pln_handoff_sentences`) and runs `ranked_inference_control_plan()` with estimator thresholds, continuation-controller thresholds, query relevance gating, reproducible seed, and max branch controls. README now documents the command as the reviewed plan artifact to consume before any future `PLN.Derive` call.
+
+Added CLI round-trip coverage in `tests/test_cli.py` verifying append-only store -> patham9/PLN handoff -> ranked plan recommends the promoted `b1` branch and preserves the boundary string (`no PLN.Query/PLN.Derive call`).
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_cli tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 13 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 377 tests; `git diff --check` passed.
+
+Boundary: non-live wrapper/CLI only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append beyond temporary test stores, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Provenance: cron petta-memory progress worker, local 2026-07-06 21:00 PDT / UTC 2026-07-07 04:00.
+
+## 2026-07-06 - GoalChainer heuristic-memory probe from handoff smoke
+
+Added an optional non-live heuristic-memory probe to `run_goalchainer_precompiled_handoff_smoke()` and CLI flag `goalchainer-smoke --heuristic-memory-probe`. The probe imports the local GoalChainer pipeline, parses the same handoff cache items through `parse_memory_evidence()`, and calls `solve_incident(memory_items=...)`; it records only an auditable summary and preserves the existing boundary: no OmegaClaw skill loaded, no accepted directive/task claim, no memory write, no live Telegram/runtime bridge.
+
+Runtime fixture artifact: `artifacts/goalchainer_heuristic_memory_probe_2026-07-07T0334Z.json` sha256 `3e55ca9531ef93ecd4e2f5b8375d318aa53b1cf21d4e02f6ae92724b3bdeaa2f`. It reports `heuristic_with_memory_path_checked=True`, `decided=publish_redacted_summary`, `memory_proof_present=True`, `leak_check_safe=True`.
+
+Checks: `PYTHONPATH=src python3 -m unittest tests.test_goalchainer_smoke -v` (`7 passed`); `PYTHONPATH=src python3 -m unittest discover -s tests -v` (`377 passed`); `git diff --check` passed. OmegaClaw GGB gate: `projects/omegaclaw/artifacts/ggb-capacity-gates/20260706-petta-memory-goalchainer-heuristic-probe/`.
 
 ## 2026-06-27
 
@@ -207,3 +608,325 @@ Ben approved pivoting the petta-memory PLN runtime track toward `patham9/PLN` / 
 
 Ben asked for a comprehensive ASCII LaTeX file and PDF documenting PeTTaChainer codebase strengths and weaknesses for the benefit of the author. Created `docs/pettachainer_codebase_assessment.tex` and compiled `docs/pettachainer_codebase_assessment.pdf` with `tectonic` (system `pdflatex` was unavailable). The source is ASCII-only and the PDF text was spot-checked with `pdftotext`. The report covers repository scope, semantic strengths, packaging/API/testing strengths, the `materialize-stmt-lambdas`/`compileadd` blocker, lack of a public precompiled-add API, runtime dependency risks, and recommended repair/regression-test priorities. Hashes: tex `7a79413ab2014786e34b7b9d7760cb513525994283ce918858899f79a654f663`; pdf `6501afae396ec3e0783156d6b19891b02a683bbc2233267ed93ec39767b6ca01`.
 
+
+## 2026-07-04 23:00 PDT / 2026-07-05 06:00 UTC - patham9/PLN smoke gate parser
+
+Progress worker added a small testable `patham9/PLN` smoke-gate parser in `repos/petta-memory` after the pivot to `patham9/PLN` as the functional chainer base. New module `petta_memory.patham9_pln` parses MeTTa/Hyperon `Passed:` markers and `Error`/exception markers, classifies shell-successful semantic failures as failures, and can reclassify explicit `.retry.log` runs while preserving primary failure provenance. This directly addresses the earlier patham9/PLN finding that shell return code 0 is insufficient because `(Test ...)` can emit `Passed: #f` or `(Error ...)` atoms.
+
+Artifacts:
+- `projects/petta-memory/artifacts/patham9_pln_smoke_gate_summary_2026-07-05T0600Z.json`, sha256 `942e6fa303bd0b5d6b0701f54050955e3e0a53c707947ec9efe3808e40ffe717`: primary artifact-only summary of the 2026-07-04 patham9/PLN smoke, 4/11 passed and 7/11 failed because ruletests initially hit `Failed to resolve module top:PLN` despite return code 0.
+- `projects/petta-memory/artifacts/patham9_pln_smoke_retry_gate_summary_2026-07-05T0600Z.json`, sha256 `ceaddccdd997c46c209d757c43280aa4df462561085ebf7236207090873dd444`: retry-aware summary, 11/11 passed, classifying the ruletest primary failures as harness/environment drift rather than semantic PLN regressions because explicit `.retry.log` files contain `Passed: #t` and no errors.
+
+Verification: focused `PYTHONPATH=src python3 -m unittest tests/test_patham9_pln.py -v` passed 7 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 123 tests; `git diff --check` passed. No live OmegaClaw/GoalChainer integration, `compileadd`, remote push, secrets/access change, or memory journal write path was invoked.
+
+## 2026-07-06
+
+5 PM progress worker added local commit `a448fe6` with a unified inference-control integration test in `repos/petta-memory`. `StoreRoundTripUnifiedInferenceControlTests` exercises all eight inference-control patterns from the trueagi-io/chaining survey against a single realistic 4-belief store fixture with diverse domains (memory-architecture, reasoning, planning), STVs (0.92/0.80 high-support through 0.45/0.30 low-confidence), and EC counts (including conflicting 2/8 evidence). The fixture is built from four promoted belief clusters in `MediumMemoryStore` and flows through the full pipeline: store -> `pettachainer_handoff_cache` -> `patham9_pln_handoff_sentences` -> each inference-control wrapper. Tests validate: (1) handoff diversity; (2) probabilistic filter ranks high-support first, strict threshold filters low-confidence after EC projection; (3) context selection isolates reasoning-domain packets; (4) chained pipeline composes filter+context with both reasoning beliefs surviving; (5) meta-learning benchmark verifies shortcut preference; (6) continuation predicate rejects low-confidence, high-support continues; (7) controlled backward chainer rejects low-strength, terminates high-support at depth limit; (8) PLN estimator ranks high-support first by estimated probability, rejects conflicting at strict EC ratio; (9) controller-as-chainer confirms high-quality, rejects low-quality; (10) all patterns preserve belief_id provenance. 10 new tests. No SWI/PeTTa/MeTTa runtime invoked, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path. Verification: 370 tests pass; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 17:00 PDT / UTC 2026-07-07 00:03.
+
+## 2026-07-05
+5 AM progress worker added a bounded non-live two-premise patham9/PLN derivation smoke in `repos/petta-memory`. New code: `patham9_pln_derivation_smoke_program(...)`, `_run_patham9_program(...)`, `run_patham9_pln_derivation_smoke(...)`, and CLI `patham9-pln-derivation-smoke`. The gate takes one promoted handoff Sentence, adds a synthetic non-live bridge implication to `(PMDerivedFromHandoff <term>)`, runs local patham9/PLN under timeout, and requires semantic `Passed:` markers so this tests actual derivation rather than direct recall. Runtime artifact: `projects/petta-memory/artifacts/patham9_pln_handoff_derivation_smoke_2026-07-05T1200Z.json`, sha256 `7352b59ffec908f9752f174fc7c7102c5d5ce737589fe16bfe19314bfdd9e545`, status passed for `(PMDerivedFromHandoff (Acceptable publish_redacted_summary))` with `((stv 0.9118 0.666) (0 1))`. Numeric stamps `(0)` and `(1)` are preserved in sidecar mapping to the original PMEvidence item and the synthetic bridge rule. Also fixed the existing query-smoke timeout classification path to use the bounded `returncode` variable instead of `completed.returncode` after a timeout. No PeTTaChainer `compileadd`, GoalChainer live path, OmegaClaw integration, memory append, or inferred-belief promotion was invoked. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 127 tests; `git diff --check` passed. Provenance: cron petta-memory progress worker, local 2026-07-05 05:00 / UTC 2026-07-05 12:00.
+ 01:00 PDT / 2026-07-05 08:00 UTC - patham9/PLN Sentence handoff bridge
+
+Progress worker added local commit `94f5b2d` with the first non-live `patham9/PLN` bridge in `repos/petta-memory` after the smoke-gate parser. New `patham9_pln_handoff_sentences(...)` maps the existing `pettachainer-handoff-cache` promoted STV items into `patham9/PLN`-style `(Sentence $Term (stv S C) ($EvidenceID))` atoms. The bridge uses provenance-bearing nested `PMEvidence` evidence IDs and preserves matching `EvidencePacket` EC support/opposition counts, promotion rule/domain/event, and cluster/belief ids under a `pi_pln_extension` block rather than projecting EC counts prematurely.
+
+Artifact: `projects/petta-memory/artifacts/patham9_pln_handoff_sentence_bridge_2026-07-05T0800Z.json`, sha256 `27745f0c0a1c417ed295f4bcc8c31ae4d3c1113c9b31ed37c7d4e33850c0f41f`, generated from `fixtures/goalchainer_handoff_smoke.metta`. It contains one read-only Sentence input for `(Acceptable publish_redacted_summary)` with `(stv 0.91 0.74)` and one contextual evidence packet `(EC 9.0 1.0)`.
+
+Boundaries: no `PLN.Query`, `PLN.Derive`, PeTTaChainer `compileadd`, GoalChainer/OmegaClaw live skill path, task claim, journal append, remote operation, or inferred-belief claim. This is a bridge artifact for the next tiny patham9/PLN load/query gate.
+
+Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 125 tests; `git diff --check` passed.
+
+## 2026-07-05 - patham9/PLN handoff query smoke
+
+3 AM progress worker added local commit `a653dea` with a bounded read-only patham9/PLN query smoke in `repos/petta-memory` after the first Sentence handoff bridge. New helpers `patham9_pln_query_smoke_program(...)` and `run_patham9_pln_query_smoke(...)`, plus CLI `patham9-pln-smoke`, convert one generated handoff Sentence into a tiny local PLN program, run `PLN.Query` under the checked-out `patham9/PLN` + local PeTTa/SWI environment, and classify the result with the semantic `Passed:` marker parser.
+
+Runtime finding: patham9/PLN's current evidence-stamp utilities expect sortable stamps, so rich symbolic `(PMEvidence ...)` stamps are preserved in the JSON sidecar while the actual runtime Sentence uses a numeric stamp such as `(0)`. The smoke over `fixtures/goalchainer_handoff_smoke.metta` passed for `(Acceptable publish_redacted_summary)`, returning `((stv 0.91 0.74) (0))` with original PMEvidence, promotion metadata, and contextual EvidencePacket `(EC 9.0 1.0)` retained in `program.source_item`.
+
+Artifact: `projects/petta-memory/artifacts/patham9_pln_handoff_query_smoke_2026-07-05T1000Z.json`, sha256 `b37fe179482b5d758b2a7c2b8d6b6da1a2271e226cb04b528c051ab2a44352bd`. Boundaries: no PeTTaChainer `compileadd`, GoalChainer live path, OmegaClaw integration, journal append, or inferred-belief promotion. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 126 tests; `git diff --check` passed. Provenance: cron petta-memory progress worker, local 2026-07-05 03:00 PDT / UTC 2026-07-05 10:00.
+
+## 2026-07-05 - patham9/pi-PLN wrapper boundary
+
+7 AM progress worker added a bounded source/artifact-only patham9/pi-PLN boundary plan in `repos/petta-memory` after the direct query and two-premise derivation gates. New helper `patham9_pi_pln_boundary_plan(...)` decides the first extension boundary as wrapper-first: keep the checked-out `patham9/PLN` core unmodified for `PLN.Query`/`PLN.Derive` over ordinary `Sentence` atoms, while petta-memory owns numeric runtime stamp assignment, PMEvidence/provenance sidecars, and later reviewed EC/context projection before runtime invocation. The helper summarizes current patham9 extension points (`PLN.Query`, `PLN.Derive`, `Sentence`, `StampDisjoint`, confidence-based `PriorityRank`) and converts contextual EvidencePacket support/opposition into artifact-only projection inputs (`total_evidence`, `positive_ratio`) without changing STV values yet.
+
+Artifact: `projects/petta-memory/artifacts/patham9_pi_pln_wrapper_boundary_plan_2026-07-05T1400Z.json`, sha256 `4e85e10f97ebed4317f6b299fc42ccecc63b89a7b65ce66a76550eaba1558588`, generated from `fixtures/goalchainer_handoff_smoke.metta` via the existing non-live handoff path. Boundaries: no patham9/PLN source patch, no truth-changing EC projection, no memory append, no inferred-belief promotion, no PeTTaChainer `compileadd`, and no live OmegaClaw/GoalChainer integration.
+
+Verification: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln -v` passed 13 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 129 tests; `git diff --check` passed. Provenance: cron petta-memory progress worker, local 2026-07-05 07:00 PDT / UTC 2026-07-05 14:00.
+
+## 2026-07-05 09:00 PDT - First wrapper-level EC projection formula gate
+
+Progress worker added local commit `349f60d` with the first non-live wrapper-level EC projection formula gate for patham9/pi-PLN in `repos/petta-memory`. New code: `ec_projected_stv(...)` computes a confidence-weighted blend of base STV and EC-derived evidence (ec_strength = support/total, ec_confidence = total/(total+2), projected_strength = weighted mean, projected_confidence = max); `patham9_pln_ec_projection_smoke_program(...)` builds two query smoke programs (direct vs projected); `run_patham9_pln_ec_projection_smoke(...)` runs both in isolated subprocesses and compares; CLI `patham9-pln-ec-projection-smoke`.
+
+Runtime artifact `projects/petta-memory/artifacts/patham9_pln_ec_projection_smoke_2026-07-05T1600Z.json` sha256 `f6802b2b661273ec1fd09c4970142b54d660e63d56d99e92abcf218a6f67f23e` passed both direct (`(stv 0.91 0.74)`) and projected (`(stv 0.904703 0.833333)`) query smokes for `(Acceptable publish_redacted_summary)` with EC `(9 1)` contextual support from `fixtures/goalchainer_handoff_smoke.metta`. The projected STV shows the expected influence: strength lowered slightly from 0.91 to 0.904703 (EC positive ratio 0.9 < base strength 0.91), confidence raised from 0.74 to 0.833333 (EC has more evidence).
+
+No memory append, inferred-belief promotion, patham9/PLN source patch, PeTTaChainer `compileadd`, GoalChainer live path, or OmegaClaw integration was invoked. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 135 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 09:00 PDT / UTC 2026-07-05 16:00.
+
+## 2026-07-05 13:00 PDT - patham9/PLN API surface mapping
+
+Progress worker added local commit with the first source-level `patham9/PLN` API surface mapping in `repos/petta-memory`. New helper `patham9_pln_api_surface(pln_repo)` reads all checked-out patham9/PLN `.metta` source files (`PLN.metta`, `src/Config.metta`, `src/Constraints.metta`, `src/Deriver.metta`, `src/Formulas.metta`, `src/Rules.metta`, `src/Utils.metta`, `src/Translator.metta`) plus `examples/PLN.py` without invoking SWI/PeTTa/MeTTa runtime and produces a structured JSON mapping of the full API surface:
+
+- **PLN.Derive**: 4 arity overloads, priority-queue-based task ranking deriver with belief buffer; selects highest-confidence task via BestCandidate/PriorityRank, matches via `|-` rules, checks StampDisjoint, merges derived results via Unique + LimitSize, recurses to maxsteps
+- **PLN.Query**: 4 arity overloads, runs PLN.Derive then searches belief results for matching term; returns (TV Ev) tuple via ConfidenceRank
+- **Sentence**: data boundary `(Sentence ($Term (stv S C)) $Evidence)`, numeric stamps for chainer compatibility
+- **StampDisjoint**: evidence overlap prevention via pairwise equality check
+- **PriorityRank / ConfidenceRank**: confidence-based task and result queue ordering
+- **LimitSize / BestCandidate**: bounded priority queue eviction via linear scan
+- **16 truth-value formulas**: Deduction, Induction, Abduction, Modus Ponens, Symmetric Modus Ponens, Revision, Negation, Inversion, Equivalence-to-Implication, Transitive Similarity, Evaluation Implication, Identity, c2w/w2c, simpleDeductionStrength, TransitiveSimilarityStrength
+- **17 inference rules**: `|-` pattern matcher including Revision, Modus Ponens, Deduction, Induction, Abduction, evaluation implication, inheritance/implication inversion, equivalence-to-implication, transitive similarity, member deduction, negation elimination
+- **5 guard predicates**: SyllogisticRuleGuard (Inheritance, Implication), SymmetricModusPonensRuleGuard (Similarity, IntentionalSimilarity, ExtensionalSimilarity)
+- **3 config defaults**: MaxSteps=20, TaskQueueSize=20, BeliefQueueSize=200
+- **14 utility helpers**: clamp, TupleConcat, TupleCount, InsertionSort, Unique, Without, ElementOf, etc.
+- **4 translator definitions**: implication-to-function translation for nested implications and negation patterns
+- **Python entrypoint**: PLN.Init registration via hyperon ext, builds and translates PLN rulebase into compiled metta-morph module
+
+pi-PLN extension points identified at two boundaries:
+1. **Wrapper boundary** (current approach): sentence construction with pre-projected STV, numeric stamp assignment with sidecar provenance, STV pre-projection via `ec_projected_stv()`, context selection owned by wrapper, queue priority adjustable only through STV confidence, truth-value formulas unmodified, inference rules open for new Sentences/implications
+2. **Internal extension boundary** (future, if wrapper cannot express required semantics): context-indexed evidence, EC-aware truth formulas, inference control (cf. trueagi-io/chaining `pln-inf-ctl.metta`), custom link types; revisit trigger defined
+
+Artifact: `projects/petta-memory/artifacts/patham9_pln_api_surface_2026-07-05T2000Z.json` sha256 `58896b1045cc7893ebd090736c1d6355bd7b8446526fb2ed3ae326b6f2c2dced`. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 144 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 13:00 PDT / UTC 2026-07-05 20:00.
+
+## 2026-07-05 - pi-PLN extension layer spec and multi-Sentence derivation smoke
+
+3 PM PDT progress worker added local commit `0ee27d1` with two new helpers in `repos/petta-memory`, advancing the two open `Now` tasks from TASKS.md.
+
+**`patham9_pi_pln_extension_spec(handoff)`** formalizes the concrete π-PLN extension layer design as a JSON-serializable spec artifact. It covers: (1) sentence construction protocol (format, STV source, stamp policy, term policy); (2) EC projection formula (confidence-weighted blend, with per-packet ec_strength/ec_confidence, properties, test references, and status); (3) provenance sidecar policy (contents, boundary); (4) context selection policy (current state not-live, design direction, patham9 support, revisit trigger); (5) inference control hooks (deferred, referencing trueagi-io/chaining `pln-inf-ctl.metta`, continuation predicates, and probabilistic pruning patterns); (6) read/write boundaries (no memory append, no inferred-belief promotion, no OmegaClaw live, no patham9 source patch); (7) revisit triggers (internal extension, inference control, context selection). The spec also includes per-item projection inputs computed from the handoff. CLI: `patham9-pi-pln-spec`.
+
+**`patham9_pln_multi_sentence_derivation_smoke_program(handoff, bridge_term=...)`** validates the wrapper boundary with multiple handoff Sentences. It loads ALL handoff items (not just one) as runtime Sentences with numeric stamps, adds a synthetic bridge implication from the first term to a `PMDerivedFromMultiHandoff` derived term, and computes the expected result. The stamp sidecar maps every numeric stamp back to its source evidence or synthetic bridge provenance. `run_patham9_pln_multi_sentence_derivation_smoke(...)` executes the program in an isolated subprocess. CLI: `patham9-pln-multi-derivation-smoke`.
+
+Both helpers have full unit test coverage (12 new tests for the spec, 8 new tests for the multi-Sentence smoke). No patham9/PLN runtime, memory append, inferred-belief promotion, PeTTaChainer `compileadd`, OmegaClaw/GoalChainer live path was invoked. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 163 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 15:00 PDT / UTC 2026-07-05 22:00.
+
+## 2026-07-05 - First end-to-end multi-Sentence patham9/PLN derivation smoke passes
+
+5 PM PDT progress worker added local commit `534a3b9` fixing and passing the first end-to-end multi-Sentence patham9/PLN derivation smoke that connects petta-memory handoff cache exports through `patham9_pln_handoff_sentences()` to the local patham9/PLN runtime.
+
+**Bug fixed:** The multi-Sentence derivation smoke program builder (`patham9_pln_multi_sentence_derivation_smoke_program()`) was joining Sentence atoms with `, ` (comma), which breaks patham9/PLN's MeTTa list parsing — the chainer returned empty results `()` for the query. Changed to whitespace/newline separation matching the working single-derivation smoke format, which uses MeTTa's native space-separated list syntax.
+
+**End-to-end gate:** Built a 3-belief profile store via `build_profile_store(path, 3)`, generated a `pettachainer_handoff_cache()`, converted to patham9/PLN Sentence inputs via `patham9_pln_handoff_sentences(cache)`, and ran `run_patham9_pln_multi_sentence_derivation_smoke()` with the local patham9/PLN runtime (SWI 9.3.36 + PeTTa + PLN.metta). The chainer loaded 3 handoff Sentences (stamps 0-2) plus 1 synthetic bridge implication (stamp 3), and successfully derived `(PMDerivedFromMultiHandoff (Requires MemoryTarget0 PLNReadyViews))` with result `((stv 0.706 0.495) (0 3))` — matching the expected deduction formula output.
+
+Runtime artifact: `projects/petta-memory/artifacts/patham9_pln_multi_sentence_derivation_smoke_2026-07-05T2000Z.json` sha256 `ebbfd2cf9c0eb27e5cf89ae919ba4091ed27c5e934f087fcd77af0a8c8f454f3`. No memory append, inferred-belief promotion, patham9 source patch, OmegaClaw/GoalChainer live path was invoked. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 163 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 17:00 PDT / UTC 2026-07-06 00:00.
+
+## 2026-07-05 - trueagi-io/chaining inference-control pattern survey
+
+9 PM PDT progress worker added local commit `cd18b51` with `survey_trueagi_chaining_inference_control()` and CLI `trueagi-inf-ctl-survey` that maps six concrete inference-control patterns from the checked-out trueagi-io/chaining repo (commit `bc9beb2`) to pi-PLN wrapper extension points:
+
+1. **PLN-based inference controller** (`pln-inf-ctl.metta`, 1949 lines): Uses PLN queries to estimate branch viability, Thompson sampling for exploration/exploitation, `EDCall` estimated delayed calls, `Control` structure with PLN estimator, `toPLN` converter. High complexity; long-term adoption phase.
+2. **Controlled backward chainer** (`inf-ctl-xp.metta`, 348 lines): Parameterized chainer with context abstraction/argument updaters and termination predicate. Medium complexity.
+3. **Meta-learning inference control** (`inf-ctl-month-xp.metta`, 359 lines): OpenCog classic reproduction with shortcut rule and month precedence. Low complexity; benchmark scenario.
+4. **Controller-as-chainer** (`inf-ctl-month-bc-xp.metta`, 501 lines): Termination via another backward chainer instance. High complexity.
+5. **Continuation predicate** (`inf-ctl-month-bc-cont-xp.metta`, 515 lines): Opt-in branch justification via `Continue` dependent type. Medium complexity.
+6. **Probabilistic backward chaining** (`prob-chaining.metta`): ProbLog-inspired probabilistic fact filtering. Low complexity; near-term adoption candidate — STV confidence as filter probability, compatible with `ec_projected_stv()`.
+
+All six patterns can be adopted at the wrapper boundary without modifying patham9/PLN source. Patterns categorized by adoption complexity: near-term (probabilistic filtering, meta-learning benchmark), medium-term (controlled chainer, continuation predicate), long-term (PLN estimator, controller-as-chainer). This survey directly supports the deferred roadmap item: *Design OmegaClaw-specific inference-control mechanisms*.
+
+Tests: 8 new tests in `TrueagiChainingInferenceControlSurveyTests`. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 176 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 21:00 PDT / UTC 2026-07-06 04:00.
+
+## 2026-07-05 - First inference-control mechanism: probabilistic filtering
+
+11 PM PDT progress worker implemented the first concrete inference-control mechanism for pi-PLN: `probabilistic_inference_filter()` in `repos/petta-memory/src/petta_memory/patham9_pln.py`. This implements the near-term "probabilistic filtering" pattern identified in the trueagi-io/chaining inference-control survey (commit `cd18b51`).
+
+**What it does:** Takes a `petta-memory-patham9-pln-handoff-v1` handoff (from `patham9_pln_handoff_sentences()`), applies the already-tested EC projection formula (`ec_projected_stv()`) to each Sentence item, computes a composite score `projected_strength * projected_confidence`, and filters/ranks Sentences by `min_confidence` threshold and/or `top_k` selection before loading into the patham9/PLN chainer.
+
+**Why it matters:** This is the first step toward the roadmap item "Design OmegaClaw-specific inference-control mechanisms for context-rich experiential learning". The basic patham9/PLN path is now working end-to-end (query, derivation, multi-Sentence derivation, EC projection), so inference control is the natural next phase. The filter demonstrates that the wrapper can pre-evaluate and select candidate premises using contextual evidence quality, rather than loading all promoted beliefs indiscriminately.
+
+**Test coverage:** 16 new tests in two classes:
+- `ProbabilisticInferenceFilterTests` (15 tests): filter schema, input/output counts, no-EC-packets base STV, conflicting EC lowering strength, ranking by composite score, min_confidence exclusion, top_k selection, combined filter, empty handoff, wrong schema, out-of-range/negative parameter rejection, boundary text, policy recording, composite score formula.
+- `StoreRoundTripInferenceFilterTests` (1 test): store -> handoff -> filter round-trip with real promoted beliefs from MediumMemoryStore.
+
+CLI: `pi-pln-inference-filter` with `--min-confidence` and `--top-k` options.
+
+No SWI/PeTTa/MeTTa runtime invoked, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 192 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-05 23:00 PDT / UTC 2026-07-06 06:00.
+
+## 2026-07-06
+
+1 AM progress worker added local commit `c219e08` with the second concrete inference-control mechanism for pi-PLN: `context_selection_wrapper()` in `repos/petta-memory`. This implements the near-term "context selection" pattern from the trueagi-io/chaining inference-control survey (commit `cd18b51`). The wrapper operates before PLN invocation, filtering contextual EvidencePackets by domain, cluster_id, or promotion_rule, and scoring each remaining packet by an evidence-weighted relevance formula: `evidence_weight = (support + opposition) / (support + opposition + 2)`. Packets below a `min_packet_relevance` threshold are filtered out. Items with no EvidencePackets pass through unchanged, since context selection cannot remove evidence that doesn't exist.
+
+Two-stage design:
+1. **Packet filtering**: select only EvidencePackets whose `promotion_domain`, `cluster_id`, or `promotion_rule` matches the query context criteria.
+2. **Packet relevance scoring**: score each remaining packet by Laplace-smoothed evidence weight so downstream EC projection can optionally weight by relevance.
+
+CLI: `pi-pln-context-select` with `--domain`, `--cluster-id`, `--promotion-rule`, and `--min-relevance` options.
+
+Tests: 16 new tests (15 in `ContextSelectionWrapperTests` covering schema, no-filter pass-through, domain filter, cluster filter, promotion_rule filter, no-match domain, min relevance threshold, empty handoff, wrong schema validation, out-of-range relevance validation, boundary text, policy criteria recording, packet summary filter reasons, combined domain+cluster filter, and items-without-packets pass-through) plus 1 in `StoreRoundTripContextSelectionTests` (store -> handoff -> context selection round-trip with real promoted beliefs from MediumMemoryStore).
+
+No SWI/PeTTa/MeTTa runtime invoked, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 208 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 01:00 PDT / UTC 2026-07-06 08:00.
+
+## 2026-07-06 03:00 PDT — Chained inference-control pipeline (context selection + probabilistic filtering)
+
+Local commit `e57b6e2` in `repos/petta-memory` (branch `agent/parser-validation`) adds the third concrete inference-control mechanism: `chained_inference_pipeline()` in `patham9_pln.py`. This implements the "chained filter+select pipeline" near-term pattern from the trueagi-io/chaining survey.
+
+**Design**: The pipeline chains two already-tested wrappers in sequence:
+1. **Stage 1 — Context selection**: filters EvidencePackets by domain/cluster_id/promotion_rule and scores remaining packets by evidence-weighted relevance. Items whose packets are all filtered out are excluded.
+2. **Stage 2 — Probabilistic filtering**: applies EC projection to the context-filtered handoff, computes composite scores (`projected_strength * projected_confidence`), and filters/ranks by confidence threshold and top_k.
+
+**Key implementation detail**: Stage 2 operates on the filtered handoff from stage 1, so item indices are remapped. The pipeline result remaps all indices back to the original handoff indices, and includes both `stage1_result` and `stage2_result` summaries for provenance.
+
+**CLI**: `pi-pln-pipeline` with `--domain`, `--cluster-id`, `--promotion-rule`, `--min-relevance`, `--min-confidence`, `--top-k`.
+
+**Tests**: 17 new tests (16 in `ChainedInferencePipelineTests` + 1 in `StoreRoundTripPipelineTests`). Validates: schema, no-filter pass-through, domain filtering excluding items with only foreign packets, packet reduction for multi-domain items, min_confidence exclusion, top_k selection, combined domain+top_k, combined domain+min_confidence, empty handoff, schema/relevance/confidence/top_k validation, index remapping, stage result presence, and a store round-trip from `MediumMemoryStore` through the full pipeline.
+
+**Boundary**: non-live wrapper-only; no SWI/PeTTa/MeTTa runtime invoked; no memory append or inferred-belief promotion; no patham9/PLN source change; no OmegaClaw/GoalChainer live path.
+
+**Verification**: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 225 tests (208 existing + 17 new); `git diff --check` passes.
+
+## 2026-07-06 05:00 PDT — Meta-learning inference-control benchmark (shortcut vs chain)
+
+Local commit `852708d` in `repos/petta-memory` (branch `agent/parser-validation`) adds the fourth concrete inference-control mechanism: `build_meta_learning_benchmark_handoff()` and `run_meta_learning_benchmark()` in `patham9_pln.py`. This implements the near-term "meta-learning benchmark" pattern from the trueagi-io/chaining survey, inspired by the OpenCog classic meta-learning experiment.
+
+**Design**: The benchmark creates a synthetic `petta-memory-patham9-pln-handoff-v1` handoff with:
+- A **shortcut item** (index 0): high STV (0.95/0.90) with supportive EC (9, 1), representing a direct high-confidence belief.
+- A **chain of items** (indices 1-3): progressively lower STVs (0.70/0.55, 0.65/0.50, 0.60/0.45) with declining EC support (3,1), (2,2), (1,3), representing a longer transitive derivation path to the same conclusion.
+
+The benchmark then runs both the probabilistic inference filter and the chained inference-control pipeline against this handoff and verifies:
+- The shortcut is ranked first in both filter and pipeline rankings.
+- No chain item outranks the shortcut.
+- The shortcut's composite score exceeds the best chain item's composite score.
+- The overall benchmark passes (`overall_pass: true`).
+
+**Key implementation details**:
+- `build_meta_learning_benchmark_handoff()` accepts configurable STVs, EC counts, domains, and chain length.
+- `run_meta_learning_benchmark()` accepts an optional external handoff (for store round-trip tests) or builds the default benchmark handoff.
+- Both functions are non-live wrapper-only: no SWI/PeTTa/MeTTa runtime, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+- The benchmark classifies items into shortcut (index 0) and chain (indices 1..N) groups, runs both wrappers, and reports `filter_shortcut_first`, `pipeline_shortcut_first`, `shortcut_preferred`, and `overall_pass`.
+
+**CLI**: `pi-pln-meta-learning-benchmark` with `--min-confidence`, `--top-k`, `--domain`, `--min-relevance`.
+
+**Tests**: 27 new tests across three classes:
+- `MetaLearningBenchmarkHandoffTests` (10 tests): handoff schema, STV ordering, evidence packets, EC counts, custom chain lengths, validation (mismatched lengths, out-of-range STV, negative EC), custom domains.
+- `MetaLearningBenchmarkRunTests` (14 tests): default benchmark pass, shortcut ranked first in filter/pipeline, composite score comparison, no chain outranks shortcut, top_k=1, min_confidence filtering, domain filter (include/exclude), wrong schema validation, out-of-range parameters, boundary text, scenario metadata, filter/pipeline result presence.
+- `StoreRoundTripMetaLearningBenchmarkTests` (1 test): store -> handoff -> benchmark round-trip from `MediumMemoryStore` with a promoted shortcut belief.
+
+**Boundary**: non-live wrapper-only; no SWI/PeTTa/MeTTa runtime invoked; no memory append or inferred-belief promotion; no patham9/PLN source change; no OmegaClaw/GoalChainer live path.
+
+**Verification**: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 252 tests (225 existing + 27 new); `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 05:00 PDT / UTC 2026-07-06 12:00.
+
+## 2026-07-06 13:00 PDT — PLN estimator wrapper (first long-term inference-control pattern)
+
+Local commit `23dc651` in `repos/petta-memory` (branch `agent/parser-validation`) adds the first long-term inference-control mechanism: `pln_estimator_wrapper()` in `patham9_pln.py`. This implements the long-term "PLN-based inference controller" pattern from the trueagi-io/chaining survey, inspired by the `pln-inf-ctl.metta` implementation in `trueagi-io/chaining/experimental/pln-inf-ctl/`.
+
+**Design**: The wrapper converts each handoff Sentence into a PLN viability estimate using Beta distribution priors, then Thompson-samples from the posterior to rank branches for exploration. This mirrors the trueagi-io/chaining pattern where a Control structure holds a PLN knowledge base and an estimator function that converts queries into PLN statements to estimate branch viability before committing to recursive search.
+
+**Prior parameter derivation**:
+- When EC counts are available: `alpha = support + 1`, `beta = opposition + 1` (Laplace-smoothed)
+- When EC is absent: `alpha = strength × confidence × 10 + 1`, `beta = (1 - strength) × confidence × 10 + 1`
+- The confidence factor scales the effective sample size for STV-derived priors
+
+**Thompson sampling**: Uses the gamma-ratio method (via `random.gammavariate`) for Beta distribution sampling, which is numerically stable and requires no external dependencies. The `exploration_weight` parameter controls the exploration/exploitation tradeoff by shrinking Beta parameters toward uniform `Beta(1,1)`: higher values increase exploration (wider posterior), lower values increase exploitation (peakier posterior). This is achieved by dividing the evidence contribution `(alpha - 1, beta - 1)` by the weight.
+
+**EDCall records**: Each ranked branch is an EDCall (Estimated Delayed Call) record pairing a sampled viability probability with a deferred branch (handoff item) for PLN.Derive exploration. The top-k branches by sampled viability are recommended for exploration.
+
+**Context filters**: The wrapper applies the same eligibility filters as the continuation predicate and context selection wrappers: `min_strength`, `min_confidence`, `domain`, `promotion_rule`, `ec_ratio_threshold`. Items failing any filter are rejected with explicit reject reasons.
+
+**Query target relevance**: Simple text containment matching flags which branches are relevant to the query target term.
+
+**CLI**: `pi-pln-estimator` with `--query-target`, `--min-strength`, `--min-confidence`, `--domain`, `--ec-ratio-threshold`, `--promotion-rule`, `--exploration-weight`, `--max-branches`, `--seed`.
+
+**Tests**: 35 new tests across two classes:
+- `PlnEstimatorWrapperTests` (34 tests): schema, mode, boundary, input count, EDCall sorting, EDCall structure, reproducibility with seed, different seeds vary, EC prior source, STV prior source, mean viability, sampled viability range, min_strength/min_confidence/domain/promotion_rule/ec_ratio filters (reject and accept), query target relevance, empty query target, max_branches cap, empty handoff, wrong schema validation, out-of-range validation, exploration weight must be positive, exploration weight scales alpha/beta, exploration weight increases variance, source pattern, policy structure, rejected items structure.
+- `StoreRoundTripPlnEstimatorTests` (1 test): store -> handoff -> PLN estimator round-trip from `MediumMemoryStore` with a promoted belief (strength 0.88, confidence 0.75, EC 8/2, domain "reasoning") that produces alpha=9, beta=3 and is correctly eligible under the test policy.
+
+**Boundary**: non-live wrapper-only; no SWI/PeTTa/MeTTa runtime invoked; no memory append or inferred-belief promotion; no patham9/PLN source change; no OmegaClaw/GoalChainer live path.
+
+**Verification**: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 329 tests (294 existing + 35 new); `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 13:00 PDT / UTC 2026-07-06 20:00.
+
+## 2026-07-06 07:00 PDT — Continuation predicate wrapper (first medium-term inference-control pattern)
+
+Local commit `b8017d6` in `repos/petta-memory` (branch `agent/parser-validation`) adds the first medium-term inference-control mechanism: `continuation_predicate_wrapper()` in `patham9_pln.py`. This implements the medium-term "continuation predicate" pattern from the trueagi-io/chaining survey, inspired by the backward-chaining continuation predicates in `experimental/inference-control/inf-ctl-month-bc-cont-xp.metta`.
+
+**Design**: Unlike the probabilistic inference filter (which pre-filters by composite score), the context selection wrapper (which filters EvidencePackets), or the chained pipeline (which combines both), the continuation predicate evaluates whether each handoff item should *continue* being explored as a derivation branch, be *terminated* (kept as a final result, no further derivation), or be *rejected* (dropped entirely). This maps to the trueagi-io/chaining pattern where continuation predicates per branch type determine whether to keep exploring a particular inference branch.
+
+**Continuation criteria**:
+1. STV strength >= `min_strength` (default 0.0)
+2. STV confidence >= `min_confidence` (default 0.0)
+3. Derivation depth < `max_derivation_depth` (if set; items at or beyond this depth are *terminated*, not rejected)
+4. Domain matches `domain` (if set)
+5. EC support ratio >= `ec_ratio_threshold` (where `ratio = support / (support + opposition)`; items without EC packets pass)
+6. Promotion rule matches `promotion_rule` (if set)
+
+**Decision outcomes**: `continue` (pass all predicate checks, below max depth), `terminate` (pass all predicate checks but at/beyond max depth), `reject` (fail one or more predicate checks).
+
+**Implementation notes**:
+- The wrapper reads `promotion_domain` and `promotion_rule` from either the top-level item or the `pi_pln_extension` block, since handoff sources vary in where these fields are placed.
+- EC counts are read from contextual evidence packets, handling both nested `ec.{support,opposition}` and top-level `{support, opposition}` packet formats.
+- STV values may be string or numeric; the wrapper coerces to float.
+- `derivation_depth` defaults to 0 for items without an explicit depth field.
+
+**CLI**: `pi-pln-continuation-predicate` with `--min-strength`, `--min-confidence`, `--max-depth`, `--domain`, `--ec-ratio-threshold`, `--promotion-rule`.
+
+**Tests**: 24 new tests across two classes:
+- `ContinuationPredicateWrapperTests` (23 tests): schema, boundary text, all-continue default policy, min_strength filter, min_confidence filter, domain filter (with check structure validation), promotion_rule filter, EC ratio threshold, max derivation depth termination, depth+strength combined (reject wins over terminate), combined filters, empty handoff, wrong schema validation, min_strength/min_confidence/ec_ratio out of range, max_depth negative, no-EC-packets passes EC check, decision field values, checks structure (all six check types), EC summary with packets, policy in result, depth termination check has `termination` flag.
+- `StoreRoundTripContinuationPredicateTests` (1 test): store -> handoff -> continuation predicate round-trip from `MediumMemoryStore` with a promoted belief (strength 0.88, confidence 0.75, EC 8/2, domain "reasoning") that correctly continues under the test policy.
+
+**Boundary**: non-live wrapper-only; no SWI/PeTTa/MeTTa runtime invoked; no memory append or inferred-belief promotion; no patham9/PLN source change; no OmegaClaw/GoalChainer live path.
+
+**Verification**: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 276 tests (252 existing + 24 new); `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 07:00 PDT / UTC 2026-07-06 14:00.
+
+## 2026-07-06 15:00 PDT — Controller-as-chainer wrapper (second long-term inference-control pattern)
+
+Local commit `fd01014` in `repos/petta-memory` (branch `agent/parser-validation`) adds the final inference-control mechanism: `controller_as_chainer()` in `patham9_pln.py`. This implements the second long-term "controller-as-chainer" pattern from the trueagi-io/chaining survey, inspired by the concept of using another backward chainer instance as a termination controller.
+
+**Design**: The wrapper runs two levels of backward chainer:
+1. **Primary chainer**: runs the existing `controlled_backward_chainer()` with the primary parameters, producing a derivation trace of per-step decisions (continue/terminate/reject).
+2. **Controller chainer**: after each primary step where branches continued, the controller re-evaluates those still-active branches using stricter criteria. The controller can:
+   - **confirm**: agree with the primary's continue decision (all controller checks pass).
+   - **override-terminate**: force-terminate a branch the primary would have continued (e.g., controller's stricter depth limit is exceeded; preserves the result as a final answer).
+   - **override-reject**: force-reject a branch the primary would have continued (e.g., controller's stricter strength/confidence/domain/EC threshold is not met).
+3. **Combined trace**: the result shows both the primary summary and controller decisions at each step, with override decisions marked clearly.
+
+Override-terminate takes priority over override-reject because termination preserves the result as a final answer rather than dropping it entirely.
+
+**Controller checks** (same six criteria as the continuation predicate, but with independent/stricter parameters):
+1. STV strength >= `controller_min_strength` (default 0.5)
+2. STV confidence >= `controller_min_confidence` (default 0.5)
+3. Derivation depth < `controller_max_derivation_depth` (default 3, termination not rejection)
+4. Domain matches `controller_domain` (if set)
+5. EC support ratio >= `controller_ec_ratio_threshold` (default 0.5)
+6. Promotion rule matches `controller_promotion_rule` (if set)
+
+**CLI**: `pi-pln-controller-as-chainer` with primary parameters (`--primary-min-strength`, `--primary-min-confidence`, `--primary-max-depth`, `--primary-domain`, `--primary-ec-ratio-threshold`, `--primary-promotion-rule`, `--primary-max-steps`, `--primary-max-branches`, `--primary-context-update-mode`) and controller parameters (`--controller-min-strength`, `--controller-min-confidence`, `--controller-max-depth`, `--controller-domain`, `--controller-ec-ratio-threshold`, `--controller-promotion-rule`).
+
+**Tests**: 31 new tests across two classes:
+- `ControllerAsChainerTests` (30 tests): schema, boundary text, primary result summary, controller chainer policy, confirmation of high-quality branch, rejection by strength/confidence/domain/promotion-rule/EC-ratio, depth termination, override-terminate priority over reject, combined step traces, override count, empty handoff, wrong schema, out-of-range validation (primary strength, controller strength, controller EC ratio, controller max depth, primary max steps, primary max branches, invalid context update mode), skip for non-continue decisions, controller checks structure, input count, confirmation/termination/rejection structure, primary chainer policy in result.
+- `StoreRoundTripControllerAsChainerTests` (1 test): store -> handoff -> controller-as-chainer round-trip from `MediumMemoryStore` with a promoted belief (strength 0.88, confidence 0.75, EC 8/2, domain "reasoning") that is confirmed by the controller.
+
+**Boundary**: non-live wrapper-only; no SWI/PeTTa/MeTTa runtime invoked; no memory append or inferred-belief promotion; no patham9/PLN source change; no OmegaClaw/GoalChainer live path.
+
+**Verification**: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 360 tests (329 existing + 31 new); `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 15:00 PDT / UTC 2026-07-06 22:00.
+
+**Completion note**: This completes the implementation of all eight inference-control patterns from the trueagi-io/chaining survey:
+- Near-term (4): probabilistic filtering, context selection, chained pipeline, meta-learning benchmark.
+- Medium-term (2): continuation predicate, controlled backward chainer.
+- Long-term (2): PLN estimator, controller-as-chainer.
+
+## 2026-07-06 19:00 PDT — Ranked inference-control plan gate before PLN.Derive
+
+Progress worker added `ranked_inference_control_plan()` in `repos/petta-memory/src/petta_memory/patham9_pln.py`. The helper is a non-live pre-derive gate that composes the existing PLN estimator / EDCall ranking with the continuation-predicate controller before any future live `PLN.Derive` call. It emits an auditable branch plan with `recommended_branches`, `held_branches`, full per-branch status, estimator probabilities, mean viability, query relevance, controller decisions/checks, and explicit hold reasons.
+
+The new tests include 5 focused `RankedInferenceControlPlanTests` plus a unified store -> handoff integration gate (`test_unified_ranked_plan_gates_before_live_derive`) that recommends only the high-support `MemoryTarget0` branch while holding irrelevant or controller-rejected branches.
+
+Boundary: no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 376 tests; `git diff --check` passes. Provenance: cron petta-memory progress worker, local 2026-07-06 19:00 PDT / UTC 2026-07-07 02:00.
+
+## 2026-07-07 11:00 PDT — Admitted-handoff branch-plan integrity hardening
+
+Provenance: cron petta-memory progress worker, local 2026-07-07 11:00 PDT / UTC 2026-07-07 18:00.
+
+Hardened the non-live pi-PLN admitted-handoff gate in `repos/petta-memory` so a reviewed ranked plan cannot be partially spliced by editing only `branch_plan` metadata. `ranked_plan_admitted_handoff()` now validates `candidate_count` against `branch_plan` length, rejects duplicate `(rank, item_index)` branch-plan keys, and checks branch-plan recommended/held status counts against the reviewed recommendation lists before copying admitted premises. Added regression tests for candidate-count mismatch, duplicate branch-plan key, and branch-plan status-partition drift; existing stale handoff, duplicate recommendation, and branch-plan mirror tests remain.
+
+Verification: `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passes 16 tests; `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 388 tests; `git diff --check` passes. Boundary: no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
+
+## 2026-07-09 13:15 PDT — Real petta-memory evidence replay into GoalChainer
+
+Added cross-project gate `projects/omegaclaw/artifacts/ggb-capacity-gates/20260709-goalchainer-real-petta-memory-replay/`. The harness replaces the prior sidecar's synthetic Python evidence dictionaries with a 1,273-byte copy of the previously archived `live_goal_bridge_journal_2026-07-08T1830Z.metta`, loaded through `MediumMemoryStore` and exported through production `goalchainer_handoff_cache()`. It allowlists the archived promoted belief and selects its two STV/EC items under a four-item cap, preserving belief/cluster/promotion provenance. One archived private/non-group Protomegabot ThreadKeeper candidate was replayed through local deterministic GoalChainer heuristic memory; `publish_redacted_summary` remained recommended, `publish_raw_log` remained forbidden/blocked, memory proofs appeared, and the leak check stayed safe. Baseline/memory redacted strength was `0.980529 -> 0.997816`; raw strength remained `0.040000` and was still forbidden/blocked by request-derived deontic evidence.
+
+Verification: harness 9/9; focused petta-memory 53 tests; focused GoalChainer 52 tests; full petta-memory 430 tests; JSON/compile/fixture checks passed; journal SHA-256 unchanged before/after. Boundaries: no Telegram, provider, supervisor, queue claim, live bridge enablement, memory append/promotion, secrets, paid compute, or push.
+
+Future work only: an explicitly bounded LLM stage could parse selected task text into logical expressions for reviewed AtomSpace insertion, followed by ECAN-like attention allocation and long-term-importance/staleness-driven retention/removal. None of that was implemented or invoked here.
+
+## 2026-07-08 09:00 PDT — Admitted-handoff item_count consistency hardening
+
+Provenance: cron petta-memory progress worker, local 2026-07-08 09:00 PDT / UTC 2026-07-08 16:00.
+
+Tightened the non-live ranked-plan admitted handoff artifact in `repos/petta-memory`: `ranked_plan_admitted_handoff()` now updates the embedded patham9/PLN `admitted_handoff["item_count"]` to the admitted subset length after filtering to recommended branches. This prevents a reviewed plan with two source candidates and one admitted branch from carrying stale handoff metadata into downstream derivation program builders or audit tooling.
+
+Regression: `RankedInferenceControlPlanTests._make_handoff()` now includes `item_count: 2`, and `test_admitted_handoff_contains_only_recommended_branches` asserts the admitted subset reports `item_count: 1`.
+
+Verification: focused `PYTHONPATH=src python3 -m unittest tests.test_patham9_pln.RankedInferenceControlPlanTests -v` passed 33 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 405 tests; `git diff --check` passed. Boundary: non-live wrapper/planning artifact only; no SWI/PeTTa/MeTTa runtime, no `PLN.Query`/`PLN.Derive`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw/GoalChainer live path.
