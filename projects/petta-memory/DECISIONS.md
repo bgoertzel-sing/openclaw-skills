@@ -3,6 +3,24 @@
 
 # Decisions
 
+## 2026-07-11: Reject per-decision GoalChainer directive/task-claim sidecars in live bridge
+
+**Decision:** `live-goal-bridge` now fails closed if any individual GoalChainer decision record contains directive/task-claim sidecar fields: `claim`, `task_claim`, `directive_claim`, `directive_report`, `plan`, `task_states`, `next`, or `skill`.
+
+**Rationale:** Previous hardening rejected directive-looking fields on the top-level GoalChainer result and `decision_payload`, but a malformed adapter could still attach the same sidecars to a recommended/candidate decision entry. Decision records are copied into the bridge artifact for audit, so they need the same read-only/no-task-claim boundary.
+
+**Consequences:** GoalChainer adapters used behind `live-goal-bridge` must return decision/appraisal evidence only, not directive reports or task-claim payloads embedded in decision entries. The bridge remains read-only: no memory write, inferred-belief promotion, PeTTaChainer `compileadd`, patham9/PLN source change, or OmegaClaw skill/task claim.
+
+
+## 2026-07-10: Reject GoalChainer directive/task-claim sidecars in live bridge
+
+**Decision:** `live-goal-bridge` now fails closed if the GoalChainer result or nested `decision_payload` contains directive/task-claim sidecar fields: `claim`, `task_claim`, `directive_claim`, `directive_report`, `plan`, `task_states`, `next`, or `skill`.
+
+**Rationale:** The bridge is allowed to read an existing journal and run local GoalChainer appraisal, but it must not become a conduit for OmegaClaw directive/task claim artifacts. Explicitly rejecting directive-shaped sidecars keeps the read-only bridge boundary separate from any future non-live/live GoalChainer deployment gate.
+
+**Consequences:** GoalChainer adapters used behind `live-goal-bridge` must return decision/appraisal evidence only, not directive reports or claimable-task payloads. The bridge remains read-only: no memory write, inferred-belief promotion, PeTTaChainer `compileadd`, patham9/PLN source change, or OmegaClaw skill/task claim.
+
+
 ## 2026-07-10: Require GoalChainer heuristic-memory check assertion in live bridge
 
 **Decision:** When `live-goal-bridge` requests `include_heuristic_memory_probe=True`, downstream GoalChainer output must now both include a validated `heuristic_memory_probe` sidecar and assert `checks.heuristic_with_memory_path_checked is True`; otherwise the bridge raises `ValidationError` before emitting output.

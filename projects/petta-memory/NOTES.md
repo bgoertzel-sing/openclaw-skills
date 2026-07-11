@@ -3,6 +3,26 @@
 
 # Notes
 
+## 2026-07-11 - Live bridge rejects per-decision directive/task-claim sidecars
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so directive/task-claim fields cannot be copied through inside individual decision records. The bridge already rejected directive-looking fields at the top-level GoalChainer result and `decision_payload`; it now also scans every decision entry for `claim`, `task_claim`, `directive_claim`, `directive_report`, `plan`, `task_states`, `next`, or `skill` before selecting/emitting a recommendation.
+
+Checks: local implementation commit `0ee7260`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 25 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 438 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-11 01:00 PDT / UTC 2026-07-11 08:00.
+
+## 2026-07-10 - Live bridge rejects GoalChainer directive/task-claim sidecars
+
+Hardened the read-only `live-goal-bridge` boundary after GoalChainer appraisal so directive/task-claim sidecars cannot be copied into the OmegaClaw-facing bridge artifact. The bridge now rejects either top-level GoalChainer results or nested `decision_payload` entries containing `claim`, `task_claim`, `directive_claim`, `directive_report`, `plan`, `task_states`, `next`, or `skill`.
+
+Checks: local implementation commit `7b96891`; focused `PYTHONPATH=src python3 -m unittest tests.test_live_bridge -v` passed 25 tests; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 438 tests; `git diff --check` passed.
+
+Boundary: read-only bridge only; no PeTTaChainer `compileadd`, no memory append, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill or task/directive claim.
+
+Provenance: cron petta-memory progress worker, local 2026-07-10 23:00 PDT / UTC 2026-07-11 06:00.
+
 ## 2026-07-10 - Live bridge requires heuristic-memory probe check assertion
 
 Hardened the read-only `live-goal-bridge` GoalChainer heuristic-memory-probe check boundary. When `include_heuristic_memory_probe=True`, the bridge now requires downstream GoalChainer `checks.heuristic_with_memory_path_checked is True` in addition to the validated `heuristic_memory_probe` sidecar before emitting output, and records `checks.heuristic_memory_probe_checked` in the bridge artifact.
