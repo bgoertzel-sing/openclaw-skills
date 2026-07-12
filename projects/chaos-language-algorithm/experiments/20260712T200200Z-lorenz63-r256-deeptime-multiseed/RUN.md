@@ -1,6 +1,6 @@
 # Preregistered lifted Lorenz-63 R256 deeptime multi-seed sweep
 
-- Status: preregistered; not yet executed
+- Status: completed, exit 0 (raw artifacts preserved under their recorded SHA-256 hashes)
 - Question: Across seeds and a bounded d/k/lag grid, does deeptime VAMP + low-cardinality microstates yield positive real-minus-shuffled compression proxy and stable held-out order-2 n-gram perplexity, relative to alphabet-matched direct/raw controls?
 - Start commit: `3d227b1b5486eed451fb53af2bfd9c3a96219975` on `agent/hd-embedding-cla`.
 - Existing unrelated work to preserve: untracked `docs/cla_python_library_interface_design.tex`.
@@ -23,7 +23,7 @@ Artifacts: `results.json`, `runs.csv`, `aggregates.csv`, stdout/stderr, environm
 - Status: completed, exit 0
 - Full sweep: 45 configurations in 62.22 s elapsed (61.80 s measured internally); 36 deeptime grid runs plus 9 controls.
 - Exact reconstruction: 45/45. Categories: 0 in all runs. Deeptime symbols matched requested k (8--24); raw compound M1 had 150--164 unique symbols.
-- Numerical warnings emitted: 0. Deeptime leading singular values were extremely near 1 (example d=3: 1.0000000000000089, 0.9999999999999762, 0.9999646317546044); this near-saturation remains a caution despite no library warning. Pure-reference values were [1,1,1].
+- Numerical warnings recorded by the original writer: 0. This was a diagnostics defect: deeptime leading singular values extremely near/slightly above 1 produced nonpositive or implausibly large implied timescales (up to about 1.35e16 in magnitude), but the old finite-only check did not flag them. The raw values and hashes remain unchanged. The repaired writer now preserves raw values while marking these diagnostics invalid with explicit status/warning fields. Pure-reference values [1,1,1] are likewise invalid as timescale evidence near lambda=1.
 
 ### Aggregate diagnostics
 
@@ -60,6 +60,7 @@ Thus this sweep supports low-cardinality symbolization and rejects raw compound 
 - Full suite: `python3 -m unittest discover -s tests -v` — 107 passed in 41.081 s.
 - `git diff --check` passed.
 - Raw per-run and aggregate records: `results.json`, `runs.csv`, `aggregates.csv`; environment, stdout/stderr, timing, exit status, and hashes preserved alongside.
+- Artifact formatting note: the already-hashed CSV files use the platform-default CSV CRLF record terminator. They were not rewritten. Future sweep CSV writers explicitly use LF, avoiding spurious `git diff --check` whitespace reports.
 
 ## Recommended next agenda step
 
