@@ -43,6 +43,21 @@ Based on the formal analysis in `docs/mcbride_cla_analysis.tex` (and compiled `.
 - [ ] **M-MD6: Natural-gradient edit search.** Replace uniform beam search with Fisher-metric-aware ranking that accounts for redundant edit directions (e.g., overlapping chunk proposals). Prototype after M-MD1-M-MD4 are validated.
 - [ ] **M-MD7: Pattern-intensity ODE convergence criterion.** Use the quantale ODE relaxation to derive a principled stopping criterion for the greedy loop based on pattern-intensity decay rate rather than a fixed iteration budget.
 
+## High-dimensional embedding / adaptive symbolization sprint
+
+Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_embedding_extracted.txt`. This supersedes interpreting raw fixed-grid M1 high-D failures as evidence about CLA itself.
+
+- [x] Add Phase-0 baseline MDL-to-bits calibration hook so results are comparable against shuffled surrogates. Implemented in `chaoslang.evaluation` as empirical iid baseline minus current two-part scorer; still not final CLA grammar likelihood.
+- [x] Add a surrogate-shuffle harness: preserve marginal symbol frequencies, destroy temporal grammar, rerun CLA, and report `Delta_grammar = gain(real) - gain(shuffled)`.
+- [x] Add held-out next-symbol log-loss / perplexity evaluation. Current implementation is a smoothed n-gram baseline diagnostic, not a CLA grammar predictive likelihood.
+- [x] Add an adaptive low-cardinality symbolizer (initially k-means microstates with chosen `k`) alongside fixed rectangular M1.
+- [x] Add an intrinsic-attractor-dimension diagnostic (spectral participation ratio / variance threshold) before choosing embedding dimension `d`; correlation dimension remains future work.
+- [x] Implement a pure-Python Phase-0 TICA/VAMP-style kinetic-map embedding with shrinkage-regularized covariances; lagged covariance is not symmetrized, and singular values are clipped to [0,1] to avoid high-D rank-deficient whitening artifacts. Production-scale D≈200–300 should use a tested backend such as `deeptime`.
+- [ ] Add PCCA+ soft-membership category seeding for CLA meta-symbol proposals after the microstate path is working.
+- [x] Run the first bounded Phase-1 ground-truth test: Lorenz-63 lifted into R256 with small noise -> intrinsic dimension -> dependency-free kinetic map (`d=3`) -> k-means microstates -> CLA -> shuffled and held-out diagnostics, with matched raw-M1. Adaptive real-minus-shuffled proxy was 39.33 bits versus 2.10 for M1; n-gram perplexity 3.42 versus 433.18. This is one-seed diagnostic evidence, not calibrated MDL/CLA likelihood or proof of grammar preservation. See `experiments/20260712T200000Z-lorenz63-lift256-phase1/RUN.md`.
+- [x] Run a preregistered multi-seed `d`/`k`/lag sweep over lifted Lorenz-63 R256 using deeptime VAMP, matched direct/raw k-means, raw compound M1, and dependency-free controls. All 36 deeptime settings had positive real-minus-shuffled proxy, but direct xyz k-means and the pure reference were as good or better; no categories emerged and near-unit singular values remain cautionary. See `experiments/20260712T200200Z-lorenz63-r256-deeptime-multiseed/RUN.md`.
+- [ ] Extend rate-distortion validation with longer trajectories, lag selection from implied-timescale stability, temporal-block surrogates, and calibrated CLA predictive/MDL coding before OmegaSim-scale traces.
+
 ## Attractor benchmark sprint
 
 - [ ] Implement dependency-light trajectory generators/symbolizers for logistic map, Lorenz-63, Rössler, Mackey-Glass, and Lorenz-96. Logistic/equal-width smoke plus deterministic Lorenz-63 and Rössler RK4 controls with M1 fixed-partition tests are in place; Mackey-Glass and Lorenz-96 remain.
@@ -56,3 +71,4 @@ Based on the formal analysis in `docs/mcbride_cla_analysis.tex` (and compiled `.
 - [x] Replace the brute-force n-gram window counter with a bounded suffix-trie-backed miner for high-cardinality compound-symbol streams; regression tests cover compound symbols and a high-cardinality repeated motif. Implemented on `agent/suffix-trie-miner` in `repos/chaoslang`.
 - [x] Add/update the CLA expert-review prompt to ask explicitly for algorithmic/data-structure inefficiencies: n-gram brute force, context histogram duplication, compound-symbol storage/copying, repeated MDL re-encoding, and suitable trie/index/hash/sparse alternatives. See `docs/cla_expert_review_prompt.md`.
 - [ ] Benchmark the bounded suffix-trie miner on real 1024-step × ~20D CLA streams after the JS/dimension-reduction symbolization path is available; compare wall time and peak memory against the old brute-force miner if preserved in a fixture.
+  - 2026-07-09 local first slice: ran Lorenz-96 control at 1024 steps × 20D with `--miner suffix_trie --category-method js`; exact reconstruction true, 510 unique symbols, 8 chunk rules, score_total 1021.2, fit_wall_time_seconds ~2.55. Evidence: `experiments/20260709T192728Z-lorenz96-1024-dim20-suffix-trie/RUN.md`. Still needs real OmegaSim stream/dim-reduction path, peak-memory capture, and true brute-force comparison fixture.

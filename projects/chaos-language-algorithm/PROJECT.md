@@ -13,10 +13,13 @@ Implement and test the Chaos Language Algorithm (CLA): symbolize continuous chao
 - Python architecture PDF: `../../library/chaos-language-algorithm/cla_python_library_architecture_ascii.pdf`
 - Python architecture extracted text: `../../library/chaos-language-algorithm/cla_python_library_architecture_extracted.txt`
 - Python architecture SHA-256: `3beacd7855f2fa3912d43d026f175b5518ba08216e19f741540a5de7d20d97c4`
+- High-dimensional embedding design PDF: Telegram attachment `cla_hd_embedding---56acc870-3e99-49c0-9c6b-427875c32b57.pdf`
+- High-dimensional embedding working text: `../../library/chaos-language-algorithm/cla_hd_embedding_extracted.txt`
+- High-dimensional embedding PDF SHA-256: unavailable; media URI was not exposed as a stable local file during ingestion
 
 ## Current status
 
-`active` / local-only. Ben promoted CLA on 2026-07-03 as the prerequisite for resuming OmegaSim: build a general toolkit for recognizing grammars of strange attractors, strange transients, and related structures. Sprint-1 local pure-Python `chaoslang` prototype now implements exact-reconstructing symbolic-string grammar induction with chunks, categories, approximate MDL, fact projection, and tests; next target is richer persistence plus attractor benchmarks up to OmegaSim starter-vector dimensionality.
+`active` / local-only. Ben promoted CLA on 2026-07-03 as the prerequisite for resuming OmegaSim: build a general toolkit for recognizing grammars of strange attractors, strange transients, and related structures. Sprint-1 local pure-Python `chaoslang` prototype now implements exact-reconstructing symbolic-string grammar induction with chunks, categories, approximate MDL, fact projection, and tests. A 2026-07-09 Lorenz-96 1024-step × 20D fixed-grid M1 smoke run exposed the high-dimensional symbolization failure mode: many unique compound symbols, little recurrence, and no strong basis for grammar claims; see `experiments/20260709T192728Z-lorenz96-1024-dim20-suffix-trie/RUN.md`. Ben's 2026-07-10 high-dimensional embedding design reframes the next target as instrumentation plus adaptive/kinetic symbolization: real-bit MDL calibration, surrogate excess compression, held-out log-loss, k-means microstates, then TICA/VAMP high-D lift validation before OmegaSim traces. A preregistered 2026-07-12 three-seed R256 sweep found positive proxy deltas for all 36 deeptime VAMP settings, but direct raw xyz k-means and the dependency-free reference were as good or better; VAMP has therefore not yet cleared the alphabet-matched baseline (`experiments/20260712T200200Z-lorenz63-r256-deeptime-multiseed/RUN.md`).
 
 ## Implementation principles
 

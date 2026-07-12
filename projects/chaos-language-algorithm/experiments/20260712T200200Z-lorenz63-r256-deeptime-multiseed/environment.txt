@@ -1,0 +1,21 @@
+captured_utc=2026-07-12T20:04:44Z
+repo=https://github.com/bgoertzel-sing/chaos-language-algorithm.git
+commit=3d227b1b5486eed451fb53af2bfd9c3a96219975
+branch=agent/hd-embedding-cla
+git_status_begin
+?? docs/cla_python_library_interface_design.tex
+?? src/chaoslang/benchmarks/phase1_sweep.py
+?? tests/test_phase1_sweep.py
+git_status_end
+Python 3.10.12
+platform=Linux-7.0.11-76070011-generic-x86_64-with-glibc2.35
+machine=x86_64
+processor=x86_64
+numpy=2.2.6
+sklearn=1.7.2
+deeptime=0.4.5
+CPU(s):                                  8
+Model name:                              11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz
+Thread(s) per core:                      2
+Core(s) per socket:                      4
+Socket(s):                               1
