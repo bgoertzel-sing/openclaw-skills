@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -u
+
+root="${RESEARCH_AGENT_ROOT:-$HOME/research-agent}"
+fail=0
+
+check_file() {
+  if [[ -f "$root/$1" ]]; then
+    printf 'OK      %s\n' "$1"
+  else
+    printf 'MISSING %s\n' "$1"
+    fail=1
+  fi
+}
+
+check_dir() {
+  if [[ -d "$root/$1" ]]; then
+    printf 'OK      %s/\n' "$1"
+  else
+    printf 'MISSING %s/\n' "$1"
+    fail=1
+  fi
+}
+
+printf 'Workspace: %s\n\n' "$root"
+for file in AGENTS.md SOUL.md USER.md IDENTITY.md TOOLS.md HEARTBEAT.md MEMORY.md DREAMS.md catalog/PROJECTS.md; do
+  check_file "$file"
+done
+for dir in memory skills templates projects library scratch archive bin; do
+  check_dir "$dir"
+done
+for skill in research-projects experiment-ledger repository-operations remote-compute-guardrails hyperon-workbench knowledge-curation research-library; do
+  check_file "skills/$skill/SKILL.md"
+done
+
+printf '\nCommand availability:\n'
+for cmd in openclaw git gh python3 node npm rg jq tmux qmd runpodctl docker; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    printf 'FOUND   %-12s %s\n' "$cmd" "$(command -v "$cmd")"
+  else
+    printf 'ABSENT  %s\n' "$cmd"
+  fi
+done
+
+if command -v openclaw >/dev/null 2>&1; then
+  printf '\nOpenClaw checks:\n'
+  openclaw --version || fail=1
+  openclaw doctor --lint || fail=1
+  openclaw gateway status || true
+  openclaw memory status --deep || true
+  openclaw exec-policy show || true
+  openclaw sandbox explain --json || true
+fi
+
+printf '\nCredential hygiene reminder: do not use recursive environment dumps as a secret check.\n'
+printf 'Review Git status, ignored files, provider credential stores, and experiment logs before any push.\n'
+
+exit "$fail"

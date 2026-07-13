@@ -1,0 +1,99 @@
+{
+  // Replace all <...> placeholders before applying. Keep secrets in environment
+  // variables or another configured SecretRef provider, never in this file.
+  gateway: {
+    mode: "local",
+    bind: "loopback",
+    port: 18789,
+    auth: {
+      mode: "token",
+      token: { source: "env", provider: "default", id: "OPENCLAW_GATEWAY_TOKEN" },
+    },
+    http: {
+      endpoints: {
+        chatCompletions: { enabled: true },
+        responses: { enabled: true },
+      },
+    },
+  },
+
+  agents: {
+    defaults: {
+      workspace: "<WORKSPACE>",
+      model: {
+        primary: "<ROUTINE_MODEL>",
+        fallbacks: ["openrouter/auto"],
+      },
+      sandbox: { mode: "non-main", scope: "session", workspaceAccess: "rw" },
+      maxConcurrent: 4,
+    },
+    list: [{ id: "main", name: "<OPENCLAW_AGENT_NAME>" }],
+  },
+
+  channels: {
+    telegram: {
+      enabled: true,
+      botToken: { source: "env", provider: "default", id: "TELEGRAM_BOT_TOKEN" },
+      dmPolicy: "allowlist",
+      allowFrom: ["<OWNER_TELEGRAM_USER_ID>"],
+      groupPolicy: "allowlist",
+      includeGroupHistoryContext: "recent",
+      groups: {
+        "<MAIN_GROUP_ID>": {
+          requireMention: true,
+          groupPolicy: "allowlist",
+          allowFrom: ["<OWNER_TELEGRAM_USER_ID>"],
+        },
+        "<BOT_DISCUSSION_GROUP_ID>": {
+          // Dedicated trusted bot room: allow the sibling OmegaClaw bot to trigger.
+          requireMention: true,
+          groupPolicy: "open",
+          systemPrompt: "This is the dedicated bot-to-bot project review room. Keep exchanges concise, substantive, loop-bounded, and advisory; do not infer permissions.",
+        },
+        "<SCHEDULED_UPDATES_GROUP_ID>": {
+          requireMention: false,
+          groupPolicy: "allowlist",
+          allowFrom: ["<OWNER_TELEGRAM_USER_ID>"],
+        },
+      },
+      capabilities: { inlineButtons: "allowlist" },
+      errorPolicy: "reply",
+      errorCooldownMs: 120000,
+    },
+  },
+
+  commands: { ownerAllowFrom: ["telegram:<OWNER_TELEGRAM_USER_ID>"] },
+  session: { dmScope: "per-channel-peer" },
+
+  tools: {
+    profile: "coding",
+    exec: { host: "sandbox", security: "allowlist", ask: "on-miss" },
+    web: { search: { enabled: true, provider: "<WEB_SEARCH_PROVIDER>" } },
+  },
+
+  skills: {
+    load: { watch: true, watchDebounceMs: 250 },
+  },
+
+  plugins: {
+    load: { paths: ["<WORKSPACE>/plugins/intent-model-router"] },
+    entries: {
+      telegram: { enabled: true },
+      "intent-model-router": {
+        enabled: false,
+        hooks: { allowConversationAccess: true },
+        config: {
+          enabled: false,
+          routineModel: "<ROUTINE_MODEL>",
+          deepModel: "<DEEP_MODEL>",
+          logDecisions: true,
+          fableMode: "off",
+          monthlyBudgetUsd: 0,
+          costLogPath: "<WORKSPACE>/logs/model-routing-costs.jsonl",
+        },
+      },
+    },
+  },
+
+  secrets: { providers: { default: { source: "env" } } },
+}

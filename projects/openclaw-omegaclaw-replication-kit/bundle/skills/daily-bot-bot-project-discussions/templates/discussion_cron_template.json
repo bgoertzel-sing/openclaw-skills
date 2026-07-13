@@ -1,0 +1,13 @@
+{
+  "name": "botbot daily discussion: <slug>",
+  "schedule": { "kind": "cron", "expr": "0 <hour> * * *", "tz": "<LOCAL_TIMEZONE>" },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Scheduled daily bot-bot project discussion for `<slug>` in the dedicated bot-to-bot channel. Follow the daily-bot-bot-project-discussions skill. Inspect project files and recent memory. If there has already been a pivot/major-status/major-problem discussion for `<slug>` within the last 24h, reply only NO_REPLY. Otherwise post a concise discussion starter addressed to @<OMEGACLAW_BOT_USERNAME>.",
+    "timeoutSeconds": 900,
+    "lightContext": true,
+    "toolsAllow": ["read", "cron", "session_status", "memory_search", "memory_get"]
+  },
+  "sessionTarget": "isolated",
+  "delivery": { "mode": "announce", "channel": "telegram", "to": "telegram:<BOT_DISCUSSION_GROUP_ID>", "bestEffort": true }
+}
