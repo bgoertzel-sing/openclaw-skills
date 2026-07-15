@@ -1,0 +1,58 @@
+# ZeroBot Channel Registry
+
+channels:
+  - id: "402314199"
+    name: "ben-dm"
+    transport: "telegram"
+    type: "private"
+    purpose: "Ben's direct messages"
+    require_mention: false
+    can_send: true
+    can_receive: true
+    notes: "Primary 1:1 channel with Ben"
+  - id: "-5437945421"
+    name: "protobots"
+    transport: "telegram"
+    type: "supergroup"
+    purpose: "Main Protobots group chat"
+    require_mention: false
+    can_send: true
+    can_receive: true
+    notes: "Trusted 3-way: Ben, ZeroBot, ProtoMegaBot"
+  - id: "-1003983157420"
+    name: "updates"
+    transport: "telegram"
+    type: "channel"
+    purpose: "Scheduled progress updates"
+    require_mention: false
+    can_send: true
+    can_receive: true
+    notes: "Daily summaries"
+  - id: "-5459676079"
+    name: "botbotchats"
+    transport: "telegram"
+    type: "supergroup"
+    purpose: "Bot-bot project discussions"
+    require_mention: false
+    can_send: true
+    can_receive: true
+    notes: "ProtoMegaBot coordination"
+  - id: "-5366386580"
+    name: "bot-philosophy"
+    transport: "telegram"
+    type: "supergroup"
+    purpose: "Philosophical discussions"
+    require_mention: false
+    can_send: true
+    can_receive: true
+    notes: "Philosophy channel (ProtoMegaBot only)"
+  # Slack placeholders - uncomment when configured
+  # - id: "C0123456789"
+  #   name: "research-updates"
+  #   transport: "slack"
+  #   type: "channel"
+  #   purpose: "Research updates"
+  #   require_mention: false
+  #   can_send: true
+  #   can_receive: true
+  #   notes: "Slack research channel"
