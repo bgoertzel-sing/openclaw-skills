@@ -82,6 +82,17 @@ Before declaring completion:
 - update project/task records and a concise daily-memory pointer;
 - distinguish observed results from interpretation.
 
+## Kanban board visibility
+
+Every persistent subagent must update the cross-project Kanban board (`catalog/KANBAN.md`) when it starts, reaches a milestone, or changes status. This is required for cross-project visibility — project-level `TASKS.md` files are authoritative for project detail, but the Kanban index is how the parent and operator see all active workers at a glance.
+
+On each meaningful state change:
+- add or update the subagent's card in the In Progress / Running lane with current status and next action;
+- move to Blocked / Needs Ben if blocked;
+- move to Done / Archived on completion.
+
+Read the Kanban board at start to check for conflicting or overlapping work before beginning.
+
 ## Control commands
 
 The orchestrator exposes durable operations:
