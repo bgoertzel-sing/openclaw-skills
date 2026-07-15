@@ -1,0 +1,68 @@
+{
+  "schema": "petta-memory-phase0-reference-artifact-v1",
+  "created": "2026-07-15T16:18:00Z",
+  "description": "Pinned reference episode for the Smokes stock patham9 example at commit 55f1751. This is the semantic anchor for the first fail-closed end-to-end episode gate. Two runs produced byte-identical output, confirming determinism.",
+  "determinism": {
+    "check": "two consecutive runs, byte-identical",
+    "run1_sha256": "fd5a6133deca5c88f6170be634bc0f5101259ba3f685abb9c6fec5babc1f893e",
+    "run2_sha256": "fd5a6133deca5c88f6170be634bc0f5101259ba3f685abb9c6fec5babc1f893e",
+    "identical": true
+  },
+  "example": {
+    "name": "Smokes",
+    "source_file": "examples/Smokes.metta",
+    "source_sha256": "f1ea44d58d859e6028f719babec44269c6c1f55e1bdf5fb09a862f2b7bb7a19c"
+  },
+  "runtime": {
+    "metta_version": "0.2.10",
+    "metta_binary_sha256": "53455bfb107c7c71eb9686c57a3e4d4c65544102af3b860999e213ab8d9b37af",
+    "metta_package": "hyperon (pip) 0.2.10",
+    "chicken_scheme": "5.4.0 (built from source, installed to ~/.local)",
+    "chicken_eggs": ["matchable", "srfi-69", "amb"]
+  },
+  "repositories": {
+    "patham9-pln": {
+      "url": "https://github.com/trueagi-io/PLN",
+      "commit": "55f1751d993f71b8a24da03e3aec94ab40789a59",
+      "local_path": "repos/patham9-pln"
+    },
+    "metta-morph": {
+      "url": "https://github.com/trueagi-io/metta-morph",
+      "commit": "9ac7b8e9452ccaffd7ce1f4b4ac7dccf7177255b",
+      "local_path": "repos/metta-morph"
+    }
+  },
+  "build_artifacts": {
+    "pln_metta_sha256": "6e172e89a2dc25d73d6191b27f21e40e3fcb2b628d1e77e6d26ca9e7536e8887",
+    "smokes_so_sha256": "3b31b18a40ae100d887e14d7e6be558dcfb520e14478c2f167bd5cf7053e9ec7",
+    "smokes_so_note": "Compiled from RUN.scm + cinterface.scm using csc -O3 -DUSE_TYPES. Located at metta-morph/extend/SMOKES.so."
+  },
+  "environment": {
+    "LD_LIBRARY_PATH_required": true,
+    "LD_LIBRARY_PATH_value": "$HOME/metta-morph/extend",
+    "PATH_required": "$HOME/.local/bin (for csc/metta)",
+    "note": "SMOKES.so cannot be copied to /usr/lib/ without root. LD_LIBRARY_PATH pointing at the metta-morph/extend directory is the no-root workaround. ctypes.CDLL('SMOKES.so') finds it through dlopen search."
+  },
+  "reproducibility_command": "export PATH=$HOME/.local/bin:$PATH && export LD_LIBRARY_PATH=$HOME/metta-morph/extend:$LD_LIBRARY_PATH && cd ~/PLN && bash build.sh && cd examples && metta Smokes.metta 2>/dev/null",
+  "result": {
+    "passed": true,
+    "semantic_result": "((stv 0.519920454545454 0.829078220412911) (4 9 10))",
+    "query_target": "(Evaluation (Predicate cancerous) (List (Concept Edward)))",
+    "passed_marker": "#t",
+    "output_sha256": "fd5a6133deca5c88f6170be634bc0f5101259ba3f685abb9c6fec5babc1f893e",
+    "output_bytes": 6021,
+    "output_file": "smokes_output.txt"
+  },
+  "boundaries": {
+    "no_memory_write": true,
+    "no_inferred_belief_promotion": true,
+    "no_live_omegaclaw_goalchainer_integration": true,
+    "no_pettachainer_compileadd": true,
+    "scope": "Phase-0 baseline reference artifact only. This does not execute the Phase-2 episode gate, invoke the petta-memory pipeline, or authorize any promotion, write, or live integration."
+  },
+  "open_risks": [
+    "Rule/trace identity: byte-identical traces from structurally distinct rule applications would let exact-replay pass over a semantic substitution. Not caught by rerun determinism alone; needs a deliberately perturbed rule set as a post-integration boundary test.",
+    "Executable TOCTOU: SMOKES.so hash is recorded but filesystem replacement between hash and load remains possible. The Phase-2 executable-pinning machinery narrows but does not eliminate this.",
+    "LD_LIBRARY_PATH dependency: reproducibility requires the loader path to be set. A permanent fix would use an absolute path in ctypes.CDLL or rpath in the .so."
+  ]
+}
