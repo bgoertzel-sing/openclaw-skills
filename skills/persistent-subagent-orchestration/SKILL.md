@@ -94,14 +94,27 @@ The orchestrator exposes durable operations:
 - `set-budget <task/run>` (requires explicit authorization for paid compute)
 - `handoff <task/run>`
 
+## Tool failure and recovery
+
+When a tool call fails, do not stop and report the failure as a terminal outcome. Instead:
+
+1. **Classify the failure:** transient (timeout, rate-limit, connection-refused, provider-unavailable) vs. permanent (file-not-found, permission-denied, schema-violation, logic-error).
+2. **Transient failures:** retry with bounded backoff (e.g., 2s, 5s, 10s, then give up after 3 attempts). If the failure persists, try an alternative tool or approach that achieves the same goal.
+3. **Permanent failures:** diagnose the root cause, attempt a repair (fix the file, adjust the command, correct the schema), and retry. If the repair itself fails, escalate to `block` with a precise diagnosis.
+4. **Infrastructure outages** (e.g., provider relay unavailable, gateway restarting): record the partial state, wait briefly, and resume from the last checkpoint. Do not declare the task failed unless the outage persists beyond a reasonable bounded wait.
+5. Never silently swallow a failure and proceed as if the tool succeeded. Record the failure, the retry attempt, and the outcome.
+
 ## Anti-patterns
 
 Do not:
 
 - stop after producing only a plan when implementation/experiment work remains;
-- await a parent “continue” after each ordinary step;
+- await a parent "continue" after each ordinary step;
 - fabricate progress while a worker is idle;
 - allow endless looping without bounded checkpoints or cancellation;
 - use paid compute without explicit approval;
 - silently use a weaker model for a quality-sensitive task;
-- mutate unrelated worktrees or publish/push without task authorization.
+- mutate unrelated worktrees or publish/push without task authorization;
+- **restate your assigned task or objective as your output** — if you find yourself summarizing or repeating the assignment back to the parent, stop immediately and execute the first concrete step instead. The parent already knows the task; they need the result;
+- **stop and report a single tool failure as a terminal blocker** when alternative approaches exist — retry, repair, or branch before escalating to `block`;
+- **emit a plan-only response when the assignment asks for implementation** — a plan is a preparatory step, not a deliverable. Proceed to implementation unless a material blocker genuinely prevents it.
