@@ -47,6 +47,13 @@ Second-phase success, not yet attempted:
 
 ## Current state
 
+On 2026-07-18, ThreadKeeper commit `486f7e8` on
+`agent/threadkeeper-hardening-next` closed a falsey-value bypass in native
+provider token accounting. Explicit boolean and empty-string counters are no
+longer normalized to zero; they fail closed as authenticated
+`provider_response_invalid` outcomes without retry. The provider-free
+subagent/budget gate passed 388 tests.
+
 On 2026-07-18, ThreadKeeper commit `848f8a2` on
 `agent/threadkeeper-hardening-next` made malformed native-provider JSON and
 non-UTF-8 response bytes fail closed without retry. Deterministic bad provider

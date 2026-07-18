@@ -1,3 +1,17 @@
+## 2026-07-18 - Native provider falsey-counter validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`486f7e8`. Native provider token counters now reach strict payload validation
+without falsey normalization. Explicit boolean or empty-string counters fail
+closed as private `provider_response_invalid` outcomes and do not consume
+configured retries; missing counters remain compatible as zero.
+
+Three focused checks and the combined provider-free subagent/budget gate (`388
+passed`) passed, along with Python compilation and `git diff --check`. The
+first check invocation used unavailable `python`; rerunning with `python3`
+passed. No provider, queue, Telegram, paid compute, secrets/access change,
+push, merge, force-push, or remote-ref deletion occurred.
+
 ## 2026-07-18 - Native provider response decoding validation
 
 Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit

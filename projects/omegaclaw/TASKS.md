@@ -4,6 +4,13 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-18: Reject falsey malformed native-provider token counters on
+  `agent/threadkeeper-hardening-next` commit `486f7e8`. Explicit `false` and
+  empty-string counters can no longer be normalized into valid zero usage;
+  they return authenticated `provider_response_invalid` after one call.
+  Focused checks: 3 passed; combined provider-free subagent/budget gate: 388
+  passed.
+
 - [x] 2026-07-18: Reject malformed native-provider JSON/UTF-8 at the trusted
   ThreadKeeper boundary on `agent/threadkeeper-hardening-next` commit
   `848f8a2`. Invalid response bytes now return authenticated
