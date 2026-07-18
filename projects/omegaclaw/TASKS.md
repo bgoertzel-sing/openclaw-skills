@@ -4,6 +4,71 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-18: Reject malformed native-provider JSON/UTF-8 at the trusted
+  ThreadKeeper boundary on `agent/threadkeeper-hardening-next` commit
+  `848f8a2`. Invalid response bytes now return authenticated
+  `provider_response_invalid` after one call rather than consuming retry
+  allowance. Focused provider checks: 5 passed; combined provider-free
+  subagent/budget gate: 386 passed.
+
+- [x] 2026-07-18: Run bounded disposition-score perturbation calibration on
+  five preregistered synthetic admitted-evidence archetypes. The exhaustive
+  `{-0.03, 0, +0.03}^4` grid covered 405 samples: four clear archetypes were
+  stable in 81/81 samples each; the ambiguous stop/hold archetype adjudicated
+  72/81 and otherwise resolved only to its nominal top action. No decisive
+  cross-action flip occurred. Gate: 15/15 checks; 4 unit tests. Evidence:
+  `artifacts/ggb-capacity-gates/20260718-disposition-perturbation-calibration/`.
+  This is synthetic robustness evidence only, with no runtime authority.
+
+- [x] 2026-07-18: Validate ThreadKeeper OpenAI-compatible response structure
+  on `agent/threadkeeper-hardening-next` commit `0c26daf`. Empty/non-list
+  choices and incomplete usage objects now return authenticated
+  `provider_response_invalid` outcomes after one call rather than consuming
+  retry allowance as transport failures. Focused provider checks: 8 passed;
+  combined provider-free subagent/budget gate: 384 passed; draft PR #1
+  safety-floor ancestry remains intact.
+
+- [x] 2026-07-18: Validate ThreadKeeper provider payload types at the trusted
+  boundary on `agent/threadkeeper-hardening-next` commit `9b5dc2a`. Native and
+  OpenAI-compatible responses now require string content and non-negative
+  integer token counters before worker parsing or quota accounting. Malformed
+  content/counters return authenticated `provider_response_invalid` outcomes.
+  Focused provider regressions: 4 passed; combined provider-free
+  subagent/budget gate: 382 passed; draft PR #1 ancestry remains intact.
+
+- [x] 2026-07-18: Preregister disposition-appraisal confidence/margin edge
+  cases and deterministic counterexample shrinking. Five exact/adjacent cases,
+  a canonical checksummed two-score counterexample to unsafe confidence-only
+  selection, 8/8 gate checks, and 4 unit tests pass provider-free. Evidence:
+  `artifacts/ggb-capacity-gates/20260718-disposition-threshold-counterexamples/`.
+  No runtime/disposition authority; next offline slice is bounded score
+  perturbation/calibration on representative admitted-evidence distributions.
+
+- [x] 2026-07-18: Authenticate remaining ThreadKeeper provider-boundary
+  failures on `agent/threadkeeper-hardening-next` commit `78a05b9`. Oversized
+  native HTTP responses and missing OpenAI-compatible clients now return
+  private structured provider errors rather than ordinary worker text.
+  Oversized bytes cannot reach tool parsing, and the persistent transcript
+  records `provider_response_invalid`. Combined provider-free subagent/budget
+  gate: 380 passed; draft PR #1 safety-floor ancestry remains intact.
+
+- [x] 2026-07-18: Authenticate ThreadKeeper provider-control outcomes at the
+  structured-return boundary on `agent/threadkeeper-hardening-next` commit
+  `21b8883`. Dispatch now trusts a private internal marker rather than
+  worker-controlled string prefixes for cancellation, rate limits,
+  concurrency limits, deadlines, and terminal retry failure. A provider-free
+  regression proves control-shaped worker text cannot forge a cancelled
+  parent return or transcript. Combined subagent/budget gate: 382 passed;
+  draft PR #1 safety-floor ancestry remains intact.
+
+- [x] 2026-07-18: Make ThreadKeeper provider retry/backoff cancellation
+  responsive on `agent/threadkeeper-hardening-next` commit `fccaac8`.
+  Cancellation is checked before every attempt and polled during configured
+  backoff, preventing a cancelled dispatch from starting another provider
+  call. Structured parent returns and persistent transcripts retain
+  `status=cancelled`. Combined provider-free subagent/budget gate: 381 passed;
+  draft PR #1 safety-floor ancestry remains intact.
+
 - [x] 2026-07-17: Make ThreadKeeper task-contract `forbidden_actions`
   fail closed on unenforceable identifiers. Commit `3353e80` centralizes the
   enforced tool/action aliases and rejects unknown or misspelled actions before

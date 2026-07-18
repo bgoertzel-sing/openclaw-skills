@@ -1,6 +1,1251 @@
+## 2026-07-18 - Native provider response decoding validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`848f8a2`. Native-provider response bodies now require strict UTF-8 and valid
+JSON. Decode and parse failures return the private
+`provider_response_invalid` control result immediately, so deterministic bad
+provider data cannot consume transport retries or enter worker parsing.
+
+Five focused provider checks and the combined provider-free subagent/budget
+gate (`386 passed`) passed, along with Python compilation and `git diff
+--check`. The first check invocation used unavailable `python`; rerunning with
+`python3` passed. No provider, queue, Telegram, paid compute, secrets/access
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-18 - OpenAI-compatible response-schema validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`0c26daf`. OpenAI-compatible responses now require a non-empty list/tuple of
+choices with a first message/content field; when usage is supplied it must
+provide both token counters for the existing strict type validation. Malformed
+response objects return the private `provider_response_invalid` control result
+without retry, preventing deterministic bad provider data from consuming retry
+quota or being misrecorded as a transport failure. Missing usage remains
+compatible as zero.
+
+Python compilation, `git diff --check`, eight focused provider checks, the
+combined provider-free subagent/budget gate (`384 passed`), and PR #1
+safety-floor ancestry passed. An initially mistyped budget-test filename
+failed before collection; the corrected established gate passed. No live
+provider, queue, Telegram, subprocess, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-18 - Disposition appraisal evidence-binding hardening
+
+Closed a provenance gap in the provider-free disposition appraisal artifact:
+the snapshot previously admitted evidence IDs without binding packet content.
+It now carries an exact digest for every admitted packet and rejects changed
+strength, confidence, temporal relevance, supported action, provenance, or
+proof under the unchanged snapshot. The refreshed gate passes 18/18 checks and
+5 unit tests, including an explicit proof-substitution regression. No live
+runtime, state, memory, queue, provider, or Telegram effect occurred.
+
+## 2026-07-17 - Provider-free disposition appraisal gate
+
+Completed the recommendation-only gate above ThreadKeeper commit `f09c621` at
+`artifacts/ggb-capacity-gates/20260717-threadkeeper-disposition-appraisal/`.
+Five synthetic fixtures bind exact task version, manifest, newest opaque
+checkpoint, EvidenceSnapshot/PiChart fingerprints, and selected evidence
+provenance before deterministic four-action scoring. Clear cases recommend
+`hold`, `request_cancel`, `fail_terminal`, or `expire`; conflicting evidence
+falls back to `hold` with `needs_adjudication` and a review deadline.
+
+The validator now passes 18/18 checks and 5 unit tests. Negative cases reject task,
+manifest, or checkpoint substitution; stale charts; unselected evidence;
+content-mutated evidence; unknown dispositions; missing hold deadlines; and direct effect requests.
+ThreadKeeper checkout/persistent fixture and petta-memory checkout fingerprints
+were unchanged. No runtime bridge, provider, queue, Telegram, memory write,
+disposition/lifecycle effect, paid compute, secret/access change, or remote
+operation occurred. Any canary still requires Ben's explicit decision.
+
+## 2026-07-17 - ThreadKeeper handoff-blocked operator dispositions
+
+Commit `f09c621` on `agent/threadkeeper-persistent-workers` closes the
+operator-recovery policy gap after stable `handoff_required` detection.
+`apply_handoff_blocked_disposition` now persists an immutable self-hashed
+decision before any optional lifecycle event. The only actions are hold,
+durable cancellation request, terminal failure, and expiry; the record binds
+the exact failed-retryable version, manifest, newest opaque checkpoint, actor,
+rationale, and bounded evidence references. It refuses a task that already has
+a resumable formal handoff and never checkpoints, requeues, calls a provider,
+or runs tools. A crash between record and event is replay-safe.
+
+Checks: Python compilation; lifecycle pytest (`62 passed`); combined
+provider-free lifecycle/subagent/budget pytest (`375 passed`); `git diff
+--check`. Evidence:
+`experiments/20260717T210750Z-threadkeeper-operator-dispositions/`. No live
+queue/provider/Telegram/ProtoMegaBot path, paid compute, access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-17 - ThreadKeeper mandatory requeue handoff and process reconstruction
+
+Commit `35bf3b1` on `agent/threadkeeper-persistent-workers` closes the retry
+continuity gap left by the first formal-handoff slice. Explicit retry requeue
+now requires the newest verified checkpoint to contain a strict formal
+handoff; an empty chain or newer generic checkpoint fails before enqueue. The
+supervisor reports `handoff_required` and retains `FAILED_RETRYABLE` for
+operator repair rather than losing the task or guessing from opaque state.
+
+A provider-free fixture uses separate interpreters for initial work/process
+exit, stale recovery/requeue, and resume. The resumed process has no inherited
+memory and reconstructs its result from the verified manifest and handoff plus
+the handoff-referenced `project/state.txt`. Python compilation, 54 lifecycle
+tests, the combined lifecycle/subagent/budget gate (`367 passed`), PR #1
+ancestry, and `git diff --check` passed. Evidence:
+`experiments/20260717T171207Z-threadkeeper-handoff-requeue-resume/`. No live
+provider/queue/Telegram/ProtoMegaBot path, paid compute, access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-17 - ProtoMegaBot 503 spam incident
+
+- **Observed:** `openclaw/protomegabot-opus` repeatedly returned HTTP 503 with
+  `upstream provider overloaded`; `openclaw/protomegabot-simple` and
+  `openclaw/default` returned HTTP 200.
+- **Observed:** ProtoCosmoBot status/tool traffic entered the OmegaClaw queue.
+  The old context-only policy still ran triage, and its later skip state was not
+  reliable at provider time.
+- **Implemented:** `fb36d35` adds quiet overload classification, cooldown, one
+  inexpensive fallback, and bounded nontransient notices; `a9c0060` moves
+  sibling-addressed rejection to ingress; `74e46d2` also rejects unaddressed
+  bot-authored traffic before enqueue.
+- **Verification:** 4/4 overload-policy tests and 8/8 address/ingress tests;
+  Python compilation, launcher/supervisor shell syntax, and diff checks passed.
+  Direct health check: simple/default 200, Opus 503. Restarted supervisor showed
+  one worker and zero MTProto bridges.
+- Existing `memory/history.metta` changes were preserved and excluded from all
+  commits. No push or paid compute.
+
+## 2026-07-17 - ThreadKeeper unknown-tool batch preflight
+
+Continued the draft-PR-#1-derived bounded ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next` with commit `8936cab`. Unknown or invented
+worker tool names previously bypassed argument-schema preflight, allowing an
+earlier valid mutation in the same parsed batch to execute before the unknown
+call was rejected. Unknown names now return `SKILL_ARG_ERROR` during the
+complete-batch preflight, before any tool effect.
+
+Provider-free direct and two-turn dispatch regressions prove that an earlier
+valid `write-file` remains effect-free and the rejection is retained in the
+persistent transcript. Four focused tests, the combined subagent/budget gate
+(`357 passed`), Python compilation, and `git diff --check` passed. No provider,
+live queue/runtime, Telegram, paid compute, credential/access/security change,
+push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-17 - ThreadKeeper malformed tool-batch preflight
+
+Continued the draft-PR-#1-derived bounded ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next` with commit `1ef286a`. Previously,
+`run_tools` validated arguments immediately before each individual call, so an
+earlier valid mutation could occur before a later malformed call was rejected.
+Also, the tolerant response parser could silently skip a malformed
+parenthesized record while retaining earlier valid calls. Tool argument shapes
+are now preflighted as a complete batch before the first effect, and every
+line-leading parenthesized protocol record must map to a parsed call before the
+batch is executed. Ordinary non-protocol prose remains recoverable.
+
+Two provider-free regressions prove that both a parsed bad-arity second write
+and a skipped unterminated second write prevent the first valid write from
+reaching the filesystem; the latter run recovers on a second turn and retains
+the protocol error in its transcript. Python compilation, `git diff --check`,
+PR #1 ancestry, three focused tests, and the combined subagent/budget gate
+passed (`355 passed`). No provider, live queue/runtime, Telegram, subprocess,
+paid compute, credential/access/security change, push, merge, force-push, or
+remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper malformed-response evidence persistence
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`5342db5`. Strict tool validation already prevented lone-surrogate file payloads
+from reaching filesystem effects, but the rejected raw worker response could
+still cross two unsafe UTF-8 boundaries: bounded history could place it in the
+next provider prompt, and `ensure_ascii=False` transcript serialization could
+fail and lose the durable record. Worker responses, parsed call evidence, tool
+results, final records, and parent payloads now preserve lone surrogates as
+visible literal `\udxxx` escapes before those boundaries.
+
+The provider-free regression drives a malformed `write-file` turn followed by
+a valid recovery emit. It verifies no output file exists, the second prompt
+contains only the visible escape, and the checksummed transcript persists the
+argument rejection without `record_write_error`. Python compilation,
+`git diff --check`, PR #1 safety-floor ancestry, and the combined focused
+subagent/budget suite passed (`353 passed`). No provider, queue, subprocess,
+Telegram, paid compute, secret/access change, push, merge, force-push, or remote
+ref deletion occurred.
+
+## 2026-07-17 - ProtoMegaBot2 persistent canary contract (offline only)
+
+Completed the roadmap's next artifact-only gate at
+`artifacts/ggb-capacity-gates/20260717-protomegabot2-persistent-canary-contract/`.
+The draft manifest pins isolated artifact-local workspace/run roots,
+ThreadKeeper source `e7e997e`, a fake loopback-only provider with no credential
+variable, zero Telegram/egress, one synthetic task, zero tool calls, bounded
+attempts/turns/tokens/runtime, cancel/stop paths, expected evidence, rollback,
+and forbidden production roots. The validator imports no runtime code and
+performs no effects.
+
+Contract validation, Python compilation, six focused positive/fail-closed
+tests, fixture validation, and `git diff --check` pass. Launch preflight exits
+2 as intended because approval, approver identity, and scope are absent. No
+supervisor/provider/queue/Telegram/ProtoMegaBot process, secret, memory write,
+paid compute, runtime-tree edit, push, or merge occurred. The next step is a
+Ben decision on exact canary scope and stop conditions, not an automatic run.
+
+## 2026-07-16 - ThreadKeeper surrogate tool-payload validation
+
+Continued strict tool-boundary validation on the draft-PR-#1-derived
+`agent/threadkeeper-hardening-next` branch and committed `31e2ebf`. All tool
+arguments now reject Unicode surrogate code points before provider,
+subprocess, audit, or filesystem effects. This specifically closes the
+remaining `write-file` / `append-file` content gap: multiline file content
+remains supported, but non-UTF-8-encodable Python surrogate values fail as
+`SKILL_ARG_ERROR` before the registered file tool is called. Two focused
+regressions prove zero tool effects for write and append.
+
+Checks: PR #1 safety-floor ancestry; Python compilation; focused argument
+pytest (`5 passed`); combined provider-free subagent/budget pytest (`352
+passed`); `git diff --check`. No provider, live queue, Telegram, runtime
+wiring, paid compute, secrets/access/security change, push, merge, force-push,
+or remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper persona-config control-text validation
+
+Continued strict configuration/tool-boundary validation on the PR #1-derived
+`agent/threadkeeper-hardening-next` branch and pushed commit `4528c41`.
+Required persona scalars and optional `base_url` now reject Unicode line and
+paragraph separators, bidi/invisible formatting controls, ASCII controls, and
+lone surrogates before persona prompt or provider setup. Six focused fixtures
+cover `persona_file`, provider, model, node role, endpoint kind, and base URL.
+Python compilation, focused pytest (`11 passed`), combined subagent/budget
+pytest (`331 passed`), and `git diff --check` passed. No provider, live queue,
+Telegram, runtime wiring, paid compute, access/security change, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-16 - Bounded persistent-worker supervisor reconciliation
+
+Added the first provider-free supervisor slice on isolated ThreadKeeper branch
+`agent/threadkeeper-persistent-workers`, commit `3673e94`. The bounded
+`supervise_persistent_once` pass integrity-checks the complete task status set
+before callbacks, reconciles each task at most once, derives replay-stable IDs
+from verified task versions, explicitly recovers/requeues expired attempts,
+observes cancellation before queue execution, and stops before effects for
+corrupt state or exhausted budgets. Four synthetic fixtures cover restart,
+cancellation, corruption, and budget exhaustion; the combined lifecycle and
+focused hardening gate passed 360 tests plus Python compilation and diff check.
+This is an in-process reconciliation primitive, not yet the roadmap's separate
+subprocess restart proof. No ProtoMegaBot/ProtoMegaBot2 wiring, provider,
+Telegram, queue supervisor process, secrets/access change, paid compute, push,
+or merge occurred. Evidence:
+`experiments/20260716T153400Z-threadkeeper-persistent-supervisor-v1/RUN.md`.
+
+## 2026-07-16 - ThreadKeeper terminal-result delivery acknowledgement
+
+Implemented the next provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, pushed commit `bf5cf10`. Terminal
+results can now be persisted as bounded immutable delivery records keyed to the
+exact terminal lifecycle event ID and payload digest. Bounded parent polling
+returns only unacknowledged deliveries and re-verifies event/result lineage;
+acknowledgement writes a separate immutable, self-hashed record bound to the
+delivery digest. Delivery and acknowledgement retries are idempotent, while
+nonterminal/stale events, payload substitution, conflicting acknowledgement
+IDs, and record tampering fail closed.
+
+Checks: PR #1 safety-floor ancestry; Python compilation; focused delivery tests
+(`3 passed`); provider-free lifecycle suite (`42 passed`); combined
+lifecycle/subagent/budget gate (`355 passed`); `git diff --check`. No provider,
+tool, Telegram, credential, supervisor, ProtoMegaBot process/path, paid compute,
+merge, force-push, or remote-ref deletion was used. Next: mechanically observed
+runtime/tool accounting, then supervisor integration.
+
+## 2026-07-16 - ThreadKeeper crash-retry-safe inbox consumption
+
+Implemented the next provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, pushed commit `dc8dd79`. New
+`consume_inbox_item` verifies the task's current `WAITING_INPUT` event and the
+exact immutable inbox item, performs the existing bounded enqueue effect, then
+writes a self-hashed receipt binding the manifest, source event, item digest,
+and queue digest before the `WAITING_INPUT -> QUEUED` lifecycle CAS. A retry
+after lifecycle-write failure reuses the verified receipt without repeating
+enqueue. Conflicting item reuse and receipt tampering fail closed. The verified
+item payload is carried into the queued objective only as explicitly labeled
+untrusted task context.
+
+Checks: PR #1 safety-floor ancestry; Python compilation; focused inbox tests
+(`6 passed`); provider-free lifecycle suite (`39 passed`); combined
+lifecycle/subagent/budget gate (`352 passed`); `git diff --check`. No provider,
+tool, Telegram, credential, supervisor, ProtoMegaBot process/path, paid compute,
+merge, force-push, or remote-ref deletion was used. Next: bounded idempotent
+result-delivery acknowledgement.
+
+## 2026-07-15 - ThreadKeeper crash-retry-safe queued-attempt accounting
+
+Implemented the next provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, commit `fed6c2a`. A completed queued
+attempt now creates a bounded immutable, self-hashed result receipt before its
+strict input/output/total-token counters enter the task-level ledger. If the
+ledger append fails, retrying the same claim verifies and reuses the receipt
+without repeating the queue effect. Usage IDs remain idempotent and bound to
+the immutable attempt; inconsistent token totals, counter-schema drift,
+receipt tampering, and conflicting result replays fail closed. Verified resume
+checkpoint identity is preserved on receipt replay.
+
+Checks: Python compilation; persistent lifecycle suite (`33 passed`); focused
+subagent/budget regressions (`313 passed`); combined total `346 passed`;
+`git diff --check`. No provider, tool, Telegram, credential, supervisor,
+ProtoMegaBot process/path, paid compute, merge, force-push, or remote-ref
+deletion was used. Next: idempotent inbox/result delivery, then automatic
+runtime/tool accounting after the queue runner exposes those compact counters.
+
+## 2026-07-15 - Topology approval and automation recovery
+
+Ben accepted the staged communication topology: distinct ProtomegaTron
+Telegram identity, local OpenClaw Gateway only as provider, explicit chat
+allowlists, and no unrestricted direct agent-session bridge. The existing
+ThreadKeeper queue/GoalChainer sidecar remains bounded, checksummed,
+candidate-only, and adjudication-gated.
+
+Replaced the disabled channel watchdog's impossible isolated `sessions_list`
+design with `bin/channel-watchdog.py`, a read-only local-journal scanner that
+emits only pattern/time/session identifiers and never quotes content. Five
+synthetic regressions, Python compilation, live silent scan, and forced cron run
+passed. Re-enabled cron `70cd9d3f-8ed4-4d86-8887-917eb919c6b9` without widening
+tree-scoped session visibility.
+
+The OmegaClaw watchdog is enabled and currently reports
+`ALREADY_RUNNING pid=1544920`; the previously discussed PID `1437624` was a
+valid supervisor at that earlier snapshot, not stale bookkeeping. Re-enabled
+ThreadKeeper, petta-chem, and GGB workers have since completed healthy runs.
+
+## 2026-07-15 - ThreadKeeper explicit persistent requeue effect
+
+Implemented the next provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, local commit `9727ad7`. New
+`requeue_persistent` keeps stale-attempt recovery and requeue as separate
+operator effects: only `FAILED_RETRYABLE` tasks are accepted; immutable
+manifest, attempt, and checkpoint lineage is verified before enqueue; the
+normal bounded queue adapter must return a valid queue digest; and a
+compare-and-swap `FAILED_RETRYABLE -> QUEUED` event records that digest.
+Duplicate requeue IDs are idempotent. A failed enqueue leaves the task
+retryable, and corrupt checkpoint payloads fail before the enqueue adapter.
+
+Gate `artifacts/ggb-capacity-gates/20260715-threadkeeper-persistent-requeue-effect/`
+passed Python compilation, `git diff --check`, and 335 combined focused tests.
+No provider, tool, Telegram, credential, supervisor, ProtoMegaBot process/path,
+push, merge, or paid compute was used. Remaining recovery work is checkpoint
+consumption by the next attempt and an idempotent receipt that closes the
+enqueue-success/event-append crash window.
+
+## 2026-07-15 - ThreadKeeper persistent-worker durable manifests, events, and status APIs
+
+Implemented the second provider-free slice of the persistent-worker mandate
+on isolated branch `agent/threadkeeper-persistent-workers` in worktree
+`projects/omegaclaw/worktrees/threadkeeper-persistent-workers`, commit
+`f82d168` (based on `7aa49e1` lifecycle contract).
+
+Added three storage primitives to `src/persistent_worker.py`:
+
+1. `create_task_manifest(root, manifest)` — atomically creates an immutable
+   `tasks/<id>/manifest.json` with version tags (`MANIFEST_VERSION`,
+   `LIFECYCLE_VERSION`), SHA-256 self-integrity, strict field validation, and
+   `os.link`-based create-if-absent semantics. Rejects symlinks and
+   non-regular files via `O_NOFOLLOW` and `lstat` checks.
+2. `append_task_event(root, task_id, ...)` — appends one CAS-checked lifecycle
+   event to `events.jsonl`. Enforces expected-version/prior-state
+   compare-and-swap, SHA-256 hash chaining (`previous_event_sha256`), idempotent
+   replay for duplicate `event_id` with matching fields, legal transition check
+   via `transition_decision`, `fcntl.flock` advisory locking on POSIX, and size
+   limits on individual events and total log.
+3. `worker_status(root, task_id)` and `list_worker_statuses(root, limit)` —
+   read-only projections that replay the event chain from the manifest,
+   verifying every hash, version, and transition. Return bounded
+   `status.v1` records. Fail closed on symlinks, unknown versions, tampered
+   records, and oversized logs.
+
+Updated `docs/persistent-workers.md` phased plan to reflect implemented
+lifecycle/status work.
+
+Checks: Python compile; 11 persistent-worker lifecycle/storage tests passed;
+5 existing subagent hardening regression tests passed (delegate unchanged);
+16 total passed, 0 failed. `git diff --check` clean. No provider, tool,
+process, queue, Telegram, ProtoMegaBot, or production path touched.
+
+## 2026-07-14 - ProtoMegaBot output and Telegram pipeline hardening
+
+Investigated the lost Bot Philosophy reply and reproduced the failure: ambiguous
+prompt syntax plus raw MeTTa-shaped history led the model to emit parenthesized
+prose and valid `pin` calls without `send`; permissive repair allowed partial
+execution and silently discarded the reply. Archived a GPT-5.6-sol consultation
+and the adopted specification under `docs/`. Implemented the P0 hardening slice
+on isolated branch `agent/protomega-output-pipeline-hardening`, commit `a16e714`,
+then integrated it carefully into the existing dirty live checkout while
+preserving its newer tier-routing work and unrelated local changes.
+
+The new path prefers `omegaclaw.action.v1` JSON, strictly validates all actions
+before execution, allows one formatter-only repair, visibly fails when a human
+reply is missing, separates untrusted history, tracks correlation IDs, preserves
+continuation routing, records Telegram dedup only after success, resumes failed
+multi-chunk sends, and permits outbound sends during poll-health faults.
+Validation: helper assertions and Python compile passed; `src/loop.metta` parsed
+under the pinned PeTTa/SWI runtime; all 31 focused test bodies passed. Pytest's
+only error was its unconditional session-cleanup attempt to invoke unavailable
+Docker. The supervisor was restarted and showed clean polling/iterations without
+send, poll, or traceback errors. Its stale MTProto-only readiness check was made
+transport-aware and now reports the active Bot API topology as process-ready.
+A human Telegram canary remains the final
+end-to-end check; durable inbound journaling and persistent delivery receipts
+remain follow-up work.
+
+## 2026-07-13 - ThreadKeeper non-empty task-contract field hardening
+
+Continued strict task-contract validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `a2c62eb` (`Reject blank task contract fields`). Blank or whitespace-only objectives and blank entries in `allowed_paths`, `forbidden_actions`, or `done_criteria` now return structured `contract_invalid` records before provider setup or worker LLM calls. String-list normalization preserves trimmed blank entries for validation instead of silently dropping malformed contract data.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused validation pytest (`19 passed`); full focused subagent/budget hardening pytest (`310 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally left untouched because its worktree contains active unrelated runtime modifications. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-13 - Goal/task contract refresh and empirical next gates
+
+Refreshed `docs/GOAL_TASK_STATE_CONTRACT.md` to v0.2 against the archived `20260712-goalchainer-canary-review-boundary` rather than the older permissive draft. The contract now requires every queued `recommended`/`candidate` decision to remain `patch_proposal_only` and `requires_adjudication`, excludes forbidden/held/weak/blocked results before queue construction, removes any canary auto-accept path, and defines offline acceptance as evidence-only—not live egress, patch application, task claim, or memory authority. Added explicit malformed/duplicate input negatives as the next unimplemented conformance slice.
+
+Added `GGB_NEXT_GATES.md` as the concise active frontier over the long historical roadmap: (1) artifact-only GoalChainer→ThreadKeeper adapter conformance, (2) immutable `petta-memory` evidence→appraisal replay with mutation rejection, and (3) a neutral schema over chemistry, ThreadKeeper, memory, and GoalChainer gate records. Each gate names capacities, anchors, pass criteria, and one small implementation task; live Telegram/provider/runtime and memory-write boundaries remain held. Focused GoalChainer canary policy verification passed (`python3 -m pytest -q tests/test_threadkeeper_canary_policy.py`: 3 passed). No live integration, queue claim, provider/Telegram action, memory write/promotion, secrets/access change, paid compute, push, or merge.
+
+## 2026-07-13 - ThreadKeeper persona/task-contract object-shape hardening
+
+Continued strict setup/task-contract validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `22a8ade` (`Reject non-object task contract configs`). Persona JSON roots and configured `task_contract` fields now must be objects. Inline nested `task_contract` values must also be objects; malformed null, boolean, numeric, array, or string values now return structured `contract_invalid` records before provider setup or worker LLM calls instead of raising during normalization or being silently ignored in favor of the outer goal object. Inline malformed values remain persisted in the transcript for audit.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused object-shape pytest (`15 passed`); full focused subagent/budget hardening pytest (`298 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally left untouched because its worktree contains active unrelated runtime modifications and live transport work. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-13 - ThreadKeeper typed task-contract objective hardening
+
+Continued strict task-contract validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `55bf691` (`Reject typed task contract objectives`). Inline JSON task contracts now preserve the supplied `objective` type through normalization and require it to be a string during validation. Explicit null, boolean, numeric, array, and object objectives return a structured `contract_invalid` transcript before any worker LLM call instead of being silently stringified into prompt text. The failed typed value remains in the transcript for audit.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused subagent/budget hardening pytest (`283 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally left untouched because its worktree contains active unrelated runtime modifications and untracked files. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-13 - Cross-project keyword GGB fixture PeTTa runtime gate
+
+Extended `local/check-ggb-gate-petta-runtime.py` beyond the current ThreadKeeper `gate-id`/`check` keyword shape to the independent GoalChainer+`petta-memory` real-evidence replay fixture, which uses a `gate-slug` summary and legacy unkeyed `ggb-check (name ...)` atoms. Embedded gate keys must still match the summary; unkeyed checks are scoped to the already structurally checked five-file fixture directory. Exact source atom queries passed in local PeTTa for the canonical positional fixture (4 checks), ThreadKeeper keyword fixture (6 checks), and GoalChainer+memory keyword fixture (8 checks); a copy missing `METRICS.metta` failed closed. Refreshed `artifacts/ggb-capacity-gates/20260713-ggb-keyword-petta-runtime-smoke/` and the GGB roadmap. This is cross-project representative evidence, not universal schema normalization. No live runtime/provider/Telegram/queue/memory-write activity or authority change.
+
+## 2026-07-13 - ThreadKeeper non-empty final-return hardening
+
+Continued structured-return validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `93d6b8f` (`Reject empty final emits`). Empty and whitespace-only `(emit ...)` values now fail closed as `EMIT_PROTOCOL_VIOLATION` before a successful parent digest can be accepted, ensuring every successful structured return has a meaningful summary. Added end-to-end transcript/status regressions and updated the subagent reference.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused emit/protocol pytest (`14 passed`); focused subagent/budget hardening pytest (`278 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally left untouched because its worktree contains active unrelated runtime modifications and untracked files. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-13 - ThreadKeeper final-emit envelope hardening
+
+Continued strict return-protocol validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `99aebc0` (`Reject hidden text beside final emits`). `parse_calls()` remains tolerant for recoverable tool turns, but a successful final emit now requires the stripped raw response to contain exactly one non-empty ASCII-newline record. Ignored narration and malformed extra call lines beside an otherwise valid `(emit ...)` therefore fail closed as `EMIT_PROTOCOL_VIOLATION` instead of becoming a parent digest.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused emit/protocol pytest (`12 passed`); focused subagent/budget hardening pytest (`276 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally not modified because its worktree has active unrelated runtime work. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-13 - GGB keyword-shaped fixture PeTTa runtime gate
+
+Extended `local/check-ggb-gate-petta-runtime.py` beyond the canonical positional run-contract shape to one current keyword-shaped ThreadKeeper gate. The bounded checker now extracts balanced top-level summary/check expressions, scopes checks to the summary gate ID, and asks local PeTTa to match the exact source atom shapes. Positional regression still returns `(partial true)` plus four checks; `20260713-threadkeeper-unicode-control-arg-hardening` returns status `pass` plus all six expected checks. A missing-`METRICS.metta` negative fixture fails closed. Archived `artifacts/ggb-capacity-gates/20260713-ggb-keyword-petta-runtime-smoke/` and refreshed the roadmap/mapping. This is representative simple-keyword coverage, not universal schema normalization. No live runtime/provider/Telegram/queue/memory-write activity or authority change.
+
+## 2026-07-13 - ThreadKeeper final-emit Unicode/control hardening
+
+Continued strict return/tool-protocol validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Committed `842792b` (`Reject unsafe Unicode in final emits`). Final `(emit ...)` values now fail closed on unsafe Unicode controls, line/paragraph separators, formatting characters, and lone surrogates before a successful parent digest is accepted. Protocol parsing now splits records only on ASCII newline so hidden Unicode separators remain inside the argument and reach validation; failed-input turn evidence is escaped visibly before transcript persistence.
+
+Checks: PR #1 safety-floor ancestry; Python compile; focused emit/protocol pytest (`8 passed`); focused subagent/budget hardening pytest (`274 passed`); `git diff --check`. The nested OmegaClaw-Core runtime source was intentionally left untouched because that worktree contains active unrelated runtime modifications/untracked files, so runtime parity is not claimed. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, push, force-push, or remote-ref deletion.
+
+## 2026-07-13 - GGB sibling fixture real-PeTTa runtime gate
+
+Closed the roadmap's minimal PeTTa parser/runtime-smoke gap for the canonical positional GGB run-contract fixture. Added `local/check-ggb-gate-petta-runtime.py`: it requires the five sibling files, invokes the existing structural checker, extracts the positional `run-summary` and passed `ggb-check` labels, loads a temporary concatenated fixture in the recorded local PeTTa/SWI runtime under a 30-second timeout, and requires exact query output. The `20260701-petta-chem-run-contract` fixture returned `(partial true)` plus its four expected check labels. Archived `artifacts/ggb-capacity-gates/20260713-ggb-petta-runtime-smoke/`. Compile, source-fixture runtime query, negative missing-file fail-closed, new-gate sibling-fixture check, and `git diff --check` all passed. This is not a universal schema claim: newer keyword-shaped fixtures should be normalized separately before broad runtime-query coverage. No live runtime/provider/Telegram/queue/memory-write activity, secrets/access changes, paid compute, push, merge, or force-push.
+
+## 2026-07-13 - ThreadKeeper Unicode run-control path gate refresh
+
+Refreshed the existing `20260713-threadkeeper-unicode-control-arg-hardening` gate for ThreadKeeper commit `6e0e49b` (`Harden Unicode run-control paths`) on `agent/threadkeeper-hardening-next`. The shared unsafe-text guard now covers queued-dispatch paths, worker `stop_file`, and queued-task `cancel_file` paths as well as file/query/optional-shell arguments, rejecting unsafe Unicode controls/formatting and lone surrogates before queue claim or worker-lock creation. Verified PR #1 safety-floor ancestry, clean ThreadKeeper status, Python compile, focused subagent/budget hardening pytest (`268 passed`), `git diff --check`, and the six-check GGB sibling fixture. The OmegaClaw-Core runtime tree was not modified and parity is not claimed because it contains active untracked/modified runtime work. No live runtime, queue claim, provider/subprocess activity, secrets/access changes, paid compute, merge, push, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper unsafe Unicode format/surrogate argument hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `cf0db9a` (`Reject unsafe Unicode tool argument formats`) to `fork/agent/threadkeeper-hardening-next`. File paths, external query arguments, and optional-shell command strings now reject unsafe Unicode `Cf` formatting characters (including soft hyphen, word joiner, and BOM) and lone surrogate code points before filesystem, provider, or subprocess handling. U+200C/U+200D remain accepted for linguistic and emoji joining. Synced the nested OmegaClaw runtime source. Checks: PR #1 ancestry, Python compile, focused subagent/budget hardening pytest (`266 passed`), `git diff --check`, runtime source `cmp`. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper Unicode line-separator tool-argument hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `8de75d5` (`Reject Unicode line separators in tool args`) to `fork/agent/threadkeeper-hardening-next`. File paths, external query arguments, and optional-shell command strings now reject Unicode C1 controls and line/paragraph separators (`U+0085`, `U+2028`, `U+2029`) as well as ASCII controls before filesystem, provider, or subprocess handling. This closes hidden prompt/transcript/audit line-injection ambiguity left by ASCII-only validation. Synced the nested OmegaClaw runtime source. Checks: Python compile, focused subagent/budget hardening pytest (`263 passed`), `git diff --check`, runtime source `cmp`. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper unquoted file-content trailing-call hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `08e7f39` (`Reject trailing calls in unquoted file content`) to `fork/agent/threadkeeper-hardening-next`. Legacy unquoted `write-file` / `append-file` content now fails closed on spaced or compact same-line trailing calls before workspace mutation; ordinary parenthesized prose remains accepted. Synced the nested OmegaClaw runtime source. Checks: Python compile, focused subagent/budget hardening pytest (`262 passed`), `git diff --check`, runtime source `cmp`. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper unquoted trailing-call protocol hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `6a62c97` (`Reject unquoted trailing single-arg calls`) to `fork/agent/threadkeeper-hardening-next`.
+
+Unquoted one-argument calls now reject ambiguous same-line `) (` trailing-call payloads before optional shell, external query, file-read, or final-emit handling. Ordinary unquoted parenthesized prose remains accepted. Synced `src/subagent.py` into the nested OmegaClaw runtime source. Checks: PR #1 ancestry, Python compile, focused subagent/budget hardening pytest (`260 passed`), `git diff --check`, runtime source `cmp` and compile. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper optional-shell command argument GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260712-threadkeeper-shell-arg-hardening/` for ThreadKeeper head `76ec6b6`. The gate records the dedicated `OMEGACLAW_SUBAGENT_MAX_SHELL_ARG_CHARS` cap (default 4096), applied before optional-shell command parsing or subprocess execution while retaining the broader per-tool cap as a second ceiling. It is coordinated against PR #1 and mapped to GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. Checks: PR ancestry, compile, focused hardening pytest (`256 passed`), diff check, runtime source sync, and fixture checker. No live runtime, shell subprocess, provider, or queue behavior was exercised.
+
+## 2026-07-12 - ThreadKeeper technical-analysis argument GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260712-threadkeeper-technical-analysis-arg-hardening/` for ThreadKeeper head `35c0c98`. The gate records the new bounded market-symbol grammar for `technical-analysis`, coordinated against PR #1 and mapped to GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. Common symbols pass while prose, leading `$`/dot, control characters, and over-32-character values fail before execution. Checks: PR ancestry, compile, focused hardening pytest (`254 passed`), diff check, runtime source sync, and fixture checker. No live runtime/provider/queue behavior or authority changes.
+
+## 2026-07-11 - ThreadKeeper append-file streaming read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `67032df` (`Bound append-file reads after open`) to `fork/agent/threadkeeper-hardening-next`.
+
+Atomic `append-file` now reads at most the configured file-size cap plus one character from its already-open no-follow fd and rejects cap crossing before replacement. This closes the post-`fstat` growth gap where an existing workspace file could otherwise be read without a streaming bound. Added regression coverage, updated docs, and synced the nested OmegaClaw runtime source. Checks: `py_compile`; focused hardening pytest (`253 passed`); `git diff --check`; runtime source `cmp`. No paid compute, live wiring, secrets/access/security changes, queue/provider activity, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper command/query argument control-character hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `9b00e38` (`Reject control chars in subagent command args`) to `fork/agent/threadkeeper-hardening-next`.
+
+Subagent `shell` command strings and external query tool arguments (`search`, `tavily-search`, `technical-analysis`) now reject ASCII control characters before subprocess/provider execution. File-tool paths already had this line-forging/ambiguous-name guard; this extends strict tool-argument validation to the remaining one-string execution/query tools while preserving normal whitespace-free commands and natural-language queries. Updated focused regressions and subagent reference docs; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused tool-argument pytest (`10 passed, 223 deselected`); focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`246 passed` for subagent + budget hardening tests); `git diff --check`; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-11 - ThreadKeeper symlink workspace-root hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `b25d763` (`Reject symlink subagent workspaces`) to `fork/agent/threadkeeper-hardening-next`.
+
+Existing `OMEGACLAW_SUBAGENT_WORKSPACE` roots now fail closed unless they are real non-symlink directories before `read-file`/`write-file`/`append-file` resolution or optional allowlisted `shell` execution. Missing dedicated workspace roots remain lazily creatable for historical write-file ergonomics, but a symlinked workspace root can no longer redirect file or shell tool effects into its target. `_sanitize_error_msg()` was adjusted so workspace-root validation failures still return structured sanitized tool errors rather than escaping through the error sanitizer. Updated focused regressions and subagent reference docs; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused symlink-workspace pytest (`4 passed, 227 deselected`); focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`244 passed` for subagent + budget hardening tests); `git diff --check`; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
 # Working Notes
 
+## 2026-07-11 - ThreadKeeper workspace/command-argument GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260711-threadkeeper-workspace-command-arg-hardening/` for ThreadKeeper head `9b00e38`, recording the latest local-boundary/tool-argument hardening as a GGB capacity gate. The gate covers existing workspace-root symlink rejection (`b25d763`) plus optional shell and external query argument control-character rejection (`9b00e38`), mapped to capacities 1.1/1.3/3.2/4.5/5.2/5.3/5.4. Refreshed `GGB_CAPACITIES_ROADMAP.md` from `bf65398`/242-test evidence to `9b00e38`/246-test evidence.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py src/threadkeeper_budget.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py Autotests/mock/test_subagent_hardening_mock.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`246 passed`); `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper unquoted emit trailing-payload validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `bf65398` (`Reject unquoted emit trailing payloads`) to `fork/agent/threadkeeper-hardening-next`.
+
+The final-emit protocol already rejected same-line trailing payloads after quoted emits. This patch closes the legacy unquoted counterpart: a worker response like `(emit done) (write-file "hidden.txt" "nope")` now surfaces as an `EMIT_PROTOCOL_VIOLATION` argument-count error instead of accepting the whole tail as a successful bare emit digest. Added focused regression coverage, updated subagent reference docs, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused emit/protocol pytest (`6 passed, 223 deselected`); focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`242 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper persona config scalar validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `78c43f2` (`Validate persona config scalar fields`) to `fork/agent/threadkeeper-hardening-next`.
+
+Persona config control fields now fail closed before prompt/provider setup unless they are short non-empty strings: `persona_file`, `provider`, `model`, `api_key_env`, `node_role`, `endpoint_kind`, and optional `base_url` are capped by `OMEGACLAW_SUBAGENT_MAX_PERSONA_SCALAR_CHARS` (default 2048). `api_key_env` must be a safe env-var identifier, and optional `persona_sha256` must be a 64-character hex SHA-256. This tightens the remaining setup/config validation path before worker LLM calls. Updated focused regression tests and persona/reference docs; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`241 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper audit/accounting read-cap GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260711-threadkeeper-audit-readcap-hardening/` for current ThreadKeeper head `bedfadb`, mapping run-index audit streaming cap enforcement (`e7ae245`), transcript audit no-path-`getsize` regular-file checks (`6a6916f`), and budget accounting/config fd-level read-cap hardening (`bedfadb`) to GGB capacities 1.3/3.2/3.5/4.5/5.2/5.3/5.4. Refreshed `GGB_CAPACITIES_ROADMAP.md` to current 237-test/head `bedfadb` evidence and preserved the Telegram-private blocker: active-supervisor handling plus explicit approval/stop conditions are still required before any live private smoke.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py src/threadkeeper_budget.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py Autotests/mock/test_subagent_hardening_mock.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`237 passed`); `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper budget accounting/config read-cap hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `bedfadb` (`Bound budget accounting reads after open`) to `fork/agent/threadkeeper-hardening-next`.
+
+`src/threadkeeper_budget.py` now rechecks budget config and usage-log size on the opened file descriptor with `fstat`, then performs bounded byte reads using the existing `THREADKEEPER_MAX_BUDGET_CONFIG_BYTES` and `THREADKEEPER_MAX_BUDGET_LOG_BYTES` caps. This closes the accounting/config counterpart of the recent run-index/transcript read-cap TOCTOU hardening: a local file that grows or is swapped after the initial `lstat` can no longer turn budget checks into unbounded reads. Added focused regressions that force the initial `lstat` to under-report size, updated README, and synced `threadkeeper_budget.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/threadkeeper_budget.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`237 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper transcript audit size-check nofollow hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `6a6916f` (`Avoid path getsize in transcript audits`) to `fork/agent/threadkeeper-hardening-next`.
+
+`verify_subagent_run_index()` no longer uses path-based `os.path.getsize()` for referenced transcript size prechecks. The audit now uses `lstat` to reject symlink/non-regular transcript records before hashing, while `_sha256_file_bounded()` still opens through the no-follow regular-file helper and enforces `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_AUDIT_BYTES` during the streamed hash read. This closes the transcript-audit counterpart of the earlier setup/index size-check TOCTOU hardening. Added a focused regression that monkeypatches `os.path.getsize` to fail, updated subagent docs, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`235 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper budget audit-log parent hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `4034064` (`Harden budget audit log parents`) to `fork/agent/threadkeeper-hardening-next`.
+
+`src/threadkeeper_budget.py` usage/escalation audit appends no longer use `os.makedirs(..., exist_ok=True)` for log parent creation. They now create parent directories component-by-component with `lstat` checks, reject symlink/non-directory ancestors before opening logs, fsync the log file, and best-effort fsync the parent directory. This closes the budget/accounting counterpart of the earlier subagent audit-parent symlink hardening while preserving the budget module's never-raise behavior on the agent response path. Added focused symlink-parent/ancestor regression tests, updated README, and synced `threadkeeper_budget.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/threadkeeper_budget.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`234 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper run-index audit read bounding
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `e7ae245` (`Bound run-index audit reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+`verify_subagent_run_index()` now enforces `OMEGACLAW_SUBAGENT_MAX_INDEX_AUDIT_BYTES` during the no-follow `index.jsonl` line scan, not only before opening the file. It uses the existing `lstat` size for the early oversized check and counts bytes as they are streamed, so local growth after the initial stat cannot turn a read-only run-index audit into an unbounded read. Added focused regressions proving path-based `getsize()` is no longer used for the index check and that cap crossing during the scan returns structured `index_audit_too_large`. Updated `docs/reference-skills-subagent.md` and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`231 passed` for subagent + budget hardening tests); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper task-contract path hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260710-threadkeeper-task-contract-path-hardening/` for current ThreadKeeper head `558c3dc`, covering strict task-contract `allowed_paths` validation plus file-tool control-character rejection across GGB capacities 1.1/1.3/3.2/4.5/5.2/5.3/5.4. Refreshed `GGB_CAPACITIES_ROADMAP.md` to 230-test/head `558c3dc` evidence.
+
+Checks: PR #1 ancestry check; source/runtime `py_compile`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`230 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, supervisor/daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper task-contract path validation hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `558c3dc` (`Harden task contract path validation`) to `fork/agent/threadkeeper-hardening-next`.
+
+Task-contract `allowed_paths` now uses the same strict workspace-relative path validator as `read-file` / `write-file` / `append-file`: absolute paths, parent-directory traversal, oversized path strings, empty strings, and control characters fail closed during contract validation before any worker LLM call, workspace resolution, contract path check, file-tool execution, or audit record use. File-tool path validation also now rejects control characters to prevent ambiguous local filenames or transcript/audit line-forging artifacts. Updated `docs/reference-skills-subagent.md`, added focused regressions, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`230 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-10 - ThreadKeeper file-tool/guard-state GGB gate refresh
+
+Archived `artifacts/ggb-capacity-gates/20260710-threadkeeper-file-tool-guardstate-hardening/` for current ThreadKeeper head `23ebb66`, covering file-tool relative-path validation (`23ebb66`) plus LLM guard-state parent symlink hardening (`2350afa`) across GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. Refreshed `GGB_CAPACITIES_ROADMAP.md` to 225-test/head `23ebb66` evidence.
+
+Checks: PR #1 ancestry check; source/runtime `py_compile`; focused mock pytest (`225 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; and GGB fixture checker. No paid compute, live wiring, secrets/access changes, queue enqueue/claim outside local tests, provider call, supervisor/daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper file-tool relative-path validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `23ebb66` (`Reject non-relative file tool paths`) to `fork/agent/threadkeeper-hardening-next`.
+
+Subagent `read-file` / `write-file` / `append-file` tool-call argument validation now fails closed unless the path is workspace-relative and contains no parent-directory traversal (`..`). This tightens the strict tool-argument validation layer before workspace path resolution, contract checks, audit paths, or file-tool execution, so worker responses cannot smuggle host absolute paths or traversal syntax into local tool/audit handling. Added focused regression coverage and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`225 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper LLM guard-state parent symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `2350afa` (`Reject symlink LLM guard state parents`) to `fork/agent/threadkeeper-hardening-next`.
+
+Per-endpoint worker LLM rate-limit and concurrency guard-state setup now validates the configured `OMEGACLAW_SUBAGENT_RUN_DIR` parent as a real non-symlink directory before creating or opening `.llm-rate-*` / `.llm-inflight-*` JSON state files. This closes the remaining parent-directory redirection gap after earlier no-follow final-file hardening for guard state: a symlinked run directory now fails closed instead of placing rate/concurrency guard artifacts under the symlink target. Added focused regression coverage and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`223 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper audit ancestor-directory symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `1cbc15b` (`Reject symlink audit ancestor directories`) to `fork/agent/threadkeeper-hardening-next`.
+
+Shared audit/run directory creation now walks parent components with `lstat` and `mkdir` one component at a time instead of using `os.makedirs(..., exist_ok=True)`, so symlinked ancestor directories such as `run-dir/link/nested` fail closed before any nested audit/log path can be created under the symlink target. Worker usage-log setup now uses the same component-by-component validation and no longer pre-creates parent paths with `os.makedirs`. Added focused regression coverage for worker `usage.jsonl` symlink ancestors and atomic JSON audit writes through symlink ancestors; updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`221 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper append-file size-check nofollow hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `aec4c9b` (`Use nofollow fd for append size checks`) to `fork/agent/threadkeeper-hardening-next`.
+
+`append-file` now performs existing-file size checks from the already-open regular non-symlink fd returned by `_open_workspace_file_read()` instead of a separate path-based `os.path.getsize()` call. This closes a small local TOCTOU/symlink-swap gap between workspace containment resolution, size inspection, and reading existing content; new-file appends also reject content that would exceed the file-size cap once the trailing newline is added. Added focused regression coverage and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`211 passed` for subagent hardening; `219 passed` with budget hardening); `git diff --check`; PR #1 ancestry check; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-10 - ThreadKeeper accounting/protocol hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260710-threadkeeper-accounting-protocol-hardening/` for current ThreadKeeper head `25d96c8`, covering quoted-final-emit trailing-payload rejection (`33d79a5`) and worker usage-log parent hardening (`25d96c8`) across GGB capacities 1.3/3.2/3.5/5.2/5.3/5.4. Refreshed `GGB_CAPACITIES_ROADMAP.md` to 218-test/head `25d96c8` evidence.
+
+Checks: PR #1 ancestry check; source/runtime `py_compile`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`218 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, supervisor/daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper worker usage-log parent hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `25d96c8` (`Harden worker usage log parent`) to `fork/agent/threadkeeper-hardening-next`.
+
+Worker LLM accounting appends to the shared `usage.jsonl` now validate the parent directory as a real non-symlink directory before opening the log, and best-effort fsync the parent directory after append. This closes a local symlink-parent redirection gap left after earlier final-file no-follow hardening for worker usage accounting. Added focused symlink-parent regression coverage, updated `docs/reference-skills-subagent.md`, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`218 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed it remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper quoted-emit trailing-payload validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `33d79a5` (`Reject trailing payloads after quoted emits`) to `fork/agent/threadkeeper-hardening-next`.
+
+The tolerant single-argument parser now requires a quoted one-argument call to end at the closing quote modulo whitespace. This closes a protocol-validation gap where a same-line payload like `(emit "done") (write-file "hidden.txt" "nope")` could be parsed as one successful `emit` argument rather than a malformed final response; it now returns structured `EMIT_PROTOCOL_VIOLATION` before any final digest is accepted. Updated `docs/reference-skills-subagent.md` and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`217 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed it remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-10 - ThreadKeeper parent-directory symlink hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260710-threadkeeper-parent-symlink-hardening/` to map current ThreadKeeper head `28adabf` onto GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. The gate covers `b567ad9` audit/run/queue parent-directory validation plus `28adabf` workspace `write-file`/`append-file` parent-directory revalidation before lock/temp-file creation and atomic replacement. Refreshed `GGB_CAPACITIES_ROADMAP.md` from stale `14d7f90`/212-test evidence to `28adabf`/216-test evidence.
+
+Checks: PR #1 ancestry check returned exit 0 (with existing ambiguous-ref warning); source/runtime `py_compile`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`216 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, supervisor/daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper workspace write-parent symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `28adabf` (`Reject symlink workspace file parents`) to `fork/agent/threadkeeper-hardening-next`.
+
+Workspace `write-file` and `append-file` atomic replacements now revalidate their parent path as a real non-symlink directory tree under `OMEGACLAW_SUBAGENT_WORKSPACE` immediately before creating lock/temp files. The helper creates missing workspace directories component-by-component with `lstat` checks instead of following swapped symlink ancestors, closing a remaining local TOCTOU gap where a parent directory could be replaced after `_resolve_workspace_path` containment but before `mkstemp`/lock creation. Added focused parent-swap regression tests and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`216 passed` for subagent + budget hardening tests); `git diff --check`; fetched `origin/pr-1` and confirmed it remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper audit parent-directory symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `b567ad9` (`Reject symlink audit parent directories`) to `fork/agent/threadkeeper-hardening-next`.
+
+Atomic JSON audit writes and transcript checksum sidecar writes now validate required parent directories as real non-symlink directories before creating temp files, and queued-run/index setup paths use the same check before queue/index writes. This closes the follow-on gap where a local symlinked run/audit parent directory could redirect durable queue/transcript/index artifacts despite no-follow checks on the final file names. The async worker loop now returns structured `worker_config_invalid` if the configured run directory is unsafe before lock acquisition or queue claim. Added focused symlink-parent regression tests and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`214 passed` for subagent + budget hardening tests); `git diff --check`; fetched `origin/pr-1` and confirmed it remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper workspace file tool no-follow hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `14d7f90` (`Harden workspace file tool reads with O_NOFOLLOW`) to `fork/agent/threadkeeper-hardening-next`.
+
+`_tool_read_file` and `_tool_append_file` previously used plain `open()` after `_resolve_workspace_path` (which uses `realpath` to resolve symlinks and check workspace containment). Added `_open_workspace_file_read(path)` helper that opens with `O_NOFOLLOW` and validates the fd is a regular non-symlink file via `fstat`, closing a TOCTOU symlink-swap gap between path resolution and the actual file read. The helper catches `ELOOP`/`EEXIST` `OSError` from `os.open` on symlink targets and converts to `ValueError` so existing tool error handling is preserved. Added 4 focused tests: direct symlink rejection by the helper, regular-file acceptance by the helper, symlink-escape rejection in `read-file` (via existing `realpath` containment), and symlink-escape rejection in `append-file` (via existing `realpath` containment). Updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`212 passed` for subagent + budget hardening tests); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper budget audit log hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `5b5c6d9` (`Harden budget audit log files`) to `fork/agent/threadkeeper-hardening-next`.
+
+`src/threadkeeper_budget.py` now treats budget/accounting logs as local audit files: usage-log and escalation-log appends reject pre-existing symlink/non-regular targets and open through no-follow regular-file checks; usage-log reads reject symlink/non-regular sources and skip oversized logs via `THREADKEEPER_MAX_BUDGET_LOG_BYTES` (default 1 MiB). Added focused tests for symlink write rejection, symlink read rejection, and bounded usage-log reads; updated README; synced `src/threadkeeper_budget.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/threadkeeper_budget.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`204 passed` for new budget hardening plus existing subagent hardening tests); `git diff --check`; runtime budget source cmp; pushed to fork. Attempted the full `Autotests/mock` suite, but it exceeded the 300s local timeout after showing pre-existing failures, so it was not used as a pass gate. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper persona setup symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `0f0b2cc` (`Reject symlink persona setup files`) to `fork/agent/threadkeeper-hardening-next`.
+
+Persona config JSON (`<persona_key>.json`) and persona prompt files now fail closed unless they are regular non-symlink files, and both reads use the shared no-follow regular-file opener before JSON parsing, prompt SHA-256 pinning, or prompt construction. This narrows the remaining setup-file redirection race/gap before any worker LLM call while preserving path confinement, byte caps, and sanitized errors. Added focused symlink regression tests, updated `docs/reference-skills-subagent.md`, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`200 passed`); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper no-follow audit read hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `1220907` (`Use nofollow opens for audit reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Read-only `verify_subagent_run_index()` now opens `index.jsonl` through the shared regular non-symlink no-follow helper for the actual audit scan after its lstat/size checks, and async-worker stale-lock metadata reads now use the same no-follow helper instead of builtin `open()` after lstat. This narrows the remaining race window for local symlink replacement between validation and read while preserving existing bounded-read and fail-closed behavior. Added focused opener-regression tests, updated `docs/reference-skills-subagent.md`, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`198 passed`); runtime source compile/cmp; `git diff --check`; PR #1 ancestry check; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper worker usage accounting symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `7f3a70e` (`Harden worker usage accounting writes`) to `fork/agent/threadkeeper-hardening-next`.
+
+Worker LLM usage accounting writes to shared `usage.jsonl` now append through the same regular non-symlink no-follow opener used for local audit/control files. This prevents a pre-existing local `usage.jsonl` symlink from redirecting worker accounting writes outside the configured memory directory while preserving best-effort/no-raise logging. Added focused tests for normal append and symlink rejection, updated `docs/reference-skills-subagent.md`, and synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`193 passed`); `git diff --check`; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-09 - ThreadKeeper transcript/guard-state hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260709-threadkeeper-transcript-guard-hardening/` to map the latest ThreadKeeper audit-read and worker-LLM guard-state path hardening onto GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. Current branch `agent/threadkeeper-hardening-next` is at `4c73526`; `origin/pr-1` remains an ancestor; nested OmegaClaw-Core runtime `subagent.py` matches the ThreadKeeper source.
+
+This gate records `3a31e25` (per-endpoint `.llm-rate-*.json` / `.llm-inflight-*.json` guard state now opens through the regular non-symlink no-follow helper) plus `4c73526` (transcript JSON reads and transcript hashing for candidate review/run-index verification now reject symlink transcript records rather than following them). Updated `GGB_CAPACITIES_ROADMAP.md` to current 191-test/head evidence.
+
+Checks: PR #1 ancestry check; source/runtime `py_compile`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`191 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker on the new gate. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, daemon/scheduler install, queue enqueue/claim, provider call, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-09 - ThreadKeeper transcript audit symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `4c73526` (`Reject symlink transcript audit records`) to `fork/agent/threadkeeper-hardening-next`.
+
+Transcript JSON reads used by `review_subagent_candidate()` and transcript hashing used by `verify_subagent_run_index()` now open through the shared regular non-symlink no-follow helper. `_resolve_subagent_transcript_path()` still checks realpath containment under `OMEGACLAW_SUBAGENT_RUN_DIR`, but returns the original absolute path so symlink transcript records are rejected rather than silently resolved/followed. This closes a local transcript/audit redirection gap without changing queue/worker semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`191 passed`); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper audit-path hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260709-threadkeeper-audit-path-hardening/` to map the latest ThreadKeeper workspace lock and run-index tail/rotation hardening onto GGB capacities 1.3/3.2/4.5/5.2/5.3/5.4. Current branch `agent/threadkeeper-hardening-next` is at `59140ac`; `origin/pr-1` remains an ancestor; nested OmegaClaw-Core runtime `subagent.py` matches the ThreadKeeper source.
+
+Checks: PR #1 ancestry check; source/runtime `py_compile`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`188 passed`); ThreadKeeper `git diff --check`; runtime source `cmp`; OmegaClaw GGB fixture checker. Updated `GGB_CAPACITIES_ROADMAP.md` to current head/test evidence. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, daemon/scheduler install, queue enqueue/claim, provider call, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper workspace file-lock symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `6c281bc` (`Reject symlink workspace file locks`) to `fork/agent/threadkeeper-hardening-next`.
+
+Per-target workspace lock files used by atomic `write-file` / `append-file` updates now open through the shared regular non-symlink no-follow helper. Existing symlink or non-regular `.target.lock` paths fail closed before file-tool synchronization, preventing a local workspace lock path from redirecting coordination outside `OMEGACLAW_SUBAGENT_WORKSPACE`. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`186 passed`); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper checksum sidecar symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `7387f40` (`Reject symlink integrity sidecars`) to `fork/agent/threadkeeper-hardening-next`.
+
+Required local `.sha256` integrity sidecars are now rejected if they are symlinks or non-regular files before any digest read. The reader uses the existing no-follow regular-file open path, preserves the configured byte cap (`OMEGACLAW_SUBAGENT_MAX_SHA256_SIDECAR_BYTES`), and keeps path details out of errors. This tightens queued-task checksum verification and candidate/transcript sidecar review without changing worker semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`185 passed`); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper run-index symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `372e336` (`Reject symlink run index files`) to `fork/agent/threadkeeper-hardening-next`.
+
+Finished-run `index.jsonl` appends and read-only `verify_subagent_run_index()` audits now reject symlink/non-regular `index.jsonl` and `index.jsonl.lock` paths, using no-follow opens where available for newly created audit files. This closes a local audit-log redirection gap in the persistent run-record path without changing queue/worker semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`184 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper inline task-contract list validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `cbe37d3` (`Tighten inline task contract list validation`) to `fork/agent/threadkeeper-hardening-next`.
+
+Inline/persona task-contract string-list fields (`allowed_paths`, `forbidden_actions`, `done_criteria`) no longer stringify scalar or non-string values during normalization. Malformed list-shape contracts now fail closed as `contract_invalid` before worker LLM calls, matching the stricter queued-task contract validator and preventing accidental broadening of file/path/action constraints. Updated focused tests and reference docs; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`181 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-08 - ThreadKeeper async worker signal-state cleanup
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `2258f6a` (`Clear async worker signal state after run`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now clears its module-local SIGTERM/SIGINT stop flag in the `finally` cleanup path after restoring prior signal handlers and writing finished lock metadata. This prevents a graceful stop handled by one supervised same-process worker-loop run from poisoning a later invocation into exiting before it checks the queue. Added focused regression coverage and updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`179 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper Telegram-private preflight blocker
+
+Archived non-live gate `artifacts/ggb-capacity-gates/20260708-threadkeeper-telegram-private-preflight/` before any further ThreadKeeper Telegram-private smoke. The artifact-local checker reads local supervisor/runner scripts, the staged integration RUN, current supervisor `status`, and source/runtime `subagent.py` only; it does not start/stop supervisors, call Telegram/providers, enqueue tasks, read secret env contents, or change runtime behavior.
+
+Result: `preflight_report.json` is `blocked` with 9/12 checks passing. Blockers: the staged gate says `TG_PRIVATE_ONLY=true`, but `local/omegaclaw-telegram-private-supervisor.sh` currently defaults `DEFAULT_TG_PRIVATE_ONLY=false`; its default `DEFAULT_TG_CHAT_IDS` includes non-private/group-style targets (`-5437945421,-1003983157420,-5459676079`); and `status` reported an already active supervisor (`active pid 679631`) during the preflight. Positive check: ThreadKeeper source `src/subagent.py` and the nested OmegaClaw-Core runtime copy are byte-identical.
+
+Verification: non-live preflight checker completed; GGB fixture checker passed for the new gate; targeted `git diff --check` passed. Recommended next action: resolve the private-only/default-chat boundary or require explicit safe environment overrides before any live private Telegram smoke; keep group/channel targets as a separate explicit gate. No paid compute, Telegram call, provider call, queue enqueue, secret read, supervisor start/stop, runtime behavior change, push/merge/force-push, or daemon/scheduler install.
+
+
+## 2026-07-08 - ThreadKeeper queued task symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `df483df` (`Reject symlink queued task records`) to `fork/agent/threadkeeper-hardening-next`.
+
+Queue listing/backpressure now count only regular non-symlink `queue/*.json` records, oldest-first sorting uses `lstat`, and `run_queued_dispatch()` rejects symlink/non-regular queued-task paths before atomic claim or JSON/sidecar reads. This closes a local queue redirection/false-backpressure gap without changing worker semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`178 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper worker-lock GGB refresh
+
+Archived `artifacts/ggb-capacity-gates/20260708-threadkeeper-worker-lock-hardening/` to map the latest ThreadKeeper async-worker lock hardening through the GGB capacity gate pattern. Current branch `agent/threadkeeper-hardening-next` is at `db834ce`; `origin/pr-1` remains an ancestor. The gate records the bounded stale-lock metadata reader (`76587eb`), symlink/non-regular stale-lock metadata rejection and lock-acquisition rejection (`db834ce`), runtime-tree sync, and 177 focused mock tests passing.
+
+Checks: PR #1 ancestry check; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`177 passed`); source/runtime `py_compile`; source/runtime `cmp`; OmegaClaw GGB fixture checker. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, daemon/scheduler install, push, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-08 - ThreadKeeper async worker lock symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `db834ce` (`Reject symlink async worker locks`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async-worker loop now ignores symlink/non-regular `.async-worker.lock` files when reading stale-lock metadata and rejects symlink/non-regular lock paths before acquiring a new worker lock, using `O_NOFOLLOW` where available plus an `fstat` regular-file check. This closes a local lock redirection gap without changing queue semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`177 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-08 - ThreadKeeper worker lock metadata read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `76587eb` (`Bound worker lock metadata reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+The async worker stale-lock reader now bounds `.async-worker.lock` metadata reads with `OMEGACLAW_SUBAGENT_ASYNC_WORKER_LOCK_METADATA_BYTES` (default 8192, minimum 1024) before UTF-8/JSON parsing. Oversized/corrupt lock metadata is ignored instead of being surfaced as stale-lock evidence, keeping operator/supervisor diagnostics from parsing adversarial local blobs. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`175 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-08 - ThreadKeeper bounded-read GGB refresh
+
+Archived `artifacts/ggb-capacity-gates/20260708-threadkeeper-bounded-read-refresh/` to consolidate the latest ThreadKeeper bounded local-read/audit evidence through the GGB gate pattern. The gate covers escalation policy pinning (`313664a`), persona config/prompt setup (`6e790ba`), worker LLM rate/concurrency guard state (`63bc0bc`), candidate/checksum sidecars (`ef89b40`/`77197df`), and streamed transcript audit hashing (`062ee72`). Current branch `agent/threadkeeper-hardening-next` is at `062ee72`; `origin/pr-1` remains an ancestor; nested OmegaClaw-Core runtime `subagent.py` matches the ThreadKeeper source.
+
+Checks: PR #1 ancestry check; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`174 passed`); `py_compile` for source/runtime copy; source/runtime `cmp`; ThreadKeeper `git diff --check`; OmegaClaw GGB fixture checker. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, daemon/scheduler install, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper streamed transcript audit hashing
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `062ee72` (`Stream transcript audit hashing`) to `fork/agent/threadkeeper-hardening-next`.
+
+`verify_subagent_run_index()` no longer hashes referenced transcripts with one whole-file `read()`. It now uses `_sha256_file_bounded()` to stream transcript SHA-256 checks in fixed-size chunks while still enforcing `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_AUDIT_BYTES` during the read, preserving the existing oversized-transcript failure mode and closing a race/heap spike gap if a transcript changes between size check and hash. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`174 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper worker LLM state read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `63bc0bc` (`Bound worker LLM state reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+The per-endpoint worker LLM rate-limit and concurrency guard state files (`.llm-rate-*.json` / `.llm-inflight-*.json` under `OMEGACLAW_SUBAGENT_RUN_DIR`) are now read with `OMEGACLAW_SUBAGENT_MAX_LLM_STATE_BYTES` (default 65536, minimum 1024). Oversized/corrupt local guard state is reset under the existing lock instead of being loaded with unbounded `json.load()`, preserving fail-safe backpressure behavior without exposing a local memory-read DoS path. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`173 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+
+## 2026-07-09 - GoalChainer reviewer policy replay on real petta-memory evidence
+
+Archived `artifacts/ggb-capacity-gates/20260709-goalchainer-reviewer-policy-real-memory-replay/` as the second replay of the offline GoalChainer reviewer policy. The artifact-local validator reads the unchanged policy from `20260708-goalchainer-reviewer-policy-thresholds` plus the archived real `petta-memory` replay report only; it does not call providers/Telegram, enqueue or claim queue tasks, launch supervisors, write/promote memory, inspect secrets, or alter runtime config.
+
+Result: 15/15 checks passed. The normalized candidate remains `needs_adjudication`/offline-only, recommends `publish_redacted_summary`, keeps `publish_raw_log` blocked/forbidden, passes thresholds (`redacted_strength=0.997816`, `raw_strength=0.040000`, margin `0.957816`), verifies leak safety, verifies 2 bounded real STV/EC evidence items, and confirms the source memory journal hash stayed unchanged. Added `.metta` sibling fixtures; JSON parse, Python compile, fixture checker, and targeted diff-check passed.
+
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
+
+## 2026-07-08 - GoalChainer reviewer policy/threshold fixture
+
+Archived `artifacts/ggb-capacity-gates/20260708-goalchainer-reviewer-policy-thresholds/` as the next non-live sidecar gate. The new `reviewer_policy.json` and artifact-local `validate_reviewer_policy.py` replay the accepted GoalChainer queue-sidecar candidate against explicit offline reviewer criteria: `needs_adjudication` status, `publish_redacted_summary` recommendation, obligated norm status, `publish_raw_log` blocked/forbidden, leak-safe artifact, bounded candidate text, required evidence IDs, required non-actions, false live-scope flags, and belief thresholds (`redacted_strength >= 0.95`, `raw_strength <= 0.05`, margin `>= 0.80`).
+
+Result: validator passed 14/14 and emitted `policy_report.json`; JSON parse, Python compile, GGB fixture checker, and targeted diff-check passed. This is still offline evidence only: no Telegram post, memory write, runtime bridge enablement, provider call, queue claim, supervisor launch, paid compute, secrets/access/security change, push, merge, or force-push.
+
+## 2026-07-08 - ThreadKeeper persona setup read caps
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `6e790ba` (`Bound persona setup reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Persona config and prompt setup now has explicit local read caps before JSON parsing, SHA-256 prompt hashing, and prompt construction: `OMEGACLAW_SUBAGENT_MAX_PERSONA_CONFIG_BYTES` (default 65536) and `OMEGACLAW_SUBAGENT_MAX_PERSONA_PROMPT_BYTES` (default 262144, `0` disables). Oversized persona artifacts fail closed before worker LLM calls and avoid echoing absolute local paths in setup errors. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`171 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper escalation policy integrity read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `313664a` (`Bound escalation policy integrity reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Cloud-delegation `escalation.metta` SHA-256 pinning now bounds local policy reads with `OMEGACLAW_SUBAGENT_MAX_ESCALATION_POLICY_BYTES` (default 1048576, `0` disables) before hashing. Oversized pinned policies deny escalation before any worker LLM call, and integrity mismatch/read errors no longer echo absolute local paths. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`169 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper sidecar read-cap GGB refresh
+
+Archived `artifacts/ggb-capacity-gates/20260708-threadkeeper-sidecar-read-cap-refresh/` to map the latest ThreadKeeper sidecar-read hardening through the GGB capacity gate pattern. Current branch `agent/threadkeeper-hardening-next` is at `ef89b40`; `origin/pr-1` remains an ancestor. The gate records the bounded candidate-review `.sha256` sidecar reader, the earlier required checksum sidecar cap, runtime-tree sync, and 168 focused mock tests passing.
+
+Checks: PR #1 ancestry check; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`168 passed`); `py_compile` for source/test/runtime copy; source/runtime `cmp`; ThreadKeeper `git diff --check`; OmegaClaw GGB fixture checker. No paid compute, live Telegram/OmegaClaw/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper checksum sidecar read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `77197df` (`Bound checksum sidecar reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Required local `.sha256` integrity sidecars are now read with `OMEGACLAW_SUBAGENT_MAX_SHA256_SIDECAR_BYTES` (default 4096, minimum 128) before digest parsing, so a tampered queue/task sidecar cannot force queue workers or audit helpers to load an arbitrary local blob into memory. Missing, oversized, malformed, non-UTF-8, or invalid digest sidecars now fail closed without echoing absolute local paths. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`167 passed`); runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper shell output memory capture cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `d29f462` (`Bound shell output memory capture`) to `fork/agent/threadkeeper-hardening-next`.
+
+The optional allowlisted `shell` tool no longer uses `capture_output=True`, which collected combined stdout/stderr in memory before applying `OMEGACLAW_SUBAGENT_SHELL_OUTPUT_CAP`. It now redirects stdout/stderr to a temporary file and reads only `cap + 1` bytes back into memory before returning the existing truncation marker. This preserves argv-only/no-shell execution, workspace cwd pinning, sanitized env, timeout, and output-cap behavior while closing a memory-bounding gap for noisy allowlisted commands. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`165 passed`); `pr-1` ancestor check; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper patch-proposal transcript content cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `c784765` (`Bound patch proposal transcript content`) to `fork/agent/threadkeeper-hardening-next`.
+
+Patch-proposal-only `write-file`/`append-file` calls still do not mutate workspace files, and parent digests still expose only bounded `{action,path}` proposal metadata. The full proposed content persisted in local transcripts is now bounded by `OMEGACLAW_SUBAGENT_MAX_PATCH_PROPOSAL_CHARS` (default 20000, minimum 1) with an explicit truncation marker, so review transcripts cannot grow unbounded if operators raise general tool-argument caps or workers propose large file bodies. Added focused regression coverage, docs, and env clamp coverage. Synced `src/subagent.py` to the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`164 passed`); `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper final emit type validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `52a9bc9` (`Require string final emits`) to `fork/agent/threadkeeper-hardening-next`.
+
+`_extract_final_emit()` now rejects non-string final `emit` arguments with `EMIT_PROTOCOL_VIOLATION` instead of coercing JSON objects/lists/numbers/booleans with `str()`. This keeps final summaries/adjudication candidates under the same strict type expectations as normal tool-call arguments and prevents typed malformed output from being accepted as a successful final digest. Added direct and dispatch-level regression tests, updated `docs/reference-skills-subagent.md`, and synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`160 passed`); `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - GoalChainer queue-mediated sidecar contract
+
+Completed the non-live follow-on contract gate after the read-only sidecar: `artifacts/ggb-capacity-gates/20260707-goalchainer-queue-sidecar-contract/`. The new `sidecar_contract.json` defines a candidate-summary sidecar that fits ThreadKeeper's existing queued-task/task-contract schema and keeps GoalChainer as an appraisal/drafting layer only: selected read-only `petta-memory` evidence and bounded candidate text in, `needs_adjudication` redacted-summary candidate out.
+
+Validation imported ThreadKeeper `_validate_queued_dispatch_task()` and passed 10/10 checks: queued-task schema accepted; `requires_adjudication=true`; `patch_proposal_only=true`; one worker turn; `max_tool_calls=2`; live/runtime side effects forbidden; live Telegram/secrets/unbounded raw transcript/writeable memory excluded; raw-log publication blocked in the output schema; non-actions explicitly include no Telegram post, no memory write, no runtime bridge change. Fixture checker passed on the `.metta` sibling files. No actual queue task was enqueued, no worker/supervisor launched, no provider call, no Telegram message, no memory write, no secrets/access/security setting changed, no paid compute, and no push/merge/force-push.
+
+Next small slice: add an offline adjudicator/reviewer harness for the queue-sidecar `needs_adjudication` candidate, or ask Ben for explicit private Telegram opt-in approval with stop conditions before any live bridge/runtime behavior changes.
+
+## 2026-07-07 - GoalChainer read-only sidecar over private ThreadKeeper task
+
+Completed the non-live Bundle D sidecar gate proposed by the topology boundary review. Added `artifacts/ggb-capacity-gates/20260707-goalchainer-readonly-sidecar-private-task/` with `run_readonly_sidecar.py`, `.metta` sibling fixtures, and `report.json`. The harness reads archived private OpenClaw/ThreadKeeper smoke records, constructs a bounded appraisal request, injects synthetic read-only `petta-memory` handoff evidence (STV support for `publish_redacted_summary`; EC opposition to `publish_raw_log`), and runs GoalChainer `solve_incident(memory_items=...)` with heuristic PLN forced.
+
+Results: 8/8 harness checks passed. Baseline and memory-informed runs both recommend `publish_redacted_summary`; `publish_raw_log` remains forbidden/blocked; memory evidence parsed/fused; redacted-summary belief strength changed `0.980529 -> 0.996970`; raw-log strength changed `0.040000 -> 0.012234`; the executed redacted artifact leak check is safe. Focused GoalChainer memory tests pass (`52 passed`) when run with explicit local `GOALCHAINER_PETTA_DIR` and `GOALCHAINER_PETTA_SWIPL`. No live Telegram/OmegaClaw runtime bridge, provider call, memory write, ThreadKeeper supervisor launch, secrets/access/security change, paid compute, push, merge, or force-push.
+
+Next small slice: define a queue-mediated/adjudicated sidecar contract for candidate summaries before any live bridge; private Telegram opt-in still requires explicit Ben approval and stop conditions.
+
+## 2026-07-07 - ThreadKeeper transcript hash audit read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `a258c73` (`Bound transcript hash audit reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_AUDIT_BYTES` (default 1048576, `0` disables) so read-only `verify_subagent_run_index()` checks each referenced transcript size before reading it to verify SHA-256. Oversized transcripts are reported as structured `transcript_too_large` issues under `index_tampered` and are not read into memory, closing the follow-on audit-memory gap after the earlier `index.jsonl` scan cap. Updated docs/tests and synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`155 passed`); runtime-tree compile/source cmp; `git diff --check`; `origin/pr-1` remains an ancestor. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper native worker HTTP response cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `ddf9aae` (`Bound native worker HTTP responses`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_LLM_HTTP_RESPONSE_BYTES` (default 1048576, `0` disables) to bound the raw HTTP body read from native Ollama-compatible worker transports before JSON decoding. This closes a transport-layer memory-bounding gap: OpenAI-compatible SDK calls remain bounded after parsed content by `OMEGACLAW_SUBAGENT_MAX_RESPONSE_CHARS`, while native urllib calls now avoid reading arbitrarily large local provider bodies into memory. Added focused tests for oversized native bodies and under-cap decode/token accounting; updated docs and synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`153 passed`); `origin/pr-1` remains an ancestor; runtime-tree compile/source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper audit/cap refresh GGB gate
+
+Refreshed the GGB roadmap with the latest ThreadKeeper hardening evidence at branch `agent/threadkeeper-hardening-next` head `080ed28`: final emit cap, configurable JSON audit/task read cap, non-finite numeric env rejection, raw worker response cap, and run-index audit read cap. Added gate artifact `artifacts/ggb-capacity-gates/20260707-threadkeeper-audit-cap-refresh/` with `.metta` sibling fixtures. Verified focused ThreadKeeper mock pytest (`151 passed`), runtime-tree sync (`src/subagent.py` equals nested OmegaClaw-Core runtime copy), runtime compile, fixture checker, and targeted diff check. No live runtime behavior, Telegram/worker supervisor launch, secrets/access/security changes, paid compute, daemon/scheduler install, push, merge, or force-push.
+
+## 2026-07-07 - OmegaClaw/ZeroBot topology boundary review
+
+Drafted `docs/omegaclaw_zerobot_topology_decision_note.md` and archived GGB gate `artifacts/ggb-capacity-gates/20260707-topology-boundary-review/`. Recommendation: use a supervised queue-mediated bridge before any live bidirectional OmegaClaw↔ZeroBot/OpenClaw chat bridge. GoalChainer should first run as a read-only decision sidecar over bounded task text plus selected `petta-memory` handoff evidence; ThreadKeeper remains the delegation/audit/adjudication layer; accepted/adjudicated summaries are the only candidate egress. Direct Telegram group and direct recursive OpenClaw bridges are deferred. No live Telegram/OmegaClaw/GoalChainer/ThreadKeeper behavior changed; no secrets/access/security settings, paid compute, daemon/scheduler install, push, merge, or force-push.
+
+Checks: document exists; `python3 projects/omegaclaw/local/check-ggb-gate-fixtures.py projects/omegaclaw/artifacts/ggb-capacity-gates/20260707-topology-boundary-review`; targeted `git diff --check`.
+
+
+## 2026-07-07 - ThreadKeeper non-finite numeric env hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `2f0a10b` (`Reject non-finite numeric env knobs`) to `fork/agent/threadkeeper-hardening-next`.
+
+`_env_float()` now rejects non-finite float env values (`nan`, `inf`, `-inf`, case-insensitive variants) and falls back to the documented safe defaults instead of letting NaN/Infinity propagate into retry backoff, shell timeout, async worker poll/runtime bounds, queued-task max age, or dispatch timeout controls. This closes a small numeric-config validation gap left after malformed/below-minimum env parsing was hardened. Updated reference docs and added focused reload coverage. Synced `src/subagent.py` to the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`148 passed`); `origin/pr-1` remains an ancestor before commit; runtime-tree `py_compile` and source/runtime `cmp`. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper run-index audit read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `080ed28` (`Bound subagent run index audits`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_INDEX_AUDIT_BYTES` (default 1048576, 0 disables) so the read-only `verify_subagent_run_index()` helper refuses to scan oversized `index.jsonl` files, returning structured `index_audit_too_large` before reading entries or transcript files. This complements index-entry rotation and prevents an unbounded/auditor-triggered local read when rotation is intentionally disabled. Updated docs and focused mock coverage; synced `src/subagent.py` to the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`151 passed`); `origin/pr-1` remains an ancestor; runtime-tree `py_compile` and source/runtime `cmp`. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper raw worker response cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `fc34757` (`Bound raw subagent worker responses`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_RESPONSE_CHARS` (default 50000, minimum 1) so oversized raw worker responses fail closed as `response_too_large` before tool-call parsing/execution and before unbounded transcript persistence. The transcript stores only a bounded preview, preserves worker token accounting, and returns a structured parent digest with `next_action` guidance. This complements the final `emit` cap, transcript field caps, per-turn tool-call cap, and token budget controls. Updated docs and focused mock coverage; synced `src/subagent.py` to the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`149 passed`); `origin/pr-1` remains an ancestor; runtime-tree `py_compile` and source/runtime `cmp`. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper final emit size cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `4d7d4f4` (`Bound final subagent emit size`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_EMIT_CHARS` (default 20000, minimum 1) so a worker's final `(emit ...)` argument is protocol-validated before being accepted as successful output, transcript summary, or adjudication candidate. Oversized emits now return structured `EMIT_PROTOCOL_VIOLATION` with transcript status `emit_protocol_violation` instead of letting an unbounded final answer become persisted run state. This complements existing parent digest, transcript-turn, transcript-field, transcript-summary, and tool-argument caps.
+
+Added focused coverage for oversized emit rejection and numeric env clamp/reload behavior; updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` to the OmegaClaw-Core runtime tree with zero diff.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`147 passed`); runtime-tree `py_compile`; `origin/pr-1` remains an ancestor via existing local ref before commit. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - petta-memory GoalChainer heuristic-memory probe
+
+Completed the next Bundle D handoff step from the GGB roadmap: `projects/petta-memory/repos/petta-memory` now lets `run_goalchainer_precompiled_handoff_smoke(..., include_heuristic_memory_probe=True)` also exercise GoalChainer's actual `solve_incident(memory_items=...)` heuristic-with-memory path. Added CLI flag `goalchainer-smoke --heuristic-memory-probe`, a focused unittest, and gate record `artifacts/ggb-capacity-gates/20260706-petta-memory-goalchainer-heuristic-probe/`.
+
+Runtime artifact: `projects/petta-memory/repos/petta-memory/artifacts/goalchainer_heuristic_memory_probe_2026-07-07T0334Z.json` sha256 `3e55ca9531ef93ecd4e2f5b8375d318aa53b1cf21d4e02f6ae92724b3bdeaa2f`. It reports `heuristic_with_memory_path_checked=True`, `decided=publish_redacted_summary`, `memory_proof_present=True`, and `leak_check_safe=True`.
+
+Checks: focused `PYTHONPATH=src python3 -m unittest tests.test_goalchainer_smoke -v` (`7 passed`), full `PYTHONPATH=src python3 -m unittest discover -s tests -v` (`377 passed`), `git diff --check`, and `local/check-ggb-gate-fixtures.py` on the new gate. No live Telegram/OmegaClaw runtime integration, no OmegaClaw skill loading, no accepted directive/task claim, no memory write, no secrets/access/security changes, no paid compute, no daemon/scheduler install, no push/merge/force-push.
+
+## 2026-07-06 - ThreadKeeper search/tavily-search/technical-analysis output size cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `ee894d3` (`Add output size cap for search/tavily-search/technical-analysis tools`) to `fork/agent/threadkeeper-hardening-next`.
+
+The `_tool_read_file` function already bounds output via `_SUBAGENT_MAX_READ_FILE_CHARS` (default 20000) and `_tool_shell` bounds via `_SHELL_OUTPUT_CAP` (default 4000), but `search`, `tavily-search`, and `technical-analysis` had no tool-level output cap. While `run_tools` clips all tool results to 2000 chars for the prompt via `_clip(str(result), 2000)`, the full unbounded external API response was in memory before clipping. A very large search response or tavily result could consume significant memory.
+
+New config knob `OMEGACLAW_SUBAGENT_MAX_SEARCH_OUTPUT_CHARS` (default 4000, 0 disables, matching the pattern of other bounding knobs) caps the output at the tool level. Added `_bound_tool_output(result, cap=None)` helper that reads the module-level config at call time (not as a default parameter, which would be evaluated once at function definition time and ignore monkeypatching in tests). All three search-type tool registrations in `_build_tool_registry()` are now wrapped: `lambda q: _bound_tool_output(websearch.search(q))`, etc.
+
+Added 6 focused tests (137 total): large result truncation with marker, small result preservation, cap disabled when 0, non-string result handling (lists/dicts str()'d and bounded), search registry wrapping (FakeWebsearch with 10k output, verified truncation), tavily/technical-analysis registry wrapping (FakeAgentverse with 10k outputs for both tools).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`137 passed`); `origin/pr-1` remains an ancestor (75 commits ahead). Synced `subagent.py` to OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper configurable JSON audit/task read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `209da6c` (`Make JSON audit read cap configurable`) to `fork/agent/threadkeeper-hardening-next`.
+
+`_read_json_file()` already had a hard-coded 256 KiB read cap for queue records and reviewable transcript JSON, but operators could not tune it and the oversize error included the local path. Added `OMEGACLAW_SUBAGENT_MAX_JSON_FILE_BYTES` (default 262144, minimum 1024) and made `_read_json_file()` use that module-level cap by default while preserving explicit per-call override support. Oversize errors now avoid echoing absolute local paths, matching the existing error-sanitization direction.
+
+Added 2 focused tests: configured size-cap rejection with no tmp path leak, and explicit max_bytes success/digest behavior. Also extended the numeric env reload fallback/clamp test to cover the new knob.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`146 passed`); `origin/pr-1` remains an ancestor via existing local ref. Synced `subagent.py` to the OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - GoalChainer petta-memory evidence bridge
+
+Implemented the memory-evidence bridge that connects `petta-memory` promoted evidence packets to GoalChainer's heuristic PLN belief grader. This is the concrete bridge described as the next step in Bundle D of the GGB roadmap.
+
+**Changes:**
+
+1. `heuristic_beliefs.py`: Added `parse_memory_evidence()` to parse `petta-memory` handoff cache items (STV atoms and EvidencePacket EC atoms) into `MemoryEvidenceItem` objects. Added `grade_beliefs_heuristic_with_memory()` that fuses memory evidence with keyword-derived ground facts using the existing subjective-logic combination rule. Fixed `_ground_to_sl()` to handle `memory_*` rule labels by using the fact strength/confidence directly (no rule-chain product), since memory evidence doesn't go through a PLN implication rule.
+
+2. `metta_reasoner.py`: Extended `reason_over_hyperbase()` with optional `memory_items` parameter. When the heuristic path is active and memory items are provided, beliefs are graded with `grade_beliefs_heuristic_with_memory()` instead of the baseline `grade_beliefs_heuristic()`. The `belief_source` metadata and `input` field reflect memory evidence presence.
+
+3. `pipeline.py`: Extended `solve_incident()` with optional `memory_items` parameter, passed through to `reason_over_hyperbase()`.
+
+4. `tests/test_heuristic_memory_bridge.py`: New test file with 18 tests covering `parse_memory_evidence` (STV/EC parsing, mixed items, unparseable skipping, zero-total skipping, clamping), `grade_beliefs_heuristic_with_memory` (no-memory baseline equivalence, empty-list baseline, STV adjustment, EC adjustment, conflicting memory lowering strength, memory for unsupported actions, multiple items fused, proof tagging), `reason_over_hyperbase` with memory (belief adjustment, baseline equivalence), and `solve_incident` with memory (correct decision with positive memory, correct decision with conflicting memory).
+
+**Results:**
+- New tests: 18 passed, 0 failed
+- Full GoalChainer suite: 53 passed, 6 skipped, 0 failed (up from 35 passed, 6 skipped, 0 failed)
+- `petta-memory` GoalChainer smoke tests: 6 passed, 0 failed (no regressions)
+- GGB fixture checker passes across all 19 gate fixtures including the new `20260706-goalchainer-memory-evidence-bridge` gate
+
+**Key design decisions:**
+- Memory evidence is only applied through the heuristic path. When PeTTaChainer becomes available (compileadd bottleneck fixed), memory items would need to be loaded as PLN premises instead.
+- The bridge parses atoms by regex, not by loading them through PeTTa. This is intentional for the non-live heuristic path.
+- Memory evidence does not override the deontic verdict (forbidden/obligated/permitted), which comes from `lib_deontic` independently. Memory evidence only adjusts the PLN belief strength/confidence that feeds the scoring engine.
+- When no memory items are provided, `grade_beliefs_heuristic_with_memory()` is identical to `grade_beliefs_heuristic()`.
+
+**Environment:** Same as prior GoalChainer gates: `GOALCHAINER_PETTA_DIR=projects/omegaclaw/repos/PeTTa`, `GOALCHAINER_PETTA_SWIPL=projects/omegaclaw/local/swipl-9.3.36/lib/swipl/bin/x86_64-linux/swipl`, `GOALCHAINER_PETTACHAINER_DIR=projects/petta-memory/repos/PeTTaChainer`.
+
+No live Telegram/OmegaClaw runtime integration, secrets/access/security changes, paid compute, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper empty search/tavily-search/technical-analysis query rejection
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `86cc243` (`Reject empty search/tavily-search/technical-analysis queries`) to `fork/agent/threadkeeper-hardening-next`.
+
+The `_validate_tool_args` function previously validated argument count, null, path-emptiness, path length, shell-emptiness, overall arg length, and NUL bytes for all tools, but `search`, `tavily-search`, and `technical-analysis` had no empty/whitespace-only check. A worker LLM response containing `(search "")` or `(tavily-search "   ")` would pass validation and call the external search/agentverse API with an empty query, wasting a network call and potentially returning unhelpful results.
+
+New validation: for `search`, `tavily-search`, and `technical-analysis`, the first argument must be non-empty after stripping whitespace, matching the existing pattern for `shell` commands. This rejects `(search "")`, `(tavily-search "   ")`, `(technical-analysis "\t\n")`, etc.
+
+Added 2 focused tests: (1) `test_validate_tool_args_search_rejects_empty_query` — verifies all three search-type tools reject empty, whitespace, and tab/newline queries; (2) `test_validate_tool_args_search_accepts_nonempty_query` — verifies all three pass with real query strings.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`131 passed`); `origin/pr-1` remains an ancestor (74 commits ahead). Synced `subagent.py` to OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper run index entry bounding with rotation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `ca98d36` (`Add run index entry bounding with rotation`) to `fork/agent/threadkeeper-hardening-next`.
+
+The compact audit index (`index.jsonl`) previously grew unbounded — every finished subagent run appends a hash-chained entry, and for long-running @Protomegabot deployments with many queued tasks, this file could grow very large over time. New config knob `OMEGACLAW_SUBAGENT_MAX_INDEX_ENTRIES` (default 0 = disabled, matching the pattern of other bounding knobs) caps the number of entries. When non-zero, the index is rotated after each append to keep only the most recent N entries.
+
+The rotation recomputes the hash chain for retained entries: the first retained entry gets `previous_entry_sha256 = ""` (as if it were the first entry) and each subsequent entry's `previous_entry_sha256` links to the prior retained entry's recomputed `entry_sha256`. This means `verify_subagent_run_index` still passes on the retained portion — the chain is intact within the retained entries, and an auditor can verify it as they would a fresh index.
+
+The rotation is performed under the existing index lock so concurrent appenders are safe. If rotation fails for any reason, the index remains append-only and unbounded (the safe default). The rotation uses an atomic temp-file + `os.replace` rewrite.
+
+Added 5 focused tests: (1) rotation truncates to cap (5 appends with cap=3 → 3 retained, correct entries, chain intact); (2) disabled when 0 (default, no rotation); (3) no rotation under cap (4 appends with cap=4, all retained); (4) rotated index verifies correctly (4 appends with cap=2, `verify_subagent_run_index` passes with 2 entries checked); (5) single-entry cap (3 appends with cap=1, only last entry retained).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`129 passed`); `origin/pr-1` remains an ancestor (73 commits ahead). Synced `subagent.py` to OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - GoalChainer OmegaClaw skill surface non-live smoke
+
+Ran the full GoalChainer pipeline through both the Python CLI skill surface (`omegaclaw_skill.py`) and the actual OmegaClaw MeTTa skill surface (`run_in_omegaclaw.metta` via PeTTa/SWI). This is the first end-to-end demonstration of GoalChainer through the actual OmegaClaw MeTTa `eval` → `py-call` → pipeline → PeTTa/SWI deontic/directive runtime path, not just direct Python CLI invocation.
+
+**Python CLI results:**
+- `goalchainer-decision`: exit 0; `publish_redacted_summary` recommended (obligated, score 1.010108, belief STV 0.9805/0.9933), `publish_raw_log` blocked (forbidden, score -1.0), `hold_external_update` weak (permitted, score 0.385841). Evidence source: `omega-core-petta-lib-deontic-pettachainer` with `belief_source: heuristic_pln`.
+- `goalchainer-solve`: exit 0; decided `publish_redacted_summary`; artifact has all sensitive fields redacted (customer_email, order_id, request_payload, access_token, stack_trace); leak check `safe=True, leaked=[]`.
+- `goalchainer-directive`: exit 0; task states: `publish_redacted_summary=ready`, `publish_raw_log=blocked`, `hold_external_update=backlog`; claim: `agent=responder, task=publish_redacted_summary`; runtime: `OmegaClaw-Core lib_directive on PeTTa`.
+
+**MeTTa skill surface results (via `run_in_omegaclaw.metta`):**
+- OmegaClaw Core skill registry loaded (`import! &self (library OmegaClaw-Core src/skills)`)
+- GoalChainer skills registered (`import! &self goalchainer_skill`)
+- `goalchainer-skill-docs` emitted 4 skill descriptions
+- `(eval (goalchainer-decision ...))` produced: `DECISION (GoalChainer on PeTTa: lib_deontic + PeTTaChainer + MetaMo)`, `recommended: publish_redacted_summary (score 1.010108)`, `blocked: publish_raw_log (lib_deontic: forbidden)`
+- `(eval (goalchainer-solve ...))` produced: `SOLVE: decided publish_redacted_summary (recommended), channel external`, `blocked: publish_raw_log (lib_deontic: forbidden)`, `redacted: customer_email, order_id, request_payload, access_token, stack_trace`, `kept: error_code=PAYMENT_TIMEOUT`, `leak check: safe=True leaked=[]`
+
+**Environment:** `GOALCHAINER_PETTA_DIR=projects/omegaclaw/repos/PeTTa`, `GOALCHAINER_PETTA_SWIPL=projects/omegaclaw/local/swipl-9.3.36/lib/swipl/bin/x86_64-linux/swipl`, `GOALCHAINER_PETTACHAINER_DIR=projects/petta-memory/repos/PeTTaChainer`.
+
+**Test suite:** 35 passed, 6 skipped, 0 failed.
+
+**GGB fixture checker:** passes across all 18 gate fixtures including the new `20260706-goalchainer-skill-surface-smoke`.
+
+No live Telegram/OmegaClaw runtime integration, secrets/access/security changes, paid compute, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper transcript summary bounding and empty shell command rejection
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `fb60ebf` (`Bound transcript summary field and reject empty shell commands`) to `fork/agent/threadkeeper-hardening-next`.
+
+Two concrete hardening improvements:
+
+1. **Transcript summary bounding**: The transcript record's `summary` field (set by `_finish_run_record`) was not bounded, even though `_bound_transcript_turns` already bounds the `turns` list. A very long worker emit value was stored as-is in the transcript JSON file, potentially producing very large files from runaway dispatches. New config knob `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_SUMMARY_CHARS` (default 0 = disabled, matching the pattern of other transcript bounding knobs) caps the summary with an explicit `[...summary truncated at N chars...]` marker when enabled.
+
+2. **Empty shell command rejection**: `_validate_tool_args` now rejects `shell` commands that are empty or whitespace-only after stripping, closing a gap where `(shell "")` or `(shell "   ")` passed validation but produced a confusing runtime 'empty command' error deeper in the execution path.
+
+Added 5 focused tests: (1) long summary capped with marker; (2) cap disabled when 0 (default); (3) short summary preserved; (4) empty/whitespace shell commands rejected; (5) non-empty shell commands accepted.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`124 passed`); `origin/pr-1` remains an ancestor (72 commits ahead). Synced `subagent.py` to OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper per-task duration and total runtime in worker loop results
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `1c6c0c6` (`Add per-task duration and total runtime to worker loop results`) to `fork/agent/threadkeeper-hardening-next`.
+
+The worker loop result items now include `task_duration_s` (wall-clock seconds from task start to completion) for each drained task, covering both successful and error results. The structured return also now includes `total_runtime_s` across all return paths (`worker_idle`, `worker_drained`, `worker_config_invalid`, `worker_already_running`) so operators can see the overall loop duration without subtracting timestamps.
+
+This improves operator audit visibility: slow tasks are immediately identifiable in the results list, and the total loop runtime is available without parsing `started_at`/`finished_at` pairs. The `task_duration_s` field is added to result items after `run_queued_dispatch` returns (or after an exception is caught), so it reflects the actual wall-clock time spent on each task including setup, LLM calls, tool execution, and teardown.
+
+Added 5 focused tests: (1) `test_worker_loop_results_include_task_duration_s` — verifies 2 successful results each have numeric non-negative `task_duration_s`; (2) `test_worker_loop_results_include_task_duration_s_on_error` — verifies error results also include `task_duration_s`; (3) `test_worker_loop_return_includes_total_runtime_s` — verifies `total_runtime_s` is present in the `worker_idle` return and consistent with `started_at`/`finished_at`; (4) `test_worker_loop_config_invalid_includes_total_runtime_s` — verifies `total_runtime_s` in the `worker_config_invalid` return; (5) `test_worker_loop_already_running_includes_total_runtime_s` — verifies `total_runtime_s` is present in the idle return path.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`119 passed`); `origin/pr-1` remains an ancestor (71 commits ahead). Synced the updated `subagent.py` to the OmegaClaw-Core runtime tree and verified compile and zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper worker loop lock metadata completion fields and queue depth
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `1f4d70b` (`Add completion fields and queue depth to worker loop lock metadata`) to `fork/agent/threadkeeper-hardening-next`.
+
+The finished lock metadata previously dropped `tasks_completed` and `consecutive_errors` that were present in the running lock metadata, leaving operators without completion counts in the final lock file. The finished metadata now includes `tasks_completed`, `consecutive_errors`, and `remaining_queue_tasks` (pending queue count) for full operator audit after the worker exits.
+
+The running lock metadata (both pre-task and post-task updates) now also includes `remaining_queue_tasks`, computed as `len(_pending_queued_dispatch_paths())` at the time the metadata is written. This gives operators live queue depth visibility while the worker is actively processing, complementing the existing `tasks_attempted`, `tasks_completed`, `consecutive_errors`, `error_count`, and `current_task_*` fields.
+
+Added 3 focused tests: (1) `test_finished_lock_metadata_includes_completion_fields` — verifies `tasks_completed`, `consecutive_errors`, and `remaining_queue_tasks` are present in the finished lock metadata after a clean `worker_idle` exit; (2) `test_running_lock_metadata_includes_remaining_queue_tasks` — queues 3 tasks, spies on `run_queued_dispatch` to capture running lock metadata during execution, verifies decreasing `remaining_queue_tasks` across calls (3→2→1) and 0 in the finished metadata; (3) `test_finished_lock_metadata_shows_errors_after_failures` — makes all worker LLM calls raise, verifies `tasks_completed=0`, `consecutive_errors=2`, `error_count=2`, and `remaining_queue_tasks=0` in the finished lock metadata.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`114 passed`); `origin/pr-1` remains an ancestor (70 commits ahead). Synced the updated `subagent.py` to the OmegaClaw-Core runtime tree and verified compile and zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - GoalChainer deontic/directive runtime seams fixed
+
+Diagnosed and fixed the two remaining GoalChainer runtime failures that were blocking Bundle D progress:
+
+1. **`derive_deontic` returning `unregulated` for all actions**: Root cause was that `omegaclaw-deontic` (the separate `lib_deontic` package at `https://github.com/MesTTo/omegaclaw-deontic`) had not been installed into the local OmegaClaw-Core tree. The `external/omegaclaw-deontic/` directory in the GoalChainer clone was empty. Cloned the repo and ran `./install.sh` to copy `lib_deontic.metta` and its submodules (platform Prolog files, deontic engine, query, explain, trust, eventcalc) into `PeTTa/repos/OmegaClaw-Core/`.
+
+2. **`lib_directive` plan not surfacing ready/next/claim state**: Same root cause as (1) — `lib_directive` is part of the same `omegaclaw-deontic` package and was not installed.
+
+3. **PeTTa library path resolution gap**: PeTTa resolves `(library OmegaClaw-Core ...)` to `PeTTa/OmegaClaw-Core/...` via `library_path(Base)` set in `metta.pl`, but the local clone was at `PeTTa/repos/OmegaClaw-Core/`. Created a symlink `PeTTa/OmegaClaw-Core -> repos/OmegaClaw-Core` so library imports resolve correctly.
+
+After these fixes, the full deontic→directive pipeline works:
+- `derive_deontic(evidence)` correctly returns `publish_raw_log=forbidden`, `publish_redacted_summary=obligated`, `hold_external_update=permitted`
+- `register_directive(deontic)` correctly classifies task states (`blocked`, `ready`, `backlog`), surfaces ready/next/claim state, and claims `publish_redacted_summary` for the responder agent
+- GoalChainer test suite: `26 passed, 6 skipped, 9 failed` (up from `25 passed, 6 skipped, 10 failed`). All 9 remaining failures are PeTTaChainer-related (missing `GOALCHAINER_PETTACHAINER_DIR` or `compileadd` stack-limit). Deontic, directive, scoring, execution, and skill tests all pass (15 tests).
+
+The `petta-memory` PeTTaChainer `compileadd` bottleneck remains the only blocking issue for the full GoalChainer pipeline (`solve_incident`), which requires PeTTaChainer belief grading.
+
+Non-live changes only: cloned `omegaclaw-deontic` for inspection, ran its installer into the local OmegaClaw-Core tree, created a symlink for PeTTa library resolution. No live Telegram/OmegaClaw runtime wiring, secrets/access/security changes, paid compute, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper current-task tracking in worker loop lock metadata
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `41f863c` (`Add current-task tracking to worker loop lock metadata`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now writes `current_task_started_at` and `current_task_queue_path` into the lock metadata before calling `run_queued_dispatch(queue_path)`, then clears them (sets to `None`) after the task completes in the post-task metadata update and in the `finally` block's finished metadata. This closes a diagnostic gap: previously, if a worker crashed mid-task (SIGKILL, OOM), the stale lock would show `status=running` with `tasks_attempted=N` but no indication of which task was being processed or when it started. Now, the stale_lock metadata includes `current_task_started_at` and `current_task_queue_path`, giving operators/supervisors crash diagnostics that identify the problematic task and approximate crash timing.
+
+The initial lock metadata (written before any task) also includes `current_task_started_at: None` and `current_task_queue_path: None` for consistency.
+
+Added 3 focused tests: (1) lock metadata during task execution includes current-task fields — uses a spy on `run_queued_dispatch` to read lock metadata mid-task and verifies `current_task_started_at` is not None and `current_task_queue_path` matches the queue path, then verifies the finished lock has cleared fields; (2) stale lock from crashed mid-task worker includes current-task fields — simulates a crashed worker with `current_task_started_at=1500.0` and a queue path, verifies the `stale_lock` in the return includes both fields; (3) finished lock metadata has null current-task fields after clean worker_idle exit.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`111 passed`); `origin/pr-1` remains an ancestor (69 commits ahead). Synced the updated `subagent.py` to the OmegaClaw-Core runtime tree and verified compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper stale worker lock detection
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `6bbf76d` (`Detect stale worker lock from crashed previous worker`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop now detects stale locks from crashed previous workers: before acquiring the flock, the loop reads the existing lock file metadata. If the file shows `status=running` but the flock can be acquired (meaning the previous holder is dead/gone), the structured return includes `stale_lock` audit metadata (pid, started_at, max_tasks, tasks_attempted, etc.) so operators and supervisors can detect when a previous worker died without clean shutdown (e.g. SIGKILL, OOM). The `stale_lock` field is also included in the early `max_tasks=0` no-claim return (always `None`) and the `worker_already_running` return for consistency.
+
+Added 3 focused tests: (1) stale lock detected from simulated crash — writes `status=running` metadata without holding flock, verifies `stale_lock` has the old PID and the lock file is then overwritten with `finished` metadata from the new worker; (2) no stale lock on fresh start — no previous lock file exists; (3) no stale lock after clean shutdown — previous lock file shows `status=finished`.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`108 passed`); `origin/pr-1` remains an ancestor (68 commits ahead). Synced the updated `subagent.py` to the OmegaClaw-Core runtime tree and verified compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper tool error path sanitization
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `25483fb` (`Sanitize absolute paths from tool error messages`) to `fork/agent/threadkeeper-hardening-next`.
+
+Tool error messages (read-file, write-file, append-file, shell) previously included raw exception text that could leak absolute filesystem paths (e.g. workspace root, /tmp, /home) to the worker LLM and into persisted transcripts. A worker LLM seeing these paths could exfiltrate them via emit, or they could be persisted in transcripts accessible to parent agents.
+
+Added `_sanitize_error_msg(e)` helper that:
+- Replaces the workspace root with `<workspace>` placeholder
+- Replaces remaining absolute Unix paths (e.g. /tmp/secret, /home/user/data) with `<path>` placeholder
+- Leaves non-path messages unchanged
+
+Also removed the workspace root from `_resolve_workspace_path`'s escape error message (was `f"path escapes subagent workspace ({root}): {path}"`, now just `"path escapes subagent workspace"`) and from the shell missing-workspace error, preventing leaks at the source.
+
+Updated `run_tools()` error handlers (`SKILL_ARG_ERROR`, `SKILL_RUNTIME_ERROR`) to use the same sanitizer.
+
+Added 4 focused tests: path escape in read/write/append tools verifies no workspace root or `/home/` in error, `_resolve_workspace_path` error content verifies no absolute paths, `_sanitize_error_msg` replacement behavior verifies workspace and absolute path replacement, shell missing-workspace error verifies no leaked path.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`105 passed`); `origin/pr-1` remains an ancestor (67 commits ahead). Synced the updated `subagent.py` to the OmegaClaw-Core runtime tree and verified compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper graceful SIGTERM/SIGINT worker-loop shutdown
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `c8a14e4` (`Add graceful SIGTERM/SIGINT handling to worker loop`) to `fork/agent/threadkeeper-hardening-next`.
+
+The bounded async worker loop (`subagent.run_queued_worker_loop(...)`) now registers signal handlers for SIGTERM and SIGINT that set a module-level flag (`_worker_signal_state["stop_requested"]`) instead of raising. The main loop checks this flag at each iteration and exits cleanly with `stop_reason="signal"` when a supervisor sends SIGTERM/SIGINT, rather than dying abruptly mid-task and orphaning a `.claimed` queue record or leaving the lock file in `running` state. Prior signal handlers are restored in the `finally` block so the worker loop does not leak its handler into the caller's context. The status mapping now treats `signal` the same as `stop_file` → `worker_stopped`.
+
+This closes a concrete hardening gap: previously, a supervisor sending SIGTERM to the worker process (e.g., via `setsid` + `kill -TERM -- -PID`) would kill it immediately, potentially leaving a claimed task orphaned and the lock file stuck in `running` state.
+
+Added 2 focused tests: `test_run_queued_worker_loop_graceful_signal_shutdown` (pre-sets the signal flag, verifies `worker_stopped` with `stop_reason="signal"` and finished lock metadata) and `test_run_queued_worker_loop_restores_signal_handlers` (verifies SIGTERM handler is restored to its pre-loop value after the loop exits).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`101 passed`); `origin/pr-1` remains an ancestor (66 commits ahead). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper dispatch-level token budget cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `14ec2ee` (`Add dispatch-level token budget cap`) to `fork/agent/threadkeeper-hardening-next`.
+
+Added `OMEGACLAW_SUBAGENT_MAX_TOKENS_PER_DISPATCH` (default 0 = disabled): when non-zero, the dispatch loop checks total accumulated worker LLM tokens (input + output) after each worker LLM call and returns a structured `token_budget_exceeded` record if the cap is exceeded. `worker_token_usage` is persisted to the transcript before returning. This complements the existing per-turn/per-dispatch tool-call quotas and wall-clock timeout, adding a direct cost-control ceiling that prevents runaway token spend across many turns.
+
+Added 3 focused tests: cap exceeded after second LLM call (verifies `token_budget_exceeded` status and transcript), cap disabled when zero (verifies normal completion with high token counts), and normal completion under the cap (verifies `ok` status). Focused mock pytest now passes 99 tests.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`99 passed`); `origin/pr-1` remains an ancestor (65 commits ahead). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper queued task max-age rejection
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `c7beaf0` (`Reject expired queued tasks before worker LLM calls`) to `fork/agent/threadkeeper-hardening-next`.
+
+The queued-worker validation now checks task age: when `OMEGACLAW_SUBAGENT_MAX_QUEUED_TASK_AGE_S` is non-zero (default 0 = disabled), `_validate_queued_dispatch_task` computes `time.time() - queued_at` and rejects tasks older than the configured max before any worker LLM call. This prevents stale/expired work from being processed after a long supervisor outage or queue backlog. Expired tasks fail closed as `queue_worker_error` and are retained as `*.failed` with audit sidecars, matching the existing fail-closed pattern for malformed queued records.
+
+Added 2 focused tests: expired task rejection (queued_at set to 2 hours ago, max age 60s, verifies `queue_worker_error` with "expired" in summary and `.failed` retention) and fresh task acceptance within the age window (max age 3600s, verifies normal `ok` status and `.done` retention).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`96 passed`); GGB sibling-fixture checker across all 14 gate fixtures. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - ThreadKeeper transcript bounding and retry backoff jitter
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `ec96332` (`Bound transcript turn records and add retry backoff jitter`) to `fork/agent/threadkeeper-hardening-next`.
+
+Two concrete hardening improvements:
+
+1. **Transcript turn bounding**: The local transcript run record (`run_record["turns"]`) previously grew unbounded — every turn stores the full prompt, raw_response, tool_calls, and tool_results. For long-running dispatches (up to `SUBAGENT_MAX_TURNS_HARD_CAP`), this could produce very large transcript files. New config knobs `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_TURNS` (default 0 = disabled) and `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_FIELD_CHARS` (default 0 = disabled) cap the number of turns retained and the per-field string sizes. When caps are exceeded, older turns/longer fields are dropped/truncated with explicit `transcript_truncated` markers for audit readers.
+
+2. **Retry backoff jitter**: `_call_with_retries` previously used pure exponential backoff without jitter. Added jitter (up to 25% of the exponential base delay) to prevent thundering-herd retry storms when multiple subagents hit the same endpoint simultaneously.
+
+Added 5 focused tests: transcript turn cap (4 turns → 2 retained, drops_dropped=2), field size cap (500-char strings → truncated with marker), disabled cap (no-op), non-string field preservation (tool_calls list untouched), and retry jitter (base 1.0 + 2.0 with jitter in [1.0,1.25] and [2.0,2.5]).
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`94 passed`). No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-05 - Private OpenClaw smoke adjudication and multi-task worker-loop gate
+
+Adjudicated the private OpenClaw smoke candidate output at `artifacts/ggb-capacity-gates/20260705-threadkeeper-private-openclaw-smoke/ADJUDICATION.md`. All 10 adjudication checks passed: queued task claimed, one real Gateway HTTP 200 call, final emit produced, no tool calls (max_tool_calls=0), no files changed (patch_proposal_only=True), no forbidden actions, transcript SHA-256 verified, queue sidecars complete, worker token usage recorded, done criteria met. Candidate status: accepted.
+
+Then completed a multi-task non-live gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-multi-task-smoke/`. The smoke queued 3 tasks via `subagent.dispatch(...)` in queue-only mode, then drained all 3 through `subagent.run_queued_worker_loop(max_tasks=3, max_idle_polls=1, max_runtime_s=600)`. Result: `smoke_passed`.
+
+Key evidence:
+- worker status: `worker_drained`; tasks attempted/completed: 3/3; consecutive_errors: 0; stop_reason: `max_tasks`;
+- all 3 results returned `needs_adjudication` as intended;
+- 3 real OpenClaw Gateway HTTP 200 calls;
+- worker token usage: task-1 19,463, task-2 19,503, task-3 39,370 total tokens;
+- 9 queue audit files retained (3 × `.done`/`.done.result.json`/`.done.sha256`);
+- 6 `index.jsonl` entries with hash-chain integrity verified;
+- `.metta` sibling fixtures pass `local/check-ggb-gate-fixtures.py` across all 14 gate fixtures.
+
+Checks: `py_compile` of smoke helper, smoke run, GGB fixture checker across all 14 gates. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
 
 ## 2026-07-05 - ThreadKeeper worker loop results bounding and live lock metadata
 
@@ -746,3 +1991,927 @@ After Ben approved the ThreadKeeper smoke in Protobots message 2724, ran the nex
 Result: `report.json` status `smoke_passed`; queued status `queued`; worker status `worker_drained`; tasks attempted/completed `1/1`; remaining queue tasks `0`; final task result `needs_adjudication` per contract; worker token usage `16,756` total. The first system-Python attempt failed closed before provider use because `openai` was not installed; rerunning with the PeTTa venv succeeded. No Telegram group/private message, paid compute, daemon/scheduler install, or broad live enablement.
 
 Checks: `py_compile` for the artifact helper and report assertions over `report.json`.
+
+## 2026-07-05 20:40 PDT - ThreadKeeper subagent.py sync + Telegram-private gate fixtures
+
+During the recurring Protobots GGB roadmap worker run, inspected the staged Telegram-private integration gate at `artifacts/ggb-capacity-gates/20260705-threadkeeper-telegram-private-integration/`. Found that the `subagent.py` merged into the OmegaClaw-Core runtime tree was at ThreadKeeper head `14ec2ee` (99 tests), while the ThreadKeeper branch had advanced to `c8a14e4` (101 tests) adding graceful SIGTERM/SIGINT handling for supervisor-controlled worker-loop shutdown.
+
+Actions taken:
+1. Synced `subagent.py` from `projects/omegaclaw/repos/ThreadKeeper/src/subagent.py` to `projects/omegaclaw/repos/PeTTa/repos/OmegaClaw-Core/src/subagent.py`. Diff is now zero between the two copies.
+2. Verified `python3 -m py_compile src/subagent.py src/threadkeeper_budget.py src/helper.py src/agentverse.py src/rag.py` passes in the OmegaClaw-Core tree.
+3. Confirmed ThreadKeeper focused mock pytest: `101 passed` at head `c8a14e4`.
+4. Created `.metta` sibling fixture files (`CONFIG.metta`, `MANIFEST.metta`, `EVENTS.metta`, `METRICS.metta`, `SUMMARY.metta`) for the `20260705-threadkeeper-telegram-private-integration` gate.
+5. Updated the gate's `RUN.md` with the synced head, 101 test count, SIGTERM/SIGINT note, and `## Checks run` section.
+6. Verified GGB sibling-fixture checker passes across all 5 gates: `petta-chem`, `threadkeeper-hardening`, `petta-memory-omegaclaw-fixture`, `goalchainer-incident-harness`, and `threadkeeper-telegram-private-integration`.
+7. Updated `GGB_CAPACITIES_ROADMAP.md`: refreshed timestamp, ThreadKeeper head to `c8a14e4`, test count to 101, added dispatch token budget cap and SIGTERM/SIGINT to capacities 3.2/4.5/5.2, updated Bundle A status with the Telegram-private integration gate (pending smoke), and set next small task to run the staged Telegram-private supervisor smoke.
+
+The Telegram-private supervisor smoke remains pending operator launch. The supervisor, token, persona config, and stop conditions are all staged. The smoke requires: start supervisor → verify @Protomegabot responds to a private message → test `(delegate ...)` dispatch if triggered → stop cleanly.
+
+No paid compute, secrets/access/security settings, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-06 - GoalChainer heuristic PLN bypass for PeTTaChainer compileadd bottleneck
+
+Bypassed the PeTTaChainer `compileadd` 8 GB stack-limit bottleneck that was blocking the full GoalChainer `solve_incident` pipeline. Created `heuristic_beliefs.py` implementing `grade_beliefs_heuristic()` that mirrors the PLN rule semantics from `evidence_chainer.py` using simple arithmetic and subjective-logic fusion on the same ground-fact strengths and rule truth values. The heuristic produces the same `Belief` dataclass output so callers are transparent to which path was used.
+
+Modified `metta_reasoner.py` to fall back to the heuristic when PeTTaChainer is unavailable, with a module-level failure cache (`_pettachainer_failed`) and `_pettachainer_available()` quick check to skip the 30s PeTTaChainer timeout on subsequent calls. Added 30s `subprocess.run` timeout to `petta_runtime.py` `run_metta()` with `TimeoutExpired` handling. The `belief_source` metadata field clearly marks when the heuristic fallback was used.
+
+Results:
+- Full test suite: `35 passed, 6 skipped, 0 failed` (up from `26 passed, 6 skipped, 9 failed`).
+- Full `solve_incident` pipeline runs end-to-end and returns correct decision:
+  - `publish_redacted_summary`: recommended, obligated, STV 0.98/0.99
+  - `hold_external_update`: weak, permitted, STV 0.72/0.85
+  - `publish_raw_log`: blocked, forbidden, STV 0.045/0.86
+- Automatic fallback path: 17.26s total (first PeTTaChainer availability check fails fast).
+- Explicit heuristic flag (`GOALCHAINER_USE_HEURISTIC_PLN=1`): 3.52s total.
+
+Archived gate `artifacts/ggb-capacity-gates/20260706-goalchainer-heuristic-pln-bypass/RUN.md` with `.metta` sibling fixtures. Updated `GOALCHAINER_INTEGRATION_MAP.md` and `GGB_CAPACITIES_ROADMAP.md` Bundle D status.
+
+This is a crude PLN-style guesstimate per Ben's verification posture (2026-07-02 note), not a rigorous PLN replacement. The heuristic does not produce real PLN proof terms or support backward chaining/multi-hop inference.
+
+Checks: `python3 -m py_compile`; full pytest; `solve_incident` end-to-end; GGB fixture checker. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, push/merge/force-push, daemon/scheduler install, or remote-ref deletion.
+
+## 2026-07-06 23:45 UTC — GoalChainer multi-scenario memory-evidence smoke
+
+Completed the multi-scenario smoke for the GoalChainer memory-evidence bridge, the next step after the 20260706-goalchainer-memory-evidence-bridge gate. Created `tests/test_multi_scenario_memory_bridge.py` with 34 tests across 8 scenario classes plus a cross-scenario differentiation class.
+
+Scenarios tested:
+1. **PII standard** (privacy at stake, facts ready): `publish_redacted_summary` recommended, `publish_raw_log` blocked by deontic.
+2. **Public data** (no sensitive data, facts ready): `publish_redacted_summary` recommended, `publish_raw_log` also recommended (no privacy risk).
+3. **Unverified facts** (privacy at stake, facts not ready): `hold_external_update` candidate, `publish_redacted_summary` weak (facts not ready).
+4. **Public + unverified** (no privacy, facts not ready): `publish_raw_log` recommended (no privacy risk + facts not ready weakens redacted).
+5. **PII + conflicting memory** (memory says raw log is OK): Decision stays `publish_redacted_summary`; deontic still blocks raw log; raw log belief strength increases but remains blocked.
+6. **PII + conflicting memory** (memory says redacted is bad): Decision stays `publish_redacted_summary` (deontic blocks alternatives); redacted strength decreases; confidence stable.
+7. **Public + boosting memory** (memory says raw log is excellent): Decision stays `publish_redacted_summary`; raw log strength increases.
+8. **Unverified + boosting memory** (memory says hold is excellent): Decision stays `hold_external_update`; hold strength increases.
+
+Key findings:
+- **Deontic invariants hold**: `publish_raw_log` is always blocked when privacy is at stake, regardless of memory evidence strength (tested up to STV 0.99/0.99 + EC 99:1).
+- **Differentiated decisions**: The four baseline scenarios produce three different top decisions and four distinct belief-strength profiles.
+- **Memory evidence shifts beliefs**: Conflicting memory (low STV) decreases belief strength; confirming memory (high STV) increases it.
+- **Memory evidence is action-local**: Memory for `publish_raw_log` does not affect `publish_redacted_summary` belief, and vice versa.
+- **EC evidence also works**: EvidencePacket atoms with strong support/opposition correctly shift beliefs.
+
+Full suite: `87 passed, 6 skipped, 0 failed` (up from `53 passed, 6 skipped, 0 failed`). Archived gate at `artifacts/ggb-capacity-gates/20260706-goalchainer-multi-scenario-smoke/` with `.metta` sibling fixtures; GGB fixture checker passes across all 20 gate fixtures with `.metta` siblings.
+
+Known limitation: evidence extraction is keyword-based, so "no customer emails" still triggers the "customer emails" category because the keyword "email" is present. The semantic evidence path (`GOALCHAINER_SEMANTIC=1`) can address this but requires the mettabase venv and Ollama.
+
+Checks: `python3 -m py_compile`; new tests (34 passed); full pytest (87 passed, 6 skipped, 0 failed); GGB fixture checker. No paid compute, live OmegaClaw/Telegram/runtime integration, secrets/access/security settings, push/merge/force-push, daemon/scheduler install, or remote-ref deletion.
+
+## 2026-07-06 - ThreadKeeper workspace file size cap for write-file/append-file
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `c6f9708` (`Add workspace file size cap for write-file and append-file`) to `fork/agent/threadkeeper-hardening-next`.
+
+The `_tool_read_file` function already bounds output via `_SUBAGENT_MAX_READ_FILE_CHARS` (default 20000), but `write-file` and `append-file` had no file-size cap. While each content argument is already bounded by `_SUBAGENT_MAX_TOOL_ARG_CHARS` (20000) at validation time, `append-file` reads the ENTIRE existing file into memory before appending, and repeated append-file calls could grow a file unboundedly on disk. A file grown to hundreds of MB through many appends would cause memory exhaustion on the next append-file call that reads it.
+
+New config knob `OMEGACLAW_SUBAGENT_MAX_FILE_SIZE_CHARS` (default 100000 = ~100KB, 0 disables, matching the pattern of other bounding knobs):
+- `write-file`: rejects content exceeding the cap before any disk write
+- `append-file`: checks existing file size via `os.path.getsize()` before reading the file into memory (preventing memory exhaustion from very large files), then checks resulting size (existing + new content + newline) before writing
+- Both return clear error messages with actual and limit sizes
+- File is left unchanged when the cap is exceeded (fail-closed)
+
+Added 7 focused tests (144 total): write-file content exceeding cap rejected, write-file content under cap succeeds, write-file cap disabled when 0, append-file existing file exceeding cap rejected without reading, append-file resulting file exceeding cap rejected without writing, append-file resulting file under cap succeeds, append-file cap disabled when 0.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`144 passed`); `origin/pr-1` remains an ancestor (76 commits ahead). Synced `subagent.py` to OmegaClaw-Core runtime tree with zero diff. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-06 20:00 PDT - Native Telegram SWI startup restored by making deontic stack opt-in
+
+Ben asked to fix the native SWI issue after `@Protomegabot` was restored only via the Python fallback harness. Inspection showed the current native runner was not stuck in Janus itself: SWI-Prolog 9.3.36 could import/use Janus minimally, but native OmegaClaw startup repeatedly spent CPU in PeTTa specialization of the newly imported deontic native grounding functions (`gb-pivot`, `gb-base`, `gb-scan-item`, `ground!`). The live `lib_omegaclaw.metta` import path had eagerly loaded `lib_deontic`, `lib_directive`, `src/skills_deontic`, `src/policy_guard`, and `src/integration/nal`, despite the deontic stack being intended as opt-in.
+
+Fix applied in `repos/PeTTa/repos/OmegaClaw-Core/lib_omegaclaw.metta`: remove eager deontic/directive imports from the default live Telegram agent import path and leave a comment explaining that these libraries remain opt-in until the native specialization path is bounded or lazy-loaded. The deontic files were not deleted.
+
+Verification: killed the stuck native SWI process, restarted the group Telegram native runner with `TG_CHAT_ID=-5437945421`, observed `[TELEGRAM] Synchronous polling enabled`, local embedding model load, knowledge-base initialization, and ongoing `(---------iteration N)` loop progress. Stopped the Python fallback harness and the accidental private-chat native runner to avoid multiple pollers for the same bot token. Remaining live relevant process is the group native SWI runner only.
+
+Security note: during environment inspection, a debug command printed the OmegaClaw Telegram bot token in tool output. Do not copy it into records. Rotate the `@Protomegabot` token at the next convenient maintenance window and update `/home/openclaw/.openclaw/omegaclaw-telegram.env`.
+
+## 2026-07-06 - OmegaClaw late-extension registry and overflow hardening
+
+Implemented and pushed OmegaClaw-Core commit `98e8883` on branch `agent/telegram-runtime-mods-checkpoint` to GitHub remote `fork` (`bgoertzel-sing/ThreadKeeper`). Scope: hardened live Telegram startup and large-context handling while keeping the deontic/directive stack installed but not eagerly imported.
+
+Changes:
+- `lib_llm_ext.py`: added context-overflow detection, preemptive escalation knobs, escalation to `OPENCLAW_ESCALATION_MODEL` (default suitable for GPT-5.5-class large context), and chunk-summary fallback when escalation fails.
+- `channels/telegram.py`: added a FIFO pending-message queue so fresh messages are not concatenated/lost in `_last_message` during bursts.
+- `lib_omegaclaw.metta`: documented why deontic/directive imports are not eager in the live bot, and imports new `lib_extensions` registry.
+- `lib_extensions.metta` + `src/extensions.py`: added late-extension status/config hook via `OMEGACLAW_LATE_EXTENSIONS` and `(extension-status)`. The current live loader marks the deontic/directive stack as `deferred` rather than importing it in-process, because an opt-in smoke showed that calling `import!` from inside the live MeTTa loop can still pin SWI. Top-level tests/CLI imports remain valid.
+- Added MesTTo `omegaclaw-deontic` bundle files, docs, examples, and tests to OmegaClaw-Core so the stack is versioned and testable.
+
+Local install:
+- Existing local supervisor loop `pid 595672` is retained as the single running native Telegram instance.
+- Duplicate/ad-hoc runner process groups were stopped.
+- Local runner script default changed to `OMEGACLAW_LATE_EXTENSIONS=""` so heavyweight extension import remains opt-in and safe by default.
+- Verified one active native runner, low/stable SWI CPU, Telegram sync polling enabled, no duplicate pollers.
+
+Verification:
+- `python3 -m py_compile lib_llm_ext.py src/extensions.py channels/telegram.py`
+- `git diff --cached --check`
+- `tests/deontic/run.sh`: 10/10 deontic core tests passed.
+- `tests/integration/test_*.metta`: 7/7 integration tests passed.
+- Late-loader opt-in smoke now completes without hanging and reports configured deontic/directive extensions as deferred.
+
+Important finding: top-level deontic tests pass, but in-process late `import!` from the running loop is not yet safe. Next implementation step is a true bounded/lazy loader path, likely by exposing Prolog-backed deontic/directive APIs without invoking the native MeTTa grounder specialization path from the live agent loop.
+
+## 2026-07-06 21:43 PDT - PeTTa grounder specialization fix proposal document
+
+Ben asked for a serious ASCII LaTeX document plus compiled PDF to guide a smart LLM/engineer in evaluating a real PeTTa grounder fix after the OmegaClaw deontic/directive import freeze. Created `docs/petta_grounder_specialization_fix_proposal.tex` and compiled `artifacts/petta-grounder-fix/petta_grounder_specialization_fix_proposal.pdf`.
+
+The document explains the observed live-runtime failure, relevant code points (`src/translator.pl`, `src/specializer.pl`, `src/spaces.pl`, and `src/deontic/ground.metta`), and a proposed bounded higher-order specialization repair: failed-specialization memoization, specialization budgets, per-function backoff, invalidation of failed memos, instrumentation, and regression tests. The proposal treats specialization as an optimization that should fall back semantically to ordinary direct calls when unprofitable or over budget.
+
+Verification: source checked ASCII-only (`non_ascii_count 0`); PDF compiled with `tectonic -X compile`; `pdftotext` sanity check confirmed title/abstract content. Tectonic reported only overfull-box warnings, not compile errors.
+
+## 2026-07-06 - PeTTa grounder specializer failed-memo fix
+
+Implemented the Fable-tweaked conservative core in `projects/omegaclaw/repos/PeTTa` branch `agent/specializer-failed-memo-fable`, local commit `4ce1d0e` (`Fix failed specialization memoization`). Relevant research rules: Rule 1 (validate estimation/mining tools early, here by preserving four concrete repro fixtures), Rule 2 (spec-level behavior: failed specialization should fall back directly and leave no artifacts), Rule 5 (reproducible report/checks), Rule 7 (kept the change localized to the specializer seam).
+
+Changes:
+- Added `ho_specialization_failed/3` memoization keyed by `(HV, Arity, normalized_bind_set)` so repeated failed higher-order specializations fall back without retrying.
+- Replaced shallow list-only variable cleanup with `normalize_specialization_key/2` using `copy_term/numbervars`, so compound keys such as `partial(lambda_1, [...])` no longer embed fresh variable ids.
+- On failed specialization, now calls `forget_symbol(SpecName)` plus parent `ho_specialization/2` cleanup, removing leaked `&self` type atoms and nb-global metadata.
+- Clears failed-specialization memos conservatively on `invalidate_specializations/1`.
+- Added four regression fixtures under `tests/regression/` from Ben/Fable/Claude repros and a shell regression runner.
+
+Evidence:
+- Pre-patch reproduced repro2 exponential-style repeated failures (2047 `Not specialized` lines for the f1..f12 binary cascade) and repro3 `&self` leak (`wrap_Spec_[myfun]` type atoms observable in collapse output).
+- Post-patch regression script: `tests/regression/test_specializer_regressions.sh` passed. Key assertions: repro1 has 2 failed attempts instead of 10; repro2 has 11 failed attempts (linear, f1..f11) instead of 2047; repro3 no longer leaks `wrap_Spec_` into `&self`; repro4 emits normalized `app_Spec_[partial(lambda_1,[_])]` rather than fresh `_NNN` variable ids.
+- PeTTa smoke: `sh run.sh examples/fib.metta` passed (`is 832040, should 832040. ✅`).
+- Full upstream example suite: `timeout 180s sh test.sh` exited 0.
+- `python3 -m py_compile` on repository Python files passed; `git diff --check` passed.
+
+Remaining caveat: repro4 still reaches the existing arithmetic instantiation error because `$z` is unbound in `(+ $y $z)`; the regression target here is only stable specialization-key generation before that semantic/runtime error.
+
+No secrets, paid compute, live Telegram/OmegaClaw runtime wiring, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-06 22:50 PDT - PeTTa failed-specialization fix implemented and PR opened
+
+Ben sent Fable's review/tweaks of the PeTTa grounder specialization proposal plus four `.metta` repros. Fable confirmed the main diagnosis and sharpened it: failed higher-order specialization retries are exponential for nested binary call shapes, failed specialization leaks `&self`/nb-global state, and the old specialization key normalization is unstable for compound/partial terms containing Prolog variables.
+
+Implemented the first high-value PeTTa repair slice on branch `agent/specializer-failed-memo-fable` in `projects/omegaclaw/repos/PeTTa`:
+- `src/specializer.pl`: added `ho_specialization_failed/3` failed-attempt memoization keyed by function, arity, and normalized bind shape.
+- Replaced shallow list-only variable replacement with variant normalization via `copy_term` + `numbervars`, stabilizing compound/partial specialization keys.
+- Failed specialization cleanup now calls `forget_symbol(SpecName)`, removing leaked clauses, type atoms in `&self`, arity/fun state, and nb-global metadata.
+- Conservative invalidation clears all failed-specialization memos.
+- Added Fable's four regression repros under `tests/regression/` plus `test_specializer_regressions.sh`.
+
+Local commit: PeTTa `4ce1d0e` (`Fix failed specialization memoization`). Pushed to Ben fork `bgoertzel-sing/PeTTa:agent/specializer-failed-memo-fable`. Opened draft upstream PR: https://github.com/trueagi-io/PeTTa/pull/191 . Direct push to `trueagi-io/PeTTa` was rejected because the account has READ permission only, so a fork branch and draft PR were used.
+
+Verification:
+- `sh tests/regression/test_specializer_regressions.sh`: passed.
+- PeTTa full examples with local SWI 9.3.36: `test.sh` exit 0, 144 example files OK.
+- OmegaClaw deontic core using this PeTTa checkout and local SWI: 10 passed, 0 failed.
+- OmegaClaw integration `tests/integration/test_*.metta`: 7 passed, 0 failed.
+- `git diff --check HEAD~1..HEAD`: clean.
+
+Limitations/follow-up: this implements Fable's steps 1-3 (cleanup, stable keys, failed-specialization memoization). It does not yet implement counters, env-configured specialization budgets, or `NoSpecialize` annotations; those remain useful belt-and-braces follow-ups. The live Telegram SWI process was not restarted during this patch; it will pick up the local PeTTa specializer change on the next clean restart.
+
+## 2026-07-07 - ThreadKeeper bounded run-index append tail reads
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `82f490b` (`Bound run index append tail reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+Closed a follow-on audit-memory gap after the earlier index verifier cap: finished-run appends previously used `_last_index_entry_hash()` and rotation by reading all of `index.jsonl`. Added bounded reverse-tail scanning for recent non-empty index lines, so appending a new run and retaining the most recent N entries no longer require loading a long intentionally unrotated index into memory. Hash-chain linking is preserved for normal indexes and rotation still recomputes retained-chain hashes under the existing lock. Updated docs/tests and synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py` plus runtime-tree compile; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`157 passed`); `origin/pr-1` remains an ancestor; runtime-tree source `cmp`. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - ThreadKeeper strict tool argument type validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `25435f2` (`Require string subagent tool arguments`) to `fork/agent/threadkeeper-hardening-next`.
+
+`_validate_tool_args()` now rejects non-string tool arguments before execution instead of coercing JSON arrays/objects/numbers/booleans with `str()`. This tightens strict tool-call validation for `read-file`, `write-file`, `append-file`, `shell`, `search`, `tavily-search`, and `technical-analysis`, preventing malformed worker responses like array-valued shell commands or object-valued search queries from reaching tool implementations. Updated docs and focused regression coverage; synced `src/subagent.py` into the OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`158 passed`); runtime-tree compile/source cmp; `git diff --check`; `origin/pr-1` remains an ancestor. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-07 - GoalChainer queue-sidecar artifact harness
+
+Completed the non-live queue artifact follow-up to the sidecar contract gate: `artifacts/ggb-capacity-gates/20260707-goalchainer-queue-sidecar-artifact/`. The harness materializes `20260707-goalchainer-queue-sidecar-contract` as a ThreadKeeper queued task with `.sha256`, runs GoalChainer locally over the archived private OpenClaw smoke candidate plus selected read-only `petta-memory` STV/EC evidence, then patches `subagent.dispatch` in-process to return that candidate through `run_queued_dispatch`.
+
+Results: 9/9 harness checks passed. The queue artifact moved to `.done`, retained checksum and `.done.result.json`, and returned `status=needs_adjudication`. GoalChainer recommended `publish_redacted_summary`; `publish_raw_log` remained forbidden/blocked. No live Telegram message, provider call, runtime bridge change, memory write, supervisor launch, secrets/access change, paid compute, push, merge, or force-push.
+
+Checks: `PYTHONPATH=projects/omegaclaw/repos/OmegaClaw-GoalChainer/src python3 projects/omegaclaw/artifacts/ggb-capacity-gates/20260707-goalchainer-queue-sidecar-artifact/run_queue_sidecar_artifact.py`; `python3 -m py_compile .../run_queue_sidecar_artifact.py`; `python3 projects/omegaclaw/local/check-ggb-gate-fixtures.py .../20260707-goalchainer-queue-sidecar-artifact`; targeted `git diff --check`.
+
+Next small slice: add an offline adjudicator/reviewer harness for this `needs_adjudication` sidecar output, or ask Ben for explicit private Telegram opt-in approval with stop conditions before any live bridge/runtime behavior changes.
+
+## 2026-07-07 - GoalChainer sidecar offline adjudicator
+
+Completed the non-live reviewer/adjudication follow-up to `20260707-goalchainer-queue-sidecar-artifact`: `artifacts/ggb-capacity-gates/20260708-goalchainer-sidecar-offline-adjudicator/`. The reviewer inspected only archived local artifacts (`sidecar_output.json`, queue report/result, sidecar contract, and prior private-smoke adjudication).
+
+Result: 12/12 artifact checks passed. Verdict: accepted for offline evidence only. Accepted redacted-summary candidate: `Checkout payment retries are timing out.` Raw-log publication remains forbidden/blocked; leak safety and explicit non-actions were preserved. The adjudication explicitly does not approve Telegram posting, live runtime bridge enablement, memory writes, provider calls, queue claims, supervisor launch, or broader `@Protomegabot` behavior changes.
+
+Checks: `python3 -m json.tool review_report.json`; `python3 projects/omegaclaw/local/check-ggb-gate-fixtures.py projects/omegaclaw/artifacts/ggb-capacity-gates/20260708-goalchainer-sidecar-offline-adjudicator`; targeted `git diff --check`. No secrets/access/security settings, live runtime wiring, Telegram message, paid compute, daemon/scheduler install, push/merge/force-push, or remote-ref deletion.
+
+## 2026-07-08 - ThreadKeeper candidate review checksum sidecar cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `ef89b40` (`Bound candidate review sidecar reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+The non-mutating `subagent.review_subagent_candidate(transcript_path)` helper now uses the shared bounded `.sha256` sidecar reader (`OMEGACLAW_SUBAGENT_MAX_SHA256_SIDECAR_BYTES`, default 4096) instead of an unbounded text read when verifying optional transcript checksum sidecars. Candidate-review setup errors now avoid echoing absolute local run/transcript paths, returning only a basename in the error payload and sanitized exception text. Updated focused coverage and `docs/reference-skills-subagent.md`; `src/subagent.py` remains synced into the OmegaClaw-Core runtime tree.
+
+Checks: `git diff --check`; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`168 passed`); `pr-1` ancestor check; runtime-tree source cmp. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+## 2026-07-08 - ThreadKeeper task-contract validation refresh GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260709-threadkeeper-contract-validation-refresh/` for current ThreadKeeper branch `agent/threadkeeper-hardening-next` head `cbe37d3`. The gate records that malformed inline/persona task-contract list fields (`allowed_paths`, `forbidden_actions`, `done_criteria`) now fail closed before worker LLM calls instead of being coerced into acceptable string lists. It also carries forward the recent supervised worker-loop signal-state cleanup evidence.
+
+Checks: PR #1 ancestry check (`origin/pr-1` remains ancestor; local clone emits an ambiguous-ref warning), `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`, focused mock pytest via `local/threadkeeper-pytest-venv` (`181 passed`), `git diff --check`, runtime source `cmp`, runtime `py_compile`, and GGB fixture checker. Updated `GGB_CAPACITIES_ROADMAP.md` to current head/test evidence. No live OmegaClaw/Telegram/runtime behavior change, provider call, queue enqueue/claim, secret read, access/security change, daemon/scheduler install, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper integrity-sidecar hardening GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260709-threadkeeper-integrity-sidecar-hardening/` for ThreadKeeper branch `agent/threadkeeper-hardening-next` head `7387f40`. This maps the required `.sha256` sidecar symlink/non-regular-file rejection slice onto GGB capacities 1.3, 3.2, 4.5, 5.2, 5.3, and 5.4. The gate records that local checksum sidecars are treated as untrusted filesystem inputs and fail closed before digest reads.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`185 passed`); `git diff --check`; runtime source cmp; runtime `py_compile`; GGB sibling fixture checker. No live OmegaClaw/Telegram/ThreadKeeper runtime behavior changed, no queue was enqueued/claimed, no provider call or secret read occurred, and no paid compute, access/security change, daemon/scheduler install, merge, force-push, or remote-ref deletion was used.
+## 2026-07-09 - ThreadKeeper run-index tail/rotation write hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `59140ac` (`Harden run index tail and rotation writes`) to `fork/agent/threadkeeper-hardening-next`.
+
+Run-index bounded-tail reads now reject symlink/non-regular `index.jsonl` and open through the shared no-follow regular-file helper before seeking. Bounded index rotation now rewrites via random local `mkstemp` files instead of predictable `index.jsonl.tmp.<pid>` names, so a pre-created temp-name symlink cannot redirect a rotation write outside `SUBAGENT_RUN_DIR`. Added focused regression coverage for symlink tail reads and predictable-temp symlink preservation; updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`188 passed`); `git diff --check`; `origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper LLM guard-state symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `3a31e25` (`Reject symlink LLM guard state`) to `fork/agent/threadkeeper-hardening-next`.
+
+Per-endpoint worker LLM guard state files (`.llm-rate-*.json` and `.llm-inflight-*.json`) now open through the shared regular non-symlink no-follow helper before locking, reading, or rewriting. Existing symlink/non-regular guard-state paths fail closed instead of following local redirections outside `OMEGACLAW_SUBAGENT_RUN_DIR`. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`189 passed`); `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper escalation policy symlink hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `55160f7` (`Reject symlink escalation policies`) to `fork/agent/threadkeeper-hardening-next`.
+
+Pinned cloud-delegation `escalation.metta` integrity checks now require the explicit/auto-detected policy path to be a regular non-symlink file, fail closed for unsafe explicit `OMEGACLAW_ESCALATION_METTA_PATH` values instead of silently falling back, and read policy bytes through the shared no-follow regular-file opener before hashing. This tightens the escalation-integrity slice without changing worker semantics or launching live workers. Updated focused coverage and `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`194 passed`); runtime source sync/compile; `git diff --check`; `refs/remotes/origin/pr-1` remains an ancestor. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-09 - ThreadKeeper budget config read hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `b9298dd` (`Harden budget config reads`) to `fork/agent/threadkeeper-hardening-next`.
+
+`src/threadkeeper_budget.py` now reads `threadkeeper.config.yaml` only from regular non-symlink files, caps config reads with `THREADKEEPER_MAX_BUDGET_CONFIG_BYTES` (default 64 KiB), and opens config through the shared no-follow regular-file helper. The lazy MeTTa escalation-policy loader also rejects symlink/non-regular policy paths before loading. This extends the audit/control-file hardening from budget logs to budget config and policy inputs. Added focused tests and updated README; synced `src/threadkeeper_budget.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/threadkeeper_budget.py Autotests/mock/test_threadkeeper_budget_hardening_mock.py ../PeTTa/repos/OmegaClaw-Core/src/threadkeeper_budget.py`; focused budget hardening pytest (`7 passed`); focused subagent + budget hardening pytest (`207 passed`); `git diff --check`; PR #1 ancestry check; runtime budget source `cmp`; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-10 - ThreadKeeper setup-file size-check nofollow hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `b424f9e` (`Use open fds for setup size checks`) to `fork/agent/threadkeeper-hardening-next`.
+
+Pinned cloud-delegation `escalation.metta` integrity checks and persona prompt reads now perform size checks from the already-open regular non-symlink fd (`os.fstat`) rather than a separate path-based `os.path.getsize()` before no-follow open. This narrows the remaining setup-file TOCTOU/symlink-swap race before worker LLM calls while preserving existing byte caps, hash pinning, and path-sanitized failures. Added focused regression tests that monkeypatch `os.path.getsize` to prove these paths no longer depend on the path-based size check; updated `docs/reference-skills-subagent.md`; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: `python3 -m py_compile src/subagent.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py Autotests/mock/test_subagent_hardening_mock.py`; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`227 passed` for subagent + budget hardening tests); `git diff --check`; fetched PR #1 and confirmed `refs/remotes/origin/pr-1` remains an ancestor; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+## 2026-07-11 - ThreadKeeper persona/emit protocol GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260711-threadkeeper-persona-emit-protocol-hardening/` for ThreadKeeper branch `agent/threadkeeper-hardening-next` head `bf65398`. The gate maps the latest pre-dispatch/protocol validation slice to GGB capacities 1.1, 1.3, 3.2, 4.5, 5.2, 5.3, and 5.4: persona config scalar fields now fail closed before worker prompt/provider setup unless bounded and type-safe, and legacy unquoted final emits now reject same-line trailing payloads as `EMIT_PROTOCOL_VIOLATION` before any successful digest/adjudication candidate is accepted.
+
+Checks: local PR ancestry check; `python3 -m py_compile` for ThreadKeeper and runtime synced `subagent.py`/`threadkeeper_budget.py` plus focused mock tests; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`242 passed`); `git diff --check`; runtime source `cmp`; GGB sibling fixture checker. No paid compute, live OmegaClaw/Telegram/ThreadKeeper runtime behavior change, queue enqueue/claim outside local tests, provider call, secret read, access/security setting change, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+## 2026-07-11 ThreadKeeper queued-dispatch path argument hardening
+
+- Repo: `projects/omegaclaw/repos/ThreadKeeper`, branch `agent/threadkeeper-hardening-next`, commit `c2f299e` (`Bound queued dispatch path arguments`), pushed to `fork/agent/threadkeeper-hardening-next`; safety-floor branch remains an ancestor of HEAD.
+- Hardened `subagent.run_queued_dispatch(queue_path)` to reject oversized strings and NUL/control characters before queue-dir resolution, claim/rename, checksum verification, or worker LLM setup. This extends strict argument validation to explicit queued-worker operator paths and avoids multiline audit/status ambiguity.
+- Added focused regressions proving newline and oversized queue paths return `queue_worker_error` without creating `.claimed`/`.failed` files. Updated `docs/reference-skills-subagent.md`. Synced `src/subagent.py` into the nested OmegaClaw runtime tree.
+- Verification: `python3 -m py_compile src/subagent.py`; focused queue path pytest (`3 passed, 232 deselected`); focused mock hardening pytest (`248 passed` across subagent + budget hardening); `git diff --check`; runtime source `cmp`/compile.
+- Boundaries: no paid compute, provider calls, live Telegram/runtime wiring, secrets/access/security changes, queue enqueue/claim outside local tests, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+
+## 2026-07-11 - ThreadKeeper run-control path argument hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 safety-floor work. Pushed commit `be5ea1f` (`Reject control chars in run control paths`) to `fork/agent/threadkeeper-hardening-next`.
+
+Worker-loop `stop_file` and queued-task `cancel_file` control-token paths now fail closed on NUL/control characters before run-dir resolution, worker-lock acquisition, queue claim validation, cancellation checks, or worker LLM setup. This closes the control-plane counterpart of the recent queue-path/tool-argument line-forging hardening: operator arguments and queued task records can no longer inject multiline status/audit text through stop/cancel token paths. Updated focused regressions and subagent reference docs; synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile src/subagent.py Autotests/mock/test_subagent_hardening_mock.py ../PeTTa/repos/OmegaClaw-Core/src/subagent.py`; focused run-control pytest (`9 passed, 228 deselected`); focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`250 passed` for subagent + budget hardening tests); `git diff --check`; runtime source cmp/compile; pushed to fork. No paid compute, live OmegaClaw/Telegram/runtime wiring, secrets/access/security settings, queue enqueue/claim outside local tests, provider call, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper run-control path GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260711-threadkeeper-run-control-path-hardening/` for ThreadKeeper branch `agent/threadkeeper-hardening-next` head `be5ea1f`. The gate maps queued-dispatch path bounding plus worker-loop `stop_file` / queued-task `cancel_file` control-character rejection to GGB capacities 1.1, 1.3, 3.2, 4.5, 5.2, 5.3, and 5.4.
+
+Checks: PR #1 ancestry check; `python3 -m py_compile` for ThreadKeeper and runtime synced `subagent.py`/`threadkeeper_budget.py` plus focused mock tests; focused mock pytest via `projects/omegaclaw/local/threadkeeper-pytest-venv` (`250 passed`); `git diff --check`; runtime source `cmp`; GGB sibling fixture checker. No paid compute, live OmegaClaw/Telegram/ThreadKeeper runtime behavior change, queue enqueue/claim outside local tests, provider call, secret read, access/security setting change, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper worker env-file loading hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor` and avoiding duplicate Phase 1 work. Pushed commit `10dad06` (`Harden worker env file loading`) to `fork/agent/threadkeeper-hardening-next`.
+
+The conservative worker-loop runner `scripts/run-subagent-worker-loop` now opens `--env-file` config with no-follow semantics when available, checks regular-file status and size on the opened fd with `fstat`, and parses from that fd. This keeps operator env-file loading bounded and fail-closed before `subagent` import while reducing path/stat/open race exposure.
+
+Checks: `python3 -m py_compile scripts/run-subagent-worker-loop Autotests/mock/test_subagent_hardening_mock.py`; focused worker-loop script pytest (`5 passed, 233 deselected`); focused hardening pytest (`238 passed`); `git diff --check`. A broader mock-suite attempt passed 243 tests but hit 3 Docker-dependent integration failures because `docker` is unavailable on this host. No paid compute, live OmegaClaw/Telegram/ThreadKeeper runtime behavior change, queue enqueue/claim outside tests, provider call, secret/access setting change, daemon/scheduler install, merge, force-push, or remote-ref deletion.
+
+## 2026-07-11 - ThreadKeeper worker env streaming read cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor`. Pushed commit `6a9452d` (`Bound worker env reads after open`) to `fork/agent/threadkeeper-hardening-next`.
+
+The worker-loop runner now reads an opened env file as at most 64 KiB plus one byte and rejects cap crossing during the read, rather than relying only on the opened-fd `fstat` size. It also rejects invalid UTF-8 explicitly before parsing. This closes a local post-`fstat` growth race that could otherwise make the env loader consume an unbounded file before importing `subagent`. Added a focused underreported-size regression.
+
+Checks: PR #1 ancestry check; `py_compile`; focused runner pytest (`5 passed, 234 deselected`); focused hardening pytest (`252 passed`); `git diff --check`; pushed to fork. No paid compute, live wiring, secrets/access/security changes, queue enqueue/claim outside tests, provider call, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper technical-analysis argument validation
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `35c0c98` (`Validate technical analysis ticker arguments`) to `fork/agent/threadkeeper-hardening-next`.
+
+`technical-analysis` tool calls now fail closed unless their sole argument matches a bounded 1-32 character market-symbol grammar. This narrows a provider-facing tool that previously accepted arbitrary free-form query text despite its ticker-only backend contract. Added regressions for common symbols and malformed/free-form values, updated docs, and synced the nested OmegaClaw runtime source. Checks: `py_compile`; focused hardening pytest (`254 passed` after correcting the initial grammar to permit caret-prefixed index symbols); `git diff --check`; runtime source `cmp`. No paid compute, live wiring, secrets/access/security changes, queue/provider activity, daemon/scheduler install, force-push, merge, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper external query argument cap
+
+Continued ThreadKeeper hardening on `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `73b6b7b` (`Bound external query arguments`) to `fork/agent/threadkeeper-hardening-next`. `search`, `tavily-search`, and `technical-analysis` now enforce a dedicated `OMEGACLAW_SUBAGENT_MAX_QUERY_ARG_CHARS` cap (default 4096) before provider execution, in addition to the broader tool-argument cap. Added focused coverage and docs; synced the nested OmegaClaw runtime source. Checks: PR #1 ancestry, `py_compile`, focused hardening pytest (`255 passed`), `git diff --check`, runtime source `cmp`. No live wiring, provider/queue activity, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper optional shell argument cap
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `76ec6b6` (`Bound optional shell command arguments`) to `fork/agent/threadkeeper-hardening-next`.
+
+The optional allowlisted argv-only `shell` tool now has a dedicated command-input cap, `OMEGACLAW_SUBAGENT_MAX_SHELL_ARG_CHARS` (default 4096), enforced before `shlex` parsing or subprocess execution. The existing broader per-tool argument cap remains defense in depth. Added focused coverage, updated reference docs, and synced the nested OmegaClaw runtime source. Checks: PR #1 ancestry; Python compile; focused hardening pytest (`256 passed`); `git diff --check`; runtime source `cmp`. No live runtime/provider/queue activity, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper unterminated quoted tool argument hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `0781f57` (`Reject unterminated quoted tool arguments`) to `fork/agent/threadkeeper-hardening-next`.
+
+Single-argument worker tool calls beginning with an unterminated quote now parse into an invalid argument shape, so `shell`, external query tools, `read-file`, and final `emit` fail closed instead of treating the malformed raw payload as one executable argument. Added focused regression coverage and synced the nested OmegaClaw runtime source. Checks: source/runtime compile; focused hardening pytest (`257 passed`); `git diff --check`; runtime source `cmp`. No live wiring, subprocess/provider/queue activity, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper quoted file-content protocol hardening
+
+Continued ThreadKeeper hardening on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / `agent/threadkeeper-safety-floor`. Pushed commit `dd3f7e5` (`Reject malformed quoted file tool content`) to `fork/agent/threadkeeper-hardening-next`.
+
+Quoted `write-file` / `append-file` content now must have a closing quote with only whitespace afterward. Unterminated content and same-line trailing payloads surface as argument-count violations before workspace mutation, closing the two-argument counterpart of the recent single-argument/emit protocol checks. Normal quoted content remains accepted. Synced `src/subagent.py` into the nested OmegaClaw-Core runtime tree.
+
+Checks: Python compile; focused hardening pytest (`258 passed`); `git diff --check`; runtime source `cmp`; pushed to fork. No live runtime, provider, queue, subprocess, secrets/access/security changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper unquoted trailing single-argument call hardening
+
+Continued on `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding Phase 1 duplication. Commit `6a62c97` extends same-line trailing-call rejection from final emits to every single-argument worker tool: malformed unquoted payloads such as `(search safe) (emit hidden)` now become argument-count failures before provider, subprocess, file-read, or emit handling. Ordinary parenthesized prose remains accepted. Updated docs/tests and synced nested OmegaClaw runtime source. Checks: compile; focused hardening pytest (`260 passed`); diff check; runtime source cmp. No live wiring, provider/subprocess/queue activity, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 — PLN naming note from Ben
+
+Ben clarified that the PLN renaming (in the context of GoalChainer's heuristic PLN-style beliefs and the petta-memory πPLN/patham9 bridge) affects naming in the software only, not design. Future subagents working on GoalChainer or petta-memory integration should treat "PLN" naming as cosmetic; the underlying probabilistic logic design is unchanged.
+
+## 2026-07-12 - ThreadKeeper compact trailing-call protocol hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `3a296ad` (`Reject compact unquoted trailing calls`) to `fork/agent/threadkeeper-hardening-next`.
+
+Unquoted one-argument calls now reject compact same-line `)(` trailing-call payloads as well as spaced `) (` payloads before optional shell, provider-backed query, file-read, or final-emit handling. Ordinary balanced parenthesized prose remains accepted. Synced `src/subagent.py` into the nested OmegaClaw runtime source. Checks: Python compile, focused subagent/budget hardening pytest (`260 passed`), `git diff --check`, and runtime source `cmp`. No live runtime, provider, queue, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+## 2026-07-12 - GoalChainer canary review-boundary gate
+
+Inspected the new non-live GoalChainer→ThreadKeeper canary and found a concrete policy gap: its generic default fixture made `publish_raw_log` recommended/permitted, queued it, and accepted it; recommended tasks also set `requires_adjudication=false`. Narrowly hardened the exploratory canary without touching ThreadKeeper PR #1: the default fixture now explicitly contains sensitive data, forbidden norms are rejected before queueing, every queued output remains `patch_proposal_only` and requires adjudication, and the offline reviewer allowlists only `publish_redacted_summary`. Added three focused regressions and archived `artifacts/ggb-capacity-gates/20260712-goalchainer-canary-review-boundary/`. Checks passed: 3 focused tests, compile, diff check, and an isolated fake-worker replay with one accepted redacted-summary candidate, raw log forbidden/not queued, and hold deferred. No provider/Gateway, Telegram, live runtime, memory write, secret, paid-compute, push, or merge activity.
+
+## 2026-07-12 - ThreadKeeper bidirectional-control tool-argument hardening
+
+Continued strict tool-argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `5624013` (`Reject bidi controls in tool args`) to `fork/agent/threadkeeper-hardening-next`. File paths, external queries, and optional-shell commands now reject Unicode bidirectional formatting/isolate controls before filesystem/provider/subprocess handling, preventing visually reordered prompt/transcript/audit arguments while preserving benign format characters such as emoji joiners. Synced nested OmegaClaw runtime source. Checks: compile, focused hardening pytest (`265 passed`), diff check, runtime source cmp. No live runtime/provider/queue/subprocess activity, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+
+## 2026-07-12 - ThreadKeeper Unicode-control argument GGB gate
+
+Archived `artifacts/ggb-capacity-gates/20260713-threadkeeper-unicode-control-arg-hardening/` at ThreadKeeper head `5624013`. The combined gate records that file paths, external queries, and optional-shell commands reject C1 controls, Unicode line/paragraph separators, and bidi formatting/isolate controls before filesystem/provider/subprocess handling. PR #1 safety-floor ancestry passed; source compile, `git diff --check`, 265 focused hardening tests, and the GGB sibling-fixture checker passed. The current OmegaClaw-Core checkout contains no runtime `subagent.py`, so byte-parity is explicitly not claimed. No live integration or external side effect occurred.
+
+## 2026-07-12 - ProtoMegaBot installation and reliability report
+
+Created the source-grounded report `docs/protomegabot_omegaclaw_installation_architecture_20260712.tex` and compiled `docs/protomegabot_omegaclaw_installation_architecture_20260712.pdf` (15 pages). It documents the project-local PeTTa/SWI/Janus/Python/OpenClaw installation, hybrid MTProto-receive/Bot-API-send architecture, multi-chat routing invariant, dated failure chronology, observed 21:16 and 21:19 process states, and prioritized remediation. Newly confirmed issues include synchronous Bot API polling leaking into MTProto mode, an orphaned bridge coexisting with a restarted bridge, private-help-text versus broad executable-default drift, and the Telethon session database being mode 0644 while the secret env is correctly 0600. Verification: ASCII-only LaTeX source, Tectonic compile, 15-page `pdfinfo`, full `pdftotext` section checks, fatal LaTeX and credential-pattern scans, and SHA-256 capture. No credential values, live reconfiguration, process stop/restart, paid compute, or remote operation.
+
+## 2026-07-12 - ProtoMegaBot P0 stabilization patch (not deployed)
+
+Implemented a source/test-only first remediation slice in the active nested OmegaClaw-Core checkout. Telegram receive now has one authoritative `TG_RECEIVE_TRANSPORT` (`mtproto` or `bot_api`), rejects contradictory legacy settings, makes `getUpdates` fail closed in MTProto mode, disables synchronous polling there, and fails startup instead of silently falling back to Bot API. The MTProto bridge no longer uses `setsid`; it receives an expected-parent PID, arms Linux `PR_SET_PDEATHSIG`, rechecks parent identity, uses a mode-0600 singleton lock, waits for an actual connected readiness event, and normalizes session-file modes to 0600. The local launcher now defaults `TG_SYNC_POLL=false`; supervisor status distinguishes ownership, worker count, owned/global bridge count, and explicitly does not claim end-to-end health. Added `Autotests/test_telegram_transport_invariants.py`. Evidence: 14 focused pytest checks passed with `--noconftest`; four address-filter unittests passed; `py_compile`, shell syntax, and `git diff --check` passed. The repository's normal pytest teardown remains environment-blocked because it unconditionally invokes unavailable Docker after tests (the tests themselves passed before teardown). Read-only live status proved the new check catches the current broken topology: one worker, zero owned bridges, and two global bridge processes at final inspection. No live process was stopped, restarted, or reconfigured, so the patch is not yet active.
+
+## 2026-07-12 - ProtoMegaBot staged reliability repair plan
+
+Wrote `PROTOMEGABOT_REPAIR_PLAN_20260712.md`, converting the GPT-5.6-sol architecture review and direct runtime/source evidence into a 15-step gated remediation sequence. Immediate order is inventory, package/review the existing source-only P0 patch, add negative transport/ownership tests, obtain approval for controlled cleanup/restart, establish one service generation, prove runtime receive exclusivity, and run a fixed-response private canary. Subsequent gates replace mutable `_active_chat_id` routing with immutable per-message envelopes, introduce framed/bounded IPC and backpressure, split liveness/readiness/end-to-end health, add privacy-safe event journaling, classify native crashes, run a one-variable crash matrix, and only then expand from private soak to multi-chat/group use. The plan explicitly treats signal 11 and exit 137 separately and does not claim deployment readiness.
+
+## 2026-07-12 - Fable route-override defect isolated and patched locally
+
+Direct local inference with `anthropic/claude-fable-5` reached the Anthropic provider and returned an Anthropic 429 rate-limit response, proving the configured provider/auth route exists; this supersedes the earlier hypothesis that Anthropic configuration/auth was absent. Source inspection showed `plugins/intent-model-router` always reclassified prompts in `before_model_resolve`, even when a caller/session had explicitly selected Fable, so ordinary technical review prompts were overwritten to `openai/gpt-5.6-sol`. Patched the router to preserve an explicit `anthropic/claude-fable-5` selection and added focused detection coverage. Checks: 9 Node tests pass, JS syntax checks pass, `git diff --check` passes. Activation remains blocked because the Gateway is a system-scope `openclaw-agent.service`; the ordinary `openclaw gateway restart` correctly refused and this Telegram session has no elevated tool grant. No service was restarted. After an approved restart, verify effective execution metadata; Anthropic may still return 429 until its account rate window/cap permits a request.
+
+## 2026-07-13 - ThreadKeeper Unicode run-control path hardening
+
+Continued strict argument validation on `projects/omegaclaw/repos/ThreadKeeper` branch `agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and avoiding duplicate Phase 1 work. Pushed commit `6e0e49b` (`Harden Unicode run-control paths`) to `fork/agent/threadkeeper-hardening-next`.
+
+Explicit queued-dispatch paths and worker stop/queued-task cancellation token paths now use the same Unicode-safe control validation as tool arguments. They reject Unicode separators, bidi/unsafe invisible formatting characters, and lone surrogates before queue claim/rename, worker-lock acquisition, token checks, or worker LLM setup. Added focused regressions for queued paths and stop files; updated docs and synced the nested OmegaClaw runtime source.
+
+Checks: PR #1 ancestry; Python compile; focused control-path pytest (`4 passed`); focused subagent/budget hardening pytest (`268 passed`); `git diff --check`; runtime source `cmp`; pushed to fork. No live runtime, provider, queue claim outside tests, subprocess, secrets/access changes, paid compute, merge, force-push, or remote-ref deletion.
+# 2026-07-15 — ThreadKeeper persistent-worker mandate
+
+Ben expanded the ThreadKeeper implementation mandate to include a native asynchronous persistent-worker mode, distinct from bounded synchronous `delegate`. Created isolated worktree `worktrees/threadkeeper-persistent-workers` on branch `agent/threadkeeper-persistent-workers` from clean local head `a2c62eb` (six commits ahead of its tracking branch). The architecture baseline is `docs/persistent-workers.md` inside that worktree. Research Rules 2, 3, 5, 6, and 7 are directly relevant: specify stateful behavior first; extend the existing hardened queue/supervisor substrate; preserve reproducible evidence; model continuity as event/checkpoint lineage; and keep MeTTa/Python abstraction seams explicit. ProtoMegaBot production is excluded; eventual live testing is ProtoMegaBot2-only.
+## 2026-07-15 - ThreadKeeper persistent spawn and cancellation surfaces
+
+Implemented the third provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, following durable manifest/event/status
+commit `f82d168`. Added idempotent `spawn_persistent` and `cancel_persistent`
+surfaces plus a lifecycle-gated queue claim wrapper. Spawn reuses the existing
+persona/task-contract/tool-subset/escalation validation and queue-only record;
+cancellation creates the task-scoped durable token before recording its CAS
+event. Causal intervention tests prove cancellation that wins first prevents
+the later claim wrapper and queue/provider effect, while integration tests prove
+the real queued worker returns `cancelled` without calling the worker LLM.
+
+Evidence: experiment
+`experiments/20260715T150724Z-threadkeeper-persistent-spawn-cancel-v1/` passed
+16 unit tests and 315 combined lifecycle/full focused subagent tests, plus
+Python compilation and `git diff --check`. No provider, Telegram, ProtoMegaBot,
+credential, supervisor, or production path was touched. Remaining limitation:
+attempt leases, checkpoint/restart recovery, and queue-result reconciliation
+remain phase 4.
+
+## 2026-07-15 - ThreadKeeper persistent attempt/checkpoint recovery records
+
+Implemented the next provider-free persistent-worker slice on isolated branch
+`agent/threadkeeper-persistent-workers`, commit `43d34fe`, and pushed the branch
+normally to `fork/agent/threadkeeper-persistent-workers`. A lifecycle claim now
+validates lease inputs before mutation and creates a versioned, bounded,
+hash-linked immutable attempt/lease before the queued-dispatch effect.
+Checkpoints are atomic, bounded, payload-hashed, idempotent by ID, and verified
+as an immutable chain. Restart recovery fails closed for active, missing,
+mismatched, or corrupt lineage; an expired verified attempt is idempotently
+recorded as `FAILED_RETRYABLE`, with requeue deliberately left as a separate
+durable effect.
+
+Evidence:
+`experiments/20260715T151639Z-threadkeeper-persistent-attempt-checkpoint-recovery-v1/`
+passed Python compilation, `git diff --check`, and 332 combined persistent
+lifecycle/storage plus full subagent/budget hardening tests. No paid compute,
+provider, live queue, Telegram, credential, supervisor, ProtoMegaBot process or
+production path was used. Next: explicit resume/requeue effects and crash
+fixtures at claim/attempt/checkpoint boundaries, then durable task budgets and
+inbox/result delivery.
+
+## 2026-07-15 - ThreadKeeper verified checkpoint resume handoff
+
+Continued the provider-free persistent-worker track on isolated branch
+`agent/threadkeeper-persistent-workers`. Commit `1b2d670` binds the latest
+verified checkpoint ID and SHA-256 into each new immutable attempt and passes
+the verified structured checkpoint to the queued runner. The existing queued
+worker validates the checkpoint identity/payload and exposes bounded canonical
+resume context through the task contract; first attempts continue with no
+checkpoint. Tests cover checkpoint-free claims and recovery/requeue into a
+second attempt, including the actual queued-worker transcript.
+
+Checks: 25 narrow lifecycle/resume tests; 337 combined persistent lifecycle,
+subagent hardening, and budget hardening tests; Python compilation; `git diff
+--check`. Commit pushed normally to `fork/agent/threadkeeper-persistent-workers`.
+No provider, paid compute, Telegram, live queue/supervisor, credential,
+ProtoMegaBot process, production path, merge, force-push, or remote-ref deletion.
+Next: an idempotent enqueue receipt plus crash fixtures across the queue/event
+boundary.
+## 2026-07-15 - ThreadKeeper persistent enqueue receipts
+
+Closed the spawn/requeue enqueue-to-event crash window on isolated branch
+`agent/threadkeeper-persistent-workers`, commit `29948e9`, normally pushed to
+`fork/agent/threadkeeper-persistent-workers`. Spawn and explicit requeue now
+write bounded immutable receipts keyed by the operation ID and bound to the
+task-manifest and queue digests before appending their lifecycle CAS event.
+After a simulated event-write crash, retry reuses the verified receipt and does
+not repeat the queue effect. Per-task enqueue locking serializes concurrent
+operations where `fcntl` is available; malformed or conflicting receipts fail
+closed.
+
+Evidence:
+`experiments/20260715T190300Z-threadkeeper-persistent-enqueue-receipts-v1/`
+passed 27 narrow lifecycle/storage tests, 340 combined persistent lifecycle,
+subagent hardening, and budget hardening tests, Python compilation, and `git
+diff --check`. No provider, paid compute, live queue/supervisor, Telegram,
+credential, ProtoMegaBot process, production path, merge, force-push, or remote
+ref deletion occurred. Next: durable task-level budgets, then inbox/result
+delivery.
+
+## 2026-07-15 - ThreadKeeper persistent task-level budget ledger
+
+Continued the isolated persistent-worker track on
+`agent/threadkeeper-persistent-workers` and pushed commit `4b7399e` normally to
+`fork/agent/threadkeeper-persistent-workers`. Task manifests now accept only a
+closed set of positive integer budget limits. Immutable task usage deltas are
+bounded, append-only, hash-linked, idempotent by usage ID, and bound to verified
+attempt lineage. `budget_status()` reconstructs monotone attempt/token/time/tool
+consumption across restarts; exhausted limits block claim and explicit requeue
+before the queue/provider/tool effect.
+
+Evidence:
+`experiments/20260715T210802Z-threadkeeper-persistent-task-budgets-v1/`
+passed 30 narrow lifecycle/storage tests and 343 combined persistent lifecycle,
+subagent hardening, and budget hardening tests, plus Python compilation and
+`git diff --check`. No provider, paid compute, live queue/supervisor, Telegram,
+credential, ProtoMegaBot process, production path, merge, force-push, or remote
+ref deletion occurred. Next: crash-safe queued-attempt accounting handoff, then
+idempotent inbox/result delivery.
+
+## 2026-07-15 - ThreadKeeper task-contract tool-quota validation
+
+Continued the bounded synchronous ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`agent/threadkeeper-safety-floor` ancestor. Commit `e4481a8` closes a remaining
+strict-validation exception path: task-contract `max_tool_calls` must not
+exceed the global dispatch quota, and arbitrarily long decimal strings are
+rejected before `int()` conversion. Invalid values persist a structured
+`contract_invalid` transcript without provider or worker LLM setup.
+
+Checks: focused quota pytest (`5 passed`); combined subagent/budget hardening
+pytest (`313 passed`); Python compilation; `git diff --check`; PR #1 ancestry.
+The nested OmegaClaw runtime copy was not synced because it already lags the
+hardening branch by several local commits. No paid compute, provider, live
+queue/runtime, Telegram, subprocess, credential/access change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-15 - ThreadKeeper closed-schema task contracts
+
+Continued the bounded synchronous ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`agent/threadkeeper-safety-floor` ancestor. Commit `0fc6efb`, pushed normally to
+`fork/agent/threadkeeper-hardening-next`, makes nested and
+persona task contracts closed-schema inputs: unknown or misspelled controls now
+persist a structured `contract_invalid` transcript before provider or worker
+setup instead of being silently discarded. Top-level inline goal envelopes keep
+their existing compatibility behavior.
+
+Checks: focused task-contract pytest (`6 passed`); combined subagent/budget
+hardening pytest (`315 passed`); Python compilation; `git diff --check`; PR #1
+ancestry. The nested OmegaClaw runtime copy remains intentionally unsynced while
+it lags several local hardening commits. No paid compute, provider, live queue,
+runtime, Telegram, subprocess, credential/access change, merge, force-push, or
+remote-ref deletion occurred.
+
+# 2026-07-15 - OpenClaw chat-room identity Phase 1
+
+Read all 757 lines of `docs/chat_room_identity_design/chat_room_identity_design.tex`. The sole PDF was generated 20 seconds after the TeX and contains the same Phase 1 schema/roadmap; no separate revised PDF was present. Traced the pipeline through `bot-message.ts` -> `bot-message-context.ts` -> `bot-message-context.session.ts` -> generic channel inbound context -> `MsgContext` -> inbound prompt metadata.
+
+Implementation commit `4c8cc1f5` adds a pure Telegram identity/envelope classifier and integration. Parent review found that reply-to-self incorrectly outranked an explicit mention of another bot, contrary to the v2 conflict rule, and that the new module had four extension-lint violations. Follow-up commit `4d234b80` makes explicit mentions authoritative when signals conflict, adds disagreement/reinforcement fixtures, and fixes the lint findings. Review also found an unconditional pre-generation `INCIDENTAL` skip, which contradicted Ben's explicit v2 definition of always-attending bots; follow-up `2e0ed9e0` removes that skip and adds a processor regression proving incidental messages reach attention policy. Validation commands: direct Vitest runs with `test/vitest/vitest.extension-telegram.config.ts` (32 passed across classifier and processor suites) and `test/vitest/vitest.auto-reply.config.ts` (75 passed); `corepack pnpm tsgo:core`; `corepack pnpm lint:extensions`; focused `oxfmt --check`; `git diff --check`. The aggregate `pnpm check` could not run initially because `pnpm` was only available through Corepack and its child processes require a PATH-visible executable. An initial multi-project test invocation also exposed a shallow-checkout cleanup issue and removed the first disposable clone; the branch was reconstructed from the pinned tag and verified with direct Vitest invocations.
+
+# 2026-07-15 - Machintel v2 registry and suppression milestone
+
+The preserved library PDF and named extracted attachment were discovered to be the unrelated 12-page Labs Constitution, despite the sidecar metadata. The authoritative complete Revision-2 source is the 857-line `docs/chat_room_identity_design/chat_room_identity_design_v2.tex`; implementation proceeded from that checked source and the artifact defect remains to repair separately.
+
+OpenClaw branch `agent/chat-room-identity-phase1` commit `e54d3356` adds `channels.telegram.botRegistry`, upgrades the structured envelope/self context to v2, derives sender/reply bot flags only from the registry, records social role/important bots and reinforced mention+reply agreement, and recognizes structured `SUPPRESS` in the existing silent-delivery gateway. Evidence: focused identity 9/9, token policy 60/60, core type check, scoped diff check. A full extension lint attempt produced no diagnostics but was manually interrupted after a prolonged quiet run, so it is not claimed as passing for this milestone.
+
+ProtoMegaBot2 commit `9a03011` adds the same mechanical schema to `channels/telegram.py`/`message_envelope.py`, registry JSON loading, mention-first classification, inspectable MeTTa policy relations, and a publish gate suppressing `SUPPRESS`, legacy `NO_REPLY`, acknowledgement-only text, and silence explanations. Provider-free canary evidence is 7/7 focused tests plus Python compilation and scoped diff check. Existing unrelated `memory/history.metta` changes were preserved and excluded from the commit. No live source, process, Telegram token, provider, or secret file was touched.
+
+## 2026-07-15 - ThreadKeeper direct dispatch-limit validation
+
+Continued the bounded synchronous ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against current draft PR #1
+head `3a870c5` / its safety-floor ancestry. Commit `6b71b45`, pushed normally
+to `fork/agent/threadkeeper-hardening-next`, removes a remaining lossy input
+path: direct `dispatch` no longer converts booleans/floats or silently replaces
+malformed `max_turns` / `max_chars` with defaults. Invalid or pathologically
+long decimal inputs persist a structured `dispatch_args_invalid` transcript
+before persona config, provider setup, or worker LLM calls. Decimal integer
+strings remain supported for MeTTa/Python compatibility and valid integer caps
+retain their existing clamp behavior.
+
+Checks: focused numeric-boundary pytest (`6 passed`); combined subagent/budget
+hardening pytest (`320 passed`); Python compilation; `git diff --check`; remote
+PR #1 head/ancestry check. The nested OmegaClaw runtime copy remains
+intentionally unsynced while it lags several local hardening commits. No paid
+compute, provider, live queue/runtime, Telegram, subprocess, credential/access
+change, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper persistent inbox storage
+
+Continued the isolated persistent-worker track on
+`agent/threadkeeper-persistent-workers`, coordinated against draft PR #1 and
+without duplicating its Phase 1 safety-floor work. Commit `66b249a`, pushed
+normally to `fork/agent/threadkeeper-persistent-workers`, adds bounded immutable
+inbox items as a provider-free storage receipt. Each item has a strict versioned
+schema, sequence, task/source-event/actor identity, bounded object payload,
+payload digest, and self-hash; creation is atomic and serialized per task.
+Eligibility is fail-closed: the task must currently be `WAITING_INPUT` and the
+item must bind to the current lifecycle event. Duplicate item IDs replay after
+restart, while stale sources, conflicting duplicates, malformed schema,
+sequence gaps, symlinks/non-regular records, and tampering are rejected. This
+slice intentionally performs no queue, lifecycle, provider, or tool effect.
+
+Checks: Python compilation; lifecycle pytest (`36 passed`); combined lifecycle,
+subagent, and budget hardening pytest (`349 passed`); `git diff --check`; PR #1
+ancestry; clean pushed worktree. No paid compute, provider, live queue/runtime,
+Telegram, secret/access/security change, merge, force-push, or remote-ref
+deletion occurred. Next: separate inbox consumption/requeue receipts, then
+result delivery/acknowledgement.
+
+Roadmap worker follow-up at 2026-07-16 07:36 UTC archived the implementation as
+`artifacts/ggb-capacity-gates/20260716-threadkeeper-persistent-inbox-storage/`.
+The combined 349-test provider-free gate replayed cleanly, and the sibling
+fixture checker covered all 7 recorded checks. `GGB_NEXT_GATES.md` now makes the
+remaining boundary explicit: storage is complete, while consumption/requeue
+must use a separate receipt that proves crash replay cannot consume or enqueue
+twice. No source/runtime change or live authority was added.
+
+## 2026-07-16 - ThreadKeeper direct dispatch scalar validation
+
+Continued the bounded synchronous hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 / its
+`agent/threadkeeper-safety-floor` ancestry without duplicating Phase 1.
+Commit `ae99ed3`, pushed normally to
+`fork/agent/threadkeeper-hardening-next`, makes direct `dispatch` reject
+non-string goals, persona keys, and explicit tool subsets plus blank goals.
+Malformed boundary values now produce a persistent structured
+`dispatch_args_invalid` record before persona/provider setup instead of being
+stringified or raising at `.strip()`.
+
+Checks: focused scalar/limit pytest (`9 passed`); combined subagent/budget
+hardening pytest (`329 passed`); Python compilation; `git diff --check`; PR #1
+ancestry. The nested OmegaClaw runtime copy remains intentionally unsynced while
+it lags several hardening commits. No paid compute, provider, live queue/runtime,
+Telegram, subprocess, credential/access/security change, merge, force-push, or
+remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper compound dispatch-argument validation
+
+Continued the bounded synchronous hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+safety-floor ancestry. Commit `a1a1bce` closes a compound-invalid-input edge:
+integer-limit errors are now combined with scalar validation before persistent
+error-record construction. A call containing both a malformed limit and
+non-string goal/tool subset/persona previously took the earlier limit-error
+path and could pass the unsafe persona value into transcript filename
+construction; it now returns and persists one `dispatch_args_invalid` record
+with sanitized record identity, before persona/provider setup.
+
+Checks: compound/numeric/scalar focused pytest (`10 passed`); full focused
+subagent pytest (`312 passed`); combined subagent/budget gate (`325 passed`);
+Python compilation; `git diff --check`; PR #1 ancestry. No provider, live
+queue/runtime, Telegram, subprocess, paid compute, secret/access/security
+change, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper persona resource/default-tool validation
+
+Continued the bounded synchronous hardening track on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`agent/threadkeeper-safety-floor` ancestry without duplicating Phase 1. Commit
+`619e223` validates optional persona resource and tool defaults during config
+load: `max_output_tokens` must be a non-boolean integer from 1 through the
+operator hard cap `OMEGACLAW_SUBAGENT_MAX_OUTPUT_TOKENS` (default 8,192), while
+`default_tool_subset` must be a non-empty bounded list of safe tool identifiers
+that are registered and v1-callable. Malformed/oversized limits, scalar or
+mixed-type lists, unsafe identifiers, excluded tools, and unknown tools now
+fail closed before escalation or provider setup.
+
+Checks: focused persona-config pytest (`22 passed`); combined provider-free
+subagent/budget hardening pytest (`342 passed`); Python compilation;
+`git diff --check`; PR #1 ancestry. The nested OmegaClaw runtime copy remains
+intentionally unsynced while it lags several hardening commits. No paid
+compute, provider, live queue/runtime, Telegram, subprocess,
+credential/access/security change, merge, force-push, or remote-ref deletion
+occurred.
+# 2026-07-16 - Persistent supervisor subprocess restart gate
+
+ThreadKeeper branch `agent/threadkeeper-persistent-workers` commit `c06725e`
+adds a provider-free subprocess fixture for the first real interpreter-boundary
+restart gate. Separate Python processes create an expired claimed attempt,
+recover and requeue it, then restart with cancellation asserted. The last
+process observes durable `QUEUED` state; the external effect journal contains
+exactly one enqueue and no runner call. Focused lifecycle tests pass 48/48 and
+the combined persistent/subagent/budget gate passes 361 tests; Python compile
+and `git diff --check` pass. No live runtime, provider, Telegram, queue service,
+memory promotion, credentials, paid compute, push, merge, or production wiring.
+## 2026-07-16 - ThreadKeeper exclusive persistent-supervisor ownership
+
+Completed the next provider-free persistent-worker supervisor slice on
+isolated branch `agent/threadkeeper-persistent-workers`, commit `e7e997e`.
+`supervise_persistent_once` now takes a non-blocking root-scoped OS file lock
+before durable-state preflight or callbacks. Concurrent callers and hosts
+without the locking primitive fail closed before queue/runner effects; the lock
+path uses the existing regular-file/no-symlink guard and crash exit releases
+ownership. A two-interpreter contention regression holds the owner during fake
+enqueue, proves the contender emits no effect, then verifies exactly one owner
+enqueue. Lifecycle pytest passed 49 tests; the combined provider-free gate
+passed 362 tests, plus Python compilation and `git diff --check`. Evidence:
+`experiments/20260716T210300Z-threadkeeper-persistent-supervisor-ownership-v1/RUN.md`.
+No live queue/provider/Telegram, ProtoMegaBot path/process, paid compute,
+credential/access change, push, merge, force-push, or remote-ref deletion.
+
+## 2026-07-16 - ThreadKeeper dispatch-deadline retry hardening
+
+Continued bounded synchronous hardening on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`fork/agent/threadkeeper-safety-floor` ancestor without duplicating Phase 1.
+Commit `4b4524a` binds each worker provider timeout to the smaller configured
+LLM timeout or remaining dispatch wall-clock budget. Retry backoff is capped by
+that deadline, a new attempt cannot start after expiry, and the dispatch checks
+again after the provider returns so a late successful-looking result is not
+accepted. Late calls persist a structured `dispatch_timeout` record with
+observed token accounting.
+
+Checks: focused timeout/retry pytest (`7 passed`); combined provider-free
+subagent/budget hardening pytest (`350 passed`); Python compilation;
+`git diff --check`; safety-floor ancestry. An initial check invocation used an
+incorrect relative venv path and exited 127 before collecting tests; the
+corrected commands passed. No provider, live runtime/queue, Telegram,
+subprocess worker, paid compute, credential/access/security change, push,
+merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-16 - ThreadKeeper closed-schema persona configs
+
+Continued bounded synchronous hardening on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`fork/agent/threadkeeper-safety-floor` ancestor without duplicating Phase 1.
+Commit `150b185` makes persona configuration a closed-schema boundary:
+unknown or misspelled controls such as `max_output_token` now fail during
+config load before escalation/provider setup. The existing deployed `notes`
+metadata remains allowed, but must be a bounded string without unsafe control
+characters. Added focused accept/reject regressions and updated the subagent
+reference.
+
+Checks: focused persona-config pytest (`39 passed`); combined provider-free
+subagent/budget hardening pytest (`347 passed`); Python compilation;
+`git diff --check`; safety-floor ancestry. The nested OmegaClaw runtime copy
+remains intentionally unsynced while it lags the hardening branch. No paid
+compute, provider, live queue/runtime, Telegram, subprocess,
+credential/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+
+## 2026-07-17 - ThreadKeeper complete-batch authorization preflight
+
+Continued bounded synchronous hardening on
+`agent/threadkeeper-hardening-next`, coordinated against draft PR #1 and its
+`fork/agent/threadkeeper-safety-floor` ancestor without duplicating Phase 1.
+Commit `63a63d3` makes worker authorization failures effect-free across the
+complete response batch. A later registered tool outside the dispatch subset,
+a task-contract-forbidden tool, an unregistered runtime tool, or a file call
+outside task-contract `allowed_paths` is now rejected during preflight before
+an earlier valid mutation can execute. Existing contract regressions now prove
+the worker must retry an authorized write in a separate response.
+
+Checks: focused authorization preflight pytest (`4 passed`); combined
+provider-free subagent/budget hardening pytest (`359 passed`); Python
+compilation; `git diff --check`; safety-floor ancestry. One combined check
+command ran the full passing pytest gate and then exited 127 because the shell
+had no bare `python`; compilation was rerun successfully with the project test
+venv. No provider, live runtime/queue, Telegram, subprocess worker, paid
+compute, credential/access/security change, push, merge, force-push, or
+remote-ref deletion occurred.
+## 2026-07-17 - ThreadKeeper effect-free quota preflight
+
+Continued the draft-PR-#1-derived bounded ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next` with commit `4fa20bc`. Worker batches that
+exceeded the per-turn or remaining dispatch/task-contract quota previously
+applied earlier valid calls before rejecting the tail. Both quota checks now
+run after complete-batch validation/authorization but before the first effect.
+
+Provider-free regressions now prove neither file in a two-write over-quota
+batch reaches the workspace for global, per-turn, or task-contract quotas.
+Three focused tests and the combined subagent/budget gate (`364 passed`),
+Python compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed. No provider, live queue/runtime, Telegram, paid compute,
+credential/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+
+## 2026-07-17 - ThreadKeeper reasoning-envelope protocol validation
+
+Continued the draft-PR-#1-derived bounded synchronous hardening track on
+`agent/threadkeeper-hardening-next` with commit `5ce53aa`, preserving
+`fork/agent/threadkeeper-safety-floor` ancestry. The tolerant response parser
+previously stripped well-formed `<think>...</think>` blocks but could parse and
+execute a tool-shaped line after an unclosed, stray, or nested reasoning
+marker. A new envelope preflight rejects those ambiguous forms before
+`run_tools`; the same check prevents a final `emit` inside an unclosed block
+from being accepted. Sequential well-formed reasoning blocks retain the
+existing stripping behavior.
+
+Provider-free regressions cover unclosed, stray, and nested envelopes with
+no file effect, acceptance of a well-formed reasoning block, and rejection of
+a hidden final emit. The combined boundary/subagent/budget gate passes 369
+tests, plus Python compilation, `git diff --check`, and Phase 1 safety-floor
+ancestry. An initial aggregate command named a nonexistent budget-test path
+and collected no tests; the corrected three-file gate passed. No provider,
+live queue/runtime, Telegram, subprocess worker, paid compute,
+credential/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+
+## 2026-07-17 - ThreadKeeper WAITING_INPUT handoff enforcement
+
+Continued the provider-free persistent-worker track on
+`agent/threadkeeper-persistent-workers` with commit `50aaaa2`. Inbox-driven
+resume now verifies the complete checkpoint chain and requires its newest
+checkpoint to be a formal handoff belonging to the current attempt before a
+new enqueue or consumption-receipt replay. Missing handoffs and a newer opaque
+checkpoint fail closed, leave the task in `WAITING_INPUT`, and produce no queue
+effect. Existing inbox fixtures now model a durable attempt/handoff chain.
+
+Checks: persistent lifecycle suite (`56 passed`); combined lifecycle/subagent/
+budget gate (`369 passed`); Python compilation; `git diff --check`; draft PR #1
+safety-floor ancestry. No provider, live queue/runtime, Telegram, ProtoMegaBot,
+paid compute, secret/access/security change, push, merge, force-push, or
+remote-ref deletion occurred. Evidence:
+`experiments/20260717T190841Z-threadkeeper-waiting-input-handoff/`.
+
+## 2026-07-17 - ThreadKeeper Markdown fence protocol validation
+
+Continued the draft-PR-#1-derived bounded synchronous hardening track on
+`agent/threadkeeper-hardening-next` with commit `79bfd4d`, preserving
+`fork/agent/threadkeeper-safety-floor` ancestry. The tolerant response parser
+previously removed Markdown fence marker lines without checking that the
+envelope was balanced or supported, so tool-shaped lines inside an unclosed,
+nested, or malformed fence could execute. Complete-batch preflight now accepts
+only balanced, non-nested triple-backtick fences with the existing bounded
+language-token alphabet. Malformed envelopes cause zero tool effects, and the
+same validation prevents a final `emit` inside an unclosed fence from becoming
+a parent result. Well-formed fenced tool calls retain their existing behavior.
+
+Checks: focused fence/thinking protocol pytest (`10 passed`); combined
+provider-free subagent/budget gate (`370 passed`); Python compilation;
+`git diff --check`; Phase 1 safety-floor ancestry. The first compilation
+command used the unavailable bare `python` alias and exited before testing;
+the corrected `python3`/project-venv checks passed. No provider, live
+queue/runtime, Telegram, subprocess worker, paid compute,
+credential/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+## 2026-07-17 - ThreadKeeper unsupported Markdown fence validation
+
+Continued the draft-PR-#1-derived bounded ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next` with local commit `3175ab4`. Markdown
+tilde-fence markers were outside the parser's supported triple-backtick v1
+syntax but were not recognized as fence markers, so tool-shaped lines inside
+them could execute. Unsupported tilde fences now reject the complete worker
+batch before effects. A provider-free regression proves that both a call
+inside the fence and an otherwise valid write earlier in the response cause
+zero filesystem effects.
+
+Checks: `fork/agent/threadkeeper-safety-floor` ancestry; focused fence pytest
+(`7 passed`); combined provider-free subagent/budget pytest (`372 passed`);
+Python compilation; `git diff --check`. An initial focused test invocation and
+one combined invocation used incorrect relative paths and failed before test
+collection; corrected project-venv commands passed. No provider, live queue,
+Telegram, runtime wiring, paid compute, secret/access/security change, push,
+merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-17 - ThreadKeeper enforceable forbidden-action contracts
+
+Continued the draft-PR-#1-derived bounded ThreadKeeper hardening track on
+`agent/threadkeeper-hardening-next` with local commit `3353e80`. Task contracts
+previously accepted any syntactically safe `forbidden_actions` identifier even
+though runtime enforcement recognized only tool names and a small alias set. A
+misspelling could therefore persist as an apparent constraint with no effect.
+The accepted vocabulary is now derived from the same centralized alias map used
+at authorization, and unknown identifiers fail before worker/provider setup.
+
+Focused contract pytest passed 7 tests; the combined provider-free subagent/
+budget gate passed 379 tests, plus Python compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry. No provider, live queue/runtime, Telegram,
+subprocess worker, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-18 - ThreadKeeper retry cancellation responsiveness
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`fccaac8`. Provider retry/backoff previously observed the dispatch deadline but
+did not observe a cancellation token until the worker call returned to the
+outer turn loop. A configured cancellation token is now checked before every
+attempt and polled at bounded intervals during retry backoff. Cancellation
+stops before another provider attempt and persists as a structured
+`status=cancelled` result and cancelled transcript rather than an LLM failure.
+
+Checks: focused retry tests (`5 passed`); combined provider-free
+subagent/budget gate (`381 passed`); Python compilation; `git diff --check`;
+draft PR #1 safety-floor ancestry. No provider, queue, Telegram, subprocess,
+paid compute, secret/access/security change, push, merge, force-push, or remote
+ref deletion occurred.
+
+## 2026-07-18 - ThreadKeeper authenticated provider-control returns
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`21b8883`. Dispatch previously inferred provider cancellation, rate limiting,
+concurrency limiting, and terminal retry failure from ordinary response-string
+prefixes. Because provider response content is worker-controlled, a worker
+could emit the cancellation prefix and forge a structured cancelled parent
+return and cancelled transcript. Retry/control outcomes now use a private
+internal string marker carrying the trusted status; identical ordinary worker
+text stays untrusted and proceeds through normal protocol handling.
+
+Checks: focused retry/control tests (`6 passed`); combined provider-free
+subagent/budget gate (`382 passed`); Python compilation; `git diff --check`;
+draft PR #1 safety-floor ancestry. No provider, queue, Telegram, subprocess,
+paid compute, secret/access/security change, push, merge, force-push, or remote
+ref deletion occurred.
+
+## 2026-07-18 - ThreadKeeper authenticated provider-boundary failures
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`78a05b9`. The native Ollama transport's HTTP byte-cap failure and the
+defensive missing-cloud-client path still returned ordinary strings. Dispatch
+therefore could treat provider failures as worker protocol text and finish as
+`incomplete`, weakening structured returns and durable failure classification.
+Both paths now return private `_LLMControlResult` markers. Oversized provider
+bytes are never JSON-decoded or parsed as tools, the parent receives
+`status=error`, and the transcript retains `provider_response_invalid`.
+
+Checks: provider-free subagent/budget gate (`380 passed`); focused provider-
+boundary regressions included; Python compilation; `git diff --check`; draft
+PR #1 safety-floor ancestry. No provider, queue, Telegram, subprocess, paid
+compute, secret/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+## 2026-07-18 - ThreadKeeper provider payload type validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`9b5dc2a`. Provider payloads are now authenticated before they enter the worker
+protocol or dispatch accounting. Native and OpenAI-compatible responses must
+contain string content and non-negative integer token counts (with absent usage
+remaining compatible as zero); booleans, strings, negative counters, malformed
+native response/message objects, and structured non-string content fail closed
+as `provider_response_invalid`. Usage is logged only after validation.
+
+Checks: four focused provider-boundary regressions; combined provider-free
+subagent/budget gate (`382 passed`); Python compilation; `git diff --check`;
+draft PR #1 safety-floor ancestry. The first focused-check command used an
+incorrect relative venv path and exited 127 before collection; the corrected
+absolute project-venv command passed. No provider, queue, Telegram, subprocess,
+paid compute, secret/access/security change, push, merge, force-push, or remote
+ref deletion occurred.
+## 2026-07-18 - Disposition score perturbation calibration
+
+Completed the next provider-free slice above the disposition appraisal gate.
+Five preregistered synthetic admitted-evidence archetypes were exhaustively
+perturbed over `{-0.03, 0, +0.03}^4` (405 samples). All four clear cases kept
+their expected recommendation in 81/81 samples. The conflicting stop/hold case
+remained adjudicated in 72/81 samples and otherwise resolved only to its
+nominal top action; no decisive recommendation jumped to another decisive
+action. The replay digest is
+`sha256:b43be1f443b8576f6a50a3ce4d7923ba0c43a07b473ec42a4a43d1b92d1ed1d0`.
+
+The validator passed 15/15 checks and four unit tests. This does not establish
+calibration on operational evidence. Before any canary, the next evidence step
+is a separately reviewed, redacted offline corpus derived from immutable
+evidence packets with preregistered labels. No live state, memory, provider,
+queue, supervisor, Telegram, runtime, secret, access, or paid-compute effect
+occurred.

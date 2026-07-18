@@ -3,7 +3,7 @@
 - Slug: `omegaclaw`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-06-26`
+- Last reviewed: `2026-07-18`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -47,6 +47,293 @@ Second-phase success, not yet attempted:
 
 ## Current state
 
+On 2026-07-18, ThreadKeeper commit `848f8a2` on
+`agent/threadkeeper-hardening-next` made malformed native-provider JSON and
+non-UTF-8 response bytes fail closed without retry. Deterministic bad provider
+data now becomes an authenticated `provider_response_invalid` outcome rather
+than consuming transport retry allowance. Five focused checks and the combined
+provider-free subagent/budget gate passed 386 tests.
+
+On 2026-07-18, the provider-free disposition-score perturbation calibration
+passed 15/15 checks and 4 unit tests across 405 preregistered synthetic samples.
+Four clear disposition archetypes remained fully stable; an ambiguous
+stop-versus-hold case adjudicated in 72/81 perturbations and otherwise resolved
+only to its nominal top action. This is offline robustness evidence only, not
+operational calibration, disposition authority, or approval for a canary.
+
+On 2026-07-18, ThreadKeeper commit `0c26daf` on
+`agent/threadkeeper-hardening-next` made malformed OpenAI-compatible response
+objects fail closed without retry. Empty/non-list choices and incomplete usage
+objects now become authenticated `provider_response_invalid` outcomes instead
+of retryable transport failures; malformed provider data cannot consume the
+configured retry allowance. The provider-free subagent/budget gate passed 384
+tests, and draft PR #1 safety-floor ancestry remains intact.
+
+On 2026-07-18, ThreadKeeper commit `9b5dc2a` on
+`agent/threadkeeper-hardening-next` made provider payload type validation fail
+closed. Native and OpenAI-compatible responses must now carry string content
+and non-negative integer token counters before entering worker protocol or
+quota accounting; malformed values become authenticated
+`provider_response_invalid` outcomes. The provider-free subagent/budget gate
+passed 382 tests, and draft PR #1 safety-floor ancestry remains intact.
+
+On 2026-07-18, ThreadKeeper commit `78a05b9` on
+`agent/threadkeeper-hardening-next` authenticated two remaining provider-
+boundary failures. Oversized native HTTP responses and impossible/missing
+OpenAI-compatible clients now carry private structured control markers rather
+than entering the worker protocol as ordinary model text. Oversized bytes are
+never parsed or executed; the durable transcript records
+`provider_response_invalid`. The provider-free subagent/budget gate passed 380
+tests, and draft PR #1 safety-floor ancestry remains intact.
+
+On 2026-07-18, ThreadKeeper commit `21b8883` on
+`agent/threadkeeper-hardening-next` authenticated provider-control outcomes at
+the structured-return boundary. Cancellation, rate-limit, concurrency-limit,
+deadline, and retry-failure states now carry a private internal marker instead
+of being inferred from worker-controlled string prefixes, so a worker cannot
+forge a cancelled dispatch or transcript by emitting control-shaped text. The
+combined provider-free subagent/budget gate passed 382 tests, and draft PR #1
+safety-floor ancestry remains intact.
+
+On 2026-07-18, ThreadKeeper commit `fccaac8` on
+`agent/threadkeeper-hardening-next` made provider retry/backoff cancellation
+responsive. A configured cancellation token is now polled during backoff and
+checked before every retry, so cancellation cannot start another provider
+attempt; the structured return and durable transcript record the dispatch as
+`cancelled`. The combined provider-free subagent/budget gate passed 381 tests,
+and draft PR #1 safety-floor ancestry remains intact.
+
+On 2026-07-17, ThreadKeeper commit `3353e80` on
+`agent/threadkeeper-hardening-next` closed a task-contract integrity gap:
+`forbidden_actions` is now a closed vocabulary of actions the runtime can
+actually enforce. Unknown or misspelled constraints fail before worker/provider
+setup instead of persisting as ineffective safety claims. The combined
+provider-free subagent/budget gate passed 379 tests; draft PR #1 safety-floor
+ancestry remains intact.
+
+On 2026-07-17, ThreadKeeper commit `3175ab4` on
+`agent/threadkeeper-hardening-next` closed the remaining unsupported Markdown
+fence gap. Tilde-fenced worker output now rejects the complete response before
+any tool effect, including when an otherwise valid write precedes the fence.
+The combined provider-free subagent/budget gate passed 372 tests; draft PR #1
+safety-floor ancestry remains intact.
+
+On 2026-07-17, the provider-free handoff-blocked disposition appraisal gate
+passed 17/17 checks and 4 unit tests. Five synthetic fixtures deterministically
+rank only `hold`, `request_cancel`, `fail_terminal`, or `expire` from pinned
+task/checkpoint and selected-memory provenance; conflicting evidence becomes a
+checksummed adjudicated `hold` with a review deadline. Provenance substitution,
+stale charts, unknown actions/evidence, missing deadlines, and direct-effect
+requests fail closed. ThreadKeeper state/source and `petta-memory` remained
+unchanged. Evidence: `artifacts/ggb-capacity-gates/20260717-threadkeeper-disposition-appraisal/`.
+
+On 2026-07-17, ThreadKeeper commit `79bfd4d` on
+`agent/threadkeeper-hardening-next` made malformed Markdown fence envelopes
+effect-free. Unclosed, nested, stray/ambiguous, and unsupported fence markers
+now reject the complete worker batch before a tool call, and a final `emit`
+inside an unclosed fence cannot be accepted. Well-formed fenced calls remain
+compatible. The combined provider-free subagent/budget gate passed 370 tests;
+the branch retains the draft PR #1 safety-floor ancestry.
+
+On 2026-07-17, ThreadKeeper persistent-worker commit `f09c621` added the
+explicit operator disposition gate for retryable tasks blocked by a missing
+formal handoff. Immutable self-hashed records can hold, request cancellation,
+fail terminally, or expire the exact task version while binding the manifest,
+newest opaque checkpoint, actor, rationale, and evidence. They never fabricate
+a handoff or enqueue work, and event-crash replay is idempotent. The combined
+provider-free lifecycle/subagent/budget gate passed 375 tests. Evidence:
+`experiments/20260717T210750Z-threadkeeper-operator-dispositions/`.
+
+On 2026-07-17, ThreadKeeper persistent-worker commit `8c106b6` added a
+provider-free restart-stability regression for the crash-before-handoff case.
+Two repeated supervisor passes return the same `handoff_required` outcome,
+leave the task `FAILED_RETRYABLE`, and cause zero enqueue effects. The combined
+lifecycle/subagent/budget gate passed 370 tests. Evidence:
+`experiments/20260717T193500Z-threadkeeper-handoff-restart-stability/`. This is
+safety evidence, not a liveness policy: the next bounded gate is to specify
+auditable operator dispositions without fabricating a handoff or silently
+reusing an older checkpoint.
+
+On 2026-07-17, ThreadKeeper persistent-worker commit `50aaaa2` extended formal
+handoff enforcement to the `WAITING_INPUT` inbox-resume boundary. The newest
+verified checkpoint must now be a formal handoff from the current attempt
+before enqueue or receipt replay; missing handoffs and newer opaque
+checkpoints leave the task waiting and cause no queue effect. The combined
+provider-free lifecycle/subagent/budget gate passed 369 tests. Evidence:
+`experiments/20260717T190841Z-threadkeeper-waiting-input-handoff/`. No live
+queue, provider, Telegram, or ProtoMegaBot path was used.
+
+On 2026-07-17, ThreadKeeper persistent-worker commit `35bf3b1` made formal
+handoffs mandatory at explicit retry requeue boundaries. Missing handoffs or a
+newer opaque checkpoint now stop before enqueue, leave the task retryable, and
+surface `handoff_required`. A provider-free fixture spans three fresh Python
+interpreters and reconstructs work exclusively from the verified durable
+manifest/checkpoint/handoff chain and a handoff-referenced project file. The
+combined lifecycle/subagent/budget gate passed 367 tests. Evidence:
+`experiments/20260717T171207Z-threadkeeper-handoff-requeue-resume/`. No live
+queue, provider, Telegram, or ProtoMegaBot path was used. Next is explicit
+formal-handoff enforcement for the `WAITING_INPUT` inbox-resume boundary.
+
+On 2026-07-17, ThreadKeeper persistent-worker commit `b6be4ea` incorporated a
+formal handoff/resume artifact into the existing immutable checkpoint chain.
+Strict `threadkeeper.persistent-worker.handoff.v1` snapshots now record role,
+observed model identity, state summary, exact pickup point, constraints,
+hazards, completed work, next steps, blockers, and evidence references. A
+verified latest-handoff projection is bound to manifest/checkpoint/handoff
+digests and exposed on resume; malformed schemas fail before checkpoint write.
+The combined provider-free lifecycle/subagent/budget gate passed 364 tests.
+Evidence: `experiments/20260717T154004Z-threadkeeper-formal-handoff-v1/`.
+No live queue, provider, Telegram, or ProtoMegaBot path was used. Next is a
+full process-death reconstruction fixture and pause/requeue emission policy.
+
+On 2026-07-17, live ProtoMegaBot overload/spam control was hardened after the
+Opus agent route repeatedly returned upstream HTTP 503. Runtime commits
+`fb36d35`, `a9c0060`, and `74e46d2` now drop unaddressed bot-authored and
+sibling-addressed group traffic before enqueue, keep transient provider
+failures out of Telegram, place overloaded routes on a five-minute cooldown,
+and permit only `openclaw/protomegabot-simple` as the automatic overload
+fallback. Fable is opt-in only. Four overload-policy and eight address/ingress
+tests pass; compilation and diff checks pass. The supervised worker was
+restarted and has one healthy process with no MTProto bridge.
+
+On 2026-07-17, ThreadKeeper commit `5ce53aa` on
+`agent/threadkeeper-hardening-next` closed a tool-protocol ambiguity around
+model reasoning markers. Unclosed, stray, or nested `<think>` envelopes now
+fail before any parsed tool effect, and a final `emit` inside an unclosed
+reasoning block cannot be accepted. Well-formed reasoning blocks retain their
+existing behavior. Five provider-free regressions and the combined
+subagent/budget gate pass 369 tests. The branch remains derived from draft PR
+#1's Phase 1 safety floor.
+
+On 2026-07-17, ThreadKeeper commit `4fa20bc` on
+`agent/threadkeeper-hardening-next` made over-quota worker batches effect-free.
+Per-turn and remaining dispatch/task-contract quota checks now run during
+complete-batch preflight, before any earlier valid file mutation. Provider-free
+regressions and the combined subagent/budget gate pass 364 tests. The branch
+remains derived from draft PR #1's Phase 1 safety floor.
+
+On 2026-07-17, ThreadKeeper commit `63a63d3` on
+`agent/threadkeeper-hardening-next` extended complete-batch preflight from
+argument shape/tool-name validation to authorization. A later tool outside the
+dispatch subset or outside task-contract `allowed_paths` now rejects the whole
+worker batch before an earlier valid write can execute. Provider-free
+regressions and the combined subagent/budget gate pass 359 tests. The branch
+remains derived from draft PR #1's Phase 1 safety floor.
+
+On 2026-07-17, ThreadKeeper commit `8936cab` on
+`agent/threadkeeper-hardening-next` made invented/unknown worker tools fail the
+complete batch preflight. A valid write earlier in the same response can no
+longer execute before a later unknown tool is rejected. Provider-free direct
+and dispatch regressions pass, and the combined subagent/budget gate passes 357
+tests. The branch remains derived from draft PR #1's Phase 1 safety floor.
+
+On 2026-07-17, ThreadKeeper commit `1ef286a` on
+`agent/threadkeeper-hardening-next` made malformed worker tool batches
+effect-free. Every parsed call's argument shape is now preflighted before the
+first tool effect, and parenthesized protocol records that the tolerant parser
+would otherwise skip reject the entire turn. Provider-free regressions prove
+that neither an earlier valid write nor a later malformed write reaches the
+filesystem; the combined subagent/budget gate passes 355 tests. The branch
+remains derived from draft PR #1's Phase 1 safety floor.
+
+On 2026-07-16, ThreadKeeper commit `5342db5` on
+`agent/threadkeeper-hardening-next` closed a persistent-evidence gap left after
+strict surrogate argument rejection: lone surrogates in untrusted worker
+responses/tool results are now rendered as visible literal escapes before they
+can reach the next provider prompt, structured parent return, or UTF-8
+transcript/checksum write. A provider-free two-turn regression proves the
+malformed file payload causes no filesystem effect while the recovered run and
+complete evidence persist. The combined subagent/budget gate passes 353 tests.
+The branch remains derived from draft PR #1's Phase 1 safety floor.
+
+On 2026-07-16, strict ThreadKeeper tool-argument validation commit `31e2ebf`
+on `agent/threadkeeper-hardening-next` closed the remaining file-payload Unicode
+encoding edge: `write-file` and `append-file` now reject surrogate code points
+before tool, audit, or filesystem effects while retaining their intentional
+multiline-content support. The combined provider-free subagent/budget gate
+passes 352 tests. The branch remains derived from draft PR #1's Phase 1 safety
+floor and does not duplicate it.
+
+On 2026-07-16, bounded synchronous ThreadKeeper hardening commit `4b4524a` on
+`agent/threadkeeper-hardening-next` closed a dispatch-timeout gap: provider
+timeouts and retry backoff are now bounded by the remaining dispatch deadline,
+no new retry starts after expiry, and results arriving after the wall-clock
+limit are rejected with a persistent `dispatch_timeout` record. The combined
+provider-free subagent/budget gate passes 350 tests. This branch remains based
+on the draft PR #1 safety-floor ancestry and does not duplicate Phase 1.
+
+On 2026-07-15, Ben expanded ThreadKeeper's mandate to make asynchronous
+persistent workers a native delegation mode while preserving synchronous
+bounded `delegate`. Work is isolated in
+`worktrees/threadkeeper-persistent-workers` on branch
+`agent/threadkeeper-persistent-workers`. Commit `7aa49e1` records the
+behavioral/ontology/threat-model specification, a single-authority MeTTa
+lifecycle policy, a fail-closed Python parity contract, and exhaustive
+provider-free truth-table tests. The corrected gate passed 5 unit tests, 10
+focused regression tests, Python compilation, `git diff --check`, and PeTTa/SWI
+compilation; see experiments
+`20260715T144937Z-threadkeeper-persistent-lifecycle-petta-parse` (preserved
+invalidated semantic finding) and
+`20260715T145130Z-threadkeeper-persistent-lifecycle-v1-fixed` (passing). No
+worker, provider, Telegram, credential, ProtoMegaBot process, or production
+path was used. Subsequent commits now provide durable manifests/events/status
+(`f82d168`), idempotent spawn/cancel (`aa33f7a`), and immutable attempt leases,
+bounded hash-linked checkpoints, and fail-closed stale-attempt recovery
+recording (`43d34fe`). Commit `9727ad7` adds the separate, idempotent explicit
+requeue effect: it verifies attempt/checkpoint lineage, recreates only the
+bounded queue record, and CAS-records its digest without claiming work. The
+Commit `1b2d670` binds the latest verified checkpoint ID/digest into the
+new immutable attempt and passes its structured payload to the queued runner as
+bounded resume context. Commit `29948e9` closes the enqueue/event crash window
+with bounded immutable manifest-bound receipts for spawn and explicit requeue;
+retries reuse a verified receipt instead of repeating the queue effect. The
+combined provider-free/focused gate passed 340 tests. Commit `4b7399e` now adds
+a bounded hash-linked task-level usage ledger, strict positive
+budget schemas, verified aggregate status, and pre-claim/requeue exhaustion
+gates; the combined gate passes 343 tests. Commit `fed6c2a` adds bounded,
+self-hashed completed-attempt result receipts and idempotent automatic token
+accounting; a retry after ledger-write failure reuses the verified receipt
+without repeating the queue effect. The combined provider-free/focused gate
+passes 346 tests. Subsequent commits add inbox/result delivery and automatic
+runtime/tool accounting from compact queue-runner counters.
+Commit `66b249a` adds the first inbox slice: bounded immutable self-hashed items
+eligible only against the current `WAITING_INPUT` event, with idempotent replay
+and fail-closed stale-source/conflict/tamper handling. The combined focused
+gate passes 349 tests.
+Commit `dc8dd79` adds that explicit consumption/requeue effect: it verifies the
+current waiting event and exact immutable item, writes a self-hashed receipt
+binding the manifest/item/queue result before lifecycle CAS, reuses the receipt
+after a crash without repeating enqueue, and passes the item as labeled
+untrusted task context. The combined provider-free/focused gate passes 352
+tests. Commit `bf5cf10` adds bounded immutable terminal-result deliveries keyed
+to the exact terminal event and result digest, separate self-hashed parent
+acknowledgements, and verified pending-delivery polling. Replays are idempotent;
+stale events, substituted payloads, conflicts, and tampering fail closed. The
+combined provider-free/focused gate passes 355 tests. Commit `c1f7b57` adds
+compact mechanically observed attempted-tool and whole-second runtime counters
+to queue-runner results and binds them with token counters in the existing
+crash-retry-safe receipt/ledger path; documentation head `a756315` records the
+boundary. The combined provider-free/focused gate passes 356 tests. Commits
+`3673e94` and `c06725e` add bounded supervisor reconciliation and a subprocess
+restart gate; `e7e997e` adds fail-closed exclusive root-scoped ownership and a
+concurrent-interpreter regression. The combined gate now passes 362 tests.
+ProtoMegaBot/ProtoMegaBot2 remain unwired; any canary requires separate
+approval.
+
+On 2026-07-14, the live ProtoMegaBot output/Telegram path was hardened after a
+model reply was silently lost. The active design now prefers a versioned JSON
+action envelope with a first-class `reply`, retains a strictly validated legacy
+S-expression compatibility path, treats history/runtime feedback as untrusted
+context, and fails visibly when a required reply is absent or malformed. The
+Telegram adapter now records deduplication only after successful delivery,
+retries remaining chunks, does not couple outbound delivery to poll health, and
+requires immutable per-message routing envelopes. The coherent implementation
+is local commit `a16e714` on branch
+`agent/protomega-output-pipeline-hardening`; it was integrated into the existing
+dirty live checkout without overwriting unrelated work and deployed under the
+supervisor. See `docs/protomega-output-pipeline-hardening.md` and
+`docs/protomega-hardening-consultation-2026-07-14.md`.
+
 OmegaClaw is installed enough to run locally in mock mode.
 
 Observed on 2026-06-26:
@@ -74,6 +361,7 @@ Immediate next step: adjudicate the private OpenClaw smoke candidate output, the
 | OmegaClaw Core inspection clone | `https://github.com/asi-alliance/OmegaClaw-Core` | `projects/omegaclaw/repos/OmegaClaw-Core` | upstream default | inspect clone |
 | PeTTa runtime checkout | `https://github.com/trueagi-io/PeTTa` | `projects/omegaclaw/repos/PeTTa` | upstream default | recorded by git in clone |
 | OmegaClaw nested runtime checkout | `https://github.com/asi-alliance/OmegaClaw-Core` | `projects/omegaclaw/repos/PeTTa/repos/OmegaClaw-Core` | upstream default | recorded by git in clone |
+| OpenClaw Phase 1 identity/routing implementation | `https://github.com/openclaw/openclaw` | `projects/omegaclaw/repos/OpenClaw` | `agent/chat-room-identity-phase1` | base tag `v2026.7.1` (`2d2ddc43`); local head `2e0ed9e0` |
 | ChromaDB helper | `https://github.com/patham9/petta_lib_chromadb` | `projects/omegaclaw/repos/PeTTa/repos/petta_lib_chromadb` | upstream default | recorded by git in clone |
 
 ## Environments
