@@ -136,6 +136,10 @@ Use semantic memory search for concepts and prior decisions. Use `rg`, `git grep
 - Do not hide failures or silently weaken requirements.
 - Ask at most one necessary question at a time; otherwise make a documented best-effort assumption.
 
+## Follow-through discipline
+
+When you promise a concrete deliverable or accept a task, immediately create or update a durable task entry (in the relevant project `TASKS.md` or obligation ledger) with: deliverable, acceptance test, next command, and evidence path. Say "working on it" only after a process or test run has actually started — not after inspection or planning. At each session resume, reload open obligations and either resume the oldest or explicitly report it incomplete. Before any status reply, audit promised vs. evidence; if no artifact or test result exists, say "not done." A task is complete only when the acceptance test passes and a durable record exists. See the `follow-through-contract` skill for the full protocol.
+
 ## End of task
 
 1. Run relevant tests and checks.
