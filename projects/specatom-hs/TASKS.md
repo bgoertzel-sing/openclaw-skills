@@ -1,9 +1,184 @@
 # Tasks
 
+- [x] 2026-07-19 11:30 PDT: Added `object-has-safe-identity` crisp validation
+  aligned with the PeTTa non-string/blank object-ID refusal gates. Exact
+  integer, whitespace-only, and valid-string ground truth, focused 26-test
+  validation suite, full 356-test suite, and `git diff --check` pass; local
+  implementation commit `a9fe38f`.
+
+- [x] 2026-07-19 09:30 PDT: Made crisp semantic-level and PeTTa-profile
+  validation reject unhashable malformed values without crashing. Exact list
+  value ground truth, focused 25-test validation suite, full unittest discovery,
+  and `git diff --check` pass; local commit `747efdf`.
+
+- [x] 2026-07-19 01:30 PDT: Added `object-identity-is-unique` crisp validation
+  aligned with the PeTTa duplicate-object refusal gate. Exact duplicate and
+  unique ground truth, focused regression, full 351-test suite, and
+  `git diff --check` pass; local implementation commit `2fcf5ee`.
+
+- [x] 2026-07-18 21:30 PDT: Added crisp, fail-closed validation obligations
+  for nested Plain-item parents: uniquely indexed parent, no self-parenting,
+  and matching file/section context. Exact ground-truth regression, focused
+  19-test validation suite, full 349-test suite, and `git diff --check` pass;
+  local commit `4fbbe89`.
+
+- [x] 2026-07-18 17:30 PDT: Make section/item exact-source-span membership
+  checks fail closed on duplicate indexed `SourceSpan` IDs, with exact
+  ambiguity evidence and regression coverage; 347-test suite passed.
+
+- [x] 2026-07-18: Made source-span, section, and item file-link validation fail closed for duplicate indexed `PlainFile` IDs. The three crisp checks now emit deterministic ambiguity evidence instead of treating the ID as indexed or selecting the last file record. Focused 17-test validation suite, full 347-test suite, and `git diff --check` pass; local commit `4c67665`.
+
+- [x] 2026-07-18: Made item-to-section validation fail closed for duplicate indexed section IDs. `item-has-section` and `item-file-matches-section-file` now emit exact Fail evidence instead of selecting the last matching section and risking a false Pass. Focused 16-test validation suite, full 346-test suite, and `git diff --check` pass; local commit `8fe7bc1`.
+
+- [x] 2026-07-18: Added the symmetric item-span aliasing regression: `item-span-file-matches-item-file` is now pinned to the canonical indexed span even when an embedded `SourceSpan` with the same ID masks a cross-file mismatch. Exact Fail evidence, focused 14-test validation suite, full 344-test suite, and `git diff --check` pass; local commit `dbc4c94`.
+
+- [x] 2026-07-18: Closed the validation-layer counterpart of the section-span aliasing gap: `section-span-file-matches-section-file` now checks the canonical indexed span rather than a conflicting embedded span record. Exact status/evidence ground truth, focused 13-test validation suite, full 343-test suite, and `git diff --check` pass; local commit `afd48da`.
+
+- [x] 2026-07-18: Closed a PeTTa section-provenance aliasing gap by checking a section's file against the canonical source span admitted to the manifest, not a conflicting embedded `SourceSpan` object with the same ID. Exact atom/refusal ground truth, focused regression, full 342-test suite, and `git diff --check` pass; local commit `1da9671`.
+
+- [x] 2026-07-18: When a source manifest is present, refused dangling `derived-from` links from SpecObjects and validation obligations to absent or earlier-refused source spans, while preserving valid links, absent optional provenance, and standalone object-only projection. Exact atom/refusal ground truth, full 340-test suite, and `git diff --check` pass; local commit `dc00958`.
+
+- [x] 2026-07-17: Refused PeTTa `PlainItem` records linked to absent/earlier-refused files, sections, or source spans, plus items whose emitted section/span belongs to another file; valid neighboring item atoms remain unchanged. Exact ground-truth regression, focused 81-test source/profile suites, full 339-test suite, and `git diff --check` pass; local commit `f53f120`.
+
+- [x] 2026-07-17: Refused PeTTa `SourceSpan` records linked to absent or earlier-refused `PlainFile` identities, preventing dangling `source-span` atoms while preserving valid neighboring provenance. Exact ground-truth regression, focused 79-test source/profile suites, full 337-test suite, and `git diff --check` pass; local commit `48d22c2`.
+
+- [x] 2026-07-17: Refused every occurrence of duplicate `PlainFile`, `SourceSpan`, `Section`, and `PlainItem` IDs before PeTTa source-manifest emission, preventing ambiguous provenance atoms while preserving uniquely identified neighboring records. Exact ground-truth regression, focused 78-test source/profile suites, full 336-test suite, and `git diff --check` pass; local commit `c97f2c1`.
+
+- [x] 2026-07-17: Refused malformed PeTTa `Section` and `PlainItem` atom-bearing fields before source-manifest emission: unsafe IDs/links, invalid ordinals, malformed provenance spans, blank item text, and non-string parent IDs no longer crash or alias emitted atoms, while valid neighboring records still emit. Focused source-index/profile suites passed 77 tests; full 335-test suite and `git diff --check` pass; local commit `346055e`.
+
+- [x] 2026-07-17: Refused malformed PeTTa `PlainFile` identities, paths, and digests before source-manifest or summary emission, while preserving a valid neighboring file as the document identity. Focused source-index/profile suites passed 76 tests; full 334-test suite and `git diff --check` pass; local commit `11e298f`.
+
+- [x] 2026-07-17: Refused malformed PeTTa source-span identities/file links and invalid byte/line bounds, including boolean pseudo-integers, while preserving valid neighboring span atoms. Focused source-index/profile suites passed 75 tests; full 333-test suite and `git diff --check` pass; local commit `bf37ab8`.
+
+- [x] 2026-07-17: Refused malformed `PlainFile`, `SourceSpan`, `Section`, and `PlainItem` container entries during PeTTa reified source-manifest export instead of dereferencing them until a crash; valid neighboring provenance still emits and document/graph summaries use the first emitted file identity. Focused 72-test profile suite and full 332-test suite pass; `git diff --check` passes; local commit `4988bbd`.
+
+- [x] 2026-07-17: Refused malformed non-`ValidationObligation` and non-`CheckRecord` entries in PeTTa reified export with structured type-bearing backend refusals instead of crashing, while continuing to emit valid neighboring records and counting only emitted checks; focused 71-test profile suite and full 331-test suite pass; `git diff --check` passes; local commit `269b708`.
+
+- [x] 2026-07-17: Refused every duplicate SpecObject ID from PeTTa reified export, suppressing ambiguous object/fact/provenance atoms and counting only emitted question objects in document-validation summaries; focused 70-test profile suite and full 330-test suite pass; `git diff --check` passes; local commit `be41253`.
+
+- [x] 2026-07-17: Refused PeTTa reified checks whose property or target disagrees with the emitted validation obligation they cite, suppressing inconsistent check atoms and excluding them from validation-summary counts; focused 67-test profile suite and full 327-test suite pass; `git diff --check` passes; local commit `4e06a16`.
+
+- [x] 2026-07-16: Refused checks whose referenced validation obligation was absent or refused by the PeTTa reified gate, suppressing dangling `check-obligation` atoms and excluding those checks from validation-summary counts; focused 66-test profile suite and full 326-test suite pass; `git diff --check` passes; local commit `d59965e`.
+
+- [x] 2026-07-16: Refused whitespace-only object and validation-obligation source-span IDs in PeTTa reified export instead of emitting malformed `derived-from` atoms, while preserving absent optional provenance; focused 64-test profile suite and full 324-test suite pass; `git diff --check` passes; local commit `5afe6c3`.
+
+- [x] 2026-07-16: Refused non-string and blank validation-obligation rationales in PeTTa reified export, preventing numeric/string rationale aliasing and suppressing the entire malformed obligation; focused 63-test profile suite and full 323-test suite pass; `git diff --check` passes; local commit `62a19c4`.
+
+- [x] 2026-07-16: Refused non-string and blank validation-obligation properties in PeTTa reified export, preventing numeric/string property aliasing and suppressing the entire malformed obligation and rationale; focused regression and full 321-test suite pass; `git diff --check` passes; local commit `2115035`.
+
+- [x] 2026-07-16: Refused non-string and blank validation-check target IDs in PeTTa reified export, preventing numeric/string target aliasing and suppressing malformed checks from atoms and document-validation summary counts; focused 60-test profile suite and full 320-test suite pass; `git diff --check` passes; local commit `894a7b5`.
+
+- [x] 2026-07-16: Refused non-string and blank validation-check properties in PeTTa reified export, preventing numeric/string property aliasing and suppressing malformed checks from atoms and document-validation summary counts; focused 59-test profile suite and full 319-test suite pass; `git diff --check` passes; local commit `39eda2d`.
+
+- [x] 2026-07-16: Refused non-string and blank check-to-obligation IDs in PeTTa reified export, preventing numeric/string link aliasing and suppressing the entire malformed check from atoms and validation-summary counts; focused 57-test profile suite and full 317-test suite pass; `git diff --check` passes; local commit `83c18d3`.
+
+- [x] 2026-07-16: Refused non-string and blank validation-obligation IDs in PeTTa reified export, suppressing aliased obligation/rationale atoms and emitting explicit backend refusals; focused 55-test profile suite and full 315-test suite pass; `git diff --check` passes; local commit `58ab362`.
+
+- [x] 2026-07-15: Refused non-string object source-span IDs in PeTTa reified provenance and executable lowering, including referenced objects, preventing misleading `derived-from` atoms and `.strip()` crashes; focused 53-test profile suite and full 313-test suite pass; local commit `1ae563b`.
+- [x] 2026-07-15: Refuse empty and whitespace-only object IDs in the PeTTa reified profile, suppressing the invalid object, provenance, and fact atoms; focused 51-test profile suite and full 311-test suite pass; local commit `0e09f18`.
+- [x] 2026-07-15: Refuse malformed non-tuple fact records in both PeTTa profiles instead of indexing/iterating them until export crashes; suppress misleading fact atoms and keep information-flow summary generation safe; focused 50-test profile suite and full 310-test suite pass; local commit `71dcd92`.
+- [x] 2026-07-15: Refuse malformed non-enum semantic levels in both PeTTa profiles instead of raising while reading `.value`; preserve safe diagnostic text for invalid levels and suppress object/fact emission; focused 49-test profile suite and full 309-test suite pass; local commit `45b6b88`.
+- [x] 2026-07-15: Require string IDs in object-scoped PeTTa fact subject positions; integer, float, and boolean subjects can no longer alias object IDs through implicit stringification; added reified/executable ground-truth regression; full 306-test suite passes; local commit `0777830`.
+- [x] 2026-07-15: Require string IDs in PeTTa object-reference fact positions; numeric and boolean values can no longer alias declared objects through implicit stringification; added reified/executable ground-truth regression; full 305-test suite passes; local commit `7bb1514`.
+- [x] 2026-07-15: Quote ASCII control characters in PeTTa scalar serialization so emitted atoms contain JSON escapes instead of raw NUL/control bytes; added fact-atom ground-truth regression; full 304-test suite passes; local commit `4f644be`.
+- [x] 2026-07-15: Quote semicolon-bearing source and fact text in PeTTa reified output so MeTTa comment syntax cannot silently truncate generated atoms; added source/fact ground-truth regression; full 303-test suite passes; local commit `1dfd8ed`.
+- [x] 2026-07-14: Added ground-truth coverage proving structured values in object-reference positions are refused by both PeTTa profiles before ID resolution/stringification; full 302-test suite passes.
+- [x] 2026-07-14: Refuse `None` and whitespace-only object-reference fact arguments in the PeTTa reified profile instead of serializing them as IDs, while preserving executable-skeleton empty-reference and deep missing-ID diagnostics; full 299-test suite passes.
+- [x] 2026-07-14: Refuse `None` scalar fact arguments in both PeTTa reified emission and executable-skeleton gating instead of serializing them as meaningful atoms; focused regression and full 298-test suite pass.
+- [x] 2026-07-14: Refuse whitespace-only scalar fact arguments in both PeTTa reified emission and executable-skeleton gating while preserving the existing object-reference-specific diagnostics; focused profile suite 37 tests and full suite 297 tests pass.
+
+- [x] 2026-07-14: Added ground-truth coverage proving whitespace-only source provenance fails closed for executable lowering directly, at the referencing object, and through an outer arbitrary-depth reference chain; 296 tests pass.
+- [x] 2026-07-14: Added ground-truth coverage proving whitespace-only executable object IDs fail closed both directly and through arbitrary-depth object-reference traversal; 295 tests pass.
+- [x] 2026-07-14: Closed the arbitrary-depth form of the empty executable-object identity fail-open: an outer safe object now receives a `MissingObjectId` refusal when its reference graph reaches an empty-ID descendant; added ground-truth coverage; 294 tests pass.
+- [x] 2026-07-14: Closed an executable-skeleton identity fail-open: empty object IDs now produce `missing-object-id-for-executable-skeleton`, and otherwise profile-valid facts with empty object-reference targets produce `unsafe-profile-fact:empty-object-reference:*`; added direct and referenced ground-truth regressions; 293 tests pass.
+- [x] 2026-07-14: Added positive executable-skeleton ground truth for a profile-safe diamond reference DAG, proving shared descendants are not misclassified as reference cycles while fail-closed traversal remains intact; 291 tests pass.
+- [x] 2026-07-13: Made mixed-depth executable-reference refusal selection globally canonical by ordering complete traversal paths rather than letting a shallower lexically later sibling mask a deeper `alpha` branch; added mixed-depth RawTextOnly ground truth; 290 tests pass.
+- [x] 2026-07-13: Made direct executable-skeleton refusal record ordering independent of an originating object's fact insertion order by canonically sorting candidate facts; added reversed-order two-target RawTextOnly ground truth; 289 tests pass.
+- [x] 2026-07-13: Made arbitrary-depth executable-reference refusal selection independent of descendant fact insertion order: deep traversal now visits canonical predicate/target references, with reversed-order ground truth for competing deep RawTextOnly paths; 288 tests pass.
+- [x] 2026-07-13: Made executable-reference refusal selection deterministic when a safe target contains multiple unsafe referenced facts: canonical minimum predicate/target/reason selection now avoids fact-order-dependent diagnostics; added a reversed-fact-order ground-truth regression; 287 tests pass.
+- [x] 2026-07-13: Added depth-parameterized ground-truth coverage proving unsupported semantic-level refusals take precedence over missing source provenance at direct, one-hop, and deeper executable-reference paths; 286 tests pass.
+- [x] 2026-07-13: Restored refusal precedence for unsafe semantic levels: `RawTextOnly` and other non-executable levels now retain their explicit semantic-level refusal even when source provenance is also absent; added a two-object ground-truth regression; 285 tests pass.
+- [x] 2026-07-13: Closed the one-hop descendant traversal gap in executable-reference safety: a directly referenced safe object whose immediate child has missing provenance, missing profile facts, profile-invalid facts, or an ambiguous ID now refuses explicitly; added a four-case ground-truth regression; 284 tests pass.
+- [x] 2026-07-12: Closed the remaining arbitrary-depth executable-reference ambiguity gap: descendant references to duplicate object IDs now refuse as `AmbiguousReference`; added `coverage -> requirement -> artifact -> duplicate source` ground-truth coverage; 283 tests pass.
+- [x] 2026-07-12: Extended arbitrary-depth executable-reference safety to refuse deep safe-level descendants with missing source provenance, missing profile facts, or profile-invalid facts; added a three-case ground-truth regression; 282 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton arbitrary-depth reference safety to refuse cyclic descendant chains explicitly (`ReferenceCycle`) instead of silently skipping revisited objects; added `coverage -> requirement -> artifact -> requirement` ground-truth coverage; 281 tests pass.
+- [x] 2026-07-12: Extended executable-skeleton arbitrary-depth reference safety to refuse descendant chains ending in undeclared objects; added `coverage -> requirement -> artifact -> missing-source` ground-truth coverage; 280 tests pass.
+- [x] 2026-07-12: Extended executable-skeleton safety through arbitrary-depth profile-valid object-reference chains; deep RawTextOnly descendants now cause explicit refusal; 279 tests pass.
+- [x] 2026-07-12: Extended executable-skeleton transitive reference safety to refuse safe intermediate objects that reference `RawTextOnly` or otherwise executable-unsafe targets; added a three-object ground-truth regression; 278 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton reference safety transitively: referenced safe-level objects whose own profile facts contain dangling object references now block lowering with an explicit refusal; added ground-truth coverage; 277 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton reference safety so safe-level targets with missing provenance, missing facts, or profile-invalid facts cannot be lowered transitively; added ground-truth refusal coverage; 276 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton gating to refuse duplicate object IDs and references whose target ID is ambiguous (`duplicate-object-id-for-executable-skeleton`, `unsafe-profile-fact:ambiguous-object-reference:*`); added a ground-truth regression; 275 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton gating to refuse otherwise valid object references when the declared target is `RawTextOnly` or another non-executable-safe semantic level (`unsafe-profile-fact:unsafe-object-reference-semantic-level:*`); added unsafe-target and safe-target regressions; 274 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton gating to refuse profile-valid facts with dangling object references (`unsafe-profile-fact:dangling-object-reference:*`); added dangling and declared-reference regressions, including one-shot iterable input; 273 tests pass.
+- [x] 2026-07-12: Tightened executable-skeleton gating to refuse source-provenanced lowered/verified objects with no profile facts (`missing-profile-facts-for-executable-skeleton`); added regression coverage; 271 tests pass.
 Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-15: Refused non-string PeTTa fact predicates before schema lookup, preventing custom or scalar runtime values from aliasing supported predicate names through string conversion; added reified/executable ground-truth coverage; 312 tests pass.
+
+- [x] 2026-07-11: Tightened executable-skeleton gating so `BackendLowered`/`Verified` labels are not sufficient by themselves: unknown predicates, malformed fact arity, and object-fact subject mismatches now produce explicit `unsafe-profile-fact:*` refusals; added safe-lowered and three unsafe ground-truth regressions; 269 tests pass.
+
+- [x] 2026-07-11: Tightened axiom justification so placeholder/unsupported `Proof:` markers remain blocking review objects but do not create `AxiomEvidence` or pass `axiom-has-explicit-justification`; added a ground-truth regression covering both `MissingProofDetail` and `MissingAxiomJustification`; 267 tests pass.
+
+- [x] 2026-07-11: Added explicit `Axiom:` marker support: source-spanned proposition objects with `Axiom`/`AxiomText`/`AxiomFor`/`SourceItem` facts, same-item support links via `AxiomEvidence` to explicit `Evidence:` or `Proof:` markers, Unknown `axiom-has-explicit-justification` checks plus exported `MissingAxiomJustification` blocking questions when justification is absent, PeTTa reified export coverage, exact-boundary regression before following `Proof:`, README support-surface update, and 266 passing tests.
+
+- [x] 2026-07-11: Added explicit `Proof:` marker support: source-spanned evidence/review objects with `Proof`/`ProofText`/`ProofFor`/`SourceItem` facts, Pass/Unknown `proof-marker-reviewable` checks for concrete proof artifacts/procedures versus TODO/raw-text-only/prove-later placeholders, exported `MissingProofDetail` blocking questions when proof detail is absent, PeTTa reified export coverage, exact-boundary regression before following `Evidence:`, README support-surface update, and 264 passing tests.
+
+
+- [x] 2026-07-11: Added explicit `Claim:` marker support: source-spanned proposition objects with `Claim`/`ClaimText`/`ClaimFor`/`SourceItem` facts, same-item evidence links via `ClaimEvidence`, Unknown `claim-has-explicit-evidence` checks plus exported `MissingClaimEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, exact-boundary regression before following `Evidence:`, README support-surface update, and 262 passing tests.
+
+- [x] 2026-07-11: Added explicit `Counterexample:` marker support: source-spanned validation objects with `Counterexample`/`CounterexampleText`/`CounterexampleFor`/`SourceItem` facts, Pass `counterexample-has-source-provenance` checks that preserve falsification examples without automatically rejecting/proving claims, PeTTa reified export coverage, exact-boundary regression before following `Evidence:`, and 260 passing tests.
+
+- [x] 2026-07-11: Added explicit `Observation:` marker support: source-spanned proposition objects with `Observation`/`ObservationText`/`ObservationFor`/`SourceItem` facts, Pass `observation-has-source-provenance` checks that preserve reported observations without implying validation success/executable semantics, PeTTa reified export coverage, exact-boundary regression before following `Evidence:`, and 259 passing tests.
+- [x] 2026-07-11: Added explicit `Hypothesis:` marker support: source-spanned proposition objects with `Hypothesis`/`HypothesisText`/`HypothesisFor`/`SourceItem` facts, same-item evidence links via `HypothesisEvidence`, Unknown `hypothesis-has-explicit-evidence` checks plus exported `MissingHypothesisEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, README support-surface update, and 258 passing tests.
+- [x] 2026-07-11: Added `Verification:` as an explicit validation-procedure alias alongside `Validation:` / `Check:`, preserving exact source spans before following `Evidence:` markers while exporting the same conservative `Validation`/`ValidationText`/`ValidationFor` facts, Pass/Unknown `validation-marker-reviewable` behavior, PeTTa reified coverage, and 256 passing tests.
+
+- [x] 2026-07-11: Added explicit `Precondition:` / `Postcondition:` marker support: source-spanned obligation/proposition objects with `Precondition`/`PreconditionText`/`PreconditionFor` and `Postcondition`/`PostconditionText`/`PostconditionFor` facts, same-item evidence links via `PreconditionEvidence`/`PostconditionEvidence`, Unknown checks plus `MissingPreconditionEvidence`/`MissingPostconditionEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 255 passing tests.
+
+- [x] 2026-07-11: Added explicit `Validation:` / `Check:` marker support: source-spanned validation objects with `Validation`/`ValidationText`/`ValidationFor`/`SourceItem` facts, Pass/Unknown `validation-marker-reviewable` checks for concrete test/golden-fixture/audit/diagnostic procedures versus validate-later placeholders, `MissingValidationDetail` blocking questions, PeTTa reified export coverage, and 253 passing tests.
+
+- [x] 2026-07-10: Added explicit `Metric:` marker support: source-spanned validation objects with `Metric`/`MetricText`/`MetricFor`/`SourceItem` facts, Pass/Unknown `metric-definition-reviewable` checks for concrete named metrics/thresholds/units versus placeholder values, `MissingMetricDefinition` blocking questions, PeTTa reified export coverage, and 251 passing tests.
+
+- [x] 2026-07-10: Added explicit `Citation:` / `Reference:` marker support: source-spanned evidence/reference objects with `Citation`/`CitationText`/`CitationFor`/`SourceItem` facts, Pass/Unknown `citation-reference-reviewable` checks for concrete DOI/arXiv/URL/bibliography/file references versus placeholder citation-needed values, `MissingCitationReference` blocking questions, PeTTa reified export coverage, and 249 passing tests.
+
+- [x] 2026-07-10: Added explicit `Example:` marker support: source-spanned review/example objects with `Example`/`ExampleText`/`ExampleFor`/`SourceItem` facts, Pass/Unknown `example-detail-reviewable` checks for concrete examples versus placeholder TODO/TBD/raw-text-only values, `MissingExampleDetail` blocking questions, PeTTa reified export coverage, and 247 passing tests.
+
+- [x] 2026-07-10: Added explicit `Acceptance Criterion:` / `Acceptance Criteria:` / `Criterion:` marker support: source-spanned validation objects with `AcceptanceCriterion`/`AcceptanceCriterionText`/`AcceptanceCriterionFor`/`SourceItem` facts, Pass/Unknown `acceptance-criterion-reviewable` checks for concrete criteria versus placeholder TODO/TBD/raw-text-only values, `MissingAcceptanceCriterionDetail` blocking questions, PeTTa reified export coverage, and 245 passing tests.
+
+- [x] 2026-07-10: Added explicit `Deadline:` / `Due:` marker support: source-spanned review objects with `Deadline`/`DeadlineText`/`DeadlineValue`/`DeadlineFor`/`SourceItem` facts, Pass/Unknown `deadline-value-reviewable` checks for concrete dates/quarters/halves/bounded relative intervals versus vague/TODO/ASAP placeholders, `UnsupportedDeadlineValue` blocking questions, PeTTa reified export coverage, and 243 passing tests.
+
+- [x] 2026-07-10: Added explicit `Priority:` marker support: source-spanned review objects with `Priority`/`PriorityText`/`PriorityValue`/`PriorityFor`/`SourceItem` facts, Pass/Unknown `priority-value-reviewable` checks for supported values (`blocker`, `critical`, `high`, `medium`, `low`, `P0`-`P3`) versus TODO/TBD/unsupported placeholders, `UnsupportedPriorityValue` blocking questions, PeTTa reified export coverage, and 241 passing tests.
+
+- [x] 2026-07-10: Added explicit `Owner:` / `Assignee:` marker support: source-spanned accountability objects with `Owner`/`OwnerText`/`OwnerFor`/`SourceItem` facts, Pass/Unknown `owner-assignment-reviewable` checks, `MissingOwnerAssignment` blocking questions for TODO/TBD/unassigned placeholders, PeTTa reified export coverage, and 239 passing tests.
+
+- [x] 2026-07-10: Added explicit `Deprecated:` / `Deprecation:` and `Replacement:` marker support: source-spanned review objects with `Deprecated`/`DeprecatedText`/`DeprecatedFor` and `Replacement`/`ReplacementText`/`Replaces`/`SourceItem` facts, same-item `DeprecatedReplacedBy` links, Unknown `deprecated-item-has-replacement-or-disposition` checks plus `MissingDeprecationDisposition` blocking questions when no replacement/migration/sunset/removal disposition is present, PeTTa reified export coverage, and 237 passing tests.
+
+- [x] 2026-07-10: Added explicit `TODO:` / `To-do:` marker support: source-spanned blocking question objects with `TodoItem`/`TodoText`/`TodoFor`/`QuestionText`/`SourceItem`/`Blocks` facts, Unknown `todo-item-needs-resolution` checks, boundary handling before following `Evidence:` / `Open issue:` markers, PeTTa reified export coverage, and 235 passing tests.
+
+- [x] 2026-07-10: Added explicit `Open issue:` / `Issue:` marker support: source-spanned blocking question objects with `OpenIssue`/`OpenIssueText`/`IssueFor`/`QuestionText`/`SourceItem`/`Blocks` facts, Unknown `open-issue-needs-resolution` checks, boundary handling before following `Evidence:` / `Question:` markers, PeTTa reified export coverage, and 233 passing tests.
+
+- [x] 2026-07-10: Added explicit `NonGoal:` / `Non-goal:` marker support: source-spanned exclusion objects with `NonGoal`/`NonGoalText`/`NonGoalFor`/`SourceItem` facts, Pass `non-goal-has-source-provenance` checks, marker-boundary handling before following `Evidence:` clauses, PeTTa reified export coverage, and 231 passing tests.
+
+- [x] 2026-07-10: Added explicit `Limitation:` marker support: source-spanned review objects with `Limitation`/`LimitationText`/`LimitationFor`/`SourceItem` facts, optional same-item mitigation links via `LimitationMitigatedBy`, Unknown `limitation-has-review-disposition` checks plus exported `MissingLimitationDisposition` blocking questions when no mitigation/workaround/disposition is present, PeTTa reified export coverage, and 230 passing tests.
+
+- [x] 2026-07-09: Broadened `Resource:` reviewability so artifact-path-only declarations such as `docs/capacity.v1.yaml` and `infra/limits.toml` pass `resource-requirement-reviewable` with exact source spans and PeTTa export, while TODO/raw-text-only placeholders remain Unknown; full suite now 228 passing tests.
+
+- [x] 2026-07-09: Broadened `Process:` reviewability so script/config/build artifact-only declarations such as `scripts/deploy.sh` and `Makefile` pass `process-definition-reviewable` with exact source spans and PeTTa export, while TODO/raw-text-only placeholders remain Unknown; full suite now 227 passing tests.
+
+- [x] 2026-07-09: Broadened witness/dependency concrete artifact recognition for extensionless build files (`Dockerfile`, `Containerfile`, `Makefile`) so explicit markers pass reviewability checks and PeTTa export without Missing* questions; full suite now 226 passing tests.
+
+- [x] 2026-07-09: Broadened dependency concrete path recognition so operational/config artifacts such as `scripts/bootstrap.sh`, `pyproject.toml`, and lockfiles can satisfy `dependency-requirement-reviewable` while retaining exact source spans and PeTTa export; full suite now 224 passing tests.
+
+- [x] 2026-07-09: Broadened witness/backend-artifact concrete path recognition so `.yaml`, `.yml`, and `.sh` artifacts such as `docs/capacity.v1.yaml` and `scripts/demo.sh` pass `witness-artifact-reviewable` while retaining exact source spans and PeTTa export; full suite now 223 passing tests.
+- [x] 2026-07-09: Tightened explicit `Process:` and `Resource:` marker boundary parsing so period-bearing operational/artifact references such as `scripts/demo.sh`, `out/review.metta`, and `docs/capacity.v1.yaml` stop before following same-item markers (for example `Evidence:`) without truncating file paths; full suite now 222 passing tests.
+- [x] 2026-07-09: Tightened explicit `Epistemic status:` / `Status:` marker boundary parsing so supported labels such as `verified` stop before following same-item markers (for example `Evidence:`), avoiding false unsupported statuses like `verified-evidence` while preserving exact epistemic/evidence source spans and PeTTa export; full suite now 221 passing tests; local commit `8cd114e`.
+- [x] 2026-07-09: Tightened explicit `Scope:`/`Context:` and `Confidence:` marker boundary parsing so period-bearing file/artifact scope references and percent confidence values stop before following same-item semantic markers (for example `Evidence:`), preserving exact scope/confidence/evidence source spans and PeTTa export; full suite now 220 passing tests.
+- [x] 2026-07-09: Tightened explicit `Interpretation:` marker boundary parsing so file-path/artifact interpretation text with periods stops before following same-item semantic markers (for example `Bridge:`), preserving exact interpretation/bridge source spans and PeTTa export; full suite now 219 passing tests.
+- [x] 2026-07-09: Tightened explicit `Rationale:` marker boundary parsing so file-path/artifact rationale text with periods stops before following same-item semantic markers (for example `Evidence:`), preserving exact rationale/evidence source spans and PeTTa export; full suite now 218 passing tests.
+- [x] 2026-07-09: Tightened explicit `Evidence:` marker boundary parsing so file-path/test evidence with periods stops before following same-item semantic markers (for example `Outcome:`), preserving exact evidence/outcome source spans and PeTTa export; full suite now 217 passing tests.
+- [x] 2026-07-08: Tightened `Witness:` / `Artifact:` marker boundary parsing so file-path witness text with periods stops before following same-item semantic markers (for example `Outcome:`), preserving separate exact source spans and PeTTa export; full suite now 216 passing tests.
+- [x] 2026-07-08: Added explicit `Dependency:` marker support: source-spanned dependency/resource objects with `Dependency`/`DependencyText`/`DependencyFor`/`SourceItem` facts, concrete service/API/file/package/dataset/artifact review via `dependency-requirement-reviewable`, Unknown `MissingDependencyDetail` blocking questions for TODO/vague placeholders, PeTTa reified export coverage, and 215 passing tests.
 - [x] 2026-06-30: Expanded the `specatom_hs` source indexer to preserve multi-line bullet continuations without swallowing nested acceptance-test bullets.
 - [x] 2026-06-30: Added conservative concept-table pass distinguishing explicit local definitions, external links, and unresolved references with Unknown checks/questions.
 - [x] 2026-06-30: Extended concept-table pass to support conservative aliases (`[def:]`, `[ref:]`, `[concept:]`) and bare glossary definitions beyond explicit `:Concept:` / `[external:...]` syntax.
@@ -32,7 +207,14 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-02: Added v0.1 CLI/demo outputs (`specatom_hs.cli`, grouped `.metta`, Markdown diagnostics, `scripts/demo.sh`) plus an `auth_service.plain` review fixture and regression checks for duplicate labels, missing coverage targets, unresolved concepts, and backend refusals.
 - [x] 2026-07-02: Optimized validation obligation/check de-duplication to use stable record IDs instead of whole-dataclass membership, making the larger auth-service review fixture practical in the unit suite.
 - [x] 2026-07-02: Added question-object blocker validation so unresolved concept questions point at their exact Unknown obligations and malformed QuestionObjects fail when review text/blocker links are missing or dangling.
-- [ ] Extend validators further toward Appendix N/P: richer coverage semantics, additional Unknown-to-question checks, richer check-record provenance, and wider predicate schemas.
+- [x] 2026-07-07: Added the first Phase 2 semantic-object slice for explicit `Scope`/`Context`, `EpistemicStatus`, `Evidence`, `Interpretation`, and `Bridge` markers with stable IDs, exact source provenance, conservative validation obligations/checks, Unknown/question handling for unsupported labels/profile gaps and missing evidence, PeTTa reified export coverage, and 189 passing tests. Decision: Ben chose this over further information-flow deepening on 2026-07-07 (`DECISIONS.md` D-20260707).
+- [x] 2026-07-07: Tightened Phase 2 semantic-object source-span alignment so repeated markers and continuation-line markers cite the exact regex occurrence instead of the first matching text in the item; added regression coverage for repeated `Evidence:` clauses and continuation-line evidence spans; 191 tests pass.
+- [x] 2026-07-07: Broadened Phase 2 `Bridge:` marker parsing so arbitrary unsupported ontology labels still create reviewable, source-spanned `BridgeObject`s plus Unknown `bridge-profile-supported` checks and `UnsupportedBridgeOntology` blocking questions instead of being silently ignored; 192 tests pass; local commit `b23cc36`.
+- [x] 2026-07-07: Added explicit Phase 2 `Confidence:` marker support: percent/decimal confidence annotations normalize to `ConfidenceValue` atoms, valid `[0,1]` values pass `confidence-value-in-unit-interval`, and out-of-range values produce Unknown checks plus `UnsupportedConfidenceValue` blocking questions; 194 tests pass; local commit `7b7aedb`.
+- [x] 2026-07-07: Added conservative Phase 2 bridge relation validation: supported graded correspondence relations pass `bridge-relation-conservative`, while identity/equivalence-style labels such as `identical` produce Unknown checks plus `UnsupportedBridgeRelation` blocking questions and PeTTa reified review atoms; 195 tests pass; local commit `6c5e2df`.
+- [x] 2026-07-07: Tightened explicit Phase 2 `Confidence:` marker behavior so non-numeric scales such as `Confidence: high` still become source-spanned confidence objects with `confidence-value-in-unit-interval` Unknown checks plus `UnsupportedConfidenceValue` blocking questions instead of being silently ignored; 196 tests pass; local commit `565a348`.
+- [x] 2026-07-08: Added a first Phase 3 witness/backend-artifact marker slice: explicit `Witness:` / `Artifact:` / `Backend artifact:` annotations now create source-spanned `BackendArtifact` objects with `Witness`/`WitnessText`/`WitnessFor` facts, `witness-artifact-reviewable` Pass checks for concrete file/test/log/commit/hash-style artifacts, Unknown checks plus `MissingWitnessArtifact` blocking questions for TODO/raw-text-only/non-concrete placeholders, and PeTTa reified export support; 199 tests pass; local commit `a838ba7`.
+- [x] 2026-07-07: Added a first Phase 3-adjacent explicit `Revision:` marker slice: source-spanned `RevisionObject`s now carry `Revision`/`RevisionText`/`Revises`/`SourceItem` facts, get `revision-has-source-provenance` Pass checks, and export through the PeTTa reified profile; 197 tests pass.
 - [x] 2026-07-06: Added `document-validation-summary` atom to PeTTa reified export with Pass/Fail/Unknown check counts and QuestionObject count; added 18-test end-to-end ground-truth test suite for `auth_service.plain` fixture covering source provenance, concepts, requirements/coverage, validation summary, refusals, and reified export structure; 159 tests pass.
 - [x] 2026-07-02: Added first v0.2 conservative ML/time-series methodology validation slice: metric declaration, horizon/frequency declaration, reproducibility evidence, and train-only preprocessing fit-scope obligations/questions.
 - [x] 2026-07-02: Extended the v0.2 ML/time-series methodology slice with baseline-comparison and uncertainty/error-bar reporting obligations/questions.
@@ -42,9 +224,24 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-03: Added conservative temporal split-order review (`ml-temporal-split-order-reviewed`) for random/shuffled time-series split wording without chronological/walk-forward/out-of-time evidence.
 - [x] 2026-07-03: Added generic-vs-named baseline/uncertainty methodology review (`ml-baseline-comparator-named`, `ml-uncertainty-method-named`) so vague baseline/uncertainty mentions become Unknown blocking questions.
 - [x] 2026-07-03: Added prediction-time feature availability review (`ml-feature-availability-reviewed`) so declared ML inputs/features require point-in-time/as-of, lagged, historical, or equivalent availability evidence.
+- [x] 2026-07-08: Added explicit `Assumption:` marker support: source-spanned `AssumptionObject`s with `Assumption`/`AssumptionText`/`AssumptionFor`/`SourceItem` facts, same-item evidence links via `AssumptionEvidence`, Unknown `assumption-has-explicit-evidence` checks plus exported `MissingAssumptionEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 204 passing tests; local commit `30365db`.
+- [x] 2026-07-08: Added explicit `Invariant:` marker support: source-spanned proposition objects with `Invariant`/`InvariantText`/`InvariantFor`/`SourceItem` facts, same-item evidence links via `InvariantEvidence`, Unknown `invariant-has-explicit-evidence` checks plus exported `MissingInvariantEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 206 passing tests; local commit `75b77a4`.
+- [x] 2026-07-08: Added explicit `Rationale:` marker support: source-spanned explanation objects with `Rationale`/`RationaleText`/`RationaleFor`/`SourceItem` facts, `rationale-has-source-provenance` Pass checks, PeTTa reified export coverage, and 209 passing tests; local commit `2514410`.
+- [x] 2026-07-08: Added explicit `Constraint:` marker support: source-spanned obligation objects with `Constraint`/`ConstraintText`/`ConstraintFor`/`SourceItem` facts, same-item evidence links via `ConstraintEvidence`, Unknown `constraint-has-explicit-evidence` checks plus exported `MissingConstraintEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 208 passing tests; local commit `ea3cb26`.
+- [x] 2026-07-08: Added explicit `Risk:` / `Mitigation:` marker support: source-spanned review objects with `Risk`/`RiskText`/`RiskFor` and `RiskMitigation`/`RiskMitigationText`/`MitigatesRiskFor` facts, same-item mitigation links via `RiskMitigatedBy`, Unknown `risk-has-explicit-mitigation` checks plus exported `MissingRiskMitigation` blocking questions when mitigation/control evidence is absent, PeTTa reified export coverage, and 211 passing tests; local commit `83e8112`.
+- [x] 2026-07-08: Added explicit `Decision:` marker support: source-spanned proposition objects with `Decision`/`DecisionText`/`DecidesFor`/`SourceItem` facts, Pass `decision-has-source-provenance` checks, PeTTa reified export coverage, README support-surface update, and 212 passing tests; local commit `df8cb83`.
+- [x] 2026-07-08: Added explicit `Outcome:` marker support: source-spanned proposition objects with `Outcome`/`OutcomeText`/`OutcomeFor`/`SourceItem` facts, Pass `outcome-has-source-provenance` checks, PeTTa reified export coverage, README support-surface update, and 213 passing tests; local commit `59250c6`.
 - [ ] v0.2 follow-up: deepen ML/time-series methodology validation with richer comparator/uncertainty semantics and stronger metric appropriateness once target/task facets are explicit.
 - [x] 2026-07-04: Added real-time/current feature freshness review (`ml-feature-freshness-reviewed`) so ML/time-series specs with current/live/recent/fresh features require freshness, staleness, latency, update-cadence, data-age, or as-of timestamp evidence.
 - [ ] v0.2 candidate: continue information-flow and temporal-availability obligations for declared inputs/outputs and temporally impossible claims.
+- [x] 2026-07-07: Added duplicate/parallel DataFlowEdge review (`information-flow-duplicate-edge-reviewed`) so repeated declarations of the same normalized component-level edge produce Pass when absent/acknowledged and Unknown blocking questions when unacknowledged; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `pulls ... from` / `pushes ... to` wording with `pulls-from` / `pushes-to` normalization, information-flow signal coverage, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `ingests ... from` / `emits ... to` wording with `ingests-from` / `emits-to` normalization, information-flow signal/declaration coverage, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `feeds into` wording with `feeds-into` normalization, exact source-span provenance, target-span trimming for trailing preposition/temporal words, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `receives ... from` wording with `receives-from` normalization, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Tightened `TemporalOrderEdge` provenance from whole-item spans to exact matched temporal-ordering phrase spans, with regression coverage comparing generated source slices to ground truth; 186 tests pass.
+- [x] 2026-07-06: Tightened DataFlowEdge provenance from item-level spans to exact matched edge-phrase source spans; edge provenance validator now passes exact/item-contained spans and regression tests compare generated spans against ground-truth source slices; 180 tests pass.
+- [x] 2026-07-06: Added sink-reachability review (`information-flow-sink-reachability-reviewed`) using reverse BFS from sinks to catch source-reachable trapped cycles/dead ends that cannot reach any output sink; Unknown creates blocking `MissingInformationFlowEvidence` questions, Pass when all nodes have a sink path; 180 tests pass.
 - [x] 2026-07-06: Added temporal ordering impossibility detection: extracts explicit "A before/after/then/precedes/follows B" statements, builds temporal ordering graph, detects impossible cycles via DFS, emits TemporalOrderEdge atoms, `information-flow-temporal-impossibility-reviewed` obligation (Fail on impossible cycles, Pass when consistent or no temporal statements), blocking questions, and PeTTa reified profile export; 131 tests pass.
 - [x] 2026-07-03: Added first v0.2 security/privacy obligation scaffolding for secrets, PII/privacy handling, access boundaries, and destructive-action safety, defaulting to Unknown/question where evidence is missing.
 - [x] 2026-07-03: Added secret log-exposure review (`security-secret-log-exposure-reviewed`) so secret/token/password specs require redaction, masking, or no-logging evidence.
@@ -74,13 +271,21 @@ Use small, testable tasks. Keep the top of each section in priority order.
 ## Next
 
 - [x] 2026-06-29: Implemented first PeTTa target reality check scaffold: `petta_reified_v0` profile gates, supported semantic levels, unsupported-level refusals, and RawTextOnly executable-skeleton refusal policy.
-- [ ] Implement Phase 2 SpecAtom-HS core more completely: `Scope`, `EpistemicStatus`, `Evidence`, `Interpretation`, and `Bridge` objects.
-- [ ] Implement Phase 3 facets: witnesses/backend artifacts, process/resource placeholders, and revisions.
+- [ ] Continue Phase 2 SpecAtom-HS core after the first semantic-object slice lands: broaden `Scope`, `EpistemicStatus`/confidence, `Evidence`, `Interpretation`, and `Bridge` coverage against the design note.
+- [ ] Continue Phase 3 facets beyond current witnesses/backend artifacts, process/resource placeholders, revisions, and explicit questions.
 - [ ] Implement Phase 4 PeTTa reified backend producing target-profile-filtered `.metta` files and richer source provenance manifests.
 - [ ] Add first SUMO/EXPO/Hyperseed bridge table with graded contextual correspondences from Appendix K.
 - [ ] Compare emitted atoms against design note 0006 and record divergences.
 
 ## Waiting or blocked
+
+- [x] 2026-07-15: Ben approved `Plain2Metta` and all publication
+  recommendations. Renamed the existing remote to public
+  `bgoertzel-sing/plain2metta` rather than creating a duplicate, retained
+  `specatom_hs` as the package/IR name, updated README/description, pushed
+  `agent/plain2metta-public-launch`, and opened draft PR #2. Secret-like tracked
+  tree scan and `git diff --check` passed; the pre-branding code suite had 306
+  passing tests at `0777830`.
 
 - [ ] Remote repository creation/push - needs explicit user direction on name/visibility.
 - [ ] Full PDF library preservation - needs a deliberate library-curation step if this source should be kept beyond the temporary attachment path.
@@ -95,6 +300,86 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Done recently
 
+- [x] 2026-07-19: Added crisp `object-has-known-role` validation so malformed
+  non-enum SpecObject roles fail deterministically before the matching PeTTa
+  backend refusal gate; exact regression coverage, focused 24-test validation
+  suite, all 354 tests, and `git diff --check` pass; local commit `1bafb57`.
+
+- [x] 2026-07-19: Made crisp and PeTTa-profile semantic-level validation fail
+  closed for malformed/unsupported non-enum values instead of crashing on
+  `.value`; exact regression coverage, focused 23-test validation suite, all
+  353 tests, and `git diff --check` pass; local commit `e408cf1`.
+
+- [x] 2026-07-19: Added explicit `validation-obligation-identity-is-unique`
+  and `check-identity-is-unique` crisp obligations so duplicate validation-layer
+  IDs fail deterministically before the matching PeTTa backend refusal gates;
+  focused 22-test validation suite and all 352 tests pass; `git diff --check`
+  passes; local commit `70891ce`.
+
+- [x] 2026-07-18: Added explicit `plain-file-identity-is-unique` and
+  `source-span-identity-is-unique` crisp obligations so duplicate top-level
+  source identities fail deterministically on the ambiguous records themselves;
+  focused 20-test validation suite and all 350 tests pass; `git diff --check`
+  passes; local commit `810c8f2`.
+
+- [x] 2026-07-18: Added explicit `section-identity-is-unique` and
+  `item-identity-is-unique` crisp obligations so duplicate source-record IDs
+  fail with deterministic ambiguity evidence rather than collapsing target-keyed
+  checks; narrow validation tests and all 348 tests pass; `git diff --check`
+  passes; local commit `00a41c8`.
+
+- [x] 2026-07-18: Made crisp section/item span-file validation fail closed on duplicate indexed SourceSpan IDs instead of using last-write-wins lookup; exact Fail/evidence regression coverage and all 344 tests pass; `git diff --check` passes; local commit `ffad34a`.
+
+- [x] 2026-07-18: Closed Plain-item parent-link provenance gaps in PeTTa source-manifest export: missing/refused, self, cross-file, and cross-section parents now suppress the child; refusal cascades to descendants while forward references to valid parents still emit. Exact atom/refusal ground truth and all 341 tests pass; `git diff --check` passes; local commit `012c93d`.
+
+- [x] 2026-07-17: Closed the PeTTa source-manifest provenance chain through `PlainItem`, refusing dangling/refused file, section, and span links and cross-file item provenance; exact atom/refusal ground truth and all 339 tests pass; local commit `f53f120`.
+
+- [x] 2026-07-17: Refused sections whose file/span was not emitted or whose span belongs to a different file, preventing dangling/cross-file `section` and `derived-from` atoms; exact atom/refusal ground truth passes, the 78-test PeTTa profile suite and full 338-test stdlib suite pass, and `git diff --check` passes; local commit `2bfa970`.
+
+- [x] 2026-07-17: Refused all duplicate validation-obligation and check IDs in PeTTa reified export, preventing order-dependent obligation selection and contradictory check atoms; linked checks to duplicate/refused obligations are suppressed, summary counts include only emitted checks, exact atom/refusal regressions pass, and the full suite passes 329 tests; local commit `8cc1078`.
+
+- [x] 2026-07-16: Tightened PeTTa reified check export so evidence must be non-blank reviewable text; integer evidence can no longer alias string evidence, malformed checks are fully suppressed and excluded from summary counts, and exact ground-truth regression coverage passes; 325 tests pass and `git diff --check` passes; local commit `4d2512a`.
+
+- [x] 2026-07-16: Tightened PeTTa reified validation-obligation export so target IDs must be non-blank strings; integer `7` can no longer alias the legitimate string target `"7"`, malformed obligation/rationale atoms are suppressed, and exact ground-truth regression coverage passes; 322 tests pass and `git diff --check` passes; local commit `6231ce3`.
+
+- [x] 2026-07-16: Tightened PeTTa reified check export so only declared `CheckStatus` enum values are emitted; runtime strings such as `"Pass"` and missing statuses are refused without aliasing valid records or inflating document-validation summary counts; 318 tests pass and `git diff --check` passes; local commit `d9bf308`.
+
+- [x] 2026-07-16: Tightened PeTTa reified check export so non-string/blank check IDs are refused instead of aliasing legitimate string IDs, and document-validation summary counts include only emitted checks; 316 tests pass and `git diff --check` passes; local commit `bc4b348`.
+
+- [x] 2026-07-15: Tightened PeTTa reified export so non-string validation-obligation source-span IDs produce explicit backend refusals and cannot be silently stringified into false `derived-from` provenance atoms; 314 tests pass and `git diff --check` passes; local commit `e5ef724`.
+
+- [x] 2026-07-14: Refused structured/non-scalar fact arguments (including lists and mappings) in both PeTTa reified and executable-skeleton profiles instead of stringifying them into misleading atoms, with ground-truth regression coverage; 301 tests pass; local commit `149bd57`.
+
+- [x] 2026-07-14: Refused non-finite scalar fact arguments (`NaN`, `Infinity`, `-Infinity`) in both PeTTa reified and executable-skeleton profiles, with ground-truth regression coverage; 300 tests pass.
+
+- [x] 2026-07-14: Checkpointed the accumulated conservative semantic-marker and fail-closed PeTTa profile work as local commit `0007d99`: exact-spanned Phase 2/3 objects and review questions, executable-reference safety through arbitrary-depth object graphs, and refusal of empty/`None` scalar and object-reference arguments. Full suite: 299 tests pass; `git diff --check` passes.
+- [x] 2026-07-11: Tightened executable-skeleton lowering to refuse otherwise profile-safe objects with missing/blank source provenance; added regression coverage; 270 tests pass.
+- [x] 2026-07-08: Added explicit `Dependency:` marker support: source-spanned dependency/resource objects with `Dependency`/`DependencyText`/`DependencyFor`/`SourceItem` facts, concrete service/API/file/package/dataset/artifact review via `dependency-requirement-reviewable`, Unknown `MissingDependencyDetail` blocking questions for TODO/vague placeholders, PeTTa reified export coverage, and 215 passing tests.
+- [x] 2026-07-08: Added explicit `Decision:` marker support: source-spanned proposition objects with `Decision`/`DecisionText`/`DecidesFor`/`SourceItem` facts, Pass `decision-has-source-provenance` checks, PeTTa reified export coverage, README support-surface update, and 212 passing tests; local commit `df8cb83`.
+- [x] 2026-07-08: Added explicit `Risk:` / `Mitigation:` marker support: source-spanned review objects with `Risk`/`RiskText`/`RiskFor` and `RiskMitigation`/`RiskMitigationText`/`MitigatesRiskFor` facts, same-item mitigation links via `RiskMitigatedBy`, Unknown `risk-has-explicit-mitigation` checks plus exported `MissingRiskMitigation` blocking questions when mitigation/control evidence is absent, PeTTa reified export coverage, and 211 passing tests; local commit `83e8112`.
+- [x] 2026-07-08: Added explicit `Rationale:` marker support: source-spanned explanation objects with `Rationale`/`RationaleText`/`RationaleFor`/`SourceItem` facts, `rationale-has-source-provenance` Pass checks, PeTTa reified export coverage, and 209 passing tests; local commit `2514410`.
+- [x] 2026-07-08: Added explicit `Constraint:` marker support: source-spanned obligation objects with `Constraint`/`ConstraintText`/`ConstraintFor`/`SourceItem` facts, same-item evidence links via `ConstraintEvidence`, Unknown `constraint-has-explicit-evidence` checks plus exported `MissingConstraintEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 208 passing tests; local commit `ea3cb26`.
+- [x] 2026-07-08: Added explicit `Invariant:` marker support: source-spanned proposition objects with `Invariant`/`InvariantText`/`InvariantFor`/`SourceItem` facts, same-item evidence links via `InvariantEvidence`, Unknown `invariant-has-explicit-evidence` checks plus exported `MissingInvariantEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 206 passing tests; local commit `75b77a4`.
+- [x] 2026-07-08: Added explicit `Assumption:` marker support: source-spanned `AssumptionObject`s with `Assumption`/`AssumptionText`/`AssumptionFor`/`SourceItem` facts, same-item evidence links via `AssumptionEvidence`, Unknown `assumption-has-explicit-evidence` checks plus exported `MissingAssumptionEvidence` blocking questions when evidence is absent, PeTTa reified export coverage, and 204 passing tests; local commit `30365db`.
+- [x] 2026-07-08: Added explicit `Question:` marker support: source-spanned `QuestionObject`s with `ExplicitQuestion`/`QuestionText`/`QuestionsObject`/`SourceItem`/`Blocks` facts, `explicit-question-needs-answer` Unknown checks, PeTTa reified export coverage, and 202 passing tests; local commit `a510534`.
+- [x] 2026-07-08: Added explicit `Process:` and `Resource:` Phase 3 marker support: source-spanned `ProcessObject`/`ResourceObject` atoms with `Process`/`ProcessText`/`ProcessFor` and `Resource`/`ResourceText`/`ResourceFor` facts, concrete process/resource validation (`process-definition-reviewable`, `resource-requirement-reviewable`), TODO/vague placeholder Unknown blocking questions (`MissingProcessDefinition`, `MissingResourceRequirement`), PeTTa reified export coverage, and 201 passing tests; local commit `09a5134`.
+- [x] 2026-07-08: Added explicit `Witness:` / `Artifact:` / `Backend artifact:` marker support with source-spanned `BackendArtifact` witness atoms, concrete-artifact validation, TODO/raw-text-only Unknown blocking questions, PeTTa export coverage, and 199 passing tests.
+- [x] 2026-07-07: Added explicit `Revision:` marker support with source-spanned `RevisionObject` atoms, provenance validation, PeTTa export coverage, and 197 passing tests.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `pulls ... from` / `pushes ... to` wording with `pulls-from` / `pushes-to` normalization, information-flow signal coverage, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `ingests ... from` / `emits ... to` wording with `ingests-from` / `emits-to` normalization, information-flow signal/declaration coverage, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `feeds into` wording with `feeds-into` normalization, exact source-span provenance, target-span trimming for trailing preposition/temporal words, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Extended component-level `DataFlowEdge` extraction to include explicit `receives ... from` wording with `receives-from` normalization, exact source-span provenance, and ground-truth regression coverage; 186 tests pass.
+- [x] 2026-07-07: Tightened `TemporalOrderEdge` provenance from whole-item spans to exact matched ordering phrase spans; temporal edge regression coverage now compares source slices against ground truth while preserving edge provenance validation; 186 tests pass.
+- [x] 2026-07-07: Broadened Phase 2 `Bridge:` marker parsing so arbitrary unsupported ontology labels still create reviewable `BridgeObject`s plus Unknown checks/questions instead of being skipped; 192 tests pass.
+- [x] 2026-07-07: Added explicit Phase 2 `Confidence:` marker support with normalized `ConfidenceValue` export and Unknown/blocking-question handling for out-of-range values; 194 tests pass; local commit `7b7aedb`.
+- [x] 2026-07-07: Tightened explicit Phase 2 `Confidence:` marker behavior so non-numeric scales such as `Confidence: high` still become source-spanned confidence objects with `confidence-value-in-unit-interval` Unknown checks plus `UnsupportedConfidenceValue` blocking questions instead of being silently ignored; 196 tests pass; local commit `565a348`.
+- [x] 2026-07-07: Added conservative bridge relation validation so `Bridge: ... as identical` remains a source-spanned `BridgeObject` but gets an Unknown `bridge-relation-conservative` check plus `UnsupportedBridgeRelation` blocking question instead of being accepted as identity; 195 tests pass; local commit `6c5e2df`.
+- [x] 2026-07-07: Added duplicate/parallel edge review to the information-flow validation slice: repeated declarations of the same normalized `DataFlowEdge` now emit `information-flow-duplicate-edge-reviewed` Pass/Unknown checks, blocking questions for unacknowledged duplication, and PeTTa reified export coverage; 186 tests pass.
+- [x] 2026-07-06: Added sink-reachability review to the information-flow validation slice: reverse BFS from sinks finds components that cannot reach any output sink even when they are source-reachable. Emits `information-flow-sink-reachability-reviewed` Pass/Unknown checks, blocking questions for trapped cycles/dead ends/missing outputs, and PeTTa reified export coverage; 180 tests pass.
+- [x] 2026-07-06: Fixed O(n^2) validator deduplication bottleneck: replaced linear-scan `all(existing.id != ...)` in `add_validation_obligation` and `add_check` with O(1) set-based lookups using `SpecDocument._obligation_ids` and `_check_ids`. Auth_service compile time dropped from >17s to 0.14s.
+- [x] 2026-07-06: Added `information-flow-graph-summary` atom to PeTTa reified export: computes node count, edge count, temporal edge count, source/sink counts, cycle count, connected component count, max dependency depth, and bottleneck node count from DataFlowEdge/TemporalOrderEdge facts; 4 ground-truth tests; 174 tests pass.
+- [x] 2026-07-06: Added bidirectional edge review to information-flow validation: detects A→B and B→A pairs in the DataFlowEdge graph, emits `information-flow-bidirectional-edge-reviewed` obligation (Pass when no bidirectional pairs or acknowledged via request-response/feedback-loop/bidirectional/two-way/mutual/round-trip wording, Unknown with blocking question when unacknowledged); 5 regression tests; 178 tests pass.
+- [x] 2026-07-06: Added connected-components detection to the information-flow validation slice: undirected BFS finds disconnected subgraphs in the DataFlowEdge graph, emits `information-flow-connected-components-reviewed` obligation (Pass when acknowledged as independent/separate/standalone, Unknown with blocking question otherwise); 3 regression tests; 170 tests pass.
 - [x] 2026-07-06: Added `document-validation-summary` atom to PeTTa reified export with Pass/Fail/Unknown check counts and QuestionObject count; added 18-test end-to-end ground-truth test suite for `auth_service.plain` fixture covering source provenance, concepts, requirements/coverage labels, duplicate label detection, orphan acceptance tests, unresolved concepts, validation summary counts, reified export structure, backend refusals, and grouped `.metta` section separators; 159 tests pass.
 - [x] 2026-07-06: Added temporal ordering impossibility detection to the information-flow validation slice: regex-based extraction of "A before/after/then/precedes/follows B" statements, temporal ordering graph construction, DFS-based cycle detection for impossible orderings, TemporalOrderEdge atoms, `information-flow-temporal-impossibility-reviewed` obligation (Fail on impossible cycles, Pass when consistent or no temporal statements), blocking questions, PeTTa reified profile export, and 9 regression tests; 131 tests pass.
 - [x] 2026-07-06: Added cross-layer DataFlowEdge vs TemporalOrderEdge consistency check: when data flows A→B but temporal statements say B before A, emits `information-flow-data-temporal-consistency-reviewed` obligation (FAIL on contradictions, PASS when consistent or either edge type absent), blocking questions, and PeTTa reified profile export; 4 regression tests; 135 tests pass.
@@ -112,7 +397,8 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-06: Added cross-layer DataFlowEdge vs TemporalOrderEdge consistency check: when data flows A→B but temporal statements say B before A, emits `information-flow-data-temporal-consistency-reviewed` obligation (FAIL on contradictions, PASS when consistent or either edge type absent), blocking questions, and PeTTa reified profile export; 4 regression tests; 135 tests pass.
 - [x] 2026-07-06: Added dependency depth / critical path length detection from extracted DataFlowEdge atoms: computes longest path in the acyclic graph via topological sort + DP, emits `information-flow-dependency-depth-reviewed` obligation (Pass when depth < 4 or acknowledged via 'deep'/'multi-layer'/'multi-hop'/'long chain'/'critical path'/'layered'/'pipeline depth' wording, Unknown with blocking question when deep and unacknowledged), 6 regression tests; 141 tests pass.
 - [x] 2026-07-06: Added bottleneck node detection (high fan-in AND high fan-out cross-dimension check): emits `information-flow-bottleneck-node-reviewed` obligation (Pass when no node is both high fan-in and high fan-out, or acknowledged via 'bottleneck'/'single point of failure'/'SPoF'/'critical'/'choke-point'/'overloaded'/'capacity-constrained'/'throughput-limit' wording, Unknown with blocking question when unacknowledged), 5 regression tests; 67 information-flow tests pass.
-- [ ] v0.2 follow-up: deepen information-flow validation with richer data-path inference, component-level dependency graphs, and stronger temporal impossibility checks once Phase 2/3 objects exist.
+- [x] 2026-07-06: Fixed O(n^2) validator deduplication bottleneck: replaced linear-scan `all(existing.id != ...)` in `add_validation_obligation` and `add_check` with O(1) set-based lookups using `SpecDocument._obligation_ids` and `_check_ids`. This fixes a 17s timeout on the `auth_service.plain` fixture (auth_service compile dropped from >17s to 0.14s).
+- [x] 2026-07-06: Added connected-components detection to the information-flow validation slice: undirected BFS finds disconnected subgraphs in the DataFlowEdge graph, emits `information-flow-connected-components-reviewed` obligation (Pass when acknowledged as independent/separate/standalone, Unknown with blocking question otherwise); 3 regression tests; 170 tests pass.
 - [x] 2026-07-05: Added API/webhook input-validation review to the conservative security/privacy slice; 78 tests pass.
 - [x] 2026-07-05: Added webhook/callback request-authenticity review to the conservative security/privacy slice; 77 tests pass.
 - [x] 2026-07-05: Added API authorization/scope review to the conservative security/privacy slice; 76 tests pass.
@@ -173,3 +459,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-06-29: Added minimal `specatom_hs` scaffold modules (`schema.py`, `passes.py`, `source_indexer.py`, `validators.py`, `backends/petta.py`), `examples/minimal.plain`, and focused tests for source spans, validation records, PeTTa gates, and reified atom stubs.
 - [x] 2026-06-29: Created `projects/specatom-hs/` project notebook and source-summary/implementation-plan document from Benjamin's uploaded SpecAtom-HS design PDF and existing project context.
 - [x] 2026-06-29: Created local prototype repo `projects/specatom-hs/repos/specatom-hs` with Python stdlib package, parser/indexer, SpecAtom-HS JSON/MeTTa-ish emitter, shallow Appendix G/O templates, crisp validator checks, examples, and 5 passing unit tests.
+
+- [x] 2026-07-06: Added self-dependency review (`information-flow-self-dependency-reviewed`) for direct DataFlowEdge self-loops; unacknowledged component→same-component dependencies create Unknown blocking questions, acknowledged recursion/feedback/fixed-point wording Passes, and ordinary edges Pass; 183 tests pass.
+- [x] 2026-07-15: Refused non-string SpecObject IDs in both PeTTa reified emission and executable-skeleton gating, preventing numeric/boolean IDs from aliasing string IDs or crashing validation; focused profile suite passed 47 tests and full suite passed 307 tests; local commit `1367d46`.
+- [x] 2026-07-15: Refused non-enum SpecObject roles in both PeTTa reified emission and executable-skeleton gating, preventing malformed runtime roles from raising during `.value` serialization or leaking supported facts; targeted regression passed and full suite passed 308 tests; local commit `d844856`.
