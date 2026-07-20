@@ -47,6 +47,171 @@ Second-phase success, not yet attempted:
 
 ## Current state
 
+On 2026-07-20, ThreadKeeper commit `bcbae5e` on
+`agent/threadkeeper-hardening-next` made explicitly supplied native Ollama
+duration metadata fail closed unless each value is a non-negative integer.
+Boolean, negative, fractional, string, and null values now become authenticated
+`provider_response_invalid` outcomes without retry; omitted duration fields
+remain compatible. Eight focused checks and the 479-test provider-free gate
+passed.
+
+On 2026-07-20, ThreadKeeper commit `b4bb993` on
+`agent/threadkeeper-hardening-next` made explicitly supplied native Ollama
+`created_at` metadata fail closed unless it is a non-empty, timezone-aware
+ISO/RFC 3339 timestamp. Wrong types, empty/malformed strings, and timezone-free
+timestamps now become authenticated `provider_response_invalid` outcomes
+without retry; omitted timestamps remain compatible. Ten focused checks and
+the 471-test provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `67f3576` on
+`agent/threadkeeper-hardening-next` made explicitly supplied OpenAI-compatible
+completion timestamps fail closed unless they are non-negative integer Unix
+timestamps. Negative, boolean, fractional, string, list, and mapping values now
+become authenticated `provider_response_invalid` outcomes without retry;
+omitted timestamps remain compatible. Nine focused checks and the 469-test
+provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `681d256` on
+`agent/threadkeeper-hardening-next` made explicitly supplied OpenAI-compatible
+response identifiers fail closed unless they are non-empty strings. Empty,
+whitespace-only, boolean, numeric, list, and mapping IDs now become
+authenticated `provider_response_invalid` outcomes without retry; omitted IDs
+remain compatible. Eight focused checks and the 460-test provider-free
+subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `f7df01a` on
+`agent/threadkeeper-hardening-next` bound explicitly supplied
+OpenAI-compatible response object metadata to `chat.completion`. Wrong-type,
+empty, boolean, numeric, list, and mapping values now fail closed as
+authenticated `provider_response_invalid` outcomes without retry; omitted
+metadata remains compatible. Eight focused checks and the 457-test
+provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `4e06b2d` on
+`agent/threadkeeper-hardening-next` made provider-native tool-call fields
+presence-sensitive. Explicit falsey `tool_calls` and deprecated
+`function_call` values now fail closed as authenticated
+`provider_response_invalid` outcomes without retry; omission/null remains the
+only accepted no-tool signal. Eight focused checks and the 444-test
+provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `5127c89` on
+`agent/threadkeeper-hardening-next` bound an explicitly indexed single
+OpenAI-compatible completion to choice zero. Nonzero, negative, boolean,
+string, and fractional indices now fail closed as authenticated
+`provider_response_invalid` outcomes without retry; omitted indices remain
+compatible. Eight focused checks and the 436-test provider-free
+subagent/budget gate passed.
+
+On 2026-07-19, the provider-free disposition split report was bound to its
+exact canonical synthetic input with `input_corpus_sha256`. Labels, reviewer
+metadata, and record order still cannot affect assignment, while any such
+input change is now visible in report provenance. Twelve unit tests, fixture
+replay, compile, JSON parse, and diff checks passed. No operational evidence
+was selected and no runtime authority changed.
+
+On 2026-07-19, ThreadKeeper commit `e01fb92` on
+`agent/threadkeeper-hardening-next` bound provider response messages to the
+assistant role. Explicit user/system/tool, empty, boolean, and numeric roles
+now fail closed as authenticated `provider_response_invalid` outcomes without
+retry; omitted roles remain compatible. Twelve focused checks and the
+428-test provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `0c44829` on
+`agent/threadkeeper-hardening-next` bound OpenAI-compatible responses to the
+requested model identity. Explicit mismatched or malformed model values now
+fail closed as authenticated `provider_response_invalid` outcomes without
+retry; omitted metadata remains compatible. Eight focused checks and the
+416-test provider-free subagent/budget gate passed.
+
+On 2026-07-19, the provider-free disposition-corpus split preregistration was
+hardened to require its pinned input schema and canonical hexadecimal SHA-256
+task provenance, and to reject duplicate task versions before deterministic
+60/20/20 assignment. Eleven unit tests plus fixture replay, compile, and diff
+checks passed. This remains synthetic-only and grants no operational collection
+or runtime authority.
+
+On 2026-07-19, ThreadKeeper commit `476a475` on
+`agent/threadkeeper-hardening-next` bound native provider responses to the
+requested model identity. Explicit missing model metadata remains compatible,
+but a mismatched or malformed model value now becomes an authenticated
+`provider_response_invalid` outcome without retry, preventing cross-model
+routing/accounting confusion. Six focused checks and the 412-test
+provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `a83f0a4` on
+`agent/threadkeeper-hardening-next` rejected explicitly truncated native
+provider completions. An Ollama response with `done=true` but a non-`stop`
+`done_reason` now becomes an authenticated `provider_response_invalid`
+outcome without retry, so partial text cannot enter the tool protocol. Eight
+focused checks and the 408-test provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `b9b547c` on
+`agent/threadkeeper-hardening-next` made explicit provider refusal/error
+signals fail closed. Native Ollama responses carrying a non-null `error` and
+OpenAI-compatible messages carrying a non-null `refusal` cannot pass
+coexisting content into the textual tool protocol; both become authenticated
+`provider_response_invalid` outcomes without retry. Two focused checks and
+the 406-test provider-free subagent/budget gate passed.
+
+On 2026-07-19, ThreadKeeper commit `533f671` on
+`agent/threadkeeper-hardening-next` made provider completion markers mandatory.
+Native Ollama responses must explicitly report `done=true`, and
+OpenAI-compatible choices must explicitly report `finish_reason=stop`; missing
+or null markers now fail closed as authenticated `provider_response_invalid`
+outcomes without retry. Six focused checks and the 404-test provider-free
+subagent/budget gate passed.
+
+On 2026-07-19, the disposition-corpus preregistration closed a reviewer-
+identity independence gap. Reviewer and adjudicator assignments must now be
+distinct, nonempty scoped pseudonyms; empty, non-string, and unscoped values
+fail closed. The provider-free gate passed 15 unit tests plus fixture replay,
+compile, and diff checks. This grants no authority to collect operational
+evidence or wire a canary.
+
+On 2026-07-19, ThreadKeeper commit `5bfa906` on
+`agent/threadkeeper-hardening-next` rejected explicitly unfinished provider
+responses. Native Ollama `done=false` and OpenAI-compatible non-`stop` finish
+reasons now fail closed as authenticated `provider_response_invalid` outcomes
+without retry, preventing partial model text from reaching the tool protocol.
+Focused checks passed 4 tests; the provider-free subagent/budget gate passed
+400 tests.
+
+On 2026-07-18, ThreadKeeper commit `a25d20d` on
+`agent/threadkeeper-hardening-next` rejected deprecated provider-native
+`function_call` payloads. Native Ollama and OpenAI-compatible compatibility
+payloads now fail closed as authenticated `provider_response_invalid`
+outcomes without retry, so they cannot bypass the existing `tool_calls`
+rejection. The provider-free subagent/budget gate passed 403 tests.
+
+On 2026-07-18, ThreadKeeper commit `99622d0` on
+`agent/threadkeeper-hardening-next` rejected provider-native tool-call payloads.
+Native Ollama and OpenAI-compatible tool calls now fail closed as authenticated
+`provider_response_invalid` outcomes without retry; only ThreadKeeper's
+validated textual tool protocol may reach execution. The provider-free
+subagent/budget gate passed 396 tests.
+
+On 2026-07-18, ThreadKeeper commit `cb5ea32` on
+`agent/threadkeeper-hardening-next` made OpenAI-compatible total-token
+accounting fail closed. When a provider supplies `usage.total_tokens`, it must
+be a non-negative integer equal to prompt plus completion tokens; malformed or
+contradictory totals become authenticated `provider_response_invalid` outcomes
+without retry. The provider-free subagent/budget gate passed 394 tests.
+
+On 2026-07-18, ThreadKeeper commit `e41d33f` on
+`agent/threadkeeper-hardening-next` made OpenAI-compatible provider choice
+selection fail closed. Responses must contain exactly one choice; empty or
+multiple-choice responses become authenticated `provider_response_invalid`
+outcomes without retry. The provider-free subagent/budget gate passed 390
+tests.
+
+On 2026-07-18, ThreadKeeper commit `45239b2` on
+`agent/threadkeeper-hardening-next` made missing native-provider message
+content fail closed. A native response must now explicitly contain string
+`message.content`; omission becomes an authenticated
+`provider_response_invalid` outcome without retry. The provider-free
+subagent/budget gate passed 389 tests.
+
 On 2026-07-18, ThreadKeeper commit `486f7e8` on
 `agent/threadkeeper-hardening-next` closed a falsey-value bypass in native
 provider token accounting. Explicit boolean and empty-string counters are no

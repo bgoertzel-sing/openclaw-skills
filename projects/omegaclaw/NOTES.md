@@ -1,3 +1,124 @@
+## 2026-07-19 - ThreadKeeper provider response-ID validation
+
+Continued the draft-PR-#1-derived hardening branch with commit `681d256`.
+OpenAI-compatible provider responses that explicitly supply an ID must now use
+a non-empty string. Empty, whitespace-only, boolean, numeric, list, and mapping
+IDs return the private `provider_response_invalid` control result without
+retry, preserving usable provider correlation metadata. Omitted IDs remain
+compatible.
+
+Eight focused checks, Python compilation, `git diff --check`, and the combined
+provider-free subagent/budget gate (`460 passed`) passed. A first combined
+invocation used the wrong budget-test filename and then exposed the persistent
+default rate-limit ledger; the established gate was rerun with its documented
+provider-free rate limiter disabled and passed. No provider, live queue/runtime,
+Telegram, paid compute, secrets/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-19 - ThreadKeeper provider message-role validation
+
+Continued the draft-PR-#1-derived hardening branch with commit `e01fb92`.
+Native and OpenAI-compatible provider responses that explicitly label their
+message as user, system, tool, empty, boolean, or numeric now return the private
+`provider_response_invalid` control result without retry. This prevents a
+misrouted non-assistant payload from entering ThreadKeeper's textual tool
+protocol while retaining compatibility with providers that omit role metadata.
+
+Twelve focused checks, Python compilation, `git diff --check`, and the combined
+provider-free subagent/budget gate (`428 passed`) passed. No provider, live
+queue/runtime, Telegram, paid compute, secrets/access/security change, push,
+merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-19 - OpenAI-compatible response model binding
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`0c44829`. OpenAI-compatible responses that explicitly identify a model must
+match the requested model; mismatched and malformed values fail closed as
+private `provider_response_invalid` outcomes without retry. Omitted response
+model metadata remains compatible.
+
+Eight focused checks, Python compilation, `git diff --check`, and the combined
+provider-free subagent/budget gate (`416 passed`) passed. An initially mistyped
+budget-test filename failed before collection; the corrected established gate
+passed. No provider, queue, Telegram, paid compute, secrets/access change,
+push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-19 - Explicit provider completion markers
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`533f671`. Native Ollama responses now require explicit `done=true`, and
+OpenAI-compatible choices require explicit `finish_reason=stop`. Missing or
+null markers fail closed as private `provider_response_invalid` outcomes
+without retry, preventing ambiguous or partial model text from entering the
+validated textual tool protocol.
+
+Six focused checks and the combined provider-free subagent/budget gate (`404
+passed`) passed, along with Python compilation and `git diff --check`. The
+initial check used unavailable `python`; rerunning with `python3` passed. No
+provider, queue, Telegram, paid compute, secrets/access change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-18 - Deprecated provider function-call rejection
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`a25d20d`. Native Ollama and OpenAI-compatible responses carrying the
+deprecated provider-native `function_call` field now fail closed as private
+`provider_response_invalid` outcomes without consuming retry allowance. This
+closes the legacy compatibility path around the existing `tool_calls`
+rejection and keeps ThreadKeeper's validated textual protocol as the only tool
+execution channel.
+
+Four focused checks and the combined provider-free subagent/budget gate (`403
+passed`) passed, along with Python compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry. The initial check used unavailable `python`;
+rerunning with `python3` passed. No provider, queue, Telegram, paid compute,
+secrets/access change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+## 2026-07-18 - Provider-native tool-call rejection
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`99622d0`. Native Ollama and OpenAI-compatible responses carrying provider-
+native tool calls now fail closed as private `provider_response_invalid`
+outcomes without consuming retry allowance. This prevents a second, silently
+ignored action channel from accompanying ThreadKeeper's validated textual tool
+protocol.
+
+Ten focused checks and the combined provider-free subagent/budget gate (`396
+passed`) passed, along with Python compilation and `git diff --check`. The
+initial check used unavailable `python`; rerunning with `python3` passed. No
+provider, queue, Telegram, paid compute, secrets/access change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-18 - OpenAI-compatible total-token accounting validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`cb5ea32`. OpenAI-compatible responses that supply `usage.total_tokens` must
+now provide a non-negative integer equal to `prompt_tokens +
+completion_tokens`. Boolean, string, negative, or contradictory totals fail
+closed as private `provider_response_invalid` outcomes and do not consume
+configured retries.
+
+Seven focused checks and the combined provider-free subagent/budget gate (`394
+passed`) passed, along with Python compilation, `git diff --check`, and remote
+`agent/threadkeeper-safety-floor` ancestry. No provider, queue, Telegram, paid
+compute, secrets/access change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+## 2026-07-18 - Native provider required-content validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`45239b2`. Native provider responses must now explicitly include string
+`message.content`; an omitted field fails closed as a private
+`provider_response_invalid` outcome and does not consume configured retries.
+
+Five focused checks and the combined provider-free subagent/budget gate (`389
+passed`) passed, along with Python compilation, `git diff --check`, and PR #1
+safety-floor ancestry. Two initial check invocations used stale recorded venv
+paths; the installed `pytest` runner passed. No provider, queue, Telegram, paid
+compute, secrets/access change, push, merge, force-push, or remote-ref deletion
+occurred.
+
 ## 2026-07-18 - Native provider falsey-counter validation
 
 Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
@@ -2929,3 +3050,198 @@ is a separately reviewed, redacted offline corpus derived from immutable
 evidence packets with preregistered labels. No live state, memory, provider,
 queue, supervisor, Telegram, runtime, secret, access, or paid-compute effect
 occurred.
+## 2026-07-18 - ThreadKeeper ambiguous provider choices
+
+Continued the draft-PR-#1-derived hardening branch with commit `e41d33f`.
+OpenAI-compatible provider responses must now contain exactly one choice;
+multiple-choice responses fail closed as authenticated
+`provider_response_invalid` outcomes after one call instead of silently
+selecting the first candidate. Three focused checks and the combined
+provider-free subagent/budget gate (`390 passed`) passed, along with Python
+compilation, `git diff --check`, and PR #1 safety-floor ancestry. No provider,
+queue, Telegram, paid compute, secrets/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+# 2026-07-19 - ThreadKeeper unfinished provider responses
+
+Commit `5bfa906` on `agent/threadkeeper-hardening-next` closes a provider-boundary
+truncation gap. An explicit native Ollama `done=false` response or an
+OpenAI-compatible choice with a non-`stop` finish reason can no longer pass
+partial text into ThreadKeeper's textual tool parser. Both return the private
+`provider_response_invalid` control outcome after one call. Providers omitting
+finish metadata remain compatible. Four focused regressions, Python compilation,
+`git diff --check`, and the combined provider-free subagent/budget gate (`400
+passed`) succeeded. No provider, live runtime, Telegram, paid compute, secret or
+access change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-19 - ThreadKeeper provider refusal/error signals
+
+Commit `b9b547c` on `agent/threadkeeper-hardening-next` closes a provider-
+boundary ambiguity after the completion-marker work. A native Ollama response
+with a non-null top-level `error`, or an OpenAI-compatible message with a
+non-null `refusal`, now becomes an authenticated `provider_response_invalid`
+outcome after one call even if the provider also supplies apparently completed
+tool-shaped content. Refusal/error content cannot reach ThreadKeeper's textual
+tool parser or consume retry allowance.
+
+Two focused regressions, Python compilation, `git diff --check`, the combined
+provider-free subagent/budget gate (`406 passed`), and draft PR #1 safety-floor
+ancestry passed. No live provider, queue/runtime, Telegram, subprocess worker,
+paid compute, secret/access/security change, push, merge, force-push, or
+remote-ref deletion occurred.
+# 2026-07-19 - Reject truncated native completion reasons
+
+ThreadKeeper commit `a83f0a4` on `agent/threadkeeper-hardening-next` closes a
+native-provider completion gap: Ollama can report `done=true` with
+`done_reason=length`, which is terminal but truncated. Explicit non-`stop`
+reasons now return authenticated `provider_response_invalid` control outcomes
+without retry, preventing partial tool-shaped text from entering worker
+protocol. Omitted `done_reason` remains compatible with older providers.
+
+Verification passed eight focused completion-boundary tests, Python
+compilation, `git diff --check`, PR #1 ancestry, and the combined provider-free
+subagent/budget gate (`408 passed`). An initially mistyped relative venv path
+and then a stale budget-test filename failed before test collection; the
+corrected established checks passed. No live provider, paid compute, secrets,
+access/security changes, push, merge, force-push, or remote-ref deletion.
+# 2026-07-19 - Native provider model-identity binding
+
+ThreadKeeper commit `476a475` on `agent/threadkeeper-hardening-next` now
+rejects an explicit native-provider response model that differs from the
+requested model, including malformed falsey/non-string values. Omitted model
+metadata remains compatible. Rejection is an authenticated
+`provider_response_invalid` control outcome and consumes no retry allowance,
+so content cannot be executed or usage attributed under the wrong requested
+route. Six focused checks, Python compilation, `git diff --check`, and the
+combined provider-free subagent/budget gate (`412 passed`) succeeded. An
+initial gate command used a nonexistent budget-test filename; the corrected
+established gate passed. No live provider, queue, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+# 2026-07-19 disposition split input binding
+
+- Hardened the synthetic-only split preregistration so every report carries a
+  canonical `input_corpus_sha256` binding the complete input document.
+- Assignment continues to hash only the scoped seed and immutable task-version
+  digest. Relabeling, reviewer changes, or record reordering cannot move a
+  record between splits, but they now change the corpus provenance digest.
+- Provider-free verification passed 12 unit tests plus compile, fixture replay,
+  JSON parsing, and scoped `git diff --check`.
+- This remains offline evidence only; it grants no operational corpus,
+  provider, canary, or runtime authority.
+# 2026-07-19 - OpenAI-compatible choice-index validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`5127c89`. When an OpenAI-compatible provider supplies an index for the single
+required response choice, it must be the integer zero. Nonzero, negative,
+boolean, string, and fractional indices now return the private
+`provider_response_invalid` control result without retry; omitted index
+metadata remains compatible.
+
+Eight focused checks and the combined provider-free subagent/budget gate (`436
+passed`) passed, along with Python compilation and `git diff --check`. The first
+focused invocation exposed two test assertions inserted across an existing test
+boundary; the assertions were relocated and the complete gate then passed. No
+provider, queue, Telegram, paid compute, secrets/access change, push, merge,
+force-push, or remote-ref deletion occurred.
+# 2026-07-19 - Provider-native tool-field presence validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`4e06b2d`. Native Ollama and OpenAI-compatible provider responses now reject
+explicit falsey `tool_calls` and deprecated `function_call` fields instead of
+treating them as absent. Only omission/null represents no provider-native tool
+request, keeping ThreadKeeper's validated textual tool protocol as the sole
+execution path.
+
+Eight focused regressions and the combined provider-free subagent/budget gate
+(`444 passed`) passed, along with Python compilation and `git diff --check`.
+An initial combined-gate command named a stale budget-test path and failed
+before collection; the corrected repository test path passed. No provider,
+queue, Telegram, paid compute, secrets/access change, push, merge, force-push,
+or remote-ref deletion occurred.
+## 2026-07-19 - Synthetic disposition split adequacy
+
+Archived `artifacts/ggb-capacity-gates/20260719-disposition-split-adequacy/`.
+The provider-free validator closes an evaluation-design gap left by deterministic
+hash assignment: it requires exact corpus/assignment identity, at least four
+records in each partition, and coverage of `hold`, `request_cancel`,
+`fail_terminal`, and `expire` in development, calibration, and held-out test.
+Eight unit tests and Python compilation pass. Constructed fixtures only; no
+operational evidence selection/redaction, scorer fitting, runtime behavior,
+provider, Telegram, memory write, push, or merge.
+# 2026-07-19 - OpenAI-compatible response object binding
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`f7df01a`. Explicit OpenAI-compatible response `object` metadata must now equal
+`chat.completion`; wrong-type, empty, boolean, numeric, list, and mapping values
+become private `provider_response_invalid` outcomes without consuming retry
+allowance. Omitted metadata remains compatible with older SDK fixtures.
+
+Eight focused checks and the combined provider-free subagent/budget gate (`457
+passed`) passed, along with Python compilation and `git diff --check`. An
+initial combined invocation named a nonexistent legacy budget-test path; the
+correct established gate then passed. No provider, queue, Telegram, paid
+compute, secrets/access change, push, merge, force-push, or remote-ref deletion
+occurred.
+# 2026-07-19 - OpenAI-compatible response timestamp validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`67f3576`. Explicit OpenAI-compatible completion `created` metadata must now be
+a non-negative integer Unix timestamp. Negative, boolean, fractional, string,
+list, and mapping values return the private `provider_response_invalid` control
+result immediately and do not consume transport retries; omitted metadata
+remains compatible.
+
+Nine focused checks and the combined provider-free subagent/budget gate (`469
+passed`) passed, along with Python compilation and `git diff --check`. One
+initial combined invocation exhausted the persistent test rate-limit ledger;
+the established provider-free gate was rerun with rate limiting explicitly
+disabled and passed. No provider, queue, Telegram, paid compute, secrets/access
+change, push, merge, force-push, or remote-ref deletion occurred.
+## 2026-07-20 - Native provider creation-timestamp validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`b4bb993`. Explicit native Ollama `created_at` metadata must now be a
+non-empty, timezone-aware ISO/RFC 3339 timestamp. Boolean, numeric, empty,
+malformed, collection, and timezone-free values return the private
+`provider_response_invalid` control result without retry; omitted timestamps
+remain compatible.
+
+Ten focused checks, Python compilation, `git diff --check`, PR #1 safety-floor
+ancestry, and the combined provider-free subagent/budget gate (`471 passed`)
+passed. The first combined invocation hit the persistent default test rate
+ledger; the established provider-free gate passed with calls-per-minute
+disabled and an isolated run directory. No provider, live queue/runtime,
+Telegram, paid compute, secrets/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+# 2026-07-20 - Provider-free motivation-state replay gate
+
+Materialized the Bach/MetaMo next gate at
+`artifacts/ggb-capacity-gates/20260720-motivation-state-replay/`. A pinned
+synthetic `petta-memory`-shaped snapshot deterministically updates competence
+and uncertainty-reduction needs plus six bounded modulators, then ranks fixed
+GoalChainer-shaped candidates. The bounded evidence-inspection candidate ranks
+first; every output remains candidate-only, adjudication-required, and records
+ThreadKeeper effect `none`. Seven unit tests and Python compile pass, covering
+replay determinism, full packet/candidate order invariance, evidence-identity
+mutation rejection, stale/missing temporal provenance, finite/range rejection,
+and monotonic information-seeking under higher uncertainty urgency. Updated
+the concise and long GGB roadmaps; the next offline slice is multi-event decay
+and restart equivalence. No memory write/promotion, task claim/enqueue, live
+runtime/provider/Telegram action, secret access, paid compute, push, merge, or
+runtime authority change.
+## 2026-07-20 - Native provider duration-metadata validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`bcbae5e`. Explicit native Ollama `total_duration`, `load_duration`,
+`prompt_eval_duration`, and `eval_duration` metadata must now be non-negative
+integers. Boolean, negative, fractional, string, and null values return the
+private `provider_response_invalid` control result without retry; omitted
+duration fields remain compatible.
+
+Eight focused checks, Python compilation, `git diff --check`, PR #1
+safety-floor ancestry, and the combined provider-free gate (`479 passed`)
+passed. An initial combined invocation exposed an existing order-dependent
+test rate-ledger leak in two older tests; the established gate passed with
+calls-per-minute disabled. No provider, live queue/runtime, Telegram, paid
+compute, secrets/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.

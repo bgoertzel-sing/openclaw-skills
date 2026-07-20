@@ -4,6 +4,220 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-20: Validate explicitly supplied native Ollama duration metadata
+  on `agent/threadkeeper-hardening-next` commit `bcbae5e`. The
+  `total_duration`, `load_duration`, `prompt_eval_duration`, and
+  `eval_duration` fields must be non-negative integers when present; boolean,
+  negative, fractional, string, and null values fail closed as authenticated
+  `provider_response_invalid` outcomes without retry. Focused checks: 8
+  passed; combined provider-free gate: 479 passed.
+
+- [x] 2026-07-20: Materialize the provider-free `motivation-state-v0.1`
+  replay gate from the Bach/MetaMo assessment. One pinned synthetic
+  `petta-memory`-shaped snapshot updates two bounded needs and six modulators,
+  then ranks three GoalChainer-shaped candidates as adjudication-required
+  ThreadKeeper candidates with effect `none`. Evidence mutation, stale or
+  missing temporal provenance, and invalid/non-finite state fail closed;
+  record ordering is invariant and uncertainty urgency is monotonic. Gate:
+  7/7 unit tests plus compile; evidence at
+  `artifacts/ggb-capacity-gates/20260720-motivation-state-replay/`.
+
+- [x] 2026-07-20: Validate explicitly supplied native Ollama `created_at`
+  metadata on `agent/threadkeeper-hardening-next` commit `b4bb993`. Boolean,
+  numeric, empty, malformed, collection, and timezone-free values fail closed
+  as authenticated `provider_response_invalid` outcomes without retry;
+  omitted and timezone-aware ISO/RFC 3339 timestamps remain compatible.
+  Focused checks: 10 passed; combined provider-free subagent/budget gate: 471
+  passed.
+
+- [x] 2026-07-19: Validate explicitly supplied OpenAI-compatible completion
+  timestamps on `agent/threadkeeper-hardening-next` commit `67f3576`.
+  Negative, boolean, fractional, string, list, and mapping values fail closed
+  as authenticated `provider_response_invalid` outcomes without retry;
+  omitted and non-negative integer timestamps remain compatible. Focused
+  checks: 9 passed; combined provider-free subagent/budget gate: 469 passed.
+
+- [x] 2026-07-19: Evaluate Joscha Bach's AAAI 2018 “Modeling Emotion and
+  Motivation” tutorial against the OmegaSelf/Hyperseed emotion-regime model.
+  Acceptance: preserve and hash the source PDF, extract page-addressable text,
+  identify the tutorial's actual need/modulator/emotion claims, and deliver a
+  concise evidence-backed assessment of agreements, tensions, and concrete
+  OmegaClaw design implications. Next command: download the canonical PDF and
+  run `pdfinfo`/`pdftotext`. Evidence path:
+  `library/bach-aaai2018-modeling-emotion-motivation/`. PDF and extracted text
+  are preserved and hashed; `pdfinfo` reports 132 pages. The page-addressed
+  assessment is in `notes/2026-07-19-bach-motivation-assessment.md` and defines
+  the next provider-free `motivation-state-v0.1` replay gate. The canonical
+  download URL, source hash, page-addressable extraction, visual-inspection
+  notes, and regime-layer comparison are preserved in
+  `library/bach-aaai2018-modeling-emotion-motivation/SOURCE.md`.
+
+- [x] 2026-07-19: Validate explicitly supplied OpenAI-compatible response IDs
+  on `agent/threadkeeper-hardening-next` commit `681d256`. Empty,
+  whitespace-only, boolean, numeric, list, and mapping IDs fail closed as
+  authenticated `provider_response_invalid` outcomes without retry; omitted
+  IDs remain compatible. Focused checks: 8 passed; combined provider-free
+  subagent/budget gate: 460 passed.
+
+- [x] 2026-07-19: Bind explicitly supplied OpenAI-compatible response object
+  metadata to `chat.completion` on `agent/threadkeeper-hardening-next` commit
+  `f7df01a`. Wrong-type, empty, boolean, numeric, list, and mapping values fail
+  closed as authenticated `provider_response_invalid` outcomes without retry;
+  omitted metadata remains compatible. Focused checks: 8 passed; combined
+  provider-free subagent/budget gate: 457 passed.
+
+- [x] 2026-07-19: Add a provider-free synthetic disposition split-adequacy
+  gate. Exact corpus/assignment identity, minimum partition size, and all four
+  authorized disposition labels per partition are required before scoring;
+  missing/duplicate identities, unknown labels/splits, underfilled partitions,
+  and incomplete label coverage fail closed. Gate: 8 unit tests plus compile.
+  No operational corpus selection, scorer fitting, runtime wiring, or canary.
+
+- [x] 2026-07-19: Make provider-native tool-call fields presence-sensitive on
+  `agent/threadkeeper-hardening-next` commit `4e06b2d`. Explicit falsey
+  `tool_calls` and deprecated `function_call` values fail closed as
+  authenticated `provider_response_invalid` outcomes without retry;
+  omission/null remains compatible. Focused checks: 8 passed; combined
+  provider-free subagent/budget gate: 444 passed.
+
+- [x] 2026-07-19: Bind an explicitly indexed single OpenAI-compatible
+  completion to choice zero on `agent/threadkeeper-hardening-next` commit
+  `5127c89`. Nonzero, negative, boolean, string, and fractional indices fail
+  closed as authenticated `provider_response_invalid` outcomes without retry;
+  omitted indices remain compatible. Focused checks: 8 passed; combined
+  provider-free subagent/budget gate: 436 passed.
+
+- [ ] 2026-07-19: Diagnose and repair ProtoMegaBot's repeated long-form
+  generation-without-delivery failure in the Bot Philosophy group. Acceptance:
+  identify the failing layer from session/runtime logs, apply a scoped fix with
+  focused regression coverage, restart only the verified ProtoMegaBot runtime
+  if required, and obtain a successful bounded end-to-end response canary.
+  Root cause fixed in OmegaClaw-Core commit `bd6130b`; 5/5 focused tests pass
+  and the verified supervisor is healthy after restart. Remaining acceptance
+  check: one live addressed complex-turn retry must deliver both acknowledgement
+  and substantive answer. Evidence path:
+  `projects/omegaclaw/artifacts/protomegabot-generation-repair-20260719.md`.
+
+- [x] 2026-07-19: Bind the provider-free disposition split report to its exact
+  canonical synthetic input using `input_corpus_sha256`. Assignment remains
+  independent of labels, reviewer metadata, and record ordering, while any
+  change to those fields is now visible in report provenance. Gate: 12/12 unit
+  tests, fixture replay, compile, JSON parse, and diff checks pass. No
+  operational collection, runtime wiring, or canary is authorized.
+
+- [x] 2026-07-19: Bind provider response messages to the assistant role on
+  `agent/threadkeeper-hardening-next` commit `e01fb92`. Explicit
+  user/system/tool, empty, boolean, and numeric message roles fail closed as
+  authenticated `provider_response_invalid` outcomes without retry; omitted
+  roles remain compatible. Focused checks: 12 passed; combined provider-free
+  subagent/budget gate: 428 passed.
+
+- [x] 2026-07-19: Bind OpenAI-compatible responses to the requested model on
+  `agent/threadkeeper-hardening-next` commit `0c44829`. Explicit mismatched,
+  empty, boolean, and numeric model values fail closed as authenticated
+  `provider_response_invalid` outcomes without retry; omitted metadata remains
+  compatible. Focused checks: 8 passed; combined provider-free
+  subagent/budget gate: 416 passed.
+
+- [x] 2026-07-19: Harden the provider-free disposition-corpus split
+  preregistration against malformed provenance and correlated duplicates. The
+  gate now requires the pinned input schema and canonical hexadecimal SHA-256
+  task digests, and rejects duplicate task-version provenance before assigning
+  deterministic 60/20/20 splits. Gate: 11/11 unit tests, fixture replay,
+  compile, and diff check pass. This grants no authority to collect operational
+  evidence, wire runtime behavior, or run a canary.
+
+- [x] 2026-07-19: Bind native-provider responses to the requested model on
+  `agent/threadkeeper-hardening-next` commit `476a475`. Explicit mismatched,
+  empty, boolean, and numeric response model values now fail closed as
+  authenticated `provider_response_invalid` outcomes without retry; omitted
+  model metadata remains compatible. Focused checks: 6 passed; combined
+  provider-free subagent/budget gate: 412 passed.
+
+- [x] 2026-07-19: Reject explicitly truncated native-provider completion
+  reasons on `agent/threadkeeper-hardening-next` commit `a83f0a4`. Ollama
+  responses with `done=true` but non-`stop` `done_reason` now fail closed as
+  authenticated `provider_response_invalid` outcomes without retry. Missing
+  `done_reason` remains compatible for older providers. Focused checks: 8
+  passed; combined provider-free subagent/budget gate: 408 passed.
+
+- [x] 2026-07-19: Reject explicit provider refusal/error signals on
+  `agent/threadkeeper-hardening-next` commit `b9b547c`. Native Ollama
+  `error` responses and OpenAI-compatible message `refusal` responses now
+  fail closed as authenticated `provider_response_invalid` outcomes without
+  retry, even when they carry tool-shaped content. Focused checks: 2 passed;
+  combined provider-free subagent/budget gate: 406 passed.
+
+- [x] 2026-07-19: Require explicit provider completion markers on
+  `agent/threadkeeper-hardening-next` commit `533f671`. Native Ollama must
+  return `done=true`, and OpenAI-compatible responses must return
+  `finish_reason=stop`; omitted/null markers fail closed as authenticated
+  `provider_response_invalid` outcomes without retry. Focused checks: 6
+  passed; combined provider-free subagent/budget gate: 404 passed.
+
+- [x] 2026-07-19: Harden disposition-corpus reviewer independence before any
+  operational evidence selection. Reviewer/adjudicator identities must now be
+  distinct, nonempty scoped pseudonyms; empty, non-string, and unscoped values
+  fail closed. Gate: 15/15 unit tests, fixture replay, compile, and diff check
+  pass. This does not authorize corpus collection, runtime wiring, or a canary.
+
+- [x] 2026-07-19: Reject explicitly unfinished provider responses on
+  `agent/threadkeeper-hardening-next` commit `5bfa906`. Native Ollama
+  `done=false` and OpenAI-compatible non-`stop` finish reasons now become
+  authenticated `provider_response_invalid` outcomes without retry, so
+  truncated partial text cannot enter the worker tool protocol. Focused
+  checks: 4 passed; combined provider-free subagent/budget gate: 400 passed.
+
+- [x] 2026-07-18: Reject deprecated provider-native `function_call` payloads
+  on `agent/threadkeeper-hardening-next` commit `a25d20d`. Native Ollama and
+  OpenAI-compatible compatibility payloads now fail as authenticated
+  `provider_response_invalid` outcomes without retry instead of bypassing the
+  existing `tool_calls` rejection. Focused checks: 4 passed; combined
+  provider-free subagent/budget gate: 403 passed.
+
+- [x] 2026-07-18: Harden the synthetic disposition-corpus preregistration
+  against cross-record provenance leakage. Task-version, checkpoint, and
+  evidence-packet digests must now be globally unique, preventing correlated
+  duplicates from crossing a later evaluation split or inflating sample size.
+  Gate: 12/12 unit tests, fixture replay, compile, and diff check pass. This
+  does not authorize operational corpus collection, runtime wiring, or a
+  canary.
+
+- [x] 2026-07-18: Reject provider-native tool calls on
+  `agent/threadkeeper-hardening-next` commit `99622d0`. Ollama-native and
+  OpenAI-compatible tool-call payloads now fail as authenticated
+  `provider_response_invalid` outcomes without retry instead of being silently
+  ignored beside textual content. Focused checks: 10 passed; combined
+  provider-free subagent/budget gate: 396 passed.
+
+- [x] 2026-07-18: Validate OpenAI-compatible provider total-token accounting on
+  `agent/threadkeeper-hardening-next` commit `cb5ea32`. When supplied,
+  `usage.total_tokens` must be a non-negative integer equal to prompt plus
+  completion tokens; malformed/contradictory totals fail as authenticated
+  `provider_response_invalid` outcomes without retry. Focused checks: 7
+  passed; combined provider-free subagent/budget gate: 394 passed.
+
+- [x] 2026-07-18: Reject ambiguous OpenAI-compatible provider choice sets on
+  `agent/threadkeeper-hardening-next` commit `e41d33f`. Responses now require
+  exactly one choice; multiple choices cannot be silently reduced to the first
+  or enter worker protocol. Focused checks: 3 passed; combined provider-free
+  subagent/budget gate: 390 passed.
+
+- [x] 2026-07-18: Reject missing native-provider message content on
+  `agent/threadkeeper-hardening-next` commit `45239b2`. Omitted
+  `message.content` now returns authenticated `provider_response_invalid`
+  after one call instead of entering the worker protocol as an empty response.
+  Focused checks: 5 passed; combined provider-free subagent/budget gate: 389
+  passed.
+
+- [x] 2026-07-18: Preregister the disposition operational-evidence corpus
+  contract without collecting operational data. The synthetic-only validator
+  binds task/checkpoint/evidence digests, requires independent reference-label
+  review and redaction audit, and rejects target contamination, incomplete
+  redaction, non-independent adjudication, and operational records. Evidence:
+  `artifacts/ggb-capacity-gates/20260718-disposition-corpus-preregistration/`.
+  This does not authorize corpus collection, runtime wiring, or a canary.
+
 - [x] 2026-07-18: Reject falsey malformed native-provider token counters on
   `agent/threadkeeper-hardening-next` commit `486f7e8`. Explicit `false` and
   empty-string counters can no longer be normalized into valid zero usage;
