@@ -3588,7 +3588,8 @@ Local commit `ac96423`; unpushed.
 Verification: focused validation-record suite passed 45 tests; full stdlib
 unittest discovery passed 375 tests in 272.379 seconds; `git diff --check`
 passed. No paid compute, remote writes, push/merge/force-push/delete, or
-secrets/access/security changes.
+secrets/access/security changes. Local implementation commit `f9a9455`;
+unpushed.
 Local commit `07110cb`; unpushed.
 
 ## 2026-07-21 backend-safe SourceSpan bound validation
@@ -3620,3 +3621,16 @@ Verification: focused validation-record suite passed 47 tests; full stdlib
 unittest discovery passed 377 tests; `git diff --check` passed. No paid
 compute, remote writes, push/merge/force-push/delete, or secrets/access/security
 changes. Local implementation commit `ed7a3d8`; unpushed.
+
+## 2026-07-21 backend-safe Section field validation
+
+- Added `section-has-safe-fields` so crisp validation exposes the PeTTa
+  exporter's non-blank string kind and non-negative, non-boolean integer
+  ordinal requirements.
+- List and blank kinds plus boolean and negative ordinals now yield exact Fail
+  evidence, while a valid neighboring section explicitly Passes.
+
+Verification: focused validation-record suite passed 48 tests; full stdlib
+unittest discovery passed 378 tests in 276.326 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.

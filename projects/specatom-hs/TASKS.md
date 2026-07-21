@@ -1,5 +1,12 @@
 # Tasks
 
+- [x] 2026-07-21 07:30 PDT: Added `section-has-safe-fields` crisp validation
+  matching the PeTTa backend's non-blank kind and non-negative, non-boolean
+  ordinal gates. Exact ground truth rejects list/blank kinds plus boolean and
+  negative ordinals while accepting a valid neighboring section. Focused
+  48-test validation suite, full 378-test unittest discovery, and
+  `git diff --check` pass; local implementation commit `f9a9455`.
+
 - [x] 2026-07-21 05:30 PDT: Added `plain-file-has-safe-fields` crisp
   validation for non-blank string paths/digests and string preserved source
   text. Exact ground truth rejects `None`, list, and blank fields without

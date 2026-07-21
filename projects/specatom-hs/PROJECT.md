@@ -52,6 +52,11 @@ Observable criteria:
 
 ## Current state
 
+As of the 2026-07-21 07:30 PDT worker, crisp Section field validation matches
+the PeTTa backend's non-blank kind and non-negative, non-boolean ordinal gates.
+Malformed kinds and ordinals now Fail with exact evidence before export, while
+valid neighboring sections explicitly Pass.
+
 As of the 2026-07-21 05:30 PDT worker, crisp PlainFile field validation
 matches the PeTTa backend's non-blank path/digest gates and safely requires
 preserved source text to be a string before digest recomputation. Malformed
