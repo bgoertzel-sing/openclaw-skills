@@ -1,5 +1,131 @@
 # Tasks
 
+- [x] 2026-07-21 05:30 PDT: Added `plain-file-has-safe-fields` crisp
+  validation for non-blank string paths/digests and string preserved source
+  text. Exact ground truth rejects `None`, list, and blank fields without
+  crashing digest recomputation while accepting a valid neighboring file.
+  Focused 47-test validation suite, full 377-test unittest discovery, and
+  `git diff --check` pass; local implementation commit `ed7a3d8`.
+
+- [x] 2026-07-21 03:30 PDT: Added `source-span-has-safe-bounds` crisp
+  validation matching the PeTTa backend's non-boolean integer and bound-order
+  gates. Exact ground truth rejects list, boolean, `None`, and reversed bounds
+  without numeric-comparison crashes while accepting a valid neighboring span.
+  Focused 46-test validation suite, full 376-test unittest discovery, and
+  `git diff --check` pass; local implementation commit `0b826ac`.
+
+- [x] 2026-07-21 01:30 PDT: Added
+  `object-has-safe-source-span-id` crisp validation, matching the PeTTa backend
+  provenance identity gate and preventing unhashable malformed provenance from
+  crashing the source-or-generated check. Exact ground truth accepts absent
+  optional provenance and a non-blank string identity while rejecting list and
+  blank identities. Focused 45-test validation suite, full 375-test unittest
+  discovery, and `git diff --check` pass; local implementation commit
+  `07110cb`.
+
+- [x] 2026-07-20 23:30 PDT: Added
+  `validation-obligation-has-safe-source-span-id` crisp validation, matching
+  the PeTTa backend provenance identity gate. Exact ground truth accepts absent
+  optional provenance and a non-blank string identity while rejecting list and
+  blank identities. Focused regression, full 374-test unittest discovery, and
+  `git diff --check` pass; local implementation commit `ac96423`.
+
+- [x] 2026-07-20 19:30 PDT: Added `check-has-safe-target` crisp validation,
+  matching the PeTTa backend's check-target identity gate. Exact ground truth
+  rejects `None`, list, and blank target IDs while accepting a valid non-blank
+  target. Focused regression, full 371-test unittest discovery, and
+  `git diff --check` pass; local implementation commit `da432ff`.
+
+- [x] 2026-07-20 15:30 PDT: Added
+  `check-has-safe-obligation-id` crisp validation, matching the PeTTa backend's
+  check-obligation identity gate. Exact ground truth rejects `None`, list, and
+  blank obligation IDs without unsafe dictionary membership while accepting a
+  valid non-blank link. Focused regression, full 370-test unittest discovery,
+  and `git diff --check` pass; local implementation commit `7a73b32`.
+
+- [x] 2026-07-20 13:30 PDT: Added
+  `validation-obligation-has-safe-target` crisp validation, matching the PeTTa
+  backend's target-identity gate. Exact ground truth rejects `None`, list, and
+  blank targets while accepting non-blank strings. Focused regression, full
+  unittest discovery, and `git diff --check` pass; local implementation commit
+  `3b0d508`.
+
+- [x] 2026-07-20 09:30 PDT: Added
+  `validation-obligation-has-reviewable-rationale` crisp validation, matching
+  the PeTTa backend's rationale gate. Exact ground truth rejects `None`, list,
+  and blank rationales while accepting non-blank text. Focused 37-test
+  validation suite, full 367-test suite, and `git diff --check` pass; local
+  implementation commit `82625f7`.
+
+- [x] 2026-07-20 07:30 PDT: Made `check-has-evidence` fail closed on
+  non-string CheckRecord evidence, matching the PeTTa backend's reviewable-text
+  gate. Exact ground truth rejects `None` and list evidence, preserves the
+  blank-string diagnostic, and accepts non-blank text. Focused 36-test
+  validation suite, full 366-test suite, and `git diff --check` pass; local
+  implementation commit `42432b2`.
+
+- [x] 2026-07-20 05:30 PDT: Made `fact-subject-matches-object` fail closed on
+  non-string subjects, matching the PeTTa backend's exact subject-type gate.
+  Ground truth proves integer `7` cannot alias object ID `"7"`, while the exact
+  string owner passes. Focused 35-test validation suite, full 365-test suite,
+  and `git diff --check` pass; local implementation commit `da469fd`.
+
+- [x] 2026-07-20 03:30 PDT: Added `fact-arguments-are-backend-safe` crisp
+  validation aligned with PeTTa export refusal gates. Exact ground truth now
+  rejects container arguments, non-string object references, blank values, and
+  non-finite floats while accepting supported non-empty scalars. Focused
+  34-test validation suite, full 364-test suite, and `git diff --check` pass;
+  local implementation commit `255484a`.
+
+- [x] 2026-07-20 01:30 PDT: Made crisp fact validation fail closed for
+  malformed non-tuple fact records and non-string predicates, matching the
+  PeTTa backend refusal gates. Exact list/string/dict/None and integer/None
+  predicate ground truth now yields deterministic Fail evidence; provenance
+  validation also skips malformed facts safely. Focused 33-test validation
+  suite, full 363-test suite, and `git diff --check` pass; local implementation
+  commit `f243bd3`.
+
+- [x] 2026-07-19 23:30 PDT: Added backend-safe Section and PlainItem identity
+  validation and filtered malformed IDs from section/item and fact-validation
+  indexes. List-valued and blank IDs now yield deterministic Fail evidence
+  instead of crashing, while valid neighboring IDs Pass. Focused 32-test
+  validation suite, full 362-test suite, and `git diff --check` pass; local
+  implementation commit `4fa1853`.
+
+- [x] 2026-07-19 21:30 PDT: Added `source-span-has-safe-identity` validation
+  and made uniqueness, validation-provenance, and edge-provenance span indexes
+  ignore unhashable/blank IDs. Exact regression coverage, focused 31-test
+  validation suite, all 361 tests, and `git diff --check` pass; local
+  implementation commit `440399b`.
+
+- [x] 2026-07-19 19:30 PDT: Added backend-safe PlainFile identity validation
+  and filtered malformed file IDs from source-span and validation-target
+  indexes. List-valued and blank IDs now yield deterministic Fail evidence
+  instead of crashing, while valid neighboring IDs Pass. Focused 30-test
+  validation suite, full 360-test suite, and `git diff --check` pass; local
+  implementation commit `752c5b2`.
+
+- [x] 2026-07-19 17:30 PDT: Added explicit backend-safe identity validation
+  for ValidationObligation and CheckRecord IDs. Non-string and blank IDs now
+  produce dedicated deterministic Fail evidence, while valid IDs produce Pass
+  evidence, matching the PeTTa exporter gates. Focused 29-test validation suite,
+  full 359-test suite, and `git diff --check` pass; local implementation commit
+  `386ff29`.
+
+- [x] 2026-07-19 15:30 PDT: Made validation-layer identity checks fail closed
+  for unhashable malformed ValidationObligation and CheckRecord IDs. Safe-ID
+  filtering now covers Counter, set, and dictionary indexes, and list-valued
+  IDs yield deterministic identity Fail evidence while downstream validation
+  continues. Focused 28-test validation suite, full 358-test suite, and
+  `git diff --check` pass; local implementation commit `75a37b8`.
+
+- [x] 2026-07-19 13:30 PDT: Made crisp object-identity validation fail closed
+  for unhashable malformed IDs. List-valued IDs now produce deterministic
+  `object-identity-is-unique` and `object-has-safe-identity` Fail evidence
+  instead of crashing set/Counter membership and downstream obligation
+  validation. Focused 27-test validation suite, full 357-test suite, and
+  `git diff --check` pass; local implementation commit `81fda0f`.
+
 - [x] 2026-07-19 11:30 PDT: Added `object-has-safe-identity` crisp validation
   aligned with the PeTTa non-string/blank object-ID refusal gates. Exact
   integer, whitespace-only, and valid-string ground truth, focused 26-test
@@ -299,6 +425,23 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [ ] TyLA/OSLF deeper type/proof alignment.
 
 ## Done recently
+
+- [x] 2026-07-20: Tightened `check-status-is-known` diagnostics to report
+  exact unsupported status values and runtime types while preserving explicit
+  Pass evidence for declared `CheckStatus` values; exact malformed/valid
+  regression coverage, focused 43-test validation suite, all 373 tests, and
+  `git diff --check` pass; local commit `a8e9372`.
+
+- [x] 2026-07-20: Added crisp `check-has-safe-property` validation matching
+  the PeTTa backend's non-blank string check-property gate; exact
+  malformed/valid regression coverage, focused 41-test validation suite, all
+  371 tests, and `git diff --check` pass; local commit `1adf2c0`.
+
+- [x] 2026-07-20: Added crisp
+  `validation-obligation-has-safe-property` validation matching the PeTTa
+  backend's non-blank string property gate; exact malformed/valid regression
+  coverage, focused 38-test validation suite, all 368 tests, and
+  `git diff --check` pass; local commit `393047e`.
 
 - [x] 2026-07-19: Added crisp `object-has-known-role` validation so malformed
   non-enum SpecObject roles fail deterministically before the matching PeTTa

@@ -3,7 +3,7 @@
 - Slug: `specatom-hs`
 - Status: `active`
 - Created: `2026-06-29`
-- Last reviewed: `2026-07-19` (backend-safe object identity validation)
+- Last reviewed: `2026-07-20` (backend-safe check status diagnostics)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -51,6 +51,118 @@ Observable criteria:
 - Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
 
 ## Current state
+
+As of the 2026-07-21 05:30 PDT worker, crisp PlainFile field validation
+matches the PeTTa backend's non-blank path/digest gates and safely requires
+preserved source text to be a string before digest recomputation. Malformed
+values now Fail deterministically instead of crashing or reaching export.
+
+As of the 2026-07-21 03:30 PDT worker, crisp SourceSpan bound validation
+matches the PeTTa backend's integer/order gates. List, boolean, `None`, and
+reversed byte/line bounds now deterministically Fail instead of raising during
+numeric comparisons, while valid bounds explicitly Pass.
+
+As of the 2026-07-21 01:30 PDT worker, crisp SpecObject source-span identity
+validation matches the PeTTa backend provenance gate. `None` remains valid
+optional absence, list and blank identities deterministically Fail, non-blank
+string identities Pass, and malformed unhashable provenance no longer crashes
+the broader source-or-generated provenance check.
+
+As of the 2026-07-20 23:30 PDT worker, crisp ValidationObligation source-span
+identity validation matches the PeTTa backend provenance gate. `None` remains a
+valid absent optional provenance value, list and blank identities Fail exactly,
+and non-blank string identities Pass before declared-span resolution.
+
+As of the 2026-07-20 21:30 PDT worker, crisp CheckRecord status validation
+reports exact unsupported runtime values and types, matching the PeTTa backend's
+declared-enum refusal gate without ambiguously stringifying malformed statuses.
+
+As of the 2026-07-20 19:30 PDT worker, crisp CheckRecord target validation
+matches the PeTTa backend's target-identity gate. `None`, container, and blank
+targets now deterministically Fail, while valid non-blank target text
+explicitly Passes.
+
+As of the 2026-07-20 17:30 PDT worker, crisp CheckRecord property validation
+matches the PeTTa backend's safe-symbol gate. `None`, container, and blank
+properties now deterministically Fail, while valid non-blank property text
+explicitly Passes.
+
+As of the 2026-07-20 15:30 PDT worker, crisp CheckRecord obligation-link
+validation matches the PeTTa backend's obligation-identity gate. `None`,
+container, and blank obligation IDs now deterministically Fail instead of
+reaching unsafe dictionary membership, while valid non-blank string links Pass.
+
+As of the 2026-07-20 13:30 PDT worker, crisp ValidationObligation target
+validation matches the PeTTa backend's target-identity gate. `None`, container,
+and blank targets now deterministically Fail, while non-blank string targets
+explicitly Pass before declared-target resolution is considered.
+
+As of the 2026-07-20 11:30 PDT worker, crisp ValidationObligation property
+validation matches the PeTTa backend's safe-symbol gate. `None`, container,
+and blank properties now deterministically Fail, while non-blank property text
+explicitly Passes.
+
+As of the 2026-07-20 09:30 PDT worker, crisp ValidationObligation rationale
+validation matches the PeTTa backend's reviewable-text gate. `None`, container,
+and blank rationales now deterministically Fail, while non-blank rationale text
+explicitly Passes.
+
+As of the 2026-07-20 07:30 PDT worker, crisp CheckRecord evidence validation
+matches the PeTTa backend's reviewable-text gate. `None` and container values
+now deterministically Fail instead of passing through string coercion, while
+non-blank string evidence still Passes and blank strings retain their explicit
+empty-evidence failure.
+
+As of the 2026-07-20 05:30 PDT worker, crisp fact-subject validation mirrors
+the PeTTa backend's exact string-subject gate. Scalar values such as integer
+`7` can no longer alias the owning string object identity `"7"`; malformed
+subject types deterministically Fail while exact string owners Pass.
+
+As of the 2026-07-20 03:30 PDT worker, crisp fact validation mirrors the
+PeTTa backend's argument gates. Container-valued arguments, non-string object
+references, blank/None values, and non-finite floats now receive deterministic
+Fail evidence, while supported non-empty scalar arguments explicitly Pass.
+
+As of the 2026-07-20 01:30 PDT worker, crisp validation rejects malformed
+non-tuple fact records and non-string predicates with deterministic Fail
+evidence, matching the PeTTa backend's existing refusal gates. Malformed facts
+also can no longer crash generated-provenance inspection.
+
+As of the 2026-07-19 23:30 PDT worker, crisp validation requires Section and
+PlainItem identities to be non-blank strings and excludes malformed identities
+from section/item and fact-validation indexes. List-valued and blank IDs now
+produce deterministic identity Fail evidence instead of crashing, while valid
+neighboring IDs explicitly Pass.
+
+As of the 2026-07-19 21:30 PDT worker, crisp validation requires SourceSpan
+identities to be non-blank strings and excludes malformed identities from all
+span lookup paths. List-valued and blank span IDs now produce deterministic
+identity Fail evidence instead of crashing uniqueness, validation-provenance,
+or edge-provenance indexing, while valid neighboring span IDs explicitly Pass.
+
+As of the 2026-07-19 19:30 PDT worker, crisp validation requires PlainFile
+identities to be non-blank strings and avoids indexing malformed unhashable IDs.
+List-valued and blank file IDs now produce deterministic identity Fail evidence
+instead of crashing source-span or validation-target indexing, while valid
+neighboring file IDs receive explicit Pass records.
+
+As of the 2026-07-19 17:30 PDT worker, crisp validation explicitly requires
+ValidationObligation and CheckRecord identities to be non-blank strings. This
+matches the PeTTa backend's existing record-ID gates: malformed list-valued or
+blank IDs now receive dedicated backend-safe identity Fail evidence, while
+valid IDs receive explicit Pass records.
+
+As of the 2026-07-19 15:30 PDT worker, crisp validation handles unhashable
+malformed ValidationObligation and CheckRecord identities without attempting
+unsafe Counter, set, or dictionary membership. List-valued IDs now produce
+deterministic Fail evidence and downstream validation continues instead of
+crashing, matching the PeTTa backend's existing refusal gates.
+
+As of the 2026-07-19 13:30 PDT worker, crisp validation handles unhashable
+malformed SpecObject identities without attempting unsafe Counter or set
+membership. List-valued IDs now produce deterministic Fail evidence for both
+identity uniqueness and backend-safe identity obligations, while downstream
+validation continues instead of crashing.
 
 As of the 2026-07-19 11:30 PDT worker, crisp validation requires SpecObject
 identities to be non-blank strings. Non-string and whitespace-only IDs now

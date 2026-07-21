@@ -1,5 +1,98 @@
 # Working Notes
 
+## 2026-07-20 backend-safe CheckRecord status diagnostics
+
+- Tightened `check-status-is-known` evidence so `None`, string aliases such as
+  `"Pass"`, and container values report their exact unsupported value and type,
+  matching the PeTTa backend's declared-enum refusal gate.
+- Declared `CheckStatus` values retain explicit normalized Pass evidence.
+- Exact malformed/valid neighboring-record ground truth prevents a runtime
+  string alias from looking like a declared enum member in crisp diagnostics.
+
+Verification: focused validation-record suite passed 43 tests; full stdlib
+unittest discovery passed 373 tests in 241.425 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `a8e9372`; unpushed.
+
+## 2026-07-20 19:30 PDT - Check target validation aligned with export
+
+The validation layer now emits `check-has-safe-target` for every original
+CheckRecord. It deterministically rejects non-string and blank targets before
+the PeTTa backend gate, while preserving an explicit Pass for non-blank string
+targets. Regression and full-suite evidence are recorded in `TASKS.md`; code
+commit: `da432ff`.
+
+## 2026-07-20 15:30 PDT - Backend-safe CheckRecord obligation links
+
+Added `check-has-safe-obligation-id` validation before obligation resolution.
+`None`, list-valued, and blank obligation identities now produce deterministic
+Fail evidence rather than reaching unsafe dictionary membership; a valid
+non-blank string link Passes. The focused regression passed, full unittest
+discovery passed all 370 tests in 167.117 seconds, and `git diff --check`
+passed. Local implementation commit `7a73b32`; no paid compute or remote
+mutation was used.
+
+## 2026-07-20 13:30 PDT - Validation-obligation target safety
+
+Added an explicit `validation-obligation-has-safe-target` crisp obligation.
+It mirrors the PeTTa export gate: non-string (including container and `None`)
+and blank targets Fail deterministically, while non-blank strings Pass. This
+keeps malformed target identity separate from the existing declared-target
+resolution check. The focused regression, full unittest suite, and
+`git diff --check` passed.
+
+## 2026-07-19 23:30 PDT - Backend-safe Section and PlainItem identities
+
+- Added `section-has-safe-identity` and `item-has-safe-identity` obligations.
+- Section/item uniqueness indexes and fact-validation item indexes now admit
+  only non-blank string IDs, preventing malformed list IDs from reaching
+  `Counter`, set, or dictionary operations.
+- Exact regression covers list-valued IDs, blank IDs, and valid neighboring
+  IDs. `PYTHONPATH=src python3 -m unittest tests.test_specatom_validation_records
+  -v` passed 32 tests; full discovery passed 362 tests; `git diff --check`
+  passed. Local implementation commit: `4fa1853`.
+
+## 2026-07-19 backend-safe SourceSpan identity validation
+
+- Added `source-span-has-safe-identity` obligations requiring non-blank string
+  identities, parallel to PlainFile and backend identity gates.
+- Span uniqueness and canonical lookup indexes now admit only safe string IDs;
+  validation-obligation provenance and edge-provenance lookup also refuse
+  unhashable span IDs without crashing.
+- Exact regression coverage exercises list-valued, blank, and valid neighboring
+  SourceSpan identities.
+
+Verification: focused validation-record suite passed 31 tests; full stdlib
+unittest discovery passed 361 tests in 62.627 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `440399b`;
+unpushed.
+
+## 2026-07-19 17:30 PDT - backend-safe validation-record identities
+
+- Added `validation-obligation-has-safe-identity` and
+  `check-has-safe-identity` crisp obligations.
+- Non-string and whitespace-only identities now produce exact Fail evidence;
+  valid non-blank string identities produce Pass evidence.
+- This separates malformed identity shape from duplicate identity diagnostics
+  and aligns validation with the PeTTa exporter's existing refusal reasons.
+
+Verification: `PYTHONPATH=src python3 -m unittest
+tests.test_specatom_validation_records -v` passed 29 tests;
+`PYTHONPATH=src python3 -m unittest discover -s tests -q` passed 359 tests;
+`git diff --check` passed. Local implementation commit `386ff29`. No paid
+compute or remote writes.
+
+## 2026-07-19 13:30 PDT - unhashable object identity validation
+
+- Filtered validation identity indexes to backend-safe, non-blank strings and
+  made malformed non-string obligation targets fail without hash membership.
+- Exact list-valued object-ID ground truth proves deterministic Fail evidence
+  replaces the prior crash.
+- Verification: focused validation-record suite passed 27 tests; full unittest
+  discovery passed 357 tests; `git diff --check` passed. Local implementation
+  commit: `81fda0f`.
+
 ## 2026-07-19 11:30 PDT - backend-safe object identity validation
 
 - Added a first-class `object-has-safe-identity` obligation for every
@@ -3339,3 +3432,191 @@ Verification: focused validation-record suite passed 22 tests; full stdlib
 unittest discovery passed 352 tests; `git diff --check` passed. No paid compute,
 remote writes, push/merge/force-push/delete, or secrets/access/security changes.
 Local commit `70891ce`; unpushed.
+
+## 2026-07-19 unhashable validation-layer identity refusal
+
+- Validation now indexes only non-blank string ValidationObligation and
+  CheckRecord IDs in uniqueness counts and downstream known-ID maps/sets.
+- List-valued malformed IDs yield deterministic
+  `validation-obligation-identity-is-unique` and `check-identity-is-unique`
+  Fail evidence rather than crashing before diagnostics are available.
+- Exact regression coverage exercises both malformed record types together and
+  confirms downstream validation completes.
+
+Verification: focused validation-record suite passed 28 tests; full stdlib
+unittest discovery passed 358 tests in 55.377 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `75a37b8`; unpushed.
+
+## 2026-07-19 backend-safe PlainFile identity validation
+
+- Added `plain-file-has-safe-identity` obligations requiring non-blank string
+  identities, alongside the existing uniqueness obligation.
+- PlainFile identity counters, source-span file indexes, and validation-target
+  sets now admit only safe string identities. List-valued IDs produce
+  deterministic Fail evidence instead of raising `TypeError`; blank IDs also
+  fail explicitly, and valid neighboring IDs still Pass.
+- Exact regression coverage exercises unhashable, blank, and valid identities
+  together.
+
+Verification: focused validation-record suite passed 30 tests; full stdlib
+unittest discovery passed 360 tests; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local commit `752c5b2`; unpushed.
+
+## 2026-07-20 malformed fact validation refusal
+
+- `_validate_object_facts` now requires each fact to be a tuple and each
+  predicate to be a string before schema lookup, so malformed fact containers
+  cannot be aliased or indexed as supported predicates.
+- List, string, dictionary, and `None` fact records plus integer and `None`
+  predicates yield exact `fact-has-supported-arity` Fail evidence.
+- Object provenance validation now ignores malformed facts while looking for a
+  `GeneratedFrom` tuple instead of dereferencing arbitrary values.
+
+Verification: focused validation-record suite passed 33 tests; full stdlib
+unittest discovery passed 363 tests; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local commit `f243bd3`; unpushed.
+
+## 2026-07-20 backend-safe fact argument validation
+
+- Added `fact-arguments-are-backend-safe` obligations after predicate/arity
+  admission, matching the PeTTa reified backend's scalar safety gates.
+- List/dictionary-style container arguments, non-string declared object
+  references, blank or `None` arguments, and non-finite floats now fail crisply
+  before export instead of appearing structurally valid until backend refusal.
+- Exact regression evidence also pins a supported non-empty string argument to
+  Pass, preventing an over-broad refusal rule.
+
+Verification: focused validation-record suite passed 34 tests; full stdlib
+unittest discovery passed 364 tests in 67.513 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `255484a`; unpushed.
+
+## 2026-07-20 backend-safe fact subject validation
+
+- `fact-subject-matches-object` now requires object-scoped fact subjects to be
+  strings before comparing them with the owning object identity.
+- Integer `7` can no longer pass crisp validation by string-coercing to owner
+  ID `"7"`; it receives deterministic `subject@1 unsupported type=int` Fail
+  evidence, while the exact string subject passes.
+
+Verification: focused validation-record suite passed 35 tests; full stdlib
+unittest discovery passed 365 tests in 66.357 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `da469fd`; unpushed.
+
+## 2026-07-20 backend-safe CheckRecord evidence validation
+
+- `check-has-evidence` now requires a non-blank string rather than accepting
+  arbitrary values after `str(...)` coercion.
+- `None` and list evidence produce deterministic type-bearing Fail evidence,
+  matching PeTTa reified export refusal; valid text Passes and blank strings
+  retain the existing `empty check evidence` failure.
+- Exact regression coverage exercises malformed and valid neighboring records.
+
+Verification: focused validation-record suite passed 36 tests; full stdlib
+unittest discovery passed 366 tests in 69.164 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `42432b2`; unpushed.
+
+## 2026-07-20 backend-safe ValidationObligation rationale validation
+
+- Added `validation-obligation-has-reviewable-rationale` to expose the same
+  non-blank string requirement already enforced by PeTTa reified export.
+- `None`, list, and blank rationales now yield deterministic Fail evidence;
+  reviewable non-blank text yields Pass evidence.
+- Exact malformed/valid neighboring-record ground truth prevents both unsafe
+  coercion and over-broad refusal.
+
+Verification: focused validation-record suite passed 37 tests; full stdlib
+unittest discovery passed 367 tests; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local commit `82625f7`; unpushed.
+
+## 2026-07-20 backend-safe ValidationObligation property validation
+
+- Added `validation-obligation-has-safe-property` to expose the same non-blank
+  string property requirement already enforced by PeTTa reified export.
+- `None`, list, and blank properties now yield deterministic Fail evidence;
+  supported non-blank property text yields Pass evidence.
+- Exact malformed/valid neighboring-record ground truth prevents unsafe
+  coercion and over-broad refusal.
+
+Verification: focused validation-record suite passed 38 tests; full stdlib
+unittest discovery passed 368 tests in 119.217 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `393047e`; unpushed.
+## 2026-07-20 backend-safe CheckRecord property validation
+
+- Added `check-has-safe-property` to expose the same non-blank string
+  requirement already enforced by PeTTa reified export.
+- `None`, list, and blank properties now yield deterministic Fail evidence;
+  supported non-blank property text yields Pass evidence.
+- Exact malformed/valid neighboring-record ground truth prevents unsafe
+  coercion and over-broad refusal.
+
+Verification: focused validation-record suite passed 41 tests; full stdlib
+unittest discovery passed 371 tests in 203.201 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `1adf2c0`; unpushed.
+## 2026-07-20 backend-safe ValidationObligation source-span identity validation
+
+- Added `validation-obligation-has-safe-source-span-id` so crisp validation
+  exposes the PeTTa exporter's absent-or-non-blank-string provenance gate.
+- `None` remains valid optional absence; list and blank identities yield exact
+  Fail evidence; non-blank string identities Pass before known-span resolution.
+- Exact malformed/valid neighboring-record ground truth prevents unsafe
+  coercion without turning optional provenance into a requirement.
+
+Verification: focused regression passed; full stdlib unittest discovery passed
+374 tests in 260.398 seconds; `git diff --check` passed. No paid compute, remote
+writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local commit `ac96423`; unpushed.
+
+## 2026-07-21 backend-safe SpecObject source-span identity validation
+
+- Added `object-has-safe-source-span-id` so crisp validation exposes the PeTTa
+  exporter's absent-or-non-blank-string provenance gate.
+- `None` remains valid optional absence; list and blank identities yield exact
+  Fail evidence; non-blank string identities Pass.
+- The broader `object-has-source-or-generated-provenance` check now guards set
+  membership and emits deterministic evidence for malformed unhashable IDs
+  instead of raising `TypeError`.
+
+Verification: focused validation-record suite passed 45 tests; full stdlib
+unittest discovery passed 375 tests in 272.379 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.
+Local commit `07110cb`; unpushed.
+
+## 2026-07-21 backend-safe SourceSpan bound validation
+
+- Added `source-span-has-safe-bounds` so crisp validation exposes the PeTTa
+  exporter's non-boolean integer and ordering requirements for byte/line bounds.
+- List and boolean byte bounds, `None` line bounds, and reversed ranges now
+  yield deterministic Fail evidence instead of reaching unsafe comparisons;
+  a valid neighboring span explicitly Passes.
+- Unsafe bounds stop before file-range and line-offset comparisons, preserving
+  fail-closed diagnostics without pretending malformed fields are indexable.
+
+Verification: focused validation-record suite passed 46 tests; full stdlib
+unittest discovery passed 376 tests in 268.694 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `0b826ac`; unpushed.
+
+## 2026-07-21 backend-safe PlainFile field validation
+
+- Added `plain-file-has-safe-fields` so crisp validation exposes the PeTTa
+  exporter's non-blank string path/digest gates.
+- Preserved source text must also be a string before SHA-256 recomputation;
+  malformed `None`/container values now Fail deterministically instead of
+  raising during `.encode()`.
+- Exact malformed/blank/valid neighboring ground truth prevents both crashes
+  and over-broad refusal.
+
+Verification: focused validation-record suite passed 47 tests; full stdlib
+unittest discovery passed 377 tests; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local implementation commit `ed7a3d8`; unpushed.
