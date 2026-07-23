@@ -1,5 +1,204 @@
 # Working Notes
 
+## 2026-07-23 07:30 PDT - exact-arity diagnostics fact consumption
+
+Diagnostics now credits `ConceptStatus`, acceptance `TestKind`, and renders
+`QuestionText` only when the fact has the schema's exact three arguments.
+Constructed ground truth proves over-arity facts remain visible through
+`fact-has-supported-arity` Fail checks and PeTTa refusal records without
+inflating summaries or leaking malformed question text; a valid neighboring
+question remains visible.
+
+Verification: focused diagnostics passed 12 tests in 68.143s; full stdlib
+unittest discovery passed 402 tests in 336.205s; `git diff --check` passed.
+No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `23b5b97`;
+unpushed.
+
+## 2026-07-23 03:30 PDT - structured question facts fail closed
+
+- `_validate_question_objects` now accepts only string `QuestionText` values
+  and non-blank string `Blocks` targets. Structured values remain rejected by
+  the general fact-argument gate and no longer become review text or reach
+  unsafe validation-obligation membership.
+- Diagnostics likewise render only non-blank string question text, preventing
+  structured malformed content from leaking into the human review report.
+- Ground truth combines malformed list-backed question facts with a valid
+  neighboring question and checks exact Fail/Pass statuses plus both PeTTa
+  refusal reasons.
+
+Verification: focused diagnostics passed 10 tests in 64.774s; full stdlib
+unittest discovery passed 400 tests in 326.010s; `git diff --check` passed.
+No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `ec15952`;
+unpushed.
+
+## 2026-07-22 23:30 PDT - structured concept-status diagnostics
+
+Diagnostics concept counting now requires a declared string status before
+dictionary membership. Constructed ground truth proves a list-backed
+`ConceptStatus` cannot crash reporting or inflate counts, its existing crisp
+`fact-arguments-are-backend-safe` Fail and PeTTa refusal stay visible, and a
+valid neighboring defined concept is preserved. Focused regression and all 398
+tests passed; `git diff --check` passed; local implementation commit
+`caf278d`.
+
+## 2026-07-22 21:30 PDT - undeclared string status diagnostics
+
+Diagnostics no longer normalize undeclared string statuses into valid results.
+Constructed ground truth with the runtime string `"Pass"` is counted as
+Unknown, remains visible in the report, and preserves the PeTTa refusal
+`unsupported-check-status-type:str`; a neighboring enum `CheckStatus.PASS`
+remains the sole pass. Focused 7-test diagnostics and full 397-test discovery
+passed; `git diff --check` passed; local implementation commit `682bb81`.
+
+## 2026-07-22 19:30 PDT - malformed check fields in diagnostics
+
+The PeTTa backend already refused structured check properties/statuses, but
+diagnostics still called `.lower()` on a possibly structured enum-like value
+and used the property directly as a dictionary/set key. Diagnostics now coerce
+status values before classification and render non-string properties into an
+explicit invalid-property bucket. Regression coverage keeps a valid neighboring
+Pass check observable while exposing the malformed check's backend refusal.
+
+## 2026-07-22 fail-closed diagnostics traversal
+
+- Diagnostics now filters malformed object/check records before field access
+  and treats malformed facts containers as empty for summary purposes.
+- Non-tuple facts no longer crash acceptance-test, concept-status, or question
+  text extraction; valid neighboring `QuestionText` remains visible.
+- Exact ground truth also confirms the Markdown report preserves PeTTa refusal
+  records for malformed objects, checks, facts containers, and facts.
+
+Verification: focused diagnostics suite passed 6 tests; full stdlib unittest
+discovery passed 396 tests in 337.348 seconds; `git diff --check` passed. No
+paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `741a9a4`;
+unpushed.
+
+## 2026-07-22 backend-safe malformed question-fact traversal
+
+- Question review now considers only tuple facts when extracting
+  `QuestionText` and `Blocks`, matching the general fact validator and PeTTa
+  backend's refusal of malformed fact records.
+- Edge-provenance detection uses the same tuple gate, preventing a later crash
+  after malformed facts have already received exact Fail checks.
+- Ground truth mixes `None` and integer facts with valid neighboring question
+  facts, proving malformed records Fail while review text and blocker links
+  still Pass.
+
+Verification: focused validation/profile suites passed 147 tests; full stdlib
+unittest discovery passed 395 tests in 337.845 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `ed6356f`; unpushed.
+
+## 2026-07-22 backend-safe CheckRecord validation
+
+- Added `check-has-valid-record-type` so crisp validation exposes the PeTTa
+  exporter's refusal of malformed validation-check entries.
+- `None` and list entries now yield exact Fail evidence and are excluded from
+  check identity, declared-target, and validation traversal indexes; a valid
+  neighboring `CheckRecord` explicitly Passes.
+
+Verification: focused validation/profile suites passed 146 tests; full stdlib
+unittest discovery passed 394 tests in 337.375 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `ff89ce0`; unpushed.
+
+## 2026-07-22 backend-safe SpecObject facts-container validation
+
+- Added `object-has-valid-facts-container` so crisp validation exposes the
+  schema requirement that `SpecObject.facts` be a list.
+- `None` and mapping containers now Fail with exact evidence and stop before
+  fact, question, edge, provenance, graph-summary, and backend iteration.
+- PeTTa reified export refuses the whole malformed object rather than emitting
+  its header without reviewable facts; a valid neighboring object still emits.
+
+Verification: focused validation/backend suites passed 144 tests; full stdlib
+unittest discovery passed 392 tests in 314.566 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `8897d50`; unpushed.
+
+## 2026-07-22 backend-safe SpecObject record-type validation
+
+- Added `object-has-valid-record-type` and matching PeTTa refusal behavior.
+- `None` and list entries now Fail/refuse exactly and are excluded from
+  downstream object/fact/question/provenance/graph processing; a valid neighbor
+  Passes and emits its reified atom.
+- Focused 2-test regression and full 390-test discovery passed, as did `git
+  diff --check`. Local unpushed commit `dc700a3`.
+
+## 2026-07-22 backend-safe PlainItem record-type validation
+
+- Added `item-has-valid-record-type` so crisp validation exposes the PeTTa
+  exporter's malformed source-manifest record refusal.
+- `None` and list entries now yield deterministic Fail evidence rather than
+  raising on `.id` or `.span`; malformed records are excluded from item
+  identity, fact-reference, validation-target, and edge-provenance indexes.
+- Exact malformed/valid neighboring ground truth confirms valid `PlainItem`
+  records still Pass.
+
+Verification: focused validation-record suite passed 58 tests; full stdlib
+unittest discovery passed 388 tests in 289.020 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `3208720`;
+unpushed.
+
+## 2026-07-22 backend-safe SourceSpan record-type validation
+
+- Added `source-span-has-valid-record-type` so crisp validation exposes the
+  PeTTa exporter's malformed source-manifest record refusal.
+- `None` and list entries now yield deterministic Fail evidence rather than
+  raising on `.id`; malformed records are excluded from span identity,
+  validation-provenance, and edge-provenance indexes.
+- Exact malformed/valid neighboring ground truth confirms valid `SourceSpan`
+  records still Pass.
+
+Verification: focused validation-record suite passed 56 tests; full stdlib
+unittest discovery passed 386 tests in 332.472 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `b43e109`;
+unpushed.
+
+## 2026-07-21 backend-safe PlainFile record-type validation
+
+- Added `plain-file-has-valid-record-type` so crisp validation exposes the
+  PeTTa exporter's malformed source-manifest record refusal.
+- `None` and list entries now yield deterministic Fail evidence rather than
+  raising on `.id`; malformed records are excluded from file identity counts,
+  source-span resolution, validation-target provenance, and the document target.
+- Exact malformed/valid neighboring ground truth confirms valid `PlainFile`
+  records still Pass.
+
+Verification: focused validation-record suite passed 55 tests; full stdlib
+unittest discovery passed 385 tests; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local implementation commit `826f8f2`; unpushed.
+
+## 2026-07-21 backend-safe SourceSpan file-link identity validation
+
+- Added `source-span-has-safe-file-identity` so crisp validation exposes the
+  PeTTa exporter's non-blank string SourceSpan file-link gate.
+- `None`, list, and blank file links now yield exact Fail evidence and stop
+  before unsafe dictionary/Counter lookup; a valid neighboring span explicitly
+  Passes.
+
+Verification: focused validation-record suite passed 54 tests; full stdlib
+unittest discovery passed 384 tests in 292.206 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `d11c370`;
+unpushed.
+
+## 2026-07-21 11:30 PDT - PlainItem nesting-level gate
+
+Closed the next source-manifest validator/backend parity gap. `PlainItem.level`
+must now be a non-negative, non-boolean integer in both crisp validation and
+the PeTTa exporter. Added exact malformed/valid-neighbor regressions.
+
+Verification: focused 2-test run passed; full unittest discovery passed all 379
+tests; `git diff --check` passed. Local implementation commit: `517c081`.
+
+
 ## 2026-07-20 backend-safe CheckRecord status diagnostics
 
 - Tightened `check-status-is-known` evidence so `None`, string aliases such as
@@ -3633,4 +3832,145 @@ changes. Local implementation commit `ed7a3d8`; unpushed.
 Verification: focused validation-record suite passed 48 tests; full stdlib
 unittest discovery passed 378 tests in 276.326 seconds; `git diff --check`
 passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `805783e`; unpushed.
+## 2026-07-21 backend-safe PlainItem content validation
+
+- Added `item-has-safe-fields` so crisp validation exposes the PeTTa
+  exporter's ordinal and raw-text gates.
+- Boolean and negative ordinals plus list and blank raw text now yield exact
+  Fail evidence; a valid neighboring item explicitly Passes.
+
+Verification: focused validation-record suite passed 49 tests; full stdlib
+unittest discovery passed 379 tests in 287.400 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `d36d5a4`; unpushed.
+## 2026-07-21 backend-safe PlainItem link identity validation
+
+- Added `item-has-safe-link-identities` so crisp validation exposes the PeTTa
+  exporter's non-blank file/section and optional-parent identity gates.
+- List and blank references now yield exact Fail evidence and stop before
+  unsafe Counter/set/dictionary membership instead of crashing validation.
+- Exact malformed/valid neighboring ground truth prevents unsafe coercion and
+  confirms optional absent parent provenance remains supported.
+
+Verification: focused validation-record suite passed 50 tests; full stdlib
+unittest discovery passed 380 tests in 277.514 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `17a9c7d`; unpushed.
+
+## 2026-07-21 backend-safe Section file-link identity validation
+
+- Added `section-has-safe-file-identity` so crisp validation exposes the PeTTa
+  exporter's non-blank string Section file-link gate.
+- List and blank file identities now yield exact Fail evidence and stop before
+  unsafe Counter/set membership; a valid neighboring section explicitly Passes.
+
+Verification: focused regression passed; full stdlib unittest discovery passed
+381 tests in 289.617 seconds; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local commit `de721c8`; unpushed.
+
+## 2026-07-21 backend-safe Section source-span validation
+
+- Added `section-has-safe-source-span` so crisp validation exposes the PeTTa
+  exporter's requirement for a concrete `SourceSpan` with a non-blank string
+  identity.
+- `None`, list, and blank-identity span values now yield exact Fail evidence
+  before any `.id` dereference; a valid neighboring section explicitly Passes.
+- Unsafe section spans stop before downstream identity, field, file-link, and
+  indexed-span checks rather than crashing or pretending provenance exists.
+
+Verification: focused validation-record suite passed 52 tests; full stdlib
+unittest discovery passed 382 tests in 287.732 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `c25bf83`; unpushed.
+
+## 2026-07-21 backend-safe PlainItem source-span validation
+
+- Added `item-has-safe-source-span` so crisp validation exposes the PeTTa
+  exporter's requirement for a concrete `SourceSpan` with a non-blank string
+  identity.
+- `None`, list, and blank-identity span values now yield exact Fail evidence
+  before any `.id` dereference; a valid neighboring item explicitly Passes.
+- Unsafe item spans stop before downstream identity, field, link, and indexed
+  provenance checks rather than crashing or pretending provenance exists.
+
+Verification: focused validation-record suite passed 53 tests; full stdlib
+unittest discovery passed 383 tests in 290.153 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local commit `ea3e391`; unpushed.
+## 2026-07-22 backend-safe Section record validation
+
+- Added `section-has-valid-record-type` so crisp validation exposes the PeTTa
+  exporter's refusal of non-`Section` source-manifest entries.
+- `None` and list entries now yield exact Fail evidence and are excluded from
+  section identity, provenance, and validation-target indexes; a valid
+  neighboring `Section` explicitly Passes.
+- Exact malformed/valid ground truth confirms validation continues without
+  dereferencing malformed records or treating them as declared targets.
+
+Verification: focused validation-record suite passed 57 tests; full stdlib
+unittest discovery passed 387 tests in 301.711 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
 secrets/access/security changes.
+
+## 2026-07-23 diagnostics object-role classification
+
+- Diagnostics now require a declared `Role` enum member before counting
+  questions, requirements, or acceptance tests.
+- Raw string lookalikes no longer exploit `str`-enum equality to inflate
+  semantic summary counts or leak malformed question text into Markdown.
+- Exact malformed/valid neighboring ground truth confirms backend refusal
+  evidence remains visible while the valid question is still counted.
+
+Verification: focused diagnostics suite passed 9 tests in 67.568 seconds; full
+stdlib unittest discovery passed 399 tests in 320.650 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `1e14790`; unpushed.
+
+## 2026-07-23 diagnostics fact-subject alignment
+
+- Diagnostics now consume `ConceptStatus`, acceptance `TestKind`, and
+  `QuestionText` facts only when the fact subject equals the containing
+  `SpecObject.id`.
+- Mismatched facts can no longer inflate semantic counts or leak question text
+  after crisp validation and PeTTa export have rejected their subject links.
+- Exact malformed/valid neighboring ground truth preserves refusal evidence
+  and confirms the valid question is still reported.
+
+Verification: focused regression passed; full stdlib unittest discovery passed
+401 tests in 334.777 seconds; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local implementation commit `8b4bbf2`; unpushed.
+
+## 2026-07-23 diagnostics object-identity admission
+
+- Diagnostics now derive semantic counts and question-report text only from
+  concrete `SpecObject` records with non-blank string IDs that occur exactly
+  once, matching the PeTTa reified backend's identity admission gates.
+- Blank, structured, and duplicate identities can no longer inflate question,
+  concept, or acceptance-test summaries or leak their question text.
+- Crisp validation failures and PeTTa refusal records remain visible, while a
+  valid neighboring question is still counted and reported.
+
+Verification: focused regression passed; full stdlib unittest discovery passed
+403 tests in 331.913 seconds; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local implementation commit `dec79c7`; unpushed.
+
+## 2026-07-23 diagnostics semantic-level admission
+
+- Diagnostics semantic counts and question text now require a declared
+  `SemanticLevel` supported by the PeTTa reified profile.
+- `RawTextOnly` and malformed string-level objects can no longer inflate
+  question, concept, or acceptance-test counts or leak question text after the
+  backend has refused them.
+- Exact refused/valid neighboring ground truth confirms both refusal reasons
+  remain visible while the supported question is still reported.
+
+Verification: focused diagnostics suite passed 14 tests in 74.585 seconds;
+full stdlib unittest discovery passed 404 tests in 538.467 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `84d66a7`; unpushed.

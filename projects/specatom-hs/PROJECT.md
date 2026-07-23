@@ -3,7 +3,7 @@
 - Slug: `specatom-hs`
 - Status: `active`
 - Created: `2026-06-29`
-- Last reviewed: `2026-07-20` (backend-safe check status diagnostics)
+- Last reviewed: `2026-07-23` (diagnostics semantic-level admission)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -51,6 +51,149 @@ Observable criteria:
 - Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
 
 ## Current state
+
+As of the 2026-07-23 11:30 PDT worker, diagnostics semantic summaries and
+question reports admit only semantic levels supported by the PeTTa reified
+profile. `RawTextOnly` and malformed level values retain backend refusal
+evidence but no longer inflate counts or leak question text.
+
+As of the 2026-07-23 09:30 PDT worker, diagnostics semantic summaries and
+question reports use only SpecObjects with backend-safe, unique identities.
+Blank, structured, and duplicate object IDs retain crisp validation and PeTTa
+refusal evidence but no longer inflate counts or leak question text.
+
+As of the 2026-07-23 07:30 PDT worker, diagnostics semantic summaries and
+question reports require exact three-argument schema arity for `ConceptStatus`,
+`TestKind`, and `QuestionText`. Over-arity facts retain crisp validation and
+PeTTa refusal evidence but no longer inflate counts or leak question text.
+
+As of the 2026-07-23 05:30 PDT worker, diagnostics semantic summaries and
+question reports require each consumed fact subject to match its containing
+object ID. Mismatched `ConceptStatus`, `TestKind`, and `QuestionText` facts no
+longer inflate concept/acceptance-test counts or leak question text, matching
+crisp validation and PeTTa refusal behavior.
+
+As of the 2026-07-23 03:30 PDT worker, question validation and diagnostics
+fail closed on structured `QuestionText` and `Blocks` values. List-backed
+question text is no longer credited or rendered, list-backed obligation links
+no longer reach unsafe membership checks, exact fact-argument refusals remain
+visible, and a valid neighboring question still passes and is reported.
+
+As of the 2026-07-23 01:30 PDT worker, diagnostics summaries fail closed on
+undeclared string object roles. String lookalikes such as `"QuestionObject"`,
+`"RequirementObject"`, and `"ValidationObject"` no longer inflate question,
+requirement, or acceptance-test counts or leak question text into reports;
+PeTTa refusal evidence remains visible and a valid neighboring question is
+still counted and reported.
+
+As of the 2026-07-22 23:30 PDT worker, diagnostics concept summaries fail
+closed on structured `ConceptStatus` fact values. Malformed list-backed
+statuses are excluded from counts while crisp validation and PeTTa refusal
+evidence remain visible, and valid neighboring concepts are still counted.
+
+As of the 2026-07-22 21:30 PDT worker, diagnostics summaries fail closed on
+undeclared string check statuses. A runtime string such as `"Pass"` is now
+classified as Unknown rather than being credited as a valid pass, matching
+crisp validation and PeTTa backend refusal behavior.
+
+As of the 2026-07-22 19:30 PDT worker, diagnostics summaries and Markdown
+reports fail closed on malformed `CheckRecord` status and property fields.
+Structured statuses are classified as Unknown, unhashable properties receive
+an explicit invalid-property bucket, coverage filtering remains safe, backend
+refusals stay visible, and a valid neighboring check is still counted.
+
+As of the 2026-07-22 17:30 PDT worker, diagnostics summaries and Markdown
+reports remain available for documents containing malformed object/check
+records, malformed facts containers, and non-tuple facts. Invalid entries are
+excluded from summary traversal while their crisp validation failures and
+PeTTa backend refusals remain visible; valid neighboring question text is
+still reported.
+
+As of the 2026-07-22 15:30 PDT worker, question review and edge-provenance
+validation ignore malformed non-tuple facts after the general fact validator
+records exact Fail evidence. `None` and integer facts no longer crash either
+downstream traversal, while valid neighboring `QuestionText` and `Blocks`
+facts still produce Pass checks.
+
+As of the 2026-07-22 13:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `CheckRecord` refusal. `None` and list entries now produce
+exact record-type Fail checks and are excluded from check identity, target,
+and validation-layer traversal, while a valid neighboring check Passes.
+
+As of the 2026-07-22 11:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `ValidationObligation` record refusal. `None` and list
+entries now produce exact record-type Fail checks and are excluded from
+validation-layer indexes and traversal, while a valid neighboring obligation
+Passes.
+
+As of the 2026-07-22 09:30 PDT worker, crisp validation and PeTTa export now
+fail closed when a valid `SpecObject` carries a malformed facts container.
+`None` and mapping containers produce exact Fail checks/backend refusals and
+are never iterated or partially emitted, while a valid neighboring list-backed
+object Passes and exports.
+
+As of the 2026-07-22 07:30 PDT worker, crisp validation and PeTTa export now
+fail closed on malformed `SpecObject` entries. `None` and list entries produce
+exact record-type Fail checks/backend refusals and are excluded from downstream
+object processing, while a valid neighboring object Passes and exports.
+
+As of the 2026-07-22 05:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `PlainItem` record refusal. Non-`PlainItem` manifest
+entries now produce exact Fail evidence and are excluded from item identity,
+fact-reference, validation-target, and edge-provenance indexes, while a valid
+neighboring record Passes.
+
+As of the 2026-07-22 03:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `Section` record refusal. Non-`Section` manifest entries
+now produce exact Fail evidence and are excluded from section identity,
+provenance, and validation-target indexes, while a valid neighboring record
+Passes.
+
+As of the 2026-07-22 01:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `SourceSpan` record refusal. Non-`SourceSpan` manifest
+entries now produce exact Fail evidence and are excluded from downstream span
+identity and provenance indexes, while a valid neighboring record Passes.
+
+As of the 2026-07-21 23:30 PDT worker, crisp validation mirrors the PeTTa
+backend's malformed `PlainFile` record refusal. Non-`PlainFile` source-manifest
+entries now produce exact Fail evidence and are excluded from all downstream
+file indexes and provenance checks, while a valid neighboring record Passes.
+
+As of the 2026-07-21 21:30 PDT worker, crisp SourceSpan file-link identity
+validation matches the PeTTA backend's non-blank string gate. `None`, list, and
+blank file links now Fail with exact evidence and stop before unsafe dictionary
+or Counter lookup, while a valid neighboring span explicitly Passes.
+
+As of the 2026-07-21 19:30 PDT worker, crisp PlainItem source-span validation
+matches the PeTTa backend's concrete-SourceSpan/non-blank-identity gate. `None`,
+container, and blank-identity span values now Fail with exact evidence before
+any `.id` dereference, while a valid neighboring item explicitly Passes.
+
+As of the 2026-07-21 17:30 PDT worker, crisp Section source-span validation
+matches the PeTTa backend's concrete-SourceSpan/non-blank-identity gate. `None`,
+container, and blank-identity span values now Fail with exact evidence before
+any `.id` dereference, while a valid neighboring section explicitly Passes.
+
+As of the 2026-07-21 15:30 PDT worker, crisp Section file-link identity
+validation matches the PeTTa backend's non-blank string gate. List and blank
+file links now Fail with exact evidence and stop before unsafe Counter/set
+membership, while a valid neighboring section explicitly Passes.
+
+As of the 2026-07-21 13:30 PDT worker, crisp PlainItem link-identity
+validation matches the PeTTa backend's file/section/optional-parent gates.
+List and blank links now Fail with exact evidence and stop before unsafe
+Counter/dictionary membership, while a valid neighboring item explicitly
+Passes.
+
+As of the 2026-07-21 11:30 PDT worker, crisp PlainItem nesting-level
+validation matches the PeTTa backend's non-negative, non-boolean integer gate.
+Boolean and negative levels now Fail with exact evidence and are refused before
+source-manifest export, while a valid neighboring item explicitly Passes.
+
+As of the 2026-07-21 09:30 PDT worker, crisp PlainItem content validation
+matches the PeTTa backend's non-negative, non-boolean ordinal and non-blank
+raw-text gates. Malformed values now Fail with exact evidence while a valid
+neighboring item explicitly Passes.
 
 As of the 2026-07-21 07:30 PDT worker, crisp Section field validation matches
 the PeTTa backend's non-blank kind and non-negative, non-boolean ordinal gates.
