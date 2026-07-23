@@ -1,5 +1,13 @@
 # Tasks
 
+- [x] 2026-07-23 13:30 PDT: Aligned diagnostics semantic object admission with
+  the PeTTa reified facts-container gate. Objects with malformed `None` facts
+  containers no longer contribute semantic question counts, while exact crisp
+  validation and backend refusal evidence remain visible and a valid
+  neighboring question is still reported. Focused diagnostics passed 14
+  tests in 66.398s; full discovery passed 404 tests in 329.188s;
+  `git diff --check` passed. Local implementation commit `0cb5f34`; unpushed.
+
 - [x] 2026-07-23 11:30 PDT: Aligned diagnostics semantic object admission with
   the PeTTa reified semantic-level gate. `RawTextOnly` and malformed level
   objects no longer contribute question/concept/acceptance-test summaries or

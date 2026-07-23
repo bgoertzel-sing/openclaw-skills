@@ -1,5 +1,20 @@
 # Working Notes
 
+## 2026-07-23 13:30 PDT - diagnostics facts-container admission
+
+Diagnostics semantic counting and question rendering now require the same
+list-backed facts container that the PeTTa reified object gate requires.
+Constructed ground truth proves an object with a malformed `None` facts
+container is excluded from question counts while its crisp validation failure
+and exact backend refusal remain visible; a valid neighboring question is
+still counted and rendered.
+
+Verification: focused diagnostics passed 14 tests in 66.398s; full stdlib
+unittest discovery passed 404 tests in 329.188s; `git diff --check` passed.
+No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `0cb5f34`;
+unpushed.
+
 ## 2026-07-23 07:30 PDT - exact-arity diagnostics fact consumption
 
 Diagnostics now credits `ConceptStatus`, acceptance `TestKind`, and renders

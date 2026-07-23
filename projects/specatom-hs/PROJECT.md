@@ -3,7 +3,7 @@
 - Slug: `specatom-hs`
 - Status: `active`
 - Created: `2026-06-29`
-- Last reviewed: `2026-07-23` (diagnostics semantic-level admission)
+- Last reviewed: `2026-07-23` (diagnostics facts-container admission)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -51,6 +51,11 @@ Observable criteria:
 - Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
 
 ## Current state
+
+As of the 2026-07-23 13:30 PDT worker, diagnostics semantic summaries and
+question reports admit only objects with list-backed facts containers.
+Malformed `None` facts containers retain crisp validation and PeTTa refusal
+evidence but no longer inflate question counts.
 
 As of the 2026-07-23 11:30 PDT worker, diagnostics semantic summaries and
 question reports admit only semantic levels supported by the PeTTa reified
