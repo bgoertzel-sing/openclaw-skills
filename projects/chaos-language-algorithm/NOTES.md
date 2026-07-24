@@ -1,5 +1,51 @@
 # Notes
 
+## 2026-07-24 10:15 PDT — M-D deterministic beam selection
+
+- Froze `docs/beam-search-policy-spec-v1.md` and implemented
+  `induction.search.BeamSearchPolicy` at clean active-worktree commit
+  `c6d7b96`.
+- Each selection uses one supplied official scorer, exact finite totals, and
+  the scorer's canonical state digest. Equal totals use digest ordering,
+  duplicate semantic states consume one slot, and every cut/duplicate state is
+  returned for later proposal-ledger disposition.
+- The frozen seed is configuration/replay metadata only in v1. The slice does
+  not generate proposals, write proposal records, or change `CLA.simple()`;
+  integration must still emit exactly one record per generated proposal and
+  label beam cuts explicitly.
+- Focused command passed 4 tests. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 235 tests in
+  46.081 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- Spec/source/test SHA-256 values:
+  `1de15d1d51bcaf4e5113cbe0d7c6e6473421bf0113c4d09986907284d34edfff`,
+  `6ba60a212c7bed9fc6f25098f74baec531e9af92fe9c1c94d98bdd244f90b03b`,
+  and `6d038c81d62629b267963d2a6c2278de961aa5460b14c47100ab84b70cb14c83`.
+- No scientific fixture, suffix, E0--E8 gate, CSSR comparison, or OmegaSim run
+  was opened. The hierarchical-generativity interpretation and expected CSSR
+  advantage on positive-entropy sofic regimes remain hypotheses.
+
+## 2026-07-24 04:15 PDT — M-D category/frame composite generation
+
+- Added `induction/compound_moves.py` at clean active-worktree commit
+  `fec7244`. The
+  proposer consumes ordinary category-inducer output, groups exact immediate
+  `left member right` frames, requires support >= 3 and at least two distinct
+  members, selects non-overlapping width-three occurrences, and emits
+  `CompositeProposal(CategoryProposal, GeneralizedChunkProposal)`.
+- Candidate ordering is decreasing realized support with canonical frame,
+  category, member, and occurrence tie breaks; generated chunk names avoid
+  existing numeric `N*` production names.
+- The canonical `a x b / a y b / a x b` test applies through `EditApplier`,
+  expands exactly to the source, and leaves one durable `Composite` edit.
+- Evidence: focused unittest 6/6; focused pytest 10 passed plus 1 subtest;
+  required `PYTHONPATH=src python3 -m unittest discover -s tests -v` 226/226
+  in 47.418 seconds; `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- No exact-score learner integration, experiment ledger, scientific fixture,
+  suffix, E0--E8 gate, or OmegaSim run was opened. Next is exact official-score
+  acceptance plus mixed-second-difference estimator/residual wiring.
+
 ## 2026-07-24 00:15 PDT — M-D deterministic LZ77-to-SLP initializer
 
 Clean active-worktree commit `4a05b5f` adds the reviewed
@@ -1683,3 +1729,45 @@ coder/search interfaces modular.
   `git diff --check` passed.
 - No E0--E8 fixture, suffix, detector, coder comparison, or scientific score
   was produced or inspected.
+
+## 2026-07-24 M-D exact composite acceptance and residual wiring
+
+- Clean active-worktree commit `2a064b1` adds an exact composite evaluation
+  seam. Frozen estimates determine evaluation order only; the lowest exact
+  improving official score wins, and exact reconstruction is checked before a
+  candidate can be accepted.
+- Every generated composite yields exactly one `ProposalRecord`, including
+  component digests, estimator identity/configuration fields, exact
+  model/data/total deltas, and an explicit acceptance or rejection reason.
+- When both component edits apply independently, the record contains all four
+  official totals, the realized mixed second difference, and the
+  estimated-versus-realized residual. The category-then-generalized-chunk case
+  is order-dependent, so its mixed fields are JSON null as required by the
+  reviewed amendment; its exact atomic composite delta remains authoritative.
+- Focused unittest passed 11. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 229 tests in
+  46.068 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- No scientific fixture, suffix, E0--E8 gate, detector comparison, or OmegaSim
+  run was opened. The scientific framing remains a hypothesis: chunk CLA may
+  detect hierarchical generativity and should likely lose to CSSR on
+  positive-entropy sofic regimes.
+# 2026-07-24 M-D proposal-budget accounting
+
+- Clean active-worktree commit `73f56d6` makes the composite evaluation seam
+  enforce the frozen default budget of 512
+  proposals per step and rejects negative budgets.
+- Frozen mixed-delta estimates and stable digests determine admission order
+  only. Cut composites are neither applied nor officially scored and cannot
+  be accepted.
+- Every generated composite still yields exactly one accounting result and,
+  when a ledger is supplied, exactly one record. Cut records carry
+  `reason="budget_cut"`, component digests, estimator identity/version, and
+  the nullable frozen estimate; uncomputed score deltas remain zero.
+- Focused unittest passed 13. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 231 tests
+  in 48.379 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- No scientific fixture, suffix, E0--E8 gate, detector comparison, or
+  OmegaSim run was opened. Exact official scoring remains the sole acceptance
+  authority. The hierarchical-generativity/CSSR framing remains a hypothesis.

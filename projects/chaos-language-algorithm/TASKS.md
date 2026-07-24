@@ -1,5 +1,51 @@
 # Tasks
 
+- [x] 2026-07-24 10:15 PDT: complete the bounded M-D deterministic beam
+  selection slice at clean active-worktree commit `c6d7b96`.
+  `BeamSearchPolicy(width, seed)` deduplicates by the adaptive scorer's
+  canonical state digest and retains the exact-score top-B states with digest
+  tie-breaking; all pruned states are returned for later ledger routing.
+  The seed is frozen replay metadata and does not perturb canonical ordering.
+  Focused stdlib tests passed 4; required discovery passed 235 in 46.081 s;
+  `compileall` and `git diff --check` passed. Public learner defaults and all
+  E0--E8 gates were untouched. Next: scorer-frozen opt-in initializer/search
+  integration with one proposal-ledger record per generated proposal.
+
+- [x] 2026-07-24 08:15 PDT: complete the bounded M-D composite
+  proposal-budget slice at clean active-worktree commit `73f56d6`.
+  `max_proposals_per_step` defaults to 512, rejects
+  negative values, admits composites in frozen estimate/digest order, and
+  does not apply or score cut proposals. Every generated composite still
+  produces exactly one result/ledger record; cut records use
+  `reason="budget_cut"` and retain estimator/configuration identity plus
+  nullable estimates. Focused stdlib tests passed 13; required discovery
+  passed 231 in 48.379 seconds; `compileall` and `git diff --check` passed.
+  No E0--E8 measurement ran. Next: deterministic beam search, then
+  scorer-frozen public initializer integration.
+
+- [x] 2026-07-24 06:15 PDT: wire the bounded M-D composite
+  exact-acceptance/accounting slice at clean active-worktree commit `2a064b1`.
+  Ranking estimates affect order only; acceptance requires exact reconstruction
+  and a strictly negative exact official-score delta. Every generated
+  composite produces one record with component digests and exact deltas.
+  Compatible independent components receive the four exact totals, realized
+  mixed second difference, and estimator residual; order-dependent components
+  fail closed with those fields null. Focused unittest passed 11, required
+  stdlib discovery passed 229 in 46.068 s, and `compileall`/`git diff --check`
+  passed. No E0--E8 measurement ran. Next: proposal-budget accounting, then
+  deterministic beam search and scorer-frozen public initializer integration.
+
+- [x] 2026-07-24 04:15 PDT: implement the bounded M-D
+  `CategoryThenChunkProposer` slice at clean active-worktree commit `fec7244`.
+  It reaches the `a{x,y}b` synergy case as
+  one deterministic composite, requires minimum support plus two distinct
+  members, orders candidates by support with stable tie breaks, and preserves
+  exact reconstruction/atomic replay. Focused unittest passed 6; focused
+  pytest passed 10 with 1 subtest; full stdlib discovery passed 226;
+  `compileall` and `git diff --check` passed. No E0--E8 measurement ran.
+  Next: exact official-score acceptance and estimated-versus-realized mixed
+  second-difference ledger wiring, then proposal budget and beam search.
+
 - [x] 2026-07-24 00:15 PDT: complete the reviewed deterministic
   `LZ77SLPInitializer` construction/pruning/replay slice at clean active
   worktree commit `4a05b5f`. Version 1 uses longest non-self-referential

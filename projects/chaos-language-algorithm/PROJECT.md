@@ -1,5 +1,40 @@
 # Chaos Language Algorithm
 
+Update, 2026-07-24 10:15 PDT: the isolated M-D deterministic beam-selection
+policy is acceptance-tested at clean active-worktree commit `c6d7b96`.
+It ranks only exact official scores, deduplicates semantically identical states
+by canonical adaptive-scorer digest, uses digest tie-breaking, and returns all
+cut states for subsequent `beam_pruned` ledger routing. The policy does not
+generate proposals, alter public learner defaults, or bypass reconstruction,
+budget, or one-record-per-proposal requirements. Focused stdlib passed 4,
+required discovery passed 235 in 46.081 seconds, and compileall/diff checks
+passed. No E0--E8 fixture or score was opened. Scorer-frozen public initializer
+and search integration remain in M-D.
+
+Update, 2026-07-24 06:15 PDT: M-D exact composite acceptance and ledger
+accounting are acceptance-tested at clean active-worktree commit `2a064b1`.
+Estimator values rank only; the exact official scorer and exact reconstruction
+alone authorize one atomic accepted composite. One record is emitted per
+generated composite. Compatible component edits receive exact four-state mixed
+second-difference totals and estimator residuals; order-dependent components
+correctly leave those fields null instead of fabricating evidence. Focused
+unittest passed 11, required stdlib discovery passed 229 in 46.068 seconds,
+and compileall/diff checks passed. No E0--E8 fixture or score was opened.
+Proposal budgeting, deterministic beam search, and scorer-frozen initializer
+integration remain in M-D.
+
+Update, 2026-07-24 04:15 PDT: the M-D category/frame generation sub-slice is
+acceptance-tested at clean active-worktree commit `fec7244`.
+`CategoryThenChunkProposer` deterministically emits atomic
+category-plus-`left M right` proposals only when a frame has the frozen minimum
+support and at least two distinct members; support-first ordering and chunk
+names are stable, and application preserves exact reconstruction as one
+durable `Composite` edit. Focused unittest passed 6, focused pytest passed 10
+with 1 subtest, required stdlib discovery passed 226, and compileall/diff
+checks passed. No scorer was changed and no E0--E8 fixture or score was opened.
+Exact official-score acceptance/estimator residual wiring, proposal budgeting,
+and beam search remain in M-D.
+
 Update, 2026-07-24: M-D now has deterministic, exact-reconstructing Re-Pair
 and non-self-referential LZ77-to-balanced-SLP initializers with exact-score
 strict pruning and replay. The LZ77 slice is clean commit `4a05b5f`; focused
