@@ -3,9 +3,16 @@ import unittest
 import torch
 
 from model import Itinerant, direction_free_channel_penalties
+from run_carom_e2_e3 import corpus_to_device
 
 
 class E2E3Tests(unittest.TestCase):
+    def test_corpus_to_device_preserves_non_tensor_fields(self):
+        corpus = (torch.tensor([1]), "metadata")
+        moved = corpus_to_device(corpus, torch.device("cpu"))
+        self.assertTrue(torch.equal(moved[0], corpus[0]))
+        self.assertEqual(moved[1], "metadata")
+
     def test_e2_fitness_is_mode_specific(self):
         model = Itinerant(d=8, K=4, steps=4, mode_specific_fitness=True)
         model.eval()
