@@ -1,5 +1,30 @@
 # Tasks
 
+- [x] 2026-07-24 00:15 PDT: complete the reviewed deterministic
+  `LZ77SLPInitializer` construction/pruning/replay slice at clean active
+  worktree commit `4a05b5f`. Version 1 uses longest non-self-referential
+  left-to-right LZ77 matches with smallest-source tie breaking, literal
+  fallbacks, deterministic power-of-two phrase decomposition, balanced binary
+  productions interned in first-use order, and the same exact-score strict
+  pruning contract as Re-Pair. Focused pytest passed 11 tests; required stdlib
+  discovery passed 220 tests in 47.267 seconds; compileall and diff check
+  passed. No E0--E8 fixture or score was opened. Next: integrate opt-in
+  initializer selection only with one frozen adaptive scorer/configuration and
+  add the remaining composite atomicity, proposal-budget, and beam invariants.
+
+- [x] 2026-07-23 22:15 PDT: complete the second bounded M-D Re-Pair slice at
+  clean active-worktree commit `4c5d466`. `RePairInitializer` now performs
+  deterministic fixpoint pruning only when exact official total bits strictly
+  decrease; ties retain rules. Each accepted inline-and-remove edit preserves
+  exact reconstruction and is replayable after the single
+  `InitializeFromRePair` edit. Focused pytest passed 37 tests; required stdlib
+  discovery passed 220 tests in 48.034 seconds; compileall and diff check
+  passed. No E0--E8 fixture or scientific score was opened. The legacy public
+  learner was not silently switched to the adaptive objective. Next: add the
+  reviewed deterministic `LZ77SLPInitializer` with the same exact-score
+  pruning contract, then integrate initializer selection with one frozen
+  adaptive scorer/configuration.
+
 - [x] 2026-07-23 20:15 PDT: complete the first bounded M-D implementation
   slice: deterministic unpruned `RePairInitializer` at active-repository clean
   commit `7b85c20`. It performs most-frequent-digram replacement with
@@ -11,9 +36,11 @@
   adaptive-score pruning and replay are complete. No scientific fixture or
   E0--E8 gate was run.
 
-- [ ] Continue M-D with exact official-score rule pruning and replay support
-  for `RePairInitializer`; prove reconstruction after every pruning decision
-  and expose `init="repair"` only after this complete slice passes.
+- [x] Continue M-D with exact official-score rule pruning and replay support
+  for `RePairInitializer`; prove reconstruction after every accepted pruning
+  decision. Evidence: commit `4c5d466`. Public `init="repair"` integration
+  remains deliberately deferred until its fit path can freeze and reuse the
+  adaptive scorer/configuration rather than mixing objectives.
 
 - [x] 2026-07-23: review and integrate the supplied mathematical foundations
   as explicit, independently checkable amendments to the adaptive-coding

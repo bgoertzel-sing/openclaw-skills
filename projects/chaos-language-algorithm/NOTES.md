@@ -1,5 +1,29 @@
 # Notes
 
+## 2026-07-24 00:15 PDT — M-D deterministic LZ77-to-SLP initializer
+
+Clean active-worktree commit `4a05b5f` adds the reviewed
+`LZ77SLPInitializer` beside Re-Pair. Its version-1 parser is deterministic,
+left-to-right, longest-match, non-self-referential, and uses smallest source
+position for ties; unmatched symbols remain literals. Copied phrases use a
+deterministic descending power-of-two decomposition and structurally interned
+balanced binary productions allocated in first-use order. Construction and
+every accepted exact-score pruning transition preserve reconstruction, and
+the initializer plus pruning edit log replays deterministically.
+
+Focused pytest passed 11 tests. Required `PYTHONPATH=src python3 -m unittest
+discover -s tests -v` passed 220 tests in 47.267 seconds;
+`python3 -m compileall -q src tests` and `git diff --check` passed. Code,
+persistence, and test SHA-256 values are
+`3bea8d7627c218b941ac3c214b44fbb2f57832c72d1711e09bb2f05fe8f4b8c7`,
+`d767c08772a57ea74d67c6167cbf7e370da8aec0d2e95b99cfcdc8f7dd51a4ef`,
+and
+`1724b05f438966660288a994759f9c4617954c0bb0fe094e5387d56e9f6a4af9`.
+No scientific fixture, suffix, E0--E8 gate, or OmegaSim run was opened.
+Fit-time initializer selection and full run-ledger metadata remain deferred
+until the public path can reuse one frozen adaptive scorer/coder
+configuration.
+
 ## 2026-07-23 20:15 PDT — M-D deterministic Re-Pair construction
 
 At clean active-repository commit `7b85c20`, the first bounded M-D slice adds
@@ -1623,3 +1647,24 @@ coder/search interfaces modular.
 - No search path was enabled and no E0--E8 fixture, suffix, or score was
   generated. Next M-D slice is deterministic Re-Pair construction and
   exact-official-score pruning; LZ77-SLP follows under the reviewed amendment.
+
+# 2026-07-23 M-D exact-score Re-Pair pruning and replay
+
+- Clean active-worktree commit `4c5d466` adds an explicit immutable
+  inline-and-remove transition and exact-score fixpoint pruning to
+  `RePairInitializer`.
+- Candidate rules are tried in stable token order. A rule is accepted only
+  when the supplied official scorer's exact total is strictly lower; ties and
+  non-improvements retain the rule. Reconstruction is asserted on every
+  accepted transition.
+- Persistence replay now reconstructs the deterministic
+  `InitializeFromRePair` state and replays live as well as unused rule-removal
+  edits one at a time, then optionally reproduces the derived score.
+- Focused pytest passed 37 tests. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 220 tests in
+  48.034 seconds. `python3 -m compileall -q src tests` and `git diff --check`
+  passed.
+- No scientific fixture, suffix, E0--E8 gate, or OmegaSim run was opened.
+  Public initializer selection remains deferred until the fit path uses one
+  frozen adaptive scorer/configuration throughout. Next implement the reviewed
+  deterministic LZ77-to-balanced-SLP initializer.
