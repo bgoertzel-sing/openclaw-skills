@@ -1668,3 +1668,20 @@ coder/search interfaces modular.
   Public initializer selection remains deferred until the fit path uses one
   frozen adaptive scorer/configuration throughout. Next implement the reviewed
   deterministic LZ77-to-balanced-SLP initializer.
+# 2026-07-24 M-D atomic composite move evidence
+
+- Active worktree:
+  `/home/openclaw/research-agent/scratch/chaoslang-strict-replay`
+- Commit: `3a1f2e8` (`Add atomic composite move replay`), clean after commit.
+- The existing joint category/generalized-chunk proposal now routes through
+  `CompositeProposal`; successful application collapses its sub-edit log to
+  one durable `Composite` edit. Replay expands the recorded ordered sub-edits
+  from the original corpus, then restores the atomic edit boundary.
+- A deliberately stale second generalized-chunk sub-edit raises without
+  mutating the immutable input state or leaving grammar/edit-log traces.
+- Evidence: 34 focused unittest tests passed; 14 focused pytest tests passed;
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 222 tests in
+  47.044 s; `PYTHONPATH=src python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- This is implementation-only evidence. No E0--E8 fixture, suffix, detector,
+  coder comparison, or scientific score was produced or inspected.

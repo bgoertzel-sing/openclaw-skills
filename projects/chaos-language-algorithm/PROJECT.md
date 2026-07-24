@@ -1,5 +1,14 @@
 # Chaos Language Algorithm
 
+Update, 2026-07-24: the next M-D search sub-slice is acceptance-tested at
+clean active-worktree commit `3a1f2e8`. Ordered composite proposals now apply
+transactionally, emit one durable `Composite` edit, replay deterministically,
+and leave the input state untouched when a later sub-edit fails exact
+reconstruction. Focused unittest passed 34, focused pytest passed 14, required
+stdlib discovery passed 222, and compileall/diff checks passed. No E0--E8
+fixture or score was opened. Category/frame proposal generation, exact
+official-score acceptance, proposal budgeting, and beam search remain in M-D.
+
 Update, 2026-07-24: M-D now has deterministic, exact-reconstructing Re-Pair
 and non-self-referential LZ77-to-balanced-SLP initializers with exact-score
 strict pruning and replay. The LZ77 slice is clean commit `4a05b5f`; focused
