@@ -1,5 +1,28 @@
 # Notes
 
+## 2026-07-23 20:15 PDT — M-D deterministic Re-Pair construction
+
+At clean active-repository commit `7b85c20`, the first bounded M-D slice adds
+an unpruned `RePairInitializer`. It repeatedly chooses the highest-frequency
+digram, breaks ties by canonical lexicographic entry order, replaces
+non-overlapping occurrences left-to-right, creates first-use `R0`, `R1`, ...
+chunk rules, and records one `InitializeFromRePair` edit. Constructed tests
+cover deterministic hierarchical output, exact reconstruction, tie selection,
+overlap behavior, immutable input, literals/end cases, limits, and fail-closed
+inputs. Focused pytest passed 16; `PYTHONPATH=src python3 -m unittest discover
+-s tests -v` passed 220; `python3 -m compileall -q src tests` and `git diff
+--check` passed. Implementation/test hashes are
+`f5b66987147748d94732082d73352902a765751c3ff83b1567e4e0fb1d1d9036`
+and
+`8b3581a12c37d2d422a9bc24e0f99aa517180d1631c8b2bce488cd337269b30f`.
+
+This is construction plumbing only. It is not yet exposed as a fit-time mode:
+M-D still requires official `AdaptiveTwoPartScorer` pruning, exact replay,
+public opt-in integration, LZ77-SLP, composite application/search, proposal
+budgeting, and beam search. No experimental ledger, frozen suffix, E0--E8
+measurement, or OmegaSim run was opened. E3 and all promotion gates remain
+binding.
+
 ## 2026-07-23 — adaptive upgrade M-B instrumentation
 
 At clean active-worktree commit `46ffbfe`, the induction loop can write one

@@ -1,5 +1,20 @@
 # Tasks
 
+- [x] 2026-07-23 20:15 PDT: complete the first bounded M-D implementation
+  slice: deterministic unpruned `RePairInitializer` at active-repository clean
+  commit `7b85c20`. It performs most-frequent-digram replacement with
+  lexicographic tie-breaking, left-to-right non-overlap handling, hierarchical
+  productions, a single `InitializeFromRePair` edit, immutable input, and exact
+  reconstruction. Focused pytest passed 16 tests; required stdlib discovery
+  passed 220 tests; `compileall` and `git diff --check` passed. The initializer
+  is intentionally not exposed through `CLA.simple(init=...)` until official
+  adaptive-score pruning and replay are complete. No scientific fixture or
+  E0--E8 gate was run.
+
+- [ ] Continue M-D with exact official-score rule pruning and replay support
+  for `RePairInitializer`; prove reconstruction after every pruning decision
+  and expose `init="repair"` only after this complete slice passes.
+
 - [x] 2026-07-23: review and integrate the supplied mathematical foundations
   as explicit, independently checkable amendments to the adaptive-coding
   programme. Deliverable: preserve the 11-page PDF and extracted text; audit
