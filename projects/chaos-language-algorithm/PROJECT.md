@@ -1,5 +1,16 @@
 # Chaos Language Algorithm
 
+Update, 2026-07-24 12:15 PDT: opt-in adaptive initializer integration is
+acceptance-tested at clean active-worktree commit `a01c2c4`.
+`search_objective="adaptive"` now constructs one frozen registry-backed
+`AdaptiveTwoPartScorer`; `init="repair"` and `init="lz77-slp"` pass that same
+scorer object through exact-score pruning and all later learner scoring.
+Defaults remain the legacy empty/proxy path, invalid combinations fail closed,
+and initialized models reconstruct and replay deterministically. Focused
+unittest passed 17; required discovery passed 239 in 51.762 seconds; compileall
+and diff checks passed. No E0--E8 fixture or score was opened. Composite/beam
+public-loop integration with complete proposal-ledger routing remains in M-D.
+
 Update, 2026-07-24 10:15 PDT: the isolated M-D deterministic beam-selection
 policy is acceptance-tested at clean active-worktree commit `c6d7b96`.
 It ranks only exact official scores, deduplicates semantically identical states

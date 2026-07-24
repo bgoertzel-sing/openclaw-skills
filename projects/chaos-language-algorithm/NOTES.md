@@ -1,5 +1,33 @@
 # Notes
 
+## 2026-07-24 12:15 PDT — M-D adaptive initializer integration
+
+- Froze `docs/adaptive-initializer-integration-spec-v1.md` and implemented the
+  opt-in learner seam at clean active-worktree commit `a01c2c4`.
+- `search_objective="adaptive"` creates one registry-backed
+  `AdaptiveTwoPartScorer`. `init="repair"` and `init="lz77-slp"` receive that
+  exact object for official-score pruning, after which the learner retains it
+  for every proposal and final score. Legacy `init="empty"` and proxy defaults
+  are unchanged; unsupported coders, initializers, and objective combinations
+  fail before fitting.
+- Exact reconstruction, initialization/pruning replay, and deterministic
+  fixed-config results are covered. A first focused run had one test-harness
+  error because it passed a `Corpus` to `replay_edits`, whose documented input
+  is a symbol iterable; changing the test to `corpus.symbols` resolved it
+  without implementation changes.
+- Focused command covering adaptive integration, both initializers, and the
+  adaptive scorer passed 17 tests. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 239 tests in
+  51.762 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- Spec/source/test SHA-256 values:
+  `ef3eefa40685536651388c35dfaabd951c7b03526b22325c8cbabf136467a732`,
+  `db420111f477cae3a1fbcefab720c5797a06704b4cd9e0bf91fb0171811e97be`,
+  and `c3b0935b0cba58b7247b6bcbc22b08b71556f01f4af2f18265015a90eefd4981`.
+- No scientific fixture, suffix, E0--E8 gate, CSSR comparison, or OmegaSim run
+  was opened. The hierarchical-generativity interpretation and expected CSSR
+  advantage on positive-entropy sofic regimes remain hypotheses.
+
 ## 2026-07-24 10:15 PDT — M-D deterministic beam selection
 
 - Froze `docs/beam-search-policy-spec-v1.md` and implemented

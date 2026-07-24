@@ -1,5 +1,14 @@
 # Tasks
 
+- [x] 2026-07-24 12:15 PDT: Freeze and implement the opt-in adaptive
+  initializer integration seam at clean active-worktree commit `a01c2c4`.
+  One registry-backed `AdaptiveTwoPartScorer` instance is shared by Re-Pair or
+  LZ77-SLP exact pruning and subsequent search/final scoring; defaults remain
+  legacy empty/proxy. Focused unittest passed 17, required discovery passed
+  239 in 51.762 seconds, and compileall/diff checks passed. No E-series
+  measurement ran. Next M-D slice is composite/beam loop integration with
+  exactly one ledger disposition per generated proposal.
+
 - [x] 2026-07-24 10:15 PDT: complete the bounded M-D deterministic beam
   selection slice at clean active-worktree commit `c6d7b96`.
   `BeamSearchPolicy(width, seed)` deduplicates by the adaptive scorer's
