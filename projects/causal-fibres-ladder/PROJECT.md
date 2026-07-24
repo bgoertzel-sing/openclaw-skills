@@ -149,6 +149,18 @@ the logit/hidden ratio is `2.16--2.18`, the both-vs-logit difference is
 below `1.5e-5`, and the best G is `4.34430 ± 0.28271`. The frozen negative
 E4 gate is unchanged; this is diagnostic, not deployability evidence.
 
+A follow-up has now resolved the label-equivalence question for the direct-
+logit sink. Twenty-eight partial-factor, parity, implication, and noisy source
+conditions were compiled to allowed-class masks and audited to leave at least
+two labels possible. After three-seed calibration, the frozen three-factor
+primary confirmed mean CS task-loss `G=3.7433` on four defined denominators
+across five disjoint seeds, with all four individual values above `0.20`.
+Parity (`8` labels possible) and implication (`12`) also clear the material
+gate. Mean CS accuracy improved from `82.19%` FF to `88.91%`, but a separately
+frozen 95% absolute-accuracy auxiliary failed. Stage-4 is therefore vindicated
+as a non-label-equivalent information-sink result, while a real provenance-
+aware upstream symbolic source remains open.
+
 E5 W1/W2 numerical kernels are eligible and pass on pinned MORK's standalone
 `linalg` crate: six-layer f32 forward meets the `1e-5` relative-logit bar with
 exact argmax, and five-step relaxation matches within `1e-6`. Actual in-store
@@ -169,6 +181,12 @@ Python, Torch, CPU, and OS versions are captured in each run. No remote
 resource is authorized.
 
 ## Key results
+
+- [E4 non-label-equivalent disposition](docs/e4_non_label_equivalent_disposition.md):
+  three-seed calibration plus five disjoint confirmation seeds show that
+  partial, parity, and implication sources clear `G>0.20` through the direct-
+  logit sink without uniquely determining the label; the 95% absolute-accuracy
+  auxiliary failed and upstream source availability remains separate.
 
 - [E4 channel diagnostic + confirmation](docs/e4_channel_diagnostic.md):
   calibration and disjoint confirmation identify incomplete information, weak

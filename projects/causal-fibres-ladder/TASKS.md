@@ -4,6 +4,27 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] Test non-label-equivalent symbolic constraint sources through the
+  confirmed E4 direct-logit sink on the frozen 75-update student.
+  Deliverable: relational/parity, 1/2/3 partial-factor, implication-rule, and
+  controlled-noise (`p=0,0.1,0.2,0.5`) calibration plus disjoint confirmation
+  with CS task accuracy and `G=(SC-FF)/(TC-FF)`, exact configs/commands/raw
+  JSON, and a plain deployment-gate disposition. Acceptance: constraint
+  information is audited as non-label-equivalent, at least three calibration
+  seeds run, thresholds are frozen before at least three disjoint confirmation
+  seeds, focused tests pass, and the run is linked from `PROJECT.md`. Next
+  command: implement the generic allowed-label constraint sink and tests
+  against `docs/e4_non_label_equivalent_protocol.md`. Evidence:
+  `experiments/20260724T220707Z-e4-non-label-equivalent-calibration/RUN.md`
+  and
+  `experiments/20260724T221117Z-e4-non-label-equivalent-confirmation/RUN.md`.
+  Completed 2026-07-24: frozen primary `partial3_123` confirmed mean defined-
+  seed CS `G=3.7433` with 4/4 defined seeds above `0.20`; parity and
+  implication sources also clear the gate. Mean CS accuracy improved from
+  `82.19%` FF to `88.91%`, but the additional frozen 95% absolute-accuracy
+  auxiliary failed. All 28 sources were non-label-equivalent. Evidence:
+  `docs/e4_non_label_equivalent_disposition.md`.
+
 - [x] Run E4 channel diagnostic calibration + confirmation on the frozen
   75-update student. Deliverable: full-versus-capped factor information,
   constraint weights `0.5x,1x,2x,5x`, and hidden/logit/both injection

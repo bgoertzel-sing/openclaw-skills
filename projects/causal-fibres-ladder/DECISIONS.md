@@ -228,3 +228,25 @@ Prioritize a direct-logit constraint adapter with explicit constraint/anchor
 scales for any prospective E4 redesign. Require provenance for deployable
 constraint information: full4 is label-equivalent on this synthetic grammar
 and is only a diagnostic upper case.
+
+## D-20260724-e4-non-label-equivalent: Accept non-label-equivalent sink recovery
+
+- Date: `2026-07-24`
+- Status: `accepted with auxiliary failure`
+- Evidence: `docs/e4_non_label_equivalent_disposition.md`
+
+Accept the specified Stage-4 headroom claim: the calibration-selected
+`partial3_123` source leaves two labels possible and confirms mean CS
+`G=3.7433` over four defined denominators, with 4/4 values above the frozen
+`0.20` gate. Relational parity leaving eight labels and a single implication
+leaving twelve labels also exceed `0.20`. Label-equivalent four-factor
+information is therefore not required by the direct-logit sink.
+
+Preserve the failed auxiliary: mean primary CS accuracy was `88.91%`, below
+the separately frozen `95%` threshold, although it improved on FF `82.19%`.
+Do not call the composite threshold battery an unqualified pass.
+
+Treat this as an information-sink result, not proof of a deployable upstream
+extractor. The diagnostic sources were compiled from known synthetic factors.
+Any deployment claim requires a provenance-aware source that emits the
+partial or relational statement without access to the target label.
