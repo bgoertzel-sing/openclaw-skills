@@ -658,3 +658,12 @@ streams, compact CLA never beat the strongest complete-code control at any
 correctly rejected and all integrity gates passed. The synthetic amortization
 positive therefore does not transfer under this scalar M1 protocol. No tuning,
 renewed scalar calibration, chaos claim, or semantic-grammar claim is licensed.
+
+Update, 2026-07-24: the next M-D search sub-slice is acceptance-tested at
+clean active-worktree commit `3a1f2e8`. Ordered composite proposals now apply
+transactionally, emit one durable `Composite` edit, replay deterministically,
+and leave the input state untouched when a later sub-edit fails exact
+reconstruction. Focused unittest passed 34, focused pytest passed 14, required
+stdlib discovery passed 222, and compileall/diff checks passed. No E0--E8
+fixture or score was opened. Category/frame proposal generation, exact
+official-score acceptance, proposal budgeting, and beam search remain in M-D.

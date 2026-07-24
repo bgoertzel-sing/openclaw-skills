@@ -672,3 +672,13 @@ Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_e
   6,232/6,296/+64 regression, exactly-one-record invariant, and final
   breakdown reconciliation. Acceptance command:
   `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
+
+- [x] 2026-07-24: Implement the M-D composite transaction/replay sub-slice at
+  clean active-worktree commit `3a1f2e8`. A composite applies ordered
+  sub-proposals immutably, records one durable `Composite` edit, replays
+  exactly, rejects nesting, and leaves the input state unchanged if a later
+  sub-edit fails. Focused unittest passed 34, focused pytest passed 14,
+  required stdlib discovery passed 222, and `compileall`/`git diff --check`
+  passed. No scientific fixture or E0--E8 score was opened. Next: wire
+  category/frame composite generation and exact official-score acceptance,
+  then proposal budgeting and deterministic beam search.

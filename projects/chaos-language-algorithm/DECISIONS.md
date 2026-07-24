@@ -18,3 +18,12 @@ No implementation decisions yet.
 **Rationale:** Ben observed that OmegaSim cannot proceed sensibly if we cannot detect whether a simulated OmegaHive has complex strange-attractor structure.
 
 **Next implication:** CLA should test on a range of strange attractors first, including dimensionalities comparable to initial OmegaSim vector traces; high-dimensional cases are deferred until a dimension-reduction step is designed.
+
+## 2026-07-24 — Composite acceptance is one durable transaction
+
+For M-D, ordered category/chunk sub-proposals are applied to immutable
+intermediate states but a successful composite exposes exactly one durable
+`Composite` edit. Nested composites are rejected in v1. Any failing sub-edit
+discards the intermediate value, leaving the input state and edit log
+unchanged. This matches the frozen atomicity and one-ledger-record invariants;
+exact official-score acceptance remains the next separate wiring slice.
