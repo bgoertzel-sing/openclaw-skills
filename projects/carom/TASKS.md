@@ -1,0 +1,314 @@
+# Tasks
+
+Use small, testable tasks. Keep the top of each section in priority order.
+
+## Now
+
+- [ ] Complete the accepted Fable/Sol E2/E3 ladder. Deliverable:
+  deterministic five-seed mode-specific fitness ablations and generic
+  direction-free regularization on the frozen corpus. Acceptance: full-scale
+  paired accuracy and trajectory gates pass without successor-pair encoding or
+  excess exposure; only then open E4. Next command: reduce or freshly
+  authorize the full-run resource requirement. Evidence:
+  `experiments/20260724T182939Z-e2-e3-cpu-smoke-r1/` and
+  `experiments/20260724T183038Z-e2-e3-cpu-fixture-r1/`. Implementation and
+  seven tests pass; smoke and fixture are deterministic. Fixture cost was
+  74.23 s and 375 MB RSS. This is calibration, not a scientific disposition.
+
+- [ ] Run the GPT-2-scale CAROM distributional controller utility gate
+  requested by Ben on 2026-07-24. Deliverable: frozen-GPT-2-small
+  compiled-channel warm-start trajectory with complete optimizer/RNG
+  checkpoints and disjoint calibration/held-out LR-action branches.
+  Acceptance: local smoke and constructed action/oracle tests pass; explicit
+  RunPod cost approval is recorded; parent states remain immutable; replay is
+  exact; paired informed-versus-passive loss/accuracy and uncertainty are
+  reported; artifacts are retrieved/hash-verified; pod is terminated and
+  inventory rechecked. Next command: finish and CPU-smoke the v4 runner, then
+  provision only after approval of the 2-hour/USD 3.00 cap. Evidence:
+  `experiments/20260724T082409Z-gpt2-distributional-controller-v4/`.
+
+- [x] Build and execute CAROM Frozen-State Replica Calibration v1, requested
+  by Ben on 2026-07-22. Deliverable: a deterministic CPU experiment that
+  captures complete model/AdamW/OneCycle/RNG states at updates 150, 450, 900,
+  1350, and 1499; performs same-state one-step replicas across batch and
+  paired-LR conditions; compares AR(1), AR(2), frozen-v companion AdamW, and
+  v-aware transition predictors on short replicated trajectories; and
+  estimates repeatable Adam-preconditioned top curvature by multi-start power
+  iteration. Acceptance: reduced smoke proves parent-state immutability,
+  exact replay, common-random LR pairing, raw/clipped gradient and
+  delta-theta/m/v capture, finite machine-readable output, and deterministic
+  hashes; the full local run records exact commands, resources, results, and
+  go/no-go gates in an experiment ledger. Next command: implement
+  `repos/carom/run_carom_frozen_replica_calibration.py` and its focused tests.
+  Evidence: `experiments/20260723T*-frozen-state-replica-calibration-v1/`.
+  Completed 2026-07-23: all operational invariants passed. Innovation Models
+  1--3 passed calibration (frozen-preconditioner median ratio `1.0144`; full
+  one-step `1.0000`), while scalar Model 0 failed (`4.0726`). The augmented
+  v-aware state model failed (`1.0235x` vs required `>=2x`) and curvature
+  repeatability failed (max CV `0.7374`, 90% width `1.4277`). Evidence:
+  `experiments/20260723T181323Z-frozen-state-replica-calibration-v1/`.
+
+- [x] Build and execute CAROM stochastic-transition identification v2.
+  Deliverable: a frozen-checkpoint experiment that uses the v1-calibrated
+  AdamW-preconditioned innovation model but compares AR(2), explicit AdamW,
+  time-varying/local-linear, and a preregistered nonlinear empirical state
+  representation over disjoint checkpoint/LR/batch interventions; estimate
+  curvature as a batch-conditioned distribution with uncertainty rather than a
+  controller point estimate. Acceptance: exact branch replay and parent
+  immutability; held-out 8-step state prediction reduces error at least 2x
+  relative to AR(1); the winning state representation transfers across at
+  least one withheld LR/batch condition; sharpness uncertainty is quantified
+  rather than silently averaged; no active controller mutation occurs. Next
+  command: write the v2 plain-language state contract, then construct
+  time-varying and nonlinear positive controls before implementing the runner.
+  Evidence: `experiments/<run-id>-stochastic-transition-id-v2/`.
+  Completed 2026-07-23: all distributional, mean-dynamics, oracle-gap, and
+  operational gates passed across five frozen checkpoints. Median random/PCA
+  coverage ratios were `0.9877/1.0532`; mean RMSE versus AR(1) `0.9922`;
+  oracle/distributional ratio `0.00472`; AdamW/calibration RMSE ratio `1.2777`.
+  This attributes the v1 deterministic failure primarily to irreducible future
+  minibatch uncertainty, rather than state insufficiency. Active control is
+  still shadow-only pending a separately tested distributional activation gate.
+  Evidence: `experiments/20260723T224500Z-stochastic-transition-id-v2/`.
+
+- [x] Produce the requested exact-parameter BridgeLearn shadow-mode v2 PDF.
+  Deliverable: ASCII-only LaTeX and compiled PDF documenting the precise
+  CAROM/BridgeLearn configuration, command, environment, all 1,500-observation
+  telemetry fields and aggregate results, calibration gates, interpretation,
+  limitations, and parameter-tuning implications. Acceptance: every numerical
+  claim traces to the hash-verified telemetry; Tectonic compilation, PDF text
+  extraction, all-page visual inspection, ASCII validation, and artifact
+  hashes pass. Next command: generate the report tables from
+  `experiments/20260722T200000Z-bridgelearn-shadow-mode-v2/telemetry.json`.
+  Evidence: `docs/carom_bridgelearn_shadow_v2_report_2026-07-22.{tex,pdf}`.
+  Completed 2026-07-22: the eight-page report traces all numerical claims to
+  the hash-verified 1,500-row telemetry, records every model/optimizer/
+  scheduler/observer/planner parameter, and distinguishes scalar tuning from
+  innovation/state-model misspecification. Tectonic compilation, ASCII source
+  validation, PDF text extraction, and visual inspection of all eight pages
+  passed.
+
+- [x] Run the matched-cadence BridgeLearn shadow calibration gate.
+  Deliverable: 1,500 per-update transition observations, split-batch noise
+  measurements, HVP sharpness probes, AR(2) diagnostics, and LR non-mutation
+  assertions. Acceptance: exit zero, all shadow invariants pass, telemetry and
+  hashes verify, and observer adequacy is explicitly assessed before active
+  control. Completed 2026-07-22: all 1,500 invariants passed and variance
+  tracking calibrated closely, but innovation, sharpness confidence, and
+  AR(1) adequacy failed the activation gate. Next command: implement a
+  shadow-only companion/momentum adapter with replicated same-parameter
+  stochastic transitions and multi-probe or power-iteration sharpness.
+  Evidence:
+  `experiments/20260722T200000Z-bridgelearn-shadow-mode-v2/`.
+
+- [x] Build and run the BridgeLearn v0.3.0 shadow-mode integration for the
+  scheduled CAROM variant. Deliverable: CPU-runnable
+  `repos/carom/run_carom_bridge_shadow.py`, JSON telemetry containing
+  OneCycleLR and BridgeController transition/calibration/sharpness diagnostics,
+  and experiment record
+  `experiments/20260722T190000Z-bridgelearn-shadow-mode/RUN.md`. Acceptance:
+  a 1,500-step seed-0 scheduled run exits zero without BridgeLearn changing
+  optimizer or scheduler state, and the telemetry parses with nonempty shadow
+  observations. Completed 2026-07-22: the 1,500-step run exited zero with 11
+  observations and the LR non-mutation invariant held. The largest contraction
+  discrepancy (0.338) and variance calibration error (0.111) occurred near the
+  LR peak, but cadence mismatch makes this diagnostic rather than causal
+  evidence. Next command: match prediction and realization at every optimizer
+  update and validate the sharpness/AR(2) observers. Evidence:
+  `experiments/20260722T190000Z-bridgelearn-shadow-mode/`.
+
+- [x] Complete the CAROM frozen-GPT-2 12k run, detailed results PDF, and two
+  independent parameter reviews requested 2026-07-22. Deliverable: retrieved
+  and hash-verified 13-checkpoint run artifacts; terminated CAROM pod; detailed
+  comparative PDF covering optimization dynamics, interventions, L5 behavior,
+  failure analysis, limitations, and reproducibility; independent Fable and
+  Sol reviews grounded in that PDF; and a synthesized, testable next-parameter
+  ladder. Acceptance: run exit/result status and cost recorded; every PDF value
+  traces to raw JSON/logs; PDF text extraction and all-page visual inspection
+  pass; both reviews are preserved verbatim; synthesis distinguishes agreement,
+  disagreement, and proposed discriminating experiments. Next command: inspect
+  pod `wsllxvsshf7jf1`, retrieve/verify outputs on completion, and terminate it.
+  Completed 2026-07-22. The run artifacts were retrieved and verified, the pod
+  was terminated, the five-page PDF passed text extraction and all-page visual
+  inspection, and Fable and Sol independently reviewed it. Their synthesis
+  corrects the edge-accuracy interpretation, identifies shared-RNG/cadence
+  confounding, and specifies a checkpoint-forensics -> low-LR warm start ->
+  matched fresh-schedule ladder. Evidence:
+  `experiments/20260722T015200Z-carom-gpt2-12k/`,
+  `docs/carom_gpt2_12k_detailed_results_2026-07-22.pdf`, and
+  `docs/reviews/2026-07-22-carom-gpt2-12k-*`.
+
+- [x] Produce a detailed PDF report for the completed frozen-GPT-2 compiled
+  channel arm and freeze a higher-accuracy rerun protocol. Deliverable: report
+  with exact model/task/training/evaluation description, checkpoint tables,
+  TinyLM context, causal and budget-sweep interpretation, limitations, and a
+  bounded rerun proposal. Acceptance: every reported number traces to the
+  hash-verified JSON; PDF text extraction and page rendering are checked;
+  rerun has an exact command, acceptance rule, A100 time/cost cap, artifact
+  path, and cleanup plan before approval is requested. Next command: generate
+  tables/plots from the two retained summaries and render the report. Evidence:
+  `experiments/20260721T222400Z-carom-gpt2-arm/` and forthcoming rerun ledger.
+  Completed 2026-07-21. The five-page PDF and TeX source passed clean Tectonic
+  rendering, five-page text extraction, visual inspection of every page, and
+  `git diff --check`. Evidence:
+  `docs/carom_gpt2_compiled_channel_report_2026-07-21.{pdf,tex}` and
+  `experiments/20260722T015200Z-carom-gpt2-12k/`.
+
+- [x] Run the preregistered 12,000-update frozen-GPT-2 accuracy extension after
+  explicit bounded approval. Deliverable: 13 checkpoint panels, final accuracy
+  and mechanism/extrapolation comparison against the 4,000-step arm, retrieved
+  checkpoints/results/logs with SHA-256 manifest, and terminated pod.
+  Acceptance: exact frozen protocol in the ledger; primary target L2--4 >0.55,
+  strong target >=0.65; three-hour/USD 4.47 hard cap; provider inventory empty
+  for this job after cleanup. Next command after approval: provision one Secure
+  Cloud A100 SXM4 80GB using the recorded template and auto-terminate deadline.
+  Evidence: `experiments/20260722T015200Z-carom-gpt2-12k/`.
+  Completed 2026-07-22. Training and all 13 intervention panels completed; the
+  >0.55 target failed (best 0.3268 at step 3,000; final 0.1888). The 31-file
+  manifest verified and pod `wsllxvsshf7jf1` was terminated.
+
+- [ ] Repair and validate Ben's supplied Oruzi-derived v3 intervention probes.
+  Deliverable: pluggable TinyLM/GPT-2 span adapter; locally seeded JVP and
+  perturbation probes; matched natural switching baseline; device-safe,
+  zero-safe cross-slot effects; live-mode decisiveness metrics; portable
+  checkpoint loading; and non-categorical reporting language. Acceptance:
+  constructed commuting/noncommuting, stable/unstable-word, zero-coupling,
+  padded-mode, CPU/GPU-device, and repeatability controls pass before any
+  scientific interpretation. Next command: implement fixtures around the six
+  probe families without changing the active training jobs. Evidence:
+  `docs/compiled-channel/harness_v3_probes_audit_2026-07-21.md`.
+  Theory/bench rationale and immediate-run ordering are preserved at
+  `../../library/carom-oruzi-reconciliation-2026/SOURCE.md`; do not adopt its
+  categorical smoke interpretations until these acceptance controls pass.
+
+- [ ] Repair and validate the supplied Exp2/Exp3 v2 harness before using its
+  metrics. Deliverable: tie-correct edge metrics, revisit-sensitive itinerary
+  metrics, explicit smeared/unclassified diagnostics, pluggable TinyLM/GPT-2
+  span extraction, CPU-canonical frozen corpora, and regression tests.
+  Acceptance: supplied tests plus all-tied AUROC=0.5, revisit-not-exact,
+  smeared-not-itinerary, TinyLM/GPT-2 adapter contract, and device round-trip
+  fixtures pass. Next command: create an isolated CAROM branch/worktree and
+  implement the metric fixtures first. Evidence:
+  `docs/compiled-channel/harness_v2_audit_2026-07-21.md` and
+  `../../library/carom-exp2-exp3-audit-response-2026/SOURCE.md`.
+
+- [ ] After harness repair, re-evaluate retained Exp2 checkpoints on one frozen
+  paired corpus. Deliverable: checkpoint-wise itinerary drift curves,
+  forced-correct/shuffled/smeared/natural endpoint results, and an L=5
+  integration-depth sweep including `S=72,100,120` (with a wider curve if the
+  endpoint has not stabilized). Acceptance: identical examples across
+  checkpoints/conditions; exposure and workspace-update norms reported;
+  conclusions distinguish metric failure, decorative control, load-bearing
+  itinerancy, and time-budget limitation. Next command: inventory and hash the
+  retained Exp2 model and TinyLM checkpoints. Evidence: forthcoming experiment
+  ledger; source rationale in
+  `../../library/carom-exp2-exp3-audit-response-2026/SOURCE.md`.
+
+- [x] Audit Ben's supplied `harness_v2.py` against the CAROM Exp2/Exp3
+  implementations and Priority-0 instrument requirements. Deliverable: a
+  preserved source copy plus a review of correctness, compatibility, and
+  required repairs. Acceptance: source hash recorded; Python syntax/self-tests
+  checked; itinerary, edge, intervention, budget-sweep, and paired-M2 logic
+  inspected against the actual model APIs; findings recorded with an evidence
+  path. Completed 2026-07-21. The supplied self-tests pass, but additional
+  counterexamples establish revisit-erasure, tie-biased AUROC, and GPT-2 span
+  incompatibility; do not use unchanged for claims. Evidence:
+  `docs/compiled-channel/harness_v2_audit_2026-07-21.md`. Next command: repair
+  these failures and add regression tests before checkpoint evaluation.
+
+- [x] Produce the detailed Exp2/Exp3 experiment-and-results report requested
+  2026-07-21. Deliverable: durable Markdown and rendered PDF covering questions,
+  implementations, protocols, complete logged metrics, learning dynamics,
+  interpretation, alternative explanations, limitations, and next experiments.
+  Acceptance: values trace to hash-verified raw logs; unpaired and missing-control
+  caveats are explicit; Markdown renders to PDF; `git diff --check` passes.
+  Completed 2026-07-21. Evidence: `docs/carom_exp2_exp3_detailed_summary.md`,
+  `.html`, and `.pdf`; nine-page PDF text extraction checked; source/log hashes
+  and `git diff --check` verified.
+
+- [x] Obtain independent Fable and Sol experiment-design reviews aimed at
+  closing the learned free-inhibition heteroclinic accuracy gap to the
+  hand-engineered chain. Deliverable: two preserved reviews and a synthesized,
+  testable next-experiment ladder. Acceptance: both reviewers receive the GPU
+  report plus the original CAROM sandbox and itinerant-theory papers; replies
+  identify mechanisms, ablations, metrics, and go/no-go criteria. Next command:
+  launch isolated Fable and Sol review sessions with the three PDFs and frozen
+  result summary. Evidence: `docs/reviews/2026-07-20-*`. Completed 2026-07-20;
+  both reviews converge on instrument repair, exposure normalization, and
+  mode-specific fitness before generic direction-free channel regularization.
+
+- [x] Implement and audit the E0/E1 exposure-controlled CAROM experiment.
+  Deliverable:
+  fixed paired evaluation, separated RNGs, trajectory/exposure diagnostics,
+  normalized activity mixing, and fixed-versus-free trajectory replay.
+  Acceptance: at least five seeds; accuracy and mechanism metrics with paired
+  intervals; a causal determination of whether the fixed/free gap survives
+  matched activity mass, command exposure, and workspace-update norm. Next
+  command: after Ben approves the frozen USD 10.43 / 7-hour bound, provision
+  one A100 SXM 80GB Secure Cloud pod and launch `command.sh`. Evidence:
+  `experiments/20260720T140710Z-e0-e1-exposure-controlled-r1/`. Completed
+  2026-07-24: all 20 trainings and 40,960 rows audited. Raw fixed-minus-free
+  was `+0.06956` (95% CI `[+0.00438,+0.13610]`); normalization worsened free
+  by `-0.29193`. The deterministic gate failed because evaluation randomized
+  initial activity, so retain the pattern only as exploratory evidence.
+
+- [ ] Prepare the one-off RunPod experiment. Deliverable: preserved source and
+  figures, local smoke evidence, preregistered remote job record, and bounded
+  resource proposal. Acceptance: generator and all variants execute locally;
+  job record specifies exact commands, metrics, artifact path, resource,
+  price, time/cost cap, and teardown. Next command: run the local smoke ledger.
+  Evidence: `experiments/*-local-smoke/` and `experiments/*-runpod-gpu/`.
+  Status: approved by Ben up to USD 10 on 2026-07-19. The temporary sequencing
+  block cleared at 23:10 PDT when the failed RelaLeap ePC pod's partial
+  artifacts were retrieved and the pod was deleted. The next command is to
+  freeze the GPU runner/protocol and its remote-job record; this commitment is
+  mirrored in `catalog/KANBAN.md`.
+
+## Next
+
+- [ ] Harden and run the compiled-channel experiment supplied 2026-07-20.
+  Deliverable: real frozen GPT-2 span adapter, fixed paired evaluation,
+  separated RNGs, multi-seed compiler-supervised/task-only/oracle/null controls,
+  calibrated edge metrics, itinerary diagnostics, and L=5 structural holdout.
+  Acceptance: frozen-base probe and instrument tests pass before a bounded GPU
+  run; results distinguish language compilation from topology scaffolding and
+  operator-core learning. Next command: freeze the experiment spec and
+  implement/test GPT-2 offset-mapped span extraction. Evidence:
+  `docs/compiled-channel/exp2_compiled_channel_supplied.py` and
+  `library/heteroclinic-cap-carom-2026/SOURCE.md`.
+  A one-seed TinyLM screen completed: edge labels were learned but L=5 and
+  trajectory generalization were poor; it does not meet this task's acceptance
+  criteria. Evidence: `experiments/20260721T055900Z-exp2-compiled-channel-tinylm/`.
+
+- [ ] Strengthen the teach-loop mechanism screen before treating it as an LLM
+  teaching result. Deliverable: paired old-task evaluation before/after each
+  registration, routing-calibration/no-regression controls, N and teacher-noise
+  sweep, ≥3 seeds, frozen GPT-2 description encoder, and prompted teacher
+  traces. Acceptance: separated operator-acquisition, paraphrase-routing, and
+  old-behavior-interference estimates with uncertainty. Next command: validate
+  the pre/post routing diagnostic on a frozen-slot positive control. Evidence:
+  `experiments/20260720T134700Z-exp3-teach-loop/`.
+
+- [ ] After explicit approval, provision the approved RunPod resource, execute
+  the frozen protocol, retrieve and verify artifacts, and terminate all
+  billable resources.
+- [ ] Interpret results with observed/inferred/hypothesis labels and update the
+  project record.
+
+## Waiting or blocked
+
+- [ ] No current approval or sequencing blocker. Ben approved up to USD 10 on
+  2026-07-19; protocol freezing and preflight remain before provisioning.
+
+## Someday or exploratory
+
+- [ ] Scrambled-order discovery, loops/halting, implicit-gradient DEQ, and
+  length extrapolation after the one-off screen.
+
+## Done recently
+
+Move durable conclusions into `PROJECT.md`, `DECISIONS.md`, or experiment results rather than relying on this list.
+
+- [x] Preserved supplied code, notebook, reports, and diagnostic figures with
+  SHA-256 hashes; local all-variant forward/backward smoke test passed in
+  `experiments/20260719T232358Z-local-smoke/`.
