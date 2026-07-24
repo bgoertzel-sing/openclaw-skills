@@ -4,6 +4,28 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] Build and confirm a deployment-time symbolic constraint extractor that
+  reads the raw synthetic-grammar input without factor-label access.
+  Deliverable: input-block decoding, controlled extraction accuracy
+  `p ∈ {1.0,0.95,0.9,0.8,0.7}`, relational parity/implication/subset
+  constraints, direct-logit CS evaluation, disjoint calibration/confirmation,
+  raw JSON, and a deployment-gate disposition. Acceptance: extractor tests
+  demonstrate input-only provenance and deterministic seeded noise; at least
+  three calibration seeds run; thresholds are frozen before at least three
+  disjoint confirmation seeds; focused/full tests pass; mean confirmation
+  `G=(SC-FF)/(TC-FF)` is compared with the `0.20` gate and prior oracle; and
+  the experiment is linked from `PROJECT.md`. Next command: inspect
+  `SyntheticGrammar`, `e4_constraints.py`, `e4_information.py`, and their
+  tests, then write the plain-language extractor protocol. Evidence path:
+  `experiments/20260724T224751Z-e4-symbolic-extractor-calibration/` and
+  `experiments/20260724T225008Z-e4-symbolic-extractor-confirmation/`.
+  Completed 2026-07-24: the frozen 90%-accuracy input-derived subset primary
+  confirmed mean defined-seed CS `G=2.32074`, with 3/3 defined seeds above
+  `0.20`; CS accuracy rose from `94.22%` to `96.09%`; all provenance checks
+  passed. The source retained `60.0%` of clean-extractor G and remained
+  material at 80%, while all tested sources were harmful at 70%. Evidence:
+  `docs/e4_symbolic_extractor_disposition.md`.
+
 - [x] Test non-label-equivalent symbolic constraint sources through the
   confirmed E4 direct-logit sink on the frozen 75-update student.
   Deliverable: relational/parity, 1/2/3 partial-factor, implication-rule, and

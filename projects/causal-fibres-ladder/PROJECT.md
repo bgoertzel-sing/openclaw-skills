@@ -161,6 +161,17 @@ frozen 95% absolute-accuracy auxiliary failed. Stage-4 is therefore vindicated
 as a non-label-equivalent information-sink result, while a real provenance-
 aware upstream symbolic source remains open.
 
+That upstream provenance gap is now closed on the reduced grammar. A new
+extractor consumes only raw one-hot-plus-lexical inputs, decodes the public
+factor blocks, applies controlled seeded reading errors, and compiles
+subset/parity/implication constraints without factor-label or target-label
+access. The frozen 90%-accuracy subset primary confirmed mean defined-seed CS
+`G=2.3207`, with 3/3 defined seeds above `0.20`; CS accuracy rose from
+`94.22%` to `96.09%`, and every provenance audit passed. It retained 60% of
+clean-extractor recovery and remained material at 80% accuracy; all sources
+became harmful at 70%. This is deployment-honest for the explicit synthetic
+surface encoding, not yet a natural-language extractor result.
+
 E5 W1/W2 numerical kernels are eligible and pass on pinned MORK's standalone
 `linalg` crate: six-layer f32 forward meets the `1e-5` relative-logit bar with
 exact argmax, and five-step relaxation matches within `1e-6`. Actual in-store
@@ -181,6 +192,11 @@ Python, Torch, CPU, and OS versions are captured in each run. No remote
 resource is authorized.
 
 ## Key results
+
+- [E4 input-derived symbolic extractor](docs/e4_symbolic_extractor_disposition.md):
+  a raw-input-only analyzer plus non-label-equivalent subset/parity/implication
+  compiler clears the deployment headroom gate at 90% extraction accuracy
+  (`G=2.3207`) under disjoint 3/5 calibration/confirmation.
 
 - [E4 non-label-equivalent disposition](docs/e4_non_label_equivalent_disposition.md):
   three-seed calibration plus five disjoint confirmation seeds show that

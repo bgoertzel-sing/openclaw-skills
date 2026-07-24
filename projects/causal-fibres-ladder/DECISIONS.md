@@ -250,3 +250,25 @@ Treat this as an information-sink result, not proof of a deployable upstream
 extractor. The diagnostic sources were compiled from known synthetic factors.
 Any deployment claim requires a provenance-aware source that emits the
 partial or relational statement without access to the target label.
+
+## D-20260724-e4-input-derived-extractor: Accept synthetic deployment provenance
+
+- Date: `2026-07-24`
+- Status: `accepted confirmation`
+- Evidence: `docs/e4_symbolic_extractor_disposition.md`
+
+Accept the frozen input-derived E4 result on the reduced synthetic grammar.
+The extractor consumes raw inputs and public block semantics only; it does not
+receive factor labels, target labels, teacher logits, or model predictions.
+Ground truth is used solely after constraint construction for fidelity audits.
+
+The calibration-selected `subset3_123_acc0p9` primary confirms mean defined-
+seed CS task-loss `G=2.32074`, with 3/3 defined seeds above the frozen `0.20`
+gate. Mean CS task accuracy improves from FF `94.22%` to `96.09%`. All
+constraints remain non-label-equivalent and every provenance audit passes.
+
+Treat extraction fidelity as a deployment condition. The primary retains 60%
+of clean-extractor G at 90% requested accuracy and remains material at 80%,
+but all tested relation families have negative mean G at 70%. Do not generalize
+this transparent one-hot-block result to free-form natural language or latent
+factor extraction without a new extractor and disjoint confirmation.
