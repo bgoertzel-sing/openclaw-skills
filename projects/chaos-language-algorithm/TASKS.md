@@ -1,5 +1,48 @@
 # Tasks
 
+- [x] 2026-07-25 12:15 PDT: freeze and implement the bounded M-E
+  prefix-fitted CSSR registry seam at clean active-worktree commit `f4b5595`.
+  `make_fitted_coder("cssr", ...)` requires an explicit non-empty training
+  prefix and `max_history`, records alpha/seed as parameters, returns a fresh
+  leakage-free `CausalStateCoder`, and remains separate from vocabulary-only
+  `make_coder`. Focused unittest passed 8; required discovery passed 261 in
+  46.233 seconds; compileall and diff checks passed. No E0--E8 measurement
+  ran. Next: specify and implement the CSSR transition-equivalence category
+  inducer before completing the remaining M-E planted-source invariants.
+
+- [x] 2026-07-25 10:15 PDT: implement the bounded M-E
+  `CausalStateCoder` slice at clean commit `30357a1`. Freeze
+  `docs/causal-state-coder-contract-v1.md`; add fresh empty per-state KT
+  estimators, deterministic suffix synchronization and unifilar transition
+  tracking, reset/clone/fail-closed behavior, and topology-only compact model
+  accounting. A leakage regression proves that arbitrarily inflating CSSR
+  training emission counts changes neither held-out bits nor model charge.
+  Focused unittest passed 6; required discovery passed 259 in 46.362 seconds;
+  compileall and diff checks passed. No registry change or E0--E8 measurement
+  ran. Next: freeze the parameterized CSSR registry/factory contract before
+  exposing the control.
+
+- [x] 2026-07-25 08:15 PDT: implement the first bounded M-E CSSR topology
+  slice at clean commit `5f8e836`. Freeze
+  `docs/cssr-reconstruction-contract-v1.md`; add pure-Python,
+  deterministic suffix-distribution splitting, unifilar fixpoint refinement,
+  canonical state identities, raw diagnostic emission counts, history
+  fallback, and statistical-complexity accounting. Focused unittest passed 3;
+  required discovery passed 256 in 45.688 seconds; compileall and diff checks
+  passed. No CSSR coder registration, held-out scoring, or E0--E8 measurement
+  ran. Next: specify and implement `CausalStateCoder` with fresh empty
+  per-state KT estimators and an explicit no-training-count leakage test.
+
+- [x] 2026-07-25 06:15 PDT: begin M-E at clean commit `759ba3f` with the
+  deferred direct-alphabet CTW control. Freeze
+  `docs/ctw-coder-contract-v1.md`; add deterministic
+  `ContextTreeWeightingCoder`, registry name `ctw-d8`, reset/clone/fail-closed
+  tests, and the governing Markov-1 sanity band. Focused unittest passed 4;
+  required discovery passed 253 in 47.277 seconds; compileall and diff checks
+  passed. No E0--E8 measurement ran. Next: specify and implement deterministic
+  CSSR causal-state reconstruction without using training emission counts for
+  held-out coding.
+
 - [x] 2026-07-24 22:15 PDT: integrate opt-in adaptive beam traversal into the
   public learner at clean commit `8471df2`. Final selection compares the root
   with the final beam under the exact official scorer; only final-path
@@ -772,3 +815,30 @@ Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_e
   passed. No scientific fixture or E0--E8 score was opened. Next: wire
   category/frame composite generation and exact official-score acceptance,
   then proposal budgeting and deterministic beam search.
+
+- [x] 2026-07-25: integrate atomic composite children into the public opt-in
+  adaptive multi-depth beam at clean active-worktree commit `592df34`.
+  Ordinary and composite candidates share one exact official scorer and beam;
+  proposal budgets, reconstruction, ancestry, mixed-difference fields, and
+  exactly-one-record accounting remain enforced. Stale proposals on derived
+  states fail closed with `reconstruction_failure`. Focused unittest passed
+  22; required discovery passed 248; compileall and diff check passed. No
+  E0--E8 measurement was opened. Next: audit remaining M-D acceptance
+  requirements and close only the smallest missing invariant before M-E.
+
+- [x] 2026-07-25: close M-D search invariant 13 through the public
+  beam/composite API at clean active-worktree commit `f948b70`. Two
+  fixed-seed fits now prove identical state, exact reconstruction,
+  byte-identical proposal ledgers, and byte-identical final breakdowns.
+  Focused unittest passed 12; required discovery passed 249 in 47.081
+  seconds; compileall and `git diff --check` passed. No E0--E8 measurement
+  was opened. Next: resolve whether the frozen `max_proposals_per_step`
+  budget must partition all single and composite proposals jointly; current
+  implementation bounds composites only.
+
+- [x] Close M-D's joint-budget gap at clean commit `db4273f`: rank the shared
+  single/composite pool by support times structural length and stable digest,
+  ledger every cut once, and retain exact-score-only acceptance.
+- [x] Pass 23 focused and 249 required discovery tests, compileall, and
+  `git diff --check`.
+- [ ] Begin M-E only after a fresh gate audit; do not open E0--E8 measurements.

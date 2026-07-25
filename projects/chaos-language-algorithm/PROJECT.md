@@ -1,5 +1,50 @@
 # Chaos Language Algorithm
 
+## 2026-07-25 10:15 PDT status
+
+The bounded M-E causal-state coding slice is acceptance-tested at clean commit
+`30357a1`. `CausalStateCoder` codes held-out symbols with one fresh empty KT
+estimator per reconstructed state, synchronizes deterministically through the
+history map, and then advances through frozen unifilar transitions. Training
+emission counts are never seeded into the adaptive tables or transmitted in
+the topology-only model charge; an explicit count-inflation regression proves
+both properties. Focused unittest passed 6; required discovery passed 259 in
+46.362 seconds; compileall and diff checks passed. No registry exposure or
+E0--E8 fixture/score was opened.
+
+## 2026-07-25 08:15 PDT status
+
+The first bounded M-E CSSR reconstruction slice is acceptance-tested at clean
+commit `5f8e836`.
+The pure-Python reconstructor deterministically groups predictive suffix
+distributions, refines them to a unifilar fixpoint, canonically labels states,
+and reports raw training emission counts plus state-occupancy complexity.
+Those counts remain diagnostics only; held-out coding has not been
+implemented and must start from empty KT estimators. Focused unittest passed
+3; required discovery passed 256 in 45.688 seconds; compileall and diff checks
+passed. No E0--E8 fixture or score was opened. `CausalStateCoder` is the next
+M-E slice.
+
+## 2026-07-25 06:15 PDT status
+
+M-E has begun at clean commit `759ba3f` with the deferred CTW control as a
+bounded, non-measuring slice.
+The direct-alphabet `ContextTreeWeightingCoder` updates an active suffix path,
+is registered as `ctw-d8`, and retains fixed-vocabulary, reset, clone, and
+deterministic-replay behavior. Focused unittest passed 4; required discovery
+passed 253 in 47.277 seconds; compileall and diff checks passed. No E0--E8
+fixture or score was opened. CSSR reconstruction remains the next M-E slice.
+
+## 2026-07-25 02:15 PDT status
+
+The public adaptive beam/composite path now has an end-to-end fixed-seed
+deterministic replay regression at clean active-worktree commit `f948b70`.
+Repeated fits produce identical `GrammarState`, exact reconstruction,
+proposal-ledger bytes, and final-breakdown bytes. Focused unittest passed 12;
+required discovery passed 249 in 47.081 seconds; compileall and diff checks
+passed. No E0--E8 fixture or score was opened. The remaining M-D audit must
+resolve the governing proposal-budget scope before M-E begins.
+
 ## 2026-07-24 22:15 PDT status
 
 M-D public beam integration is acceptance-tested at clean active-worktree
@@ -750,3 +795,18 @@ reconstruction. Focused unittest passed 34, focused pytest passed 14, required
 stdlib discovery passed 222, and compileall/diff checks passed. No E0--E8
 fixture or score was opened. Category/frame proposal generation, exact
 official-score acceptance, proposal budgeting, and beam search remain in M-D.
+
+Update, 2026-07-25: M-D's joint proposal-budget gap is closed at clean
+active-worktree commit `db4273f`. One deterministic
+`max_proposals_per_step` pool now covers singles and composites per greedy
+step or beam parent; cut proposals are unscored and ledgered once. Focused
+unittest passed 23, required discovery passed 249 in 45.535 seconds, and
+compileall/diff checks passed. No E0--E8 measurement was opened.
+
+Update, 2026-07-25: the prefix-fitted CSSR registry seam is acceptance-tested
+at clean active-worktree commit `f4b5595`. CSSR topology fitting requires an
+explicit non-empty prefix and stays separate from ordinary vocabulary-only
+coders; held-out per-state KT estimators remain fresh. Focused unittest passed
+8, required discovery passed 261 in 46.233 seconds, and compileall/diff checks
+passed. No E0--E8 measurement was opened. The next M-E slice is the
+transition-equivalence category inducer.

@@ -1,5 +1,93 @@
 # Notes
 
+## 2026-07-25 12:15 PDT — M-E prefix-fitted CSSR registry
+
+- Clean active-worktree commit `f4b5595` freezes
+  `docs/cssr-registry-factory-contract-v1.md` and exposes CSSR only through a
+  distinct fitted-coder registry. The caller must supply the prefix,
+  vocabulary, `max_history`, alpha, and seed; missing, unknown, empty, or
+  out-of-vocabulary inputs fail closed.
+- The fitted machine is passed to `CausalStateCoder`, whose held-out KT tables
+  begin empty. Ordinary vocabulary-only `make_coder` remains unchanged, so
+  grammar scoring cannot silently fit CSSR on the stream being coded.
+- Focused unittest passed 8. Required discovery passed 261 tests in 46.233
+  seconds; `python3 -m compileall -q src tests` and `git diff --check` passed.
+- Contract/registry/test SHA-256:
+  `2ff6d11a96060f7df802d55a7880dfb4447ade7d9b684b0deedb3e267a73b204`,
+  `8bc26819e1d61c2783391318a47dff3f3787cb0268c08def67bd5ea87b39e395`,
+  and `808ef70d226fc528722e5cdcffe8a727514924ad6eb1eb3ec86d26addf38ce7c`.
+- No suffix, E0--E8 fixture, scientific score, remote compute, or OmegaSim
+  work ran. CSSR superiority on positive-entropy sofic regimes and CLA
+  sensitivity to hierarchical generativity remain hypotheses.
+
+## 2026-07-25 08:15 PDT — M-E CSSR topology reconstruction
+
+- Froze `docs/cssr-reconstruction-contract-v1.md` and added
+  `chaoslang.automata.cssr.CSSR` plus immutable `CausalStateMachine` output.
+  Training suffixes are compared with a two-sample likelihood-ratio statistic
+  and an explicitly documented pure-Python Wilson--Hilferty chi-square
+  threshold approximation, then refined to deterministic unifilar topology.
+- The acceptance-tested active-worktree commit is `5f8e836`.
+- Canonical type-qualified ordering removes hash-order dependence. The
+  machine exposes transitions, suffix-to-state fallback, raw training
+  emission counts, and state-occupancy entropy. The raw counts are diagnostic
+  topology evidence only and are not wired into a coder.
+- Focused unittest passed 3. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 256 tests in
+  45.688 seconds; `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- Contract/source/test SHA-256:
+  `0314959a6ddddbccadf5ffdb4922f31d7d0171569cce62dc2ef05d8ca5aec824`,
+  `dd6e496c304087517990031c351da18d620cdb21145811ef3aa4e55831497db5`,
+  and `f531a6bc604e1861f9eec1849ab6ef2c917ae88575fc52eda2c37644edd1aaf1`.
+- No held-out code, registry control, E0--E8 fixture, suffix, scientific
+  score, remote compute, or OmegaSim work ran. The claimed asymptotic CSSR
+  recovery and sofic/chunk ordering remain hypotheses requiring the frozen
+  evaluation gates.
+
+## 2026-07-25 06:15 PDT — M-E direct-alphabet CTW control
+
+- Clean active-worktree commit `759ba3f` adds a frozen bounded contract and a
+  direct-alphabet context-tree weighting coder. Each suffix-tree node carries a
+  KT likelihood; internal likelihoods
+  mix the node KT with the product of observed child likelihoods, and only the
+  active suffix path is updated.
+- Registered the fixed configuration as `ctw-d8`. Tests cover deterministic
+  replay, clone/reset, invalid configuration and symbols, registry exposure,
+  and the governing generous redundancy sanity band against adaptive Markov-1.
+- Contract/source/test SHA-256 values:
+  `43163b46f0b4ee82dcedc8efbfc15b80942cfa2c9af64953f5554b0a753d5096`,
+  `ae46dffb86c33d488a046442a65debeba2d51696e0d4479cb3f7b6d2ee792497`,
+  and `55f87f9e1bf6e310766fd7f141e140e5e31916838ccb2ddf7624e4f580129983`.
+- Focused unittest passed 4. Required discovery passed 253 in 47.277 seconds;
+  compileall and `git diff --check` passed. The first full discovery attempt
+  exposed the intentionally expanded exact registry tuple; updating that
+  regression expectation and rerunning yielded the clean result above.
+- No E0--E8 fixture, suffix, scientific score, CSSR comparison, remote
+  compute, or OmegaSim work ran. Hierarchical generativity and the expected
+  CSSR advantage on positive-entropy sofic regimes remain hypotheses.
+
+## 2026-07-25 00:15 PDT — M-D composite-aware beam traversal
+
+- Clean active-worktree commit `592df34` removes the temporary prohibition on
+  combining opt-in adaptive beam search with atomic composite moves.
+  Composite candidates now enter the same exact-score, digest-tied beam as
+  ordinary proposals while retaining the frozen per-parent proposal budget,
+  atomic reconstruction checks, mixed-second-difference evidence, ancestry,
+  and one context-addressed ledger record per generated proposal.
+- Budget cuts and invalid composites remain non-children with their original
+  dispositions. An integration test exposed stale ordinary proposals on
+  composite-derived states; these now fail closed as one
+  `reconstruction_failure` record rather than aborting the traversal.
+- Focused unittest passed 22 tests. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 248 tests in
+  46.975 seconds; `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- No E0--E8 fixture, suffix, scientific score, CSSR comparison, remote
+  compute, or OmegaSim work ran. Exact official scoring remains the sole
+  acceptance authority; the hierarchical-generativity/CSSR framing remains a
+  hypothesis.
+
 ## 2026-07-24 M-D public beam integration
 
 - Clean active-worktree commit `8471df2` adds opt-in `search="beam"` with a
@@ -42,6 +130,7 @@
 
 - Active worktree:
   `/home/openclaw/research-agent/scratch/chaoslang-strict-replay`.
+- Clean implementation commit: `30357a1`.
 - Clean implementation commit: `972b362`.
 - `BeamSearchPolicy.select_candidates` exact-scores states, deduplicates by
   canonical digest, and returns a complete disjoint retained/pruned ID
@@ -1866,3 +1955,62 @@ coder/search interfaces modular.
 - No scientific fixture, suffix, E0--E8 gate, detector comparison, or
   OmegaSim run was opened. Exact official scoring remains the sole acceptance
   authority. The hierarchical-generativity/CSSR framing remains a hypothesis.
+
+# 2026-07-25 M-D public beam deterministic replay
+
+- Clean active-worktree commit `f948b70` adds the missing end-to-end fixed-seed
+  replay regression for the opt-in public adaptive beam/composite path.
+- Two independent ledger directories produce identical fitted
+  `GrammarState`, exact expansion, `proposals.jsonl` bytes, and
+  `final_breakdown.json` bytes.
+- Focused `PYTHONPATH=src python3 -m unittest tests.test_beam_search -v`
+  passed 12 tests. Required discovery passed 249 tests in 47.081 seconds.
+  `python3 -m compileall -q src tests` and `git diff --check` passed.
+- No experiment ledger was required because this was a deterministic unit
+  regression, not a measurement. No E0--E8 fixture or scientific score was
+  generated. E3 and the OmegaSim pause remain binding.
+- Audit follow-up: governing §4.3 describes `max_proposals_per_step` without
+  limiting it to composites, while the current public loops apply it to
+  composite proposals only. Resolve and test a joint single/composite budget
+  before declaring M-D complete or starting M-E.
+
+## 2026-07-25 M-D joint proposal-budget closure
+
+Clean active-worktree commit `db4273f` applies one proposal budget across
+single and composite moves for each greedy step or beam parent. Admission is
+ranked deterministically by support times structural length, then stable
+digest. Cut candidates are not applied or officially scored and receive
+exactly one `budget_cut` record. Exact official score and exact reconstruction
+remain the sole acceptance requirements.
+
+Focused unittest passed 23 tests. Required discovery passed 249 tests in
+45.535 seconds; compileall and `git diff --check` passed. This was a unit-level
+search/accounting invariant, so no experiment ledger, E0--E8 fixture, suffix,
+or scientific score was opened. The hierarchical-generativity framing and
+expected CSSR advantage on positive-entropy sofic regimes remain hypotheses.
+# 2026-07-25 10:15 PDT — M-E leakage-free causal-state coder
+
+- Active worktree:
+  `/home/openclaw/research-agent/scratch/chaoslang-strict-replay`.
+- Froze `docs/causal-state-coder-contract-v1.md` and implemented
+  `automata.unifilar_coder.CausalStateCoder`.
+- Every causal state receives a fresh empty KT table over the declared
+  vocabulary. State synchronization uses the longest known held-out suffix
+  until a frozen transition exists; missing transitions return to suffix
+  synchronization. Reset and clone preserve deterministic replay.
+- The compact v1 machine charge covers ordered state identifiers and canonical
+  transition triples only. A regression replaces all diagnostic training
+  emission counts with values scaled by 10,000 plus 7 and obtains exactly the
+  same held-out code length and model charge, ruling out the specified leakage
+  path.
+- Focused unittest passed 6; required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 259 tests in
+  46.362 seconds; `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- Contract/source/test SHA-256:
+  `5b05c0f9111d3701d2ccb725976a1a8668aa06d671108d79723192837031a6d9`,
+  `95c171c0331d872fc2e3f0c2f9757dd831e0ad56104c928173855d9414905263`,
+  `ac4f70173fd0e967bcd5dbe9e3a9c3cb2cc4c38c761b04e01b51972ab5986e14`.
+- This was non-measuring: no registry exposure, E0--E8 fixture, held-out
+  scientific score, remote compute, or OmegaSim work ran. Exact official
+  scoring and the hierarchical-generativity/CSSR framing remain unchanged.
