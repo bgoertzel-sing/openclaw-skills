@@ -1,5 +1,27 @@
 # Notes
 
+## 2026-07-24 M-D public beam integration
+
+- Clean active-worktree commit `8471df2` adds opt-in `search="beam"` with a
+  positive `beam_width`, restricted to the already-frozen adaptive scorer.
+- Every generated single proposal is exact-scored and reconstruction-checked.
+  The final state is the exact-score/digest minimum of the initial state and
+  final retained beam. Only its ancestry is accepted; pruned candidates use
+  `beam_pruned`, retained off-path candidates are dominated, and every
+  generated proposal has exactly one SHA-256-addressed ledger record.
+- Depth-qualified node identifiers prevent a repeated canonical state at a
+  later depth from overwriting ancestry. Greedy/default behavior is unchanged.
+  Beam plus composite moves fails closed until the next M-D slice integrates
+  composite children into this traversal.
+- A first focused command named stale module
+  `tests.test_adaptive_initializer_api` and failed before that module ran; the
+  correct module is `tests.test_adaptive_initializer_integration`.
+  The corrected focused command passed 16 tests. Required stdlib discovery
+  passed 247 tests in 47.205 seconds; `compileall` and `git diff --check`
+  passed.
+- No E0--E8 fixture, suffix, detector comparison, or OmegaSim work ran. The
+  hierarchical-generativity/CSSR scientific reframing remains a hypothesis.
+
 ## 2026-07-24 18:15 PDT — M-D multi-depth beam transition
 
 - Froze `docs/beam-traversal-contract-v1.md` and implemented `BeamNode`,

@@ -1,5 +1,16 @@
 # Tasks
 
+- [x] 2026-07-24 22:15 PDT: integrate opt-in adaptive beam traversal into the
+  public learner at clean commit `8471df2`. Final selection compares the root
+  with the final beam under the exact official scorer; only final-path
+  proposals are accepted, width/deduplication losses are `beam_pruned`, and
+  retained off-path proposals are explicitly dominated, with exactly one
+  ledger record per generated proposal. Depth-qualified node identities keep
+  replay ancestry stable. Beam+composite currently fails closed pending the
+  remaining shared-expansion slice. Focused unittest passed 16 after one
+  recorded stale selector; discovery passed 247 in 47.205 seconds;
+  compileall/diff checks passed. No E-series measurement ran.
+
 - [x] 2026-07-24 18:15 PDT: add ancestry-aware multi-depth beam transitions at
   clean commit `98a1656`, with exact official scoring, canonical
   deduplication, complete retained/pruned partitions, and replay-stable

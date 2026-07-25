@@ -1,5 +1,15 @@
 # Chaos Language Algorithm
 
+## 2026-07-24 22:15 PDT status
+
+M-D public beam integration is acceptance-tested at clean active-worktree
+commit `8471df2`. Adaptive beam search is opt-in, preserves exact
+reconstruction and depth-stable ancestry, selects only under the exact
+official scorer, and produces one final disposition per generated proposal.
+Greedy and legacy behavior remain the defaults. Beam+composite expansion is
+the next bounded M-D slice and currently fails closed. No E-series gate is
+authorized by this implementation slice.
+
 Update, 2026-07-24 18:15 PDT: ancestry-aware multi-depth M-D beam traversal is
 acceptance-tested at clean active-worktree commit `98a1656`. Each transition
 exact-scores and canonical-deduplicates children, partitions every proposal id,
