@@ -1,5 +1,169 @@
 # Notes
 
+## 2026-07-24 16:30 — Observe post-exhaustion quiescence
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-9`, which advances only
+  an eight-sweep `stop-bounded` result from its exact chamber and retains the
+  ninth sweep's checked outcomes.
+- The 64-reactant fixture now demonstrates the semantic distinction between
+  a productive driver boundary and actual chemistry quiescence: 64 productive
+  ticks are followed by eight checked no-ops, yielding `stop-quiescent` with
+  72 accounted steps, the unchanged 64-event history, and exact tick-64
+  chamber. Closed-cap and productive-then-quiescent fixtures still stop after
+  one and two sweeps.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (421
+  terminal true results, zero failure markers); `git diff --check` passed. No
+  Python chemistry logic or scientific claim changed; pre-existing untracked
+  scratch files were left untouched. Commit `500172b` pushed normally to
+  GitHub `main`.
+
+## 2026-07-24 14:30 — Extend bounded live ticking to eight sweeps
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-8`, which advances from
+  the checked seven-sweep result's exact chamber only when that result ended
+  in productive bound exhaustion. Closed-cap and productive-then-quiescent
+  paths still stop after one and two sweeps.
+- Extended eight-sweep positional and run-wide outcome accessors plus the
+  fixed event-history append seam through 64 retained events. The sustained
+  cap-1 fixture returns `stop-bounded` with 64 productive outcomes and tick
+  64.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (412
+  terminal true results, zero failure markers); `git diff --check` and an
+  obvious secret-like diff scan passed. No Python chemistry logic or
+  scientific claim changed; pre-existing untracked scratch files were left
+  untouched. Commit `871fe0e` pushed normally to GitHub `main`.
+
+## 2026-07-24 12:30 — Extend bounded live ticking to seven sweeps
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-7`, which advances from
+  the checked six-sweep result's exact chamber only when that result ended in
+  productive bound exhaustion. Closed-cap and productive-then-quiescent paths
+  still stop after one and two sweeps.
+- Extended seven-sweep positional and run-wide outcome accessors plus the
+  fixed event-history append seam through 56 retained events. The sustained
+  cap-1 fixture returns `stop-bounded` with 56 productive outcomes and tick
+  56.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (403
+  terminal true results, zero failure markers); `git diff --check` and an
+  obvious secret-like diff scan passed. No Python chemistry logic or
+  scientific claim changed; pre-existing untracked scratch files were left
+  untouched. Commit `d1e5046` pushed normally to GitHub `main`.
+
+## 2026-07-24 08:30 — Extend bounded live ticking to five sweeps
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-5`, which advances from
+  the checked four-sweep result's exact chamber only when that result ended in
+  productive bound exhaustion. Closed-cap and productive-then-quiescent paths
+  still stop after one and two sweeps.
+- Extended five-sweep positional and run-wide outcome accessors plus the fixed
+  event-history append seam through 40 retained events. The sustained cap-1
+  fixture returns `stop-bounded` with 40 productive outcomes and tick 40.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (385
+  true results, zero failure markers); `git diff --check` and an obvious
+  secret-like diff scan passed. No Python chemistry logic or scientific claim
+  changed; pre-existing untracked scratch files were left untouched. Commit
+  `587143d` pushed normally to GitHub `main`.
+
+## 2026-07-24 06:30 — Extend bounded live ticking to four sweeps
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-4`, which consumes the
+  checked three-sweep result and advances from its exact projected chamber
+  only when that bounded result ended with a live productive continuation.
+- The focused test exposed the prior 24-event append ceiling. Extended the
+  fixed PeTTa-native `append-chamber-event` seam through 32 retained events,
+  then verified four-sweep count/accessors, exact run-wide productive/no-op
+  accounting, `stop-bounded`, and the tick-32 chamber. One- and two-sweep
+  early stops remain unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (375
+  true results, zero failure markers); `git diff --check` passed. No Python
+  chemistry logic or scientific claim changed; pre-existing untracked scratch
+  files were left untouched. Commit `11d9598` pushed normally to GitHub
+  `main`.
+
+## 2026-07-24 04:30 — Extend bounded live ticking to three sweeps
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-3`, which advances only
+  productive retained sweeps from their exact projected chambers and maps a
+  productive third-sweep continuation to terminal `stop-bounded`.
+- Extended sweep count, positional access, and run-wide productive/no-op
+  accounting to three retained sweeps. Closed-cap and ordinary fixtures stop
+  after one and two sweeps; the sustained cap-1 fixture retains 24 productive
+  ticks and its exact tick-24 chamber.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (366
+  true results, zero failure markers); `git diff --check` and an obvious
+  secret-like diff scan passed. Commit `c33537e` pushed normally to GitHub
+  `main`; pre-existing untracked scratch files were left untouched.
+
+## 2026-07-24 02:30 — Report bounded tick-loop exhaustion
+
+- Added PeTTa-native `chamber-tick-final-bounded-action`, mapping a productive
+  final sweep's live `continue` decision to terminal `stop-bounded` at the
+  two-sweep driver boundary.
+- A sustained cap-1 fixture preserves all 16 productive outcomes, productive
+  run-wide disposition, and the exact tick-16 chamber. Quiescent and invalid
+  terminal actions remain unchanged; chemistry and emergence claims are
+  unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (357
+  true results); `git diff --check` and an obvious secret-like diff scan
+  passed. Commit `6223b6e` pushed normally to GitHub `main`; pre-existing
+  untracked scratch files were left untouched.
+
+## 2026-07-23 20:30 — Package a live bounded tick sweep
+
+- Added PeTTa-native `chamber-tick-generated-sweep`, which evaluates the
+  complete eight-step checked generation/selection/firing path once and
+  packages those retained steps with the control action derived from them.
+- Direct action, steps, and chamber accessors keep loop drivers on the same
+  evaluated provenance. Exp00 verifies a closed-cap sweep stops quiescent and
+  a productive-first sweep continues from the exact projected chamber.
+  Chemistry and emergence claims are unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (336
+  true results); `git diff --check` passed. Pre-existing untracked scratch
+  files were left untouched. Commit `80d41c6` pushed normally to GitHub
+  `main`.
+
+## 2026-07-23 16:30 — Classify bounded live tick histories
+
+- Added PeTTa-native `chamber-tick-steps-disposition`, which consumes the
+  established outcome-accounting and productivity counts.
+- Complete closed-cap and productive-first eight-step histories classify as
+  `quiescent` and `productive`. A synthetic three-step history containing
+  `unknown` fails closed to `invalid-outcomes`. Generation, deterministic
+  selection, checked firing, and chemistry are unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (329
+  true results); `git diff --check` passed. Pre-existing untracked scratch
+  files were left untouched. Commit `8b7e3a0` pushed normally to GitHub
+  `main`.
+
+## 2026-07-23 14:30 — Count unaccounted bounded tick outcomes
+
+- Added PeTTa-native `chamber-tick-steps-unaccounted-count`, which exposes
+  the exact retained outcomes not classified as productive or no-op.
+- Complete closed-cap and productive-first eight-step live histories report
+  zero. A synthetic three-step history containing `unknown` reports one, and
+  the existing accounting-validity gate now derives from this count.
+  Generation, deterministic selection, checked firing, and chemistry are
+  unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (326
+  true results); `git diff --check` passed. Pre-existing untracked scratch
+  files were left untouched. Commit `7999344` pushed normally to GitHub
+  `main`.
+
+## 2026-07-23 12:30 — Validate bounded tick outcome accounting
+
+- Added PeTTa-native `chamber-tick-steps-outcome-accounting-valid?`, which
+  checks that productive plus no-op outcomes exactly equal the retained
+  bounded step count.
+- The complete closed-cap and productive-first eight-step live histories
+  validate. A synthetic three-step history containing `unknown` fails, so
+  malformed outcome tokens cannot silently pass through host-side parsing.
+  Generation, deterministic selection, checked firing, and chemistry are
+  unchanged.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (323
+  true results); `git diff --check` and the focused secret-like diff scan
+  passed. Pre-existing untracked scratch files were left untouched. Commit
+  `c8713af` pushed normally to GitHub `main`.
+
 ## 2026-07-23 08:30 — Extend bounded live ticking to seven steps
 
 - Added PeTTa-native `chamber-tick-generated-steps-7`, which feeds the
@@ -1460,3 +1624,143 @@ untracked scratch files were left untouched.
 - Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (320 true
   results); `git diff --check` passed. Pre-existing untracked scratch files
   were left untouched. Commit `4192438` pushed normally to GitHub `main`.
+
+# 2026-07-23 18:30 PDT — bounded-history loop-control decision
+
+- Added PeTTa-native `chamber-tick-steps-next-action` over the complete
+  bounded-history disposition: productive histories continue, complete valid
+  no-op histories stop quiescent, and malformed retained outcomes stop
+  invalid.
+- Exp00 covers all three decisions using live eight-step generated histories
+  plus an invalid fixture. Candidate generation, deterministic selection,
+  firing, chemistry, and scientific claims are unchanged.
+- Provenance/checks: recorded local PeTTa/SWI stack via
+  `scripts/run_exp00.sh` (332 true results); `git diff --check` passed.
+- Commit `602163c` pushed normally to GitHub `main`; pre-existing untracked
+  scratch files were left untouched.
+
+# 2026-07-23 22:30 PDT — consume sweep control in live ticking
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-2`, which consumes the
+  first live sweep's own action and advances only `continue` from the exact
+  projected chamber.
+- A productive initial fixture retains two sweeps and ends
+  `stop-quiescent`; a closed candidate cap retains one sweep and stops
+  without a redundant generation pass. Accessors expose the retained count,
+  action, individual sweeps, and final chamber.
+- Provenance/checks: local PeTTa/SWI `scripts/run_exp00.sh` passed with 341
+  true results; `git diff --check` passed. No chemistry rule, selection
+  policy, candidate cap, or scientific claim changed. Commit `2630239`
+  pushed to GitHub `main`.
+
+# 2026-07-24 00:30 PDT — run-wide bounded sweep accounting
+
+- Added PeTTa-native aggregate accounting over retained one- and two-sweep
+  runs: total ticks, productive ticks, no-ops, unaccounted outcomes,
+  accounting validity, and run-wide disposition.
+- The productive fixture retains 16 checked ticks `(1 productive, 15 no-op)`
+  and remains disposition `productive` after its terminal sweep returns
+  `stop-quiescent`; the closed-cap fixture is quiescent across eight no-ops.
+- Provenance/checks: local PeTTa/SWI `scripts/run_exp00.sh` passed with 351
+  true results and no failure markers; `git diff --check` passed. No
+  chemistry rule, deterministic selection policy, candidate cap, trajectory,
+  or scientific claim changed.
+- Commit `52902f8` pushed normally to GitHub `main`; pre-existing untracked
+  scratch files were left untouched.
+# 2026-07-24 10:30 PDT — sixth bounded generated sweep
+
+- Added PeTTa-native `chamber-tick-generated-sweeps-6`, advancing only the
+  productive bound-exhausted five-sweep result from its exact projected
+  chamber while preserving established one-/two-sweep early stops.
+- Six-sweep accessors and aggregate accounting retain 48 productive checked
+  ticks, zero no-ops, and the exact tick-48 chamber. The fixed
+  `append-chamber-event` seam now retains 48 events.
+- Candidate generation, deterministic selection, checked firing, and
+  chemistry remain on the existing PeTTa-native path; no scientific claim
+  changed.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` (394
+  true results, zero failure markers); `git diff --check` passed. Commit
+  `ba872a4` pushed normally to GitHub `main`; pre-existing untracked scratch
+  files were left untouched.
+# 2026-07-24 18:30 PDT — thirteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 12 to 13 retained
+  source rules while preserving the explicit first-eight candidate boundary.
+- Extended source rewrite ownership and bounded source-count provenance to 13
+  rules. The cap-2 direct chamber tick still deterministically selects the
+  productive second generated candidate and preserves the complete rule list.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 423 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Commit `fa5fbd4` pushed normally to GitHub `main`; pre-existing untracked
+  exp08/catalysis scratch work was left untouched.
+
+# 2026-07-24 20:30 PDT — fourteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 13 to 14 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 14
+  rules. The attrition audit reports six generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 428 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `ea6f29b` pushed normally to GitHub `main`.
+
+# 2026-07-24 22:30 PDT — fifteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 14 to 15 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 15
+  rules. The attrition audit reports seven generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 434 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `8e0bcb8` pushed normally to GitHub `main`.
+
+# 2026-07-25 00:30 PDT — sixteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 15 to 16 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 16
+  rules. The attrition audit reports eight generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 439 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `b6c79ee` pushed normally to GitHub `main`.
+
+# 2026-07-25 02:30 PDT — seventeen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 16 to 17 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 17
+  rules. The attrition audit reports nine generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 444 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `2b4562d` pushed normally to GitHub `main`.
+
+# 2026-07-25 04:30 PDT — eighteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 17 to 18 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 18
+  rules. The attrition audit reports ten generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 449 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `71d4477` pushed normally to GitHub `main`.

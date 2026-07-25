@@ -6,6 +6,181 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] **Completed 2026-07-25 04:30:** extend bounded candidate generation and
+  source provenance to an 18-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 18 source
+  rules, the audit record reports ten generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 449
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `71d4477` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 02:30:** extend bounded candidate generation and
+  source provenance to a 17-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 17 source
+  rules, the audit record reports nine generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 444
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `2b4562d` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 00:30:** extend bounded candidate generation and
+  source provenance to a 16-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 16 source
+  rules, the audit record reports eight generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 439
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `b6c79ee` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-24 22:30:** extend bounded candidate generation and
+  source provenance to a 15-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 15 source
+  rules, the audit record reports seven generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 434
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `8e0bcb8` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-24 20:30:** extend bounded candidate generation and
+  source provenance to a 14-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 14 source
+  rules, the audit record reports six generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 428
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `ea6f29b` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-24 18:30:** extend bounded candidate generation and
+  source provenance to a 13-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count audit seams cover all 13
+  source rules, and the ordinary cap-2 deterministic tick still selects and
+  fires productive `r0`. Exp00 passed with 423 terminal true results and zero
+  failure markers; `git diff --check` passed. Commit `fa5fbd4` pushed normally
+  to GitHub `main`.
+
+- [x] **Completed 2026-07-24 16:30:** distinguish bounded-driver exhaustion
+  from resource-driven quiescence with a ninth live sweep. New
+  `chamber-tick-generated-sweeps-9` advances only the productive
+  eight-sweep bound-exhausted path. The 64-reactant fixture retains 64
+  productive outcomes plus eight checked no-ops, stops `stop-quiescent`,
+  preserves its exact 64-event tick-64 chamber, and keeps one-/two-sweep
+  early stops. Exp00 passed with 421 terminal true results and zero failure
+  markers; `git diff --check` passed. Commit `500172b` pushed normally to
+  GitHub `main`.
+
+- [x] **Completed 2026-07-24 14:30:** extend bounded live chamber ticking to
+  eight sweeps. New `chamber-tick-generated-sweeps-8` consumes the checked
+  seven-sweep result, advances only its productive bound-exhausted path, and
+  preserves one-/two-sweep early stops. Eight-sweep accessors and run-wide
+  accounting retain 64 productive ticks and the exact terminal chamber; the
+  fixed event append seam now retains 64 events. Exp00 passed with 412
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `871fe0e` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 12:30:** extend bounded live chamber ticking to
+  seven sweeps. New `chamber-tick-generated-sweeps-7` consumes the checked
+  six-sweep result, advances only its productive bound-exhausted path, and
+  preserves one-/two-sweep early stops. Seven-sweep accessors and run-wide
+  accounting retain 56 productive ticks and the exact terminal chamber; the
+  fixed event append seam now retains 56 events. Exp00 passed with 403
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `d1e5046` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 10:30:** extend bounded live chamber ticking to
+  six sweeps. New `chamber-tick-generated-sweeps-6` consumes the checked
+  five-sweep result, advances only its productive bound-exhausted path, and
+  preserves one-/two-sweep early stops. Six-sweep accessors and run-wide
+  accounting retain 48 productive ticks and the exact terminal chamber; the
+  fixed event append seam now retains 48 events. Exp00 passed with 394 true
+  results and zero failure markers; `git diff --check` passed. Commit
+  `ba872a4` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 08:30:** extend bounded live chamber ticking to
+  five sweeps. New `chamber-tick-generated-sweeps-5` consumes the checked
+  four-sweep result, advances only its productive bound-exhausted path, and
+  preserves one-/two-sweep early stops. Five-sweep accessors and run-wide
+  accounting retain 40 productive ticks and the exact terminal chamber; the
+  fixed event append seam now retains 40 events. Exp00 passed with 385 true
+  results and zero failure markers; `git diff --check` passed. Commit
+  `587143d` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 06:30:** extend bounded live chamber ticking to
+  four sweeps and lift the discovered event-history boundary. New
+  `chamber-tick-generated-sweeps-4` reuses the checked three-sweep result,
+  advances only a live bounded continuation, and preserves one-/two-sweep
+  early stops. PeTTa-native event append now retains 32 events; four-sweep
+  accessors and run-wide accounting preserve all 32 productive ticks and the
+  exact terminal chamber. Exp00 passed with 375 true results and
+  `git diff --check` passed. Commit `11d9598` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 04:30:** extend bounded live chamber ticking to
+  three sweeps. New `chamber-tick-generated-sweeps-3` consumes each retained
+  sweep's PeTTa-native action, stops after one or two sweeps when appropriate,
+  and reports `stop-bounded` after a sustained third sweep. Three-sweep
+  accessors preserve exact run-wide accounting and the tick-24 chamber.
+  Exp00 passed with 366 true results and `git diff --check` passed. Commit
+  `c33537e` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 02:30:** expose bounded tick-loop exhaustion.
+  When the second and final allowed live sweep remains productive,
+  `chamber-tick-generated-sweeps-2` now returns `stop-bounded` instead of an
+  unactionable `continue`. A sustained cap-1 fixture retains 16 productive
+  checked ticks, productive run disposition, and the exact tick-16 chamber.
+  Exp00 passed with 357 true results and `git diff --check` passed. Commit
+  `6223b6e` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-24 00:30:** preserve run-wide outcome accounting
+  across bounded live sweeps. New PeTTa-native accessors expose total,
+  productive, no-op, and unaccounted tick counts plus accounting validity and
+  aggregate disposition. The productive fixture now remains classified
+  `productive` after its second sweep terminates `stop-quiescent`, while a
+  closed cap is quiescent throughout. Exp00 passed with 351 true results and
+  `git diff --check` passed. Commit `52902f8` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-23 22:30:** consume bounded sweep control inside
+  the PeTTa tick loop. New `chamber-tick-generated-sweeps-2` advances a
+  productive first sweep from its exact projected chamber into a second live
+  sweep, while quiescent or invalid first sweeps stop without regenerating
+  chemistry. Direct accessors expose retained sweep count, action, sweeps,
+  and final chamber. Exp00 passed with 341 true results and
+  `git diff --check` passed. Commit `2630239` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-23 20:30:** bind one bounded live sweep to the
+  loop-control action derived from its exact retained history. New
+  `chamber-tick-generated-sweep` packages the eight checked generated ticks
+  and their `continue` or `stop-quiescent` decision; direct accessors expose
+  the action, steps, and projected chamber without regenerating chemistry in
+  host glue. Exp00 passed with 336 true results and `git diff --check`
+  passed. Commit `80d41c6` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-23 18:30:** drive bounded loop control from the
+  complete PeTTa-native history disposition. New
+  `chamber-tick-steps-next-action` returns `continue` for productive
+  histories, `stop-quiescent` after a complete valid no-op sweep, and
+  `stop-invalid` for malformed retained outcomes. Exp00 passed with 332 true
+  results and `git diff --check` passed. Commit `602163c` pushed to GitHub
+  `main`.
+
+- [x] **Completed 2026-07-23 16:30:** classify complete bounded live tick
+  histories inside PeTTa. New `chamber-tick-steps-disposition` fails closed
+  to `invalid-outcomes` when accounting is incomplete, otherwise reports
+  `productive` when any retained tick changed chemistry and `quiescent` when
+  all retained ticks were valid no-ops. Exp00 passed with 329 true results
+  and `git diff --check` passed. Commit `8b7e3a0` pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-23 14:30:** expose the exact unaccounted remainder
+  in bounded live tick outcomes. New PeTTa-native
+  `chamber-tick-steps-unaccounted-count` subtracts productive and no-op
+  classifications from the retained step width. Both complete eight-step
+  paths report zero, while a three-step history containing `unknown` reports
+  one; the accounting-validity gate now derives from this count. Exp00 passed
+  with 326 true results and `git diff --check` passed. Commit `7999344`
+  pushed to GitHub `main`.
+
+- [x] **Completed 2026-07-23 12:30:** validate complete bounded tick outcome
+  accounting inside PeTTa. New
+  `chamber-tick-steps-outcome-accounting-valid?` requires the productive and
+  no-op counts to sum to the exact retained step count. Both complete
+  eight-step live paths pass, while a well-shaped three-step history with an
+  `unknown` outcome fails. Exp00 passed with 323 true results and
+  `git diff --check` passed. Commit `c8713af` pushed to GitHub `main`.
+
 - [x] **Completed 2026-07-23 10:30:** complete bounded live generated ticking
   at the stable eight-candidate generation boundary. New
   `chamber-tick-generated-steps-8` consumes the seven-step final chamber,

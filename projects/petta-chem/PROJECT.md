@@ -3,7 +3,7 @@
 - Slug: `petta-chem`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-23` (10:30)
+- Last reviewed: `2026-07-25` (04:30)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -43,6 +43,170 @@ Operational criteria:
 - Paid remote compute unless separately approved with a cleanup/cost plan.
 
 ## Current state
+
+2026-07-25 04:30 progress: bounded PeTTa-native candidate generation is now
+total for an 18-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 18
+rules, the audit record reports ten generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 449
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `71d4477` pushed normally to GitHub `main`.
+
+2026-07-25 02:30 progress: bounded PeTTa-native candidate generation is now
+total for a 17-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 17
+rules, the audit record reports nine generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 444
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `2b4562d` pushed normally to GitHub `main`.
+
+2026-07-25 00:30 progress: bounded PeTTa-native candidate generation is now
+total for a 16-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 16
+rules, the audit record reports eight generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 439
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `b6c79ee` pushed normally to GitHub `main`.
+
+2026-07-24 22:30 progress: bounded PeTTa-native candidate generation is now
+total for a 15-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 15
+rules, the audit record reports seven generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 434
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `8e0bcb8` pushed normally to GitHub `main`.
+
+2026-07-24 20:30 progress: bounded PeTTa-native candidate generation is now
+total for a 14-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 14
+rules, the audit record reports six generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 428
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `ea6f29b` pushed normally to GitHub `main`.
+
+2026-07-24 18:30 progress: bounded PeTTa-native candidate generation is now
+total for a 13-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership and source-count audit
+seams also cover all 13 retained rules, and direct cap-2 deterministic
+selection still fires the productive second candidate. Exp00 passed with 423
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `fa5fbd4` pushed normally to GitHub `main`.
+
+2026-07-24 16:30 progress: PeTTa-native bounded chamber ticking now supports
+a ninth live sweep that distinguishes driver-bound exhaustion from
+resource-driven quiescence. The 64-reactant fixture remains productive through
+eight sweeps, then retains a complete ninth sweep of eight checked no-ops,
+returns `stop-quiescent`, preserves 64 events, and keeps the exact tick-64
+chamber. Exp00 passed with 421 terminal true results and zero failure markers;
+`git diff --check` passed. Commit `500172b` pushed normally to GitHub `main`.
+
+2026-07-24 14:30 progress: PeTTa-native bounded chamber ticking now supports
+eight live sweeps. `chamber-tick-generated-sweeps-8` advances only a
+productive seven-sweep bound exhaustion, preserves one-/two-sweep early
+stops, and retains exact run-wide accounting and the terminal chamber through
+tick 64. The fixed event-history append boundary was extended from 56 to 64
+events. Exp00 passed with 412 terminal true results and zero failure markers;
+`git diff --check` passed. Commit `871fe0e` pushed normally to GitHub `main`.
+
+2026-07-24 12:30 progress: PeTTa-native bounded chamber ticking now supports
+seven live sweeps. `chamber-tick-generated-sweeps-7` advances only a
+productive six-sweep bound exhaustion, preserves one-/two-sweep early stops,
+and retains exact run-wide accounting and the terminal chamber through tick
+56. The fixed event-history append boundary was extended from 48 to 56
+events. Exp00 passed with 403 terminal true results and zero failure markers;
+`git diff --check` passed. Commit `d1e5046` pushed normally to GitHub `main`.
+
+2026-07-24 10:30 progress: PeTTa-native bounded chamber ticking now supports
+six live sweeps. `chamber-tick-generated-sweeps-6` advances only a productive
+five-sweep bound exhaustion, preserves one-/two-sweep early stops, and retains
+exact run-wide accounting and the terminal chamber through tick 48. The fixed
+event-history append boundary was extended from 40 to 48 events. Exp00 passed
+with 394 true results and zero failure markers; `git diff --check` passed.
+Commit `ba872a4` pushed normally to GitHub `main`.
+
+2026-07-24 08:30 progress: PeTTa-native bounded chamber ticking now supports
+five live sweeps. `chamber-tick-generated-sweeps-5` advances only a productive
+four-sweep result from its exact projected chamber, preserves one-/two-sweep
+early stops, and retains exact run-wide accounting through tick 40. The fixed
+event-history append boundary was extended from 32 to 40 events. Exp00 passed
+with 385 true results and zero failure markers; `git diff --check` passed.
+Commit `587143d` pushed normally to GitHub `main`.
+
+2026-07-24 06:30 progress: PeTTa-native bounded chamber ticking now supports
+four live sweeps. The work exposed and extended the fixed event-history append
+boundary from 24 to 32 events; deterministic generation, selection, checked
+firing, and exact projected-chamber handoff now remain live through tick 32.
+Closed-cap and productive-then-quiescent fixtures still stop after one and two
+sweeps, while the sustained cap-1 fixture returns `stop-bounded` with 32
+productive outcomes and the exact tick-32 chamber. Exp00 passed with 375 true
+results and `git diff --check` passed. Commit `11d9598` pushed to GitHub
+`main`.
+
+2026-07-24 04:30 progress: PeTTa-native bounded chamber ticking now supports
+three live sweeps while preserving early stop behavior. Closed-cap and
+productive-then-quiescent fixtures retain one and two sweeps respectively;
+a sustained cap-1 fixture reaches `stop-bounded` only after 24 productive
+checked ticks and preserves its exact tick-24 chamber. Exp00 passed with 366
+true results and `git diff --check` passed. Commit `c33537e` pushed to GitHub
+`main`.
+
+2026-07-24 02:30 progress: bounded PeTTa-native chamber ticking now reports
+`stop-bounded` when its second and final allowed sweep remains productive,
+rather than returning an unactionable `continue`. A sustained fixture retains
+all 16 productive checked ticks and its exact tick-16 chamber. Exp00 passed
+with 357 true results and `git diff --check` passed. Commit `6223b6e` pushed
+to GitHub `main`.
+
+2026-07-24 00:30 progress: bounded PeTTa-native tick runs now retain
+run-wide outcome accounting across one or two live sweeps. Total, productive,
+no-op, and unaccounted counts distinguish a productive first sweep followed
+by quiescence from a run that was quiescent throughout, even though both
+terminate with `stop-quiescent`. Exp00 passed with 351 true results and
+`git diff --check` passed. Commit `52902f8` pushed to GitHub `main`.
+
+2026-07-23 22:30 progress: PeTTa now consumes a live sweep's own control
+action through `chamber-tick-generated-sweeps-2`. A productive first sweep
+advances from its exact projected chamber into a second bounded sweep, while
+a closed-cap first sweep stops without regenerating chemistry. The exp00
+fixture reaches `stop-quiescent` after one or two sweeps as appropriate;
+exp00 passed with 341 true results and `git diff --check` passed.
+Commit `2630239` pushed to GitHub `main`.
+
+2026-07-23 20:30 progress: one PeTTa-native
+`chamber-tick-generated-sweep` now packages the complete eight-step live
+history with the control action derived from that exact history. Direct
+accessors expose the action, retained steps, and projected chamber; closed-cap
+and productive paths return `stop-quiescent` and `continue`, respectively.
+Exp00 passed with 336 true results and `git diff --check` passed.
+Commit `80d41c6` pushed to GitHub `main`.
+
+2026-07-23 18:30 progress: complete bounded live tick histories now drive a
+PeTTa-native `chamber-tick-steps-next-action`. Productive histories return
+`continue`, complete quiescent histories return `stop-quiescent`, and
+malformed histories fail closed to `stop-invalid`. Exp00 passed with 332 true
+results and `git diff --check` passed. Commit `602163c` pushed to GitHub
+`main`.
+
+2026-07-23 16:30 progress: bounded live tick histories now expose one
+PeTTa-native `chamber-tick-steps-disposition`. Complete closed-cap,
+productive-first, and malformed histories classify as `quiescent`,
+`productive`, and `invalid-outcomes`, respectively, without host-side count
+logic. Exp00 passed with 329 true results and `git diff --check` passed.
+Commit `8b7e3a0` pushed to GitHub `main`.
+
+2026-07-23 14:30 progress: bounded tick histories now expose the exact
+PeTTa-native `chamber-tick-steps-unaccounted-count`. Complete closed-cap and
+productive-first eight-step paths report zero, while a three-step history
+containing `unknown` reports one; the existing accounting-validity gate now
+consumes this count. Exp00 passed with 326 true results and
+`git diff --check` passed. Commit `7999344` pushed to GitHub `main`.
+
+2026-07-23 12:30 progress: bounded live generated tick histories now expose
+a PeTTa-native outcome-accounting invariant. The complete eight-step
+closed-cap and productive-first paths validate because every retained outcome
+is classified as `productive` or `no-op`; an otherwise well-shaped history
+containing `unknown` is rejected. Exp00 passed with 323 true results and
+`git diff --check` passed. Commit `c8713af` pushed to GitHub `main`.
 
 2026-07-23 10:30 progress: bounded live generated ticking now reaches the
 stable eight-candidate generation boundary through eight checked PeTTa-native
