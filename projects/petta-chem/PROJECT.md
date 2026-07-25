@@ -3,7 +3,7 @@
 - Slug: `petta-chem`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-25` (04:30)
+- Last reviewed: `2026-07-25` (08:30)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -43,6 +43,22 @@ Operational criteria:
 - Paid remote compute unless separately approved with a cleanup/cost plan.
 
 ## Current state
+
+2026-07-25 08:30 progress: bounded PeTTa-native candidate generation is now
+total for a 20-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 20
+rules, the audit record reports twelve generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 459
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `84d70c7` pushed normally to GitHub `main`.
+
+2026-07-25 06:30 progress: bounded PeTTa-native candidate generation is now
+total for a 19-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 19
+rules, the audit record reports eleven generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 453
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `2e78383` pushed normally to GitHub `main`.
 
 2026-07-25 04:30 progress: bounded PeTTa-native candidate generation is now
 total for an 18-rule four-molecule chamber while retaining the stable

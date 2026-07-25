@@ -1,5 +1,19 @@
 # Notes
 
+## 2026-07-25 08:30 PDT — twenty-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 19 to 20 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 20
+  rules. The attrition audit reports twelve generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 459 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `84d70c7` pushed normally to GitHub `main`.
+
 ## 2026-07-24 16:30 — Observe post-exhaustion quiescence
 
 - Added PeTTa-native `chamber-tick-generated-sweeps-9`, which advances only
@@ -1764,3 +1778,17 @@ untracked scratch files were left untouched.
   `git diff --check` passed. No chemistry rule or scientific claim changed.
 - Pre-existing untracked exp08/catalysis scratch work was left untouched.
 - Commit `71d4477` pushed normally to GitHub `main`.
+
+# 2026-07-25 06:30 PDT — nineteen-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 18 to 19 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 19
+  rules. The attrition audit reports eleven generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 453 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `2e78383` pushed normally to GitHub `main`.
