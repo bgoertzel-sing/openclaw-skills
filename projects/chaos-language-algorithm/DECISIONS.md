@@ -1,5 +1,12 @@
 # Decisions
 
+## 2026-07-24: Multi-depth beam ancestry is explicit
+
+Beam retention is not final scientific acceptance. Nodes carry canonical
+state, parent, proposal, and depth identities; public integration must accept
+only the selected final path and label all other generated valid proposals
+`beam_pruned`. Greedy remains the default and E0--E8 remain unauthorized.
+
 No implementation decisions yet.
 
 
@@ -27,3 +34,12 @@ intermediate states but a successful composite exposes exactly one durable
 discards the intermediate value, leaving the input state and edit log
 unchanged. This matches the frozen atomicity and one-ledger-record invariants;
 exact official-score acceptance remains the next separate wiring slice.
+
+## 2026-07-24 — Mixed evidence fails closed for dependent components
+
+Composite ranking estimates never authorize acceptance. The exact official
+score and exact reconstruction are the only acceptance authority. Four-state
+mixed-second-difference evidence is recorded only when both component edits
+also apply independently to the same base state; dependent or invalid
+components retain an exact atomic composite delta but use null mixed totals and
+residuals rather than a fabricated counterfactual.

@@ -1,5 +1,32 @@
 # Chaos Language Algorithm
 
+Update, 2026-07-24 18:15 PDT: ancestry-aware multi-depth M-D beam traversal is
+acceptance-tested at clean active-worktree commit `98a1656`. Each transition
+exact-scores and canonical-deduplicates children, partitions every proposal id,
+and preserves parent/proposal ancestry for final-path and `beam_pruned` ledger
+routing. Focused unittest passed 8; discovery passed 245 in 47.452 seconds;
+compileall and diff checks passed. No E0--E8 fixture or score was opened.
+Public-loop ledger emission and opt-in API integration remain next.
+
+Update, 2026-07-24 16:15 PDT: the next M-D beam-accounting seam is
+acceptance-tested at clean active-worktree commit `972b362`.
+Proposal-addressable candidate selection now partitions
+every generated candidate exactly once into retained or pruned identifiers,
+deduplicates canonical states deterministically, and fails closed on duplicate
+or empty ledger identifiers. Focused unittest passed 6; required discovery
+passed 243 in 46.374 seconds; compileall and diff checks passed. No E0--E8
+fixture or score was opened. Public multi-depth traversal remains next.
+
+Update, 2026-07-24 14:15 PDT: opt-in adaptive composite-loop integration is
+acceptance-tested at clean active-worktree commit `3c17035`. Single and
+composite proposals compete under the same exact official scorer; atomic
+reconstruction, deterministic replay, the frozen proposal budget, and one
+ledger disposition per generated composite remain enforced. Defaults and
+legacy objectives are unchanged. Focused unittest passed 21; required
+discovery passed 241 in 46.581 seconds; compileall and diff checks passed. No
+E0--E8 fixture or score was opened. Multi-depth beam traversal with
+`beam_pruned` ledger routing remains in M-D.
+
 Update, 2026-07-24 12:15 PDT: opt-in adaptive initializer integration is
 acceptance-tested at clean active-worktree commit `a01c2c4`.
 `search_objective="adaptive"` now constructs one frozen registry-backed

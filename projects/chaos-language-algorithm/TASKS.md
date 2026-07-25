@@ -1,5 +1,29 @@
 # Tasks
 
+- [x] 2026-07-24 18:15 PDT: add ancestry-aware multi-depth beam transitions at
+  clean commit `98a1656`, with exact official scoring, canonical
+  deduplication, complete retained/pruned partitions, and replay-stable
+  ancestry. Focused unittest passed 8; discovery passed 245 in 47.452 seconds;
+  compileall/diff checks passed. Next: public-loop final-path and
+  `beam_pruned` ledger emission plus opt-in API wiring.
+
+- [x] 2026-07-24 16:15 PDT: add proposal-addressable deterministic beam
+  disposition at clean active-worktree commit `972b362`.
+  Every candidate identifier is partitioned exactly once,
+  canonical duplicate states occupy one slot, and invalid identifiers fail
+  closed. Public multi-depth traversal and final-path ledger acceptance remain
+  the next M-D slice.
+
+- [x] 2026-07-24 14:15 PDT: integrate opt-in composite proposals into the
+  adaptive greedy public loop at clean active-worktree commit `3c17035`.
+  Single and composite candidates compete under the same exact official
+  scorer; composite budget cuts and every scored/rejected composite receive
+  exactly one ledger disposition, while defaults and legacy objectives remain
+  unchanged. Focused unittest passed 21; required discovery passed 241 in
+  46.581 seconds; compileall and diff checks passed. No E-series measurement
+  ran. Next M-D slice is multi-depth beam-loop integration and `beam_pruned`
+  ledger routing.
+
 - [x] 2026-07-24 12:15 PDT: Freeze and implement the opt-in adaptive
   initializer integration seam at clean active-worktree commit `a01c2c4`.
   One registry-backed `AdaptiveTwoPartScorer` instance is shared by Re-Pair or

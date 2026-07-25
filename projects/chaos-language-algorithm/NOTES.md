@@ -1,5 +1,50 @@
 # Notes
 
+## 2026-07-24 18:15 PDT — M-D multi-depth beam transition
+
+- Froze `docs/beam-traversal-contract-v1.md` and implemented `BeamNode`,
+  `BeamAdvance`, and `BeamSearchPolicy.advance` at clean commit `98a1656`.
+- Parent/proposal ancestry is explicit; invalid parent frontiers fail closed;
+  children are exact-scored, canonical-deduplicated, and completely
+  partitioned for later final-path acceptance and `beam_pruned` routing.
+- SHA-256: contract
+  `69289d3c57e440ef5ea1fe7116f81ee85cba320eac3acecc4a66851496a86a76`;
+  implementation
+  `6c78c4261728e59d028c20e531e30e5284d8c4b6e9a67e27ecffca74afff2e44`;
+  test `00eeeb94c4cf6e854d1cb74a488060d9bc54067869c8cb97d365236ef491d426`.
+- Focused unittest passed 8; required discovery passed 245 in 47.452 seconds;
+  compileall and diff checks passed. No fixture, E0--E8 score, remote compute,
+  or OmegaSim run was opened.
+
+## 2026-07-24 16:15 PDT — M-D proposal-addressable beam disposition
+
+- Active worktree:
+  `/home/openclaw/research-agent/scratch/chaoslang-strict-replay`.
+- Clean implementation commit: `972b362`.
+- `BeamSearchPolicy.select_candidates` exact-scores states, deduplicates by
+  canonical digest, and returns a complete disjoint retained/pruned ID
+  partition suitable for `beam_pruned` ledger routing.
+- Focused unittest passed 6; required discovery passed 243 tests in 46.374
+  seconds; compileall and `git diff --check` passed.
+- This was non-measuring. No E0--E8 fixture, suffix, score, detector
+  comparison, or OmegaSim run was opened. Public multi-depth traversal and
+  final-path-aware ledger emission remain next.
+
+## 2026-07-24 14:15 PDT — M-D adaptive composite-loop integration
+
+- Clean active-worktree commit `3c17035` exposes opt-in
+  `enable_composites=True` only with the adaptive objective.
+- Ordinary and composite candidates compete under one frozen
+  `AdaptiveTwoPartScorer`; exact total bits alone choose the step winner.
+  Composite generation retains the frozen 512 default budget, exact
+  reconstruction, atomic application, mixed-difference evidence, and one
+  ledger record per generated proposal including budget cuts.
+- Defaults and legacy proxy/indexed paths are unchanged. Focused unittest
+  passed 21; full required discovery passed 241 tests in 46.581 seconds;
+  `compileall` and `git diff --check` passed.
+- No E0--E8 fixture, suffix, or score was opened. M-D next requires beam
+  traversal integration and explicit `beam_pruned` ledger dispositions.
+
 ## 2026-07-24 12:15 PDT — M-D adaptive initializer integration
 
 - Froze `docs/adaptive-initializer-integration-spec-v1.md` and implemented the
