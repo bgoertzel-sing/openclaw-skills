@@ -1,5 +1,28 @@
 # Notes
 
+## 2026-07-25 14:15 PDT — M-E CSSR transition-equivalence categories
+
+- Froze `docs/cssr-category-inducer-contract-v1.md` and added
+  `chaoslang.automata.causal_categories.CSSRCategoryInducer` in the active
+  `scratch/chaoslang-strict-replay` worktree at clean commit `f83e105`.
+- Eligible causal states require total diagnostic support at least
+  `min_support`. Candidate parse tokens must define transitions on every
+  eligible state; equal ordered successor tuples form deterministic empirical
+  categories. This complete-domain rule prevents missing transitions from
+  producing vacuous equivalence.
+- Ordinary `CategoryProposal` output preserves core semantics. Required
+  `source=cssr` and canonical topology-only machine SHA-256 are exposed by
+  `provenance_for`, ready for a later ledger integration slice.
+- Focused unittest passed 10. Required discovery passed 265 tests in 46.705
+  seconds; `python3 -m compileall -q src tests` and `git diff --check` passed.
+- Contract/source/test SHA-256:
+  `5e60e8ade4fd4489e3302c6eefcdc1f4e2649b4f5a6001ffd73f4a5f9afe942c`,
+  `abf876eaf38266b80c5af7494b0dfdeeba913c85b5869d5927103204a2d620a2`,
+  and `363cee2303534b402a67bd4f05818f2c3f9608ee08366d15f81993d655d65746`.
+- No suffix, scientific score, E0--E8 fixture, remote compute, or OmegaSim work
+  ran. Transition-monoid recovery and the expected CSSR advantage on
+  positive-entropy sofic regimes remain hypotheses awaiting frozen gates.
+
 ## 2026-07-25 12:15 PDT — M-E prefix-fitted CSSR registry
 
 - Clean active-worktree commit `f4b5595` freezes

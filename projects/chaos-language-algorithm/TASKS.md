@@ -1,5 +1,16 @@
 # Tasks
 
+- [x] 2026-07-25 14:15 PDT: freeze and implement at clean commit `f83e105`
+  the bounded M-E CSSR
+  transition-equivalence category-inducer seam. Complete supported-state
+  transition actions are grouped deterministically, incomplete domains fail
+  closed, ordinary category proposals preserve the core API, and CSSR source
+  plus canonical topology digest are exposed as sidecar provenance. Focused
+  unittest passed 10; required discovery passed 265 in 46.705 seconds;
+  compileall and diff checks passed. No E0--E8 measurement ran. Next: complete
+  the remaining M-E planted-source recovery and coder-ordering unit invariants
+  without opening evaluation fixtures.
+
 - [x] 2026-07-25 12:15 PDT: freeze and implement the bounded M-E
   prefix-fitted CSSR registry seam at clean active-worktree commit `f4b5595`.
   `make_fitted_coder("cssr", ...)` requires an explicit non-empty training

@@ -1,5 +1,16 @@
 # Chaos Language Algorithm
 
+## 2026-07-25 14:15 PDT status
+
+The bounded M-E CSSR transition-equivalence category-inducer seam is
+acceptance-tested at clean commit `f83e105`. It proposes ordinary categories only when parse tokens have
+the same complete transition action over every sufficiently supported causal
+state, records deterministic topology-only SHA-256 provenance separately, and
+does not change `chaoslang.core` or public learner defaults. Focused unittest
+passed 10; required discovery passed 265 in 46.705 seconds; compileall and
+diff checks passed. No E0--E8 fixture or score was opened. Planted-source
+recovery and coder-ordering invariants remain before M-E completion.
+
 ## 2026-07-25 10:15 PDT status
 
 The bounded M-E causal-state coding slice is acceptance-tested at clean commit
