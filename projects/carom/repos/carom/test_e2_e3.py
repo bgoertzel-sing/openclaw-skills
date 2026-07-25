@@ -3,7 +3,8 @@ import unittest
 import torch
 
 from model import Itinerant, direction_free_channel_penalties
-from run_carom_e2_e3 import corpus_to_device
+from run_carom_e2_e3 import corpus_to_device, evaluate
+from run_carom_e0_e1 import make_eval_corpus
 
 
 class E2E3Tests(unittest.TestCase):
@@ -50,6 +51,16 @@ class E2E3Tests(unittest.TestCase):
         second = model(C, X, return_traj=True)
         self.assertTrue(torch.equal(first[0], second[0]))
         self.assertTrue(torch.equal(first[1], second[1]))
+
+    def test_evaluation_temporarily_uses_reference_recurrence(self):
+        model = Itinerant(d=8, K=4, steps=2, mode_specific_fitness=True)
+        sentinel = object()
+        object.__setattr__(model, "_compiled_recurrent_step", sentinel)
+        corpus = make_eval_corpus(4, 19)
+        first = evaluate(model, corpus, batch_size=2)
+        second = evaluate(model, corpus, batch_size=2)
+        self.assertEqual(first, second)
+        self.assertIs(model._compiled_recurrent_step, sentinel)
 
 
 if __name__ == "__main__":

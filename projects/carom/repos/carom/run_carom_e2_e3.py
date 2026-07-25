@@ -34,26 +34,49 @@ E3_WEIGHTS = {
 }
 
 
+def make_activity_noise(model, batch_size, device):
+    """Draw recurrence noise in the original eager call order.
+
+    The explicit tensor keeps random-number generation outside a compiled
+    graph while preserving the supplied model's draw sequence: one entry
+    perturbation followed by one [batch, mode] draw per controller step.
+    """
+    initial = torch.randn(batch_size, model.M, device=device)
+    steps = torch.stack([
+        torch.randn(batch_size, model.M, device=device)
+        for _ in range(model.S)
+    ], dim=1)
+    return initial, steps
+
+
 def evaluate(model, corpus, batch_size):
     model.eval()
+    # Keep scientific evaluation on the exact eager reference path. Compiling
+    # both grad-enabled training and no-grad evaluation needlessly specializes
+    # the transition graph and can exhaust Dynamo's per-code recompile cache.
+    compiled_step = model._compiled_recurrent_step
+    object.__setattr__(model, "_compiled_recurrent_step", None)
     C, _, X, Y, D = corpus
     rows, correct, exact, count = [], 0, 0, 0
-    with torch.no_grad():
-        for start in range(0, len(C), batch_size):
-            sl = slice(start, start + batch_size)
-            logits, diag = model(C[sl], X[sl], return_diagnostics=True)
-            pred = logits.argmax(-1)
-            slot = pred.eq(Y[sl])
-            correct += int(slot.sum())
-            exact += int(slot.all(-1).sum())
-            count += slot.numel()
-            mech = activity_metrics(diag["activity"],
-                                    diag["workspace_update_norm"])
-            for j, row in enumerate(mech):
-                row.update(example_id=start + j, depth=int(D[sl][j]),
-                           slot_accuracy=float(slot[j].float().mean()),
-                           exact_workspace=bool(slot[j].all()))
-                rows.append(row)
+    try:
+        with torch.no_grad():
+            for start in range(0, len(C), batch_size):
+                sl = slice(start, start + batch_size)
+                logits, diag = model(C[sl], X[sl], return_diagnostics=True)
+                pred = logits.argmax(-1)
+                slot = pred.eq(Y[sl])
+                correct += int(slot.sum())
+                exact += int(slot.all(-1).sum())
+                count += slot.numel()
+                mech = activity_metrics(diag["activity"],
+                                        diag["workspace_update_norm"])
+                for j, row in enumerate(mech):
+                    row.update(example_id=start + j, depth=int(D[sl][j]),
+                               slot_accuracy=float(slot[j].float().mean()),
+                               exact_workspace=bool(slot[j].all()))
+                    rows.append(row)
+    finally:
+        object.__setattr__(model, "_compiled_recurrent_step", compiled_step)
     return {"slot_accuracy": correct / count,
             "exact_workspace_accuracy": exact / len(C), "rows": rows}
 
@@ -68,6 +91,12 @@ def train(arm, features, regularized, seed, args, corpus, device):
         fixed_chain=False, mode_specific_fitness=True,
         fitness_features=features,
     ).to(device)
+    if args.compile_model:
+        model.enable_compiled_recurrence(
+            backend=args.compile_backend,
+            mode=args.compile_mode,
+            fullgraph=args.compile_fullgraph,
+        )
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr,
                                   weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
@@ -77,7 +106,14 @@ def train(arm, features, regularized, seed, args, corpus, device):
         C, _, X, Y, _ = make_batch(args.batch_size, train_rng)
         C, X, Y = C.to(device), X.to(device), Y.to(device)
         model.train()
-        logits, activity = model(C, X, return_traj=True)
+        initial_noise, activity_noise = make_activity_noise(
+            model, args.batch_size, device
+        )
+        logits, activity = model(
+            C, X, return_traj=True,
+            initial_activity_noise=initial_noise,
+            activity_noise=activity_noise,
+        )
         loss = F.cross_entropy(logits.flatten(0, 1), Y.flatten())
         if regularized:
             penalties = direction_free_channel_penalties(activity)
@@ -100,6 +136,10 @@ def train(arm, features, regularized, seed, args, corpus, device):
     return {
         "arm": arm, "seed": seed, "features": list(features),
         "regularized": regularized, "metrics": first,
+        "compiled": args.compile_model,
+        "compile_backend": args.compile_backend if args.compile_model else None,
+        "compile_mode": args.compile_mode if args.compile_model else None,
+        "compile_fullgraph": args.compile_fullgraph if args.compile_model else None,
         "deterministic_repeat_match": first == second,
         "result_sha256": digest, "elapsed_s": time.time() - t0,
     }
@@ -119,6 +159,11 @@ def main():
     p.add_argument("--K", type=int, default=16)
     p.add_argument("--controller-steps", type=int, default=70)
     p.add_argument("--noise", type=float, default=.02)
+    p.add_argument("--compile-model", action="store_true")
+    p.add_argument("--compile-backend", default="inductor")
+    p.add_argument("--compile-mode", default="reduce-overhead")
+    p.add_argument("--compile-fullgraph", action=argparse.BooleanOptionalAction,
+                   default=True)
     p.add_argument("--device", default="auto",
                    choices=("auto", "cpu", "cuda"))
     args = p.parse_args()

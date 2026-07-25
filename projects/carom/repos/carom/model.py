@@ -139,6 +139,7 @@ class Itinerant(Base):
             rho0.fill_diagonal_(1.0)
         self.rho_raw = nn.Parameter(torch.log(torch.expm1(rho0)))  # inv-softplus
         self.rho_raw.requires_grad = not fixed_chain
+        self._compiled_recurrent_step = None
 
     def fitness(self, w, C, P=None):
         if P is None:
@@ -160,8 +161,39 @@ class Itinerant(Base):
             return self.base + self.sig_scale * learned
         learned = self.sigma(pooled) + self.sig_cmd(C).squeeze(-1)
         return self.base + self.sig_scale * learned - self.ord * P.float()
+
+    def enable_compiled_recurrence(self, *, backend="inductor",
+                                   mode="reduce-overhead", fullgraph=True):
+        """Compile one transition and reuse it without unrolling all S steps."""
+        compiled = torch.compile(
+            self.recurrent_step, backend=backend, mode=mode,
+            fullgraph=fullgraph, dynamic=False,
+        )
+        object.__setattr__(self, "_compiled_recurrent_step", compiled)
+        return self
+
+    def recurrent_step(self, w, feat, a, f, rho_m, beta_cmd, C, P,
+                       step_noise):
+        fit = self.fitness(w, C, P) - self.fk * f
+        comp = torch.einsum("mj,bj->bm", rho_m, a)
+        a = (
+            a + self.dt * a * (fit - comp) + self.noise * step_noise
+        ).clamp(0.05, 4.0)
+        f = f + self.dt / self.ftau * (a - f)
+        beta = torch.einsum("bm,bmk->bk", a, beta_cmd)
+        if self.normalize_activity:
+            beta = self.activity_gain * beta / (
+                self.activity_epsilon + a.sum(dim=-1, keepdim=True)
+            )
+        u = self.core(w, feat)
+        delta = self.dt * (
+            torch.einsum("bk,bknd->bnd", beta, u) - self.leak * w
+        )
+        return w + delta, a, f, delta
+
     def forward(self, C, X, P=None, return_traj=False, return_diagnostics=False,
-                activity_override=None):
+                activity_override=None, initial_activity_noise=None,
+                activity_noise=None):
         B = C.shape[0]; dev = C.device
         w, feat = self.embed(X)
         a = torch.full((B, self.M), 0.05, device=dev)
@@ -169,7 +201,11 @@ class Itinerant(Base):
         # Evaluation must be bitwise deterministic.  Training retains the
         # independent random entry perturbation used by the supplied model.
         if self.training:
-            a = a + 0.01 * torch.randn_like(a).abs()
+            entry_noise = (
+                torch.randn_like(a)
+                if initial_activity_noise is None else initial_activity_noise
+            )
+            a = a + 0.01 * entry_noise.abs()
         f = torch.zeros_like(a)
         rho_m = F.softplus(self.rho_raw)
         beta_cmd = self.rho(C)                                # [B, M, K]
@@ -177,23 +213,38 @@ class Itinerant(Base):
         update_norms = []
         if activity_override is not None and activity_override.shape[1] != self.S:
             raise ValueError("activity_override must have one row per controller step")
+        if activity_noise is not None and activity_noise.shape != (B, self.S, self.M):
+            raise ValueError(
+                "activity_noise must have shape [batch, controller step, mode]"
+            )
         for t in range(self.S):
             if activity_override is None:
-                fit = self.fitness(w, C, P) - self.fk * f
-                comp = torch.einsum("mj,bj->bm", rho_m, a)
-                noise = self.noise * torch.randn_like(a) if self.training else 0.0
-                a = (a + self.dt * a * (fit - comp) + noise).clamp(0.05, 4.0)
-                f = f + self.dt / self.ftau * (a - f)
+                if self.training:
+                    step_noise = (
+                        torch.randn_like(a)
+                        if activity_noise is None else activity_noise[:, t]
+                    )
+                else:
+                    step_noise = torch.zeros_like(a)
+                step_fn = (
+                    self.recurrent_step if self._compiled_recurrent_step is None
+                    else self._compiled_recurrent_step
+                )
+                w, a, f, delta = step_fn(
+                    w, feat, a, f, rho_m, beta_cmd, C, P, step_noise
+                )
             else:
                 a = activity_override[:, t]
-            beta = torch.einsum("bm,bmk->bk", a, beta_cmd)    # [B, K]
-            if self.normalize_activity:
-                beta = self.activity_gain * beta / (
-                    self.activity_epsilon + a.sum(dim=-1, keepdim=True)
+                beta = torch.einsum("bm,bmk->bk", a, beta_cmd)
+                if self.normalize_activity:
+                    beta = self.activity_gain * beta / (
+                        self.activity_epsilon + a.sum(dim=-1, keepdim=True)
+                    )
+                u = self.core(w, feat)
+                delta = self.dt * (
+                    torch.einsum("bk,bknd->bnd", beta, u) - self.leak * w
                 )
-            u = self.core(w, feat)
-            delta = self.dt * (torch.einsum("bk,bknd->bnd", beta, u) - self.leak * w)
-            w = w + delta
+                w = w + delta
             if return_traj or return_diagnostics:
                 traj.append(a if return_traj and not return_diagnostics
                             else a.detach().clone())
