@@ -4,6 +4,86 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] Implement and calibrate the typed CMCP retention experiment. Deliverable:
+  an append-only typed store carrying cohort identity, ordered example
+  identities, packet/provenance/innovation identity, mechanism family,
+  precision, and values hash; a two-task parameter-learning protocol comparing
+  naive, CMCP, direction-only, oracle, and no-ledger controls; disjoint
+  calibration/confirmation seeds; raw accuracy, calibration, interference,
+  and forgetting metrics. Acceptance: constructed identity/provenance tests
+  fail closed on row permutation, cohort mismatch, duplicate packet IDs, and
+  conflicting innovation payloads; exact command/config is frozen before
+  calibration; model updates are explicit and equally metered across arms;
+  thresholds are frozen before confirmation; durable run records and a local
+  commit exist. Completed 2026-07-25 with a principled calibration stop:
+  20 focused tests passed and all matched-learning invariants held. CMCP
+  tracked oracle precision (`6.8364--7.9343` versus `7.5`) but naive precision
+  inflated to `21.0` without the predicted practical harm; naive retained
+  Task A better on all three seeds and usually matched Task-B learning.
+  Confirmation seeds remain sealed. Next command: only design a new stressor
+  if it introduces independently motivated systematic evidence bias or a
+  longer nonstationary curriculum. Evidence:
+  `docs/e4_cmcp_typed_retention_disposition.md` and
+  `experiments/20260725T021200Z-e4-cmcp-typed-retention-calibration/`.
+
+- [x] Implement, calibrate, and confirm the E4/CMCP persistent-ledger
+  duplicate-burst experiment. The initial fresh-batch smoke exposed invalid
+  row alignment and is non-scientific; the corrected protocol reuses a
+  hash-identified cohort with fresh extraction noise per episode. Thirteen
+  combined CMCP tests pass. On five sealed confirmation seeds, all nine frozen
+  checks passed: episode-8 precision CMCP/oracle/naive was
+  `8.89433/9.0/26.0`; CMCP versus naive accuracy was `0.83281/0.74844`, ECE
+  `0.07797/0.12309`, and Brier `0.22596/0.32489`. Model weights were unchanged.
+  Next command: design a typed cohort/example-identity store before any
+  parameter-learning retention claim. Evidence:
+  `experiments/20260725T015720Z-e4-cmcp-persistent-calibration/`,
+  `experiments/20260725T015835Z-e4-cmcp-persistent-confirmation/`, and
+  `docs/e4_cmcp_persistent_disposition.md`.
+
+- [x] Run the bounded E4/CMCP evidence-ledger experiment on the confirmed
+  text-like substrate. Deliverable: frozen protocol; exact-duplicate,
+  deterministic-descendant, independent-repeat, partial-redundancy, and
+  rotated-frame evidence streams; naive, direction-only, CMCP
+  conditional-information, and oracle-joint accounting arms; disjoint
+  calibration/confirmation; raw metrics and disposition. Acceptance:
+  constructed estimator tests pass; duplicate idempotence, independent-evidence
+  utilization, effective precision error, task loss/accuracy/calibration, and
+  presentation-order sensitivity are reported; thresholds are frozen before
+  confirmation; existing E4 model and direct-logit sink remain unchanged.
+  Completed 2026-07-25: all seven frozen confirmation checks passed. CMCP
+  made duplicate and deterministic-descendant precision exactly idempotent,
+  retained `0.997862` of independent evidence, aligned the known rotated
+  frame to `1.24e-10`, and had zero order RMS. Partial redundancy remained
+  imperfect (`0.657531` weight versus oracle `0.5`), while naive duplicate
+  counting slightly improved immediate loss. Next command: preregister a
+  persistent-ledger duplicate-burst experiment measuring calibration,
+  precision growth, retention, and curriculum reversal. Evidence:
+  `experiments/20260725T001900Z-e4-cmcp-ledger-confirmation/` and
+  `docs/e4_cmcp_ledger_disposition.md`.
+
+- [x] Run the E4 external-validity bridge on a compositional text-like
+  surface. Deliverable: token-sequence grammar with lexical aliases,
+  distractors, local word-order variation and embedding noise; an input-only
+  symbolic extractor; a 75-update six-block student; controlled extraction
+  noise; disjoint calibration/confirmation; comparison with the clean
+  substrate; tests, raw metrics, disposition, and local commit. Acceptance:
+  focused and full tests pass; at least three calibration seeds run;
+  thresholds are frozen before at least three disjoint confirmation seeds;
+  the frozen primary reports extraction accuracy, CS accuracy, and
+  `G=(SC-FF)/(TC-FF)`; the new noise floor and deployment verdict are
+  recorded. Next command: inspect the existing grammar, extractor,
+  constraints, information sink, student, and tests, then write the
+  plain-language protocol. Evidence path:
+  `experiments/20260724T234609Z-e4-textlike-calibration-channel-matched/`
+  and `experiments/20260724T234938Z-e4-textlike-confirmation/`.
+  Completed 2026-07-24: the frozen natural-surface subset primary confirmed
+  mean CS `G=0.30387`, with 5/5 seeds above `0.20`; extraction fidelity was
+  `96.09%`, and CS accuracy rose from `81.56%` to `82.50%`. Material mean G
+  persisted through 20% added errors (`77.38%` extraction) and failed at 30%
+  (`68.32%`). All provenance, cardinality, and non-ceiling checks passed;
+  full suite `212 passed`. Evidence:
+  `docs/e4_textlike_external_validity_disposition.md`.
+
 - [x] Build and confirm a deployment-time symbolic constraint extractor that
   reads the raw synthetic-grammar input without factor-label access.
   Deliverable: input-block decoding, controlled extraction accuracy

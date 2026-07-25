@@ -3,7 +3,7 @@
 - Slug: `causal-fibres-ladder`
 - Status: `active`
 - Created: `2026-07-23`
-- Last reviewed: `2026-07-24`
+- Last reviewed: `2026-07-25`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -149,6 +149,38 @@ the logit/hidden ratio is `2.16--2.18`, the both-vs-logit difference is
 below `1.5e-5`, and the best G is `4.34430 ± 0.28271`. The frozen negative
 E4 gate is unchanged; this is diagnostic, not deployability evidence.
 
+The first CMCP bridge is now confirmed on the text-like E4 substrate. A
+provenance-first conditional-information ledger gives exact idempotence for
+duplicates and deterministic descendants, while retaining `0.997862` of an
+independent second observation that a direction-only novelty rule discards.
+Known-frame rotation alignment and presentation-order invariance pass to
+numerical precision. This is an evidence-accounting result, not yet a
+performance result: naive duplicate injection slightly improves immediate
+loss, partial-redundancy weights are biased upward, and persistent
+overconfidence/forgetting remained untested in that single-shot run.
+
+The corrected eight-episode persistent follow-up now establishes a practical
+same-cohort benefit. Across five sealed confirmation seeds, CMCP tracks oracle
+precision (`8.89433` versus `9.0`) while naive accumulation inflates to
+`26.0`; it improves mean accuracy (`0.83281` versus `0.74844`), ECE
+(`0.07797` versus `0.12309`), and Brier (`0.22596` versus `0.32489`). An
+initial fresh-batch smoke was rejected because row-aligned packets were applied
+to unrelated examples. The valid result uses one identified cohort with fresh
+extraction noise per episode. Because weights stay frozen, this is evidence
+for precision/calibration accounting, not continual-learning retention or
+forgetting prevention.
+
+The first parameter-learning follow-up is operational but negative for a CMCP
+advantage. A typed store now fails closed on cohort/example row mismatch,
+duplicate packet identities, and conflicting innovation payloads. In a
+three-seed one-factor curriculum reversal, all five arms began from one model
+hash and received identical Task-B batches and 48 updates. CMCP tracked oracle
+effective precision (`6.8364--7.9343` versus `7.5`) and retained much more
+Task-A behavior than no-ledger replay, but naive precision inflation to `21.0`
+was not harmful: naive retained Task A better on every seed and usually matched
+Task-B learning. Confirmation seeds therefore remain sealed. Evidence:
+`docs/e4_cmcp_typed_retention_disposition.md`.
+
 A follow-up has now resolved the label-equivalence question for the direct-
 logit sink. Twenty-eight partial-factor, parity, implication, and noisy source
 conditions were compiled to allowed-class masks and audited to leave at least
@@ -172,6 +204,17 @@ clean-extractor recovery and remained material at 80% accuracy; all sources
 became harmful at 70%. This is deployment-honest for the explicit synthetic
 surface encoding, not yet a natural-language extractor result.
 
+The E4 external-validity bridge now replaces those clean blocks with a
+12-token compositional surface containing lexical aliases, neutral
+distractors, local word-order variation, embedding noise, and irrecoverably
+masked aliases. On five disjoint confirmation seeds the frozen natural-surface
+subset primary passes all gates: extraction fidelity `96.09%`, mean CS
+`G=0.30387`, 5/5 individual G values above `0.20`, and FF/SC accuracy
+`81.56%/82.50%`. Mean recovery remains material at 20% added extraction error
+(`77.38%` realized fidelity) and falls below the gate at 30% (`68.32%`).
+Stage-4 inversion therefore survives this controlled text-like bridge, with a
+much smaller margin than the one-hot result; free-form language remains open.
+
 E5 W1/W2 numerical kernels are eligible and pass on pinned MORK's standalone
 `linalg` crate: six-layer f32 forward meets the `1e-5` relative-logit bar with
 exact argmax, and five-step relaxation matches within `1e-6`. Actual in-store
@@ -192,6 +235,16 @@ Python, Torch, CPU, and OS versions are captured in each run. No remote
 resource is authorized.
 
 ## Key results
+
+- [E4/CMCP persistent-ledger confirmation](docs/e4_cmcp_persistent_disposition.md):
+  the corrected stable-cohort eight-episode protocol passed all nine frozen
+  gates on five disjoint seeds. CMCP closely matches oracle precision and
+  improves loss, accuracy, ECE, and Brier relative to naive accumulation.
+
+- [E4 text-like external-validity bridge](docs/e4_textlike_external_validity_disposition.md):
+  aliases, distractors, shuffled windows, embedding noise, and masked tokens
+  retain a frozen mean `G=0.30387` with 5/5 robust seed passes. The observed
+  extraction-fidelity floor lies between `77.38%` and `68.32%`.
 
 - [E4 input-derived symbolic extractor](docs/e4_symbolic_extractor_disposition.md):
   a raw-input-only analyzer plus non-label-equivalent subset/parity/implication
