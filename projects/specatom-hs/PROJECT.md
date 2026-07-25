@@ -3,7 +3,7 @@
 - Slug: `specatom-hs`
 - Status: `active`
 - Created: `2026-06-29`
-- Last reviewed: `2026-07-23` (diagnostics facts-container admission)
+- Last reviewed: `2026-07-25` (interior invisible-format-padding refusal)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -51,6 +51,155 @@ Observable criteria:
 - Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
 
 ## Current state
+
+As of the 2026-07-25 15:30 PDT worker, object-scoped validation subtargets
+cannot contain invisible Unicode control characters. A bell-character-bearing
+subtarget fails crisp validation; PeTTa export suppresses the obligation and
+linked check; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 13:30 PDT worker, object-scoped validation subtargets
+cannot evade canonical identity checks with invisible Unicode format
+characters in the interior of the suffix. A `fact:<ZERO WIDTH SPACE>0`
+subtarget fails crisp validation; PeTTa export suppresses the obligation and
+linked check; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 11:30 PDT worker, object-scoped validation subtargets
+cannot evade canonical identity checks with trailing invisible Unicode format
+padding. A zero-width-space-suffixed subtarget fails crisp validation; PeTTa
+export suppresses the obligation and linked check; diagnostics exclude their
+evidence while admitting a canonical neighbor.
+
+As of the 2026-07-25 09:30 PDT worker, zero-width-space padding immediately
+before an object-scoped validation target's colon separator has exact
+end-to-end regression coverage. Crisp validation fails the changed identity;
+PeTTa export suppresses the obligation and linked check; diagnostics exclude
+their evidence while admitting a canonical neighbor.
+
+As of the 2026-07-25 07:30 PDT worker, object-scoped validation subtargets
+cannot evade canonical identity checks with invisible Unicode format padding
+immediately after the colon separator. A zero-width-space-padded subtarget
+fails crisp validation; PeTTa export suppresses the obligation and linked
+checks; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 05:30 PDT worker, object-scoped validation subtargets
+cannot evade canonical identity checks with Unicode whitespace immediately
+after the colon separator. Crisp validation rejects an em-space-padded
+subtarget; PeTTa export suppresses the obligation and linked checks; diagnostics
+exclude their evidence while admitting a canonical neighbor.
+
+As of the 2026-07-25 03:30 PDT worker, object-scoped validation targets
+cannot evade canonical separator checks with Unicode whitespace such as a
+non-breaking space between the owning object ID and colon. Crisp validation
+rejects the changed identity; PeTTa export suppresses the obligation and
+linked checks; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 01:30 PDT worker, object-scoped validation targets
+cannot evade canonical subtarget checks by inserting whitespace between the
+owning object ID and its colon separator. Crisp validation rejects the changed
+identity; PeTTa export suppresses the obligation and linked checks; diagnostics
+exclude their evidence while admitting a canonical neighbor.
+
+As of the 2026-07-24 23:30 PDT worker, object-scoped validation targets
+cannot evade canonical subtarget checks by adding whitespace before the owning
+object ID. Crisp validation rejects the changed identity; PeTTa export
+suppresses the obligation and its linked checks; diagnostics exclude it.
+
+As of the 2026-07-24 21:30 PDT worker, object-scoped validation subtargets
+must be canonical identities without leading or trailing whitespace. Crisp
+validation rejects padded suffixes, while PeTTa export suppresses their
+obligations and linked checks and diagnostics exclude their evidence.
+
+As of the 2026-07-24 19:30 PDT worker, validation targets consisting of a
+declared semantic-object ID, a colon, and only whitespace fail closed. Crisp
+validation rejects them, while PeTTa export suppresses their obligations and
+linked checks and diagnostics exclude them from summaries and reports.
+
+As of the 2026-07-24 17:30 PDT worker, PeTTa export and diagnostics fail
+closed on validation targets consisting only of a declared semantic-object ID
+and a trailing colon. Such obligations and their linked checks are suppressed
+with an exact backend refusal instead of emitting validation claims that crisp
+validation has already rejected.
+
+As of the 2026-07-24 15:30 PDT worker, crisp validation rejects an
+object-scoped validation target whose colon separator is followed by no
+subtarget. A target such as `object:child:` now fails declaration validation,
+while `object:child:fact:0` remains accepted.
+
+As of the 2026-07-24 13:30 PDT worker, crisp validation recognizes
+object-scoped validation targets owned by colon-bearing semantic object IDs.
+Targets such as `object:child:fact:0` no longer falsely fail declaration
+validation because of first-colon splitting.
+
+As of the 2026-07-24 11:30 PDT worker, validation-obligation target ownership
+uses the longest exact/object-scoped match among declared semantic object IDs.
+Colon-bearing child IDs can no longer be mistaken for an emitted parent, so
+obligations and diagnostics fail closed when the actual child target is
+refused.
+
+As of the 2026-07-24 09:30 PDT worker, PeTTa export suppresses a validation
+obligation and its linked checks when its exact or object-scoped target belongs
+to a semantic object refused by the target profile. Diagnostics use the same
+admission rule, preventing validation summaries from describing non-emitted
+semantic targets.
+
+As of the 2026-07-24 07:30 PDT worker, PeTTa export applies provenance
+admission before emitting a validation obligation or rationale. An obligation
+with malformed or non-emitted source provenance is now suppressed together
+with its linked checks, rather than leaving a provenance-free validation claim
+beside a refusal.
+
+As of the 2026-07-24 05:30 PDT worker, PeTTa export refuses an entire
+semantic object and its facts when optional source provenance is explicitly
+malformed (non-string or whitespace-only), rather than emitting an
+unprovenanced semantic claim alongside a refusal. Diagnostics already use the
+same fail-closed admission rule.
+
+As of the 2026-07-24 03:30 PDT worker, diagnostics admit semantic objects only
+when their runtime role is a declared `Role` enum member, matching PeTTa export.
+An object with the string lookalike role `"ConceptObject"` can no longer
+contribute a valid-looking `ConceptStatus` fact to concept summaries after its
+object atom and facts have been refused.
+
+As of the 2026-07-24 01:30 PDT worker, PeTTa export refuses an entire semantic
+object and its facts when the object explicitly cites a source span that the
+source manifest cannot emit. Diagnostics apply the same admission rule, so
+question counts and report text cannot be derived from refused provenance; a
+valid neighboring object remains exported and reported.
+
+As of the 2026-07-23 23:30 PDT worker, diagnostics admit checks linked to
+source-derived validation obligations only when the cited source span is
+actually emittable by the PeTTa source manifest. Scalar-safe but missing or
+otherwise refused span references no longer affect summaries, coverage totals,
+or detailed reports; backend refusal evidence remains visible.
+
+As of the 2026-07-23 21:30 PDT worker, diagnostics admit checks only when
+their linked validation obligation has an absent or backend-safe source-span
+identity. Checks linked to obligations refused for structured or blank
+provenance no longer affect summaries, coverage totals, or detailed reports,
+while refusal evidence remains visible.
+
+As of the 2026-07-23 19:30 PDT worker, diagnostics summaries and Markdown
+reports admit checks only when their validation obligation is itself
+backend-admissible and the check property and target match that obligation.
+Orphan checks, checks linked to refused obligations, and property/target
+mismatches retain PeTTa refusal evidence but no longer affect summary counts,
+coverage totals, or detailed check output.
+
+As of the 2026-07-23 17:30 PDT worker, diagnostics summaries and Markdown
+reports admit only checks whose obligation, property, target, status, and
+evidence scalar fields satisfy the PeTTa backend's basic safety gates.
+Malformed scalar fields retain backend refusal evidence but no longer affect
+Pass/Fail/Unknown counts, property breakdowns, coverage totals, or detailed
+check output.
+
+As of the 2026-07-23 15:30 PDT worker, diagnostics validation summaries and
+Markdown reports admit only checks with backend-safe, unique identities.
+Blank, structured, and duplicate check IDs retain PeTTa refusal evidence but
+no longer inflate Pass/Fail/Unknown counts or leak failure evidence.
 
 As of the 2026-07-23 13:30 PDT worker, diagnostics semantic summaries and
 question reports admit only objects with list-backed facts containers.

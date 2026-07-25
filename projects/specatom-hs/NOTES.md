@@ -1,5 +1,187 @@
 # Working Notes
 
+## 2026-07-25 07:30 PDT - Invisible format padding after target separator
+
+Python's `str.strip()` treats ordinary and many Unicode spaces as padding but
+does not remove zero-width space (`U+200B`, Unicode category `Cf`). This left
+an invisible identity variant immediately after an object-subtarget separator.
+The crisp target-declaration check now rejects leading format characters in
+the subtarget, and the shared PeTTa/diagnostics admission gate classifies the
+same target as padded. A paired malformed/canonical regression confirms the
+malformed obligation and linked evidence do not emit or affect diagnostics.
+
+Verification: exact 2-test regression passed; validation/backend slice passed
+166 tests in 2.210s; full stdlib discovery passed 435 tests in 436.308s;
+`git diff --check` passed. Local implementation commit `88bfee9`; unpushed.
+No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.
+
+## 2026-07-25 05:30 PDT - Unicode padding after target separator
+
+Confirmed empirically that the shared object-subtarget admission gate treats
+an em space immediately after `:` as ambiguous outer subtarget whitespace.
+Added crisp-validation and combined PeTTa-export/diagnostics regressions. The
+malformed obligation and linked failure evidence are suppressed, while a
+canonical neighboring target remains exported and counted.
+
+## 2026-07-25 01:30 PDT - Pre-separator object-target padding fails closed
+
+- Extended the shared PeTTa object-subtarget padding gate to detect whitespace
+  inserted between a declared object ID and the colon separator.
+- `object:child :fact:0` already failed crisp declaration validation; it now
+  also suppresses the validation obligation and linked check during PeTTa
+  export and diagnostics admission.
+- Exact malformed/canonical neighboring ground truth confirms refused evidence
+  does not leak while the canonical target remains emitted and counted.
+
+Verification: exact 2-test regression passed; validation/backend/diagnostics
+slice passed 186 tests in 120.660s; full stdlib discovery passed 429 tests in
+445.495s; `git diff --check` passed. Local implementation commit `0c27586`;
+unpushed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+
+## 2026-07-24 23:30 PDT - Leading-padded object target refusal
+
+`has_padded_object_subtarget` now resolves an object owner after trimming the
+whole candidate target, then treats any change from that trim as ambiguous
+padding. This closes the case where ` object:child:fact:0` previously avoided
+object-scoped admission checks because it did not literally start with the
+declared object ID. Crisp validation already rejected the altered identity;
+export and diagnostics now share that fail-closed result.
+Implemented in local Plain2Metta commit `9a4a7b7`.
+
+## 2026-07-24 21:30 PDT - Canonical object subtarget identities
+
+- Tightened object-scoped validation target admission so a non-empty suffix
+  must also equal its stripped form.
+- Crisp validation, PeTTa export, and diagnostics now agree that
+  `object:child: fact:0 ` is ambiguous and must fail closed, while the
+  canonical `object:child:fact:0` remains supported.
+- Exact regressions assert declaration failure, backend refusal/suppression,
+  and exclusion of linked failure evidence from diagnostics.
+
+Verification: three focused regressions passed; the relevant
+validation/backend/diagnostics suites passed 182 tests in 115.652s; full
+stdlib discovery passed 425 tests in 443.066s; `git diff --check` passed.
+Local implementation commit `408a9a1`; unpushed. No paid compute, remote
+writes, or secrets/access/security changes.
+
+## 2026-07-24 19:30 PDT - Whitespace-only object subtargets
+
+- Tightened object-scoped validation target admission to require a
+  non-whitespace suffix after the owning object ID and colon.
+- Crisp validation, PeTTa export, and diagnostics now agree that
+  `object:child:   ` is empty, while ordinary colon-bearing subtargets remain
+  supported.
+- Exact regressions assert declaration failure, backend refusal/suppression,
+  and exclusion of linked failure evidence from diagnostics.
+
+Verification: three focused regressions passed; the relevant
+validation/backend/diagnostics suites passed 179 tests in 103.899s; full
+stdlib discovery passed 422 tests in 398.208s; `git diff --check` passed.
+Local implementation commit `413ff7c`; unpushed. No paid compute, remote
+writes, or secrets/access/security changes.
+
+## 2026-07-24 crisp target declaration for colon-bearing object IDs
+
+- Replaced first-colon target splitting in validation-layer self-checks with
+  complete declared-object prefix matching.
+- A fact target such as `object:child:fact:0` now passes
+  `obligation-target-is-declared` when `object:child` is declared, matching the
+  PeTTa exporter and diagnostics ownership behavior.
+- Exact ground truth asserts one Pass record and its evidence, preventing the
+  earlier false undeclared-target result.
+
+Verification: focused regression passed; all 64 validation-record tests passed;
+full stdlib unittest discovery passed 416 tests in 397.943 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `452dc5a`; unpushed.
+
+## 2026-07-24 11:30 PDT - Most-specific validation target ownership
+
+- Replaced first-colon target parsing with longest declared exact/object-scoped
+  object-ID matching.
+- A target such as `object:child:fact:0` is now owned by declared
+  `object:child`, not declared `object`; a refused child therefore suppresses
+  its obligation and linked diagnostics even when the parent emits.
+- Exact backend and diagnostics ground truth covers the refused-child,
+  emitted-parent adversary.
+
+Verification: two focused tests passed in 0.573s; backend/diagnostics suites
+passed 109 tests in 103.504s; full stdlib discovery passed 415 tests in
+467.788s; `git diff --check` passed. Local commit `2e0b6cd`; unpushed. No paid
+compute or remote/security action.
+
+## 2026-07-24 09:30 PDT - Validation target/object admission alignment
+
+- Added a fail-closed PeTTa gate for validation obligations whose exact or
+  object-scoped target belongs to a semantic object that was not emitted.
+- Linked checks no longer emit or contribute to diagnostics summaries, while a
+  valid neighboring object target and its Pass check remain visible.
+- Preserved refusal precedence: malformed obligation provenance is still
+  reported before target admission is considered.
+- Updated the auth-service end-to-end ground truth to compare the emitted
+  document summary against backend-admitted diagnostics rather than every raw
+  in-memory check.
+
+Verification: three focused regressions passed; full stdlib unittest discovery
+passed 413 tests in 354.107 seconds; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `417ac22`; unpushed.
+
+## 2026-07-24 07:30 PDT - Validation-obligation provenance admission
+
+Inspection found that diagnostics already excluded checks whose obligation
+provenance was malformed or non-emittable, but the PeTTa backend still emitted
+the obligation and rationale before recording the provenance refusal. Moved
+the provenance gates ahead of obligation emission and admission into
+`emitted_obligations`. Ground-truth tests now assert that malformed/missing
+provenance emits neither validation claims nor linked checks, while refusal
+records remain visible. Full stdlib discovery passed 411 tests in 331.462s.
+
+## 2026-07-24 01:30 PDT - Explicit object provenance fails closed
+
+The PeTTa reified backend now checks a non-empty, scalar-safe object
+`source_span_id` against the emitted source manifest before emitting the
+semantic object or any of its facts. Diagnostics use the same manifest
+admission rule for semantic counts and question rendering. Exact ground truth
+shows that a question tied to a refused span neither emits nor leaks report
+text, while a valid neighboring question still exports and reports.
+
+Verification: focused diagnostics/backend suites passed 104 tests; full stdlib
+discovery passed 410 tests in 335.528 seconds; `git diff --check` passed. No
+paid compute or remote/security mutation was used. Local implementation commit
+`2928bb8`; unpushed.
+
+## 2026-07-23 17:30 PDT - Diagnostics reject backend-unsafe check scalars
+
+`_admitted_checks` now requires non-blank string obligation/property/target
+identities, a declared `CheckStatus`, and non-blank string evidence in addition
+to a safe unique check ID. This closes a reporting mismatch where checks
+refused by PeTTa could still inflate diagnostics or expose their evidence.
+
+Evidence: local commit `2e60b16`; `PYTHONPATH=src python3 -m unittest
+tests.test_diagnostics -v` passed 16 tests; full unittest discovery passed 406
+tests in 345.370 seconds; `git diff --check` passed.
+
+## 2026-07-23 diagnostics check-identity admission
+
+- Diagnostics now derive validation counts, per-property summaries, and
+  FAIL/UNKNOWN report lines only from concrete `CheckRecord` entries with
+  non-blank string IDs that occur exactly once.
+- Blank, structured, and duplicate check identities can no longer inflate
+  validation summaries or leak their evidence after the PeTTa backend has
+  refused them.
+- Exact malformed/valid neighboring ground truth preserves all refusal reasons
+  and confirms the valid check is still counted.
+
+Verification: focused diagnostics passed 15 tests in 75.865 seconds; full
+stdlib unittest discovery passed 405 tests in 343.895 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `5a9f028`; unpushed.
+
 ## 2026-07-23 13:30 PDT - diagnostics facts-container admission
 
 Diagnostics semantic counting and question rendering now require the same
@@ -3989,3 +4171,183 @@ full stdlib unittest discovery passed 404 tests in 538.467 seconds;
 `git diff --check` passed. No paid compute, remote writes,
 push/merge/force-push/delete, or secrets/access/security changes. Local
 implementation commit `84d66a7`; unpushed.
+
+## 2026-07-23 diagnostics check-obligation admission
+
+- Diagnostics now count and render checks only when the linked validation
+  obligation passes the PeTTa backend's record, unique-identity, property,
+  target, and rationale gates.
+- Checks linked to missing/refused obligations and checks whose property or
+  target disagrees with the admitted obligation cannot inflate summaries,
+  coverage totals, or leak failure evidence into Markdown.
+- Exact malformed/valid neighboring ground truth confirms all four backend
+  refusal reasons remain visible while a valid linked Pass is still reported.
+
+Verification: focused diagnostics suite passed 17 tests in 67.564 seconds;
+full stdlib unittest discovery passed 407 tests in 340.673 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `eb82952`; unpushed.
+
+## 2026-07-23 diagnostics obligation-provenance admission
+
+- Diagnostics now admit a linked validation obligation only when its optional
+  source-span identity passes the PeTTa backend's scalar safety gate.
+- A check linked to an obligation with structured or whitespace-only
+  provenance cannot inflate validation or coverage summaries or leak failure
+  evidence into Markdown.
+- Exact malformed/valid neighboring ground truth confirms the backend refusal
+  remains visible while a valid linked Pass is still reported.
+
+Verification: focused diagnostics suite passed 18 tests in 71.155 seconds;
+full stdlib unittest discovery passed 408 tests in 338.934 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `c098b80`; unpushed.
+
+## 2026-07-23 diagnostics emitted-provenance admission
+
+- Added a shared PeTTa manifest admission query for source-span identities.
+- Diagnostics now exclude checks linked to obligations whose non-empty
+  source-span reference is not actually emitted by the source manifest.
+- Exact ground truth preserves the backend
+  `validation-obligation-source-span-not-emitted` refusal, suppresses unsafe
+  failure evidence, and admits a valid neighboring Pass.
+
+Verification: exact regression passed; full stdlib unittest discovery passed
+409 tests in 335.514 seconds; `git diff --check` passed. No paid compute,
+remote writes, push/merge/force-push/delete, or secrets/access/security
+changes. Local implementation commit `c24012d`; unpushed.
+
+## 2026-07-24 diagnostics runtime-role admission
+
+- Diagnostics now admit semantic objects only when `role` is a declared
+  `Role` enum member, matching the PeTTa reified object's admission gate.
+- A string lookalike `"ConceptObject"` can no longer contribute a
+  valid-looking `ConceptStatus` fact after its object atom and facts are
+  refused.
+- Exact atom and summary ground truth extends the existing malformed-role
+  regression while preserving the valid neighboring question.
+
+Verification: focused regression passed; all 20 diagnostics tests passed in
+68.088 seconds; full stdlib unittest discovery passed 410 tests in 319.673
+seconds; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `def18d0`; unpushed.
+
+## 2026-07-24 fail-closed malformed object provenance
+
+- PeTTa reified export now rejects a whole semantic object before emitting its
+  object atom or facts when its optional source-span identity is explicitly
+  non-string or whitespace-only.
+- This prevents semantic claims from surviving as apparently unprovenanced
+  output beside a provenance refusal and matches diagnostics admission.
+- Exact ground truth covers structured and blank provenance while confirming a
+  valid neighboring object remains emitted and reported.
+
+Verification: three focused profile/diagnostics tests passed; full stdlib
+unittest discovery passed 411 tests in 338.446 seconds; `git diff --check`
+passed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `ef8de39`;
+unpushed.
+
+## 2026-07-24 non-empty object validation subtargets
+
+- Crisp target declaration no longer treats a bare trailing colon as an
+  object-scoped subtarget.
+- `object:child:` now produces a deterministic Fail with
+  `undeclared target=object:child:`, while the existing
+  `object:child:fact:0` positive case remains Pass.
+
+Verification: exact positive/negative regressions passed; a baseline discovery
+started before the edit passed all prior 416 tests in 380.585 seconds;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes. Local
+implementation commit `96df4e9`; unpushed.
+# 2026-07-24 17:30 PDT - Empty object subtargets fail closed in export
+
+- Added an explicit PeTTa refusal for a validation target that is exactly a
+  declared object identity plus a trailing colon.
+- Diagnostics use the same admission gate, so checks linked to the refused
+  obligation cannot inflate summaries or leak evidence into reports.
+- Exact ground truth preserves emission of the valid neighboring semantic
+  object while suppressing the malformed obligation and linked check.
+
+Verification: three focused regressions passed; backend/diagnostics suites
+passed 110 tests in 85.473s; full stdlib discovery passed 419 tests in
+387.104s; `git diff --check` passed. Local implementation commit `8c5b8ff`;
+unpushed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.
+
+## 2026-07-25 03:30 PDT - Unicode-padded object separators fail closed
+
+- Generalized the PeTTa padded-subtarget gate from four ASCII whitespace
+  characters to Python's Unicode whitespace classification.
+- A non-breaking space between a declared object ID and the subtarget colon
+  can no longer evade export admission after crisp validation rejects it.
+- Exact atom/refusal and diagnostics ground truth suppresses the malformed
+  obligation and linked evidence while retaining a canonical neighbor.
+
+Verification: three focused regressions passed; validation/backend suites
+passed 162 tests in 2.304s; full stdlib discovery passed 431 tests in
+459.985s; `git diff --check` passed. Local implementation commit `691a313`;
+unpushed. No paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.
+
+## 2026-07-25 09:30 PDT - Pre-separator invisible-format regression
+
+- Added exact crisp-validation and PeTTa-export/diagnostics ground truth for a
+  zero-width space immediately before an object-subtarget colon separator.
+- The existing generalized Unicode-format gate refuses the malformed
+  obligation and its linked check, while the canonical neighboring target
+  remains emitted and counted.
+- This directly covers the mirror case of the prior post-separator
+  zero-width-space regression without changing compiler semantics.
+
+Verification: exact 2-test regression passed; full stdlib discovery passed
+437 tests in 473.121s; `git diff --check` passed. Local implementation commit
+`154952a`; unpushed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+
+## 2026-07-25 11:30 PDT - Trailing invisible-format padding fails closed
+
+- Crisp target declaration now rejects a zero-width format character at the
+  end of an otherwise valid object-scoped subtarget.
+- The PeTTa padded-subtarget gate suppresses the malformed obligation and its
+  linked check, and diagnostics exclude its evidence.
+- Exact ground truth confirms a canonical neighboring target remains emitted
+  and counted.
+
+Verification: exact 2-test regression passed; full stdlib discovery passed
+439 tests in 439.928s; `git diff --check` passed. No paid compute, remote
+writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `7c20c9f`; unpushed.
+
+## 2026-07-25 13:30 PDT - Interior invisible-format padding fails closed
+
+- Crisp target declaration now rejects Unicode format characters anywhere in
+  an object-scoped subtarget, not only at its first or last character.
+- The PeTTa admission gate applies the same rule, suppressing the malformed
+  obligation and linked check before diagnostics can consume their evidence.
+- Exact ground truth covers `object:child:fact:<ZERO WIDTH SPACE>0` and
+  confirms a canonical neighboring target remains emitted and counted.
+
+Verification: exact 2-test regression passed; validation/backend suites passed
+172 tests in 2.372s; full stdlib discovery passed 441 tests in 451.797s;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `f4b1fcf`; unpushed.
+
+## 2026-07-25 15:30 PDT - Interior control characters fail closed
+
+- Crisp target declaration now rejects Unicode control characters anywhere in
+  an object-scoped subtarget, matching the existing invisible-format rule.
+- The PeTTa admission gate suppresses the malformed obligation and linked
+  check before diagnostics can consume their evidence.
+- Exact ground truth covers `object:child:fact:<BELL>0` and confirms a
+  canonical neighboring target remains emitted and counted.
+
+Verification: exact 2-test regression passed; full stdlib discovery passed
+443 tests in 501.447s; `git diff --check` passed. No paid compute, remote
+writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `24c8f10`; unpushed.

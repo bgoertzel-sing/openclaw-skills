@@ -1,5 +1,230 @@
 # Tasks
 
+- [x] 2026-07-25 15:30 PDT: Closed invisible Unicode control-character
+  evasion for object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<BELL>0` fails crisp declaration validation, is refused by
+  the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `24c8f10`,
+  `src/specatom_hs/backends/petta.py`,
+  `src/specatom_hs/validators.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression, all
+  443 tests in 501.447s, and `git diff --check` passed.
+
+- [x] 2026-07-25 13:30 PDT: Closed interior invisible Unicode format-character
+  evasion for object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<ZERO WIDTH SPACE>0` fails crisp declaration validation,
+  is refused by the PeTTa profile, and cannot contribute linked check evidence
+  to diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `f4b1fcf`,
+  `src/specatom_hs/backends/petta.py`,
+  `src/specatom_hs/validators.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  172 relevant validation/backend tests in 2.372s, all 441 tests in 451.797s,
+  and `git diff --check` passed.
+
+- [x] 2026-07-25 11:30 PDT: Closed trailing invisible Unicode format-padding
+  evasion for object-scoped validation subtargets. Acceptance:
+  `object:child:fact:0<ZERO WIDTH SPACE>` fails crisp declaration validation,
+  is refused by the PeTTa profile, and cannot contribute linked check evidence
+  to diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `7c20c9f`,
+  `src/specatom_hs/backends/petta.py`,
+  `src/specatom_hs/validators.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression, all
+  439 tests in 439.928s, and `git diff --check` passed.
+
+- [x] 2026-07-25 09:30 PDT: Added end-to-end regression coverage for invisible
+  Unicode format padding immediately before an object-subtarget separator.
+  Acceptance: `object:child<ZERO WIDTH SPACE>:fact:0` fails crisp declaration
+  validation, is refused by the PeTTa profile, and cannot contribute linked
+  check evidence to diagnostics; a canonical neighboring target remains
+  emitted and counted. Evidence: local repository commit `154952a`,
+  `tests/test_specatom_validation_records.py` and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression, all
+  437 tests in 473.121s, and `git diff --check` passed.
+
+- [x] 2026-07-25 07:30 PDT: Closed invisible Unicode format-padding evasion
+  immediately after an object-subtarget separator. Acceptance:
+  `object:child:<ZERO WIDTH SPACE>fact:0` fails crisp declaration validation,
+  is refused by the PeTTa profile, and cannot contribute linked check evidence
+  to diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `88bfee9`,
+  `src/specatom_hs/backends/petta.py`,
+  `src/specatom_hs/validators.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  166 relevant validation/backend tests in 2.210s, all 435 tests in 436.308s,
+  and `git diff --check` passed.
+
+- [x] 2026-07-25 05:30 PDT: Added end-to-end regression coverage for Unicode
+  whitespace immediately after an object-subtarget separator. Acceptance:
+  `object:child:<EM SPACE>fact:0` fails crisp declaration validation, is
+  refused by the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `10f9279`,
+  `tests/test_specatom_validation_records.py` and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  190 relevant validation/backend/diagnostics tests, all 433 tests in
+  437.845s, and `git diff --check` passed.
+
+- [x] 2026-07-25 03:30 PDT: Closed Unicode-whitespace pre-separator evasion
+  for object-scoped validation targets. Acceptance:
+  `object:child<NBSP>:fact:0` fails crisp declaration validation, is refused by
+  the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `691a313`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 3-test regression,
+  162 relevant tests in 2.304s, all 431 tests in 459.985s, and
+  `git diff --check` passed.
+
+- [x] 2026-07-25 01:30 PDT: Closed pre-separator whitespace evasion for
+  object-scoped validation targets. Acceptance: `object:child :fact:0` fails
+  crisp declaration validation, is refused by the PeTTa profile, and cannot
+  contribute linked check evidence to diagnostics; a canonical neighboring
+  target remains emitted and counted. Evidence:
+  local repository commit `0c27586`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  186 relevant tests, all 429 tests in 445.495s, and `git diff --check`
+  passed.
+
+- [x] 2026-07-24 23:30 PDT: Closed leading-padding evasion for object-scoped
+  validation targets. Acceptance: a target such as
+  ` object:child:fact:0` fails crisp declaration validation, is refused by the
+  PeTTa profile with the padded-subtarget reason, and cannot affect
+  diagnostics; valid unpadded neighbors remain supported. Evidence:
+  local repository commit `9a4a7b7`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`.
+
+- [x] 2026-07-24 21:30 PDT: Closed padded object-subtarget ambiguity.
+  Targets such as `object:child: fact:0 ` now fail crisp declaration
+  validation; PeTTa export suppresses the obligation and linked checks with an
+  exact padded-subtarget refusal; diagnostics cannot count or render their
+  evidence. Three focused regressions, 182 relevant
+  validation/backend/diagnostics tests, all 425 tests in 443.066s, and
+  `git diff --check` passed. Local implementation commit `408a9a1`; unpushed.
+
+- [x] 2026-07-24 19:30 PDT: Closed the whitespace-only object-subtarget gap.
+  Targets such as `object:child:   ` now fail crisp declaration validation;
+  PeTTa export suppresses the obligation and linked checks with the same exact
+  empty-subtarget refusal; diagnostics cannot count or render their evidence.
+  Three focused regressions, 179 relevant validation/backend/diagnostics tests,
+  all 422 tests in 398.208s, and `git diff --check` passed. Local
+  implementation commit `413ff7c`; unpushed.
+
+- [x] 2026-07-24 17:30 PDT: Aligned PeTTa export and diagnostics with crisp
+  rejection of empty object-scoped validation subtargets. An obligation
+  targeting `object:child:` is now suppressed with an exact refusal, its
+  linked checks cannot affect summaries or reports, and the valid semantic
+  object still emits. Three focused regressions, 110 backend/diagnostics tests,
+  all 419 tests in 387.104s, and `git diff --check` passed. Local
+  implementation commit `8c5b8ff`; unpushed.
+
+- [x] 2026-07-24 15:30 PDT: Tightened object-scoped validation-target
+  declaration so a trailing separator without a subtarget, such as
+  `object:child:`, fails closed while a real colon-bearing subtarget remains
+  accepted. Exact positive/negative regressions passed; the concurrently
+  started baseline discovery passed all prior 416 tests in 380.585s; and
+  `git diff --check` passed. Local implementation commit `96df4e9`; unpushed.
+
+- [x] 2026-07-24 13:30 PDT: Aligned crisp validation-target declaration with
+  colon-bearing semantic object IDs. Object-scoped targets such as
+  `object:child:fact:0` now resolve against the complete declared object ID
+  instead of splitting at the first colon and producing a false Fail. Exact
+  regression, all 64 validation-record tests, all 416 tests in 397.943s, and
+  `git diff --check` passed. Local implementation commit `452dc5a`; unpushed.
+
+- [x] 2026-07-24 11:30 PDT: Made validation-target ownership robust for
+  colon-bearing/nested semantic object IDs. The exporter and diagnostics now
+  resolve the longest exact or object-scoped declared ID, preventing an
+  emitted parent from masking a refused child target. Two focused regressions,
+  109 backend/diagnostics tests, all 415 tests in 467.788s, and
+  `git diff --check` passed. Local implementation commit `2e0b6cd`; unpushed.
+
+- [x] 2026-07-24 09:30 PDT: Made validation-obligation object targets fail
+  closed with semantic-object emission. An obligation targeting an exact or
+  object-scoped subtarget of a refused semantic object is now suppressed with
+  its linked checks; diagnostics exclude those checks, while valid neighboring
+  object targets remain admitted. Updated end-to-end summary ground truth to
+  compare against admitted diagnostics. Three focused regressions, all 413
+  tests in 354.107s, and `git diff --check` passed. Local implementation
+  commit `417ac22`; unpushed.
+
+- [x] 2026-07-24 07:30 PDT: Made PeTTa validation-obligation provenance fail
+  closed before semantic emission. Malformed, blank, missing, or otherwise
+  non-emitted source-span references now suppress the obligation atom,
+  rationale, and linked checks while retaining exact backend refusal evidence;
+  valid neighboring obligations/checks remain admitted. Five focused
+  profile/diagnostics regressions, all 411 tests in 331.462s, and
+  `git diff --check` passed. Local implementation commit `9ef608b`; unpushed.
+
+- [x] 2026-07-24 05:30 PDT: Made PeTTa semantic-object provenance fail closed
+  for explicit malformed values. Non-string and whitespace-only source-span
+  IDs now suppress the whole object and its facts instead of emitting
+  provenance-free semantics beside a refusal; diagnostics preserve the same
+  admission contract and valid neighbors still emit/report. Three focused
+  profile/diagnostics tests, all 411 tests in 338.446s, and
+  `git diff --check` passed. Local implementation commit `ef8de39`; unpushed.
+
+- [x] 2026-07-24 03:30 PDT: Aligned diagnostics semantic-object admission with
+  the PeTTa runtime-role gate. A string lookalike `"ConceptObject"` can no
+  longer inflate defined-concept counts through an otherwise valid
+  `ConceptStatus` fact after export refuses the object and facts. Exact
+  atom/summary ground truth, all 20 diagnostics tests, all 410 tests in
+  319.673s, and `git diff --check` passed. Local implementation commit
+  `def18d0`; unpushed.
+
+- [x] 2026-07-24 01:30 PDT: Made explicit object provenance fail closed across
+  PeTTa export and diagnostics. Objects citing missing/refused manifest spans
+  now suppress the object atom and facts rather than degrading into
+  provenance-free semantic claims; their question text is excluded from
+  diagnostics while a valid neighbor remains admitted. Focused backend and
+  diagnostics suites passed 104 tests; full discovery passed 410 tests in
+  335.528s; `git diff --check` passed. Local implementation commit `2928bb8`;
+  unpushed.
+
+- [x] 2026-07-23 23:30 PDT: Aligned diagnostics obligation provenance with
+  PeTTa source-manifest admission. A check linked to an obligation citing a
+  scalar-safe but non-emitted span is excluded from summary/report counts while
+  backend refusal evidence remains visible and a valid neighboring Pass is
+  admitted. Exact regression and all 409 tests passed; `git diff --check`
+  passed. Local implementation commit `c24012d`; unpushed.
+
+- [x] 2026-07-23 21:30 PDT: Aligned diagnostics check admission with the
+  PeTTa validation-obligation source-provenance scalar gate. Checks linked to
+  obligations with structured or blank source-span identities no longer
+  contribute summary/coverage counts or detailed failure output; exact backend
+  refusal evidence remains visible and a valid neighboring Pass is preserved.
+  Focused diagnostics passed 18 tests in 71.155s; full discovery passed 408
+  tests in 338.934s; `git diff --check` passed. Local implementation commit
+  `c098b80`; unpushed.
+
+- [x] 2026-07-23 19:30 PDT: Aligned diagnostics check admission with PeTTa
+  validation-obligation linkage gates. Orphan checks, checks linked to refused
+  obligations, and checks whose property or target disagrees with the emitted
+  obligation no longer contribute summary/coverage counts or detailed failure
+  output; exact backend refusals remain visible and a valid neighboring Pass
+  is preserved. Focused diagnostics passed 17 tests in 67.564s; full discovery
+  passed 407 tests in 340.673s; `git diff --check` passed. Local implementation
+  commit `eb82952`; unpushed.
+
+- [x] 2026-07-23 15:30 PDT: Aligned diagnostics check admission with PeTTa
+  validation-layer identity gates. Blank, structured, and duplicate check IDs
+  no longer contribute Pass/Fail/Unknown or per-property summaries and cannot
+  leak failure evidence into Markdown; exact backend refusals remain visible
+  and a valid neighboring Pass is preserved. Focused diagnostics passed 15
+  tests in 75.865s; full discovery passed 405 tests in 343.895s;
+  `git diff --check` passed. Local implementation commit `5a9f028`; unpushed.
+
 - [x] 2026-07-23 13:30 PDT: Aligned diagnostics semantic object admission with
   the PeTTa reified facts-container gate. Objects with malformed `None` facts
   containers no longer contribute semantic question counts, while exact crisp
@@ -619,6 +844,13 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [ ] TyLA/OSLF deeper type/proof alignment.
 
 ## Done recently
+
+- [x] 2026-07-23: Aligned diagnostics check scalar admission with the PeTTa
+  backend's basic gates for obligation IDs, properties, target IDs, declared
+  statuses, and non-blank evidence. Refused checks no longer affect diagnostic
+  counts/property breakdowns or leak detailed evidence; focused diagnostics
+  passed 16 tests, the full stdlib suite passed all 406 tests, and
+  `git diff --check` passed. Local commit `2e60b16`.
 
 - [x] 2026-07-22: Added crisp `item-has-valid-record-type` validation matching
   the PeTTa backend's malformed `PlainItem` refusal; malformed entries are
