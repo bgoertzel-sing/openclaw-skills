@@ -6,6 +6,14 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] **Completed 2026-07-25 10:30:** extend bounded candidate generation and
+  source provenance to a 21-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 21 source
+  rules, the audit record reports thirteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 463
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `2ed002a` pushed normally to GitHub `main`.
+
 - [x] **Completed 2026-07-25 08:30:** extend bounded candidate generation and
   source provenance to a 20-rule four-molecule chamber. Generation retains
   the stable first-eight prefix, ownership/count seams cover all 20 source

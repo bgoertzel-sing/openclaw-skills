@@ -1792,3 +1792,17 @@ untracked scratch files were left untouched.
   `git diff --check` passed. No chemistry rule or scientific claim changed.
 - Pre-existing untracked exp08/catalysis scratch work was left untouched.
 - Commit `2e78383` pushed normally to GitHub `main`.
+
+# 2026-07-25 10:30 PDT — twenty-one-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 20 to 21 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 21
+  rules. The attrition audit reports thirteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 463 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `2ed002a` pushed normally to GitHub `main`.
