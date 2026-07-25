@@ -1,5 +1,15 @@
 # Chaos Language Algorithm
 
+## 2026-07-25 16:15 PDT status
+
+The two remaining M-E automata unit invariants are acceptance-tested at clean
+active-worktree commit `40749d7`. Five frozen 10,000-symbol planted
+golden-mean streams all
+reconstruct exactly two causal states, and a prefix-fitted causal-state coder
+beats an adaptive Markov-1 coder on a disjoint 5,000-symbol even-process
+suffix. These are implementation calibrations only: E5 remains unopened and
+the hierarchical-generativity/CSSR scientific framing remains a hypothesis.
+
 ## 2026-07-25 14:15 PDT status
 
 The bounded M-E CSSR transition-equivalence category-inducer seam is

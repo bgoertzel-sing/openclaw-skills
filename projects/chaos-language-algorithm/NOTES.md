@@ -1,5 +1,24 @@
 # Notes
 
+## 2026-07-25 16:15 PDT — M-E planted automata acceptance invariants
+
+- Froze `docs/automata-acceptance-invariants-v1.md` in the active
+  `scratch/chaoslang-strict-replay` worktree at clean commit `40749d7`.
+- Five deterministic, independent 10,000-symbol golden-mean fixtures all
+  reconstructed exactly two causal states, exceeding the required 4/5 gate.
+- CSSR fitted only on a 10,000-symbol even-process prefix; on a disjoint
+  5,000-symbol suffix, a fresh causal-state KT coder used fewer adaptive data
+  bits than a fresh adaptive Markov-1 coder under the same vocabulary and
+  alpha. Model bits were excluded exactly as invariant 15 specifies.
+- Focused unittest passed 14 tests in 0.589 seconds. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 267 tests.
+  `python3 -m compileall -q src tests` and `git diff --check` passed.
+- This was a unit calibration and required no experiment ledger. No E0--E8
+  fixture, scientific suffix, or score was generated or inspected. E3 remains
+  binding and OmegaSim remains paused. Chunk CLA as a detector of hierarchical
+  generativity, with expected CSSR advantage on positive-entropy sofic
+  regimes, remains a hypothesis rather than a promoted conclusion.
+
 ## 2026-07-25 14:15 PDT — M-E CSSR transition-equivalence categories
 
 - Froze `docs/cssr-category-inducer-contract-v1.md` and added

@@ -1,5 +1,13 @@
 # Tasks
 
+- [x] 2026-07-25 16:15 PDT: freeze and acceptance-test at clean commit
+  `40749d7` the remaining M-E automata invariants. Five of five planted
+  golden-mean seeds recover exactly
+  two states, and the prefix-fitted causal-state coder strictly beats
+  adaptive Markov-1 on the disjoint longer-memory suffix. Focused unittest
+  passed 14 tests; required discovery passed 267 tests; compileall and
+  `git diff --check` passed. No E0--E8 measurement ran.
+
 - [x] 2026-07-25 14:15 PDT: freeze and implement at clean commit `f83e105`
   the bounded M-E CSSR
   transition-equivalence category-inducer seam. Complete supported-state
