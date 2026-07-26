@@ -1,6 +1,6 @@
 # RunPod proposal: CAROM GPT-2 schedule diagnostic
 
-- Status: `awaiting explicit approval; do not provision`
+- Status: `approved by Ben; pod provisioned 2026-07-26T00:21:15Z`
 - Provider/account: RunPod Secure Cloud; authenticated account reported by
   `runpodctl doctor` as `bengoertzel@gmail.com`.
 - Resource: 1× H100 SXM, RunPod template `runpod-torch-v280`
@@ -32,3 +32,22 @@
   2026-07-26. One retains a 100 GB network volume. Raw provider metadata is
   not copied here because an old resource contains a secret-valued environment
   field.
+
+## Provisioned resource
+
+- Pod ID: `425j76ha3y9a4i`
+- Region/location: `IN`
+- Observed price: USD 2.99/hour
+- GPU: H100 SXM 80 GB; 28 vCPU; 251 GB RAM
+- Disk: 50 GB container disk; zero network volume
+- Provider auto-termination: `2026-07-26T02:20:00Z`
+
+## Final disposition
+
+- Training completed: approximately `2026-07-26T01:54Z`
+- Artifact verification and deletion completed before the auto-termination
+  deadline.
+- Estimated pod lifetime: about 1.58 hours; estimated compute cost:
+  approximately USD 4.72 at USD 2.99/hour, below the USD 6 cap.
+- Retrieved evidence hashes matched; pod deletion confirmed; no task pod
+  remains in inventory.

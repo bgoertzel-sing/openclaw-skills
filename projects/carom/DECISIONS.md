@@ -21,6 +21,16 @@ active policy: v5's forecast was directionally wrong at 91.8% of peak LR and
 correct at 9.8%, but two post-hoc checkpoints cannot identify a general
 decision boundary.
 
+### Result amendment
+
+The approved H100 run passed the warm-start stability gate but failed
+promotion. A `1e-4` warmup-cosine schedule sustained step-3000 weights through
+effective update 6,000 (final L2--4 0.3529, tau 0.8398), whereas the archived
+high-LR run had collapsed to about 0.22 by that interval. The fresh low-peak
+control reached only 0.2122. Treat high LR as the strengthened leading cause,
+not proven causally, and use `1e-4` only as a stable warm-start candidate.
+Do not promote it as a fresh-training schedule.
+
 ## D-20260725-e2-pass-e3-fail-keep-e4-closed
 
 - Date: `2026-07-25`

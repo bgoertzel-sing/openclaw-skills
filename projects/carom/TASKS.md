@@ -4,14 +4,18 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
-- [ ] Run the preregistered GPT-2 low-peak schedule diagnostic after explicit
+- [x] Run the preregistered GPT-2 low-peak schedule diagnostic after explicit
   approval of its concrete RunPod proposal. Deliverable: step-3000 warm start
   (explicit optimizer/scheduler reset) plus matched-shape fresh low-peak
   control, frozen validation corpora, checkpoint-complete L2--4/L5/edge/
   itinerary traces, hash-verified retrieval, termination, and inventory
   recheck. Acceptance: operational and stability gates in the run ledger pass
   within 2 hours/USD 6. Next command: await approval, then recheck H100 price
-  and region before provisioning. Evidence:
+  and region before provisioning. Completed on H100 within approximately
+  1.58 hours/USD 4.72. Stability passed: warm final L2--4 0.3529, tau 0.8398,
+  coverage 0.6921; no collapse. Promotion failed: L2--4 below 0.45 and L5
+  0.2396 below 0.25. Fresh low-peak control was stable but underpowered at
+  0.2122 L2--4. Retrieved hashes matched and the pod was deleted. Evidence:
   `experiments/20260726T000748Z-gpt2-schedule-diagnostic/`.
 
 - [x] Repair compiled-channel v2/v3 instruments and constructed controls.
@@ -26,8 +30,9 @@ Use small, testable tasks. Keep the top of each section in priority order.
   `experiments/20260726T003000Z-compiled-channel-instrument-repair/`.
 
 - [ ] Run the GPT-2 multi-seed compiled-channel confirmation. Blocked until
-  the schedule diagnostic passes and a separate exact paid-compute proposal
-  is approved. Protocol and numerical gates are frozen in
+  a separate exact paid-compute proposal is approved. Step-2 stability passed,
+  but its low-peak schedule is licensed only for warm starts; a fresh schedule
+  needs calibration. Protocol and numerical gates are frozen in
   `docs/compiled-channel/gpt2-multiseed-protocol-2026-07-26.md`.
 
 - [ ] Independently validate the v6 controller peak-LR guard. Local historical
