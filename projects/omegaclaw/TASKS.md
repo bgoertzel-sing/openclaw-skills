@@ -4,6 +4,887 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-26: Close ThreadKeeper's operator-facing queued-dispatch path
+  boundary on commit `896a38e`. The path must be an exact non-empty built-in
+  string; non-string values and behavior-bearing string subclasses return
+  `queue_worker_error` before coercion, queue-directory access, task claim, or
+  worker effects. Nine focused checks and the 1047-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-26: Preregister a discriminating motivational score-policy
+  boundary holdout before calibration. The sealed five-case contract binds
+  the policy and prior runner identities and tests four-way/request-review
+  ties, a one-unit request advantage, and the adjacent 799/800 review-risk
+  boundary. Eight provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260726-motivation-score-policy-boundary-holdout-preregistration/`.
+  Contract SHA-256:
+  `a3d98d19a36132e130f8848fa0a8ef834f48a2ae5d2b26827520d5e9dfb30413`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently execute the
+  sealed holdout without importing its validator, and do not calibrate policy
+  parameters from the result.
+
+- [x] 2026-07-26: Close ThreadKeeper's direct-dispatch scalar boundary on
+  commit `d8254ad`. Integer limits and goal/tool-subset/persona arguments must
+  use exact built-in types; behavior-bearing subclasses return persistent
+  `dispatch_args_invalid` records before overloaded operations, persona setup,
+  or worker/provider calls. Five focused checks and the 1039-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-26: Close ThreadKeeper's bounded manual queue-drain quota
+  boundary on commit `c16efa7`. `drain_queued_dispatches(max_tasks=...)`
+  requires an exact non-negative built-in integer; malformed values and
+  behavior-bearing integer subclasses return `worker_config_invalid` before
+  queue enumeration or worker effects. Seven focused checks and the 1034-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-26: Close ThreadKeeper's supervised-worker numeric-bound
+  boundary on commit `bb9cd07`. Explicit task, idle-poll, consecutive-error,
+  poll-interval, and runtime limits must use exact built-in integer/float
+  types; behavior-bearing subclasses fail closed before overloaded operations,
+  lock acquisition, or queue effects. Two focused checks and the 1029-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-26: Close ThreadKeeper's persona-configuration boundary on
+  commit `e67e05e`. Config containers, nested task contracts, scalar strings,
+  output-token limits, and default tool lists/items must use exact built-in
+  types; behavior-bearing subclasses fail closed during setup before worker or
+  provider calls. Five focused checks and the 1015-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-26: Independently execute motivational score-policy v0.1
+  without importing the preregistration validator. The runner binds the sealed
+  preregistration and candidate-set identities, recomputes all candidate
+  scores, reproduces the three registered selections, and exercises the
+  review-risk override. Five provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260726-motivation-score-policy-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: preregister a discriminating
+  holdout set for tie-breaking and near-threshold behavior before calibration.
+
+- [x] 2026-07-26: Close ThreadKeeper's durable queued-dispatch task boundary
+  on commit `f0ed2da`. Queue record containers, scalar identity/control
+  fields, tool lists/items, numeric limits, and nested contracts must use
+  exact built-in types; behavior-bearing subclasses fail closed before queue
+  execution or worker effects. Six focused checks and the 1010-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-26: Close ThreadKeeper's task-contract boundary on commit
+  `5d964c6`. Contract mappings, objectives, list containers/items, quotas, and
+  boolean policy fields must use exact built-in types; behavior-bearing
+  subclasses fail closed before overloaded operations. Four focused checks and
+  the 1017-test provider-free hardening suite passed.
+
+- [x] 2026-07-26: Preregister motivational score-policy v0.1 separately from
+  the frozen reachability evidence. The contract binds predecessor and
+  candidate-set identities, scale-1000 integer arithmetic, three exact
+  features, candidate weights, conservative tie breaking, a review-risk
+  override, three holdouts, and candidate-only authority. Seven provider-free
+  checks pass at
+  `artifacts/ggb-capacity-gates/20260726-motivation-score-policy-preregistration/`.
+  This is not implementation or calibration evidence. Next: implement an
+  independent holdout runner without importing this validator.
+
+- [x] 2026-07-26: Close ThreadKeeper's authenticated OpenAI-compatible
+  `usage.total_tokens` boundary on commit `2886862`. The aggregate counter
+  must be an exact built-in integer; behavior-bearing subclasses fail closed
+  before overloaded comparison or arithmetic. Five focused checks and the
+  1013-test provider-free hardening suite passed.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated OpenAI-compatible
+  completion-metadata boundary on commit `dd251e8`. Completion object/model,
+  finish reason, message role, choice index, choice containers, and SDK
+  extra-field mappings must use exact built-in types. Behavior-bearing
+  subclasses fail closed before overloaded comparison, length, or truth
+  operations. Seven focused checks and the 1012-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-26: Freeze the motivational v0.3 new-candidate reachability
+  evidence contract. The gate content-addresses the sealed fixture,
+  independent consumer, and consumer tests while pinning registry/checkpoint
+  identities, cursor/trace, exact `defer_for_review` selection, absence of a
+  score policy, and candidate-only authority. Five provider-free checks pass
+  at
+  `artifacts/ggb-capacity-gates/20260726-motivation-reachability-contract-freeze/`.
+  Next: preregister score-policy evolution separately; do not alter this
+  frozen evidence boundary.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated native-provider
+  `thinking` metadata boundary on commit `9fda4c5`. Non-null thinking metadata
+  must be an exact built-in string; behavior-bearing subclasses fail closed
+  before overloaded equality. Four focused checks and the 1005-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated native-provider mapping
+  and scalar-metadata boundary on commit `11c46d6`. Response/message mappings
+  must be exact built-in dictionaries; model, creation-time, role, and
+  completion-reason values must be exact built-in strings. Behavior-bearing
+  subclasses fail closed before overloaded iteration, comparison, or
+  normalization. Six focused checks and the 1004-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-25: Independently reproduce motivational v0.3 new-candidate
+  reachability from a sealed JSON fixture without importing producer or prior
+  gate code. The strict consumer verifies registry/checkpoint digests, exact
+  cursor/trace/order, and bounded action authority; duplicate members,
+  trailing content, semantic mutation, rehashed early cursor, and rehashed
+  authority widening fail closed. Six provider-free tests pass at
+  `artifacts/ggb-capacity-gates/20260725-motivation-new-candidate-serialized-consumer/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: freeze this reachability
+  evidence contract before introducing any score-policy evolution.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated native-provider
+  duration/context metadata boundary on commit `a8d338b`. Duration values,
+  context containers, and context token IDs must use exact built-in integer/list
+  types; behavior-bearing subclasses fail closed before overloaded comparison
+  or iteration. Twenty-one focused checks and the 998-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated OpenAI-compatible
+  response-metadata boundary on commit `e638a15`. Response IDs and creation
+  timestamps must be exact built-in strings/integers; behavior-bearing
+  subclasses fail closed as `provider_response_invalid` before their
+  overloaded operations can run. Nineteen focused checks and the 982-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-25: Preregister and exercise the first motivational v0.3
+  new-candidate reachability holdout. A pinned checkpoint at cursor 3 reaches
+  exactly `defer_for_review` by ordinal replay after the three preserved
+  candidates; no score function or scoring-policy change is introduced.
+  Changed expectation, early cursor with rehash, registry substitution, and
+  authority widening fail closed. Five provider-free tests pass at
+  `artifacts/ggb-capacity-gates/20260725-motivation-new-candidate-reachability/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently reproduce
+  the result from a serialized fixture without importing producer code.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated provider-usage boundary
+  to behavior-bearing integer subclasses on commit `d2c8611`. Input/output
+  token counts must now be exact built-in integers or become a private
+  `provider_response_invalid` control result before accounting or persistence.
+  Three focused checks and the 980-test provider-free hardening suite passed.
+
+- [x] 2026-07-25: Close ThreadKeeper's authenticated provider-content
+  boundary to behavior-bearing string subclasses on commit `1d830c9`. Provider
+  content must now be an exact built-in string or it becomes a private
+  `provider_response_invalid` control result before parser, prompt, or
+  transcript operations. Two focused checks and the 978-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-25: Independently consume the motivational v0.2-to-v0.3
+  migration receipt and prove checkpoint replay equivalence. A separately
+  implemented verifier binds both registry and checkpoint digests, preserves
+  cursor/incumbent/trace, and replays the pre-existing tail identically before
+  `defer_for_review` becomes reachable. Five provider-free tests pass at
+  `artifacts/ggb-capacity-gates/20260725-motivation-migration-independent-replay/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: define a preregistered
+  holdout where the new candidate is reached, without changing scoring policy.
+
+- [x] 2026-07-25: Close ThreadKeeper's direct `run_tools()` boundary to
+  behavior-bearing list, tuple, and string subclasses on commit `497c9c8`.
+  Complete-batch validation now rejects these shapes before any earlier valid
+  tool effect. Eleven focused checks and the 982-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-25: Persist ThreadKeeper tool-response parser exceptions as
+  structured failures on commit `f8335c2`. Parser `ValueError`/`TypeError`
+  failures now return bounded `skill_protocol_error` digests and durable
+  transcripts instead of escaping `dispatch()`; exception messages remain
+  private. Seven focused checks and the 985-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-25: Separate motivational semantic evolution from the frozen
+  representation boundary. An explicit candidate-set v0.2-to-v0.3 migration
+  adds only `defer_for_review`, preserves checkpoint cursor/incumbent/trace,
+  and binds old/new registry and checkpoint digests in a candidate-only
+  receipt. Seven provider-free tests pass; downgrade, removal/renumbering,
+  candidate mutation, authority widening, and checkpoint unbinding fail
+  closed. Evidence:
+  `artifacts/ggb-capacity-gates/20260725-motivation-candidate-registry-migration/`.
+  Next: independently consume the migration receipt and prove v0.3
+  checkpoint replay equivalence before any scoring-policy change.
+
+- [x] 2026-07-25: Enforce exact built-in string values for every parsed
+  ThreadKeeper tool argument on commit `814be73`. String subclasses and
+  non-string argument values now fail as persistent `skill_protocol_error`
+  records during complete-batch preflight, before any earlier valid tool
+  effect. Six focused checks and the 983-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-25: Enforce exact built-in container types at ThreadKeeper's
+  closed parser-output boundary on commit `cbbc36f`. List/tuple/string
+  subclasses for the batch, record, tool name, or arguments now fail as a
+  persistent `skill_protocol_error` before any tool effect. Nine focused
+  checks and the 968-test provider-free hardening suite passed.
+
+- [x] 2026-07-25: Freeze the provider-free motivational representation
+  evidence contract. The gate content-addresses the two-consumer admission
+  contract, portable-boundary holdout, and both passing consumer reports while
+  pinning the maximum portable integer, new Unicode scalar, admitted
+  candidate-set digest, and candidate-only authority. Five checks pass at
+  `artifacts/ggb-capacity-gates/20260725-motivation-representation-contract-freeze/`.
+  Next: test an explicitly versioned candidate-registry migration separately
+  from this frozen representation boundary.
+
+- [x] 2026-07-25: Validate ThreadKeeper parser output before `dispatch()`
+  destructures or records tool calls on commit `a43aa39`. Malformed batch,
+  record, name, and argument-container shapes now return a persistent
+  `skill_protocol_error` transcript and structured parent digest instead of
+  raising outside the existing execution preflight. Five focused checks and
+  the 964-test provider-free hardening suite passed.
+
+- [x] 2026-07-24: Require canonical Unicode in ThreadKeeper final structured
+  returns on commit `2bad03e`. Final `emit` values containing lone surrogate
+  code points or non-NFC text now fail before a successful parent digest or
+  transcript status is produced. Two focused checks and the 959-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-24: Hold out the motivational-registry cross-runtime
+  representation boundary. Both strict consumers accept the maximum portable
+  integer `9007199254740991` through raw parsing, reject `9007199254740992`
+  before semantic hashing, and accept a new valid supplementary-plane Unicode
+  scalar through representation preflight. The original candidate-set hash is
+  unchanged. Twenty-four pinned-consumer assertions and three orchestration checks
+  pass at `artifacts/ggb-capacity-gates/20260724-motivation-portable-boundary-holdout/`.
+  Candidate-only; ThreadKeeper effect `none`. The content-addressed
+  per-consumer admission record was refreshed for both bounded consumers.
+
+- [x] 2026-07-24: Require list-shaped arguments for ThreadKeeper final `emit`
+  records on commit `3973119`. Malformed scalar, tuple, mapping, and null emit
+  containers now fail the complete-batch preflight before any earlier valid
+  tool effect. Four focused checks and the 958-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-24: Preregister per-consumer raw-byte-preflight admission for
+  motivational-registry portability evidence. The content-addressed strict
+  Python and Node.js consumers must each own rejection of noncanonical
+  integers, non-NFC/non-scalar strings, and duplicate members at registry,
+  candidate, and nested-contract depths; a shared validator, peer import,
+  missing failure case, identity drift, diversity collapse, or authority
+  widening fails closed. Seven admission checks and both pinned consumer
+  suites pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-per-consumer-preflight/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: require a holdout registry
+  fixture with a new valid Unicode scalar and maximum admitted integer before
+  considering the representation contract stable.
+
+- [x] 2026-07-24: Require a closed, strongly typed ThreadKeeper worker
+  tool-call shape on commit `c0e4a61`. Tool names must be strings and argument
+  containers must be JSON-array-shaped Python lists; scalar strings, tuples,
+  mappings, and null now fail the complete-batch preflight before any tool
+  effect. Four focused checks and the 968-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-24: Require a closed ThreadKeeper tool-call batch/record shape
+  on commit `896f0bf`. Non-list batches and records other than exact
+  `(name, arguments)` tuples now fail before tuple unpacking or any earlier
+  valid tool effect. Four focused checks and the 962-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-24: Reject internal U+1680 OGHAM SPACE MARK in ThreadKeeper
+  file-tool and task-contract paths on commit `bd58fac`. This visually blank
+  Unicode space is the only non-ASCII `Zs` character that survives NFKC
+  without becoming ASCII space, so it previously bypassed compatibility-space
+  rejection inside path components. Four focused checks and the 965-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-24: Add a separately implemented strict Node.js motivational-
+  registry consumer. Both byte-distinct fixtures reproduce candidate-set
+  SHA-256 `7ee23bac6d9e82c263039bff9f9015c65a457a844e9538aba22396727518804c`;
+  three noncanonical numeric spellings, non-NFC text, a lone surrogate, and
+  duplicate members at registry, candidate, and nested-contract depths fail
+  before semantic hashing. Ten checks and syntax/direct replay pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-strict-javascript-consumer/`.
+  Candidate-only; ThreadKeeper effect `none`. The per-consumer raw-byte-
+  preflight admission follow-on is complete.
+
+- [x] 2026-07-24: Reject U+2800 BRAILLE PATTERN BLANK in ThreadKeeper
+  file-tool and task-contract paths on commit `e74bcbe`. This visually empty
+  symbol is neither a Unicode format character nor a compatibility space, so
+  it previously bypassed the shared path guard. Thirty-six focused checks and
+  the 961-test provider-free hardening suite passed.
+
+- [x] 2026-07-24: Reject U+16FE4 KHITAN SMALL SCRIPT FILLER in ThreadKeeper
+  file-tool and task-contract paths on commit `f03fcf0`. This visually empty
+  combining mark is not a Unicode format character, so it previously bypassed
+  the shared path guard. Thirty-two focused checks and the 957-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-24: Add an independent Python strict-JSON motivational-registry
+  consumer. Both byte-distinct fixtures retain candidate-set SHA-256
+  `7ee23bac6d9e82c263039bff9f9015c65a457a844e9538aba22396727518804c`;
+  all five representation-preflight negatives and duplicate members at
+  registry, candidate, and nested-contract depths fail before semantic
+  hashing. Ten checks, direct replay, compilation, and diff check pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-strict-json-consumer/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: decide by preregistered
+  contract whether every admitted consumer or one shared byte validator owns
+  duplicate-member rejection.
+
+- [x] 2026-07-24: Reject visually empty Khmer inherent vowel controls in
+  ThreadKeeper file-tool and task-contract paths on commit `f5e873d`.
+  U+17B4/U+17B5 are combining marks rather than Unicode format characters, so
+  the prior format guard did not catch them. Twenty-eight focused checks and
+  the 953-test provider-free hardening suite passed.
+
+- [x] 2026-07-24: Reject invisible Unicode fillers in ThreadKeeper file-tool
+  and task-contract paths on commit `0cf8295`. COMBINING GRAPHEME JOINER,
+  Hangul choseong/jungseong fillers, HANGUL FILLER, and HALFWIDTH HANGUL FILLER
+  can no longer create visually empty filename text in prompts and audit
+  records. Twenty focused checks and the 945-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-24: Preregister and enforce a motivational-registry
+  representation preflight without changing the admitted candidate-set hash.
+  Both byte-distinct fixtures retain SHA-256
+  `7ee23bac6d9e82c263039bff9f9015c65a457a844e9538aba22396727518804c`;
+  ordinal aliases `-0`, `0e0`, and `0.0`, a decomposed Unicode purpose, and a
+  lone surrogate fail closed. Seven checks pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-representation-preflight/`.
+  Candidate-only; ThreadKeeper effect `none`. The non-JavaScript replay and
+  duplicate-member boundary follow-on is complete.
+
+- [x] 2026-07-24: Reject Unicode compatibility forms containing embedded path
+  separators in ThreadKeeper file-tool and task-contract paths on commit
+  `0dbd260`. The symbols ℀, ℁, ℅, and ℆ NFKC-normalize to strings containing
+  `/` and now fail before worker LLM, contract authorization, audit, or
+  filesystem effects. Twenty-eight focused checks and the 925-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-24: Reject Unicode compatibility spaces in ThreadKeeper
+  file-tool and task-contract paths on commit `934d58e`. Characters such as
+  NBSP, EN/EM SPACE, FIGURE SPACE, NARROW NO-BREAK SPACE, MEDIUM MATHEMATICAL
+  SPACE, and IDEOGRAPHIC SPACE can no longer survive inside a component and
+  later NFKC-normalize into a trailing ASCII-space alias. Twenty-eight focused
+  checks and the 896-test provider-free hardening suite passed.
+
+- [x] 2026-07-24: Add a third independent motivational-registry consumer
+  using Node.js built-ins. Both byte-distinct producer fixtures reproduce
+  candidate-set SHA-256
+  `7ee23bac6d9e82c263039bff9f9015c65a457a844e9538aba22396727518804c`;
+  semantic mutation, authority widening, unknown fields, reordering, and a
+  fractional ordinal fail closed. Seven checks pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-javascript-holdout/`.
+  Candidate-only; ThreadKeeper effect `none`. The ambiguous Unicode/numeric
+  representation preflight follow-on is complete.
+
+- [x] 2026-07-24: Require NFC Unicode normalization for ThreadKeeper
+  task-contract `allowed_paths` on commit `8403e06`. This closes the mismatch
+  where file-tool paths rejected decomposed spellings but the authorization
+  boundary admitted them. Invalid paths now fail before worker LLM, contract
+  authorization, audit, or filesystem effects. Two focused checks and the
+  868-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Reject ThreadKeeper path components whose NFKC compatibility
+  form becomes a canonical Windows device name on commit `3bd18da`.
+  Fullwidth and subscript-digit aliases such as `ＣＯＮ.txt`, `ＣＯＭ１.log`,
+  and `ＬＰＴ₉.txt` now fail in file-tool and task-contract paths before
+  worker LLM, audit, contract authorization, or filesystem effects.
+  Forty-four focused checks and the 867-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-23: Preregister and replay a motivational registry
+  consumer-diversity admission rule. Two content-addressed consumers must
+  differ in language, runtime, JSON library, and implementation path, import
+  no other admitted consumer, and reproduce the exact candidate-set hash.
+  Ten provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260724-motivation-consumer-diversity/`.
+  Candidate-only; adjudication required; ThreadKeeper effect `none`.
+
+- [x] 2026-07-23: Reject Unicode compatibility forms that NFKC-normalize into
+  `:`, `<`, `>`, `"`, `|`, `?`, or `*` in ThreadKeeper file-tool and
+  task-contract paths on commit `3f2280a`. Fullwidth and small-form punctuation
+  can no longer bypass alternate-stream and Windows-forbidden filename checks
+  before worker LLM, audit, contract authorization, or filesystem effects.
+  Thirty-six focused checks and the 864-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-23: Reject Unicode compatibility characters whose NFKC form
+  contains ASCII dots in ThreadKeeper file-tool and task-contract paths on
+  commit `6a26286`, including U+2024, U+2025, U+2026, U+FE52, and U+FF0E.
+  These can no longer bypass audited traversal, extension, or Windows
+  device-name spellings and later normalize to ASCII dots. Twenty focused
+  checks and the 828-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Reproduce the admitted motivational candidate-set hash with
+  a separately implemented Perl/JSON::PP canonicalizer. Both byte-distinct
+  registry fixtures independently reproduce
+  `7ee23bac6d9e82c263039bff9f9015c65a457a844e9538aba22396727518804c`;
+  semantic mutation, action-authority widening, and unknown fields fail
+  closed. Five provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-independent-canonicalizer/`.
+  Candidate-only; ThreadKeeper effect `none`.
+
+- [x] 2026-07-23: Reject Unicode separator lookalikes in ThreadKeeper
+  file-tool and task-contract paths on commit `1a4f68d`. Fraction slash,
+  division slash, big solidus, and big reverse solidus can no longer visually
+  masquerade as path separators in prompts or audit records. Sixteen focused
+  checks and the 795-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Reject Unicode separator compatibility characters in
+  ThreadKeeper file-tool and task-contract paths on commit `2f749e3`.
+  U+FE68, U+FF0F, and U+FF3C can no longer be audited as filename text and
+  later compatibility-normalized into `/` or `\`. Twelve focused checks and
+  the 792-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Compare two independently serialized motivational candidate
+  registries under a strict canonicalization contract. Their raw JSON bytes
+  differ but converge to the previously admitted candidate-set SHA-256;
+  semantic mutation, action-authority widening, unknown fields, and candidate
+  reordering fail closed. Five unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-cross-producer-canonicalization/`.
+  Candidate-only; ThreadKeeper effect `none`. Follow-on independent
+  Perl/JSON::PP reproduction is complete.
+
+- [x] 2026-07-23: Complete ThreadKeeper variation-selector path validation on
+  commit `f8e9691` by rejecting Mongolian free variation selectors
+  U+180B--U+180D and U+180F in file-tool and task-contract paths before worker
+  LLM, audit, contract authorization, or filesystem effects. Twenty-eight
+  focused checks and the 767-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Reject Unicode variation selectors in ThreadKeeper file-tool
+  and task-contract paths on commit `f9f04e0`. BMP selectors U+FE00--U+FE0F
+  and supplementary selectors U+E0100--U+E01EF now fail before worker LLM,
+  audit, contract authorization, or filesystem effects. Twelve focused checks
+  and the 751-test provider-free hardening suite passed.
+
+- [x] 2026-07-23: Independently ingest the sealed motivational candidate
+  registry/checkpoint without importing or invoking producer sealing code.
+  The consumer recomputes semantic, action, candidate-set, and checkpoint
+  digests before suffix replay; semantic mutation, authority widening,
+  substitution, and checkpoint mutation fail closed. Five unit checks,
+  compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-candidate-contract-ingest/`.
+  Candidate-only; ThreadKeeper effect `none`. The separately serialized
+  cross-producer comparison is now complete.
+
+- [x] 2026-07-23: Reject ThreadKeeper file-tool and task-contract path
+  components exceeding the common 255-byte filesystem component limit on
+  commit `a8d0311`. Validation counts UTF-8 bytes, so multibyte names fail
+  before worker LLM, audit, contract authorization, or filesystem effects.
+  Four focused checks and the 752-test provider-free hardening gate passed.
+
+- [x] 2026-07-23: Reject Windows-forbidden filename characters in ThreadKeeper
+  file-tool and task-contract paths on commit `638618b`. The characters `<`,
+  `>`, `"`, `|`, `?`, and `*` now fail before worker LLM, audit, contract
+  authorization, or filesystem effects. Twenty-four focused checks and the
+  748-test provider-free hardening gate passed.
+
+- [x] 2026-07-23: Bind each stable motivational candidate ID to semantic
+  and action-contract digests before checkpoint resume. Semantic mutation,
+  effect/authority widening, digest substitution, candidate reordering, and
+  checkpoint mutation fail closed. Six unit checks, compile, and JSON replay
+  pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-candidate-contract-digests/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently ingest this
+  registry/checkpoint rather than sealing and consuming it in one process.
+
+- [x] 2026-07-23: Reject invisible Unicode joiners in ThreadKeeper file-tool
+  and task-contract paths on commit `31e3cdd`. U+200C/U+200D now fail before
+  worker LLM, audit, contract authorization, or filesystem effects. Eight
+  focused checks and the 724-test provider-free hardening gate passed.
+
+- [x] 2026-07-23: Reject superscript-digit Windows device aliases in
+  ThreadKeeper file-tool and task-contract paths on commit `4d1fd33`.
+  `COM¹`--`COM³` and `LPT¹`--`LPT³`, including names with extensions, now
+  fail before worker LLM, audit, or filesystem effects. Twenty-eight focused
+  checks and the 703-test provider-free hardening gate passed.
+
+- [x] 2026-07-23: Bind a motivational checkpoint to an ordered, versioned
+  three-candidate set and independently recompute a two-event suffix with two
+  rank switches. Candidate mutation/reordering, stale version, unknown score
+  keys, policy drift, and checkpoint mutation fail closed. Six unit checks,
+  compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-candidate-set-resume/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: bind per-candidate
+  semantic/action-contract digests.
+
+- [x] 2026-07-23: Reject Windows-trimmed path components in ThreadKeeper
+  file-tool and task-contract paths on commit `049939b`. Components ending in
+  dots or spaces now fail before worker LLM, audit, contract authorization, or
+  filesystem effects. Forty focused checks and the 691-test provider-free
+  hardening gate passed.
+
+- [x] 2026-07-22: Reject Windows reserved device names in ThreadKeeper
+  file-tool and task-contract paths on commit `2e003c3`. Path components such
+  as `NUL`, `CON.txt`, `COM1.log`, and `LPT9` now fail before worker LLM,
+  audit, contract authorization, or filesystem effects. Twenty-three focused
+  checks and the 679-test provider-free hardening gate passed.
+
+- [x] 2026-07-22: Independently resume the scale-1000 motivational
+  checkpoint from a preregistered suffix. The consumer verifies the admitted
+  checkpoint and source hashes, recomputes the suffix from the pinned source,
+  and ignores a deliberately falsified producer `resumed_trace`. Checkpoint
+  mutation, suffix mutation, and cursor/scale/margin drift fail closed. Five
+  unit checks, compile, JSON replay, and diff check pass at
+  `artifacts/ggb-capacity-gates/20260723-motivation-fixed-point-resume/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: bind candidate-set
+  identity before testing a multi-candidate suffix.
+
+- [x] 2026-07-22: Reject Windows alternate-data-stream spellings in
+  ThreadKeeper file-tool and task-contract paths on commit `a0df4fc`. Relative
+  paths containing colons, including `safe.txt:hidden` and
+  `safe.txt::$DATA`, now fail before LLM, audit, or filesystem effects.
+  Seventeen focused checks and the 663-test provider-free hardening gate
+  passed.
+
+- [x] 2026-07-22: Reject drive-qualified ThreadKeeper file-tool and task-
+  contract paths on commit `2204b86`. Spellings such as `C:/secret.txt` and
+  `c:secret.txt`, which POSIX can treat as relative but Windows interprets as
+  drive-qualified, now fail before LLM, audit, or filesystem effects. Ten
+  focused checks and the 661-test provider-free hardening gate passed.
+
+- [x] 2026-07-22: Independently ingest the scale-1000 motivational checkpoint.
+  A separate consumer recomputes the checkpoint and source hashes and pins the
+  schema, cursor, scale, margin, and trace prefix; mutation, stale source
+  identity, and policy drift fail closed. Four unit checks, compile, JSON
+  replay, and diff check pass at
+  `artifacts/ggb-capacity-gates/20260722-motivation-fixed-point-ingest/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: preregister a bounded
+  suffix event and prove the independent consumer resumes from the admitted
+  checkpoint without trusting a producer-supplied resumed trace.
+
+- [x] 2026-07-22: Reject cross-platform-ambiguous backslashes in ThreadKeeper
+  file-tool and task-contract relative paths on commit `7c6b544`. Paths now
+  require forward-slash separators before audit, provider, or filesystem
+  effects. Seven focused checks and the 659-test provider-free
+  subagent/budget gate passed.
+
+- [x] 2026-07-22: Require canonical ThreadKeeper relative path spellings on
+  `agent/threadkeeper-hardening-next` commit `3ca23e7`. File tools and task
+  contract `allowed_paths` now reject dot components, repeated separators,
+  and trailing separators before audit or filesystem effects, so the recorded
+  spelling equals the normalized path used. Twenty-six focused checks and the
+  652-test provider-free subagent/budget gate passed.
+
+- [x] 2026-07-22: Compare decimal and integer fixed-point motivational replay.
+  Scale-1000 integers derived after pinned three-place round-half-even preserve
+  the below/above/exact hysteresis trace; a two-case self-hashed checkpoint
+  resumes to the uninterrupted trace. Four unit checks, compile, and JSON
+  replay pass at `artifacts/ggb-capacity-gates/20260722-motivation-fixed-point/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently ingest the
+  checkpoint and fail closed on mutation, stale source identity, or policy drift.
+
+- [x] 2026-07-22: Reject ambiguous ThreadKeeper run-control paths on
+  `agent/threadkeeper-hardening-next` commit `8402cad`. Queued-task
+  `cancel_file` and async-worker `stop_file` inputs with leading/trailing
+  ASCII or Unicode whitespace or non-NFC spellings now fail before queue
+  claims, worker locks, or LLM calls. Eight focused checks and the 640-test
+  provider-free subagent/budget gate passed.
+
+- [x] 2026-07-22: Require NFC normalization for ThreadKeeper audited tool
+  arguments on `agent/threadkeeper-hardening-next` commit `16a7776`. Canonically equivalent but
+  byte-distinct file paths, external queries, and optional-shell commands now
+  fail before filesystem, prompt, subprocess, or audit effects; file contents
+  remain unrestricted by this single-line rule. Two focused checks and the
+  634-test provider-free subagent/budget gate passed.
+
+- [x] 2026-07-22: Probe motivational quantization at a preregistered
+  hysteresis boundary. Decimal-string inputs with three-place round-half-even
+  preserve the below/exact/above decisions, while a two-place lossy control
+  suppresses the just-above-boundary switch. Unpinned rounding, invalid
+  precision, non-string/non-finite scores, changed expectations, and unpinned
+  provenance fail closed. Five unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260722-motivation-quantization/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: compare decimal replay to
+  an integer fixed-point representation across boundary and restart fixtures.
+
+- [x] 2026-07-22: Reject boundary whitespace in ThreadKeeper query and shell
+  arguments on `agent/threadkeeper-hardening-next` commit `192ccd2`. Search,
+  Tavily, technical-analysis, and optional-shell inputs with leading or
+  trailing ASCII or Unicode whitespace now fail before prompt, provider,
+  subprocess, or audit effects. Focused boundary-whitespace checks: 28 passed;
+  provider-free subagent/budget gate with LLM call limiting disabled: 632
+  passed.
+
+- [x] 2026-07-22: Reject boundary whitespace in ThreadKeeper file-tool paths
+  on `agent/threadkeeper-hardening-next` commit `e972609`. Read, write, and
+  append paths with leading or trailing ASCII or Unicode whitespace now fail
+  before audit or filesystem effects, avoiding visually ambiguous filenames.
+  Focused checks: 13 passed; provider-free subagent/budget gate with LLM call
+  limiting disabled: 616 passed.
+
+- [x] 2026-07-22: Preregister inclusive finite numeric domains for the v0.1
+  motivational fields. Probability deltas are bounded to `[-1, 1]` and
+  resource-fraction cost to `[0, 1]`; exact endpoints pass, while just-outside,
+  NaN, infinity, overflow, boolean, string, and null values fail closed. Five
+  unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260722-motivation-field-ranges/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: test quantization and
+  rounding sensitivity near a preregistered selection boundary.
+
+- [x] 2026-07-22: Reject Unicode noncharacters at ThreadKeeper tool argument
+  boundaries on `agent/threadkeeper-hardening-next` commit `cc1e306`. Paths,
+  queries, and optional shell commands now reject U+FDD0--FDEF and every
+  plane-ending FFFE/FFFF code point before filesystem, prompt, subprocess, or
+  audit use. Focused checks: 5 passed; provider-free subagent/budget gate with
+  LLM call limiting disabled: 604 passed.
+
+- [x] 2026-07-22: Reject unknown OpenAI-compatible SDK/Pydantic fields on
+  `agent/threadkeeper-hardening-next` commit `fd927f8`. Non-empty
+  `model_extra` at the response, choice, message, or usage layer now fails
+  closed as `provider_response_invalid` without retry, including extras whose
+  values are null or falsey. Focused checks: 24 passed; provider-free
+  subagent/budget gate with LLM call limiting disabled: 603 passed.
+
+- [x] 2026-07-22: Reject OpenAI-compatible top-level response `metadata` on
+  `agent/threadkeeper-hardening-next` commit `ed7283c`. Non-null metadata,
+  including explicit falsey values, now fails closed as an authenticated
+  `provider_response_invalid` outcome without retry. Focused checks: 4 passed;
+  provider-free subagent/budget gate with LLM call limiting disabled: 579
+  passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible top-level `error` payloads on
+  `agent/threadkeeper-hardening-next` commit `063ae25`. Non-null error payloads,
+  including explicit falsey values, now fail closed as authenticated
+  `provider_response_invalid` outcomes without retry. Focused checks: 4 passed;
+  provider-free subagent/budget gate with rate limiting disabled: 575 passed.
+
+- [x] 2026-07-21: Pin explicit motivational field units independently of
+  semantic identity. `competence_gain` and `uncertainty_gain` deliberately
+  share a dimension, but semantic relabeling still fails closed; missing,
+  extra, empty, and non-string unit metadata also fail. Four unit checks,
+  compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-field-units/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: preregister admissible
+  numeric ranges per field and test boundary/overflow negatives.
+
+- [x] 2026-07-21: Reject OpenAI-compatible usage token-detail payloads on
+  `agent/threadkeeper-hardening-next` commit `b990113`. Non-null
+  `prompt_tokens_details` and `completion_tokens_details`, including explicit
+  falsey values, now fail closed as authenticated `provider_response_invalid`
+  outcomes without retry. Focused checks: 8 passed; provider-free
+  subagent/budget gate with rate limiting disabled: 571 passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible assistant `parsed` payloads on
+  `agent/threadkeeper-hardening-next` commit `f711a73`. Non-null parsed
+  structured outputs, including explicit falsey values, now fail closed as an
+  authenticated `provider_response_invalid` outcome without retry. Focused
+  checks: 4 passed; provider-free subagent/budget gate with rate limiting
+  disabled: 567 passed.
+
+- [x] 2026-07-21: Bind motivational affine metadata per score field. Distinct
+  scales/origins for `competence_gain`, `uncertainty_gain`, and `cost` preserve
+  the preregistered trace after field-specific normalization; missing/extra
+  metadata, invalid scales, score mismatch, and field swaps fail closed. Five
+  unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-per-field-affine/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: bind explicit unit labels
+  and test same-dimension field swaps before freezing a feature schema.
+
+- [x] 2026-07-21: Reject OpenAI-compatible top-level
+  `prompt_filter_results` metadata on `agent/threadkeeper-hardening-next`
+  commit `de49e1c`. Non-null prompt-filter metadata, including explicit
+  falsey values, now fails closed as an authenticated
+  `provider_response_invalid` outcome without retry. Focused checks: 4
+  passed; provider-free subagent/budget gate with rate limiting disabled:
+  563 passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible choice `content_filter_results`
+  metadata on `agent/threadkeeper-hardening-next` commit `3030a6a`. Non-null
+  content-filter metadata, including explicit falsey values, now fails closed
+  as an authenticated `provider_response_invalid` outcome without retry.
+  Focused checks: 4 passed; provider-free subagent/budget gate with rate
+  limiting disabled: 559 passed.
+
+- [x] 2026-07-21: Probe affine-origin sensitivity of the dimensionless
+  motivation contract. Centering common declared origins `0.0`, `0.05`, and
+  `0.10` before scale normalization preserves the preregistered trace;
+  invalid, missing/mismatched, and candidate-specific offsets fail closed.
+  Five unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-affine-origin/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: test per-field
+  scale/origin metadata and field-swap negatives before freezing a feature
+  schema.
+
+- [x] 2026-07-21: Reject OpenAI-compatible choice `logprobs` metadata on
+  `agent/threadkeeper-hardening-next` commit `af147ac`. Non-null log
+  probabilities, including explicit falsey values, now fail closed as an
+  authenticated `provider_response_invalid` outcome without retry. Focused
+  checks: 4 passed; provider-free subagent/budget gate with rate limiting
+  disabled: 555 passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible provider `service_tier` metadata
+  on `agent/threadkeeper-hardening-next` commit `ef2b8f4`. Non-null tiers,
+  including explicit falsey values, now fail closed as an authenticated
+  `provider_response_invalid` outcome without retry. Focused checks: 4
+  passed; provider-free subagent/budget gate with rate limiting disabled:
+  551 passed.
+
+- [x] 2026-07-21: Preregister a dimensionless motivational normalization
+  contract. Declared score scales `1.0`, `0.5`, and `0.25` reproduce the same
+  four-step trace after normalization; invalid and score-mismatched scale
+  metadata fail closed. Five unit checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-normalization-contract/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: probe affine-offset
+  sensitivity before freezing any operational score contract.
+
+- [x] 2026-07-21: Reject OpenAI-compatible provider `system_fingerprint`
+  metadata on `agent/threadkeeper-hardening-next` commit `2c44571`. Non-null
+  fingerprints, including explicit falsey values, now fail closed as an
+  authenticated `provider_response_invalid` outcome without retry. Focused
+  checks: 4 passed; provider-free subagent/budget gate with rate limiting
+  disabled: 547 passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible assistant message metadata on
+  `agent/threadkeeper-hardening-next` commit `087b369`. Non-null `metadata`,
+  including explicit falsey values, now fails closed as an authenticated
+  `provider_response_invalid` outcome without retry. Focused checks: 4 passed;
+  provider-free subagent/budget gate with rate limiting disabled: 543 passed.
+
+- [x] 2026-07-21: Test motivational hysteresis score-scale sensitivity. A
+  fixed absolute margin `0.05` preserves the intended switch at scale `1.0`
+  but suppresses it at `0.5` and `0.25`; scaling the margin with the declared
+  score scale preserves the preregistered trace across all three. Five unit
+  checks, compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-score-scale/`. Candidate-only;
+  ThreadKeeper effect `none`. Next: preregister a dimensionless normalization
+  contract and reject zero, negative, non-finite, or mismatched scale metadata.
+
+- [x] 2026-07-21: Reject OpenAI-compatible assistant message names on
+  `agent/threadkeeper-hardening-next` commit `78d6224`. Non-null `name`
+  metadata, including explicit falsey values, now fails closed as an
+  authenticated `provider_response_invalid` outcome without retry, preventing
+  alternate message identity metadata beside validated text. Focused checks:
+  4 passed; provider-free subagent/budget gate with rate limiting disabled:
+  539 passed.
+
+- [x] 2026-07-21: Reject OpenAI-compatible assistant `reasoning_content` on
+  `agent/threadkeeper-hardening-next` commit `49a8a17`. Non-null hidden
+  reasoning payloads, including explicit falsey values, now fail closed as
+  authenticated `provider_response_invalid` outcomes without retry. Focused
+  checks: 4 passed; provider-free subagent/budget gate with rate limiting
+  disabled: 535 passed.
+
+- [x] 2026-07-21: Replay provisional motivation hysteresis on a structurally
+  different three-candidate topology. Margin `0.05` permits exactly one useful
+  clarification-to-reversible-plan switch and holds it across two
+  perturbations; control margin `0.10` suppresses the switch. Five unit checks,
+  compile, and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-candidate-topology/`.
+  Candidate-only; ThreadKeeper effect `none`; this corroborates but does not
+  freeze a runtime default. Next: test scale/normalization sensitivity before
+  considering a v0.1 default freeze.
+
+- [x] 2026-07-21: Reject OpenAI-compatible assistant annotation payloads on
+  `agent/threadkeeper-hardening-next` commit `3beac3b`. Non-null annotations,
+  including explicit falsey values, now fail closed as authenticated
+  `provider_response_invalid` outcomes without retry, closing an ignored
+  alternate output channel beside validated text. Focused checks: 4 passed;
+  provider-free subagent/budget gate with rate limiting disabled: 531 passed.
+
+- [x] 2026-07-20: Reject OpenAI-compatible assistant audio payloads on
+  `agent/threadkeeper-hardening-next` commit `1f6cb4c`. Non-null audio fields,
+  including explicit falsey values, now fail closed as authenticated
+  `provider_response_invalid` outcomes without retry, closing an ignored
+  alternate output channel beside validated text. Focused checks: 5 passed;
+  provider-free combined gate with rate limiting disabled: 532 passed.
+
+- [x] 2026-07-21: Preregister and replay an independent provider-free
+  hysteresis-margin holdout. A distinct three-event sequence makes margin
+  `0.00` oscillate twice, margin `0.05` preserve exactly one useful switch,
+  and margins `0.10`/`0.20` suppress the switch. Five unit checks, compile,
+  and JSON replay pass at
+  `artifacts/ggb-capacity-gates/20260721-motivation-margin-holdout/`.
+  Margin `0.05` is provisional and offline-only; ThreadKeeper effect remains
+  `none`. Next: replay it on a structurally different candidate set before
+  freezing a v0.1 default.
+
+- [x] 2026-07-20: Reject unknown native Ollama top-level response fields on
+  `agent/threadkeeper-hardening-next` commit `b059a8d`. Explicit null, falsey,
+  and populated unrecognized fields now fail closed as authenticated
+  `provider_response_invalid` outcomes without retry, closing ignored payload
+  channels outside the validated message/accounting schema. Focused checks: 8
+  passed; provider-free combined gate with rate limiting disabled: 522 passed.
+
+- [x] 2026-07-20: Reject unknown native Ollama message fields on
+  `agent/threadkeeper-hardening-next` commit `a450d82`. Explicit null, falsey,
+  and populated unrecognized fields now fail closed as authenticated
+  `provider_response_invalid` outcomes without retry, preventing ignored
+  alternate payload channels beside validated content. Focused checks: 12
+  passed; provider-free combined gate with rate limiting disabled: 518 passed.
+
+- [x] 2026-07-20: Preregister and replay four separate provider-free
+  hysteresis-margin runs. Margins 0.00, 0.05, and 0.10 preserve the intended
+  single switch; 0.20 suppresses it. Each run binds the pinned source digest,
+  margin, expected switch count, trace, and run digest; changed expectations,
+  duplicate margins, and unpinned sources fail closed. Gate: 5/5 unit tests,
+  compile, and JSON replay at
+  `artifacts/ggb-capacity-gates/20260720-motivation-margin-sensitivity/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: preregister an independent
+  holdout event sequence before selecting a default margin.
+
+- [x] 2026-07-20: Reject native Ollama `message.images` payloads on
+  `agent/threadkeeper-hardening-next` commit `ba95d0c`. Explicit falsey and
+  populated image fields fail closed as authenticated
+  `provider_response_invalid` outcomes without retry, closing an ignored
+  alternate provider payload channel. Focused checks: 12 passed; provider-free
+  combined gate with rate limiter disabled: 514 passed.
+
+- [x] 2026-07-20: Reject unexpected native Ollama `message.thinking` content
+  on `agent/threadkeeper-hardening-next` commit `9865540`. Nonempty strings
+  and malformed non-string values fail closed as authenticated
+  `provider_response_invalid` outcomes without retry; omission, null, and the
+  provider's empty disabled-thinking marker remain compatible. Focused checks:
+  6 passed; provider-free combined gate: 510 passed.
+
+- [x] 2026-07-20: Bind motivational incumbent and hysteresis-policy identity
+  into a self-hashed provider-free checkpoint. Restarted replay exactly matches
+  uninterrupted selection and terminal state; checkpoint mutation, policy
+  drift, and invalid rehashed incumbent fail closed. Gate: 7/7 unit tests plus
+  compile and JSON replay; evidence at
+  `artifacts/ggb-capacity-gates/20260720-motivation-hysteresis-checkpoint/`.
+  Outputs remain candidate-only, adjudication-required, and ThreadKeeper effect
+  `none`. Next: preregister separate bounded margin-sensitivity runs.
+
+- [x] 2026-07-20: Make native Ollama message-role metadata
+  presence-sensitive on `agent/threadkeeper-hardening-next` commit `5bb8af3`.
+  Explicit JSON null now fails closed as authenticated
+  `provider_response_invalid` without retry; omission remains compatible.
+  Focused regression: 1 passed; provider-free combined gate: 504 passed.
+
+- [x] 2026-07-20: Make native Ollama `done_reason` metadata
+  presence-sensitive on `agent/threadkeeper-hardening-next` commit `16100b6`.
+  Explicit JSON null now fails closed as authenticated
+  `provider_response_invalid` without retry; omission remains compatible.
+  Focused checks: 4 passed; combined provider-free gate: 503 passed.
+
+- [x] 2026-07-20: Add a provider-free competing-needs rank-switch gate for
+  `motivation-state-v0.1`. One pinned uncertainty-resolution event causes
+  exactly one preregistered switch from bounded evidence inspection to
+  answering; a 0.05 hysteresis margin prevents a small counter-perturbation
+  from oscillating selection. Gate: 7/7 unit tests plus compile; evidence at
+  `artifacts/ggb-capacity-gates/20260720-motivation-rank-switch/`. Outputs
+  remain candidate-only, adjudication-required, and ThreadKeeper effect
+  `none`. Next: checkpoint incumbent and hysteresis-policy identity.
+
+- [x] 2026-07-20: Make native Ollama `created_at` metadata presence-sensitive
+  on `agent/threadkeeper-hardening-next` commit `4cc9c7b`. Explicit JSON null
+  now fails closed as authenticated `provider_response_invalid` without retry;
+  omission remains compatible. Focused checks: 11 passed; combined
+  provider-free gate: 493 passed.
+
+- [x] 2026-07-20: Make native Ollama model metadata presence-sensitive on
+  `agent/threadkeeper-hardening-next` commit `4d04499`. Explicit JSON null and
+  other mismatched/malformed model values fail closed as authenticated
+  `provider_response_invalid` outcomes without retry; omission remains
+  compatible. Focused checks: 7 passed; combined provider-free gate: 500
+  passed.
+
+- [x] 2026-07-20: Extend `motivation-state-v0.1` with a provider-free
+  three-event temporal replay. Explicit elapsed time applies bounded decay; a
+  self-hashed two-event checkpoint resumes to the same terminal state and
+  ranking as uninterrupted replay; checkpoint mutation and non-monotonic time
+  fail closed; a clock-only step preserves the top-ranked candidate. Gate:
+  6/6 unit tests plus compile; evidence at
+  `artifacts/ggb-capacity-gates/20260720-motivation-temporal-replay/`. Outputs
+  remain candidate-only, adjudication-required, and ThreadKeeper effect
+  `none`. Next: competing-needs rank-switch/hysteresis fixture.
+
+- [x] 2026-07-20: Validate explicitly supplied native Ollama `context`
+  metadata on `agent/threadkeeper-hardening-next` commit `8cee8c2`. Context
+  must be a list of non-negative integer token IDs; null, scalar, mapping,
+  boolean-containing, negative, and fractional values fail closed as
+  authenticated `provider_response_invalid` outcomes without retry. Focused
+  checks: 10 passed; combined provider-free gate: 497 passed.
+
 - [x] 2026-07-20: Validate explicitly supplied native Ollama duration metadata
   on `agent/threadkeeper-hardening-next` commit `bcbae5e`. The
   `total_duration`, `load_duration`, `prompt_eval_duration`, and
