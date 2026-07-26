@@ -1,5 +1,26 @@
 # Decision Log
 
+## D-20260726-gpt2-low-peak-warm-start-and-instrument-gate
+
+- Date: `2026-07-26`
+- Status: `accepted protocol; remote execution awaiting approval`
+
+Treat `step_3000.pt` as weights plus Python RNG only. Because AdamW and
+scheduler state are absent, label the conservative arm a warm start and never
+an exact continuation. Compare 3,000 warm-start updates with a 6,000-update
+fresh control under the same normalized `1e-4` peak warmup-cosine schedule.
+Provision no paid resource until the exact USD 6 H100 proposal is approved.
+
+Use only the repaired v2/v3 instruments after their constructed-control gate.
+Small commutator or switching-growth estimates remain descriptive and do not
+license global stability/commutation claims. Step 4 remains blocked on Step-2
+schedule evidence.
+
+For controller v6, adopt the 0.25x peak guard as a testable candidate, not an
+active policy: v5's forecast was directionally wrong at 91.8% of peak LR and
+correct at 9.8%, but two post-hoc checkpoints cannot identify a general
+decision boundary.
+
 ## D-20260725-e2-pass-e3-fail-keep-e4-closed
 
 - Date: `2026-07-25`
