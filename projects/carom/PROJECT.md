@@ -87,6 +87,43 @@ mechanism diagnostics, not GPT-2 or LLM-teaching claims. Evidence:
 
 ## Key results
 
+- 2026-07-25: Local CPU forensics over all 13 preserved 12k compiled-channel
+  checkpoints localized the acute collapse to steps 3,000--4,000 at peak LR.
+  Broad operator-core norm growth and repaired itinerary decline lead it; a
+  raw-gradient crisis coincides with it, followed by low-rank/starved hyper
+  routing. Edge AUPRC improves while itinerary dominance fails, and the
+  imported RelaLeap “Layer 5” premise does not describe CAROM. Schedule
+  surgery can prevent the acute failure, but structural gain control remains
+  indicated. Evidence:
+  `experiments/20260726T-forensics-12k-collapse/`.
+
+- 2026-07-25: Corrected GPT-2 controller v5 applied selected LR scales to
+  state-restored, common-random held-out continuations at nonterminal updates
+  600 and 1200. Action sensitivity and oracle headroom passed, but utility
+  failed: at update 600 the selector chose 1.5x while 0.25x was oracle,
+  worsening loss about 2.35% versus passive; at update 1200 it chose the
+  oracle 0.5x and improved about 0.12%. The A100 run cost about USD 1.00;
+  artifacts were hash-verified and the pod was terminated. Evidence:
+  `experiments/20260725T161000Z-gpt2-controller-v5-active/`.
+
+- 2026-07-25: The approved E2/E3 GPU attempt did not produce a scientific
+  result within the USD 10 bound. A40 and H100 timing probes did not complete
+  even the first of 25 arms; the H100 lower bound projects beyond 4.5 hours
+  and USD 13.45. Partial logs were retrieved and every pod was terminated.
+  The next gate is exact compiled/vectorized equivalence for the 70-step
+  recurrence before another campaign. Evidence:
+  `experiments/20260724T194500Z-e2-e3-gpu-r1/`.
+
+- 2026-07-25: Full-shape local E2/E3 feasibility slices passed deterministic
+  execution but ruled out a practical CPU confirmation on the current host.
+  Fifty arm-updates took 3:26.47 with 7.80 GB peak RSS, projecting about
+  86 wall hours for the frozen 75,000 training updates before full evaluation.
+  This is resource calibration, not a scientific disposition. Numerical paired
+  trajectory/exposure thresholds remain to be frozen; E4 stays closed.
+  Evidence:
+  `experiments/20260725T094800Z-e2-e3-full-cpu-feasibility-r1/` and
+  `experiments/20260725T095240Z-e2-e3-full-cpu-train-rate-r1/`.
+
 - 2026-07-23: Stochastic transition identification v2 completed locally and
   passed all preregistered gates at five frozen AdamW checkpoints. Distributional
   coverage was calibrated (median random/PCA ratios `0.9877/1.0532`), mean

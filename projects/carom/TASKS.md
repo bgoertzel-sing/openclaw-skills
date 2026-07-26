@@ -4,6 +4,19 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] Complete local checkpoint forensics for the 12k compiled-channel
+  collapse. Deliverable: repaired-instrument evaluation of all 13 preserved
+  checkpoints, raw JSON, weight/gradient/representation timelines,
+  correlations, and a mechanism/schedule disposition. Acceptance: every
+  checkpoint validates; deterministic CPU analysis exits zero; report
+  separates observation, inference, and hypothesis. Next command:
+  `bash experiments/20260726T-forensics-12k-collapse/command.sh`. Evidence:
+  `experiments/20260726T-forensics-12k-collapse/`. Result: collapse localized
+  to `(3000, 4000]` at peak LR; broad core growth leads it, a raw-gradient
+  crisis coincides with it, hyper routing then becomes low-rank/starved, and
+  edge AUPRC improves despite itinerary failure. Schedule surgery prevents
+  the acute collapse but structural gain control remains indicated.
+
 - [x] Run the preregistered GPT-2 low-peak schedule diagnostic after explicit
   approval of its concrete RunPod proposal. Deliverable: step-3000 warm start
   (explicit optimizer/scheduler reset) plus matched-shape fresh low-peak

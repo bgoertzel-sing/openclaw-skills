@@ -125,3 +125,19 @@ or evidence that the proposed scale cannot answer the mechanism questions.
 ### Supersedes or superseded by
 
 None.
+# D-20260725-12k-collapse-forensics: Treat peak-LR instability as trigger, not sole cause
+
+Checkpoint forensics over all 13 preserved GPT-2 compiled-channel controller
+states localizes the acute accuracy collapse to `(3000, 4000]`, coincident
+with the OneCycleLR peak and a four-to-many-orders raw-gradient crisis. Broad
+operator-core growth and dominance-aware itinerary degradation precede it;
+L5 is not uniquely explosive. After step 6,000, hyper routing is nearly
+rank-one and gradient-starved while core representations become almost
+unchanged. Edge AUPRC continues improving and therefore cannot stand in for
+executable itinerary quality.
+
+Use an early LR switch (before step 3,000) to prevent the acute collapse, but
+do not treat schedule-only repair as sufficient for promotion. Future designs
+must test groupwise core gain control, raw pre-clip gradient gates, and
+dominance-aware itinerary gates. Evidence:
+`experiments/20260726T-forensics-12k-collapse/`.
