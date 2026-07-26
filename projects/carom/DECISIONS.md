@@ -1,5 +1,26 @@
 # Decision Log
 
+## D-20260725-e2-pass-e3-fail-keep-e4-closed
+
+- Date: `2026-07-25`
+- Status: `accepted`
+- Related run: `experiments/20260725T173639Z-e2-e3-compiled-recurrence-v1/`
+
+Apply the numerical gates prospectively frozen before r2 in
+`experiments/20260724T194500Z-e2-e3-gpu-r1/RUN.md`; do not replace them with
+thresholds chosen after inspecting the completed campaign.
+
+E2 full passes: its mean paired slot-accuracy advantages over no-workspace,
+no-command, and no-position are 0.05583, 0.12529, and 0.10008, with
+nonnegative paired differences on 4/5, 4/5, and 5/5 seeds. E3 generic
+regularization fails: it loses 0.02725 mean slot accuracy versus E2 full
+(allowed loss 0.010) and increases terminal trapping by 0.00332, although
+revisit fraction and integrated activity mass pass.
+
+The joint gate fails and E4 remains closed. Reopen only after a newly specified
+E3 repair recovers at least 0.01725 mean slot accuracy and removes the observed
+terminal-trapping increase without excess revisit or activity exposure.
+
 ## D-20260724-e0e1-caveated-close-e2
 
 - Date: `2026-07-24`
