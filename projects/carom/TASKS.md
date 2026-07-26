@@ -4,44 +4,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
-- [x] Compile and equivalence-gate the CAROM E2/E3 70-step recurrence, then
-  relaunch under a fresh bounded GPU approval, requested by Ben on 2026-07-25.
-  Deliverable: optional whole-graph compilation without changing recurrent
-  semantics; eager/compiled forward, activity, gradient, optimizer-step,
-  seeded-noise, and deterministic-evaluation checks; separate compile and
-  steady-state timing; full-shape cost estimate; retrieved/hash-verified GPU
-  results and terminated resource. Acceptance: local equivalence and existing
-  E0--E3 tests pass, measured speedup supports the approved bound, and the
-  original five-seed gates remain unchanged. Next command: implement the
-  optional compiler seam and focused equivalence harness. Evidence:
-  `experiments/20260725T173639Z-e2-e3-compiled-recurrence-v1/`.
-  Local implementation commit `4d24f77`: all 33 CAROM tests and a five-arm
-  smoke pass. The full-width CPU Inductor probe gives 2.37x steady-state
-  speedup with maximum post-AdamW parameter error `3.86e-6`; the bounded H100
-  CUDA calibration/campaign proposal awaits explicit approval in
-  `REMOTE_JOB.md`.
-  The completion campaign produced all 25 arm/seeds. Example-level aggregation
-  verifies the reported means. E2 full passed all three prospective paired
-  feature gates; E3 failed the safety/trajectory gate because its mean slot
-  accuracy loss was 0.02725 (limit 0.010) and terminal trapping increased by
-  0.00332. The joint gate failed and E4 remains closed. Aggregator and
-  regression tests: `aggregate_e2_e3.py`, `test_aggregate_e2_e3.py`.
-
-- [x] Correct and rerun the GPT-2 active-controller gate (v5), approved by Ben
-  on 2026-07-25. Deliverable: nonterminal checkpoints, controller-selected
-  LR applied to explicit state-restored continuations, common future batches
-  for active/passive/oracle arms, exact parent immutability, and paired
-  loss/accuracy outcomes. Acceptance: constructed action-selection tests and
-  local smoke pass; remote job remains within 2 hours/USD 3; artifacts are
-  retrieved and hash-verified; pod is terminated. Next command: implement and
-  test `run_carom_gpt2_controller_v5.py`. Evidence:
-  `experiments/20260725T161000Z-gpt2-controller-v5-active/`.
-  Completed on an A100 in 40.11 minutes. Action sensitivity and oracle
-  headroom passed, but controller utility and selection failed: the selector
-  was harmful at update 600 and matched the oracle at update 1200. Artifacts
-  were hash-verified and the pod was terminated.
-
-- [x] Complete the accepted Fable/Sol E2/E3 ladder. Deliverable:
+- [ ] Complete the accepted Fable/Sol E2/E3 ladder. Deliverable:
   deterministic five-seed mode-specific fitness ablations and generic
   direction-free regularization on the frozen corpus. Acceptance: full-scale
   paired accuracy and trajectory gates pass without successor-pair encoding or
@@ -50,33 +13,9 @@ Use small, testable tasks. Keep the top of each section in priority order.
   `experiments/20260724T182939Z-e2-e3-cpu-smoke-r1/` and
   `experiments/20260724T183038Z-e2-e3-cpu-fixture-r1/`. Implementation and
   seven tests pass; smoke and fixture are deterministic. Fixture cost was
-  74.23 s and 375 MB RSS. Full-shape local calibrations on 2026-07-25 measured
-  3:26.47 for 50 arm-updates (7.80 GB peak RSS), projecting about 86 CPU-hours
-  for the frozen 75,000 updates before full evaluation. Eight focused E0/E1
-  plus E2/E3 tests pass. No remote resource was provisioned or used. The
-  preregistration describes joint scientific selection qualitatively but does
-  not freeze numerical paired accuracy, trajectory, or excess-exposure
-  thresholds; therefore a run cannot honestly be called a preregistered gate
-  pass yet. Next command: freeze those numerical gates, then execute the
-  existing five-seed GPU runner under a separately authorized paid-compute
-  action (or explicitly accept the approximately 86-hour local projection).
-  Evidence:
-  `experiments/20260725T094800Z-e2-e3-full-cpu-feasibility-r1/` and
-  `experiments/20260725T095240Z-e2-e3-full-cpu-train-rate-r1/`. This remains
-  calibration, not a scientific disposition; E4 remains closed.
-  GPU feasibility was subsequently measured under Ben's USD 10 approval:
-  A40 exceeded 17.5 minutes and H100 exceeded 10.8 minutes without completing
-  the first of 25 arms. The H100 lower-bound projects beyond 4.5 hours /
-  USD 13.45. Partial logs were retrieved and all E2/E3 pods terminated; no
-  scientific result exists. Next command: validate a compiled/vectorized
-  70-step recurrence against exact eager outputs and determinism before
-  requesting another full campaign.
-  Completed by the compiled recurrence campaign. E2 passed; E3 and the joint
-  promotion gate failed under thresholds prospectively frozen before r2.
-  E4 stays closed. Evidence:
-  `experiments/20260725T173639Z-e2-e3-compiled-recurrence-v1/`.
+  74.23 s and 375 MB RSS. This is calibration, not a scientific disposition.
 
-- [x] Run the GPT-2-scale CAROM distributional controller utility gate
+- [ ] Run the GPT-2-scale CAROM distributional controller utility gate
   requested by Ben on 2026-07-24. Deliverable: frozen-GPT-2-small
   compiled-channel warm-start trajectory with complete optimizer/RNG
   checkpoints and disjoint calibration/held-out LR-action branches.
@@ -87,15 +26,6 @@ Use small, testable tasks. Keep the top of each section in priority order.
   inventory rechecked. Next command: finish and CPU-smoke the v4 runner, then
   provision only after approval of the 2-hour/USD 3.00 cap. Evidence:
   `experiments/20260724T082409Z-gpt2-distributional-controller-v4/`.
-  The 2026-07-25 v4 rerun repaired the terminal-scheduler crash but is not a
-  valid active-control utility result: it never applies a selected action to
-  the parent trajectory, and its final gate occurs at the OneCycleLR zero-LR
-  endpoint. Next command: implement a state-restored, common-random-number
-  continuation comparison in which the selected scale affects the actual
-  continuation and all gates precede the terminal LR region. Evidence:
-  `experiments/20260725T095200Z-gpt2-controller-v4-rerun/RUN.md`.
-  Superseded and completed by the corrected v5 active-continuation gate above;
-  the valid result is negative overall controller utility.
 
 - [x] Build and execute CAROM Frozen-State Replica Calibration v1, requested
   by Ben on 2026-07-22. Deliverable: a deterministic CPU experiment that
