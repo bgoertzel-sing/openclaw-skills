@@ -4,6 +4,20 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [ ] Execute the approved GPT-2 piecewise-vs-OneCycle schedule experiment.
+  Deliverable: two complete 12,000-update arms with frozen evaluations and
+  checkpoints, hash-verified retrieved artifacts, gate disposition, and
+  confirmed RunPod termination. Acceptance: local runner tests pass; remote
+  manifest verifies; no task pod remains; `RUN.md` separates observation,
+  inference, and hypothesis. Next command: provision the approved H100 SXM
+  with a four-hour provider termination deadline. First attempt stopped after
+  12.8 minutes: the runner used absolute LRs as `LambdaLR` multipliers, making
+  the actual peak 500× too small, and evaluated every 500 rather than 1000
+  updates. Partial artifacts verified 13/13 and pod inventory is empty. Next
+  command: add optimizer-level realized-LR and cadence regression tests,
+  correct the runner, and freeze a new commit for explicit rerun approval.
+  Evidence: `experiments/20260726T100000Z-gpt2-piecewise-schedule/`.
+
 - [x] Complete local checkpoint forensics for the 12k compiled-channel
   collapse. Deliverable: repaired-instrument evaluation of all 13 preserved
   checkpoints, raw JSON, weight/gradient/representation timelines,

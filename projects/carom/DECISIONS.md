@@ -141,3 +141,22 @@ do not treat schedule-only repair as sufficient for promotion. Future designs
 must test groupwise core gain control, raw pre-clip gradient gates, and
 dominance-aware itinerary gates. Evidence:
 `experiments/20260726T-forensics-12k-collapse/`.
+
+# D-20260726-piecewise-runner-invalid: Reject the first piecewise attempt as a scientific run
+
+- Date: `2026-07-26`
+- Status: `accepted`
+- Decision owner: delegated research agent
+- Related run: `experiments/20260726T100000Z-gpt2-piecewise-schedule/`
+
+The first approved H100 attempt is invalid and must not be used to assess any
+stability, promotion, or schedule-comparison gate. The runner passed absolute
+learning rates to PyTorch `LambdaLR`, so the optimizer applied those values as
+multipliers on a `2e-3` base rate and capped the realized rate at `4e-6`.
+The implementation also used a 500-update evaluation cadence instead of the
+frozen 1000-update cadence.
+
+Before another paid attempt, add an optimizer-level regression test for the
+realized rates at the phase-1 peak, phase boundary, and final update; test the
+checkpoint cadence; correct the implementation; freeze a new source commit;
+and obtain explicit approval for the corrected run.

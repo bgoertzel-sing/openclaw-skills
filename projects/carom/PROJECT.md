@@ -87,6 +87,16 @@ mechanism diagnostics, not GPT-2 or LLM-teaching claims. Evidence:
 
 ## Key results
 
+- 2026-07-26: The approved H100 piecewise-schedule attempt was invalidated and
+  stopped after 12.8 minutes because the runner supplied absolute rates to
+  `LambdaLR`, which treated them as multipliers and reduced the intended
+  `2e-3` peak to `4e-6`; it also evaluated every 500 rather than the frozen
+  1000 updates. This is an operational failure, not a schedule result. All 13
+  partial artifacts hash-verified, the estimated charge is USD 0.64, and the
+  pod was deleted with empty final inventory. A corrected runner, realized-LR
+  regression test, frozen commit, and new approval are required. Evidence:
+  `experiments/20260726T100000Z-gpt2-piecewise-schedule/`.
+
 - 2026-07-25: Local CPU forensics over all 13 preserved 12k compiled-channel
   checkpoints localized the acute collapse to steps 3,000--4,000 at peak LR.
   Broad operator-core norm growth and repaired itinerary decline lead it; a
