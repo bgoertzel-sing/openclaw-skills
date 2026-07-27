@@ -1,6 +1,7 @@
 # E0 coder calibration v1
 
-- Status: frozen ledger candidate; not executed.
+- Status: completed; exit 0; integrity controls passed; frozen aggregate rule
+  failed.
 - Freeze time: 2026-07-26T10:15:00-07:00 /
   2026-07-26T17:15:00Z.
 - Repository:
@@ -41,3 +42,42 @@ This is coder calibration only. It supplies no evidence of chaos, attractor
 recovery, hierarchical generativity, semantic grammar, or superiority over
 CSSR on positive-entropy sofic regimes. E3 remains binding and OmegaSim remains
 paused until E7 resolves and E8a passes.
+
+## Results
+
+The exact `bash command.sh` invocation ran once and exited 0 with empty stderr
+in 15:40.45 wall time, using 369,844 KiB maximum RSS. All matching-coder
+entropy-convergence predicates passed for all five seeds, every CTW sanity
+band passed, both Markov-source M2 comparisons passed, and the iid M2
+comparisons passed for vocabulary sizes 2 and 4 and for Zipf-v16. Historical
+manifest/result provenance and all four canonical-LZ78 bit, reconstruction,
+and byte-stability checks passed.
+
+The aggregate E0 rule nevertheless failed because all five 100,000-symbol
+`iid-uniform-v16` rows exceeded the frozen adaptive-Markov-2 redundancy
+allowance:
+
+| seed | excess beyond frozen allowance (bits) |
+| ---: | ---: |
+| 26072601 | 274.625 |
+| 26072602 | 317.872 |
+| 26072603 | 318.820 |
+| 26072604 | 417.373 |
+| 26072605 | 438.455 |
+
+No threshold, implementation, source, seed, or result was tuned or rescored.
+This v1 gate is closed as failed. Its narrow failure localizes to the
+high-cardinality iid Markov-2 redundancy predicate; it does not revise the
+passed coder checks or authorize E1.
+
+Post-run focused E0 tests passed 4/4; required stdlib discovery passed 283/283;
+compileall and `git diff --check` passed. Artifact SHA-256 values:
+
+- `results.json`:
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`.
+- empty `stderr.txt`:
+  `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+- `timing.txt`:
+  `98d695bb1383860d29d9642a3210c56989c4e2bceedf7acaf30ef9c6006c60d9`.
+- `exit-status.txt`:
+  `9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa`.

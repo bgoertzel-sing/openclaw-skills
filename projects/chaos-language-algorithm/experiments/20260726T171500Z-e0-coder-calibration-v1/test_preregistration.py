@@ -41,7 +41,7 @@ class E0LedgerFreezeTests(unittest.TestCase):
             copied,
         )
 
-    def test_command_is_exact_and_results_do_not_exist_before_execution(self):
+    def test_command_is_exact_and_artifact_set_is_atomic(self):
         expected = (
             "#!/usr/bin/env bash\n"
             "set -u\n"
@@ -54,8 +54,9 @@ class E0LedgerFreezeTests(unittest.TestCase):
             'exit "$status"\n'
         )
         self.assertEqual((LEDGER / "command.sh").read_text(), expected)
-        for name in ("results.json", "stderr.txt", "timing.txt", "exit-status.txt"):
-            self.assertFalse((LEDGER / name).exists(), name)
+        artifacts = ("results.json", "stderr.txt", "timing.txt", "exit-status.txt")
+        present = [(LEDGER / name).exists() for name in artifacts]
+        self.assertIn(present, ([False] * 4, [True] * 4))
 
 
 if __name__ == "__main__":
