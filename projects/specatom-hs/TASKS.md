@@ -1,5 +1,253 @@
 # Tasks
 
+- [ ] **Monday playability milestone — due 2026-08-03:** deliver one compact,
+  reproducible Plain2Metta “lab bench” that Ben can install and explore after
+  the conference. The primary episode must take a small, readable Plain
+  specification through source-preserving compilation into bounded JSON,
+  reified `.metta`, and a concise diagnostics/explanation report, then execute
+  at least one meaningful query or validation through a pinned available
+  MeTTa/PeTTa backend (or record a precise backend blocker and provide a
+  deterministic semantic reference runner).
+  Acceptance:
+  (1) fresh-checkout setup plus one command completes locally;
+  (2) bundled input and expected semantic results are human-checkable;
+  (3) generated default artifacts are bounded to practical interactive size
+  and contain no combinatorial check explosion;
+  (4) at least one edited-input variant visibly changes the compiled/query
+  result, giving Ben something substantive to experiment with;
+  (5) focused tests and the full provider-free suite pass at an immutable
+  revision;
+  (6) a short `PLAYGROUND.md` explains the model, commands, expected output,
+  editable knobs, limitations, and exact revision;
+  (7) an experiment `RUN.md` records the clean-room command, environment,
+  artifact hashes, timings, sizes, exit status, and observed result.
+  Scope stop: no new marker families, arity expansion, Unicode/provenance
+  edge-case hardening, or broad refactoring unless required by a failure in
+  this acceptance path.
+  Progress 2026-07-27 16:16 PDT: closed the oldest acceptance gap, default
+  output/check explosion, by restricting validation-layer self-checks to the
+  obligations and checks present when validation begins. On
+  `examples/minimal.plain`, the default run fell from 28,784 checks,
+  34,750,366-byte JSON, 12,369,116-byte MeTTa, 7.69 s, and 292,188 KiB max RSS
+  to 592 checks, 770,826-byte JSON, 279,923-byte MeTTa, 0.26 s, and 24,524 KiB
+  max RSS; diagnostics are 10,889 bytes. A CLI regression pins interactive
+  bounds of 1,000 checks, 1 MB JSON, 500 KB MeTTa, and 50 KB diagnostics.
+  Focused CLI/validation suite: 89 tests passed; `git diff --check` passed.
+  Local implementation commit `d285472`; unpushed.
+  Next command: specify the compact bundled Plain -> JSON/reified
+  MeTTa/diagnostics episode and its visible edited-input semantic delta.
+  Evidence target:
+  `experiments/20260803T*-monday-playground/RUN.md`,
+  `repos/specatom-hs/PLAYGROUND.md`, and a task-specific local commit.
+
+- [x] 2026-07-27 15:30 PDT: Added derived `DataFlowEdge` occurrence ground
+  truth after all eight non-CR/LF separators recognized by Python
+  `splitlines()`. Acceptance: an explicit edge phrase following VT, FF, FS,
+  GS, RS, NEL, U+2028, or U+2029 and preceding non-ASCII text slices its exact
+  UTF-8 bytes and stays on physical line 2. Evidence:
+  `tests/test_specatom_source_indexer.py`; focused 10-test indexer suite and
+  full 468-test discovery passed; `git diff --check` passed.
+  Local implementation commit `de5a2b6`; unpushed.
+
+- [x] 2026-07-27 13:30 PDT: Added derived concept-occurrence ground truth
+  after all eight non-CR/LF separators recognized by Python `splitlines()`.
+  Acceptance: a `:Café:` reference following VT, FF, FS, GS, RS, NEL, U+2028,
+  or U+2029 slices its exact non-ASCII UTF-8 bytes and stays on physical line
+  2. Evidence: `tests/test_specatom_source_indexer.py`; focused 9-test indexer
+  suite and full 467-test discovery passed; `git diff --check` passed.
+  Local implementation commit `8f9f610`; unpushed.
+
+- [x] 2026-07-27 11:30 PDT: Added derived semantic-occurrence ground truth
+  after all eight non-CR/LF separators recognized by Python `splitlines()`.
+  Acceptance: an `Evidence:` marker following VT, FF, FS, GS, RS, NEL, U+2028,
+  or U+2029 slices its exact non-ASCII UTF-8 bytes and stays on physical line
+  2. Evidence: `tests/test_specatom_source_indexer.py`; focused 8-test indexer
+  suite and full 466-test discovery passed; `git diff --check` passed.
+  Local implementation commit `ba1cadf`; unpushed.
+
+- [x] 2026-07-27 09:30 PDT: Aligned derived semantic/source occurrence spans
+  across CR, LF, and CRLF continuation boundaries. Acceptance: an `Evidence:`
+  marker on a lone-CR continuation line compiles without alignment failure,
+  slices its exact non-ASCII UTF-8 source bytes, and reports physical line 3.
+  Evidence: `src/specatom_hs/source_indexer.py`,
+  `src/specatom_hs/passes.py`, and
+  `tests/test_specatom_source_indexer.py`; focused 7-test indexer suite,
+  168 semantic/information-flow tests, and full 465-test discovery passed;
+  `git diff --check` passed. Local implementation commit `64f53cc`; unpushed.
+
+- [x] 2026-07-27 07:30 PDT: Generalized physical-line ground truth across all
+  eight non-CR/LF separators recognized by Python `splitlines()`: VT, FF, FS,
+  GS, RS, NEL, U+2028, and U+2029. Acceptance: each separator remains literal
+  first-item content and exact UTF-8 provenance, while the following item
+  remains on physical line 3. Evidence:
+  `tests/test_specatom_source_indexer.py`; focused 6-test indexer suite and
+  full 464-test stdlib discovery passed; `git diff --check` passed. Local
+  implementation commit `7e5befd`; unpushed.
+
+- [x] 2026-07-27 05:30 PDT: Aligned source record splitting with the documented
+  CR/LF/CRLF line-number model instead of Python's broader Unicode
+  `splitlines()` behavior. Acceptance: U+2028 remains inside one item's text
+  and exact UTF-8 span while the following item starts on physical line 3.
+  Evidence: `src/specatom_hs/source_indexer.py` and
+  `tests/test_specatom_source_indexer.py`; focused 6-test indexer suite and
+  full 464-test stdlib discovery passed; `git diff --check` passed.
+
+- [x] 2026-07-27 03:30 PDT: Made source line indexing recognize LF, CRLF, and
+  lone-CR boundaries while preserving UTF-8 byte offsets. Acceptance: one
+  mixed-newline fixture reports section/item start lines 1--4, slices every
+  exact record span from the encoded source, and counts CRLF only once.
+  Evidence: `src/specatom_hs/source_indexer.py` and
+  `tests/test_specatom_source_indexer.py`; focused 5-test indexer suite and
+  full 463-test stdlib discovery passed; `git diff --check` passed.
+  Local implementation commit `4b28d16`; unpushed.
+
+- [x] 2026-07-27 01:30 PDT: Made first-heading recognition compatible with a
+  UTF-8 BOM without altering source provenance. Acceptance: a BOM-bearing
+  `***definitions***` heading is indexed, its exact byte span retains the
+  three-byte BOM, and the following item span slices the original encoded
+  source at the correct byte offsets. Evidence:
+  `src/specatom_hs/source_indexer.py` and
+  `tests/test_specatom_source_indexer.py`; exact 4-test indexer suite and
+  90-test source/concept/semantic-object suite passed, as did
+  `git diff --check`. Local implementation commit `ac841f8`; unpushed.
+
+- [x] 2026-07-26 13:30 PDT: Corrected source provenance offsets to use
+  actual UTF-8 byte positions rather than Python character indexes.
+  Acceptance: a non-ASCII heading and `:Café:` marker round-trip from emitted
+  section, item, concept-occurrence, and semantic `Evidence:` spans by slicing
+  the original encoded bytes; source-span validation uses encoded file length
+  and byte-relative line counting. Evidence: `src/specatom_hs/source_indexer.py`,
+  `src/specatom_hs/passes.py`, `src/specatom_hs/validators.py`, and
+  `tests/test_specatom_source_indexer.py`; focused 193-test
+  source/validation/backend suite passed, as did the 65-test
+  source/concept/semantic-object suite and `git diff --check`. Local
+  implementation commit `e861052`; unpushed.
+
+- [x] 2026-07-26: Complete the v0.1 usability gate: publish install metadata,
+  install the CLI into a fresh virtual environment, and compile three realistic
+  specifications through JSON/MeTTa/diagnostics output. Acceptance: all three
+  runs exit zero and preserve nonempty outputs plus SHA-256 summary data.
+  Evidence: `repos/specatom-hs/setup.py`,
+  `repos/specatom-hs/scripts/usability-gate.sh`, and
+  `experiments/20260726T185730Z-v01-three-spec-install-report/`; durable output
+  digest summary in that run's `artifacts/summary.json`. Scope remains the
+  frozen conservative profile.
+
+- [x] 2026-07-26 09:30 PDT: Centralized canonical object-scoped validation
+  subtarget checks shared by crisp validation and PeTTa/diagnostics admission.
+  Acceptance: one ground-truth corpus covers canonical ASCII/NFC identities
+  plus empty, padded, format, control, surrogate, noncharacter, private-use,
+  unassigned, non-NFC, non-NFKC, variation-selector, and combining-mark
+  refusals; validator/backend behavior remains unchanged. Evidence:
+  `src/specatom_hs/identities.py`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`, and
+  `tests/test_specatom_identities.py`; focused 191-test suite and full
+  460-test discovery passed; `git diff --check` passed.
+  Local implementation commit `ce1e9cd`; unpushed.
+
+- [x] 2026-07-26 07:30 PDT: Closed Unicode combining-mark ambiguity for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact<U+0338>:0` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked evidence to diagnostics;
+  the unmodified neighbor `object:child:fact:0` remains emitted and counted.
+  Evidence: `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression and
+  full 459-test discovery passed; `git diff --check` passed.
+  Local implementation commit `f06254a`; unpushed.
+
+- [x] 2026-07-26 05:30 PDT: Closed Unicode variation-selector ambiguity for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact<U+FE0F>:0` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked evidence to diagnostics;
+  the unmodified neighbor `object:child:fact:0` remains emitted and counted.
+  Evidence: `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression and
+  full 457-test discovery passed; `git diff --check` passed.
+  Local implementation commit `85e5fff`; unpushed.
+
+- [x] 2026-07-26 03:30 PDT: Closed Unicode compatibility-normalization
+  ambiguity for object-scoped validation subtargets. Acceptance:
+  `object:child:<FULLWIDTH f>act:0` fails crisp declaration validation, is
+  refused by the PeTTa profile, and cannot contribute linked evidence to
+  diagnostics; its NFKC neighbor `object:child:fact:0` remains emitted and
+  counted. Evidence: local implementation commit `63d2667`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression, 212
+  relevant validation/backend/diagnostics tests, and full 455-test discovery
+  passed; `git diff --check` passed.
+
+- [x] 2026-07-26 01:30 PDT: Closed canonical Unicode normalization ambiguity
+  for object-scoped validation subtargets. Acceptance: decomposed
+  `object:child:cafe<U+0301>` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked evidence to diagnostics;
+  its NFC neighbor `object:child:caf<U+00E9>` remains emitted and counted.
+  Evidence: local implementation commit `a881927`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression, 210
+  relevant validation/backend/diagnostics tests, and full 453-test discovery
+  passed; `git diff --check` passed.
+
+- [x] 2026-07-25 23:30 PDT: Closed unassigned Unicode handling for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<U+0378>0` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `0018fe6`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression and
+  208 relevant validation/backend/diagnostics tests passed; `git diff --check`
+  passed.
+
+- [x] 2026-07-25 21:30 PDT: Closed Unicode private-use handling for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<U+E000>0` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `3372def`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression and
+  180 relevant validation/backend tests passed; `git diff --check` passed.
+
+- [x] 2026-07-25 19:30 PDT: Closed reserved Unicode noncharacter handling for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<U+FDD0>0` fails crisp declaration validation, is refused
+  by the PeTTa profile, and cannot contribute linked check evidence to
+  diagnostics; a canonical neighboring target remains emitted and counted.
+  Evidence: local repository commit `f069218`,
+  `src/specatom_hs/validators.py`,
+  `src/specatom_hs/backends/petta.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  178 relevant validation/backend tests in 2.519s, all 447 tests in 511.660s,
+  and `git diff --check` passed.
+
+- [x] 2026-07-25 17:30 PDT: Closed non-scalar Unicode surrogate handling for
+  object-scoped validation subtargets. Acceptance:
+  `object:child:fact:<LONE HIGH SURROGATE>0` produces a crisp declaration
+  failure instead of a `UnicodeEncodeError`, is refused by the PeTTa profile,
+  and cannot contribute linked check evidence to diagnostics; a canonical
+  neighboring target remains emitted and counted. Evidence:
+  local repository commit `a02074d`,
+  `src/specatom_hs/schema.py`, `src/specatom_hs/backends/petta.py`,
+  `src/specatom_hs/validators.py`,
+  `tests/test_specatom_validation_records.py`, and
+  `tests/test_specatom_petta_profile_gates.py`; exact 2-test regression,
+  176 relevant validation/backend tests in 5.512s, all 445 tests in 714.128s,
+  and `git diff --check` passed.
+
 - [x] 2026-07-25 15:30 PDT: Closed invisible Unicode control-character
   evasion for object-scoped validation subtargets. Acceptance:
   `object:child:fact:<BELL>0` fails crisp declaration validation, is refused by
@@ -844,6 +1092,12 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [ ] TyLA/OSLF deeper type/proof alignment.
 
 ## Done recently
+
+- [x] 2026-07-26 11:30 PDT: Rejected interior whitespace in canonical
+  object-scoped validation subtargets through the shared crisp-validation and
+  PeTTa/diagnostics admission predicate. Ground truth covers ASCII space and
+  Unicode em space; 216 focused validation/backend/diagnostics tests and all
+  460 tests pass; `git diff --check` passes.
 
 - [x] 2026-07-23: Aligned diagnostics check scalar admission with the PeTTa
   backend's basic gates for obligation IDs, properties, target IDs, declared
