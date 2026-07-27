@@ -1,0 +1,48 @@
+{
+  "code_commit": "096cbb11b2d60e4d07a7bbfffb30b808e169dab4",
+  "coders": [
+    "adaptive-unigram",
+    "adaptive-markov-1",
+    "adaptive-markov-2",
+    "adaptive-markov-3",
+    "ctw-d8",
+    "lz78"
+  ],
+  "historical_lz78": {
+    "expected_bits": {
+      "cantor-ternary-positive": 2728.0,
+      "cantor-ternary-shuffled": 3560.0,
+      "regular-paperfolding-positive": 8056.0,
+      "regular-paperfolding-shuffled": 11440.0
+    },
+    "manifest_sha256": "88b4a4ca0920fd8a1ad80f28efa3bb855148913caf8f7dd558021fed37abf9e3",
+    "results_sha256": "f638887f0868490011332fb035bd7ee6856106cf7bfaddc641fe21e1614252e1",
+    "suffix_sha256": {
+      "cantor-ternary-positive": "57a34c9bcb615fc337d2a62650970efae6f34f5afb93da8af97de6324eab1cd8",
+      "cantor-ternary-shuffled": "a0c5a8109fff5d989e41fcb03aa65e2de39795eb9a3184fc54021f958df5eefd",
+      "regular-paperfolding-positive": "3de8562e56d3af1802a7a365a269c2236ae2f00f1ab70ee1583175034098ff29",
+      "regular-paperfolding-shuffled": "70500be8e19f52d5fe2c785ecbe1adbe3869d51d89fd14613450259a17c52c98"
+    }
+  },
+  "lengths": [1000, 10000, 100000],
+  "protocol": "e0-coder-calibration-preregistration-v1",
+  "schema": "chaoslang.e0-coder-calibration-ledger",
+  "seeds": [26072601, 26072602, 26072603, 26072604, 26072605],
+  "source_names": [
+    "iid-uniform-v2",
+    "iid-uniform-v4",
+    "iid-uniform-v16",
+    "iid-zipf-v16-s1p2",
+    "markov1-binary",
+    "markov3-binary",
+    "periodic-001011"
+  ],
+  "thresholds": {
+    "ctw_depth": 8,
+    "ctw_redundancy_multiplier": 2.0,
+    "m2_iid_redundancy_multiplier": 2.0,
+    "periodic_bits_per_symbol": 0.01,
+    "positive_entropy_relative": 0.05
+  },
+  "version": 1
+}
