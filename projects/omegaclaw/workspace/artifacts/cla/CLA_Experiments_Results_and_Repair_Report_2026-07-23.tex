@@ -1,0 +1,645 @@
+% ASCII-only LaTeX. Evidence cutoff 2026-07-23.
+\documentclass[10pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage{booktabs,longtable,array,amsmath,amssymb,hyperref,microtype,xcolor}
+\usepackage{xurl}
+\hypersetup{colorlinks=true,urlcolor=blue!55!black,linkcolor=blue!45!black}
+\emergencystretch=3em
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\newcommand{\obs}{\textbf{Observed.}}
+\newcommand{\inferd}{\textbf{Inferred.}}
+\newcommand{\hyp}{\textbf{Hypothesis.}}
+\newcommand{\decision}{\textbf{Recommended decision.}}
+\newcommand{\codeurl}{\url{https://github.com/bgoertzel-sing/chaos-language-algorithm}}
+
+\title{Chaos Language Algorithm (CLA)\\
+Experiments, Results, Failure Diagnosis, and Repair Programme}
+\author{ZeroBot / Chaos Language Algorithm and OmegaSim project records}
+\date{Evidence cutoff: July 23, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report consolidates the durable CLA evidence through July 23, 2026. It
+covers the pure-Python \texttt{chaoslang} implementation, low- and
+high-dimensional symbolization, synthetic grammar and complete-code tests,
+Mackey--Glass and Lorenz--96 calibration, geometric chaos-detector candidates,
+and the complete OmegaSim A6 CLA sweep. The central result is not that every
+part of CLA is broken. Exact reconstruction, deterministic replay, frozen
+prefix/suffix separation, compact model transmission, and shuffled-null
+rejection are generally sound. Low-cardinality symbolization repairs the
+obvious high-dimensional alphabet explosion. A separately calibrated
+nearest-neighbor divergence detector also discriminated the bounded positive
+and control battery. The unresolved failure is the bridge from a dynamical
+trajectory to a compact, generalizing grammar: model-description cost is often
+larger than the suffix savings, the search tends to return one- or
+two-production grammars with no categories, and complete CLA codes lose to
+unigram, Markov, or LZ78 controls on the chaotic fixtures. The report separates
+direct measurements from interpretation and proposes diagnostic experiments
+that can distinguish representation failure, search failure, and MDL
+accounting failure before further OmegaSim claims.
+\end{abstract}
+
+\section{Executive diagnosis}
+
+\textbf{Code URL:} \codeurl.
+
+\textbf{Current scientific status.} CLA is a well-tested experimental
+infrastructure and a partially calibrated symbolic coder, not yet a validated
+``chaos grammar'' detector. The decisive split is:
+
+\begin{itemize}
+\item \textbf{Engineering integrity mostly works:} exact reconstruction,
+canonical persistence, deterministic replay, prefix-only fitting, and null
+controls have repeatedly passed.
+\item \textbf{Representation partly works:} direct Cartesian symbolization
+fails in high dimension; fitted low-cardinality microstates restore recurrence
+and finite-order predictability. Tested linear VAMP embeddings did not beat
+matched PCA/raw controls.
+\item \textbf{Synthetic grammar competence is conditional:} indexed and
+compact transmission can win on some constant-length substitution sources and
+at long enough horizons, but does not generalize across all planted families.
+\item \textbf{Attractor grammar coding fails:} across scalar, ordinal,
+recurrence, and full-vector representations, compact CLA loses to simple
+complete-code controls.
+\item \textbf{Geometric Stage A can work:} nearest-neighbor divergence v2
+passed its six-fixture battery. The subsequent prefix-quantized Stage-B CLA
+code lost badly to LZ78.
+\item \textbf{OmegaSim is negative under the frozen CLA:} all 120 planned
+role-specific A6 cells were evaluated with three seeds and matched
+appraisal/linear/shuffled controls; every grammar was trivial (one or two
+productions, zero categories).
+\end{itemize}
+
+\decision{} Do not spend effort on another identical OmegaSim A6 sweep.
+First instrument the inducer so that proposal coverage, accepted moves, data
+savings, model-cost increments, and rejection reasons are observable. Then run
+an oracle-decomposition battery that separately tests representability,
+search, parameter/model coding, and sample complexity. Only after a planted
+hierarchical grammar and a fresh chaotic fixture pass complete-code controls
+should CLA be used to prioritize OmegaSim regimes.
+
+\section{What CLA currently implements}
+
+The main pipeline is
+\[
+\begin{aligned}
+x_{1:n} &\rightarrow \text{state representation}
+\rightarrow \text{symbolizer} \rightarrow s_{1:n}\\
+&\rightarrow \text{candidate mining}
+\rightarrow \text{greedy grammar induction}\\
+&\rightarrow \text{model plus data code}.
+\end{aligned}
+\]
+
+The \texttt{chaoslang} package began as a dependency-light, pure-Python,
+backend-neutral MVP. It contains fixed-grid and fitted microstate
+symbolization; n-gram/suffix-trie chunk mining; contextual category proposals;
+exact grammar expansion and reconstruction; approximate historical scores;
+later complete indexed and compact binary model transmissions; literal,
+unigram, Markov-1, Markov-2, and canonical LZ78 controls; frozen-prefix
+training; and deterministic experiment artifacts. The backend-neutral fact
+layer leaves a seam for a later Hyperon/MeTTa implementation but the reported
+measurements are from the Python system.
+
+\begin{longtable}{p{0.22\linewidth}p{0.35\linewidth}p{0.35\linewidth}}
+\toprule
+Measurement & What it establishes & What it does not establish \\
+\midrule
+\endhead
+Exact reconstruction & The stored grammar/parse expands losslessly to the
+symbol stream & Predictive validity, semantic categories, or useful
+compression \\
+Complete-code win & For the frozen fixture and code, model plus suffix is
+shorter than every named complete control & A universal detector or proof of
+chaos \\
+Shuffled-null rejection & The frozen statistic/code does not prefer the exact
+named null & Robustness to every surrogate or confound \\
+Held-out n-gram loss & Finite-order predictability of the symbol stream &
+Predictive likelihood of the induced CLA grammar \\
+Stage-A divergence pass & Local neighbors separate under the frozen geometric
+test & A compact grammar, source-law identification, or semantic structure \\
+OmegaSim matched-control win & A particular appraisal trace exceeds its
+linear and shuffled controls on frozen proxy metrics & Nontrivial grammar,
+strange attractor, or causal semantics \\
+\bottomrule
+\end{longtable}
+
+\section{Chronological experiment programme}
+
+\subsection{Baseline symbolic and high-dimensional tests}
+
+Low-dimensional 256-sample tests reconstructed exactly and produced small
+grammars. Under the original equal-width rectangular partition, alphabet size
+grew rapidly with dimension. The clearest high-dimensional smoke used 1,024
+points of 20-dimensional Lorenz--96:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Input symbols & 1,024 \\
+Unique compound symbols & 510 \\
+Accepted rules & 8 \\
+Accepted categories & 0 \\
+Approximate score & 1,021.2 \\
+Fit time & 2.554 s \\
+Exact reconstruction & true \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\obs{} Half the positions were unique symbols and the score stayed close to
+one proxy unit per input symbol. \inferd{} The primary failure occurred before
+grammar induction: a Cartesian product partition makes recurrence sparse in
+high dimension. This run cannot imply that Lorenz--96 lacks grammar.
+Provenance: experiment
+\texttt{20260709T192728Z-lorenz96-1024-dim20-suffix-trie}.
+
+\subsection{R256 lifted Lorenz--63 and representation controls}
+
+A first Phase-1 test lifted Lorenz--63 into 256 dimensions, projected it to a
+small kinetic representation, and fitted low-cardinality microstates.
+Real-minus-shuffled proxy bits improved from 2.10 under compound M1 to 39.33,
+and held-out order-2 n-gram perplexity improved from 433.18 to 3.42. This
+showed that the symbolization seam could repair alphabet explosion, but it did
+not isolate the benefit of VAMP from clustering.
+
+The preregistered three-seed follow-up evaluated 36 VAMP configurations plus
+controls:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+Method & Mean proxy margin & Mean n-gram perplexity \\
+\midrule
+deeptime VAMP (36 rows) & 8.085 & 11.628 \\
+direct raw xyz k-means & 12.200 & 3.697 \\
+dependency-free reference & 15.167 & 4.151 \\
+raw compound M1 & 1.867 & 257.769 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All VAMP and control configurations had positive shuffled-surrogate margins;
+no categories emerged. Positive proxy margin was therefore not specific to
+VAMP. In the leakage-free rank-conditioned follow-up, selected VAMP beat the
+best matched PCA lift on both held-out loss and surrogate margin in 0/3
+trajectories at $k=8$ and 0/3 at $k=16$, versus the preregistered requirement
+of at least 2/3. VAMP held-out next-symbol loss was worse in every
+seed/alphabet stratum. Linear VAMP development was stopped.
+
+Provenance:
+\path{20260712T200000Z-lorenz63-lift256-phase1},
+\path{20260712T200200Z-lorenz63-r256-deeptime-multiseed}, and
+\path{20260713T153839Z-lorenz63-rank-conditioned-vamp-tica}.
+
+\subsection{Frozen held-out and complete-code calibration}
+
+The project then replaced the historical approximate ``bits'' proxy with
+frozen held-out comparisons and explicit model transmission. The results
+exposed model cost as a dominant problem.
+
+\begin{longtable}{p{0.25\linewidth}p{0.17\linewidth}p{0.48\linewidth}}
+\toprule
+Run & Decision & Key quantitative result \\
+\midrule
+\endhead
+Held-out v1 & Fail & Aggregate CLA 65,976.621 bits versus unigram 6,588.443;
+about 32.5 kbits of model cost per fixture dominated. \\
+Joint chunk/category diagnostic & Local positive & On a tiny constructed
+fixture, an abstract joint move scored 75 proxy bits versus 76 initially,
+showing the combined move can exist in the search space. \\
+Generalized complete code & Reject & Joint move saved 6,232 data bits but
+added 6,296 model bits: 34,416 versus 34,352 total, a 64-bit loss. \\
+Indexed complete code & Local positive & Same frozen joint state saved 1,672
+data bits for 816 added model bits, a net 856-bit win. This validated the
+indexed transmission, not automatic search or attractor coding. \\
+Held-out indexed v2 & Fail & Aggregate indexed CLA 21,989.324 bits versus
+unigram 6,739.904; Markov-1 was 18,153.874. \\
+Synthetic de Bruijn-5 & Fail & Positive indexed CLA 4,600.700 bits versus
+unigram 2,608.721, a 1,991.979-bit loss; shuffled null not promoted. \\
+\bottomrule
+\end{longtable}
+
+\obs{} More economical serialization substantially reduced overhead and could
+reverse a small constructed decision. It did not close the gap on the
+held-out attractor fixtures. \inferd{} At least two separable questions remain:
+(1) whether the right grammar is proposed/found and (2) whether a good grammar
+is encoded with competitive finite-sample complexity. A single aggregate MDL
+score currently hides these mechanisms.
+
+\subsection{Synthetic source calibration}
+
+The synthetic programme tested planted symbolic structure without chaotic
+state reconstruction. It produced real, but narrow, successes.
+
+\begin{longtable}{p{0.27\linewidth}p{0.12\linewidth}p{0.51\linewidth}}
+\toprule
+Experiment & Gate & Main result \\
+\midrule
+\endhead
+Sample complexity & Pass & A repeated source crossed at the frozen horizon;
+indexed model 4,712 bits plus 5.151 suffix bits beat Markov-2 by 3,798.715
+bits; the null never crossed. \\
+Family generalization & Fail & One planted positive passed, but Fibonacci word
+missed by 288.059 bits even though its suffix code was much shorter than
+Markov-2; model cost decided the result. \\
+Two constant-length morphisms & Pass & Both 2-uniform positives beat controls;
+neither exact-marginal shuffled null was promoted. Rudin--Shapiro margin was
+only 171.466 bits. \\
+Universal controls & Fail & Cantor lost even to LZ78. Paperfolding beat LZ78
+but lost to unigram by 1,711.071 bits due to a 7,040-bit model. \\
+Compact model & Fail & Compact transmission saved 464--648 bits versus JSON.
+Four-state 2-uniform won by 350.562 bits; complementary 3-uniform lost to
+unigram by 195.269 bits. \\
+Phase robustness & Fail & Compact CLA lost the two required phases to LZ78 by
+1,497 and 1,371 bits; nulls rejected. \\
+Fixed-model amortization & Pass & Positive lost at 4,096 symbols but crossed
+at 16,384 and remained ahead at 65,536; shuffled source never crossed. \\
+\bottomrule
+\end{longtable}
+
+\obs{} CLA can exploit some substitution-generated regularities, especially
+when a fixed model cost is amortized over a long suffix. It is not uniformly
+competitive across closely related planted families. \inferd{} The algorithm has
+some genuine grammar-coding ability; the failure is better described as poor
+coverage/efficiency/generalization than total absence of capability.
+
+\subsection{Attractor representation and coding tests}
+
+Long-horizon amortization did not transfer from synthetic sources to the
+chaotic fixtures:
+
+\begin{longtable}{p{0.24\linewidth}p{0.25\linewidth}p{0.39\linewidth}}
+\toprule
+Representation & Positive fixtures & Result against strongest controls \\
+\midrule
+\endhead
+Scalar fixed partition, 65,536 suffix & Mackey--Glass and Lorenz--96 x5 &
+72,723.386 vs Markov-1 25,006.425; 103,647.803 vs Markov-1 43,859.342 \\
+Ordinal patterns & Mackey--Glass and Lorenz--96 x6 &
+9,235.184 vs LZ78 2,872; 10,224.372 vs LZ78 3,928 \\
+Recurrence-lag projection & Mackey--Glass and Lorenz--96 x7 &
+9,954.129 vs LZ78 5,008; 13,697.457 vs unigram 7,814.621 \\
+Full-vector recurrence & Mackey--Glass and full 8D Lorenz--96 &
+9,933.113 vs LZ78 5,304; 5,522.398 vs LZ78 2,000 \\
+\bottomrule
+\end{longtable}
+
+Every integrity gate passed in these runs; compact CLA beat the older JSON CLA
+continuity control, and shuffled nulls were not promoted. The positives still
+lost. Thus codec engineering improved CLA relative to itself without making
+it competitive with external codes.
+
+Provenance:
+\texttt{20260718T131500Z-attractor-amortization-v1},
+\texttt{20260718T171500Z-ordinal-attractor-v1},
+\texttt{20260719T011500Z-recurrence-attractor-v1}, and
+\texttt{20260719T071500Z-vector-recurrence-attractor-v1}.
+
+\subsection{Geometric Stage-A detector search}
+
+Because grammar coding was not yet calibrated, a separate Stage-A programme
+asked only whether a geometric statistic could distinguish fresh chaotic
+fixtures from stable and shuffled controls.
+
+\begin{longtable}{p{0.27\linewidth}p{0.13\linewidth}p{0.50\linewidth}}
+\toprule
+Candidate & Gate & Error pattern \\
+\midrule
+\endhead
+Recurrence determinism & Fail & Both positives detected, but stable
+Lorenz--96 was a false positive with DET=1.0. \\
+Paired divergence & Fail & Mackey--Glass false negative
+($-0.0067585$); stable Lorenz--96 false positive ($0.0106748$). \\
+Correlation 0--1 & Fail & Both positives false negatives; stable controls
+correctly rejected. \\
+Renormalized separation & Fail & Lorenz--96 positive detected; Mackey--Glass
+false negative ($-0.0009623$). \\
+Conditional entropy v1 & Protocol failure & Runner requested a nonexistent
+result attribute; no score was produced. \\
+Conditional entropy v2 & Fail & Both positives detected, but stable and
+shuffled Lorenz--96 were false positives. \\
+Nearest-neighbor divergence v1 & Protocol failure & Stable fixture had no
+eligible positive-distance pair; no score was produced. \\
+Nearest-neighbor divergence v2 & Pass & Mackey--Glass $0.0196568$ and
+Lorenz--96 $0.0130529$ promoted; stable/shuffled controls rejected or
+fail-closed as preregistered. \\
+\bottomrule
+\end{longtable}
+
+\obs{} Nearest-neighbor divergence v2 was the first complete six-fixture
+Stage-A pass. \textbf{It was not a grammar or compression pass.} The fresh
+prefix-quantized Stage-B test then lost to LZ78 on both positives:
+Mackey--Glass 8,824.829 versus 744 bits; full-state Lorenz--96 8,482.142
+versus 1,240 bits. This is the clearest decomposition in the project:
+geometric evidence can be present while the representation-plus-grammar code
+remains noncompetitive.
+
+\subsection{OmegaSim A6 integration}
+
+The first frozen OmegaSim detector run evaluated 180 rows: five seeds,
+couplings 0.35/0.60, delays 0/3, appraisal/linear/shuffled dynamics, and three
+feature strata. One of twelve preregistered cells promoted:
+coupling 0.60, delay 3, roles8, with four of five matched-seed wins. This was
+only bounded proxy evidence.
+
+The subsequent stratified re-sweep completed all 120 planned role-specific A6
+cells with three seeds and matched controls. Across the batches, every induced
+grammar had one or two productions and zero categories. Individual tuples
+occasionally achieved exploratory matched-control wins (including several
+4/6, 5/6, and 6/6 cases), but none met the grammar-priority rule of more than
+two productions or at least one category.
+
+\obs{} The A6 sweep is complete under its frozen protocol. \inferd{} It does not
+show that OmegaSim dynamics are simple; it shows that this CLA
+representation/search/coding pipeline does not expose nontrivial grammar in
+those traces. Repeating the same pipeline would mainly reproduce the same
+instrument limitation.
+
+Provenance:
+\texttt{projects/omegasim/experiments/20260715T153049Z-cla-detector-preregistered}
+and batches ending at
+\texttt{20260718T084500Z-a6-stratified-cla-resweep-10}.
+
+\section{Failure decomposition}
+
+\subsection{F1: high-dimensional symbolization}
+
+\textbf{Evidence:} 510 unique symbols in 1,024 points for 20D rectangular
+Lorenz--96; raw M1 perplexity around 258 versus 3.7--4.2 for
+low-cardinality controls.
+
+\textbf{Status: partially repaired.} Train-fitted k-means/microstates restore
+recurrence. Linear VAMP did not outperform matched PCA/raw controls. The next
+representation should be justified by a held-out predictive or coding win, not
+by kinetic terminology alone.
+
+\subsection{F2: proposal/search coverage}
+
+\textbf{Evidence:} OmegaSim returns nearly invariant one- or two-production,
+zero-category grammars; a tiny oracle-like joint chunk/category move can
+improve an objective, but ordinary greedy results remain trivial. Synthetic
+performance varies sharply across source families.
+
+\hyp{} Greedy single-edit search is myopic: useful categories or hierarchical
+rules may require a temporarily costly coordinated move. Candidate mining may
+also fail to propose motifs whose occurrences vary in context or phase.
+
+\textbf{Missing diagnostic:} For every iteration, record candidates proposed,
+support, data-bit saving, model-bit increment, total delta, overlap conflicts,
+and explicit rejection reason. Without this, ``MDL penalty too high'' and
+``search never found the grammar'' are observationally confounded.
+
+\subsection{F3: model transmission cost}
+
+\textbf{Evidence:} held-out v1 spent roughly 32.5 kbits per model; indexed and
+compact codecs saved hundreds to thousands of bits and reversed some synthetic
+decisions, but hard positives still lost because their suffix improvement did
+not repay the model. Fibonacci and paperfolding are especially diagnostic:
+suffix coding improved substantially while total coding lost.
+
+\hyp{} The current grammar format pays for generality it does not use:
+symbol identifiers, rule tables, parse/index metadata, and categories may be
+encoded independently rather than through a source-adaptive universal prior.
+There may also be duplicated structural information between grammar and parse.
+
+\subsection{F4: data code conditional on the grammar}
+
+\textbf{Evidence:} on attractor fixtures, even 65,536-symbol fixed-model
+amortization remained behind Markov-1. This cannot be explained solely by a
+one-time model cost. The induced grammar's conditional data code is itself too
+weak for these streams.
+
+\hyp{} Exact deterministic expansions are a poor fit to noisy/continuous
+dynamics. A probabilistic grammar or state-conditioned residual code may be
+needed: grammar for recurrent macrostructure, with a local Markov/arithmetic
+coder for deviations.
+
+\subsection{F5: objective mismatch}
+
+The algorithm seeks shortest exact code, while the scientific goal is
+compositional, intervention-relevant dynamical structure. LZ78 or Markov codes
+can win compression without yielding interpretable grammar, while a useful
+semantic grammar may initially cost more bits. Compression remains an
+essential anti-overfitting constraint, but one scalar objective may not be an
+adequate search guide.
+
+\hyp{} Use a two-stage or multi-objective scheme: first require held-out
+predictive gain beyond matched Markov/LZ controls, then select among competitive
+models using stability, category recovery, and intervention consistency.
+
+\subsection{F6: sample complexity and nonstationarity}
+
+The synthetic fixed-model source crossed only at 16,384 symbols. This confirms
+a real finite-sample threshold. But attractor runs failed even at 65,536
+symbols, so ``just use more data'' is not a sufficient general explanation.
+Phase sensitivity and changing local partitions suggest that stationary
+symbol grammars may be mismatched to nonstationary orbit geometry.
+
+\section{Prioritized algorithm-repair programme}
+
+\subsection*{R0: Build a transparent score decomposition}
+
+Add one machine-readable row per candidate and iteration:
+\[
+(\text{proposal type},\text{support},\Delta L_{\rm data},
+\Delta L_{\rm model},\Delta L_{\rm total},\text{accepted},\text{reason}).
+\]
+Also emit final totals by symbol dictionary, production topology, parameters,
+parse/index stream, and residual/literal escape stream.
+
+\textbf{Acceptance test:} on the generalized complete-code fixture, the report
+must reproduce the observed 6,232-bit data saving, 6,296-bit model increment,
+and +64-bit rejection exactly.
+
+\subsection*{R1: Oracle representability test}
+
+For each planted family, supply the true generating grammar in the current
+internal representation and compute:
+
+\begin{enumerate}
+\item oracle grammar plus suffix code;
+\item best grammar found by current search;
+\item external controls.
+\end{enumerate}
+
+If the oracle loses, the representation/code is inadequate. If the oracle wins
+but search loses, the problem is mining/search. If both win but learned
+categories differ, the problem is identifiability rather than compression.
+
+\subsection*{R2: Search ablations}
+
+On untouched synthetic families, compare:
+
+\begin{itemize}
+\item current greedy single move;
+\item beam search with widths 4, 16, and 64;
+\item paired chunk-plus-category moves;
+\item split/merge category moves;
+\item grammar initialization from suffix automata or Sequitur/Re-Pair;
+\item exact or branch-and-bound search on very small fixtures.
+\end{itemize}
+
+Match proposal sets and code accounting. Measure oracle recovery, total bits,
+runtime, and the first iteration at which the correct abstraction appears.
+
+\subsection*{R3: Replace deterministic exact grammar with a hybrid code}
+
+Keep exact reconstruction, but encode:
+
+\[
+L = L(G) + L(\text{macro parse}\mid G)
+    + L(\text{residual symbols}\mid \text{state/context}).
+\]
+
+Candidate residual coders should include KT/Dirichlet-smoothed Markov,
+context-tree weighting, and arithmetic coding. A grammar move should be
+credited only for the incremental conditional saving beyond the same residual
+coder without that move. This prevents grammar from being asked to explain
+every microscopic fluctuation.
+
+\subsection*{R4: Use hierarchical and probabilistic categories}
+
+Current exact-context categories are brittle. Test soft/overlapping categories
+with a transmitted membership model, and hierarchical nonterminals with
+explicit reuse. Category success should be measured on planted latent classes:
+adjusted mutual information, held-out code gain, stability across seeds, and
+counterfactual substitution validity.
+
+\subsection*{R5: Representation contest before grammar induction}
+
+Freeze a common downstream coder and compare:
+
+\begin{itemize}
+\item raw scalar/coordinate partitions;
+\item delay embeddings;
+\item PCA plus k-means;
+\item recurrence features;
+\item nearest-neighbor local geometry;
+\item nonlinear predictive embeddings;
+\item OmegaSim task-derived state factors.
+\end{itemize}
+
+Fit all transforms on the prefix only. Match alphabet size and occupancy.
+Select by held-out code/prediction, not by reconstruction variance. Linear VAMP
+should remain retired unless a new hypothesis predicts a specific advantage.
+
+\subsection*{R6: Fresh calibration ladder}
+
+\begin{enumerate}
+\item \textbf{Unit fixtures:} exact grammar recovery on tiny enumeratable
+sources.
+\item \textbf{Synthetic families:} substitution, hierarchical, stochastic,
+phase-shifted, and noisy grammars with exact-marginal nulls.
+\item \textbf{Sample-complexity curves:} predeclare horizons and estimate the
+crossover distribution across seeds.
+\item \textbf{Known dynamics:} fresh Mackey--Glass/Lorenz--96 trajectories,
+stable controls, and temporally structured surrogates.
+\item \textbf{OmegaSim positive control:} implant a known recoverable grammar
+into an A6-like observation channel before testing endogenous dynamics.
+\item \textbf{Untouched OmegaSim/A7:} only after the preceding gates pass.
+\end{enumerate}
+
+The promotion rule should require every planted positive to beat literal,
+unigram, Markov-1/2, context-tree, and LZ78 controls; all nulls must be
+rejected; categories must recover planted structure where categories are part
+of the fixture.
+
+\section{Concrete first three experiments}
+
+\begin{longtable}{p{0.08\linewidth}p{0.28\linewidth}p{0.29\linewidth}p{0.25\linewidth}}
+\toprule
+ID & Question & Design & Decision rule \\
+\midrule
+\endhead
+D1 & Is failure representational, search, or coding? &
+Ten tiny planted grammars; enumerate or provide oracle grammar; compare oracle,
+greedy, beam, and external codes. & Proceed only if oracle beats controls on
+all positives and search recovers at least 8/10 without null promotion. \\
+D2 & Is greedy myopia blocking categories? &
+Freeze proposal universe on complementary 3-uniform, Fibonacci, paperfolding,
+and two hierarchical noisy fixtures; compare greedy and paired/beam moves. &
+Search repair supported if it closes at least 80\% of oracle-to-greedy bit gap
+on every fixture at bounded runtime. \\
+D3 & Can a hybrid probabilistic grammar code chaotic symbols? &
+Fresh prefix/suffix Mackey--Glass and full-state Lorenz--96; fixed
+representation contest; CTW/Markov residual under no-grammar and grammar
+models. & Both positives beat all complete controls; stable/shuffled controls
+not promoted; exact decode and frozen-prefix invariants pass. \\
+\bottomrule
+\end{longtable}
+
+\section{What not to do}
+
+\begin{itemize}
+\item Do not tune thresholds, partitions, horizons, or source parameters on
+the already inspected frozen suffixes.
+\item Do not treat the nearest-neighbor Stage-A pass as a CLA grammar pass.
+\item Do not replace complete-code comparisons with the older compression
+proxy.
+\item Do not infer ``no chaos'' from a grammar-coding null.
+\item Do not enlarge OmegaSim before a planted OmegaSim-like positive control
+is recoverable.
+\item Do not optimize only model serialization: the 65,536-symbol attractor
+failures show that conditional data coding and representation also matter.
+\end{itemize}
+
+\section{Reproducibility map}
+
+Canonical project ledgers are under:
+\begin{itemize}
+\item \path{projects/chaos-language-algorithm/experiments/}
+\item \path{projects/omegasim/experiments/}
+\end{itemize}
+
+The most decision-relevant CLA ledgers are:
+\begin{itemize}
+\item \texttt{20260713T153839Z-lorenz63-rank-conditioned-vamp-tica}
+\item \texttt{20260716T172310Z-frozen-heldout-calibration-v1}
+\item \texttt{20260717T051500Z-generalized-complete-code-gate-v1}
+\item \texttt{20260717T091500Z-indexed-complete-code-gate-v1}
+\item \texttt{20260717T151800Z-frozen-heldout-calibration-v2}
+\item \texttt{20260717T171800Z-synthetic-detector-calibration-v1}
+\item \texttt{20260717T191500Z-synthetic-sample-complexity-v1}
+\item \texttt{20260717T231900Z-synthetic-uniform-morphism-v1}
+\item \texttt{20260718T071500Z-synthetic-compact-model-v1}
+\item \texttt{20260718T111500Z-synthetic-amortization-v1}
+\item \texttt{20260718T131500Z-attractor-amortization-v1}
+\item \texttt{20260719T071500Z-vector-recurrence-attractor-v1}
+\item \texttt{20260721T011500Z-nearest-neighbor-calibration-v2}
+\end{itemize}
+
+The Stage-B prefix-quantized null is summarized in
+\path{projects/chaos-language-algorithm/DECISIONS.md} (July 21 decision) and
+\path{NOTES.md}; its frozen outcome remains binding. The complete A6 closure is
+recorded in
+\path{projects/omegasim/experiments/20260718T084500Z-a6-stratified-cla-resweep-10/RUN.md}.
+
+\section{Bottom line}
+
+\obs{} CLA has crossed from an uncalibrated proxy prototype into a disciplined
+experimental system with exact codes, strong provenance, useful negative
+results, and one bounded geometric detector pass. It has not crossed the
+scientific gate that matters for OmegaSim: a nontrivial induced grammar that
+beats strong complete-code controls on fresh chaotic data and remains stable
+under matched nulls.
+
+\inferd{} The most likely repair is not one parameter change. The evidence
+supports a three-part redesign: transparent oracle-relative search
+diagnostics, a more expressive hierarchical/probabilistic grammar with a
+competitive residual coder, and representation selection by held-out coding
+rather than proxy compression. The proposed D1--D3 experiments can determine
+which part is decisive without another broad, ambiguous sweep.
+
+\vfill
+\small
+\textbf{Repository:} \codeurl.\\
+\textbf{Report source:}
+\path{docs/cla_experiments_and_repair_diagnostic_20260723.tex}.
+
+\end{document}

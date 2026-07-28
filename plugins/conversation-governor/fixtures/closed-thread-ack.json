@@ -1,0 +1,1 @@
+{"thread":{"schema_version":"1.0.0","thread_id":"thread-7","state":"CLOSED","updated_at":"2026-07-27T22:00:00.000Z"},"candidate":{"text":"Acknowledged."},"expected":{"decision":"DROP","reason":"ACKNOWLEDGMENT_ONLY","state":"CLOSED"}}

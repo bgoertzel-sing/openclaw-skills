@@ -1,0 +1,20 @@
+# Git State
+Captured UTC: 2026-07-19T23:32:44Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/worktrees/tinyshakespeare-hdpc
+Commit: ee77c3e26c16bc849a12e39a9c04614586aeb034
+Branch: agent/epc-outcome-probes
+Remote names: 
+
+## Status
+## agent/epc-outcome-probes
+ M scripts/run_gpt2_diagnostic_cpu.py
+?? configs/epc_outcome_probe_local_substantive.json
+?? scripts/run_epc_representation_audit.py
+?? src/relaleap/hdpc/representation.py
+?? tests/test_representation_diagnostics.py
+
+## Diff summary
+ scripts/run_gpt2_diagnostic_cpu.py | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

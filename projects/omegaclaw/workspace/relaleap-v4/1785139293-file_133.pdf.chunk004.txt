@@ -1,0 +1,137 @@
+ train on the
+C2 train states’ exhaustive tables (≈ 12,000 transitions across families), targets Y rollout − τb, per-
+(family, horizon) train-only standardization; sign probabilities isotonic-calibrated on calibration
+seeds only, exactly as in V2/V3.
+    Gates. Inside the C2 validity radius: MSE change ≤ +5% (do-no-harm). Outside it
+(specifically h = 25, and any failed C2 cells): MSE improvement ≥ 20% over backbone-alone
+and over constant and support-only baselines; sign ECE ≤ 0.15; ensemble agreement statistics
+reported. If the residual passes nothing, ship the backbone as instrument (see falsification
+section) — that outcome is a deliverable, not a failure.
+
+A.5    Stage C4: small Transformer (first GPU stage, ≤ 12 GPU-h)
+Purpose. The smallest honest Transformer instantiation: per-head modules, surrogate curva-
+ture, confusion-sparsified pairs.
+   Numerics.
+
+  Model: 2-layer causal Transformer, dmodel = 128, 4 heads/layer (8 head modules), dff = 512
+   (2 FF modules; M = 10), vocab 64, sequence length 64, dropout 0, float32 with float64
+   reductions.
+
+  Data: Task A = PCFG synthetic grammar (reuse the CGCCT Stage-P1 generator), 5M
+   tokens, pretrain 8,000 AdamW steps, η = 3 × 10−4 , β = (0.9, 0.999), weight decay 0.01,
+   batch 32, cosine decay to 3 × 10−5 , gradient clip 1.0. Task B = terminal-remapped grammar
+   (systematic interference), 400 adaptation updates at η = 10−4 , clip 1.0.
+
+  Retained evaluation: a frozen 200-batch Task-A eval set; gA estimated as the mean over an
+   8-batch replay draw per decision state, with CMCP typed deduplication if a replay buffer
+   (rather than fresh draws) is used.
+
+  Decision states: every 5 adaptation updates (80 per seed); horizons h ∈ {1, 5, 10, 25}; α ∈
+   {0.5, 0.1}; actions: ordinary, 10 singles, and the top-5 confusion-graph pairs (footprint codes
+   per §7, D = 8,192 bipolar, ANN over the 45 candidate pairs is trivial at this scale but the
+   machinery must run end-to-end because C5/scale-up depend on it).
+
+  Curvature: true HVPs are affordable at this scale — use them; also compute the empirical-
+   Fisher block surrogate at every state and report its agreement (cosine, magnitude ratio) as
+   the calibration that a later GPT-2-small stage will rely on. Surrogate admission threshold
+   for future use: cosine ≥ 0.8, magnitude ratio in [0.5, 2], at ≥ 30 states.
+
+  Noise floors and effect-size precheck exactly as in C2 (30 probe states, 64 replicates); seeds
+   3 minimum, per-seed reporting.
+
+    Gates. Backbone Spearman ≥ 0.4 vs paired rollout truth at h ≤ 10 among margin-qualified
+states, per seed; synergy Spearman ≥ 0.5 on confusion-graph pairs vs measured pair-minus-
+singles; frozen-D acceptance as in C2; residual head (retrained on Transformer data with C3
+hyperparameters) subject to the same do-no-harm / earn-your-keep gates. Report, descriptively,
+
+                                                  19
+which heads carry persistent conflict terms — this table is the input the CGCCT commutator
+loss has been waiting for.
+
+A.6    Stage C5: CAROM track (CPU or ≤ 4 GPU-h)
+Purpose. The three CAROM semantics, in increasing order of novelty.
+   Numerics. Reuse the CAROM sandbox configuration: operator library K = 8, 16 slots,
+program length 6, 4 context families; BPTT-trained scheduled variant as substrate (i); fixed-
+point variant as substrate (ii); itinerant/LV arbitration as substrate (iii).
+ 1. Scheduled: operator-level gating actions (M = K + 1 counting the control system as a
+    module); tangent propagator through the unrolled program; gates as in C2 with the same
+    margin discipline; 60 decision states × 3 seeds, horizons {1, 5, 10}.
+ 2. Fixed-point: IFT sensitivities via conjugate gradients (tolerance 10−6 , max 200 iterations,
+    warm-started); validation against nudged finite differences (nudge 10−3 , central): relative
+    error ≤ 10% at 20 probe equilibria before any effect estimates are reported.
+ 3. Discrete commutators: 500 paired CRN measurements of d(Ui Uj , Uj Ui ) across the 6 context
+    pairs from snapshots along training, d = max over per-context eval-loss differences. Gate:
+    Spearman ≥ 0.5 between measured commutator magnitude and realized forgetting when the
+    contexts are subsequently trained sequentially (both orders, paired). This is the CAROM-
+    native critic claim; if it fails while (1) passes, the discrepancy localizes the non-gradient
+    components as the obstruction — report which.
+
+A.7    Stage C6: policy pilot (only if C2 and C4 pass)
+The conservative V-series policy, re-expressed on vector outcomes and the validity radius (§5),
+evaluated on the C2 test bed first: retention vs ordinary and support-score controls, incoming
+loss within 0.02 nat, positive paired bootstrap (104 resamples), superiority to frequency-matched
+random, ≥ 50% of oracle improvement (oracle from exhaustive tables), credit-wavefront and
+effective-rank diagnostics preserved. New protocol version, fresh seeds, thresholds frozen before
+the first confirmation seed is opened — V-series discipline unchanged.
+
+A.8    Frozen choices and allowed knobs
+Never change: the estimand (1) and CRN pairing; the gate definitions and thresholds once C1
+completes; the validity-radius definition (ρ ≥ 0.8, e ≤ 0.25, margin ≥ 3σ); the effect-size precheck
+rule (≥ 5σ, at most 3 strengthening iterations); the behavior-policy mix; float64 for the fixture;
+the per-seed reporting requirement; the do-no-harm bound on the residual. May change with
+a one-line note: horizon and α grids; residual width/depth within [1, 4] × [32, 128]; learning
+rates (halve on divergence, clip 1.0); CG tolerances; footprint dimension D; number of confusion-
+graph pairs [3, 10].
+
+A.9    Budgets and global stop conditions
+C0–C3 are CPU-only; C4 ≤ 12 GPU-hours; C5 ≤ 4 GPU-hours; hard programme ceiling 3
+GPU-days including reruns. Stop and report (partial results are a deliverable) if: C0 or C1
+Gate 1 fails; C2 yields no valid cell at h ≤ 5 and the operator directs a halt; cumulative compute
+exceeds the ceiling; or any fix would touch a frozen choice.
+
+                                                20
+A.10    Report format
+Produce RESULTS.md containing: environment and pinned versions; per-stage gate outcomes
+with measured numbers beside thresholds; the validity-radius maps (C2, C4) as tables over
+(h, α); the no-signal fraction curves; the synergy identity check; the controlled-autopsy Spearman
+ceiling next to the backbone’s; the frozen-D/exact-D and HVP/Fisher agreement tables; per-
+seed numbers throughout; every deviation in one line; and a closing paragraph answering, in
+order: did the backbone validate where truth is exact; what is the validity radius on real learners;
+does learning add anything beyond the theory; do measured commutators predict CAROM
+forgetting; and what single follow-up is most informative. Attach all JSON artifacts and the
+commit SHAs, following the V-series provenance conventions.
+
+
+References
+  Goertzel, B. Causal Coding and the General Causal-Continual-Learning Theorem. Manuscript,
+   December 2025.
+
+  RelaLeap project. Co-learned Global Causal Critic: Idea, Tests, Negative Results, and Ques-
+   tions for External Review. Technical briefing, July 26, 2026.
+
+  RelaLeap project. CMCP-Guided ePC Distillation: Matched-Budget Calibration. Experi-
+   ment record 20260725T161000Z, July 2026.
+
+  Goertzel, B. Hypervector Frames for Category-Guided Causal Coding. Manuscript, July
+   2026.
+
+  CAROM series working notes, including From Scheduled Execution to Itinerant Dynamics
+   and PC-CAROM, July 2026.
+
+  Commutator-critic sandbox: quadratic demo.py, mlp demo jax.py, with RESULTS.md and
+   JSON artifacts. Companion code to this note, July 2026.
+
+  Yu, T., et al. Gradient Surgery for Multi-Task Learning (PCGrad). NeurIPS 2020. (Recalled
+   from model memory; verify before use.)
+
+  Bai, S., Kolter, J.Z., Koltun, V. Deep Equilibrium Models. NeurIPS 2019. (Recalled from
+   model memory; verify before use.)
+
+  Martens, J., Grosse, R. Optimizing Neural Networks with Kronecker-factored Approximate
+   Curvature (K-FAC). ICML 2015. (Recalled from model memory; verify before use.)
+
+
+
+
+                                                21
+

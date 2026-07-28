@@ -1,0 +1,24 @@
+# Git State
+Captured UTC: 2026-07-25T03:10:00Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1
+Commit: 9436f10fe19dcb40412c0bd3c3de774a7a0eed7b
+Branch: agent/e1-guarded-homotopy
+Remote names: 
+
+## Status
+## agent/e1-guarded-homotopy
+?? artifacts/
+?? configs/e1_homotopy_calibration.json
+?? configs/e4_cmcp_biased_injection_v1.json
+?? configs/e4_cmcp_replay_sweep_v1.json
+?? scripts/run_e1_calibration_multi.py
+?? scripts/run_e4_cmcp_biased_injection.py
+?? scripts/run_e4_cmcp_replay_sweep.py
+?? src/relaleap.egg-info/
+?? src/relaleap/hdpc/e4_cmcp_biased.py
+?? tests/test_e4_cmcp_biased.py
+?? tests/test_e4_cmcp_replay_sweep.py
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

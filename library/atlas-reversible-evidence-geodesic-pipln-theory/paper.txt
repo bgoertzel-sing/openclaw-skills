@@ -1,0 +1,2709 @@
+Atlas-Indexed Reversible Evidence-Fibered Geodesic
+                      πPLN
+Local Bayesian Charts, Higher Proof Geometry, Revision, and Forgetting as Holonomy
+
+                                           Ben Goertzel
+                                    with GPT-5.6 Pro assistance
+
+                                           July 12, 2026
+
+
+                                              Abstract
+      Geodesic inference control treats reasoning as a boundary-value problem: among paths
+  from premise distributions to goal distributions, prefer a least-effort corridor guided by the
+  product of a forward reachability factor and a backward goal-usefulness factor. Paraconsistent
+  Geodesic Modal Homotopy Type Theory (PGM–HoTT) treats identity proofs as graded paths
+  with separate positive and negative evidence channels. The information-geometric theory of
+  energy-based continual learning decomposes forgetting into metric anisotropy and connection
+  curvature, and identifies finite order-dependent forgetting with holonomy around a task loop.
+  This paper integrates these ideas into an atlas-indexed, reversible, directed, evidence-fibered
+  formulation of πPLN.
+      The persistent cognitive state is not one posterior over one ambient sample space. It is a
+  context-indexed, provenance-rich, paraconsistent evidence metagraph. Ordinary Bayesian or
+  νPLN calculations occur inside temporary local charts, whose assumptions, priors, factorization
+  choices, and concept boundaries are explicit. Charts export empirical positive and negative
+  evidence back to the persistent layer; gluing charts into a larger probabilistic model is a theorem
+  to be earned, not a global axiom.
+      Mathematically, the architecture consists of an atlas-indexed family of directed higher proof
+  spaces and evidence fibrations. Their Grothendieck construction contains both within-context
+  inference and guarded context translation. Local Bayesian charts are modeled as reversible
+  evidence/probability lenses: in the beta–Bernoulli case, subtracting the chart prior on export
+  gives an exact round trip and proves that repeated chart construction cannot manufacture
+  evidence. Cross-context de-duplication is permitted only after translation to a covering context.
+  Probabilistic gluing is expressed as a homotopy-descent type; geodesic contractibility licenses an
+  essentially unique global chart, while emptiness records genuine non-gluability. A quantitative
+  descent obstruction is kept separate from curvature.
+      The paper proves an atlas-level local-to-global coherence theorem whose error is the sum of
+  defects of proof-rewrite cells, inference–translation naturality cells, context-composition cells,
+  chart round trips, and revision cells. In the smooth reversible limit, proof curvature, context
+  curvature, and mixed curvature are the bidegree components of one total evidence connection,
+  and endpoint order dependence is exactly its holonomy. The full diagnostic therefore has three
+  conceptually distinct parts: control-path multiplicity versus unique evidence, reversible holonomy,
+  and probabilistic descent obstruction. Revision becomes a first-class higher morphism, with
+  residuated fit, preservation, weakness, provenance correction, and a reversible complement.
+      We derive a hybrid geodesic controller that runs Schrodinger bridges inside local Bayesian
+  islands and uses quantale-valued costs for context changes, guarded translations, and revisions.
+  We give curvature-, novelty-, and descent-aware BGC scores; covering-context splice tests;
+  Dykstra-style chart and evidence residuals; and concrete MORK records for contexts, charts,
+
+
+                                                  1
+Atlas-Indexed Reversible Geodesic πPLN                             Goertzel with GPT-5.6 Pro assistance
+
+
+      transitions, descent cells, and reversible revisions. The resulting architecture searches a higher
+      atlas of proofs while transporting an auditable, non-duplicating, reversible evidence section over
+      it.
+
+
+Contents
+1 Introduction                                                                                             6
+  1.1 Contributions and theorem status . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           7
+
+2 Background I: PLN and geodesic inference control                                                          8
+  2.1 PLN truth values and evidence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             8
+  2.2 Schrodinger-bridge control . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          8
+  2.3 A precision concerning Noether conservation . . . . . . . . . . . . . . . . . . . . . . .             9
+
+3 Background II: PGM–HoTT, SENF, and TransWeave                                                    9
+  3.1 Split quantale and graded identity . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  3.2 Why a directed extension is needed . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+  3.3 Proof relevance before truncation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+4 Background III: πPLN as an atlas of local Bayesian charts                                                10
+  4.1 Persistent packet semantics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          10
+  4.2 Contexts and chart construction . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            11
+  4.3 The packet algebra and the evidence-count quantale . . . . . . . . . . . . . . . . . .               11
+  4.4 STV and beta projections . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           12
+  4.5 Exporting evidence rather than priors . . . . . . . . . . . . . . . . . . . . . . . . . .            12
+  4.6 Non-gluability is a real probabilistic phenomenon . . . . . . . . . . . . . . . . . . . .            12
+  4.7 Residuated revision . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        13
+  4.8 Local Bayesian islands in a strict control graph . . . . . . . . . . . . . . . . . . . . .           13
+
+5 Background IV: forgetting as metric anisotropy and curvature                                             14
+  5.1 Mode-resolved metric mismatch . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            14
+  5.2 Commutators and connection curvature . . . . . . . . . . . . . . . . . . . . . . . . .               14
+  5.3 Finite holonomy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          15
+  5.4 Causal coding and sparse confusing pairs . . . . . . . . . . . . . . . . . . . . . . . .             15
+
+6 A directed evidence-fibered extension of PGM–HoTT                                                        15
+  6.1 Grades and judgments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           15
+  6.2 Directed higher proof space . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          16
+  6.3 Evidence fibration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         16
+  6.4 Evidence continuity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          17
+  6.5 Evidence-preserving proof identity . . . . . . . . . . . . . . . . . . . . . . . . . . . .           17
+
+
+
+                                                      2
+Atlas-Indexed Reversible Geodesic πPLN                          Goertzel with GPT-5.6 Pro assistance
+
+
+7 Exact evidence de-duplication and approximate proof coherence                                         18
+  7.1 The double-counting functional . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        18
+  7.2 Homotopy de-duplication . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         18
+  7.3 Approximate de-duplication . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        18
+  7.4 Proof squares as local curvature cells . . . . . . . . . . . . . . . . . . . . . . . . . . .      19
+  7.5 Local-to-global proof-surface theorem . . . . . . . . . . . . . . . . . . . . . . . . . . .       19
+
+8 Control mass, evidence mass, and proof multiplicity                                                   20
+  8.1 Two measures on proof space . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         20
+  8.2 An exact mode-resolved identity . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         21
+  8.3 Overcounting and undercounting . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          21
+
+9 The smooth evidence connection and the PLN curvature decomposition                                    22
+  9.1 Reduction hypotheses . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        22
+  9.2 Conditional curvature theorem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         22
+  9.3 Directed bigons and finite relative holonomy . . . . . . . . . . . . . . . . . . . . . . .        23
+
+10 Reversible PLN                                                                                       23
+   10.1 Logical versus computational reversibility . . . . . . . . . . . . . . . . . . . . . . . .      23
+   10.2 Graph dilation of an arbitrary rule . . . . . . . . . . . . . . . . . . . . . . . . . . . .     24
+   10.3 How much ancilla is necessary? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      24
+   10.4 Bregman projections and dual residuals . . . . . . . . . . . . . . . . . . . . . . . . .        24
+   10.5 Dykstra variables as reversible projection ancillas . . . . . . . . . . . . . . . . . . . .     25
+   10.6 Exact group-commutator holonomy . . . . . . . . . . . . . . . . . . . . . . . . . . . .         25
+   10.7 Visible forgetting as projected reversible holonomy . . . . . . . . . . . . . . . . . . .       26
+   10.8 Reversible idempotent merge . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       27
+
+11 Reversible HoTT microphysics and directed PLN macrophysics                                           27
+   11.1 The microstate groupoid . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     27
+   11.2 Literal proof loops . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   27
+   11.3 TransWeave as a pseudofunctor on proof space . . . . . . . . . . . . . . . . . . . . .          28
+
+12 Atlas-indexed dE–PGM–HoTT for πPLN                                                                   28
+   12.1 The context category and guarded translations . . . . . . . . . . . . . . . . . . . . .         28
+   12.2 Doubly indexed evidence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     29
+   12.3 Charts as a contravariant prestack . . . . . . . . . . . . . . . . . . . . . . . . . . . .      29
+   12.4 Local Bayesian charts as reversible lenses . . . . . . . . . . . . . . . . . . . . . . . .      29
+   12.5 Context-guarded evidence equivalence . . . . . . . . . . . . . . . . . . . . . . . . . .        30
+   12.6 Homotopy descent for probabilistic charts . . . . . . . . . . . . . . . . . . . . . . . .       31
+   12.7 A quantitative descent obstruction . . . . . . . . . . . . . . . . . . . . . . . . . . . .      32
+   12.8 Three kinds of local coherence cell . . . . . . . . . . . . . . . . . . . . . . . . . . . .     32
+
+
+                                                    3
+Atlas-Indexed Reversible Geodesic πPLN                          Goertzel with GPT-5.6 Pro assistance
+
+
+   12.9 Atlas local-to-global coherence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     32
+   12.10Smooth total curvature and exact total holonomy . . . . . . . . . . . . . . . . . . . .         33
+   12.11Holonomy and descent obstruction are independent . . . . . . . . . . . . . . . . . . .          33
+   12.12Multiplicity, holonomy, and descent . . . . . . . . . . . . . . . . . . . . . . . . . . . .     34
+   12.13Revision as a first-class higher morphism . . . . . . . . . . . . . . . . . . . . . . . . .     34
+
+13 Hybrid geodesic control on the reversible πPLN atlas                                                 35
+   13.1 Local bridge actions, atlas moves, and fiber constraints . . . . . . . . . . . . . . . . .      35
+   13.2 Curvature-, revision-, and evidence-aware BGC . . . . . . . . . . . . . . . . . . . . .         35
+   13.3 Covering-context and holonomy-aware splicing . . . . . . . . . . . . . . . . . . . . .          36
+   13.4 Dykstra-PLN . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     37
+
+14 MORK realization                                                                                     37
+   14.1 Rewrite cells and proof classes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     37
+   14.2 Reversible rule applications . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    38
+   14.3 Context, chart, descent, and revision records . . . . . . . . . . . . . . . . . . . . . .       38
+   14.4 Local curvature probes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    39
+   14.5 Atlas frontier expansion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    40
+
+15 Worked examples                                                                                      41
+   15.1 Repeated chart construction does not create evidence . . . . . . . . . . . . . . . . .          41
+   15.2 Concept boundaries and covering contexts . . . . . . . . . . . . . . . . . . . . . . . .        41
+   15.3 A non-gluable chart triangle . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    42
+   15.4 Mixed curvature from infer–translate order . . . . . . . . . . . . . . . . . . . . . . .        42
+   15.5 Two proof paths, one causal innovation . . . . . . . . . . . . . . . . . . . . . . . . . .      42
+   15.6 Noncommuting projection rules . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       43
+   15.7 A reversible rule-loop probe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    43
+
+16 Empirical predictions and evaluation program                                                         43
+   16.1 Prior-cycling and chart-roundtrip tests . . . . . . . . . . . . . . . . . . . . . . . . . .     43
+   16.2 Holonomy versus non-gluability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      44
+   16.3 Translation naturality predicts ontology errors . . . . . . . . . . . . . . . . . . . . . .     44
+   16.4 Reversible corrective revision . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    44
+   16.5 Path multiplicity versus unique evidence . . . . . . . . . . . . . . . . . . . . . . . . .      44
+   16.6 Local commutators predict global path dependence . . . . . . . . . . . . . . . . . . .          44
+   16.7 Exact provenance removes inflation but not curvature . . . . . . . . . . . . . . . . .          45
+   16.8 Reversible residuals make forgetting recoverable . . . . . . . . . . . . . . . . . . . . .      45
+   16.9 Curvature-aware geodesic scheduling . . . . . . . . . . . . . . . . . . . . . . . . . . .       45
+   16.10Storage-efficiency frontier . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   45
+
+17 Limitations and open problems                                                                        45
+
+
+                                                    4
+Atlas-Indexed Reversible Geodesic πPLN                          Goertzel with GPT-5.6 Pro assistance
+
+
+   17.1 Choosing the context site and covers . . . . . . . . . . . . . . . . . . . . . . . . . . .      45
+   17.2 Model-class dependence of descent obstruction . . . . . . . . . . . . . . . . . . . . .         45
+   17.3 Partial translations and untranslated residue . . . . . . . . . . . . . . . . . . . . . .       46
+   17.4 Priors, hyperpriors, and chart identity . . . . . . . . . . . . . . . . . . . . . . . . . .     46
+   17.5 Formal type theory . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    46
+   17.6 Causal identity of evidence tokens . . . . . . . . . . . . . . . . . . . . . . . . . . . .      46
+   17.7 Smooth reduction validity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     46
+   17.8 Approximate sketches . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      46
+   17.9 Nonabelian proof holonomy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       46
+   17.10Privacy and reversibility . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   47
+
+18 Conclusion                                                                                           47
+
+A Notation summary                                                                                      48
+
+B A compact axiom package for implementation                                                            48
+
+
+
+
+                                                   5
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+1    Introduction
+A large uncertain-reasoning system must solve at least four problems at once.
+   First, it must decide which inference to perform. Geodesic inference control addresses this
+as a least-effort boundary-value problem. A good intermediate state is both reachable from the
+premises and useful toward the goal; in Schrodinger-bridge language these demands are represented
+by forward and backward factors f and g, with bridge mass proportional to f g [1, 9].
+   Second, it must decide when two derivations carry the same evidence. A raw proof graph counts
+syntactically distinct paths. But paraphrases, role permutations, rule reorderings, and repeated
+projections may all transport the same primitive observations. PGM–HoTT supplies a language
+for identities between proofs and for graded positive and negative identity evidence [2, 10]. An
+idempotent provenance fiber then turns those higher identities into an exact de-duplication rule.
+   Third, it must control order dependence. The coupling-dilemma theory separates a metric term,
+caused by weighting information modes incorrectly, from a curvature term, caused by noncommuting
+transport between task or solution manifolds. At finite scale the latter is holonomy [4]. Causal
+coding adds the structural observation that good causal modularity makes most update pairs
+commute or nearly commute, so global path dependence is controlled by a sparse graph of genuinely
+confusing pairs [3].
+   Fourth, it must reason without pretending that every cognitive context is a marginal of one
+master probability space. The πPLN formulation treats persistent knowledge as context-indexed
+positive and negative empirical evidence. Local Bayesian charts are created when a calculation needs
+ordinary probabilistic coherence, and their outputs are projected back to empirical evidence. Priors
+belong to charts, not to the durable evidence store. Some chart families glue; others provably do not.
+Revision therefore acts on evidence packets, provenance, translations, valuations, and ontologies,
+not only on one global posterior [5].
+   These requirements lead naturally to an atlas-indexed architecture. Instead of postulating one
+ambient proof base, associate each context with a directed higher proof space and an evidence
+fibration, and combine them into a total context–proof structure:
+
+                             one proof base with one evidence fibration
+                                                  ⇓                                               (1.1)
+                   a context-indexed atlas of proof bases and evidence fibrations
+
+Locally, the de-duplication, proof-surface, reversible-dilation, and holonomy results apply inside each
+context. Globally, two additional questions arise. Does inference commute with context translation?
+And do the local probability charts admit any coherent global gluing?
+   The central synthesis is:
+
+                      control mass lives on raw context–proof paths,
+                     evidence mass lives on context-guarded provenance components,
+                   double counting is a mismatch between these two masses,                        (1.2)
+              contextual forgetting is holonomy around proof-and-context loops,
+                     non-gluability is absence of a coherent global chart section.
+
+Holonomy and non-gluability must not be conflated. Curvature measures path-dependent transport
+when transports exist. Descent obstruction says that no global probabilistic object realizes all local
+charts, even when pairwise overlaps look compatible.
+
+                                                  6
+Atlas-Indexed Reversible Geodesic πPLN                          Goertzel with GPT-5.6 Pro assistance
+
+
+   A reversible implementation makes the higher geometry literal. A PLN implication need not be
+logically reversible, but a particular rule execution can be computationally reversible if it carries the
+information the visible step would erase: overwritten state, provenance overlap, chart assumptions,
+prior parameters, Bregman/Dykstra residuals, context labels, translation complements, and random
+seeds. The visible directed system is then a forgetting projection of an invertible microstate
+dynamics.
+
+1.1   Contributions and theorem status
+The manuscript distinguishes exact discrete statements, exact chart special cases, conditional smooth
+results, and design proposals.
+
+ Result                        Status              Content
+ Evidence de-duplication       Exact              Idempotent evidence transport prevents confi-
+                                                  dence growth from multiple representatives of
+                                                  one evidential proof class.
+ Proof-surface bound           Exact              The discrepancy between parallel derivations is
+                                                  bounded by the sum of local proof-rewrite defects.
+ Beta chart round trip         Exact              Importing empirical counts into a beta chart and
+                                                  exporting after subtracting the local prior is the
+                                                  identity; repeated chart construction cannot du-
+                                                  plicate prior mass.
+ Context-guarded         de-   Exact              Cross-context paths merge idempotently only af-
+ duplication                                      ter evidence-preserving transport into a covering
+                                                  context.
+ Probabilistic         non-    Exact example      Three pairwise unbiased anti-correlated charts
+ gluability                                       can agree on all one-variable overlaps and still
+                                                  admit no global joint distribution.
+ Descent formulation           Semantic theorem A homotopy-descent type represents coherent
+                               schema             chart gluings; geodesic contractibility gives an
+                                                  essentially unique global chart.
+ Atlas       proof-surface     Exact              Proof, translation, chart, context-composition,
+ bound                                            and revision defects add along a finite higher
+                                                  surface.
+ Reversible rule and revi-     Exact              Every deterministic visible update is the projec-
+ sion dilation                                    tion of an injective graph lift; Bregman projec-
+                                                  tions use the dual residual as a geometrically
+                                                  meaningful ancilla.
+ Total holonomy identity       Exact        under The difference between two complete context–
+                               invertibility and proof paths is displacement by their relative
+                               metric compatibil- group-valued holonomy.
+                               ity
+ Metric/curvature trans-       Conditional        Under explicit projection, Fisher, and operating-
+ fer to PLN                                       point hypotheses, the neural forgetting
+                                                  decomposition becomes multiplicity plus
+                                                  proof/context/mixed curvature.
+
+
+
+                                                   7
+Atlas-Indexed Reversible Geodesic πPLN                                 Goertzel with GPT-5.6 Pro assistance
+
+
+ Multiplicity–holonomy–        Definition   and        Keeps wrong evidence multiplicity, path-
+ descent diagnostic            conditional   de-       dependent transport, and failure of global proba-
+                               composition             bilistic gluing conceptually separate.
+ Hybrid atlas BGC and          Design proposal         Local Schrodinger bridges, quantale-valued tran-
+ MORK realization                                      sitions, revision moves, descent-aware splicing,
+                                                       records, and probes.
+
+
+   The exact atlas results require no global probability distribution, differentiable manifold, or neural
+energy. The Fisher–Rao formulas are a special smooth realization, not a foundational assumption of
+πPLN.
+
+
+2     Background I: PLN and geodesic inference control
+2.1    PLN truth values and evidence
+A standard PLN truth value may be represented by a strength-confidence pair (s, c). A convenient
+evidence parameterization uses positive and negative counts (α, β). With a confidence scale k0 > 0,
+                                                        α                     w
+                              w = α + β,         s=        ,           c=          .                    (2.1)
+                                                       α+β                  w + k0
+Conversely, for c < 1,
+                                      c
+                             w = k0       ,     α = sw,     β = (1 − s)w.                        (2.2)
+                                    1−c
+The scalar w is not sufficient for sound evidence accounting. Two capsules can each have weight
+w while being supported by exactly the same primitive observation. Confidence fusion therefore
+requires provenance, or at least an overlap estimator over provenance.
+   The local-first MORK design in geodesic inference control associates immutable evidence tokens,
+sketches, capsule nodes, and rule-application edges with Atomspace expressions. Merge is intended
+to be associative, commutative, idempotent, and overlap-aware [1]. In the exact model developed
+below, a capsule carries finite sets of primitive token identifiers. Approximate sketches are treated
+as a controlled implementation error.
+
+2.2    Schrodinger-bridge control
+Let X be a state space, t ∈ [t0 , t1 ], ρ(x, t) a probability density, v(x, t) a velocity field, and p(x) > 0
+a reference prior. A representative Schrodinger-bridge action is
+
+                                                    1
+                                    Z t1 Z
+                                                                         ρ(x, t)
+                                                                                      
+                     ASB [ρ, v] =           ρ(x, t)   ∥v(x, t)∥2 + ε log         dx dt,                 (2.3)
+                                     t0   X         2                     p(x)
+
+subject to
+                         ∂t ρ + ∇ · (ρv) = 0,       ρ(·, t0 ) = ρ0 ,        ρ(·, t1 ) = ρ1 .            (2.4)
+For a suitable reference transition kernel, the bridge has forward and backward factors f and g such
+that
+                                                  f (x, t)g(x, t)
+                                     ρ(x, t) = R                     .                          (2.5)
+                                                 X f (ξ, t)g(ξ, t)dξ
+
+
+
+
+                                                       8
+Atlas-Indexed Reversible Geodesic πPLN                             Goertzel with GPT-5.6 Pro assistance
+
+
+The control interpretation is immediate. The forward factor measures compatibility with the past
+boundary; the backward factor measures compatibility with the future boundary. A practical
+bidirectional geodesic chaining (BGC) heuristic scores a candidate rule step r by
+
+                                Score0 (r) = ∆(log f + log g) − λ ∆Cr ,                           (2.6)
+
+where Cr is local inference effort. Exact f and g may be replaced by factor-graph messages, Monte
+Carlo meet probabilities, or learned value functions [1].
+   The crucial point for this paper is that ρ is a control distribution over paths or partial proof
+states. It is not automatically a measure of independent evidence. Twenty cheap derivations can
+deserve more search attention than one expensive derivation while still carrying only one primitive
+observation.
+
+2.3     A precision concerning Noether conservation
+Time-translation invariance of an action such as (2.3) yields a Hamiltonian or effort-like conserved
+quantity under the usual regularity hypotheses. It does not, by itself, imply that a primitive evidence
+token cannot be copied down two branches and later counted twice.
+   We therefore distinguish:
+
+    (i) control-energy conservation, arising from symmetry of the path action;
+
+ (ii) evidence continuity, saying that pure inference does not mint new primitive observations;
+
+ (iii) idempotent fusion, saying that repeated references to one token contribute once;
+
+ (iv) flat or curvature-controlled transport, governing order dependence.
+
+The first is variational. The second and third are algebraic/provenance constraints. The fourth is
+geometric. Conflating them obscures which intervention is needed when inference goes wrong.
+
+
+3     Background II: PGM–HoTT, SENF, and TransWeave
+PGM–HoTT extends homotopy type theory in three directions [2]. First, identity has separate
+positive and negative evidence channels. Second, paths have grades in a logic quantale, making
+shortest or Pareto-minimal proofs first-class. Third, modalities can forget grades or enforce bounded
+consistency.
+
+3.1     Split quantale and graded identity
+Let Q+ and Q− be commutative unital quantales. Define
+
+                                         V = Q+ × (Q− )op .                                       (3.1)
+
+The reversal in the negative component represents the fact that increasing counter-evidence should
+weaken positive identity rather than strengthen it. For x, y : A and budgets τ + ∈ Q+ and τ − ∈ Q− ,
+PGM–HoTT uses graded families
+
+                                  Id+
+                                    A,≤τ + (x, y),       Id−
+                                                           A,≤τ − (x, y).                         (3.2)
+
+                                                     9
+Atlas-Indexed Reversible Geodesic πPLN                         Goertzel with GPT-5.6 Pro assistance
+
+
+Positive and negative identity evidence may coexist without explosion. A left-exact forgetting
+modality discards grades and returns ordinary HoTT identity; a consistency modality can discharge
+sufficiently bounded negative evidence.
+   The theory is modeled by V -enriched infinity-groupoids, supports graded transport, and includes
+a guarded form of univalence. It underlies a Semantic Elegant Normal Form (SENF) and TransWeave
+mappings that align semantic frames, roles, entities, times, and regions while preserving graded
+identity information.
+
+3.2   Why a directed extension is needed
+An identity proof in HoTT is invertible. A PLN deduction is generally not. From premises A and
+A ⇒ B, deriving B does not produce a deductive inverse from B to the premises. Abduction is a
+different, uncertain operation.
+    Consequently, inference rules should not simply be identified with ordinary HoTT paths. The
+correct separation is:
+
+                 semantic identity is invertible, while visible inference is directed.           (3.3)
+
+We will model visible derivations as directed 1-cells in a higher category, while retaining ordinary
+PGM–HoTT identity in the maximal invertible core. Later, a reversible microstate dilation will
+show how directed visible rules can nevertheless arise as projections of invertible hidden-state paths.
+
+3.3   Proof relevance before truncation
+For a proposition A, let Der(Γ, A) be the full type or higher space of derivations from assumptions Γ.
+This object must retain syntax, provenance, grades, rewrites, and higher coherence. Mere provability
+is its propositional truncation,
+
+                                   Provable(A) = ∥Der(Γ, A)∥−1 .                                 (3.4)
+
+If truncation is applied before evidence overlap is resolved, the very distinctions needed for de-
+duplication disappear. The governing principle is therefore
+
+                                   deduplicate before truncating.                                (3.5)
+
+
+4     Background III: πPLN as an atlas of local Bayesian charts
+The πPLN proposal keeps ordinary Bayesian mathematics but changes its scope. The enduring
+semantics is a context-indexed, paraconsistent evidence metagraph. Probability spaces are temporary
+local charts used when a task requires them. A global probability space may be constructed when
+compatibility conditions warrant it, but it is not assumed a priori [5].
+
+4.1   Persistent packet semantics
+Let L be a typed metagraph language and Stmt(L) its statements. A persistent πPLN state has the
+form
+                        Kt : Stmt(L) × Ctx −→ P(Packet) × Qcnt
+                                                             ± × M,                       (4.1)
+
+
+                                                  10
+Atlas-Indexed Reversible Geodesic πPLN                               Goertzel with GPT-5.6 Pro assistance
+
+
+where M stores provenance, attention, reliability, task traces, assumption fingerprints, and ontology-
+boundary declarations. For a statement φ in context C, the primary object is a packet family
+                                            n                                     o
+                                                      −
+                              Et (φ, C) = ei = (∆+
+                                                 i , ∆i , Pi , ai , ri , . . .)       .              (4.2)
+                                                                                  i
+
+The familiar count pair is a cached valuation,
+                                             −
+                                    (Eφ,C
+                                      +
+                                          , Eφ,C ) = AggC (Et (φ, C)).                               (4.3)
+
+Packets, rather than collapsed counts, remain available for overlap correction, quarantine, retraction,
+temporal discounting, and ontology relabeling.
+
+4.2     Contexts and chart construction
+A πPLN context is a tuple
+                                  C = (LC , XC , EC , TC , AC , WC , ρC ),                           (4.4)
+where LC is a local language fragment, XC a local universe of discourse, EC selected evidence, TC
+the task or query, AC a temporary assumption package, WC a weakness or control structure, and
+ρC a relevance/reliability weight.
+   A chart constructor produces
+
+                               ΓC (Kt , TC ) = (ΩC , FC , νC , MC , DC , ιC ),                       (4.5)
+
+where (ΩC , FC , νC ) is a local probability space, MC a local model random variable, DC a local
+observation family, and ιC maps statements to local events. Inside this chart one may use ordinary
+Bayesian conditioning, sum-product, conjugate updating, or νPLN rule derivations.
+   The negative axiom is as important as the positive construction:
+
+      It is not required that there exist (Ω, F, ν) with every νC as a marginal or restriction.      (4.6)
+
+
+4.3     The packet algebra and the evidence-count quantale
+At the packet level, merge is idempotent on primitive provenance:
+
+                                                  e ∨ e = e.                                         (4.7)
+
+At the projected count level, πPLN uses
+
+                                      ± = ([0, ∞] , ≤, ∨, ⊗, (0, 0)),
+                                     Qcnt                                                            (4.8)
+                                                 2
+
+
+with componentwise order and join and
+
+                            (n+ , n− ) ⊗ (m+ , m− ) = (n+ + m+ , n− + m− ).                          (4.9)
+
+This tensor is exact for provenance-disjoint evidence. In general the count valuation vC is inclusion–
+exclusion aware:
+                            vC (e1 ∨ e2 ) = vC (e1 ) + vC (e2 ) − vC (e1 ∧ e2 ).                (4.10)
+Thus the additive quantale is a strict algebra for independent sufficient statistics, while the idempotent
+packet algebra is the more fundamental object for provenance.
+
+                                                      11
+Atlas-Indexed Reversible Geodesic πPLN                               Goertzel with GPT-5.6 Pro assistance
+
+
+4.4    STV and beta projections
+Let a chart use prior strength p0,C and virtual count kC > 0. The empirical counts project to a
+PLN simple truth value
+
+                                    n+ + kC p0,C                     n+ + n−
+                            sC =                 ,          cC =                 .                 (4.11)
+                                   n+ + n− + k C                   n+ + n− + k C
+Setting
+                              α0,C = kC p0,C ,          β0,C = kC (1 − p0,C )                      (4.12)
+gives the beta projection
+                                    + −                              −
+                            ΠC
+                             Beta (n , n ) = Beta(α0,C + n , β0,C + n ).
+                                                          +
+                                                                                                   (4.13)
+
+Theorem 4.1 (Local beta recovery). Inside a Bernoulli chart containing n+ positive and n− negative
+empirical observations, the projection (4.13) is exactly the beta–Bernoulli posterior determined by
+the chart prior.
+                                                 +           −
+Proof. The likelihood is proportional to θn (1 − θ)n . Multiplication by the beta prior density
+θα0,C −1 (1−θ)β0,C −1 gives the beta posterior with parameters α0,C +n+ and β0,C +n− . The empirical
+counts are sufficient statistics; the prior parameters belong to the chart.
+
+4.5    Exporting evidence rather than priors
+A clean chart export has the form
+
+                                   OutC (φ) = (n
+                                               b+       b−
+                                                 C (φ), n C (φ), PC , AC ).                        (4.14)
+
+If a legacy interface emits a Bayesian STV whose strength already includes (p0,C , kC ), the prior
+must be unwound before persistence. If NC is the empirical count represented by confidence, then
+
+                             C (φ) = ρC (NC + kC )sC − kC p0,C ,
+                            ∆+                                                                     (4.15)
+                                                                       
+
+                            ∆−
+                             C (φ) = ρC     NC − ((NC + kC )sC − kC p0,C ) .                       (4.16)
+                                                                                
+
+
+A negative result or a value outside [0, NC ] is a chart-diagnostic failure, not evidence to be clipped
+silently.
+
+4.6    Non-gluability is a real probabilistic phenomenon
+Pairwise compatible charts need not extend to one global distribution; this is the classical marginal-
+extension/contextuality phenomenon studied in, for example, [6, 7].
+
+Theorem 4.2 (Non-extendible pairwise marginals). Let X, Y, Z ∈ {−1, +1}. For each pair, define
+the same unbiased distribution
+                                                1                                   7
+                       P (++) = P (−−) =           ,        P (+−) = P (−+) =          .           (4.17)
+                                                16                                  16
+The three pairwise charts agree on every one-variable marginal, but no joint distribution on (X, Y, Z)
+realizes all three.
+
+
+                                                       12
+Atlas-Indexed Reversible Geodesic πPLN                         Goertzel with GPT-5.6 Pro assistance
+
+
+Proof. Every one-variable marginal is uniform. Each pair has correlation
+                                                              1 7  3
+                            r = P (X = Y ) − P (X ̸= Y ) =     − =− .                            (4.18)
+                                                              8 8  4
+If a joint distribution existed, its correlation matrix
+
+                                                1 r r
+                                                         
+
+                                           R = r 1 r                                           (4.19)
+                                                      
+                                                 r r 1
+
+would be positive semidefinite because a⊤ Ra = E[(a1 X + a2 Y + a3 Z)2 ] ≥ 0. Its eigenvalues are
+1 − r, 1 − r, 1 + 2r, and 1 + 2r = −1/2 < 0. Contradiction.
+
+   This obstruction is stronger than disagreement between two probability estimates. Every local
+chart is valid and every overlap agrees; the global object does not exist.
+
+4.7   Residuated revision
+Let QC be a commutative residuated quantale with residual ⇒C , and let PC be a complete lattice of
+evaluable propositions or local metagraph patterns. Candidate revised states and evidence packets
+are projected into this shared lattice by
+
+                           evalK : KC (H, E) → PC ,       evalE : EC → PC .                      (4.20)
+
+For a weakness valuation wC : PC → QC , define
+
+                       fitC (K; E) = wC (evalE E) ⇒C wC (evalK K ∧ evalE E),                     (4.21)
+                     presC (K; H) = wC (evalK H) ⇒C wC (evalK K ∧ evalK H).                      (4.22)
+
+A hard revision maximizes preservation and weakness subject to a fit threshold; a soft revision
+lexicographically maximizes
+
+                        (fitC (K; E), presC (K; H), wC (evalK K), − Cost(K)).                    (4.23)
+
+This covers empirical addition, overlap discounting, quarantine, retraction, relabeling, context
+splitting, chart replacement, and ontology revision. Bayesian conditioning is recovered only in
+probability-valued local special cases.
+
+4.8   Local Bayesian islands in a strict control graph
+Inside a chart, probability valuations are generally lax with respect to event intersection: νC (A∩B) =
+νC (A)νC (B) only under chart-specific independence assumptions. Outside the chart, exported
+messages live in strict evidence and control quantales. A practical product label is
+
+                         QπPLN = Qassump × Qcnt
+                                            ± × Qweak × Qcost × Qprov .                          (4.24)
+
+Local probabilistic factor graphs compute their own marginals or sufficient statistics, then export
+evidence packets. The surrounding graph routes assumptions, evidence, weakness, cost, and
+provenance; it is not one global probabilistic factor graph.
+
+
+                                                    13
+Atlas-Indexed Reversible Geodesic πPLN                                       Goertzel with GPT-5.6 Pro assistance
+
+
+5     Background IV: forgetting as metric anisotropy and curvature
+This section summarizes the part of the coupling-dilemma theory used later. The original setting is
+an energy-based continual learner, not PLN, but its algebra applies whenever sequential updates
+and joint assimilation admit the same projection or contraction structure [4].
+
+5.1   Mode-resolved metric mismatch
+Let task t have quadratic loss
+                                                   1
+                                     ℓt (θ) =        ∥θ − θt⋆ ∥2At ,        At ⪰ 0,                         (5.1)
+                                                   2
+with joint information operator
+
+                                     M=                         λmin = λmin (M ).                           (5.2)
+                                             X
+                                                    At ,
+                                               t
+
+Sequential training produces mode-dependent recency weights w̄t,k , whereas the joint optimum uses
+precision weights b̄t,k . In the commuting mode-resolved model, normalized expected forgetting has
+the exact form
+                                           1 X X
+                                    Fbb =        Sk   (w̄t,k − b̄t,k )2 ,                     (5.3)
+                                          λmin k    t
+
+where Sk are eigenvalues of M . The equation says that even perfectly commuting tasks can forget:
+sequential learning can assign the wrong multiplicity to evidence in stiff information modes.
+
+5.2   Commutators and connection curvature
+For small gradient-flow steps, the Baker–Campbell–Hausdorff expansion gives
+
+                                                     1X
+                                                                                             !
+                          −τt At
+                                   = exp −   τt At +       τs τt [At , As ] + O(τ 3 ) .                     (5.4)
+                     Y                             X
+                          e
+                      t                    t
+                                                     2 s<t
+
+The first generator is order-free. All leading order dependence is in the commutators.
+   When the task Hessians are Fisher metrics of one statistical model evaluated at nearby operating
+points, the commutator is the contraction of the Fisher–Rao curvature, up to explicit non-exponential-
+family defects. The resulting decomposition, stated in the coupling-dilemma manuscript as Theorem
+26, is schematically
+
+                                  1 X                    XD                           E
+                     Fbb =                Sk B̄k + c           Ξst , [(δs ∧ δt )⌟R⊥ ]Ξst +Egen .            (5.5)
+                              λmin   k                   s<t
+                              |      {z       }      |                 {z             }
+                              metric anisotropy                connection curvature
+
+
+The metric term can be changed by natural-gradient or preconditioning methods. The curvature
+term is invariant under such a metric-only fix; it requires modularity, causal factorization, or another
+way of flattening the relevant connection.
+
+
+
+
+                                                               14
+Atlas-Indexed Reversible Geodesic πPLN                              Goertzel with GPT-5.6 Pro assistance
+
+
+5.3   Finite holonomy
+The leading-order commutator sum has a finite nonperturbative completion. Let Γ be the loop
+formed by a sequential task path followed by the reverse joint geodesic, and let e∥ be the residual
+direction transported around the loop. Then
+
+                                            1                   2
+                                 Forder =     (HolΓ (∇⊥ ) − I)e∥ .                                 (5.6)
+                                            2                   g
+
+In rank two, if the holonomy angle is Θ,
+                                                       2          Θ
+                                      Forder = 2 e∥        sin2     .                              (5.7)
+                                                       g          2
+In higher rank, an orthogonal holonomy decomposes into rotation planes with angles Θi and
+projectors Pi :
+                                                 Θi       2
+                               Forder = 2   sin2                                     (5.8)
+                                          X
+                                                    Pi e ∥ .
+                                          i
+                                                 2        g
+
+Dykstra correction variables resum the residuals omitted by ordinary cyclic projection and reconstruct
+the joint projection; geometrically, they carry the transport defect whose cycle product is holonomy.
+
+5.4   Causal coding and sparse confusing pairs
+Causal coding seeks a factorization in which each context updates only the causal modules it actually
+influences. In the smooth setting this suppresses cross-module Hessian blocks and Lie brackets. In a
+metric-enriched categorical setting, let Uc be the actual update, Vc an ideal context-local update,
+and
+                              d(Uc , Vc ) ≤ εc ,  ∆cc′ = d(Vc Vc′ , Vc′ Vc ).                   (5.9)
+Then the actual pairwise confusion cost is bounded by
+
+                                      δcc′ = 2(εc + εc′ ) + ∆cc′ .                                (5.10)
+
+An adjacent-swap argument shows that global path dependence is at most a sum over the confusing
+pairs actually crossed when one order is transformed into another [3]. This discrete local-to-global
+pattern will be reused directly for proof rewrites.
+
+
+6     A directed evidence-fibered extension of PGM–HoTT
+We now define the core mathematical structure. It will be called dE–PGM–HoTT: directed,
+evidence-fibered PGM–HoTT. The name describes a semantic extension rather than a completed
+proof-assistant implementation.
+
+6.1   Grades and judgments
+Let
+                              G = Q+ × (Q− )op × Qeff × Qdup × Qcoh                                (6.1)
+be a product quantale. The first two components are inherited from PGM–HoTT. The remaining
+components may record inference effort, an upper bound on duplicate-evidence exposure, and an
+upper bound on coherence defect.
+
+                                                  15
+Atlas-Indexed Reversible Geodesic πPLN                               Goertzel with GPT-5.6 Pro assistance
+
+
+   The core judgments are
+                Γ ⊢ x : B,       Γ ⊢ p : x ⇒g y,         Γ ⊢ α : p ⇛ω q,         Γ ⊢ e : Ev(x).     (6.2)
+Here p is a directed derivation, α is a 2-cell or proof rewrite, and e is evidence in the fiber above x.
+  Composition is graded:
+                         p : x ⇒g y,       q : y ⇒h z        =⇒   q ◦ p : x ⇒g⊗h z.                 (6.3)
+Horizontal and vertical composition of 2-cells accumulate coherence grade in the corresponding
+quantale component.
+
+6.2   Directed higher proof space
+Definition 6.1 (Directed proof base). A directed proof base is a G-enriched complete Segal object
+B. Its objects are belief or inference states, its directed 1-cells are rule applications and composite
+derivations, and its higher cells are proof rewrites and their coherences.
+
+   The maximal invertible subobject Core(B) is an infinity-groupoid. We require it to carry the split
+V = Q+ × (Q− )op enrichment of PGM–HoTT. Thus semantic identity, TransWeave equivalences,
+and graded positive/negative identity proofs remain invertible even though ordinary inference arrows
+are not.
+Remark 6.2. A complete Segal object is used because composition should be coherent rather than
+strictly associative. Readers who do not need this homotopy-level generality may replace B by a
+strict 2-category or even a directed graph with specified rewrite squares. All exact metric bounds
+below already hold in the strict discrete case.
+
+6.3   Evidence fibration
+Definition 6.3 (Evidence fibration). An evidence fibration over B is a cocartesian fibration
+                                                 πE : E −→ B                                        (6.4)
+whose fiber over x is a metric commutative idempotent evidence algebra Ev(x). Every derivation
+p : x ⇒ y induces a join-preserving, nonexpansive transport
+                                            Tp : Ev(x) −→ Ev(y),                                    (6.5)
+and every 2-cell α : p ⇛ q induces a specified comparison
+                                               ηα : Tp =⇒ Tq .                                      (6.6)
+
+   In the exact token model,
+                                       Ev(x) = Pfin (Ux+ ) × Pfin (Ux− ),                           (6.7)
+with join given by componentwise union. Positive and negative evidence are retained separately:
+                             (E + , E − ) ∨ (F + , F − ) = (E + ∪ F + , E − ∪ F − ).                (6.8)
+Therefore
+                                                  e ∨ e = e.                                        (6.9)
+A nonnegative weight function on primitive tokens gives valuations ν + and ν − . PLN truth values
+are computed from these valuations only after union and overlap correction.
+
+                                                        16
+Atlas-Indexed Reversible Geodesic πPLN                         Goertzel with GPT-5.6 Pro assistance
+
+
+6.4    Evidence continuity
+Definition 6.4 (Pure inference and observation). A pure inference transport Tp is provenance-
+noncreating if
+                                   supp(Tp e) ⊆ supp(e).                                (6.10)
+An observation morphism may add a fresh primitive token u not already in the support.
+
+   Pure inference may change which proposition a token supports, and it may attenuate or transform
+positive and negative weights according to a truth function. It may not create a second independent
+copy of the same token. In an implementation, references to one immutable token can fan out
+through many proof branches; the confidence valuation is still applied to their idempotent union.
+
+6.5    Evidence-preserving proof identity
+Definition 6.5 (Evidence equivalence). Two parallel derivations p, q : x ⇒ y are strongly evidence-
+equivalent, written
+                                           p ≃E q,                                           (6.11)
+if they are connected by a zigzag of 2-cells with zero coherence defect and their induced transports
+agree as maps Tp = Tq .
+
+   The evidence components of the derivation space are
+
+                                    π0E Der(x, y) := Der(x, y)/≃E .                             (6.12)
+
+This quotient is finer than mere equality of conclusions and coarser than syntactic equality of
+proofs. Two derivations proving the same proposition with independent observations must remain
+in different components. Two elaborate derivations that merely repackage one observation should
+lie in the same component.
+
+Proposition 6.6 (Semantic realization of the core fragment). Let B be a G-enriched complete Segal
+object whose core is a PGM–HoTT model, and let πE : E → B be an evidence fibration as above.
+Then directed composition, graded 2-cell composition, evidence transport, PGM–HoTT identity
+transport on the core, and the evidence-equivalence relation are all sound in this semantic structure.
+
+Proof. Directed composition and higher coherence are supplied by the complete Segal structure.
+Grades compose by the monoidal product in G. Cocartesian lifting supplies Tp , and functoriality
+gives Tq◦p ≃ Tq Tp . The restriction to Core(B) is an enriched infinity-groupoid, so the original
+PGM–HoTT identity interpretation applies there. Zero-defect 2-cells compose and invert within the
+chosen zigzags, and equality of induced transports is transitive, so ≃E is an equivalence relation.
+
+   This proposition is deliberately modest. It establishes a semantic package for the fragment used in
+this paper. A complete syntax with substitution, universes, guarded univalence, and normalization
+for all new directed/evidence constructs is a separate formalization project.
+
+
+
+
+                                                  17
+Atlas-Indexed Reversible Geodesic πPLN                                  Goertzel with GPT-5.6 Pro assistance
+
+
+7     Exact evidence de-duplication and approximate proof coherence
+7.1    The double-counting functional
+For parallel derivations P = {p1 , . . . , pn } and evidence e, define
+                                                n                      n
+                                                                                 !
+                                Ddc (P ; e) =                                                          (7.1)
+                                                X                      _
+                                                      ν(Tpi e) − ν           Tpi e .
+                                                i=1                    i=1
+
+For the exact token model, take ν(E) =           u∈E wu in either evidence channel.
+                                             P
+
+
+Proposition 7.1 (Multiplicity formula). Let mu be the number of transported capsules Tpi e con-
+taining token u. Then
+                              Ddc (P ; e) =   (mu − 1)+ wu ≥ 0.                           (7.2)
+                                            X
+
+                                                       u
+
+The same formula holds separately for positive and negative channels.
+
+Proof. The first term in (7.1) counts token u exactly mu times. The union in the second term
+counts it once if mu ≥ 1 and zero times otherwise. Subtraction gives (mu − 1)+ wu , and summing
+over tokens proves the claim.
+
+7.2    Homotopy de-duplication
+Theorem 7.2 (Exact evidential homotopy de-duplication). Suppose evidence merge is idempotent,
+transports preserve joins, and pi ≃E p1 for every i. Then for every e,
+                                                n
+                                                      Tpi e = Tp1 e.                                   (7.3)
+                                                _
+
+                                                i=1
+
+Therefore adding syntactic representatives of one evidential proof class cannot increase positive or
+negative evidence weight.
+
+Proof. Evidence equivalence gives Tpi e = Tp1 e for every i. By idempotence,
+
+                                        Tp1 e ∨ · · · ∨ Tp1 e = Tp1 e.                                 (7.4)
+
+Applying either channel valuation proves the last statement.
+
+Interpretation. Double counting is not primarily a numerical calibration error. It is a failure
+to preserve higher proof identity. A flat proof graph sees n paths; the evidence fibration sees one
+transported provenance class.
+
+7.3    Approximate de-duplication
+Assume each evidence fiber has a metric dE and join is nonexpansive:
+
+                                        dE (a ∨ c, b ∨ c) ≤ dE (a, b).                                 (7.5)
+
+
+
+
+                                                           18
+Atlas-Indexed Reversible Geodesic πPLN                                              Goertzel with GPT-5.6 Pro assistance
+
+
+Theorem 7.3 (Approximate de-duplication). Let ai = Tpi e and suppose
+
+                                         dE (ai , a1 ) ≤ ωi              (i ≥ 2).                                  (7.6)
+
+Then
+                                                 n                       n
+                                                                 !
+                                                                                                                   (7.7)
+                                                 _                       X
+                                          dE           ai , a1       ≤         ωi .
+                                                 i=1                     i=2
+
+If ν is Lν -Lipschitz, then
+                                                                               n
+                                                 !
+                                                ai − ν(a1 ) ≤ Lν                                                   (7.8)
+                                           _                                   X
+                                     ν                                                ωi .
+                                            i                                  i=2
+
+Proof. Set bj = a1 ∨ · · · ∨ aj . Since a1 ∨ a1 = a1 , nonexpansiveness gives
+
+                      dE (bj , bj−1 ) = dE (bj−1 ∨ aj , bj−1 ∨ a1 ) ≤ dE (aj , a1 ) ≤ ωj .                         (7.9)
+
+The triangle inequality proves (7.7). The valuation bound follows from Lipschitz continuity.
+
+   This theorem gives an explicit place for sketch error, approximate causal equivalence, or nonexact
+TransWeave alignment to enter the accounting.
+
+7.4    Proof squares as local curvature cells
+Consider two rules r and s that can be applied in either order:
+                                                           r
+                                                x        −−→          xr
+                                                s↓                   ↓ s|r                                        (7.10)
+                                                          r|s
+                                                 xs     −−−→ xrs .
+
+If the two endpoints are related by a semantic identity ι : xsr ≃ xrs in the PGM–HoTT core, define
+the evidence curvature defect of the square by
+                                                                                            
+                                  δ□ (e) = dE Tι Ts|r Tr (e), Tr|s Ts (e) .                                       (7.11)
+
+A zero-defect 2-cell fills the square coherently. A nonzero defect means that the same semantic
+endpoint receives different evidence depending on rule order.
+
+7.5    Local-to-global proof-surface theorem
+Theorem 7.4 (Proof-surface coherence bound). Let p, q : x ⇒ y be parallel derivations connected
+by a finite proof surface Σ tiled by local rewrite cells σ1 , . . . , σm . Assume evidence transport and
+contextual pre- and post-composition are nonexpansive. If cell σi has defect at most δi , then for
+every e ∈ Ev(x),
+                                                                     m
+                                            dE (Tp e, Tq e) ≤                                                     (7.12)
+                                                                     X
+                                                                             δi .
+                                                                     i=1
+
+Consequently,
+                                                                                    !2
+                                     1                    1 X
+                                       dE (Tp e, Tq e)2 ≤     δi                         .                        (7.13)
+                                     2                    2 i
+
+
+
+                                                           19
+Atlas-Indexed Reversible Geodesic πPLN                                Goertzel with GPT-5.6 Pro assistance
+
+
+Proof. Choose a sequence of derivations
+
+                                    p = p0 ⇛ p1 ⇛ · · · ⇛ pm = q                                    (7.14)
+
+that replaces one local cell at each step. Nonexpansiveness of common prefixes and suffixes implies
+
+                                         dE (Tpi−1 e, Tpi e) ≤ δi .                                 (7.15)
+
+The triangle inequality gives (7.12); squaring yields the second claim.
+
+Corollary 7.5 (Sparse confusing-rule bound). Suppose actual rule transports Ur are within εr of
+ideal local transports Vr , and define
+
+                         ∆rs = d(Vs Vr , Vr Vs ),        δrs = 2(εr + εs ) + ∆rs .                  (7.16)
+
+Then the discrepancy between two rule orders is bounded by the sum of δrs over the local inversions
+used to transform one order into the other. If only M rule pairs are confusing and δrs ≤ δ, the
+bound is O(M δ) rather than O(T 2 δ).
+
+Proof. The pairwise bound is the triangle-inequality estimate used in the approximate categorical
+CCL theorem. Apply the proof-surface theorem to the adjacent-swap surface that sorts one order
+into the other. Each inversion pair is crossed at most once.
+
+Interpretation. The 2-cells of proof space are not decorative. They are the local carriers of
+curvature. Causal modularity makes most squares flat because rules with disjoint causal support
+commute. The global proof-path defect is the accumulated failure of the remaining cells to commute.
+
+
+8     Control mass, evidence mass, and proof multiplicity
+8.1   Two measures on proof space
+Let ρctl (p) be the control mass assigned by the f g scheduler to a raw partial derivation p. Let
+
+                                    π : Der(x, y) −→ π0E Der(x, y)                                   (8.1)
+
+map a derivation to its evidential component C. The pushforward control mass is
+
+                                      (π∗ ρctl )(C) =          ρctl (p).                             (8.2)
+                                                         X
+
+                                                         p∈C
+
+Separately, let µev (C) be the unique evidence precision contributed by component C after idempotent
+provenance fusion.
+   There is no reason for these measures to coincide. Multiple easy proofs can make a region of
+proof space highly reachable while carrying one observation. Conversely, a difficult proof can carry
+rare independent evidence and be underexplored by a cost-only scheduler.
+
+
+
+
+                                                    20
+Atlas-Indexed Reversible Geodesic πPLN                                           Goertzel with GPT-5.6 Pro assistance
+
+
+8.2      An exact mode-resolved identity
+The next theorem is the proof-space analogue of the mode-resolved forgetting identity.
+Theorem 8.1 (Mode-resolved proof-multiplicity identity). Let M ≻ 0 have orthonormal eigenvectors
+uk and eigenvalues Sk , with λmin = mink Sk . Let C = 1, . . . , N index unique evidential components.
+Suppose independent centered innovations ξC ∈ Rd satisfy
+                                                                       ⊤
+                                         E[ξC ] = 0,             E[ξC ξD ] = σ 2 δCD I.                         (8.3)
+
+Let sequential/geodesic assimilation and joint unique-evidence assimilation be
+
+                                θseq = µ +                             θjoint = µ +                             (8.4)
+                                              X                                       X
+                                                      W C ξC ,                            BC ξC ,
+                                                  C                                   C
+
+where WC and BC commute with M and have mode entries wC,k and bC,k . Then
+
+                          1                         σ2 X X
+                                                          
+                      E       ∥θseq − θjoint ∥2M =         Sk   (wC,k − bC,k )2 .                               (8.5)
+                        2λmin                      2λmin k    C
+
+Proof. Write DC = WC − BC . Independence gives
+                                          2
+                                                          ⊤ ⊤                                 ⊤
+                                              =             D C M DC ξC = σ 2             tr(DC M DC ).         (8.6)
+                        X                         X                                 X
+                    E           D C ξC                 E ξC
+                            C             M       C                                   C
+
+Since DC and M are diagonal in the uk basis,
+                                             ⊤
+                                         tr(DC M DC ) =               Sk (wC,k − bC,k )2 .                      (8.7)
+                                                                 X
+
+                                                                 k
+
+Divide by 2λmin .
+
+  In a geodesic PLN controller, wC,k is induced by aggregated path occupation or update scheduling,
+while bC,k is the overlap-corrected precision that a joint assimilation of unique evidence would assign.
+
+8.3      Overcounting and undercounting
+Define
+                      ∆C,k = wC,k − bC,k ,              ∆+
+                                                         C,k = (∆C,k )+ ,         ∆−
+                                                                                   C,k = (−∆C,k )+ .            (8.8)
+Then
+                                                                  − 2
+                                              ∆2C,k = (∆+
+                                                        C,k ) + (∆C,k ) .
+                                                             2
+                                                                                                                (8.9)
+The positive part is evidence overcounting or repeated reinforcement. The negative part is evidence
+starvation, displacement, or inferential forgetting.
+   When bC,k > 0, define effective multiplicity
+                                                                      wC,k
+                                                         mC,k =            .                                   (8.10)
+                                                                      bC,k
+The contribution is
+                                                       b2C,k (mC,k − 1)2 .                                     (8.11)
+Thus the metric term is not merely “duplicate evidence.” It is the full squared error in how many
+effective uses the controller gives each unique evidential component.
+
+                                                                 21
+Atlas-Indexed Reversible Geodesic πPLN                                          Goertzel with GPT-5.6 Pro assistance
+
+
+Definition 8.2 (Proof-space multiplicity error). The mode-weighted control/evidence mismatch is
+                                                   1 X
+                                      Emult =                          (wC,k − bC,k )2 .                           (8.12)
+                                                                   X
+                                                              Sk
+                                                 λmin    k         C
+
+   This is the direct proof-space reading of metric anisotropy. A metric or scheduling change can
+reduce it without changing which proofs are semantically valid.
+
+
+9     The smooth evidence connection and the PLN curvature decom-
+      position
+The discrete results above require no manifold. We now state the hypotheses under which they
+admit the same smooth interpretation as energy-based continual learning.
+
+9.1    Reduction hypotheses
+Assumption 9.1 (Smooth proof-state reduction). There is a smooth manifold Θ of local PLN
+belief/evidence states, with a positive metric g, such that each rule or evidential component r has a
+smooth loss ℓr and update flow or projection on Θ.
+
+Assumption 9.2 (Projection model). Assimilating rule/evidence component r to local convergence
+is a Bregman projection onto a solution submanifold Mr . Joint overlap-corrected assimilation is
+the corresponding joint projection or joint minimum.
+
+Assumption 9.3 (One model, many operating points). The local Hessians Ar = ∇2 ℓr are Fisher
+or Gauss–Newton metrics of one statistical model evaluated at nearby operating points θr , up to
+bounded defects Er , curvature drift, and non-autoparallelity.
+
+Assumption 9.4 (Mode identification). The path-control weights and unique-evidence weights in
+(8.12) coincide with the recency and precision profiles of the projection model.
+
+   These are substantial assumptions. They are plausible for a differentiable PLN truth-value layer,
+a probabilistic circuit realization, or an energy-based neural-symbolic substrate, but they do not
+hold automatically for every symbolic rule engine.
+
+9.2    Conditional curvature theorem
+Theorem 9.5 (Proof-space metric-curvature decomposition). Under the smooth reduction hypotheses,
+for sufficiently nearby operating points and small sequential steps, normalized PLN path error satisfies
+                                                                   XD                                  E
+      FbPLN =                     Emult                       +c          Ξrs , [(δr ∧ δs )⌟RE,⊥ ]Ξrs +Eapprox .    (9.1)
+                                  | {z }
+                                                                   r<s
+                control multiplicity versus unique evidence    |                    {z                 }
+                                                                       evidence-connection curvature
+
+
+Here RE,⊥ is the normal curvature of the evidence/solution bundle, and Eapprox contains Hessian–
+Fisher mismatch, drift of the third-order tensor, extrinsic curvature, finite-step error, and provenance-
+sketch error.
+
+
+
+                                                              22
+Atlas-Indexed Reversible Geodesic πPLN                                Goertzel with GPT-5.6 Pro assistance
+
+
+Proof. Under the assumptions, the PLN assimilation problem is an instance of the projection model
+used in the coupling-dilemma theorem. Relabel the task index by the unique evidential component
+or rule index r. Assumption 4 identifies the first term of that theorem with (8.12). The BCH
+commutator term is identified, under Assumption 3, with the curvature of the Fisher/evidence
+connection contracted against the operating-point bivector. The stated defect terms are exactly the
+violations of the exponential-family, flatness, and exact-provenance hypotheses. Therefore (9.1) is a
+corollary of the metric-curvature decomposition in (5.5).
+
+Conceptual reading. The first term is one-dimensional: it concerns how a measure is placed
+on evidential 1-path components. The second is two-dimensional: it concerns whether evidence
+transport respects proof 2-cells. The first can be corrected by weighting or preconditioning. The
+second requires changing causal support, modularity, or connection structure.
+
+9.3    Directed bigons and finite relative holonomy
+For noninvertible visible inference, two parallel paths p, q : x ⇒ y form a directed bigon rather than
+a literal loop. The primitive discrepancy is
+
+                                  BigonDef(p, q; e) = dE (Tp e, Tq e).                               (9.2)
+
+If transport on a residual evidence bundle is invertible and metric-compatible, define relative
+holonomy
+                                       Hp,q = Tq−1 Tp .                                   (9.3)
+Then
+                                                      1
+                                 Forder (p, q; e) =     ∥(Hp,q − I)e∥2 .                             (9.4)
+                                                      2
+When p followed by q −1 bounds a proof surface Σ,
+                                                           Z
+                                         Hp,q = Sexp           RE .                                  (9.5)
+                                                           Σ
+
+Equations (5.7) and (5.8) then apply to the evidence residual.
+   The finite law is stronger than a statement that error is “related to” curvature. It says that the
+endpoint discrepancy is the actual monodromy of the evidence connection around the proof loop.
+
+
+10     Reversible PLN
+10.1    Logical versus computational reversibility
+A reversible implementation of a deduction does not assert the converse implication. It stores
+enough information to undo the exact state transition. If a visible rule is
+
+                                             U : X −→ Y,                                            (10.1)
+
+its inverse at the microstate level means “restore the previous x and all overwritten evidence
+registers,” not “deduce x from U (x) without those registers.”
+
+
+
+                                                      23
+Atlas-Indexed Reversible Geodesic πPLN                           Goertzel with GPT-5.6 Pro assistance
+
+
+10.2    Graph dilation of an arbitrary rule
+Theorem 10.1 (Reversible graph dilation). For every deterministic map U : X → Y , the graph
+map
+                 ιU : X −→ Graph(U ) ⊆ Y × X,        ιU (x) = (U (x), x),             (10.2)
+is a bijection. The visible rule is recovered by projection:
+
+                                             U = π Y ◦ ιU .                                       (10.3)
+
+Thus every deterministic visible rule is the projection of an invertible map onto its graph.
+
+Proof. The inverse Graph(U ) → X is projection onto the second coordinate. The projection identity
+is immediate.
+
+   For a sequence of rules, the second coordinate may be stored in a persistent history stack or
+represented by Bennett-style reversible computation [18]. If states are encoded as finite bit strings,
+standard reversible gates provide a global permutation on a sufficiently large register. The graph
+theorem isolates the information-theoretic content without committing to one gate set.
+
+10.3    How much ancilla is necessary?
+Proposition 10.2 (Worst-case ancilla lower bound). Let X, Y, A be finite, and let L : X → Y × A
+be injective with πY L = U . Then
+                                     |A| ≥ max |U −1 (y)|.                                 (10.4)
+                                                y∈Y
+
+Hence any fixed-length auxiliary record needs at least
+
+                                           log2 max |U −1 (y)|                                    (10.5)
+                                                 y
+
+bits in the worst case.
+
+Proof. For a fixed y, all x ∈ U −1 (y) have the same visible output. Injectivity of L therefore requires
+distinct auxiliary values in A for those inputs.
+
+   If X is random and the auxiliary record is losslessly prefix-coded conditional on U (X), its
+expected length is at least H(X | U (X)). Reversibility makes the cost of discarded information
+explicit rather than eliminating it.
+
+10.4    Bregman projections and dual residuals
+The most geometrically meaningful ancilla is often not a full history snapshot but the normal
+component discarded by projection.
+  Let Φ be a Legendre function on an open convex domain Ω ⊆ Rd , and let
+
+                              DΦ (z, x) = Φ(z) − Φ(x) − ⟨∇Φ(x), z − x⟩                            (10.6)
+
+be its Bregman divergence. Let C ⊆ Ω be nonempty, closed, and convex, and let
+
+                                    y = PCΦ (x) = arg min DΦ (z, x).                              (10.7)
+                                                          z∈C
+
+
+                                                     24
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+Theorem 10.3 (Reversible Bregman projection). Define the dual residual
+
+                                       q = ∇Φ(x) − ∇Φ(y).                                     (10.8)
+
+Then q ∈ NC (y), the normal cone of C at y, and
+
+                                       x = ∇Φ∗ (∇Φ(y) + q).                                   (10.9)
+
+Consequently the map
+                                            x 7−→ (y, q)                                     (10.10)
+is injective and has the displayed inverse on its image.
+
+Proof. First-order optimality for minimizing DΦ (·, x) over C is
+
+                                   0 ∈ ∇Φ(y) − ∇Φ(x) + NC (y),                               (10.11)
+
+so q ∈ NC (y). Since Φ is Legendre, ∇Φ is injective and ∇Φ∗ is its inverse on the corresponding
+dual domain. Therefore
+                             ∇Φ∗ (∇Φ(y) + q) = ∇Φ∗ (∇Φ(x)) = x.                          (10.12)
+
+
+
+   For Euclidean projection, Φ(x) = 12 ∥x∥2 and q = x − y. A projection that visibly discards a
+normal residual is therefore exactly reversible when the residual is propagated.
+
+10.5    Dykstra variables as reversible projection ancillas
+Bregman Dykstra algorithms attach dual correction variables to successive constraint projections.
+These variables carry forward the components that naive cyclic projection would discard. Theo-
+rem 10.3 gives a direct interpretation:
+
+               a Dykstra correction is a reusable dual residual of a lossy projection.       (10.13)
+
+In the coupling-dilemma holonomy theorem, the infinite family of carried increments resums the
+difference between cyclic and joint projection. In reversible PLN, propagating these residuals turns
+“evidence debt” into explicit state rather than hidden path dependence.
+
+10.6    Exact group-commutator holonomy
+Let A and B be invertible lifted rule maps on a microstate space X.
+                                                                 e We use the convention that
+ABz means apply B and then A.
+
+Definition 10.4 (Rule commutator holonomy). Define
+
+                                HA,B = (BA)−1 AB = A−1 B −1 AB.                              (10.14)
+
+Then
+                                          AB = BAHA,B .                                      (10.15)
+
+
+
+
+                                                 25
+Atlas-Indexed Reversible Geodesic πPLN                         Goertzel with GPT-5.6 Pro assistance
+
+
+Theorem 10.5 (Exact order-defect identity). If A and B are isometries of (X,
+                                                                          e d), then for every z,
+
+                                    d(ABz, BAz) = d(HA,B z, z).                               (10.16)
+
+More generally, for invertible isometric composite derivations U
+                                                               ep and U
+                                                                      eq with common endpoints, let
+
+                                                  e −1 U
+                                           Hp,q = U    ep .                                   (10.17)
+                                                   q
+
+Then
+                                     d(U     eq z) = d(Hp,q z, z).
+                                       ep z, U                                                (10.18)
+
+Proof. Since AB = BAHA,B and BA is an isometry,
+
+                        d(ABz, BAz) = d(BAHA,B z, BAz) = d(HA,B z, z).                        (10.19)
+
+The path statement is identical with BA replaced by U
+                                                    eq .
+
+   This identity turns a heuristic “commutator penalty” into the displacement generated by an
+actual closed executable loop: perform one order, undo the other order, and measure what remains.
+
+10.7    Visible forgetting as projected reversible holonomy
+Let Π : X
+        e → X forget residuals, provenance witnesses, inverse frames, and history registers.
+
+Definition 10.6 (Visible path-dependent forgetting). For two lifted derivations p, q, define
+                                                 1
+                                 Fvis (p, q; z) = dX (ΠU
+                                                       ep z, ΠU
+                                                              eq z)2 .                        (10.20)
+                                                 2
+Theorem 10.7 (Projection bound). If Π is nonexpansive and the lifted transports are isometries,
+then
+                                             1
+                             Fvis (p, q; z) ≤ dXe (Hp,q z, z)2 .                        (10.21)
+                                             2
+Equality holds whenever Π preserves the relevant holonomy displacement isometrically.
+
+Proof. By nonexpansiveness and the exact order-defect identity,
+
+                                  dX (ΠU
+                                       ep z, ΠU
+                                              eq z) ≤ d (U
+                                                       e p z, Uq z)
+                                                       X
+                                                         e    e                               (10.22)
+                                                    = dXe (Hp,q z, z).                        (10.23)
+
+Square and divide by two.
+
+   Nothing need be destroyed in the total microstate. Visible forgetting can arise because information
+has moved into hidden residual coordinates or because nontrivial holonomy rotates the full state
+around a proof loop. Reversibility makes both effects recoverable and auditable, but it does not
+make the connection flat.
+
+
+
+
+                                                  26
+Atlas-Indexed Reversible Geodesic πPLN                           Goertzel with GPT-5.6 Pro assistance
+
+
+10.8    Reversible idempotent merge
+The visible union E1 ∪ E2 is not invertible: it forgets which source supplied which token. A reversible
+evidence merge retains parent capsules and an overlap witness. At the simplest level,
+
+                                   (E1 , E2 ) 7−→ (E1 ∪ E2 , E1 , E2 )                         (10.24)
+
+is injective. A content-addressed DAG stores the parents without copying unchanged token payloads.
+Thus visible confidence can use an idempotent union while the hidden state remains exactly reversible.
+
+
+11     Reversible HoTT microphysics and directed PLN macrophysics
+The reversible dilation suggests a two-level semantic organization.
+
+11.1    The microstate groupoid
+Let Be be a type or infinity-groupoid of complete PLN microstates, including visible beliefs, evidence
+provenance, Bregman/Dykstra residuals, transport frames, and any random seeds needed for replay.
+A lifted rule instance is an equivalence
+                                              re : x
+                                                   e ≃ ye.                                       (11.1)
+It may therefore be represented by an ordinary HoTT path, with the PGM–HoTT positive/negative
+and geodesic grades attached.
+   Let
+                                          Π : Be −→ Bvis                               (11.2)
+be a forgetting map or modality. The visible rule
+
+                                             r : Πx
+                                                  e ⇒ Πye                                        (11.3)
+
+need not be invertible because its inverse requires the forgotten registers.
+   Thus
+                   directed inference = reversible path + a forgetting modality.                 (11.4)
+
+11.2    Literal proof loops
+Two lifted derivations
+                                              pe, qe : x
+                                                       e ≃ ye                                    (11.5)
+produce the literal loop
+                                            qe−1 · pe : x
+                                                        e≃x
+                                                          e.                                     (11.6)
+An evidence fiber over Be therefore carries a monodromy representation
+
+                                    ρE : Ω(B,
+                                           e xe) −→ Aut(Ev(x
+                                                           e)).                                  (11.7)
+
+Order-dependent forgetting is the displacement caused by this action.
+Remark 11.1 (Reversibility is not flatness). A family of reversible maps may be highly noncommuta-
+tive. Reversibility makes curvature exactly executable, measurable, and undoable; causal modularity
+or explicit connection correction is still required to make holonomy small.
+
+                                                   27
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+11.3    TransWeave as a pseudofunctor on proof space
+A TransWeave W should lift from a mapping between SENF representations to a pseudofunctor
+
+                                     W∗ : Der(S1 ) −→ Der(S2 )                                 (11.8)
+
+and an evidence map
+                                      WE : Ev(S1 ) −→ Ev(S2 ).                                 (11.9)
+For every derivation p, require a naturality 2-cell
+
+                                       θp : WE Tp ⇛ TW∗ p WE .                                (11.10)
+
+Its defect
+                                 ωW (p; e) = dE (WE Tp e, TW∗ p WE e)                         (11.11)
+measures TransWeave coherence curvature. Zero defect means “infer then translate” and “translate
+then infer” preserve evidence exactly. Alternative weaves that differ syntactically but have zero
+evidence defect belong to one evidential component and must not be counted as independent support.
+
+
+12     Atlas-indexed dE–PGM–HoTT for πPLN
+A complete πPLN semantics organizes directed higher proof spaces over a context atlas. Each
+context carries a proof base BC and an evidence fibration EC ; the total construction preserves
+the fiberwise de-duplication and holonomy structure while controlling translation, chart selection,
+revision, and gluing.
+
+12.1    The context category and guarded translations
+Let C be a category of admissible contexts. A morphism
+
+                                            τ : C −→ D                                         (12.1)
+
+is a guarded translation carrying a declared domain of statements, concept-boundary map, assump-
+tion transformation, reliability grade, and untranslated residue. A genuinely partial translation may
+be represented by a span
+                                           C ←− C0 −→ D                                         (12.2)
+from the subcontext C0 on which it is defined. This avoids pretending that every ontology map is
+total.
+   For each context C, let BC be the directed higher proof space valid in that context. An admissible
+translation induces a partial higher functor
+
+                                           τ∗ : BC 99K BD .                                    (12.3)
+
+We assume these assignments are pseudofunctorial on their domains: identity and composition are
+respected up to specified higher cells rather than silently identified.
+
+Definition 12.1 (Total atlas proof category). The total context–proof space is the Grothendieck
+construction                                   Z
+                                        Btot =     BC .                                   (12.4)
+                                                      C∈C
+
+
+                                                 28
+Atlas-Indexed Reversible Geodesic πPLN                               Goertzel with GPT-5.6 Pro assistance
+
+
+An object is a pair (C, x). A 1-cell
+
+                                         (τ, p) : (C, x) −→ (D, y)                                 (12.5)
+
+consists of a guarded translation τ : C → D and a derivation p : τ∗ x ⇒ y inside D.
+
+   Within-context rule application is the special case τ = IdC . A pure context change has p an
+identity in the target fiber. The total space therefore records whether a cognitive move changed a
+belief, changed the chart in which the belief is interpreted, or did both.
+
+12.2    Doubly indexed evidence
+For each (C, x) let EvC (x) be the provenance-sensitive evidence algebra. The atlas evidence structure
+is the composite fibration                Z
+                                      Etot =         EC −→ Btot −→ C.                              (12.6)
+                                               C∈C
+A total path P = (τn , pn ) · · · (τ1 , p1 ) induces evidence transport
+
+                                          TP = Tpn Tτn · · · Tp1 Tτ1 ,                             (12.7)
+
+with domains understood. Context transport must preserve primitive provenance identity even
+when it changes statement labels or count valuations.
+   The persistent πPLN state (4.1) is a section of this structure over statement–context pairs. It
+need not be a global probability measure; it is a global section of an evidence packet fibration.
+
+12.3    Charts as a contravariant prestack
+Inference transport is naturally covariant, but chart restriction is contravariant. We therefore also
+use a partial prestack
+                                     Chart : C op 99K ProbChart.                               (12.8)
+A refinement or inclusion i : U → C restricts a chart ΓC to i∗ ΓC on U . Descent asks whether
+compatible local charts are restrictions of one chart on a covering context.
+  This two-direction organization is deliberate:
+
+                    τ∗ : push statements and evidence along guarded translations,
+                                                                                                   (12.9)
+                    i∗ : restrict charts and probabilistic structure to overlaps.
+
+
+12.4    Local Bayesian charts as reversible lenses
+Let aC denote the assumptions and prior parameters of chart C. A chart episode has an import
+map
+                                    ICaC : EvC −→ ProbC                               (12.10)
+and an export map
+                                            aC
+                                           OC  : ProbC −→ EvC .                                   (12.11)
+They form a well-behaved evidence lens when
+                                                aC aC
+                                               OC IC = IdEvC                                      (12.12)
+
+                                                      29
+Atlas-Indexed Reversible Geodesic πPLN                             Goertzel with GPT-5.6 Pro assistance
+
+
+on the admissible empirical evidence domain. The reverse law need only hold on the image of
+import, because a chart may contain auxiliary posterior structure not representable by the persistent
+sufficient statistic.
+Theorem 12.2 (Beta chart round trip and prior non-duplication). Fix aC = (α0 , β0 ) and define
+
+                                 ICaC (n+ , n− ) = Beta(α0 + n+ , β0 + n− ),                    (12.13)
+                             aC
+                            OC  (Beta(α, β)) = (α − α0 , β − β0 )                               (12.14)
+
+on α ≥ α0 , β ≥ β0 . Then
+                                     aC aC
+                                    OC IC (n+ , n− ) = (n+ , n− ).                              (12.15)
+Consequently, any finite number of chart import–export cycles leaves persistent empirical evidence
+unchanged. By contrast, naively persisting posterior parameters as fresh counts adds one copy of
+(α0 , β0 ) per cycle.
+
+Proof. Substitution gives
+
+                             (α0 + n+ − α0 , β0 + n− − β0 ) = (n+ , n− ).                       (12.16)
+
+Iteration preserves the same pair. If posterior parameters are instead treated as empirical counts, one
+cycle maps (n+ , n− ) to (n+ + α0 , n− + β0 ); induction gives an added m(α0 , β0 ) after m cycles.
+
+Corollary 12.3 (Charting is not observing). A pure chart construction and local calculation do not
+mint primitive evidence tokens. Only an explicit observation or externally justified empirical packet
+may enlarge provenance support.
+
+   If import or export is lossy, use the reversible graph dilation of Theorem 10.1. There is an
+injective lift
+                                  IeC : (e, aC , 0) ←→ (πC , qC , aC ),                 (12.17)
+where qC is the complement needed to reconstruct e. For exponential-family projection, qC may be
+a Bregman dual residual; for a compressed factor graph it may contain discarded sufficient statistics
+and normalization data.
+
+12.5    Context-guarded evidence equivalence
+Parallel proofs from different contexts are not directly comparable. Let
+
+                            p : (C, x) ⇒ (C, y),        q : (D, x′ ) ⇒ (D, y ′ ).               (12.18)
+
+A comparison requires a covering decision context C∗ and guarded translations
+
+                                   τC : C → C∗ ,        τD : D → C∗ .                           (12.19)
+
+Definition 12.4 (Cross-context evidence equivalence). Write
+
+                                                p ≃C∗
+                                                   E q                                          (12.20)
+
+when the translated endpoints are identified in C∗ and a zero-defect 2-cell witnesses
+
+                                            TτC Tp = TτD Tq                                     (12.21)
+
+on the compared provenance support.
+
+                                                   30
+Atlas-Indexed Reversible Geodesic πPLN                                   Goertzel with GPT-5.6 Pro assistance
+
+
+Theorem 12.5 (Guarded cross-context de-duplication). If p ≃C∗
+                                                           E q, context transports preserve
+joins, and the evidence algebra in C∗ is idempotent, then
+
+                                   TτC Tp (e) ∨ TτD Tq (e) = TτC Tp (e).                              (12.22)
+
+If no admissible covering context and translation witness exist, the cross-context merge is undefined
+rather than automatically additive.
+
+Proof. The evidence-equivalence witness makes the two transported elements equal. Idempotence
+gives the displayed identity. The final clause is a typing rule: elements of distinct context fibers
+have no primitive merge operation until transported to a common fiber.
+
+   This rule blocks two symmetric errors. It prevents ontology smear, in which equal surface strings
+with different concept boundaries are averaged. It also prevents false independence, in which two
+chart-specific presentations of one primitive observation are counted twice.
+
+12.6    Homotopy descent for probabilistic charts
+Let {Ui → U } be a covering family of contexts and Γi local charts. On overlaps Uij suppose there
+are graded positive identities
+                                       αij : Γi |Uij ≃ Γj |Uij                            (12.23)
+with bounded negative-identity evidence and higher coherence on triple overlaps.
+
+Definition 12.6 (Chart descent type). The type of coherent global gluings is
+
+                         DescU (Γ• ) :=            Id+ (ΓU |Ui , Γi )
+                                          XY
+
+                                          ΓU   i
+                                                                                                      (12.24)
+                                                           Coh(αjk ◦ αij , αik ) × Cons− .
+                                                   Y
+                                               ×
+                                                   i,j,k
+
+
+   The PGM–HoTT definiteness criterion now applies one level higher.
+
+Proposition 12.7 (Geodesic gluing trichotomy). For a chart family Γ• :
+
+  (i) if DescU (Γ• ) is geodesically contractible, there is an essentially unique acceptable global chart;
+
+ (ii) if it is inhabited but not geodesically contractible, several inequivalent global charts remain and
+      must be guarded as alternatives;
+
+(iii) if it is empty, the local charts are non-gluable in the chosen chart class.
+
+Forgetting grades recovers the ordinary homotopy-descent statements.
+
+Proof. Item (i) is the PGM–HoTT soundness of geodesic definiteness applied to the descent type.
+Item (ii) is merely existence without uniqueness. Item (iii) is the definition of failure of descent. The
+grade-forgetting modality preserves the relevant finite limits and identity data by the PGM–HoTT
+assumptions.
+
+   For the anti-correlation family (4.17), the descent type of global joint probability charts is empty
+even though all one-variable overlap data agree.
+
+
+                                                            31
+Atlas-Indexed Reversible Geodesic πPLN                                     Goertzel with GPT-5.6 Pro assistance
+
+
+12.7    A quantitative descent obstruction
+Let ri Γ denote restriction of a candidate global chart to Ui , and let di be separating chart metrics
+or divergences. Define
+                                                                                     !1/2
+                              Odesc (Γ• ) = inf             ωi di (ri ΓU , Γi )                             (12.25)
+                                                      X
+                                                                                 2
+                                                                                            .
+                                               ΓU
+                                                       i
+
+Proposition 12.8 (Zero obstruction and exact gluing). If an exact global chart exists, then
+Odesc = 0. Conversely, if the infimum in (12.25) is attained and every di separates equality, then
+Odesc = 0 implies an exact gluing.
+
+Proof. An exact global chart makes every summand zero. Conversely, an attaining chart with zero
+weighted sum has di (ri ΓU , Γi ) = 0 for every positive weight, hence exact equality on every chart;
+the descent coherence data then supply the gluing.
+
+   The obstruction depends on the proposed global chart class. Enlarging the model class can
+reduce it; this is a feature, because ontology or layer revision may create a richer covering context.
+It must nevertheless be reported rather than hidden inside a forced approximate posterior.
+
+12.8    Three kinds of local coherence cell
+The atlas introduces new two-dimensional defects in addition to ordinary proof squares.
+  For a rule r in C and a translation τ : C → D, define the inference–translation naturality defect
+
+                                  δτ,r (e) = dED (Tτ Tr (e), Tτ∗ r Tτ (e)) .                                (12.26)
+
+It compares “infer then translate” with “translate then infer.”
+         τ     σ
+   For C −
+         →D−   → E, define the context-composition defect
+
+                                   δσ,τ (e) = dEE (Tσ◦τ (e), Tσ Tτ (e)) .                                   (12.27)
+
+   For a chart lens and a revision R, define
+
+                  ϵC (e) = dEC (OC IC e, e),         δR (e) = d(TRspecified e, TRimplemented e).            (12.28)
+
+The beta chart theorem gives ϵC = 0 in its exact domain.
+
+12.9    Atlas local-to-global coherence
+Theorem 12.9 (Atlas proof-surface bound). Let P, Q : (C, x) → (D, y) be total paths in Btot
+connected by a finite higher surface Σ. Suppose its generating cells are proof-rewrite cells, inference–
+translation cells, context-composition cells, chart round-trip cells, and revision cells. Assume all
+common pre- and post-compositions are nonexpansive. Then
+
+                     dED (TP e, TQ e) ≤              δσ +
+                                              X                     X
+                                                                               δτ,r
+                                          σ∈Σproof              (τ,r)∈Σmixed
+                                                                                                            (12.29)
+                                          +                 δσ,τ +                ϵC +
+                                                  X                     X                       X
+                                                                                                     δR .
+                                              (σ,τ )∈Σctx             C∈Σchart              R∈Σrev
+
+
+
+
+                                                           32
+Atlas-Indexed Reversible Geodesic πPLN                                  Goertzel with GPT-5.6 Pro assistance
+
+
+Proof. Choose a sequence of total paths from P to Q replacing one generating cell at a time. The
+change caused by each replacement is bounded by the cell defect after common prefixes and suffixes,
+by nonexpansiveness. Sum with the triangle inequality. This is the same adjacent-replacement proof
+as the single-context surface theorem, now in the Grothendieck construction.
+
+Corollary 12.10 (Flat atlas). If every generating defect in (12.29) vanishes, chart lenses obey exact
+round-trip laws, and the relevant descent type is inhabited, then evidence transport is independent
+of proof and chart presentation on every contractible total surface. If the descent type is also
+geodesically contractible, the global chart is essentially unique.
+
+12.10    Smooth total curvature and exact total holonomy
+Assume the total atlas bundle admits a smooth horizontal/vertical splitting. The curvature two-form
+decomposes by bidegree:
+                                         2,0      1,1      0,2
+                                Rtot = Rproof + Rmixed + Rcontext .                          (12.30)
+The first component measures rule-order curvature inside a context. The second measures failure
+of inference to be natural under context translation. The third measures curvature of chart and
+ontology transport.
+    The decomposition is a splitting of the curvature form, not an assertion that finite effects add as
+commuting scalars. The exact finite transport is the nonabelian surface-ordered exponential of the
+full form.
+Theorem 12.11 (Total relative holonomy). Let TeP and TeQ be reversible, metric-compatible lifts of
+two total paths with common endpoints. Define
+
+                                           HP,Q = TeQ−1 TeP .                                        (12.31)
+
+Then
+                                                      1
+                                 Fatlas (P, Q; e) =     ∥(HP,Q − I)e∥2 .                             (12.32)
+                                                      2
+If the resulting loop bounds a surface Σ, then
+                                                           Z
+                                        HP,Q = Sexp            Rtot .                                (12.33)
+                                                           Σ
+
+Proof. Metric compatibility gives
+
+                         TeP e − TeQ e = TeQ (HP,Q e − e) = ∥(HP,Q − I)e∥ .                          (12.34)
+
+The surface formula is nonabelian Stokes for the total connection.
+
+   The rank-two and multi-angle sin2 laws from the single-context theory apply to HP,Q on the
+reversible residual subbundle.
+
+12.11    Holonomy and descent obstruction are independent
+Proposition 12.12 (Two distinct global defects). Neither of the following implications holds in
+general:
+                            Rtot = 0 =⇒ DescU (Γ• ) inhabited,                          (12.35)
+                                 DescU (Γ• ) inhabited =⇒ HP,Q = I.                                  (12.36)
+
+                                                      33
+Atlas-Indexed Reversible Geodesic πPLN                          Goertzel with GPT-5.6 Pro assistance
+
+
+Proof. For the first failure, take the three anti-correlated pairwise charts. Within each chart and
+on each one-variable overlap, choose trivial flat transport. The curvature vanishes locally, but the
+global-joint descent type is empty by the non-extendibility theorem. For the second failure, take
+one globally defined probability chart but two nonlinear, noncommuting evidence projections inside
+it. The chart glues trivially, while their reversible group commutator is nonidentity.
+
+   Thus a complete diagnostic must report both path transport and chart existence.
+
+12.12    Multiplicity, holonomy, and descent
+Definition 12.13 (Atlas inference defect). For a task-specific family of local charts and two complete
+context–proof paths, define
+
+                                     1
+                   EπPLN = Emult +     ∥(HP,Q − I)e∥2 + λdesc Odesc (Γ• )2 + Eapprox .          (12.37)
+                                     2
+
+   The first term measures wrong effective use of unique evidence. The second measures path-
+dependent proof/context transport. The third measures failure of the selected probability charts
+to admit a coherent global realization in the proposed model class. The expression is a diagnostic
+and control objective in general. It becomes a literal error decomposition only under additional
+orthogonality and smooth reduction assumptions that identify the three residual channels.
+
+12.13    Revision as a first-class higher morphism
+A visible revision has the form
+                                      R : (C, H, E) −→ (C ′ , K).                               (12.38)
+It may add evidence, discount provenance, quarantine a packet, change a chart, split a concept,
+move to another ontology, or alter the valuation that defines weakness and relevance. Its grade can
+record
+                              ℓ(R) = (fit, pres, weak, cost, prov, coh).                     (12.39)
+The preferred revision is selected by (4.22)–(4.23).
+
+Proposition 12.14 (Reversible revision lift). Every deterministic revision R : S → S ′ has an
+injective graph lift
+                                     e 0) = (R(s), s).
+                                    R(s,                                               (12.40)
+For packet-level πPLN revision, the retained complement may be restricted to the information
+actually overwritten: old reliability and activity flags, old context and statement labels, the previous
+translation witness, the old chart assumptions, and any discarded packet decomposition.
+
+Proof. The graph lift is injective because its second component recovers s. The listed smaller
+complement is sufficient whenever the visible revision and unchanged persistent DAG together
+reconstruct all other fields.
+
+  A revision loop can therefore possess holonomy even when every step is auditable and undoable.
+Reversibility makes the defect recoverable; it does not make revision order-independent.
+
+
+
+
+                                                   34
+Atlas-Indexed Reversible Geodesic πPLN                                 Goertzel with GPT-5.6 Pro assistance
+
+
+13     Hybrid geodesic control on the reversible πPLN atlas
+13.1    Local bridge actions, atlas moves, and fiber constraints
+Within a fixed context C, the Schrodinger-bridge action lives on a local probabilistic base and has a
+local factorization
+                                    ρC (x, t) ∝ fC (x, t)gC (x, t).                            (13.1)
+Across contexts there need not be one probability density. A complete atlas path alternates local
+bridge segments with guarded translations and revision moves:
+                                             τ       R           τ
+                                     γ = γ1 −→
+                                             1      2
+                                               γ2 −−→     3
+                                                      γ3 −→ ··· .                                    (13.2)
+
+Its semantic label is naturally product-quantale-valued:
+                                     O C
+                            L(γ) =    LSBi (γi ) ⊗   ℓ(τj ) ⊗   ℓ(Rk ).                              (13.3)
+                                                   O          O
+
+                                       i                 j                 k
+
+A scalar action is a scheduling projection of this richer label, not the foundational semantics.
+   Evidence consistency lives in the total fiber. The local bridge energy, provenance constraints,
+revision quality, and descent risk need not be identified.
+   Let e(t) be an evidence section along a controlled path and DtE e its covariant derivative. Let
+Jobs denote genuinely new observational evidence. A useful scalarized augmented objective is
+                                         η
+                                             Z
+                                                                       2
+                     Atot = ASB [ρ, v] +         ρ DtE e − Jobs            dt
+                                   Z     2
+                             + λdc     ρ Ddc dt + λcurv            δσ + λdesc Odesc (Γ• )2 .         (13.4)
+                                                             X
+
+                                                             σ∈Σ
+
+The terms respectively choose low-effort local proof corridors, enforce lawful evidence transport,
+penalize repeated provenance, discourage locally curved rule/context combinations, and penalize
+forced use of a non-gluable chart family.
+   An alternative is to minimize only ASB subject to hard constraints
+
+                            DtE e = Jobs ,       Ddc = 0,            Forder ≤ εhol .                 (13.5)
+
+This makes clear that path effort, evidence conservation, and holonomy are distinct structures.
+
+Proposition 13.1 (Path-independent evidence in the flat exact limit). Suppose a simply connected
+region of proof space has zero evidence curvature on every generating 2-cell, transports preserve
+idempotent joins, and pure inference introduces no new tokens. Then any two homotopic derivations
+with common endpoints transport the same evidence, and merging all such derivations adds no
+confidence beyond one representative.
+
+Proof. Zero cell defects and the proof-surface theorem imply Tp = Tq for homotopic paths. Exact
+homotopy de-duplication then gives an idempotent merge.
+
+13.2    Curvature-, revision-, and evidence-aware BGC
+For a partial atlas path P in context C and a candidate action a, where a may be a rule, chart
+transition, or revision, define:
+
+                                                    35
+Atlas-Indexed Reversible Geodesic πPLN                              Goertzel with GPT-5.6 Pro assistance
+
+
+   • ∆Iuniq (a | P ): unique provenance newly delivered by a;
+
+   • Ireuse (a | P ): provenance already represented on P and reused by a;
+
+   • δcoh (a, P ): proof, mixed, context, chart, and revision cell defects created by a;
+
+   • fit(a) and pres(a): residuated revision scores when a changes a state or context;
+
+   • weak(a): task-relative weakness or generality;
+
+   • ∆Odesc (a): predicted change in chart-gluing obstruction.
+
+Inside a local chart, a practical scalar priority is
+
+                        Score(a | P, C) = ∆(log fC + log gC ) − λCa
+                                             + β∆Iuniq (a | P ) − ηIreuse (a | P )
+                                                                                                  (13.6)
+                                             − ζδcoh (a, P ) + ρ fit(a) + σ pres(a)
+                                             + υ weak(a) − χ∆Odesc (a).
+
+For a pure within-chart rule, the revision and context terms may be neutral. For a chart-selection or
+ontology-revision move, fC gC is replaced by the appropriate boundary-value or learned task-value
+estimate on the candidate context.
+   This score does not quotient away useful path multiplicity. Multiple proof or chart routes may
+improve robustness and reachability. It prevents the controller from treating their multiplicity as
+independent evidence, from crossing highly nonnatural translations without paying for them, or
+from forcing a globally incoherent chart merely because its local posterior is sharp.
+
+13.3     Covering-context and holonomy-aware splicing
+When forward and backward strands meet in the same context, syntactic unification is insufficient;
+their transported evidence states should agree. When they meet in different contexts CF and
+CB , even that comparison is ill typed until the controller constructs a covering context C∗ with
+translations
+                                τF : CF → C∗ ,     τB : CB → C∗ .                           (13.7)
+Let
+                                     e∗F = TτF eF ,        e∗B = TτB eB .                         (13.8)
+Define
+                                  1
+                         Hsplice = dEC∗ (e∗F , e∗B )2 + λdesc Odesc (ΓF , ΓB ; C∗ )2 .            (13.9)
+                                  2
+A splice score may be
+
+                           SpliceScore = log fCF + log gCB − λC − ξHsplice .                     (13.10)
+
+If no admissible covering context exists, the strands do not splice merely because their surface
+strings unify.
+   In the reversible lift, compute the exact relative loop after transporting both strands to C∗ :
+
+                                             HF,B = TeP−1
+                                                        ∗ TP ∗ ,
+                                                          e
+                                                            F
+                                                                                                 (13.11)
+                                                           B
+
+and penalize its displacement on the relevant evidence subspace.
+
+                                                      36
+Atlas-Indexed Reversible Geodesic πPLN                      Goertzel with GPT-5.6 Pro assistance
+
+
+13.4   Dykstra-PLN
+A Dykstra-corrected PLN rule application transports:
+
+               visible truth value + provenance capsule + dual projection residual.       (13.12)
+
+The residual is passed to subsequent projections rather than discarded. At atlas level, analogous
+residuals accompany chart import/export, context translation, and revision. A proof-and-chart
+cycle then carries an explicit evidence and context debt whose fixed point reconstructs the joint
+overlap-corrected, prior-unwound projection when such a projection exists. This is the natural
+reversible counterpart of cyclic πPLN inference.
+
+
+14     MORK realization
+The MORK content-addressed DAG proposed in geodesic inference control already supplies im-
+mutable objects, parent CIDs, deterministic merge frontiers, and local evidence sketches [1]. The
+following records add higher proof cells and reversible state.
+
+14.1   Rewrite cells and proof classes
+type: RewriteCell
+fields: {
+    lhs_path_cids[],
+    rhs_path_cids[],
+    source_state_cid,
+    target_state_cid,
+    rewrite_kind,
+    semantic_identity_cid,
+    lhs_capsule_cid,
+    rhs_capsule_cid,
+    evidence_distance,
+    overlap_delta,
+    coherence_grade,
+    parents[]
+}
+
+type: EvidenceProofClass
+fields: {
+    endpoint_atom_id,
+    representative_path_cid,
+    member_path_digest,
+    evidence_capsule_cid,
+    evidence_sketch_cid,
+    positive_weight,
+    negative_weight,
+    best_control_cost,
+    aggregate_fg_mass,
+    rewrite_cell_cids[]
+
+                                               37
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+}
+
+The fields ‘aggregate_fg_mass’ and evidence weight are intentionally separate. Many search paths
+may increase the first while idempotent provenance leaves the second unchanged.
+
+14.2    Reversible rule applications
+type: ReversibleRuleApp
+fields: {
+    rule_id,
+    binding_uid,
+    premise_capsule_cids[],
+    prior_output_capsule_cid,
+    output_capsule_cid,
+    exact_overlap_witness_cid,
+    bregman_residual_cid,
+    dykstra_increment_cid,
+    transport_frame_cid,
+    rng_seed,
+    parent_ruleapp_cid,
+    inverse_checksum
+}
+
+Persistent sharing means that unchanged state need not be copied. Storage is concentrated on
+information actually lost by the visible rule: overwritten pointers, overlap decomposition, projection
+residuals, and nondeterministic choices.
+
+14.3    Context, chart, descent, and revision records
+The atlas layer adds explicit context and chart objects rather than hiding them in rule metadata.
+
+type: ChartLensRecord
+fields: {
+    context_cid,
+    chart_cid,
+    assumption_package_cid,
+    local_prior_cid,
+    import_map_id,
+    export_map_id,
+    chart_complement_cid,
+    roundtrip_error,
+    parent_cids[]
+}
+
+type: ContextTransition
+fields: {
+    source_context_cid,
+    target_context_cid,
+
+                                                 38
+Atlas-Indexed Reversible Geodesic πPLN                      Goertzel with GPT-5.6 Pro assistance
+
+
+     translation_map_cid,
+     reliability_grade,
+     untranslated_residue_cid,
+     inverse_complement_cid,
+     naturality_probe_cids[],
+     parent_cids[]
+}
+
+type: DescentCell
+fields: {
+    local_chart_cids[],
+    overlap_context_cids[],
+    transition_cids[],
+    pairwise_compatibility_grades[],
+    higher_coherence_grade,
+    global_chart_candidate_cid,
+    gluing_defect,
+    parent_cids[]
+}
+
+type: RevisionEdge
+fields: {
+    old_state_cid,
+    evidence_packet_cid,
+    revised_state_cid,
+    source_context_cid,
+    target_context_cid,
+    fit_grade,
+    preservation_grade,
+    weakness_grade,
+    cost_grade,
+    correction_kind,
+    reversible_complement_cid,
+    parent_cids[]
+}
+
+    A practical inferred Atom or statement record should therefore carry at least
+
+Statement, (n_plus, n_minus), STVProjection,
+ContextID, ChartID, AssumptionPackageCID, LocalPriorCID,
+ProvenanceCID, Weakness, TaskTrace, Attention,
+TransportFrameCID, DescentStatus
+
+with the scalar STV treated as a cached interface rather than the primary evidence object.
+
+14.4    Local curvature probes
+For a candidate pair r, s, execute both orders in a temporary namespace:
+
+                                                39
+Atlas-Indexed Reversible Geodesic πPLN                      Goertzel with GPT-5.6 Pro assistance
+
+
+capsule_rs = apply(s, apply(r, capsule))
+capsule_sr = apply(r, apply(s, capsule))
+
+delta_rs = evidence_distance(capsule_rs, capsule_sr)
+
+Cache the result by rule schemas, binding-overlap class, context class, and evidence-overlap bucket.
+Only neighbors in a sparse confusion graph require probes. Under the assumptions of the proof-
+surface theorem, the extra per-step work is proportional to the local confusion degree rather than
+total proof length.
+
+14.5   Atlas frontier expansion
+expand(path P, action a):
+
+    C_target = choose_target_context(P.context, a)
+    transition = guarded_translation(P.context, C_target, a)
+
+    if transition is undefined:
+        reject(a)
+
+    chart = retrieve_or_build_chart(C_target, P.task)
+    capsule_new = apply_action_in_chart(a, transition, chart, P.capsule)
+    capsule_new = export_prior_unwound(capsule_new, chart)
+
+    unique_gain =
+        sketch_difference_weight(capsule_new, P.capsule)
+
+    reused_mass =
+        sketch_intersection_weight(capsule_new, P.capsule)
+
+    coherence =
+        proof_commutator_cost(a, P)
+        + translation_naturality_cost(transition, a, P)
+        + chart_roundtrip_cost(chart)
+        + revision_coherence_cost(a)
+
+    descent_delta =
+        estimate_descent_change(P.chart_family, chart, transition)
+
+    revision_grades =
+        fit_preservation_weakness(a, P, C_target)
+
+    proof_class =
+        canonicalize_in_covering_context(
+            endpoint=capsule_new.atom,
+            context=C_target,
+            evidence_digest=capsule_new.digest)
+
+
+
+                                                40
+Atlas-Indexed Reversible Geodesic πPLN                            Goertzel with GPT-5.6 Pro assistance
+
+
+     score =
+         delta_local_log_f_plus_log_g
+         - lambda_cost * step_cost(a)
+         + beta_unique * unique_gain
+         - eta_reuse * reused_mass
+         - zeta_coh * coherence
+         + rho_fit * revision_grades.fit
+         + sigma_pres * revision_grades.preservation
+         + upsilon_weak * revision_grades.weakness
+         - chi_desc * descent_delta
+
+     enqueue(path_node,
+             context=C_target,
+             chart=chart,
+             control_score=score,
+             evidence_class=proof_class)
+
+   With exact token CIDs, de-duplication is exact. With KMV, HLL, or related sketches, the
+approximate de-duplication theorem turns sketch error into an explicit confidence-error bound,
+provided the chosen evidence metric and valuation satisfy the stated Lipschitz assumptions. Chart
+round-trip error and translation naturality error enter separately, so implementation diagnostics can
+distinguish prior leakage, ontology mismatch, and genuine rule curvature.
+
+
+15     Worked examples
+15.1    Repeated chart construction does not create evidence
+Suppose the persistent store contains empirical counts
+
+                                               e = (8, 2)                                       (15.1)
+
+and a local chart uses prior Beta(1, 1). Import gives Beta(9, 3). Correct export subtracts the prior
+and returns (8, 2) exactly. Repeating the chart episode any number of times leaves the persistent
+evidence unchanged.
+   A naive system that stores posterior parameters as if they were fresh empirical counts produces
+
+                                  (8, 2) 7→ (9, 3) 7→ (10, 4) 7→ · · · .                        (15.2)
+
+After m cycles it has fabricated m positive and m negative virtual observations. This is evidence
+double counting caused by confusing a chart coordinate choice with an observation. The reversible
+lens law (12.15) removes it exactly.
+
+15.2    Concept boundaries and covering contexts
+Let context CA define
+                                  TallA (x) ≡ Height(x) > 200 cm,                               (15.3)
+while CB defines
+                                  TallB (x) ≡ Height(x) > 180 cm.                               (15.4)
+
+                                                   41
+Atlas-Indexed Reversible Geodesic πPLN                            Goertzel with GPT-5.6 Pro assistance
+
+
+For a person of height 185 cm, evidence is negative for TallA and positive for TallB . The two packets
+are not contradictory measurements and must not be averaged under the bare string “Tall.”
+   A decision task may construct a covering context C∗ containing height as a common measurable
+quantity and translations
+
+                     τA (TallA ) = Height > 200,        τB (TallB ) = Height > 180.              (15.5)
+
+The packets can now be compared without merging their proposition labels. The covering context
+explains the apparent conflict as a boundary difference. Without these translations, guarded typing
+blocks the merge and thereby prevents ontology smear.
+
+15.3    A non-gluable chart triangle
+Take the three pairwise charts of (4.17). Each is internally coherent, every one-variable restriction
+is uniform, and all context-composition transports on those single-variable overlaps can be chosen
+flat. Nevertheless, no global joint chart exists. Thus
+
+                     Rcontext = 0 on the represented overlaps,             Odesc > 0             (15.6)
+
+in the class of ordinary joint distributions. A controller asked for one joint answer has several
+legitimate revision moves: weaken one pairwise chart, enlarge the ontology with a contextuality
+marker, retain all charts and report non-gluability, or reject the global query as ill posed. Forcing a
+posterior is not the only coherent response.
+
+15.4    Mixed curvature from infer–translate order
+Let a source context classify “fever” by a loose commonsense threshold and a target medical context
+classify it by a calibrated temperature threshold. A deduction rule r may transform symptom
+reports into a fever judgment in the source context. Compare
+
+                                   Tτ Tr (e)   with        Tτ∗ r Tτ (e).                         (15.7)
+
+If the source rule silently used the loose predicate boundary while the transported rule uses the
+strict boundary, the two evidence packets differ. The defect δτ,r is neither ordinary within-context
+rule curvature nor chart non-gluability. It is mixed curvature: inference is not natural under the
+proposed ontology translation. The appropriate intervention is to refine the translation or covering
+context, not merely to precondition the truth-value metric.
+
+15.5    Two proof paths, one causal innovation
+Let one primitive observation token z support both A and B:
+
+                                          z ⇒ A,        z ⇒ B,                                   (15.8)
+
+and let two derivations infer C:
+
+                                p : z ⇒ A ⇒ C,          q : z ⇒ B ⇒ C.                           (15.9)
+
+Suppose a zero-defect rewrite cell witnesses that both routes transport the same token z to C. Then
+
+                                        Tp {z} = Tq {z} = {z}                                  (15.10)
+
+                                                   42
+Atlas-Indexed Reversible Geodesic πPLN                           Goertzel with GPT-5.6 Pro assistance
+
+
+and
+                                       Tp {z} ∨ Tq {z} = {z} .                                 (15.11)
+If wz is the token weight, naive addition gives 2wz , whereas idempotent fusion gives wz . The
+double-counting functional is
+                                    Ddc ({p, q} ; {z}) = wz .                           (15.12)
+   Now add an independent observation u and a third derivation r carrying u. Correct fusion is
+                                      Tp e ∨ Tq e ∨ Tr e = {z, u} ,                            (15.13)
+with weight wz + wu . The controller may retain all three paths for search diversity, but the evidence
+layer has two independent innovations, not three proofs.
+
+15.6    Noncommuting projection rules
+Consider Euclidean evidence state x ∈ R2 . Let P project onto the x-axis and Q project onto a line
+at angle θ:                        !                                     !
+                              1 0                  cos2 θ    sin θ cos θ
+                        P =          ,     Q=                              .               (15.14)
+                              0 0                sin θ cos θ   sin2 θ
+Then
+                                              sin 2θ
+                                                                  !
+                                                           0 −1
+                                   QP − P Q =                   .                              (15.15)
+                                                2          1 0
+The order defect vanishes only when the constraint lines are parallel or orthogonal. Each visible
+projection is noninvertible, but the reversible Bregman lift carries
+                                  qP = x − P x,         qQ = x − Qx.                           (15.16)
+The pair (P x, qP ) reconstructs x, as does (Qx, qQ ). Thus the order-dependent visible endpoint is
+not caused by fundamental information loss; it is caused by noncommuting constraint geometry.
+Dykstra corrections propagate the normal residuals needed to recover the joint projection.
+
+15.7    A reversible rule-loop probe
+Let A and B be reversible metric-compatible microstate implementations of two PLN operations,
+for example a provenance-aware revision and a context transport. The exact loop
+                                        HA,B = A−1 B −1 AB                                     (15.17)
+can be run directly. If HA,B z = z on the relevant evidence subspace, the pair is locally flat even if
+the visible rules look different. If it moves z, the displacement is the exact order defect by (10.16).
+This gives an empirical curvature probe requiring no global differential-geometric model.
+
+
+16     Empirical predictions and evaluation program
+16.1    Prior-cycling and chart-roundtrip tests
+Repeatedly enter and leave the same local beta or factor-graph chart without adding observations.
+Correct prior-unwound export predicts invariant persistent evidence. A system that persists
+posterior coordinates will show linear evidence inflation with the number of chart cycles. This
+isolates chart-induced double counting from proof-path duplication.
+
+                                                   43
+Atlas-Indexed Reversible Geodesic πPLN                            Goertzel with GPT-5.6 Pro assistance
+
+
+16.2    Holonomy versus non-gluability
+Construct two benchmark families. In the first, use one global chart with noncommuting nonlinear
+rule transports: descent obstruction is zero but holonomy is nonzero. In the second, use the
+anti-correlated pairwise charts with flat overlap transport: local holonomy is zero while descent
+obstruction is positive. A diagnostic that reports only one scalar should fail to distinguish them;
+the three-channel diagnostic (12.37) should not.
+
+16.3    Translation naturality predicts ontology errors
+For pairs of contexts with known boundary shifts, estimate δτ,r by executing infer–then–translate and
+translate–then–infer. The prediction is that large mixed defects identify unsafe context translations
+and correlate with ontology-smear errors better than within-context commutators alone.
+
+16.4    Reversible corrective revision
+Apply quarantine, reliability discount, retraction, and relabeling to provenance packets. Verify exact
+replay from the reversible complement. Compare this with adding counterevidence: the visible
+aggregate may change similarly, but only the reversible packet-level representation preserves the
+distinction between “new evidence against the claim” and “old support was invalidly counted.”
+    The synthesis suggests experiments that separate multiplicity, curvature, and hidden residual
+effects.
+
+16.5    Path multiplicity versus unique evidence
+Construct benchmark proof graphs with many paraphrastic or permuted derivations of the same
+primitive evidence and a smaller number of genuinely independent observations. Compare:
+
+ (a) raw path-count confidence;
+
+ (b) sketch-corrected confidence;
+
+ (c) exact token-union confidence;
+
+ (d) control mass allocated by the f g scheduler.
+
+The prediction is that raw path count inflates confidence, while exact evidence mass remains invariant
+under addition of evidence-equivalent paths. Control mass may still increase, validating the need
+for two measures.
+
+16.6    Local commutators predict global path dependence
+Estimate δrs for sampled rule pairs and build a confusion graph. For alternative proof orders,
+compare the measured endpoint evidence distance with
+
+                                                                                                (16.1)
+                                               X
+                                                          δrs .
+                                            {r,s}∈Econf
+
+The prediction is that global order sensitivity tracks the sum over confusing pairs and remains small
+in sparse causal factorizations even when total proof length is large.
+
+                                                  44
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+16.7    Exact provenance removes inflation but not curvature
+Replace lossy evidence sketches with exact token CIDs. Double-counting error should drop sharply.
+Residual order dependence should remain when nonlinear rule transports do not commute. This
+experiment distinguishes provenance error from connection curvature.
+
+16.8    Reversible residuals make forgetting recoverable
+For projection-like PLN updates, store dual residuals and compare three operations:
+
+  (i) visible sequential projection;
+ (ii) inverse replay using residuals;
+ (iii) Dykstra-corrected joint projection.
+
+The reversible state should recover the pre-step evidence exactly up to numerical precision. Dykstra
+correction should reduce sequential-versus-joint discrepancy without requiring a semantic inverse
+implication.
+
+16.9    Curvature-aware geodesic scheduling
+Compare the baseline score (2.6) with (13.6). Measure proof cost, endpoint confidence, duplicate
+evidence, splice disagreement, and robustness to rule reordering. The expected benefit is not
+necessarily a shorter proof. It is a proof whose evidence is more unique, more order-stable, and
+easier to audit.
+
+16.10    Storage-efficiency frontier
+The ancilla bound (10.4) predicts a tradeoff between reversible auditability and storage. For families
+of increasingly many-to-one truth functions, measure retained bits per step and compare with
+empirical conditional entropy H(X | U (X)). Compression should approach but not beat the
+information-theoretic lower bound without sacrificing exact reversibility.
+
+
+17      Limitations and open problems
+17.1    Choosing the context site and covers
+The atlas formalism presupposes a category or restriction structure of contexts and a notion of
+covering family. In practice these are learned and task-relative. Bad cover choices can hide a valid
+gluing or manufacture an apparent one. The theory makes the choice explicit but does not solve
+context discovery by itself.
+
+17.2    Model-class dependence of descent obstruction
+A positive Odesc is relative to a proposed class of global charts and divergences. Enlarging the model
+class, adding latent variables, or refining the ontology may turn a non-gluable family into a gluable
+one. The obstruction is therefore a diagnostic of the current representational layer, not an absolute
+metaphysical claim.
+
+                                                 45
+Atlas-Indexed Reversible Geodesic πPLN                         Goertzel with GPT-5.6 Pro assistance
+
+
+17.3    Partial translations and untranslated residue
+Real cross-context maps are partial and may leave semantically important residue. Treating a
+partial translation as total can make naturality defects look artificially small because untranslatable
+content has been dropped. Implementations should retain an explicit residue object and charge its
+loss in the coherence grade.
+
+17.4    Priors, hyperpriors, and chart identity
+The beta round-trip theorem assumes the same recorded prior is subtracted on export. If chart
+priors are revised, learned, or hierarchically coupled, the chart identity and reversible complement
+must include the prior version and its provenance. Otherwise changing a prior can be mistaken for
+empirical evidence.
+
+17.5    Formal type theory
+The paper supplies a semantic core, not a fully mechanized directed dependent type theory. A
+complete treatment should define substitution, universes, directed dependent elimination, higher
+inductive types, interaction with PGM–HoTT modalities, and a normalization or canonicity theorem
+where appropriate.
+
+17.6    Causal identity of evidence tokens
+Exact token identity is not always the same as causal independence. Two sensor records may have
+different CIDs but be deterministic descendants of one latent event. The ideal evidence algebra
+should therefore quotient primitive records by a justified causal-equivalence relation or represent a
+richer causal provenance hypergraph. Learning this relation without erasing genuine independence
+is a central open problem.
+
+17.7    Smooth reduction validity
+The curvature decomposition (9.1) is conditional. Many symbolic PLN rules are piecewise, discrete,
+or nonprojective. The discrete proof-surface theorem remains valid, but Fisher–Rao curvature
+may not be the correct smooth invariant. One needs empirical and theoretical criteria for when a
+differentiable probabilistic-circuit or energy-based realization faithfully approximates the symbolic
+engine.
+
+17.8    Approximate sketches
+Idempotence at the object/CID level does not imply unbiased evidence cardinality under all sketches.
+False overlap and missed overlap can respectively undercount and overcount evidence. The metric
+and Lipschitz constants in the approximate de-duplication theorem should be worked out for each
+sketch family and correlation regime.
+
+17.9    Nonabelian proof holonomy
+In rank greater than two, no single curvature scalar determines forgetting for all evidence directions.
+The complete invariant is the holonomy conjugacy class or its angle spectrum. Efficiently estimating
+
+                                                  46
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+the leading angles from local rule probes without constructing a huge transport matrix is an open
+algorithmic problem.
+
+17.10    Privacy and reversibility
+Exact reversible logs can retain sensitive information that an ordinary lossy inference would discard.
+Privacy-preserving reversible computation, encrypted provenance witnesses, retention policies, and
+deliberate irreversible erasure require explicit design. Landauer’s principle reminds us that erasure
+is a physical and governance choice, not merely a software omission [19].
+
+
+18      Conclusion
+Geodesic inference control, PGM–HoTT, πPLN, causal coding, and the curvature theory of forgetting
+fit together once five different structures are given different mathematical homes.
+    Search probability lives on raw context–proof paths. Semantic and evidential identities live
+on higher cells. Persistent positive and negative evidence lives in an idempotent, provenance-rich
+section indexed by context. Ordinary probability lives inside temporary local charts. Revision and
+context translation are explicit moves rather than invisible changes of interpretation.
+    This organization exposes three failure modes that a single posterior or scalar confidence cannot
+distinguish:
+
+          multiplicity error = wrong effective use of unique evidence,
+                  holonomy = path-dependent transport around proof/context loops,              (18.1)
+        descent obstruction = failure of local probability charts to glue globally.
+
+Metric changes and scheduler reweighting address the first. Causal modularity, coherent translations,
+and connection flattening address the second. Context refinement, ontology revision, latent-variable
+enrichment, or an explicit report of non-gluability addresses the third. Treating all three as
+“uncertainty” applies the wrong intervention.
+   The reversible microstate formulation makes the geometry executable. Rule applications, chart
+construction, context translations, and corrective revisions become equivalences when they carry
+the complements they would otherwise erase. Directed πPLN is the visible projection obtained
+by forgetting those inverse witnesses. Forgetting is then not necessarily destruction: it can be
+hidden residual transport or total holonomy. Double counting is not an unavoidable side effect of
+multiple proofs or charts: it is non-idempotent fusion after provenance, prior identity, or higher
+proof equivalence has been discarded.
+   The global probabilistic lesson is equally sharp. Local Bayesian coherence is valuable and fully
+retained. But a family of coherent local charts need not define one coherent world model. PGM–
+HoTT descent gives a principled criterion: use a global chart when the gluing type is geodesically
+contractible, retain guarded alternatives when it is multiply inhabited, and preserve the obstruction
+when it is empty.
+   The resulting architectural principle is:
+
+         Geodesic πPLN should search an atlas-indexed directed higher proof space,
+                     run ordinary Bayesian inference inside local charts,                      (18.2)
+            and transport a reversible, idempotent evidence section across them.
+
+                                                 47
+Atlas-Indexed Reversible Geodesic πPLN                      Goertzel with GPT-5.6 Pro assistance
+
+
+This preserves the practical strengths of bidirectional least-effort reasoning while making con-
+text, provenance, revision, non-gluability, evidence reuse, and order-dependent curvature explicit,
+auditable, and separately measurable.
+
+
+A      Notation summary
+
+    Symbol                  Meaning
+    B                       Directed higher proof base.
+    Core(B)                 Maximal invertible core carrying PGM–HoTT identity.
+    Der(x, y)               Directed derivation space from x to y.
+    Ev(x)                   Evidence fiber over inference state x.
+    Tp                      Evidence transport along derivation p.
+    p ≃E q                  Strong evidence equivalence of parallel derivations.
+    ρctl                    Geodesic control mass on raw proof paths.
+    µev                     Unique-evidence measure on evidential components.
+    Ddc                     Duplicate-evidence functional.
+    Emult                   Mode-weighted control/evidence multiplicity mismatch.
+    RE                      Curvature of the evidence connection.
+    Hp,q                    Relative holonomy between two reversible derivations.
+    q                       Bregman dual residual or Dykstra correction.
+    Π                       Forgetting projection from reversible microstate to visible PLN state.
+    C                       Category or restriction category of πPLN contexts.
+    BC                      Directed higher proof space internal to context C.
+    Btot                    Grothendieck construction of the context-indexed proof spaces.
+    ΓC                      Temporary local Bayesian or νPLN chart in context C.
+    IC , OC                 Evidence-to-probability import and prior-unwinding export maps.
+    DescU (Γ• )             Homotopy-descent type of coherent global chart gluings.
+    Odesc                   Quantitative probabilistic chart-gluing obstruction.
+      2,0
+    Rproof                  Within-context proof curvature.
+      1,1
+    Rmixed                  Inference–translation mixed curvature.
+      0,2
+    Rcontext                Context and chart-transport curvature.
+    Rev                     First-class evidence/context/ontology revision morphism.
+
+
+B      A compact axiom package for implementation
+An implementation need not expose the full higher-categorical semantics. The exact discrete
+guarantees require the following package.
+
+A1. Every evidence capsule has immutable primitive provenance or a sketch with a quantified
+    metric error.
+
+A2. Merge is associative, commutative, and idempotent on provenance identity.
+
+A3. Pure inference does not mint new primitive evidence tokens.
+
+A4. Rule transports preserve merge and are nonexpansive in the chosen evidence metric.
+
+                                                48
+Atlas-Indexed Reversible Geodesic πPLN                        Goertzel with GPT-5.6 Pro assistance
+
+
+ A5. Proof rewrites carry local evidence-coherence defects.
+
+ A6. Candidate rule pairs are connected in a sparse confusion graph when they share
+     causal/evidential support.
+
+ A7. Reversible mode retains the data needed to reconstruct every visible rule input, including dual
+     residuals for projection-like steps.
+
+ A8. Control mass and evidence mass are stored and reported separately.
+
+ A9. Every persistent evidence packet is indexed by a context and carries its assumption and
+     ontology fingerprints.
+
+A10. Local chart export removes chart priors and virtual counts before persistent storage.
+
+A11. Cross-context fusion requires a covering context and explicit guarded translations.
+
+A12. Chart, translation, and revision maps carry local coherence defects and reversible complements.
+
+A13. The system records whether a selected chart family is uniquely gluable, multiply gluable, or
+     non-gluable in the current model class.
+
+A14. Revision is represented at packet level so quarantine/retraction/relabeling remain distinct
+     from counterevidence.
+
+   Under A1–A4, exact or approximate de-duplication holds. Under A4–A6, the single-context
+proof-surface bound holds. A7 makes rule-loop holonomy executable, and A8 prevents a scheduler
+from silently turning proof multiplicity into confidence. A9–A14 provide the atlas-level typing,
+prior-unwinding, translation, coherence, descent, and revision conditions required by the πPLN
+architecture.
+
+
+References
+ [1] B. Goertzel, Geodesic Inference Control, manuscript, December 5, 2025.
+
+ [2] B. Goertzel, Paraconsistent Geodesic Modal HoTT (PGM–HoTT), Semantic Elegant Nor-
+     mal Form (SENF), and TransWeave for Identity-Aware Commonsense Reasoning with PLN,
+     manuscript, December 15, 2025.
+
+ [3] B. Goertzel, Causal Coding and the General Causal-Continual-Learning Theorem, manuscript,
+     December 1, 2025.
+
+ [4] B. Goertzel, The Coupling Dilemma: Reach versus Conditioning, Sharing versus Forgetting,
+     and Catastrophic Forgetting as Curvature of the Task Manifold, manuscript, 2026.
+
+ [5] B. Goertzel, πPLN: Paraconsistent PLN Without a Global Probability Space, manuscript, May
+     27, 2026.
+
+ [6] N. N. Vorob’ev, Consistent families of measures and their extensions, Theory of Probability and
+     Its Applications 7 (1962), 147–163.
+
+ [7] S. Abramsky and A. Brandenburger, The sheaf-theoretic structure of non-locality and contex-
+     tuality, New Journal of Physics 13 (2011), 113036.
+
+                                                 49
+Atlas-Indexed Reversible Geodesic πPLN                       Goertzel with GPT-5.6 Pro assistance
+
+
+ [8] B. Goertzel, M. Ikle, I. F. Goertzel, and A. Heljakka, Probabilistic Logic Networks: A Compre-
+     hensive Framework for Uncertain Inference, Springer, 2008.
+
+ [9] C. Leonard, A survey of the Schrodinger problem and some of its connections with optimal
+     transport, Discrete and Continuous Dynamical Systems A 34 (2014), 1533–1574.
+
+[10] The Univalent Foundations Program, Homotopy Type Theory: Univalent Foundations of
+     Mathematics, Institute for Advanced Study, 2013.
+
+[11] F. W. Lawvere, Metric spaces, generalized logic, and closed categories, Rendiconti del Seminario
+     Matematico e Fisico di Milano 43 (1973), 135–166.
+
+[12] C. Rezk, A model for the homotopy theory of homotopy theory, Transactions of the American
+     Mathematical Society 353 (2001), 973–1007.
+
+[13] M. Grandis, Directed Algebraic Topology: Models of Non-Reversible Worlds, Cambridge Univer-
+     sity Press, 2009.
+
+[14] S. Amari and H. Nagaoka, Methods of Information Geometry, American Mathematical Society
+     and Oxford University Press, 2000.
+
+[15] L. M. Bregman, The relaxation method of finding the common point of convex sets and
+     its application to the solution of problems in convex programming, USSR Computational
+     Mathematics and Mathematical Physics 7 (1967), 200–217.
+
+[16] R. L. Dykstra, An algorithm for restricted least squares regression, Journal of the American
+     Statistical Association 78 (1983), 837–842.
+
+[17] H. H. Bauschke and J. M. Borwein, Legendre functions and the method of random Bregman
+     projections, Journal of Convex Analysis 4 (1997), 27–67.
+
+[18] C. H. Bennett, Logical reversibility of computation, IBM Journal of Research and Development
+     17 (1973), 525–532.
+
+[19] R. Landauer, Irreversibility and heat generation in the computing process, IBM Journal of
+     Research and Development 5 (1961), 183–191.
+
+[20] S. Demko, W. F. Moss, and P. W. Smith, Decay rates for inverses of band matrices, Mathematics
+     of Computation 43 (1984), 491–499.
+
+[21] M. Benzi and G. H. Golub, Bounds for the entries of matrix functions with applications to
+     preconditioning, BIT Numerical Mathematics 39 (1999), 417–438.
+
+[22] J. Pearl, Causality: Models, Reasoning, and Inference, 2nd edition, Cambridge University Press,
+     2009.
+
+
+
+
+                                                 50
+

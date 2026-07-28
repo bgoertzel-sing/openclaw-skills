@@ -1,0 +1,468 @@
+{
+  "antithetic_identification": {
+    "antithetic_raw_variance": 0.130321,
+    "antithetic_signal_amplitude_from_policy": 0.361,
+    "antithetic_transfer_denominator": 13.0321,
+    "artifacts": {
+      "contrast_plot": "antithetic_contrast_error.png",
+      "information_plot": "antithetic_regressor_information.png",
+      "online_csv": "antithetic_online_rls.csv",
+      "online_se_plot": "antithetic_online_standard_error.png",
+      "signal_plot": "antithetic_probe_signals.png",
+      "trial_csv": "antithetic_trial_results.csv"
+    },
+    "burn_steps": 80,
+    "equal_realized_probe_width": 0.01,
+    "estimation_steps": 240,
+    "experiment": "antithetic_identification",
+    "improvement": {
+      "condition_white_vs_antithetic": 129.9714543737068,
+      "contrast_rmse_antithetic_vs_none": 30.977042341871677,
+      "contrast_rmse_antithetic_vs_white": 16.86927406374334,
+      "smallest_eigenvalue_antithetic_vs_white": 102.50374260180335
+    },
+    "modes": {
+      "antithetic": {
+        "added_state_variance": 0.009992505863811195,
+        "c1_mean": 1.799247147251188,
+        "c1_rmse": 0.0027599566155098415,
+        "c2_mean": -0.8107993021487835,
+        "c2_rmse": 0.0027268342612226356,
+        "contrast_mean": 2.6100464493999715,
+        "contrast_rmse": 0.002492780735661373,
+        "mean_state_variance": 0.013591557771120881,
+        "median_regressor_condition": 2.563819947049768,
+        "median_smallest_eigenvalue": 0.007809879503874982
+      },
+      "none": {
+        "added_state_variance": 0.0,
+        "c1_mean": 1.7929990294609583,
+        "c1_rmse": 0.038923499544162285,
+        "c2_mean": -0.804352513259305,
+        "c2_rmse": 0.038432162731904244,
+        "contrast_mean": 2.597351542720263,
+        "contrast_rmse": 0.07721897439758438,
+        "mean_state_variance": 0.0035990519073096855,
+        "median_regressor_condition": 340.7256773038712,
+        "median_smallest_eigenvalue": 2.2805724506145056e-05
+      },
+      "white": {
+        "added_state_variance": 0.00857941974004827,
+        "c1_mean": 1.7972635622941917,
+        "c1_rmse": 0.021113671145764484,
+        "c2_mean": -0.8076312238338145,
+        "c2_rmse": 0.021003297429550184,
+        "contrast_mean": 2.6048947861280065,
+        "contrast_rmse": 0.04205140141069144,
+        "mean_state_variance": 0.012178471647357957,
+        "median_regressor_condition": 333.2234072703783,
+        "median_smallest_eigenvalue": 7.619116439693376e-05
+      }
+    },
+    "online_rls_final": {
+      "antithetic": {
+        "contrast_estimate": 2.6098726898928426,
+        "contrast_standard_error": 0.021927308345512805
+      },
+      "none": {
+        "contrast_estimate": 2.5980827016938672,
+        "contrast_standard_error": 0.9270077340947716
+      },
+      "white": {
+        "contrast_estimate": 2.606151947929804,
+        "contrast_standard_error": 0.49303810201300274
+      }
+    },
+    "process_noise_sd": 0.004,
+    "seed": 1234,
+    "trials": 1000,
+    "true_c1": 1.8,
+    "true_c2": -0.81,
+    "true_contrast_c1_minus_c2": 2.6100000000000003,
+    "unit_white_state_variance_gain": 263.88686397434844,
+    "white_probe_raw_variance": 3.789502762430822e-05
+  },
+  "companion_stability": {
+    "artifacts": {
+      "case_csv": "companion_cases.csv",
+      "grid_csv": "companion_stability_grid.csv",
+      "lyapunov_plot": "companion_lyapunov_norm_comparison.png",
+      "transient_plot": "companion_transient_amplification.png",
+      "triangle_plot": "companion_stability_triangle_conditioning.png"
+    },
+    "cases": {
+      "fast_underdamped": {
+        "c1": 0.5,
+        "c2": -0.1,
+        "jury_margin_1": 0.6,
+        "jury_margin_2": 1.6,
+        "jury_margin_3": 0.9,
+        "lyapunov_condition": 10.965642520620225,
+        "max_covariance_amplification": 1.2520128616033603,
+        "max_state_amplification": 1.118933805729079,
+        "name": "fast_underdamped",
+        "peak_amplification_step": 1,
+        "recommended_matrix_slew": 0.12820729387184288,
+        "regime": "underdamped",
+        "rho_bar": 0.48717082451262844,
+        "root_1_imag": 0.19364916731037085,
+        "root_1_real": 0.25,
+        "root_2_imag": -0.19364916731037085,
+        "root_2_real": 0.25,
+        "small_gain_asymptotic_bound": 0.0004458865023707522,
+        "small_gain_condition_satisfied": true,
+        "spectral_radius": 0.31622776601683794
+      },
+      "near_repeated_root": {
+        "c1": 1.8,
+        "c2": -0.81,
+        "jury_margin_1": 0.010000000000000009,
+        "jury_margin_2": 3.61,
+        "jury_margin_3": 0.18999999999999995,
+        "lyapunov_condition": 5104.956517193133,
+        "max_covariance_amplification": 49.47223736565914,
+        "max_state_amplification": 7.033650358502272,
+        "name": "near_repeated_root",
+        "peak_amplification_step": 9,
+        "recommended_matrix_slew": 0.01874999812055042,
+        "regime": "critical",
+        "rho_bar": 0.9250000075177983,
+        "root_1_imag": 0.0,
+        "root_1_real": 0.9000000100237311,
+        "root_2_imag": 0.0,
+        "root_2_real": 0.899999989976269,
+        "small_gain_asymptotic_bound": 0.05744642123346891,
+        "small_gain_condition_satisfied": true,
+        "spectral_radius": 0.9000000100237311
+      },
+      "separated_overdamped": {
+        "c1": 1.2,
+        "c2": -0.27,
+        "jury_margin_1": 0.07000000000000006,
+        "jury_margin_2": 2.47,
+        "jury_margin_3": 0.73,
+        "lyapunov_condition": 85.16468531590934,
+        "max_covariance_amplification": 2.984995625531594,
+        "max_state_amplification": 1.727713988347491,
+        "name": "separated_overdamped",
+        "peak_amplification_step": 2,
+        "recommended_matrix_slew": 0.018750000000000017,
+        "regime": "overdamped",
+        "rho_bar": 0.9249999999999999,
+        "root_1_imag": 0.0,
+        "root_1_real": 0.8999999999999999,
+        "root_2_imag": 0.0,
+        "root_2_real": 0.30000000000000004,
+        "small_gain_asymptotic_bound": 0.0074198765432556555,
+        "small_gain_condition_satisfied": true,
+        "spectral_radius": 0.8999999999999999
+      },
+      "underdamped_same_radius": {
+        "c1": 0.4,
+        "c2": -0.81,
+        "jury_margin_1": 1.4100000000000001,
+        "jury_margin_2": 2.21,
+        "jury_margin_3": 0.18999999999999995,
+        "lyapunov_condition": 1.6258544398773263,
+        "max_covariance_amplification": 1.3184824579026375,
+        "max_state_amplification": 1.1482519139555734,
+        "name": "underdamped_same_radius",
+        "peak_amplification_step": 1,
+        "recommended_matrix_slew": 0.01874999999999999,
+        "regime": "underdamped",
+        "rho_bar": 0.925,
+        "root_1_imag": 0.8774964387392122,
+        "root_1_real": 0.19999999999999998,
+        "root_2_imag": -0.8774964387392122,
+        "root_2_real": 0.19999999999999998,
+        "small_gain_asymptotic_bound": 0.001025197968440522,
+        "small_gain_condition_satisfied": true,
+        "spectral_radius": 0.9000000000000001
+      }
+    },
+    "comparison": {
+      "condition_ratio_repeated_vs_underdamped": 3139.8607353671287,
+      "covariance_amplification_ratio_repeated_vs_underdamped": 37.52210510586284,
+      "small_gain_bound_ratio_repeated_vs_underdamped": 56.034466514651236
+    },
+    "experiment": "companion_stability",
+    "grid_points": 7532,
+    "repeated_root_norm_check": {
+      "euclidean_covariance_amplification_at_peak": 49.47223736565912,
+      "lyapunov_norm_ratio_at_peak": 0.24279796307802287,
+      "maximum_bound_violation": 0.0,
+      "peak_step": 9,
+      "rho_bar_bound_at_peak": 0.24578266720997852
+    }
+  },
+  "dynamic_sharpness": {
+    "artifacts": {
+      "counterfactual_csv": "dynamic_sharpness_counterfactual.csv",
+      "counterfactual_plot": "dynamic_sharpness_counterfactual.png",
+      "edge_plot": "dynamic_sharpness_edge_utilization.png",
+      "parameter_plot": "dynamic_sharpness_parameters.png",
+      "trace_csv": "dynamic_sharpness_trace.csv",
+      "tracking_plot": "dynamic_sharpness_tracking.png"
+    },
+    "burn_in_for_metrics": 60,
+    "counterfactual": {
+      "candidate_momentum": 0.85,
+      "candidate_step_size": 0.29,
+      "frozen_edge_utilization": 0.967946834575414,
+      "initial_funnel_relative_width": 0.0077509450634682675,
+      "maximum_rollout_relative_width": 0.8131553701607838,
+      "point_forecast_edge_crossing_future_step": 17,
+      "start_step": 150,
+      "true_edge_crossing_future_step": 15,
+      "upper_funnel_edge_crossing_future_step": 4
+    },
+    "estimated_gamma_p": 0.027040723609381298,
+    "estimated_gamma_r": 0.41506012331865794,
+    "experiment": "dynamic_sharpness",
+    "funnel_coverage_against_true": 1.0,
+    "maximum_true_edge_utilization": 1.0787057606364319,
+    "median_funnel_width": 0.27704821225684295,
+    "plant_one_step_rmse_against_measurement": 0.029780152602734283,
+    "plant_one_step_rmse_against_true": 0.022796779053609027,
+    "relative_error_gamma_p": -0.03425987109352509,
+    "relative_error_gamma_r": -0.011761611146052496,
+    "rmse_improvement_over_static": 9.791341405342006,
+    "rolling_static_model_rmse": 0.22321104665603542,
+    "seed": 123,
+    "steps": 420,
+    "true_gamma_p": 0.028,
+    "true_gamma_r": 0.42
+  },
+  "environment": {
+    "bridgelearn": "0.3.0",
+    "bridgelearn_path": "/tmp/blenv/lib/python3.10/site-packages/bridgelearn/__init__.py",
+    "matplotlib": "3.10.9",
+    "numpy": "2.2.6",
+    "platform": "Linux-7.0.11-76070011-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12 (main, Mar  3 2026, 11:56:32) [GCC 11.4.0]"
+  },
+  "generated_utc": "2026-07-23T01:48:52.332981+00:00",
+  "momentum_reachability": {
+    "artifacts": {
+      "horizon_csv": "momentum_horizon_curve.csv",
+      "horizon_plot": "momentum_minimum_horizon.png",
+      "lower_bound_csv": "momentum_lower_bound_sweep.csv",
+      "lower_bound_plot": "momentum_lower_bound_sweep.png",
+      "one_step_csv": "momentum_one_step_results.csv",
+      "one_step_plot": "momentum_one_step_reachability.png"
+    },
+    "experiment": "momentum_reachability",
+    "grid_horizon_near_mu_0.9": 27,
+    "initial_amplitude_floor": 0.9486832980505138,
+    "initial_covariance_floor": 0.9,
+    "initial_momentum": 0.9,
+    "initial_variance": 0.08,
+    "minimum_horizon_at_mu_0.9": 27,
+    "one_step": {
+      "adaptive_momentum_feasible_count": 5,
+      "adaptive_results": [
+        {
+          "feasible": true,
+          "lyapunov_condition": 79.50330908053505,
+          "mode": "adaptive_mu",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 0.9499999999999997,
+          "regime": "overdamped",
+          "relative_target_error": 0.0,
+          "selected_momentum": 0.0,
+          "selected_step_size": 0.025320565519103666,
+          "spectral_radius": 0.9746794344808963,
+          "target_variance_ratio": 0.95
+        },
+        {
+          "feasible": true,
+          "lyapunov_condition": 39.50702271882786,
+          "mode": "adaptive_mu",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 0.8999999999999999,
+          "regime": "overdamped",
+          "relative_target_error": 0.0,
+          "selected_momentum": 0.0,
+          "selected_step_size": 0.05131670194948623,
+          "spectral_radius": 0.9486832980505138,
+          "target_variance_ratio": 0.9
+        },
+        {
+          "feasible": true,
+          "lyapunov_condition": 19.515928669676455,
+          "mode": "adaptive_mu",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 0.8000000000000002,
+          "regime": "overdamped",
+          "relative_target_error": 1.734723475976807e-16,
+          "selected_momentum": 0.0,
+          "selected_step_size": 0.10557280900008403,
+          "spectral_radius": 0.894427190999916,
+          "target_variance_ratio": 0.8
+        },
+        {
+          "feasible": true,
+          "lyapunov_condition": 12.860739849599652,
+          "mode": "adaptive_mu",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 0.7000000000000002,
+          "regime": "overdamped",
+          "relative_target_error": 8.673617379884035e-17,
+          "selected_momentum": 0.0,
+          "selected_step_size": 0.16333997346592433,
+          "spectral_radius": 0.8366600265340757,
+          "target_variance_ratio": 0.7
+        },
+        {
+          "feasible": true,
+          "lyapunov_condition": 7.563017928136332,
+          "mode": "adaptive_mu",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 0.5000000000000001,
+          "regime": "overdamped",
+          "relative_target_error": 0.0,
+          "selected_momentum": 0.0,
+          "selected_step_size": 0.2928932188134524,
+          "spectral_radius": 0.7071067811865476,
+          "target_variance_ratio": 0.5
+        }
+      ],
+      "fixed_momentum_feasible_count": 0,
+      "fixed_results": [
+        {
+          "feasible": false,
+          "lyapunov_condition": 10.888074548173558,
+          "mode": "fixed_mu_0.9",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 1.3808033240997226,
+          "regime": "underdamped",
+          "relative_target_error": 0.43080332409972283,
+          "selected_momentum": 0.9,
+          "selected_step_size": 0.30953109183489325,
+          "spectral_radius": 0.9486832980505138,
+          "target_variance_ratio": 0.95
+        },
+        {
+          "feasible": false,
+          "lyapunov_condition": 9.97242976713018,
+          "mode": "fixed_mu_0.9",
+          "momentum_floor_binding": false,
+          "predicted_variance_ratio": 1.3308033240997226,
+          "regime": "underdamped",
+          "relative_target_error": 0.43080332409972266,
+          "selected_momentum": 0.9,
+          "selected_step_size": 0.3355272282652759,
+          "spectral_radius": 0.9486832980505138,
+          "target_variance_ratio": 0.9
+        },
+        {
+          "feasible": false,
+          "lyapunov_condition": 8.456594495191194,
+          "mode": "fixed_mu_0.9",
+          "momentum_floor_binding": true,
+          "predicted_variance_ratio": 1.2308033240997232,
+          "regime": "underdamped",
+          "relative_target_error": 0.43080332409972316,
+          "selected_momentum": 0.9,
+          "selected_step_size": 0.3897833353158735,
+          "spectral_radius": 0.9486832980505139,
+          "target_variance_ratio": 0.8
+        },
+        {
+          "feasible": false,
+          "lyapunov_condition": 7.248085381856267,
+          "mode": "fixed_mu_0.9",
+          "momentum_floor_binding": true,
+          "predicted_variance_ratio": 1.1308033240997235,
+          "regime": "underdamped",
+          "relative_target_error": 0.43080332409972333,
+          "selected_momentum": 0.9,
+          "selected_step_size": 0.4475504997817137,
+          "spectral_radius": 0.9486832980505139,
+          "target_variance_ratio": 0.7
+        },
+        {
+          "feasible": false,
+          "lyapunov_condition": 5.419578746645742,
+          "mode": "fixed_mu_0.9",
+          "momentum_floor_binding": true,
+          "predicted_variance_ratio": 0.9308033240997232,
+          "regime": "underdamped",
+          "relative_target_error": 0.43080332409972316,
+          "selected_momentum": 0.9,
+          "selected_step_size": 0.5771037451292418,
+          "spectral_radius": 0.948683298050514,
+          "target_variance_ratio": 0.5
+        }
+      ],
+      "total_targets": 5
+    },
+    "target_ratio_0.70_lower_bound_sweep": [
+      {
+        "feasible": true,
+        "momentum_lower_bound": 0.0,
+        "predicted_variance_ratio": 0.7000000000000002,
+        "relative_target_error": 8.673617379884035e-17,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.16333997346592433,
+        "spectral_radius": 0.8366600265340757
+      },
+      {
+        "feasible": true,
+        "momentum_lower_bound": 0.1,
+        "predicted_variance_ratio": 0.7053185595567866,
+        "relative_target_error": 0.0053185595567864855,
+        "selected_momentum": 0.1,
+        "selected_step_size": 0.1949189208343456,
+        "spectral_radius": 0.7762579162648899
+      },
+      {
+        "feasible": false,
+        "momentum_lower_bound": 0.3,
+        "predicted_variance_ratio": 0.7478670360110802,
+        "relative_target_error": 0.047867036011080104,
+        "selected_momentum": 0.3,
+        "selected_step_size": 0.25807681557118767,
+        "spectral_radius": 0.5477225575051662
+      },
+      {
+        "feasible": false,
+        "momentum_lower_bound": 0.5,
+        "predicted_variance_ratio": 0.8329639889196679,
+        "relative_target_error": 0.13296398891966785,
+        "selected_momentum": 0.5,
+        "selected_step_size": 0.3212347103080295,
+        "spectral_radius": 0.7071067811865475
+      },
+      {
+        "feasible": false,
+        "momentum_lower_bound": 0.7,
+        "predicted_variance_ratio": 0.9606094182825484,
+        "relative_target_error": 0.26060941828254836,
+        "selected_momentum": 0.7,
+        "selected_step_size": 0.3843926050448718,
+        "spectral_radius": 0.8366600265340753
+      },
+      {
+        "feasible": false,
+        "momentum_lower_bound": 0.85,
+        "predicted_variance_ratio": 1.0842659279778393,
+        "relative_target_error": 0.38426592797783915,
+        "selected_momentum": 0.85,
+        "selected_step_size": 0.43176102609750355,
+        "spectral_radius": 0.9219544457292888
+      },
+      {
+        "feasible": false,
+        "momentum_lower_bound": 0.9,
+        "predicted_variance_ratio": 1.1308033240997235,
+        "relative_target_error": 0.43080332409972333,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.4475504997817137,
+        "spectral_radius": 0.9486832980505139
+      }
+    ],
+    "terminal_variance": 0.005,
+    "variance_ratio": 0.0625
+  }
+}

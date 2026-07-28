@@ -3,8 +3,85 @@
 - Slug: `petta-chem`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-25` (10:30)
+- Last reviewed: `2026-07-28` (12:30)
 - Owner: Benjamin Goertzel
+
+2026-07-28 12:30 progress: added canonical PeTTa-native application and
+resource guards for influx, dilution, ligation, and cleavage events. A
+four-event influx/ligation/cleavage/dilution trace preserves exact counts and
+replays identically; thirty focused SSA checks pass. Canonical general event
+enumeration and the frozen calibration ledger remain next; no calibration
+endpoint was inspected.
+
+2026-07-28 10:30 progress: added a replayable PeTTa-native direct-SSA draw
+boundary over canonical integer weights: exact total/cumulative categorical
+selection, separately keyed event and waiting-time uniforms, a symbolic
+inverse-CDF waiting-time record, and a fail-closed no-enabled-event result.
+Twenty-three focused checks pass. General event enumeration/application,
+longer invariant traces, and the frozen calibration ledger remain next; no
+calibration endpoint was inspected.
+
+2026-07-28 08:30 progress: opened the post-oracle SSA gate with a new
+PeTTa-native exact-arithmetic boundary. Propensity numerators cover catalytic
+load, distinct/identical ligations, cleavage, and insufficient-resource
+guards without host chemistry. A reversible two-event tiny system returns
+exactly to its initial integer counts and replays identically. Seventeen
+focused checks pass; full seeded categorical/waiting-time sampling and the
+frozen calibration ledger remain next. No calibration endpoint was inspected.
+
+2026-07-28 06:30 progress: passed the complete independent tiny-system RAF
+oracle gate: all 400 PeTTa-generated systems (100 graph seeds at four
+catalysis values) agreed with exhaustive Python truth for all 255 nonempty
+reaction subsets, maximal RAF, and every irrRAF. The committed manifest
+records comparison, detector, source, and runtime hashes without reporting
+structural incidence. Neutral SSA and exact tiny-state controls are next; no
+calibration endpoint was inspected. Commit `707dbcc` was pushed normally to
+GitHub `main`.
+
+2026-07-28 04:30 progress: implemented replayable PeTTa-owned sampling of
+eight `R_3` reactions without replacement and pathway-independent Bernoulli
+catalysis at `p=f/40`. Focused checks cover exact selection, cardinality,
+replay, and zero/full catalysis boundaries. The 100 generated oracle
+comparisons and manifest remain pending; no calibration endpoint was inspected.
+
+2026-07-28 02:30 progress: froze the PeTTa-owned canonical `R_3` source
+universe for generated oracle fixtures: 14 literal binary polymers, the six
+food polymers, 20 directed cleavages, and 20 ordered ligations. Thirty-three
+focused checks pass. Seeded eight-reaction selection/catalysis and the 100
+oracle comparisons remain pending; the calibration embargo remains active.
+
+2026-07-28 00:30 progress: added PeTTa-native maximal-RAF union and complete
+inclusion-minimal irrRAF projections over exhaustive tiny-system truth.
+Twenty-nine focused checks match the independent oracle for the closure chain,
+three independent irrRAFs with multiple products/catalysts, and the empty
+unreachable cycle. The 100 generated `L=3` comparisons and committed manifest
+remain pending; no calibration endpoint was inspected.
+
+2026-07-27 22:30 progress: added PeTTa-native exhaustive reaction-subset
+enumeration on the frozen tiny-system boundary and filtered every nonempty
+subset through the independent structural RAF predicate. Focused checks match
+the oracle's complete subset truth for a closure chain, a three-reaction
+multiple-product/multiple-catalyst system, and an unreachable cycle. Maximal
+RAF/irrRAF projections and 100 generated comparisons remain pending; the
+calibration embargo remains active.
+
+2026-07-27 20:30 progress: implemented the generic PeTTa-native food-closure
+and structural RAF subset predicate over canonical `neutral-crs-v1` facts.
+Twenty focused PeTTa checks cover the fact boundary plus closure chains,
+multiple products/catalysts, food and self catalysis, unreachable cycles,
+edge addition, and reaction/edge deletion. Exhaustive subset enumeration and
+the 100 generated tiny-system comparisons remain pending; no calibration
+endpoint was inspected.
+
+2026-07-27 18:30 progress: added the canonical PeTTa-side `neutral-crs-v1`
+fact boundary and serialized the seven frozen RAF-oracle hand-fixture
+families in new reviewed files. A focused run caught a critical representation
+hazard: bare binary polymers (`01`, `00`) are parsed numerically and lose
+identity, so all binary molecules now cross the interface as quoted strings;
+the smoke tests preserve molecule identity, multiple products, and repeated
+reactants. The exhaustive PeTTa detector and 100 generated tiny comparisons
+remain pending, the calibration embargo remains active, and protected exp08
+and scratch files were untouched.
 
 ## Purpose
 
@@ -43,6 +120,234 @@ Operational criteria:
 - Paid remote compute unless separately approved with a cleanup/cost plan.
 
 ## Current state
+
+2026-07-27 16:30 progress: implemented the independent exhaustive subset RAF
+oracle behind a strict canonical `neutral-crs-v1` JSON boundary. It enumerates
+all nonempty subsets for systems of at most 12 reactions and reports exact RAF
+subsets, the maximal RAF union, and all inclusion-minimal irrRAFs. Nine focused
+tests cover the seven frozen fixture families plus canonical validation and
+order normalization. The initial run exposed and repaired two fixture/interface
+mistakes: stoichiometric lists must retain duplicates, and the productive
+prefix of a food-closure chain can itself be a RAF. The corrected suite and
+`git diff --check` pass. The PeTTa detector and generated tiny-system comparison
+remain open, so the oracle gate is closed and no sampled outcome was inspected.
+Commit `73ddcde` was pushed normally to GitHub `main`.
+
+2026-07-27 14:30 progress: froze `neutral-crs-v1`, a pathway-independent
+binary-polymer random catalytic reaction-system protocol, and the exhaustive
+small-system RAF-oracle gate. The design declares the alphabet, food set,
+maximum length, full ligation/cleavage reaction distribution, independent
+Bernoulli catalysis, expected-catalysis control parameter, PeTTa-native SSA
+resource dynamics, exact sweep/seeds, four separate endpoint classes, and a
+canonical PeTTa/oracle interface. It also makes standard food-closure RAF
+semantics (including food catalysts) an explicit fail-closed gate rather than
+silently inheriting exp04's generated-product restriction. No sampled outcome
+was inspected. The first-class catalysis regression and `git diff --check`
+passed; commit `ad70a64` was pushed normally to GitHub `main`. Evidence:
+`repos/petta-chem/docs/neutral_crs_oracle_protocol.md`.
+
+2026-07-27 corrective review: the recurring worker had continued bounded
+candidate-generator expansion from 33 to 41 source rules.  This was an
+infrastructure-only sequence (each record explicitly reports no chemistry
+trajectory or scientific-result change) and conflicts with both the earlier
+twelve-rule freeze and the 2026-07-26 external-review recommendation to stop
+feature accretion.  That line is now frozen.  The active scientific path is a
+neutral stochastic random-catalytic chemistry, with an independent small-system
+RAF oracle, separate structural/reachability/persistence/causal endpoints, and
+finite-size calibration before any new guidance or bridge work.  Existing
+exp00--exp07 and the constructed Doob-h results remain control infrastructure;
+they do not motivate further generator growth or exp08 execution.
+
+2026-07-27 12:30 progress: bounded PeTTa-native candidate generation is now
+total for a 41-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 41
+rules, the audit record reports thirty-three generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+564 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `851189a`.
+
+2026-07-27 10:30 progress: bounded PeTTa-native candidate generation is now
+total for a 40-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 40
+rules, the audit record reports thirty-two generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+559 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `030ce18`.
+
+2026-07-27 08:30 progress: bounded PeTTa-native candidate generation is now
+total for a 39-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 39
+rules, the audit record reports thirty-one generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+554 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `924fb77`.
+
+2026-07-27 06:30 progress: bounded PeTTa-native candidate generation is now
+total for a 38-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 38
+rules, the audit record reports thirty generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 549
+terminal true results and zero failure markers; `git diff --check` passed. No
+chemistry rule, trajectory, or scientific result changed. The focused change
+was pushed normally to GitHub `main` as commit `f802c30`.
+
+2026-07-27 04:30 progress: bounded PeTTa-native candidate generation is now
+total for a 37-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 37
+rules, the audit record reports twenty-nine generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+544 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `5e0ec8d`.
+
+2026-07-27 02:32 progress: bounded PeTTa-native candidate generation is now
+total for a 36-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 36
+rules, the audit record reports twenty-eight generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+539 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `a47cfca`.
+
+2026-07-27 00:58 progress: bounded PeTTa-native candidate generation is now
+total for a 35-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 35
+rules, the audit record reports twenty-seven generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+534 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `2ccbba0`.
+
+2026-07-27 00:30 progress: bounded PeTTa-native candidate generation is now
+total for a 34-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 34
+rules, the audit record reports twenty-six generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+529 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `4792097`.
+
+2026-07-26 14:30 progress: bounded PeTTa-native candidate generation is now
+total for a 33-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 33
+rules, the audit record reports twenty-five generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+524 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `17db9f8`.
+
+2026-07-26 12:30 progress: bounded PeTTa-native candidate generation is now
+total for a 32-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 32
+rules, the audit record reports twenty-four generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+519 terminal true results and zero failure markers; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. The focused
+change was pushed normally to GitHub `main` as commit `5aae13a`.
+
+2026-07-26 10:30 progress: repaired the exp03 singleton regression by removing
+redundant `seed-number` clauses for seeds 11, 13, and 17 from
+`src/chem_dynamics.metta`; the shared exp00 kernel remains the single owner.
+The seed-11 three-tick query now returns one logical chamber instead of eight,
+and fixing it exposed and removed the same masked 2^3 proof multiplicity for
+seeds 13 and 17. The canonical exp00/01/contract/02/03/04/05/06/07 script
+matrix passed on the recorded local PeTTa/SWI stack; `git diff --check` passed.
+No chemistry rule, trajectory, or scientific result changed. Commit `16b6f1a`
+was pushed normally to GitHub `main`.
+
+2026-07-26 external-review report: prepared a systematic 13-page review packet
+at `docs/petta_chem_external_review_2026-07-26.pdf` (SHA-256
+`f74980653dac32aa31424c2613c4a2cc6a36bae4c025f48d4c2e20cdf51396db`).
+It inventories implementation and exp00--exp08, separates observed results from
+interpretation, and recommends a neutral random catalytic-reaction model plus
+independent RAF-oracle validation before further guidance work. A fresh
+canonical-script audit reproduced exp00/01/contract/02/04/05/06/07 but found
+one exp03 singleton failure: the seed-11 chamber query returns eight identical
+answers. The report records this as a current reproducibility defect; no
+scientific result was changed.
+
+2026-07-26 06:30 progress: bounded PeTTa-native candidate generation is now
+total for a 31-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 31
+rules, the audit record reports twenty-three generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+514 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `bfa0e47` pushed normally to GitHub `main`.
+
+2026-07-26 04:30 progress: bounded PeTTa-native candidate generation is now
+total for a 30-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 30
+rules, the audit record reports twenty-two generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+509 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `426712a` pushed normally to GitHub `main`.
+
+2026-07-26 02:30 progress: bounded PeTTa-native candidate generation is now
+total for a 29-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 29
+rules, the audit record reports twenty-one generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+504 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `a8dcdc6` pushed normally to GitHub `main`.
+
+2026-07-26 00:30 progress: bounded PeTTa-native candidate generation is now
+total for a 28-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 28
+rules, the audit record reports twenty generation omissions, and direct cap-2
+deterministic selection still fires productive `r0`. Exp00 passed with 499
+terminal true results and zero failure markers; `git diff --check` passed.
+Commit `6cc07bc` pushed normally to GitHub `main`.
+
+2026-07-25 22:30 progress: bounded PeTTa-native candidate generation is now
+total for a 27-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 27
+rules, the audit record reports nineteen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+494 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `288138c` pushed normally to GitHub `main`.
+
+2026-07-25 20:30 progress: bounded PeTTa-native candidate generation is now
+total for a 26-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 26
+rules, the audit record reports eighteen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+489 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `be9fd5d` pushed normally to GitHub `main`.
+
+2026-07-25 18:30 progress: bounded PeTTa-native candidate generation is now
+total for a 25-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 25
+rules, the audit record reports seventeen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+484 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `85a9ea2` pushed normally to GitHub `main`.
+
+2026-07-25 16:30 progress: bounded PeTTa-native candidate generation is now
+total for a 24-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 24
+rules, the audit record reports sixteen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+479 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `69c3db6` pushed normally to GitHub `main`.
+
+2026-07-25 14:30 progress: bounded PeTTa-native candidate generation is now
+total for a 23-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 23
+rules, the audit record reports fifteen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+474 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `b1a5a7a` pushed normally to GitHub `main`.
+
+2026-07-25 12:30 progress: bounded PeTTa-native candidate generation is now
+total for a 22-rule four-molecule chamber while retaining the stable
+first-eight generated prefix. Source-rule ownership/count seams cover all 22
+rules, the audit record reports fourteen generation omissions, and direct
+cap-2 deterministic selection still fires productive `r0`. Exp00 passed with
+468 terminal true results and zero failure markers; `git diff --check` passed.
+Commit `745d871` pushed normally to GitHub `main`.
 
 2026-07-25 10:30 progress: bounded PeTTa-native candidate generation is now
 total for a 21-rule four-molecule chamber while retaining the stable

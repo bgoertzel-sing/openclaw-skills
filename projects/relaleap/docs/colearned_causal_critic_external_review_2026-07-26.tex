@@ -1,0 +1,181 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.82in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\setlist{nosep}
+\newcommand{\obs}{\textbf{Observed.} }
+\newcommand{\inferr}{\textbf{Inference.} }
+\newcommand{\decision}{\textbf{Decision.} }
+\title{Co-learned Global Causal Critic\\Idea, Tests, Negative Results, and Questions for External Review}
+\author{RelaLeap project technical briefing}
+\date{26 July 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report describes a fail-closed research program for learning a critic that predicts which intervention on a modular continual learner will improve a retention--plasticity tradeoff. The object is not an observational importance score. It is a decision-time estimate of a randomized, common-random-number paired counterfactual update effect. Three local CPU Phase-0 attempts have completed. Version 1 used analytic fixtures; it showed partial ordering and pair-error signal but was inadequate for policy claims. Version 2 used a trainable three-branch MLP with real optimizer, gradient, activation, and representation state; its untouched confirmation failed discrimination, calibration, and utility-regression gates. Version 3 added larger training volume, standardized targets, stronger effects, cross-module features, and a trajectory audit. It stopped before calibration or confirmation because every positive control lost its declared ordering at the final audit checkpoint.
+
+There is no claim that the critic works, that a routing policy improves continual learning, or that the method transfers to text. The narrower result is that the randomized paired-evaluation machinery and fail-closed gates work, while the current positive controls do not provide a trajectory-stable identifiable test bed. This report asks for advice on repairing the positive control without weakening the causal question.
+\end{abstract}
+
+\section{Executive status}
+\begin{itemize}
+\item All work reported here used local CPU only. No paid compute, text experiment, or Shakespeare phase was run for this critic program.
+\item V1 and V2 failed their frozen estimation conjunctions. V3 failed earlier, at its mandatory pre-confirmation trajectory audit.
+\item The policy stage is blocked in every version. Policy-looking outputs from a failed estimator run are diagnostic only.
+\item The main open problem is a \emph{trajectory-stable modular positive control}: one whose intended single/pair intervention ordering survives the same optimizer trajectory that produces critic training and test states.
+\end{itemize}
+
+\section{The causal critic idea}
+Continual learning exposes a local choice after an incoming-task gradient is computed: update every module normally, attenuate one module, or coordinate attenuation across several modules. Gradient norm, overlap, curvature, or a support score may identify participation. They do not establish that protecting that module on this update is beneficial after a finite rollout. The proposed critic learns that action-relevant counterfactual effect from randomized interventions.
+
+At learner state $S_t$, action $a$, ordinary action $a_0$, and horizon $h$, the estimand is
+\[
+ \tau_h(S_t,a)=\mathbb{E}[Y_{t+h}(a)-Y_{t+h}(a_0)\mid S_t].
+\]
+The primary scalar advantage is
+\[
+ U_h=(L_A(a_0)-L_A(a))
+ -\lambda_B\max(0,L_B(a)-L_B(a_0))
+ -\lambda_C\,\mathrm{cost}(a),
+\]
+where $L_A$ is retained-task loss and $L_B$ incoming-task loss. Retained loss, incoming loss, commutator/leakage diagnostics, and module displacement are all also saved; $U_h$ is not treated as the whole scientific result.
+
+The eventual policy is deliberately conservative: choose a nonordinary action only when calibrated benefit probability is high, at least four of five ensemble members agree, a lower utility bound is positive, and predicted incoming-task harm is below a frozen tolerance. The method must first work in synthetic settings with executable counterfactual truth.
+
+\section{Identification, state, and anti-leakage design}
+At every observed state, the runner executes baseline and intervention rollouts from an exact snapshot. They receive identical learner and optimizer state, Python/NumPy/PyTorch RNG state, minibatches, and replay streams. The action gates a selected module gradient \emph{after backward} and before the optimizer step. Effects are measured by executing the learner, not by assigning a closed-form utility label.
+
+The behavior policy randomizes 50\% ordinary, 25\% moderate single-module attenuation, 15\% strong single-module attenuation, and 10\% eligible-pair attenuation. Propensities are logged. An exhaustive action table at a state supplies controlled truth; an independently randomized action per state supplies a held-out audit slice. Train, calibration, and confirmation seeds are disjoint. The critic cannot differentiate through the learner, and the learner cannot differentiate through the critic.
+
+Features must be observable at decision time. Future losses, paired outcomes, family labels, and oracle action labels are forbidden. Exact paired learner/Adam/RNG restoration is separately tested.
+
+\section{Phase-0 test bed}
+The controlled learner is a three-branch MLP with disjoint \texttt{upstream}, \texttt{downstream}, and \texttt{context} parameter groups, real task losses, real gradients, probe activations, and Adam state. Four families encode intended causal structures:
+\begin{description}[style=nextline]
+\item[Local-specific] Incoming learning conflicts mainly with one retained pathway, so protecting it should help retention.
+\item[Downstream chain] An upstream change propagates through a coupled downstream representation; coordinated protection should beat a one-module action.
+\item[Synergistic pair] Protecting one branch creates imbalance; protecting the planted pair should preserve retained representation.
+\item[Null or harmful] Retained and incoming optima align, so protection should bring no benefit and can delay incoming learning.
+\end{description}
+Ground truth is the exhaustive common-state paired-rollout table. Architectural labels define the intended positive control, but measured rollout outcomes define critic labels and gates.
+
+V2 module tokens contained retained/incoming gradient norms and squared-gradient statistics, cosine, support-like ratio, parameter norm/count, activation mean/variance/effective rank, Adam second moment, and recent gate. V3 added pairwise retained-gradient products, incoming-gradient cosines, joint displacement, activation cross-covariance, action-gate by gradient interactions, and decayed recent loss/gradient statistics.
+
+\section{Critic and comparator}
+The main V2/V3 model is a five-member hurdle ensemble. Each member predicts a Bernoulli logit for $P(U_h>0)$, conditional positive and nonpositive amount heads, and unscalarized outcome heads. Sign loss is class-balanced; amount loss applies only to its sign component. The ensemble probability can be isotonic-calibrated on calibration seeds only, when both classes have enough support.
+
+V3 standardizes only the amount target using training data:
+\[
+ z=(U-\mu)/\sigma.
+\]
+The sign target remains raw $U>0$. The independent comparator is intentionally additive across modules. Constant, support-only linear, and local-linear utility baselines are also reported.
+
+\section{Frozen estimation and policy gates}
+All applicable gates must pass on every untouched confirmation family before any policy result can be interpreted:
+\begin{enumerate}
+\item Spearman correlation between predicted and true $U_h$ at least 0.50.
+\item Benefit-sign AUROC at least 0.75 if both classes exist. AUROC is null, not 0.5, for a one-class family.
+\item In null/harmful, false-beneficial actions at the frozen policy threshold at most 5\%.
+\item Ten-bin benefit-probability ECE at most 0.15 (V1 used 0.10).
+\item Utility MSE strictly below constant and support-only baselines, plus local-linear on nonlinear families.
+\item In synergy, global pair MAE at least 20\% below independent and pair benefit-sign recall at least 0.75.
+\item Randomized-audit ESS at least 50 per action class and 20 per module/action marginal.
+\end{enumerate}
+Only then would policy gates test retention versus ordinary/support controls, incoming loss within 0.02 nat, positive paired bootstrap, superiority to frequency-matched random, at least half oracle improvement, and preserved credit-wavefront/effective-rank diagnostics.
+
+\section{Chronology and results}
+\begin{longtable}{p{0.13\linewidth}p{0.20\linewidth}p{0.27\linewidth}p{0.31\linewidth}}
+\toprule
+Version & Main change & Positive observations & Blocking result\\
+\midrule
+\endhead
+V1 analytic & Deterministic analytic map; Gaussian critic & Spearman .527--.932; synergy global pair MAE 21.0\% below independent; null false-benefit 0\% & ECE .222--.287; synergy AUROC .223; correct linear baselines dominated in linear families; no real learner state for policy diagnostics.\\
+V2 trainable & Three-branch MLP, real Adam/gradients/activations; hurdle ensemble and calibration-only isotonic map & Coverage passed; synergy global MAE .005132 versus .123864 independent (95.9\% reduction); null false-benefit 0\% & Spearman below .065 in every family; AUROC .554--.613; ECE failed in 3/4; MSE 10--70x constant; pair sign recall .259; null trajectory had positive labels.\\
+V3 audit & 10x train states, target standardization, stronger signal, cross-module/history features, re-anchoring, five checkpoints & Intended ordering through 75\% of audit trajectory; full suite passed & At 100\% update checkpoint all four families lost declared ordering. Stop before calibration/confirmation.\\
+\bottomrule
+\end{longtable}
+
+\subsection{V1 analytic confirmation}
+V1 used 800 training, 800 calibration, and 1,600 confirmation logged interventions per family. It was useful for testing the estimand and runner, but its analytic fixture had no optimizer moments, activations, credit wavefront, or representation rank. It demonstrated that good scalar ordering in selected families is insufficient: probability calibration failed and local-linear models correctly solved deterministic linear cases.
+
+\subsection{V2 trainable confirmation}
+V2 used 30 train states (300 exhaustive transitions), 30 calibration states, and 600 confirmation states (6,000 transitions) per family. Calibration selected horizon 5, learning rate $10^{-4}$, interval 10, $\lambda_B=1$, and isotonic probabilities before confirmation. Full verification passed 461 tests, 1 skipped.
+
+\begin{table}[h]
+\centering
+\caption{V2 untouched confirmation metrics. Lower is better for ECE and MSE.}
+\begin{tabular}{lrrrrrr}
+\toprule
+Family & Spearman & AUROC & ECE & Critic MSE & Constant & Support\\
+\midrule
+Local-specific & .0646 & .5542 & .0899 & $1.895e{-4}$ & $2.724e{-6}$ & $4.382e{-6}$\\
+Downstream-chain & .0121 & .5951 & .2750 & $5.805e{-5}$ & $1.320e{-5}$ & $1.428e{-5}$\\
+Synergistic-pair & .0353 & .6132 & .1921 & $4.850e{-5}$ & $6.573e{-6}$ & $1.432e{-5}$\\
+Null-or-harmful & -.1661 & .4459 & .1956 & $3.567e{-5}$ & $1.109e{-6}$ & $1.301e{-6}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\obs Raw benefit probabilities stayed near .49--.51. Predicted amount variance was roughly 10--70 times the variance of utilities, whose scale was $10^{-4}$ to $10^{-5}$. The null/harmful trajectory produced 1,313 positive labels of 6,000, contradicting its intended one-class structure. Global architecture captured pair \emph{amount} error much better than the additive comparator but not pair sign.
+
+\inferr The V2 result is consistent with underdetermined learning and poor scale/trajectory matching. It does not identify whether feature non-identifiability, critic objective, nonstationarity, or fixture construction is dominant. It is not policy evidence.
+
+\subsection{V3 pre-confirmation audit}
+V3 froze 300 train states (3,000 transitions), 100 calibration states (1,000 transitions), and 600 confirmation states (6,000 transitions). Before any confirmation seed was opened, a 100-update audit examined checkpoints 0, 25, 50, 74, and 99 under disjoint audit seeds. At checkpoint 99 all families violated their retained-loss ordering. Null/harmful had 0\% positive utility but also failed ordering. The formal runner stopped after writing the audit. Focused tests passed 11/11; the full suite passed 463, 1 skipped.
+
+\decision V3 calibration, confirmation, policy, and text phases were not run. Under the frozen protocol, coefficients, thresholds, and re-anchoring cannot be tuned against this audit. A successor requires a new versioned protocol and fresh audit and confirmation seeds.
+
+\section{What is and is not established}
+\begin{tabular}{p{0.28\linewidth}p{0.62\linewidth}}
+\toprule
+Established & Not established\\
+\midrule
+Exact paired restoration and randomized action logging work in the controlled runner. & A global critic can estimate intervention advantage accurately enough to select updates.\\
+Global architecture can lower synergy pair \emph{amount} MAE against an additive comparator in V1 and V2. & Global causal structure was learned rather than exploited from fixture/action-table artifacts.\\
+Current positive controls are not stable over the required trajectory. & Any retention/plasticity improvement, causal modularity claim, or real-text transfer.\\
+The gates prevent policy claims after failed estimator checks. & The causal estimand is impossible or the broad idea is disproven.\\
+\bottomrule
+\end{tabular}
+
+\section{Likely failure modes}
+\begin{enumerate}
+\item \textbf{State-distribution mismatch.} Exhaustive train transitions may not cover optimizer states visited in long confirmation.
+\item \textbf{Nonstationary causal response.} The value of a gate changes as the learner approaches its incoming target; a static critic may be asked to interpolate incompatible regimes.
+\item \textbf{Weak or ill-conditioned action signal.} V2 utilities were tiny relative to amount-head output scale. V3 target scaling did not get to confirmation because fixture instability came first.
+\item \textbf{Insufficient causal state.} Current gradients, activations, and moments may be descriptive but insufficient for finite-horizon intervention effects.
+\item \textbf{Positive-control construction error.} A retained objective relative to a fixed anchor can lose action geometry as incoming optimization converges. Re-anchoring on retained loss may not preserve intervention margin.
+\item \textbf{Target mismatch.} Predicting scalar $U_h$ and a hard sign may be less stable than modeling full paired outcome vectors or action rankings and deriving a robust policy separately.
+\end{enumerate}
+
+\section{Questions for external reviewers}
+\begin{enumerate}
+\item What is the cleanest trajectory-stable positive control for an online intervention critic with real gradients/optimizer state, known modular causality, nontrivial pair synergy, and a null/harmful arm, without encoding utility in the features?
+\item Is periodic target re-anchoring defensible? If so, what should trigger it: retained loss, counterfactual action margin, a fixed task schedule, or a state-space reset? If not, what stationary design is preferable?
+\item Is scalar advantage $U_h$ the right primary target, or should the critic model a vector/distribution of outcomes and use a separately specified robust decision rule?
+\item Are the gates appropriately strict and matched to the claimed capability? How should one-class nulls and MSE/ranking/sign requirements be evaluated?
+\item What comparator best tests global causal structure? Is an additive independent critic too weak, or do shared global features leave the comparison ambiguous?
+\item What minimal evidence should be required before moving from this controlled MLP to a small sequence learner?
+\end{enumerate}
+
+\section{Reproduction map}
+The implementation is in \texttt{projects/relaleap/worktrees/colearned-causal-critic-v1}, branch \texttt{agent/colearned-causal-critic-v1}. Key commits: V1 implementation \texttt{690c8f7}; V2 protocol/fixture \texttt{6eec790}; V2 frozen confirmation \texttt{3ae81ea}; V3 protocol \texttt{12697eb}; V3 implementation \texttt{5eb57db}; V3 audit record \texttt{9be8222}.
+
+Primary sources are V1, V2, and V3 protocol Markdown files and the following experiment records:
+\begin{itemize}
+\item \texttt{experiments/20260726T063000Z-colearned-causal-critic-phase0/RUN.md};
+\item \texttt{experiments/20260726T130602Z-colearned-causal-critic-v2-phase0/RUN.md};
+\item \texttt{experiments/20260726T184000Z-colearned-causal-critic-v3-preconfirmation-audit/RUN.md}.
+\end{itemize}
+The V2 raw transitions/predictions and V3 raw audit JSON, command, logs, and test outputs are retained beside those records. V3 configuration SHA-256 is \texttt{51136dfb5d50cc40190f398743425eb2d59c854fe85816fa5b6a3d7e77ea4c69}; audit JSON SHA-256 is \texttt{08894d35f82ba3639ec2d179b68680b634e86d45cc4f191dc2352cdddfe2008b}.
+
+\section{Bottom line}
+The idea is an unvalidated proposal: learn a conservative global counterfactual update critic from randomized paired interventions rather than route on local importance proxies. So far the program has been more valuable as a falsification harness than as a positive result. It exposed poor critic learning in V2 and poor long-trajectory fixture stability in V3, and it prevented either from being mistaken for policy evidence. External advice is sought on a better positive control and whether the target and gates correctly operationalize the intended causal capability.
+\end{document}
+

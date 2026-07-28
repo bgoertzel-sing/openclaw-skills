@@ -272,3 +272,52 @@ of clean-extractor G at 90% requested accuracy and remains material at 80%,
 but all tested relation families have negative mean G at 70%. Do not generalize
 this transparent one-hot-block result to free-form natural language or latent
 factor extraction without a new extractor and disjoint confirmation.
+
+## D-20260724-e4-textlike-external-validity: Accept controlled text-surface bridge
+
+- Date: `2026-07-24`
+- Status: `accepted confirmation with bounded scope`
+- Evidence: `docs/e4_textlike_external_validity_disposition.md`
+
+Accept the frozen natural-surface E4 result. The input-only lexical extractor
+on aliases, distractors, shuffled local windows, embedding noise, and masked
+factor tokens confirms mean channel-matched CS task-loss `G=0.30387`, with all
+5/5 disjoint seeds above `0.20`. Mean CS accuracy improves from `81.56%` FF to
+`82.50%`, extraction fidelity is `96.09%`, and every provenance,
+non-label-equivalence, and non-ceiling check passes.
+
+Treat the extraction boundary as measured rather than universal. Mean G
+remains above `0.20` through 20% added reading errors (`77.38%` realized
+fidelity) and falls to `0.15250` at 30% (`68.32%`), placing the observed floor
+between those levels. Do not interpret the finite-sample 10%/20%
+nonmonotonicity as beneficial noise.
+
+The raw G magnitude must not be directly compared with the prior one-hot
+campaign because this bridge uses a channel-matched direct-logit TC anchor;
+the hidden-state TC denominator was below the frozen definition floor.
+Conclude only that controlled text-like surface complexity reduces margin but
+does not reverse Stage-4 deployment. Free-form natural language, learned
+semantic parsing, and out-of-vocabulary robustness remain untested.
+
+## D-20260725-e4-cmcp-ledger: Admit CMCP evidence accounting, not performance
+
+- Date: `2026-07-25`
+- Status: `accepted confirmation with bounded scope`
+- Evidence: `docs/e4_cmcp_ledger_disposition.md`
+
+Accept CMCP as a prospective evidence-accounting layer between the E4
+extractor and direct-logit sink. On five disjoint confirmation seeds it gives
+exact effective-precision idempotence for duplicates and deterministic
+descendants, preserves nearly all independent repeated evidence, aligns the
+tested known rotated frame, and is presentation-order invariant.
+
+Do not claim an immediate task-performance or continual-learning advantage.
+Naive duplicate counting slightly improves one-shot loss, although CMCP is
+slightly better calibrated, and the partial-redundancy estimate remains
+positively biased. Persistent precision, delayed overconfidence, interference,
+and forgetting were not measured.
+
+Before implementing the full MORK ledger, run a bounded persistent-evidence
+stress test with correlated duplicate bursts and independent confirmations
+across episodes. Promote the design to MORK only if it improves calibration or
+retention while preserving independent-evidence utilization.

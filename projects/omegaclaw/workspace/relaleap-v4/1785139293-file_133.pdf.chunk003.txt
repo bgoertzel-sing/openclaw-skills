@@ -1,0 +1,315 @@
+ing touches global RNG state.
+
+9.3     Numerical hygiene (binding on all stages)
+ 1. Precision. The quadratic fixture and all validity-gate arithmetic run in float64. Trans-
+    former/CAROM stages run float32 with float64 accumulation for inner products and
+    losses. No tf32, no AMP, anywhere in Phase 0.
+
+ 2. Step-size discipline. Enforce η λmax (DH) ≤ 0.5 (power-method estimate, 10 iterations, 3
+    probes) before any run; log the margin. Half the historical “mysterious” fixture instability
+    is edge-of-stability dynamics that this check excludes by construction.
+
+                                               12
+ 3. Measured noise floors. σnoise (h) is estimated from ≥ 64 replicate CRN pairs at ≥ 20
+    probe states per family before training data are generated, never assumed. All effect-size,
+    margin, and validity thresholds are expressed in units of the measured floor.
+
+ 4. Effect-size precheck. Before generating a stage’s training data, verify that the median
+    |τhA | over probe states and non-ordinary actions is ≥ 5 σnoise (h) at the operating (h, α); if
+    not, strengthen α or the planted conflict and re-run the precheck. This single rule would
+    have prevented the V2 tiny-utility regime.
+
+ 5. No leaky standardization. Target standardization (residual head only) is per (family,
+    horizon), fitted on training seeds, applied frozen; sign targets are never standardized.
+
+ 6. Paired statistics only. All comparisons between arms, methods, or ablations are paired
+    per (state, action, seed); minimum 3 seeds, 5 preferred; report per-seed numbers.
+
+ 7. HVP verification.
+              √         Every HVP pathway is checked against central finite differences with
+           −3        −1
+    step 10     d ∥v∥ -scaled perturbations: relative error ≤ 10−6 (float64) and ≤ 10−3
+    (float32) at 20 random (θ, v) pairs, as a standing pytest fixture, not a one-off.
+
+9.4    Test inventory
+(i) partition masks: gate algebra identities Ga0 = I, idempotence, disjointness; (ii) HVP vs
+finite differences as above; (iii) tangent propagator vs closed-form quadratic truth to ≤ 10−8
+relative error in float64; (iv) frozen-D vs exact-D discrepancy report; (v) paired restoration
+bit-exactness (import the V3 test); (vi) determinism: two runs, same seeds, identical artifacts
+byte-for-byte; (vii) null-family analytic nonnegativity checked at every generated state; (viii)
+synergy identity (11) vs pair-minus-singles closed form; (ix) gate implementations against hand-
+computed miniature cases.
+
+
+10     Toy-scale sandbox validation and lessons learned
+Before committing agent budget to Stages C0–C6, the mechanisms were exercised end-to-end at
+toy scale in two self-contained scripts (quadratic demo.py, NumPy, float64; mlp demo jax.py,
+JAX, float64; CPU, minutes). The sandbox is not a substitute for the staged programme —
+scales, learners, and statistics are deliberately miniature — but it settles the question a referee
+should ask first: do the claimed identities and estimators actually behave as derived, in running
+code, where truth is exact? They do, and the exercise produced protocol amendments recorded
+below and threaded into the appendix.
+
+10.1    Setup
+Quadratic suite. The fixture of Section 6 at d = 64, M = 4 × 16, SGD η = 0.1, gradient noise
+σ = 10−3 , gates applied to the realized stochastic gradient, CRN paired rollouts as in V2/V3.
+The backbone accesses the fixture only through decision-time-legal oracles (gA , gB , HVPs) —
+never the matrices — mimicking the production API. All four families run; ground truth is the
+closed-form counterfactual, recomputed per state.
+    MLP suite. An 8→32→32→4 tanh MLP with three modules (layer 1, layer 2, head),
+pretrained on a teacher task A (600 Adam steps), then adapted to a conflicting task B (150
+
+
+                                                13
+steps, fresh Adam state), with decision states every 10 updates, actions gating one module (or
+the layer-1/layer-2 pair) at α ∈ {0.5, 0.1}, horizons h ∈ {1, 5, 10, 25}, and truth from CRN paired
+rollouts. Conflict families: B1 input-permutation (yB = fA (P x); conflict planted in layer 1), B2
+output-shift (yB = fA (x)+c; head), and a stress family (B1 at 10× learning rate). The backbone
+computes the exact injected perturbation of the full optimizer state (θ, m, v) — one gated versus
+one ordinary step from the snapshot — and propagates it by forward-mode jax.jvp through
+the entire Adam update (exact-D), alongside the frozen-D approximation of Eq. (7).
+
+10.2     Results: quadratic suite (exact truth)
+
+ check                                            result                              gate analogue
+ CRN rollout vs closed form                       rel. err ≤ 2.6 × 10−8               C0 self-test
+ backbone Spearman (all families, h ≤ 20)         0.998–1.000                         C1 Gate 1
+ backbone median rel. err                         0.09%–0.56%                         C1 Gate 1
+ decision-time (preview) backbone Spearman        0.998–1.000                         —
+ synergy identity vs pair−singles                 rel. err 0.0000; controls ≤ 10−15   C1 Gate 2
+ synergy effect size over noise floor             22 × /16 × /9× at h = 1/5/10        precheck
+ null: min first-order alignment                  +1.85 × 10−4 > 0, all states        C1 Gate 3
+ null: false-beneficials beyond 3σ                0                                   C1 Gate 3
+ margin decay (640-step trajectory)               0.188 → 9 × 10−5 , geometric        Prop. 2
+ no-signal fraction, first→last quartile          0.00 → 1.00                         Prop. 2
+
+   The backbone’s entire residual error in the quadratic is the omitted second-order term
+1 ⊤
+2 ∆ QA ∆ — visible, bounded, and exactly the object assigned to the residual head. The margin-
+decay row is Proposition 2 observed under a microscope: the fitted decay rate (−0.0100/step)
+sits inside the worst-case bound (ln(1 − ηλmin ) = −0.0054), and the audit-relevant quantity —
+the fraction of states with no resolvable signal — goes from zero to one along the trajectory.
+Nothing “breaks”; the estimand drains.
+    The insufficient-statistics proposition ran constructively: 400 states were Gauss–Newton-
+projected onto identical V2-style feature vectors (mismatch < 10−10 ). Exact τ1 coincides across
+the class to 5×10−15 — the first-order-plus-uniform-curvature component is feature-determined,
+as the theory says — while exact τ10 spans [−3.2 × 10−4 , +9.0 × 10−3 ] with 7 sign flips against
+the reference state. Cross-instance (train on four wide-spectrum fixture instances, test on a fifth,
+h = 50 where propagator reweighting dominates), ridge and 5-NN on V2-style features reach
+Spearman 0.21 and 0.46 respectively; the backbone reaches 1.00 on the same test set, because
+it measures the test instance’s curvature at runtime rather than hoping the features encoded it.
+
+10.3     Results: MLP + Adam (truth = CRN paired rollouts)
+Backbone Spearman versus rollout truth, margin-filtered:
+
+
+
+
+                                                14
+                family / mode                   h=1      h=5      h = 10    h = 25
+                B1 input-perm., exact-D         1.000   1.000     1.000     1.000
+                B1 input-perm., frozen-D        1.000   0.988     0.972     0.923
+                B2 output-shift, exact-D        1.000   1.000     1.000     1.000
+                B2 output-shift, frozen-D       1.000   0.979     0.925     0.852
+                B1 stress (10× lr), exact-D     1.000   0.999     0.998     0.997
+                B1 stress (10× lr), frozen-D    1.000   0.156    −0.054     0.203
+
+    Median relative error of exact-D stays in 0.03%–1.9% throughout, including the stress family.
+The one-step synergy identity, evaluated on the real network via one HVP, matches the measured
+pair-minus-singles difference at Spearman 0.996–1.000 (median rel. err 0.7%–1.7%). The analytic
+incoming-harm claim holds where stated: the fraction of actions with τ B ≥ 0 is 0.98–1.00 at
+h = 1 (first order: gating always costs incoming progress) and decays at long horizons where
+second-order effects enter — the vector-outcome design earning its keep.
+
+10.4   Lessons learned
+ 1. The effect-size precheck caught a live failure. The first synergy plant — a random-
+    direction cross-block, as originally specified — landed at 0.1× the measured noise floor: a
+    faithful reproduction of V2’s tiny-utility regime, in fresh code, on the first try. The precheck
+    flagged it; the repair (a rank-1 cross-block aligned with the early-phase incoming gradient,
+    measured on the early trajectory slice) brought the plant to 9–22× the floor. The C1
+    numerics are amended accordingly, and the episode is the strongest available argument for
+    keeping the precheck mandatory and unfrozen-in-spirit: it is the rule that distinguishes “the
+    mechanism is absent” from “the fixture whispered.”
+
+ 2. Exact-D is load-bearing under Adam, not a refinement. At learner-typical η = 10−3 ,
+    frozen-D degrades gracefully (0.85–0.97 at h ≥ 10); at η = 10−2 it collapses to noise while
+    exact-D is essentially unaffected. Differentiating through the moment recursions is where
+    most of the horizon-transport fidelity lives. Amendment: exact-D is the default for Adam
+    learners in C2/C4; frozen-D is an optimization admitted only by the probe gate, with the
+    expectation that it fails at practical learning rates.
+
+ 3. A decision-time backbone exists. The deployment-legal variant — a noise-free preview
+    rollout standing in for the realized future baseline — matched validation-mode Spearman to
+    three decimals in the quadratic. The critic may not need the realized future at all; C2 gains
+    a preview-mode comparison arm to test this on real learners, where minibatch curvature
+    fluctuation could yet separate them.
+
+ 4. Measure, don’t declare — confirmed on a real learner. In B1 the conflict is planted
+    in layer 1, yet the realized retention benefit at h = 10 orders head > layer 2 > layer 1:
+    Adam distributes the interfering update over all modules, and the causally efficacious gate
+    is not the architecturally intended one. Any residual temptation to reintroduce declared
+    per-family orderings for real-learner audits should end here.
+
+ 5. The failure propositions are now regression tests. Both propositions of Section 4
+    exist as constructive, seed-stable code (feature-identical sign-flip states; the margin-decay /
+
+
+                                                15
+      no-signal curve). They move from post-mortem narrative to standing pytest fixtures: any
+      proposed feature set or audit criterion must pass through them.
+
+ 6. The learnable residue is small at toy scale. With exact injection and exact-D trans-
+    port, what remains for a residual head is 0.03–1.9% relative — consistent with the pos-
+    sibility, flagged in Section 11, that the programme’s honest landing is the backbone as a
+    measurement instrument, with the learned component thin or empty. C3’s do-no-harm gate
+    is therefore not a formality; it is the likely binding constraint.
+
+
+11      What would falsify this proposal
+The proposal is fail-closed like its predecessors, and its falsifiers are sharp. If the backbone
+fails its own validity gate inside the fixture (Stage C1), the implementation is wrong — stop.
+If the backbone validates on the fixture but shows no validity region at all on the real MLP
+learner at h ≤ 5 and strong attenuation (Stage C2), then second-order local theory genuinely
+does not govern short-horizon intervention effects in trained networks at Phase-0 scale — a
+real and publishable negative that would also, notably, constrain the quantitative reach of the
+CCL theorem’s smooth specialization. If the backbone validates but the residual head cannot
+beat it anywhere outside the radius (Stage C3), the honest conclusion is that the learnable part
+of the critic problem is empty at this scale, and the program should ship the backbone as a
+measurement instrument (for CGCCT commutator losses and confusion graphs) rather than as
+a learned critic — which would itself be a useful landing.
+
+
+A      Agent experiment programme: stages C0–C6
+This appendix is written for autonomous coding agents. Run stages in order; each has purpose,
+procedure, gates, numerics, budget, and stop conditions. A cleanly measured null is a
+successful outcome; the only failure is a corrupted positive. Fix only what blocks
+execution; record every deviation in one line. Frozen choices (A.8) may never be changed. All
+work through C3 is local CPU, matching the V-series discipline; C4 is the first GPU stage and
+is gated on C1–C2 passing.
+    Where a number below is given as a default, use it; where a range is given, sweep it and
+report the sweep, do not silently pick one point. The numerics were chosen for statistical power
+and conditioning, not convenience; if a budget forces reduction, reduce the number of sweeps,
+never the number of seeds, probe states, or noise-floor replicates.
+
+A.1     Stage C0: infrastructure and self-tests (CPU, ≤ 2 h)
+Purpose. Stand up the library and prove the measurement plumbing before any science. Refer-
+ence implementations of the expected numerical behavior exist (quadratic demo.py, mlp demo jax.py,
+Section 10); C0 ports their checks into pytest with the tolerances below, including the two con-
+structive failure-proposition demos as standing regression tests (Lesson 5).
+    Procedure and gates.
+
+ 1. Implement partition.py, backbone.py, fixtures/quadratic.py; run the full test inven-
+    tory of §9.
+
+
+
+                                              16
+ 2. HVP gate: relative error vs central finite differences ≤ 10−6 (float64, d = 512 quadratic)
+    and ≤ 10−3 (float32, the V2 three-branch MLP), 20 random (θ, v) pairs each.
+
+ 3. Tangent-propagator gate: vs closed-form quadratic τh , relative error ≤ 10−8 at h ∈ {1, 5, 20},
+    10 states, all 8 single actions, float64, SGD.
+
+ 4. Paired-restoration gate: import and pass the V3 exact-restoration test unchanged (learner,
+    Adam state, RNG streams bit-identical after snapshot/restore).
+
+ 5. Determinism gate: two full C0 runs with identical seeds produce byte-identical JSON arti-
+    facts.
+
+Stop if any gate fails after two fix attempts.
+
+A.2    Stage C1: quadratic fixture — backbone validation and controlled au-
+       topsy (CPU, ≈ 4–8 h)
+Purpose. Validate the backbone against exact truth; demonstrate the two failure propositions
+constructively; calibrate the synergy design rule.
+   Fixture numerics (defaults; freeze after this stage).
+
+  Dimension d = 512; M = 8 modules of 64; float64.
+
+  Spectra: QA , QB diagonal entries log-uniform on [0.05, 1.0] (condition number 20); optimizer
+   SGD, η = 0.1 (so ηλmax = 0.1, comfortably inside the 0.5 ceiling); a second arm with
+   Adam(η = 10−2 , β = (0.9, 0.999), ϵ = 10−8 ).
+
+  Gradient noise σ ∈ {10−3 , 10−2 } (two arms).
+
+  Families: null (a∗ = b∗ , both diagonal — aligned by construction); local-specific (b∗ − a∗
+   supported on I3 with ∥b∗ − a∗ ∥ = 2, QA diagonal on I3 scaled ×3); chain (QB cross block
+   between I2 , I5 with spectral norm 0.3); synergy (QA cross block between I4 , I7 : rank-1
+   and aligned with the early-phase incoming gradient direction, spectral norm 0.4, with the
+   precheck measured on the early trajectory slice — the sandbox showed a random-direction
+   block lands at 0.1× the noise floor (Lesson 1); verify ≥ 5 σnoise (1) in the effect-size precheck
+   and, if violated, raise toward 0.5 or restrict the state slice earlier, never lower the noise).
+
+  Trajectories: 400 SGD steps from θ0 ∼ N (a∗ , I); decision states every 2 steps (200 per
+   family per seed); horizons h ∈ {1, 2, 5, 10, 20, 50}; attenuations α ∈ {0.5, 0.1}; action table:
+   ordinary + 8 moderate + 8 strong + the planted pair and 4 random control pairs.
+
+  Noise floors: 64 CRN replicate pairs at 20 probe√ states per family per horizon per σ arm
+   (standard error of the floor estimate ≈ σnoise / 128, i.e. ≤ 9% relative).
+
+  Seeds: 5 (train 3 / confirmation 2, disjoint), fixture regenerated per seed.
+
+   Gates.
+
+ 1. Backbone vs exact truth: relative RMSE ≤ 5% and Spearman ≥ 0.95, per family and hori-
+    zon, restricted to states with margin ≥ 3 σnoise (h); report the excluded (no-signal) fraction
+    and its growth along the trajectory — this curve is the empirical form of Proposition 2 and
+    belongs in the report, not in the failure column.
+
+                                                 17
+ 2. Synergy: measured u⊤m QA un matches pair-minus-singles exact truth within 10% relative at
+    h = 1 and within 25% at h = 5; the 4 random control pairs show synergy ≤ σnoise .
+
+ 3. Null: analytic nonnegativity of the first-order term at every generated state (100%, exact);
+    rollout false-benefit at the V3 policy threshold = 0%.
+
+ 4. Controlled autopsy (diagnostic, no pass/fail): retrain the V2-style MLP on V2-style features
+    against exact τh on this fixture (3,000 train / 1,000 val transitions, Adam 10−4 , 2,000 epochs,
+    early stop patience 200); report its Spearman ceiling next to the backbone’s, and exhibit
+    ≥ 10 permuted-state pairs with identical features and opposite-sign truth (Proposition 1
+    made executable).
+
+Stop the programme if Gate 1 fails: the backbone implementation or theory is wrong at the
+only place where truth is exact.
+
+A.3    Stage C2: real MLP learner — backbone against paired rollouts (CPU,
+       ≈ 6–12 h)
+Purpose. Establish the validity radius on the V2/V3 three-branch MLP test bed with real
+Adam state, real activations, real minibatches.
+  Numerics.
+
+  Learner and families: the V3 fixture and behavior policy unchanged (50/25/15/10 action
+   mix, propensities logged), Adam η = 10−4 , λB = 1, interval 10 — continuity with the
+   V-series is the point.
+
+  Effect-size precheck (mandatory, before data generation). At 30 probe states per
+   family, measure σnoise (h) (64 CRN replicates) and the median |τhA | over strong actions for
+   h ∈ {1, 2, 5, 10}. Select the operating pair (h∗ , α∗ ) as the smallest h with median effect
+   ≥ 5 σnoise at α = 0.1; if none qualifies, strengthen the planted conflict (scale the family’s
+   conflicting-target displacement by 1.5×, iterate at most 3 times) and record each iteration.
+   Do not proceed on sub-5σ effects under any circumstances.
+
+  States: 300 train / 100 calibration / 600 confirmation per family (V3 scale), exhaustive
+   action tables at train states, randomized audit slice as in V3; seeds disjoint as in V3.
+
+  Backbone modes: exact-D is the default (Lesson 2: frozen-D collapsed at 10× learning rate
+   in the sandbox while exact-D held at Spearman ≥ 0.997). Frozen-D may be substituted as
+   an optimization only if it passes acceptance at 50 probe states: cosine ≥ 0.95 and magnitude
+   ratio in [0.5, 2] against exact-D. Add a decision-time preview arm (noise-free preview rollout
+   in place of the realized baseline; Lesson 3) and report its agreement alongside.
+
+  Power-method λmax estimates: 10 iterations, 3 probes, logged per state.
+
+   Gates. On untouched confirmation seeds, backbone-only: Spearman ≥ 0.5 vs rollout truth
+per family at (h∗ , α∗ ) among margin-qualified states; sign AUROC ≥ 0.75 where two-class;
+synergy Spearman ≥ 0.6 for planted pairs; null false-benefit ≤ 5%; ESS gates as in V3. Report
+the full validity-radius map (ρh , eh ) over h ∈ {1, 2, 5, 10, 25}, α ∈ {0.5, 0.1}. Stop (and write
+the negative up — it is a substantive result about second-order theory in trained networks) if
+no (h, α) cell passes with h ≤ 5.
+
+
+                                                18
+A.4    Stage C3: residual head (CPU, ≈ 4–8 h)
+Purpose. Test whether learning adds anything beyond the theory, on the honest null model.
+    Numerics. Residual MLP 2 × 64, GELU, five-member ensemble, AdamW 3 × 10−4 , weight
+decay 10−2 , batch 256, ≤ 500 epochs, early stop on calibration seeds (patience 50);

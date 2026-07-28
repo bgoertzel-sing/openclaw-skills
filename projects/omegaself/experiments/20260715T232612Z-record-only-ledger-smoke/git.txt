@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-15T23:26:12Z
+Working directory: projects/omegaself/repos/protomegabot2-omegaclaw-record-only
+Commit: 2bfa244b99b08f96e11e0e7ba40c5ed71159857a
+Branch: agent/omegaself-record-only
+Remote names: fork,origin
+
+## Status
+## agent/omegaself-record-only
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

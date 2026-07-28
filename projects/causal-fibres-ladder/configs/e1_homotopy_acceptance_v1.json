@@ -1,0 +1,62 @@
+{
+  "schema": "causal_fibres.e1_homotopy_acceptance.v1",
+  "status": "draft_not_frozen",
+  "programme_sha256": "5c8516f1c00899ae5923e85af115bf58e275062703670d361ac113d4887f856b",
+  "historical_r8": {
+    "design_commit": "9ccb151cc396dc73ce9c4ba9b2c9eb63de88d543",
+    "completed_run_commit": "ecf2f79db00365a3921152c19a06c1b54ee34771",
+    "data_identity": "wikitext103",
+    "role": "separate_reproduction_anchor_not_paired_e1_control"
+  },
+  "e1_synthetic_grammar": {
+    "factor_names": [
+      "subj_num",
+      "obj_num",
+      "tense",
+      "negation"
+    ],
+    "reject_factor_schema_mismatch": true,
+    "arms": [
+      "bp_kd",
+      "direct_epc",
+      "homotopy_epc",
+      "homotopy_objective_control"
+    ],
+    "calibration_seeds": null,
+    "confirmation_seeds": null,
+    "require_disjoint_seed_sets": true,
+    "minimum_calibration_seeds": 3,
+    "minimum_confirmation_seeds": 5,
+    "homotopy": {
+      "settlement_depths": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "activity_step_size": null,
+      "energy_hold_ratio": null,
+      "energy_hold_count": null,
+      "divergence_abort_multiplier": null
+    }
+  },
+  "provisional_not_confirmatory": {
+    "maximum_single_block_share_of_top5_mass": 0.5,
+    "minimum_participation_ratio_relative_to_teacher_per_block": 0.8,
+    "notes": "Must be justified and frozen after constructed-control and calibration evidence, before disjoint confirmation."
+  },
+  "operational_gates": {
+    "weights_unchanged_during_settle": true,
+    "teacher_free_path_touches_no_teacher": true,
+    "matched_seed_and_sample_identity": true,
+    "pooled_per_block_mass_consistent": true,
+    "guard_failures_retained": true,
+    "finite_machine_readable_artifacts": true,
+    "deterministic_config_and_artifact_hashes": true
+  },
+  "paid_compute_authorized": false
+}

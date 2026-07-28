@@ -1,0 +1,24 @@
+# Git State
+Captured UTC: 2026-07-15T15:07:24Z
+Working directory: /home/openclaw/research-agent/projects/omegaclaw/worktrees/threadkeeper-persistent-workers
+Commit: f82d1687b8d566a58cf32cebafe303507748fd5e
+Branch: agent/threadkeeper-persistent-workers
+Remote names: fork,origin
+
+## Status
+## agent/threadkeeper-persistent-workers
+ M Autotests/mock/test_subagent_hardening_mock.py
+ M docs/persistent-workers.md
+ M src/persistent_worker.py
+ M src/subagent.py
+ M tests/test_persistent_worker_lifecycle.py
+
+## Diff summary
+ Autotests/mock/test_subagent_hardening_mock.py |  38 ++++++++
+ docs/persistent-workers.md                     |   9 ++
+ src/persistent_worker.py                       | 127 +++++++++++++++++++++++++
+ src/subagent.py                                |  63 ++++++++++++
+ tests/test_persistent_worker_lifecycle.py      | 100 +++++++++++++++++++
+ 5 files changed, 337 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

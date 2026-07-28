@@ -1,0 +1,13 @@
+test_appraisal_run_is_bounded_and_reproducible (test_a6_model.A6ModelTests) ... ok
+test_controls_run (test_a6_model.A6ModelTests) ... ok
+test_functional_candidate_metrics_are_exposed (test_a6_model.A6ModelTests) ... ok
+test_matched_excess_scoring_accepts_clear_appraisal_excess (test_a6_model.A6ModelTests) ... ok
+test_matched_excess_scoring_fails_closed_against_stronger_control (test_a6_model.A6ModelTests) ... ok
+test_feature_strata_have_preregistered_dimensions (test_cla_detector.CLADetectorTests) ... ok
+test_promotion_requires_five_complete_seeds_and_four_wins (test_cla_detector.CLADetectorTests) ... ok
+test_reduced_detector_is_deterministic_and_exact (test_cla_detector.CLADetectorTests) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.120s
+
+OK

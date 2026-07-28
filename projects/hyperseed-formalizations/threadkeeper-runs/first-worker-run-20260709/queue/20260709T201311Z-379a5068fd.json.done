@@ -1,0 +1,40 @@
+{
+  "cancel_file": "",
+  "goal": "Complete work item note-0004-revision on the existing active branch. Read papers/0004-omegasim-strange-attractor-tuning/omegasim_strange_attractor_tuning.tex. Revise note 0004 for the 2026-07-01 OmegaSim feedback. The revision must substantively add: (1) logistic/sigmoid response interpreted as bounded thresholded cognitive appraisal, not arbitrary chaos injection; (2) a latent motivational state with explicit dynamics; (3) separate semantic and artifact fields and their coupling; (4) costly prediction/resource accounting; (5) hysteresis and adaptive thresholds; (6) residual-state lobe discovery with a concrete residual definition and clustering/validation method; (7) amplitude-matched linear controls; and (8) explicit A6, A7, and A8 experiment families with hypotheses, sweep variables, controls, and acceptance criteria. Preserve all existing material. Prefer creating a focused included file named omegasim_feedback_revision_2026_07_01.tex and inserting an input line immediately before end-document, rather than rewriting the whole main file. Build only note 0004 with tectonic if available, writing build output under /tmp/threadkeeper-note-0004-build so the pre-existing dirty tracked PDF is not overwritten. Inspect git status/diff, stage only the note-0004 LaTeX source files you changed, and make one local commit using git -c user.name=\"Benjamin Goertzel\" -c user.email=\"ben@singularitynet.io\" commit -m \"Revise OmegaSim tuning with cognitive appraisal experiments\". Do not push. Do not modify, stage, reset, clean, stash, or overwrite any unrelated existing work. Emit a concise summary with exact files changed, build status, commit hash, errors, and remaining gaps.",
+  "max_chars": 2000,
+  "max_turns": 8,
+  "persona_key": "hyperseed-worker",
+  "queued_at": 1783627991.3494062,
+  "run_id": "20260709T201311Z-379a5068fd",
+  "status": "queued",
+  "task_contract": {
+    "allowed_paths": [
+      "papers/0004-omegasim-strange-attractor-tuning"
+    ],
+    "done_criteria": [
+      "Main note includes the 2026-07-01 revision before end-document",
+      "All eight requested feedback areas are substantively addressed",
+      "A tectonic build is attempted without overwriting the existing tracked PDF",
+      "Only note-0004 LaTeX sources are staged and committed locally",
+      "No push and no unrelated user work is changed"
+    ],
+    "forbidden_actions": [
+      "push",
+      "reset",
+      "clean",
+      "stash",
+      "remote-write",
+      "secret-access"
+    ],
+    "max_tool_calls": 24,
+    "objective": "Complete work item note-0004-revision on the existing active branch. Read papers/0004-omegasim-strange-attractor-tuning/omegasim_strange_attractor_tuning.tex. Revise note 0004 for the 2026-07-01 OmegaSim feedback. The revision must substantively add: (1) logistic/sigmoid response interpreted as bounded thresholded cognitive appraisal, not arbitrary chaos injection; (2) a latent motivational state with explicit dynamics; (3) separate semantic and artifact fields and their coupling; (4) costly prediction/resource accounting; (5) hysteresis and adaptive thresholds; (6) residual-state lobe discovery with a concrete residual definition and clustering/validation method; (7) amplitude-matched linear controls; and (8) explicit A6, A7, and A8 experiment families with hypotheses, sweep variables, controls, and acceptance criteria. Preserve all existing material. Prefer creating a focused included file named omegasim_feedback_revision_2026_07_01.tex and inserting an input line immediately before end-document, rather than rewriting the whole main file. Build only note 0004 with tectonic if available, writing build output under /tmp/threadkeeper-note-0004-build so the pre-existing dirty tracked PDF is not overwritten. Inspect git status/diff, stage only the note-0004 LaTeX source files you changed, and make one local commit using git -c user.name=\"Benjamin Goertzel\" -c user.email=\"ben@singularitynet.io\" commit -m \"Revise OmegaSim tuning with cognitive appraisal experiments\". Do not push. Do not modify, stage, reset, clean, stash, or overwrite any unrelated existing work. Emit a concise summary with exact files changed, build status, commit hash, errors, and remaining gaps.",
+    "patch_proposal_only": false,
+    "requires_adjudication": false
+  },
+  "tool_subset": [
+    "read-file",
+    "write-file",
+    "append-file",
+    "shell"
+  ]
+}

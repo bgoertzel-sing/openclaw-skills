@@ -1,0 +1,1 @@
+{"lease":{"schema_version":"1.0.0","lease_id":"lease_444444444444444444444","scope":{"event_id":"evt_111111111111111111111"},"holder":"zero","public_slots":1,"expires_at":"2026-07-27T22:05:00.000Z","status":"ACTIVE"},"expected":{"decision":"DROP","reason":"LEASE_HELD_BY_OTHER"}}

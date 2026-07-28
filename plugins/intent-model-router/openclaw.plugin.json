@@ -1,7 +1,7 @@
 {
   "id": "intent-model-router",
   "name": "Intent Model Router",
-  "description": "Routes routine turns to GLM, serious turns to GPT-5.5/default, optional Fable escalations, and logs Fable cost telemetry.",
+  "description": "Routes routine turns to GLM, semi-routine turns to Terra, advanced turns to Sol/default, optional Fable escalations, and logs Fable cost telemetry.",
   "activation": {
     "onStartup": true
   },
@@ -10,7 +10,14 @@
     "additionalProperties": false,
     "properties": {
       "routineModel": { "type": "string" },
+      "semiRoutineModel": { "type": "string" },
       "deepModel": { "type": "string" },
+      "fixedAgentIds": {
+        "type": "array",
+        "items": { "type": "string" },
+        "uniqueItems": true,
+        "description": "Agent IDs whose configured primary/fallback chain must not be rewritten by this router."
+      },
       "fableModel": { "type": "string" },
       "fableMode": { "type": "string", "enum": ["off", "explicit", "auto"] },
       "enableAnthropic": { "type": "boolean", "description": "Deprecated compatibility alias: true behaves like fableMode=explicit when fableMode is absent." },
@@ -34,6 +41,10 @@
       "logAllUsage": { "type": "boolean" },
       "logCosts": { "type": "boolean" },
       "logDecisions": { "type": "boolean" },
+      "suppressFalseFallbackNotices": {
+        "type": "boolean",
+        "description": "Suppress fallback notices caused solely by this plugin's intentional per-run model override."
+      },
       "enabled": { "type": "boolean" },
       "pricingPerMTok": {
         "type": "object",

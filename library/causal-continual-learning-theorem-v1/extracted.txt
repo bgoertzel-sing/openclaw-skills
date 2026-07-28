@@ -1,0 +1,2180 @@
+                            Causal Coding
+          and the General Causal-Continual-Learning Theorem
+                                              Ben Goertzel
+
+                                           December 1, 2025
+
+
+                                                Abstract
+         We present a general framework in which continual learning robustness is a structural con-
+     sequence of learning and using correct (or approximately correct) causal structure. The key
+     idea is that when an AI system factors its world-model into causally meaningful modules, and
+     allocates its computational budget so as to keep those modules as independent as the data al-
+     low, then the gradient flows associated with different contexts almost commute. In that regime,
+     training under a stream of changing contexts is provably close to training on a joint mixture,
+     and catastrophic forgetting is quantitatively controlled, with explicit error terms that depend
+     on the amount of inter-context overlap.
+         We formalize this as a General Causal-Continual-Learning Theorem in an abstract operator
+     setting, and then give two concrete specializations: (i) a continuous-variable version on smooth
+     parameter manifolds using gradient flows and Lie brackets; and (ii) a discrete version for general
+     state/update systems. Both are instances of a more general category-theoretic formulation in
+     which context-conditioned updates are endomorphisms on a causally factorized object, and
+     “small commutators” are measured in an enriching quantale of loss and computational cost.
+         Finally, we specialize the theorem to (a) causal-coding versions of predictive-coding neural
+     networks, where interventional Jacobians and clarity regularizers suppress cross-module Hessian
+     blocks, and (b) predictive coding Transformers, where causal coding acts at the level of attention
+     heads and value channels. In both cases we obtain explicit qualitative and quantitative condi-
+     tions under which causal coding makes catastrophic forgetting provably hard to achieve, in a
+     probably approximately correct sense that degrades smoothly as causal modularity assumptions
+     are relaxed.
+
+
+Contents
+1 Introduction                                                                                            3
+
+2 Background                                                                                              5
+  2.1 The independence-coupling tradeoff and weakness . . . . . . . . . . . . . . . . . . . .             5
+  2.2 Predictive coding and causal coding . . . . . . . . . . . . . . . . . . . . . . . . . . .           5
+  2.3 PC Transformers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         6
+  2.4 Continual learning and commutativity . . . . . . . . . . . . . . . . . . . . . . . . . .            7
+
+3 The General Causal-Continual-Learning Theorem                                                    7
+  3.1 Abstract setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+  3.2 From causal modularity to small commutators . . . . . . . . . . . . . . . . . . . . . 8
+  3.3 Sequential vs. joint training under small commutators . . . . . . . . . . . . . . . . . 9
+  3.4 The General Causal-Continual-Learning Theorem . . . . . . . . . . . . . . . . . . . . 10
+
+
+                                                     1
+   3.5   Informal interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+   3.6   Making the theorem PAC for closer correlation to reality . . . . . . . . . . . . . . . . 11
+
+4 Continuous-variable specialization                                                              12
+  4.1 Continuous parameter manifolds and gradient flows . . . . . . . . . . . . . . . . . . . 12
+  4.2 Explicit Lie-bracket bounds . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+5 Discrete-variable specialization                                                                    13
+  5.1 Abstract endomorphisms and commutators . . . . . . . . . . . . . . . . . . . . . . .            13
+  5.2 Discrete causal modularity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    13
+  5.3 Discrete Causal-Continual-Learning Theorem . . . . . . . . . . . . . . . . . . . . . .          14
+  5.4 Categorical viewpoint (very briefly) . . . . . . . . . . . . . . . . . . . . . . . . . . . .    14
+
+6 Application to causal-coding neural networks                                                        14
+  6.1 Parameter modularization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      15
+  6.2 Causal gates and clarity as enforcers of modularity . . . . . . . . . . . . . . . . . . .       15
+  6.3 Resulting continual-learning guarantees . . . . . . . . . . . . . . . . . . . . . . . . .       15
+
+7 Application to PC Transformers                                                                      16
+  7.1 Modularization in a Transformer . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       16
+  7.2 Causal coding at the head/channel level . . . . . . . . . . . . . . . . . . . . . . . . .       16
+  7.3 Causal modularity and commutators for Transformer contexts . . . . . . . . . . . . .            17
+
+8 Application to incremental compression as a learning approach                                   17
+  8.1 Incremental-compression-style causal coding and continual learning . . . . . . . . . . 18
+  8.2 Contexts, feature libraries, and modules . . . . . . . . . . . . . . . . . . . . . . . . . 19
+  8.3 An incremental-causal update rule for a new context . . . . . . . . . . . . . . . . . . 20
+  8.4 Structural assumptions for multi-context incremental compressibility . . . . . . . . . 21
+  8.5 Incremental-Compression Causal-Continual-Learning Theorem . . . . . . . . . . . . 22
+  8.6 Categorical viewpoint . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+  8.7 One more step: McBride-inspired gradient guidance for causal incremental compression 23
+
+A A categorical formulation of causal continual learning                                              27
+  A.1 Three layers of description as categories . . . . . . . . . . . . . . . . . . . . . . . . .     27
+  A.2 Contexts as endomorphisms and continual learning as path-independence . . . . . .               27
+  A.3 Causal factorization as monoidal structure . . . . . . . . . . . . . . . . . . . . . . . .      28
+  A.4 Context-locality as factorwise endomorphisms . . . . . . . . . . . . . . . . . . . . . .        29
+  A.5 Categorical General Causal-Continual-Learning Theorem . . . . . . . . . . . . . . .             30
+  A.6 Connection to the tradeoff between preprocessing and disentangling . . . . . . . . .            30
+  A.7 Approximate categorical CCL: enriched setting and confusing pairs . . . . . . . . . .           31
+      A.7.1 Metric-enriched monoidal setting and approximate locality . . . . . . . . . .             31
+      A.7.2 Pairwise commutator defects and confusing pairs . . . . . . . . . . . . . . . .           32
+      A.7.3 Approximate CCL with linear dependence on confusing pairs . . . . . . . . .               33
+      A.7.4 Connection to causal-coding neural networks . . . . . . . . . . . . . . . . . .           34
+      A.7.5 Connection to incremental compression and IC-based causal coding . . . . .                35
+
+
+
+
+                                                   2
+B Illustrative example: causal coding in a PC Transformer with overlapping tex-
+  tual contexts                                                                                   35
+  B.1 Two fuzzy, overlapping contexts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+  B.2 Context-conditioned do-influence at the head/channel level . . . . . . . . . . . . . . 36
+  B.3 Overlapping contexts and approximate modularity . . . . . . . . . . . . . . . . . . . 37
+  B.4 Why this does not require discrete context labels . . . . . . . . . . . . . . . . . . . . 38
+
+C Asymptotic equivalence and acceleration of causal IC                                             39
+
+
+1     Introduction
+The aim of this paper is to give a simple, clear and practical explanation for why
+
+    • causal coding, considered as a general family of learning mechanisms for guiding learning-
+      networks toward internal structure reflecting causal relations in the world (spanning e.g. both
+      continuous and discrete systems, and neural and non-neural systems)
+
+can be generally effective for
+
+    • continual learning (avoiding pathologies like “catastrophic forgetting” that one sees in
+      typical backpropagation-based neural nets)
+
+     The high-level story is simple. Any reasonably general learner sees many contexts over its
+lifetime: different input regimes, goals, interaction patterns, or parts of the world. If adapting
+to a new context always re-writes the same small set of entangled parameters, then the system
+must forget: new updates tear up old solutions. If, instead, the system carves its internal state
+into reasonably independent causal modules, so that each context mostly tunes its own subset of
+modules while leaving the rest alone, then adapting to new contexts does not destroy competence
+in older ones.
+     The central claim of this paper is that:
+
+       Causal modeling, combined with an explicit drive to keep latent factors as independent
+       as the data allow, is exactly what you need to make this modularity happen—and to
+       make continual learning work.
+
+    More concretely, the argument has four conceptual steps:
+
+    1. Contexts correspond to different ways of querying the same causal world. If there
+       really is a shared causal structure underlying all the contexts an agent encounters, then there
+       is a distinguished representation in which that structure becomes a relatively sparse graph
+       over latent variables, with many weak or absent edges. Different contexts then depend on
+       different subgraphs.
+
+    2. Independence vs. dependency is not optional: it is an optimization tradeoff. A
+       system can either (1) explicitly track dependencies (couplings, interactions, attention links),
+       or (2) reparametrize its state to make things more independent (whitening, disentangling,
+       abstraction). Both routes cost compute; the “tradeoff theorem” says you cannot hit a fixed
+       accuracy target without investing in at least one of them. If you optimize this tradeoff, you
+       end up with representations that are as factorized as the data permit.
+
+
+                                                  3
+  3. When the representation is factorized, context updates almost commute. Each
+     context induces a vector field in parameter space (its gradient field under the context-specific
+     loss). If different contexts touch almost-disjoint modules, their vector fields almost commute
+     in the Lie bracket sense. When flows commute, doing context A then B is almost the same as
+     doing B then A, and almost the same as doing a single step on the combined loss over both
+     contexts. When contexts overlap, commutators are controlled by the size and strength of the
+     overlaps, as made explicit in the abstract categorical formulation and its “confusing pairs”
+     bounds.
+  4. When context flows almost commute, forgetting is bounded. General results on
+     compositions of flows show that the deviation between sequential training under contexts
+     1, . . . , T and a joint multi-context update is controlled by the pairwise commutators. If those
+     commutators are small, the performance drop in earlier contexts after adapting to new ones is
+     provably small, and the error grows at most linearly with the number of genuinely interacting
+     context pairs.
+
+    The role of causal coding is to operationalize steps (1) and (2) in predictive-coding style net-
+works. Causal coding uses interventional influence (do-derivatives) to decide which connections
+really carry causal signal, gates updates through those connections, and prunes redundant routes
+that mainly serve to diffuse influence. Together with the general independence/coupling tradeoff,
+this pushes the network toward a causally-meaningful, weakly entangled latent factorization. Once
+you have that, the commutator and continual-learning results kick in.
+    Very roughly, the philosophical moral is:
+
+     To do continual learning well, an AI should treat new contexts as local updates to a
+     causal world-model that it already factorized as much as possible. Causal coding is one
+     way—and perhaps a particularly clean way—to enforce this factorization and make the
+     underlying gradient flows nearly commuting.
+
+What this paper does. On the technical side we:
+
+   • Formalize an abstract setting in which a family of contexts corresponds to a family of update
+     operators on a state/configuration space equipped with a causal factorization.
+   • State and prove a General Causal-Continual-Learning Theorem that says: if context-conditioned
+     updates respect this causal factorization in a precise sense (only touching the modules that
+     causally matter to them, plus small residual couplings), then their update operators almost
+     commute, and sequential training almost matches joint multi-context training, up to error
+     terms that depend explicitly on a sparse graph of “confusing” context pairs.
+   • Give two concrete specializations:
+       1. a continuous-variable version on a smooth parameter manifold, with context updates
+          given by gradient flows and “almost commute” measured by Lie brackets of vector fields;
+       2. a discrete-variable version where the state space is arbitrary and context-conditioned
+          updates are arbitrary endomorphisms, with “almost commute” measured in a metric or
+          quantale-enriched sense.
+   • Show how the continuous version applies to causal-coding predictive-coding networks, where
+     do-influence matrices and clarity regularizers suppress cross-module Hessian blocks and thus
+     shrink commutators.
+
+                                                 4
+    • Sketch how the same structure appears in predictive-coding Transformers, where causal coding
+      acts across attention heads and feed-forward channels.
+
+Paper structure. Section 2 reviews the independence/coupling tradeoff, predictive and causal
+coding, PC Transformers, and the commutativity-based view of continual learning. Section 3 states
+and proves the general Causal-Continual-Learning Theorem and gives a nontechnical interpretation.
+Sections 4 and 5 give continuous and discrete specializations. Sections 6 and 7 apply the theorem to
+causal-coding neural networks and then to PC Transformers specifically, followed by Section 8 which
+considers application to incremental compression (as an example of a purely discrete, non-neural
+application).
+    Appendix A gives a general categorical formulation of the Causal-Continual-Learning Theorem,
+and Appendix B gives some hypothetical in-depth examples of the application to transformers.
+Appendix C clarifies some aspects of the application to incremental compression—noting that
+in a best-case regime where a modular optimum exists, the use of causal coding can accelerate
+convergence toward this optimum without changing it; and in more typical regimes it biases learning
+toward different, more modular optima that may be preferable for continual learning even if they
+differ from the plain incremental-compression optimum.
+
+
+2     Background
+2.1    The independence-coupling tradeoff and weakness
+Any system that processes multiple information channels faces an irreducible choice:
+
+    • Route A: independence-enforcing transforms. Change representation to make channels more
+      independent (whitening, decorrelation, factorization, abstraction, masking). This reduces the
+      amount of explicit dependency you need to track later but costs computation now.
+
+    • Route B: explicit dependency modeling. Keep the representation as-is, but introduce explicit
+      couplings (factors, attention, joins, multi-ary operations) that track dependencies. This can
+      explode in cost as higher-order interactions are added.
+
+    The “tradeoff theorem” (in its various analytic and categorical forms) says that, subject to
+resource constraints, any method that hits a given information-efficiency target must pay at least
+one of these costs. More refined statements characterize Pareto-optimal operating points as those
+where the marginal information gain per unit cost is equalized between Route A and Route B.
+Practically, this implies that a well-designed system will:
+
+    1. perform just enough independence-inducing transforms to keep the remaining dependency
+       mass manageable; and
+
+    2. introduce explicit couplings only where the residual dependencies really matter for predictive
+       accuracy.
+
+This is the formal backbone behind the intuitive statement that “good architectures are as factorized
+as the data allow.”
+
+
+
+
+                                                  5
+2.2   Predictive coding and causal coding
+Predictive coding (PC) treats a network as implementing inference in a hierarchical generative
+model. Each layer predicts the activity of the layer below; prediction errors are driven to zero by
+iterative updates of latent variables; weights are updated by local Hebbian-style rules driven by
+prediction errors. In the standard formulation, the key quantities are
+
+   • a free energy F (x, z; θ), often quadratic in residuals;
+
+   • inference dynamics ż = −∂F/∂z relaxing to a fixed point;
+
+   • learning rules ∆θ ∝ ∂F/∂θ using local error and presynaptic activity.
+
+   Causal coding (CC) modifies this picture in two crucial ways:
+
+  1. Causal gates. Instead of weighting updates by mere correlation, CC estimates do-influence
+     matrices C, which quantify how much a child’s equilibrium would change under a small
+     Pearlian intervention on a parent unit. Learning updates are then gated by |Cji |p (with
+     p ∈ [1, 2]), focusing learning on connections that actually carry causal signal.
+
+  2. Clarity / pruning. CC penalizes redundant or diffusive routes, for example via diffusion-
+     based penalties on lateral connections and sparsity-inducing gates on vertical connections.
+     This encourages direct, clear causal paths and prunes edges whose influence can already be
+     explained by multi-hop paths through other units.
+
+    Mathematically, do-influence can be expressed in terms of second derivatives of the free energy,
+or approximated via natural-gradient / Fisher-metric surrogates. In multilayer hierarchies, block
+Schur complements and Gauss-Newton approximations give tractable formulas for interventional
+maps from one layer to another.
+    The net effect is that CC drives the network toward a representation in which:
+
+   • causal influence flows along a relatively sparse backbone of strong edges;
+
+   • many potential paths exist but are weak or pruned;
+
+   • the effective mixed Hessian blocks between causally unrelated groups of parameters are small.
+
+2.3   PC Transformers
+Recent work has shown how to implement Transformers in a predictive-coding framework: self-
+attention, feed-forward layers, and normalization are treated as parts of a generative model; infer-
+ence iteratively relaxes “value” nodes to minimize a KL-based free energy, and learning updates
+weights accordingly. The key take-away for our purposes is that:
+
+   • attention heads, value channels, and feed-forward blocks provide natural modules that could,
+     in principle, be treated as approximately independent causal factors most of the time, with
+     explicit couplings only where attention actually needs to connect tokens;
+
+   • predictive coding already introduces local error signals and recurrent inference that make it
+     natural to implement causal gates and pruning at the head/channel level.
+
+   A “causal-codingified” PC Transformer would thus:
+
+
+                                                  6
+    • estimate interventional influence from heads/channels in layer ` + 1 to activities in layer `;
+    • gate updates to attention and feed-forward weights by these influence estimates;
+    • prune attention links and value channels that are redundant with others, using e.g. diffusion-
+      style clarity penalties or sparse regression.
+Section 7 returns to this in more detail.
+
+2.4    Continual learning and commutativity
+In continual learning, we are given a non-stationary stream of data in which the underlying distri-
+bution and objectives drift over time. We refer to the different regimes of this stream as contexts:
+different domains, goals, user populations, interaction styles, or environmental conditions. Catas-
+trophic forgetting occurs when adapting to later contexts significantly degrades performance in
+earlier ones.
+    A useful way to analyze this is to view each context t as inducing a gradient vector field
+Xt (θ) = −∇Lt (θ) on parameter space, where Lt is the loss under context t (e.g. an expectation
+over data from that context). Training for a small time ht under context t is then approximated by
+the time-ht flow Ψtht of Xt . A single pass over a sequence of contexts corresponds to the composition
+
+                                 Θseq = ΨThT ◦ · · · ◦ Ψ2h2 ◦ Ψ1h1 (θ0 ).
+                                                                     P
+The “ideal” joint step, training on a weighted
+                                       P         mixture LΣ = t ht Lt , corresponds to the time-1
+flow of the combined vector field XΣ = t ht Xt :
+                                            Θjoint = ΨΣ
+                                                      1 (θ0 ).
+
+   General results on compositions of flows show that the difference between Θseq and Θjoint is
+governed by the pairwise commutators (Lie brackets) [Xi , Xj ]. Intuitively:
+                            [Xi , Xj ](θ) = DXj (θ)Xi (θ) − DXi (θ)Xj (θ)
+measures how much doing a tiny step of Xi then Xj differs from doing them in the opposite
+order. When all [Xi , Xj ] vanish, the flows commute and order does not matter. When [Xi , Xj ] are
+small, the order-dependence and hence the forgetting induced by a new context are quantitatively
+bounded.
+   For gradient flows, the commutator can be expressed in terms of mixed Hessian blocks, so that
+small cross-block Hessians (and/or small gradients) imply small commutators. This is where causal
+coding enters: by suppressing cross-module couplings, it shrinks the mixed blocks and thus reduces
+commutators across contexts. As we will see later via the categorical approximate CCL theorem,
+these effects can be quantified in terms of a sparse graph of “confusing” context pairs and do not
+require exact modularity.
+
+
+3     The General Causal-Continual-Learning Theorem
+We now formulate an abstract version of the main theorem, with as few architecture-specific as-
+sumptions as possible. This section uses a continuous notation (vector fields, gradients) but is
+really about the structure of context-conditioned updates; Section 5 gives a purely discrete version,
+and Appendix A gives a more general categorical version that subsumes both the continuous and
+discrete cases among other potential variations, and also provides approximate variants whose error
+bounds depend explicitly on context overlaps.
+
+                                                    7
+3.1    Abstract setup
+Let Θ be a smooth parameter manifold (or simply Rd ). A context t is represented at the learning
+level by a smooth loss Lt : Θ → R with associated gradient vector field Xt (θ) = −∇Lt (θ). We
+assume each Lt has Lipschitz gradient and (optionally) satisfies a Polyak-Lojasiewicz condition in
+the region of interest, so that gradient descent behaves well.
+    We suppose the learner has chosen a causal representation and modularization of parameters:
+                                                                    X
+                          θ = (θ(1) , . . . , θ(M ) ), θ(m) ∈ Rdm ,   dm = d,
+                                                                       m
+
+intended to correspond to causal modules (latent factors, heads, channels, blocks, etc.). Informally,
+a given context t should depend strongly only on the subset of modules that causally matter for
+that context.
+
+Definition 1 (Support sets and residual couplings). For each context t we define:
+
+   • a support set St ⊆ {1, . . . , M } of modules that t claims to depend on;
+
+   • a residual gradient outside support
+                                                         X     ∂Lt
+                                          Gout
+                                           t (θ) :=                 (θ) ;
+                                                              ∂θ(m)
+                                                      m∈S
+                                                       / t
+
+
+   • cross-Hessian norms between modules m ∈ St and n ∈
+                                                      / St ,
+
+                                          cross              ∂ 2 Lt
+                                         Ht,m,n (θ) :=                (θ) .
+                                                          ∂θ(m) ∂θ(n)
+
+We say that the family {Lt } is (εg , εh )-causally modular (relative to the modularization) if, in the
+training region,
+                                 Gout
+                                    t (θ) ≤ εg ,
+                                                       cross
+                                                      Ht,m,n (θ) ≤ εh
+for all t, all θ, all m ∈ St , and all n ∈
+                                         / St .
+
+   Intuitively: each context’s gradient lives almost entirely inside its support modules, and the
+curvature coupling its support modules to others is small. This definition controls the “outside-
+support” and cross-support terms; in the presence of overlapping supports, there are also in-support
+terms that need to be bounded separately in terms of a pairwise overlap or confusion score, as made
+explicit in the approximate categorical formalism in Appendix A.
+   In a causal-coding network, the support sets St and small residuals are enforced by causal gates
+and pruning:
+
+   • gates suppress updates on parameters whose do-influence under that context is tiny;
+
+   • clarity penalties prune edges that merely create redundant diffusive paths, shrinking cross-
+     Hessian blocks.
+
+
+
+
+                                                      8
+3.2   From causal modularity to small commutators
+Define the gradient vector fields
+                                                                                     
+                                                              ∂Lt              ∂Lt
+                            Xt (θ) = −∇Lt (θ) = −                (1)
+                                                                     , . . . , (M )       .
+                                                              ∂θ              ∂θ
+
+The Lie bracket [Xi , Xj ] can be expressed in components as
+                                                                                 !
+                                                 X     ∂Xjk ` ∂Xik `
+                             [Xi , Xj ]k (θ) =             X −    X                   ,
+                                                       ∂θ` i   ∂θ` j
+                                                 `
+
+where k, ` range over coordinates on Θ. In block form, one can think of this as involving mixed
+Hessian blocks of Li and Lj weighted by gradient components of Lj and Li , respectively.
+    The following lemma abstracts the usual “commutator is bounded by mixed Hessians times gra-
+dients” calculation to the modular setting and captures those parts of the commutator controlled
+by out-of-support gradients and cross-support Hessians. Additional in-support terms arising from
+overlapping supports are handled via pairwise confusion costs in the approximate categorical the-
+orem in Appendix A.
+
+Lemma 1 (Causal modularity implies small commutator contributions). Suppose the family {Lt }
+is (εg , εh )-causally modular, with all ∇Lt uniformly bounded by Gmax in norm. Then there exists a
+constant C depending only on the modularization such that, for all i 6= j and all θ in the training
+region, the contribution to [Xi , Xj ](θ) coming from cross-support Hessian blocks and out-of-support
+gradients obeys
+                               k[Xi , Xj ](θ)kcross ≤ C (εh Gmax + εg Hmax ) ,
+where Hmax bounds the within-support Hessian blocks in norm. In the special case where supports
+are disjoint, this bound controls the full commutator.
+
+Sketch. Write the gradient and Hessian in block form with respect to the modules. Within each
+context t, blocks linking modules outside St to those inside St are bounded by εh , and gradient
+components outside St are bounded by εg . Expanding [Xi , Xj ] in block form shows that every term
+that involves a cross-support Hessian block or an out-of-support gradient either contains a cross-
+Hessian block (bounded by εh ) times a gradient (bounded by Gmax ), or a within-support Hessian
+block (bounded by Hmax ) times an out-of-support gradient (bounded by εg ). Summing over finitely
+many modules produces the stated bound with some combinatorial constant C. When supports
+are disjoint, there are no in-support overlap terms and this bound controls the entire bracket.
+
+    Thus, in a causally modular representation, a large part of the commutators of context vector
+fields is small by construction, and the remaining contributions arise from overlaps in the supports
+Si ∩ Sj ; these overlap terms are controlled in Appendix A by confusion costs that quantify how
+strongly two contexts interact on their shared modules.
+
+3.3   Sequential vs. joint training under small commutators
+Let Ψth denote the time-h flow of Xt , and write a single training cycle as before:
+
+                          Θseq = ΨThT ◦ · · · ◦ Ψ1h1 (θ0 ),         Θjoint = ΨΣ
+                                                                              1 (θ0 ),
+            P
+with XΣ =     t ht Xt .
+
+
+                                                      9
+   General results on compositions of flows (via Taylor expansion or the Baker-Campbell-Hausdorff
+formula) give
+                                     1X                              X         
+                     Θseq − Θjoint =       hi hj [Xi , Xj ](θ0 ) + O    hi hj hk ,
+                                     2
+                                              i<j                          i,j,k
+
+and hence, under a uniform bound k[Xi , Xj ](θ)k ≤ ε,
+                                                     1 X
+                                   kΘseq − Θjoint k ≤ ε  hi hj + O(h3 ),
+                                                     2
+                                                              i<j
+
+where h = maxt ht .
+   Moreover, the change in an earlier context’s loss Li after training under a later context j can
+be bounded in terms of [Xi , Xj ] and Lipschitz constants of ∇Li . Informally, the more the new
+context’s flow fails to commute with the old context’s flow, the more it pulls parameters off the old
+context’s solution manifold. In the approximate categorical setting this is made precise by bounds
+that depend only on the confusion costs of those pairs (i, j) that actually interfere.
+
+3.4   The General Causal-Continual-Learning Theorem
+We can now combine causal modularity and flow composition to state the main theorem.
+Theorem 1 (General Causal-Continual-Learning Theorem). Let Θ be a smooth parameter manifold
+and {Lt }Tt=1 a family of C 3 context-conditioned losses with Lipschitz gradients and bounded Hessians
+on a convex training region N ⊂ Θ. Suppose:
+
+  1. ( Causal modularity) There is a modularization θ = (θ(1) , . . . , θ(M ) ) and support sets St such
+     that the family {Lt } is (εg , εh )-causally modular on N , with uniform bounds Gmax and Hmax
+     on gradient norms and within-support Hessian blocks.
+  2. ( Causal coding realizer) The learning algorithm in each context approximately follows gradient
+     flow on Lt with respect to this modularization, using causal gates and pruning derived from
+     (exact or approximate) do-influence. That is, the actual update vector field X̃t satisfies kX̃t −
+     Xt k ≤ δ on N , and the gates are computed from influence estimates that agree (up to δ) with
+     the true causal influence.
+  3. ( Step sizes) Step sizes ht > 0 are small enough that all flows stay within N and higher-order
+     error terms O(h3 ) can be neglected.
+
+   Then there exists a constant C such that, for any initial θ0 ∈ N :
+  1. ( Approximate commutativity) For all i 6= j and all θ ∈ N ,
+                                                                          
+                               k[X̃i , X̃j ](θ)k ≤ C εh Gmax + εg Hmax + δ := εcomm ,
+
+      where εcomm should be understood as a worst-case bound that can be refined in terms of pairwise
+      confusion costs as in the approximate categorical theorem.
+  2. ( Sequential ≈ joint) Let Ψ̃tht be the time-ht flow of X̃t , and Ψ̃Σ
+                                                                        1 the time-1 flow of X̃Σ :=
+     P
+        t ht X̃t . Then
+                                                  1      X
+                              kΘ̃seq − Θ̃joint k ≤ εcomm     hi hj + O(h3 ),
+                                                  2
+                                                                    i<j
+
+      where Θ̃seq = Ψ̃ThT ◦ · · · ◦ Ψ̃1h1 (θ0 ) and Θ̃joint = Ψ̃Σ
+                                                                1 (θ0 ).
+
+
+                                                         10
+  3. ( Forgetting bound) For any earlier context i and later context j, the change in Li after a
+     step on context j satisfies
+
+                           |Li (θafter j ) − Li (θbefore j )| ≤ Kij hi hj εcomm + O(h3 ),
+
+      where Kij depends on Lipschitz constants of ∇Li along the trajectory. In particular, catas-
+      trophic forgetting is ruled out in the limit εcomm → 0 and small ht , and more refined bounds
+      that depend only on confusing pairs are given by the approximate categorical theorem in Ap-
+      pendix A.
+
+Sketch. Item (1) follows by combining Lemma 1 (applied to Xt ) with the fact that replacing Xt
+by X̃t perturbs commutators by at most O(δ). Overlapping-support contributions are further
+controlled by pairwise confusion costs as in the enriched categorical setting.
+    Item (2) is a direct application of the standard expansion for compositions of flows: the deviation
+between the product of flows and the flow of the sum is given to second order by a sum of pairwise
+commutators weighted by hi hj /2, plus higher-order nested commutators which are O(h3 ) under
+our smoothness assumptions.
+    Item (3) applies the mean value theorem to Li along the segment between Θ̃seq and Θ̃joint , plus
+the bound from (2), to relate the change in Li to εcomm and Lipschitz constants of ∇Li . Details
+are standard and omitted.
+
+3.5   Informal interpretation
+The theorem formalizes the philosophical story from the Introduction:
+
+   • If the learner has found a representation in which each context touches only the modules it
+     really needs (causal modularity), and the residual couplings between modules are small, then
+     the context gradient fields almost commute. Causal coding is one concrete way to enforce
+     this modularity.
+
+   • When context flows almost commute, the difference between seeing contexts in sequence and
+     seeing them jointly is a second-order effect controlled by pairwise commutators. In particular,
+     later contexts cannot drastically degrade earlier ones unless the commutators are large, and
+     the approximate categorical theorem refines this to show that only “confusing” pairs matter.
+
+   • The independence/coupling tradeoff theorem tells you why the learner would want to be in
+     the causal-modular regime: there, it achieves a good accuracy/compute tradeoff by keep-
+     ing modules as independent as the data allow and only paying for explicit couplings where
+     necessary.
+
+   • Thus causal modeling (to identify the right modules) plus a drive to maximally independent
+     representations (to sit on the Pareto frontier of the independence/coupling tradeoff) yields a
+     regime in which continual learning is automatically well-behaved.
+
+   In short: if you build and maintain the right causal factorization, the commutators shrink,
+and so does forgetting, with the quality of continual learning degrading smoothly as modularity
+assumptions are relaxed.
+
+
+
+
+                                                     11
+3.6    Making the theorem PAC for closer correlation to reality
+Limitations and approximate categorical variants. Theorem 1, as stated above, should be
+read as a clean, worst-case continuous instantiation of the general idea rather than as the final word.
+Its hypotheses pack all violations of modularity and commutativity into a single uniform parameter
+εcomm , and the resulting bounds use this worst-case constant for every pair of contexts. In practice,
+however, neither exact modularity nor uniform commutator bounds are realistic: contexts typically
+have overlapping supports and some pairs of contexts interact much more strongly than others. The
+continuous theorem also does not explicitly separate the different sources of non-commutativity
+(overlaps in Si ∩ Sj versus approximation errors in the update rule), but rather folds them into a
+single quantity.
+     To address this, Appendix A develops an approximate categorical version of the CCL theorem
+in a metric-enriched monoidal setting. There we make explicit two kinds of error: (i) a locality error
+εc for each context c, measuring how far its update Uc is from an ideal context-local map that acts
+only on its intended support Sc , and (ii) an ideal commutator defect ∆c,c0 for each pair of contexts,
+measuring how far their ideal updates fail to commute. These combine into a per-pair confusion cost
+δc,c0 , and the main approximate categorical theorem shows that path-dependence and forgetting
+error can be bounded by a sum over these confusion costs. In particular, the deviation between
+sequential and joint updates is shown to scale linearly in the number and magnitude of genuinely
+confusing context pairs, rather than in the square of the total number of contexts.
+     The continuous and discrete specializations in the main text arise as instances of this enriched
+categorical picture: in the smooth case we take Θ to be a parameter manifold, Uc to be small-
+gradient flows for Lc , and dΘ to measure performance distance; in the discrete case we take Θ
+to be a configuration space with a metric d and Uc to be non-expansive update maps. In both
+cases the categorical PAC-style formulation replaces the single, global εcomm of Theorem 1 by a
+structured family of errors {εc , ∆c,c0 } and makes clear how continual-learning guarantees degrade
+smoothly as modularity assumptions are relaxed. This refined perspective is important for practical
+applications: real systems are only approximately modular, and it is the sparsity and weakness of
+the confusion graph (rather than exact disjointness) that determines how robust sequential training
+will be.
+
+
+4     Continuous-variable specialization
+The previous section was already stated in a smooth setting. Here we make the gradient-flow
+assumptions explicit and connect more directly to standard continuous-time analysis.
+
+4.1    Continuous parameter manifolds and gradient flows
+Assume Θ ⊆ Rd is open and each Lt is C 3 . Define the gradient vector fields Xt = −∇Lt and flows
+Ψth as before. We assume:
+
+    • Lipschitz gradient: k∇Lt (θ) − ∇Lt (θ0 )k ≤ Lt kθ − θ0 k for all θ, θ0 in a convex region N , with
+      uniform bound Lt ≤ L.
+
+    • Bounded Hessian: k∇2 Lt (θ)k ≤ H on N .
+
+    • PL inequality (optional): 21 k∇Lt (θ)k2 ≥ µ(Lt (θ) − L∗t ), ensuring gradient descent converges
+      linearly to a minimum.
+
+
+
+                                                  12
+   Under these assumptions, classical ODE theory justifies the Taylor expansions of flows and the
+Baker-Campbell-Hausdorff truncations used in Theorem 1.
+
+4.2   Explicit Lie-bracket bounds
+In coordinates, the Lie bracket for gradient fields can be written as
+
+                         [Xi , Xj ](θ) = −∇2 Lj (θ)∇Li (θ) + ∇2 Li (θ)∇Lj (θ).
+
+In block form with respect to a parameter split θ = (u, v), this yields
+                                                                                            !
+                                         (j) (i)        (j) (i)       (i) (j)     (i) (j)
+                                      −Huu gu − Huv gv + Huu gu + Huv gv
+                    [Xi , Xj ](θ) =     (j) (i)  (j) (i)  (i) (j)  (i) (j)                      ,
+                                      −Hvu gu − Hvv gv + Hvu gu + Hvv gv
+        (t)
+where H·· are Hessian blocks of Lt and g (t) the corresponding gradient blocks.
+    If causal coding and pruning have suppressed the mixed blocks Huv and Hvu , then the commu-
+tator norm is dominated by within-block Hessians times cross-block gradients—exactly the pattern
+                                            (t)     (t)            (t)
+captured in Lemma 1. Quantitatively, if kHuv k, kHvu k ≤ εh and kgv k ≤ εg , then
+
+                                  k[Xi , Xj ](θ)k ≤ 2Hεg + 2Gmax εh ,
+
+with H a bound on within-block Hessians and Gmax a bound on gradient norms. Overlaps in the
+supports Si ∩ Sj contribute additional terms that can be bounded in terms of confusion costs δi,j
+as in Appendix A.
+    Thus the continuous specialization of Theorem 1 is essentially Theorem 1 itself, with explicit
+continuous-time constants and with more refined, overlap-sensitive versions available via the cate-
+gorical approximate CCL theorem.
+
+
+5     Discrete-variable specialization
+We now give a version that does not assume a differentiable structure at all. This captures, for
+example, symbolic program rewriting systems, finite-state controllers, or modular networks updated
+by discrete rules.
+
+5.1   Abstract endomorphisms and commutators
+Let Θ be an arbitrary set of states or configurations. A context t is represented at the update
+level by an endomorphism Ut : Θ → Θ (e.g. one training epoch or one adaptation step under that
+context). Sequential updates across a sequence of contexts 1, . . . , T give
+
+                                       Θseq = UT ◦ · · · ◦ U1 (θ0 ).
+
+We can also consider a “joint” update UΣ that approximates the effect of training on some combi-
+nation of contexts (e.g. stochastic mixtures of minibatches from different parts of the data stream).
+   To talk about “small” deviations we equip Θ with a (pseudo)metric d : Θ × Θ → [0, ∞), or
+more generally with an enrichment in a quantale of costs/effects. For simplicity assume a metric.
+   Define the discrete commutator of two updates Ui , Uj at a point θ by
+
+                             Cij (θ) := Uj (Ui (θ)),        Cji (θ) := Ui (Uj (θ)).
+
+We say Ui and Uj commute up to ε if d(Cij (θ), Cji (θ)) ≤ ε for all θ.
+
+                                                       13
+5.2   Discrete causal modularity
+Suppose we have a decomposition of state into components θ = (θ(1) , . . . , θ(M ) ) and a notion of
+projection π (m) : Θ → Θ(m) (for instance Θ is a product space). For each context t we define a
+support set St and say that Ut is locally causal if it changes components in St arbitrarily but affects
+components outside St only through small, bounded interactions.
+   One way to formalize this is:
+Definition 2 (Discrete causal
+                           Q modularity).    We say a family {Ut } is ε-causally modular if there
+exists a decomposition Θ ∼
+                         = m  Θ(m) and support sets S such that, for all θ and all m ∈
+                                                         t                            / St ,
+
+                                d π (m) (Ut (θ)), π (m) (θ) ≤ ε.
+                                                           
+
+    That is, each context-conditioned update Ut leaves non-support modules almost fixed.
+    In a causal-coding implementation, this arises from gates that freeze modules with negligible
+do-influence for the current context, and from pruning that removes cross-module couplings. The
+metric d can capture, for example, differences in loss, in causal influence structure, or in a summary
+of the state.
+
+5.3   Discrete Causal-Continual-Learning Theorem
+Theorem 2 (Discrete Causal-Continual-Learning). Let Θ be a metric space with metric d, and let
+{Ut }Tt=1 be a family of endomorphisms that is ε-causally modular with respect to some decomposition
+and support sets St . Suppose further that each Ut is non-expansive in d (Lipschitz constant ≤ 1).
+    Then there exists K depending only on the decomposition such that, for all i 6= j and all θ,
+                                                             
+                                   d Uj (Ui (θ)), Ui (Uj (θ)) ≤ Kε.
+
+In particular, the deviation between sequential and joint updates after one cycle is bounded by
+O(T 2 ε) in d, and the change in any context-specific evaluation functional that is Lipschitz in d is
+bounded by O(T 2 ε) as well. Appendix A shows how this worst-case O(T 2 ) scaling can be refined
+to bounds that depend linearly on the number and magnitude of pairwise confusion costs δi,j , and
+hence on the number of genuinely confusing context pairs rather than all T 2 pairs.
+Sketch. Because each Ut leaves non-support modules almost fixed, composing Ui and Uj in different
+orders can only differ to the extent that their supports overlap and propagate into non-support
+modules. The number of overlapping modules and the depth of such propagation is bounded by
+a constant depending on the decomposition. Each application introduces at most ε disturbance
+per non-support module, and non-expansiveness prevents amplification. Thus the total divergence
+between Uj Ui and Ui Uj is at most Kε for some constant K. A union bound over pairs and steps
+then gives the O(T 2 ε) bound for a full cycle.
+
+    This theorem is the discrete analog of Theorem 1: causal modularity (in the sense of almost
+disjoint supports) implies small commutators and hence bounded forgetting, without any differ-
+entiability assumption. The approximate categorical CCL theorem in Appendix A shows how to
+sharpen this to bounds that depend linearly on the number and strength of confusing context pairs.
+
+5.4   Categorical viewpoint (very briefly)
+Both the continuous and discrete versions can be seen as instances of a more general categorical
+statement: in a symmetric monoidal category C enriched in a quantale Q, with an object de-
+composed as a tensor product of causal subsystems, a family of endomorphisms that each act as
+
+                                                  14
+identity on all but their support factors, and whose nontrivial actions are Q-small outside support,
+will compose in an almost-commutative way with respect to the Q-order. The metric d or the norm
+on vector fields is then just one choice of such an enrichment.
+    The details of the categorical formulation, including approximate variants with confusion costs,
+are given in Appendix A at the end of the paper.
+
+
+6     Application to causal-coding neural networks
+We now specialize the continuous theorem to causal-coding predictive networks.
+
+6.1    Parameter modularization
+In a typical PC/CC decoder we can take the parameter vector to be grouped into:
+
+    • vertical weights W (`) between layers;
+
+    • lateral weights L(`) within layers;
+
+    • possibly biases and normalization parameters.
+
+A natural modularization is to treat each vertical or lateral weight block (as a matrix, convolutional
+kernel, head, or channel) as a module θ(m) .
+
+6.2    Causal gates and clarity as enforcers of modularity
+Causal coding estimates do-influence matrices C layerwise, either exactly (via Hessians) or approx-
+imately (via Fisher surrogates or learned approximators). It then:
+
+    • constructs gates rji ∝ |Cji |p to modulate weight updates, suppressing updates on edges with
+      negligible causal influence;
+
+    • applies clarity or diffusion-based penalties that shrink or prune lateral edges whose effect can
+      be reproduced by multi-hop paths.
+
+    These mechanisms directly shrink:
+
+    • gradients of Lt with respect to parameters that have negligible do-influence in context t
+      (reducing εg );
+
+    • effective mixed Hessian blocks between modules that do not share strong causal paths (re-
+      ducing εh ).
+
+    Thus, under sustained causal coding, the network is driven into a regime where the loss family
+{Lt } associated with different contexts is (εg , εh )-causally modular in the sense of Definition 1,
+and where pairwise confusion costs between contexts are small for all but a sparse set of genuinely
+interacting context pairs.
+
+
+
+
+                                                  15
+6.3    Resulting continual-learning guarantees
+Given the above, Theorem 1 applies with:
+
+    • modules corresponding to vertical and lateral weight blocks, attention heads, channels, etc.;
+
+    • support sets St corresponding to those modules whose gates are non-negligible in context t;
+
+    • εg , εh controlled by gate selectivity, pruning thresholds, and the amount of variance in do-
+      influence estimates.
+
+   If causal coding is aggressive enough (strong sparsity, strong clarity penalties) to keep εcomm
+and the confusion costs small, then:
+
+    • one pass through a stream of contexts is close (in parameter space and in function space) to
+      a joint step on the corresponding mixture loss;
+
+    • the degradation in performance under earlier contexts when adapting to new ones is bounded
+      by a term proportional to εcomm and to the number of confusing context pairs encountered;
+
+    • catastrophic forgetting can only occur when contexts genuinely conflict at the causal level
+      (i.e. when they require incompatible assignments to the same causal modules).
+
+    In this way, causal coding provides a principled mechanism to achieve the structural condi-
+tions (causal modularity, small commutators, sparse confusion graph) that make continual learning
+robust.
+
+
+7     Application to PC Transformers
+Next we sketch how the approach we are exploring applies to predictive-coding Transformers aug-
+mented with causal coding.
+
+7.1    Modularization in a Transformer
+In a Transformer block we can distinguish several natural modules:
+                              (h)   (h)   (h)   (h)
+    • self-attention heads (WQ , WK , WV , WO ) for each head h;
+
+    • feed-forward channels (rows of the feed-forward matrices);
+
+    • layer-norm and positional-encoding parameters.
+
+   A PC Transformer introduces additional “activity” parameters for each layer (the PC value
+nodes) and inference dynamics over them, but the weight parameters remain grouped in the same
+way.
+
+
+
+
+                                                16
+7.2   Causal coding at the head/channel level
+A causal-coding PC Transformer would:
+
+   • estimate interventional influence of each head/channel on downstream prediction errors (e.g.
+     how much the equilibrium distribution at some layer changes under do-interventions on that
+     head);
+
+   • build gates per head (and possibly per token) based on these influences;
+
+   • apply clarity penalties to prune attention links and channels that are redundant with others
+     (e.g. via diffusion on the token/head graph).
+
+    Intuitively, most of the time many heads are not causally necessary for a given input and
+surrounding context; gates can shut them off, making their parameters modules outside the support
+set St for that context. Clarity penalties discourage diffuse, multi-hop attention patterns when
+direct edges suffice.
+
+7.3   Causal modularity and commutators for Transformer contexts
+In this setting, contexts might be different input domains, prompt styles, interaction regimes,
+or implicit tasks defined by user intent. Each context t induces a loss Lt on the Transformer
+parameters. Under a causal-coding regime:
+
+   • For a given context, only a subset of heads and channels (support modules) receive strong
+     gradient updates; gradients on other modules are suppressed by gates (small εg ).
+
+   • Mixed Hessian blocks coupling support modules for one context to support modules unique
+     to another context shrink as the representation is refactorized and the network learns to
+     route context-specific information along dedicated paths (small εh ), and confusion costs are
+     concentrated on a sparse set of overlapping contexts.
+
+   Thus, the family {Lt } becomes causally modular with respect to the head/channel decom-
+position, satisfying the hypotheses of Theorem 1 and the approximate categorical CCL theorem.
+Consequently:
+
+   • The gradient flows for different contexts approximately commute; training under one contex-
+     tual distribution and then another is close to training on the mixture, with a deviation that
+     grows linearly in the number of confusing context pairs.
+
+   • Catastrophic forgetting is bounded: behavior in “old” contexts is only harmed by “new”
+     contexts to the extent that they really share and conflict over the same heads and channels.
+
+   • The independence/coupling tradeoff provides design guidance: invest Route A effort in finding
+     a head/channel factorization that makes contexts as independent as possible, and Route B
+     effort in explicit cross-token attention only where causal evidence demands it.
+
+    This suggests a principled route to continual learning in Transformer-like architectures: use
+predictive coding to get local error signals and biologically-plausible inference, use causal coding to
+discover and enforce a modular causal factorization over heads and channels, and rely on the general
+and approximate Causal-Continual-Learning Theorems to guarantee that, once this factorization
+
+
+                                                  17
+is in place, sequential adaptation across a stream of contexts will behave similarly to joint training
+and will not catastrophically forget.
+     Appendix B fleshes out this proposed application further, elaborating a hypothetical concrete
+example of how a causal coding based transformer might deal with prompts spanning different
+contexts.
+
+
+8     Application to incremental compression as a learning approach
+Slightly more adventurously, we now explore how the general relationship between causal coding
+and continual learning might manifest itself in the context of a different (non-neural) sort of learning
+mechanism: incremental compression a la the WILLIAM algorithm. The goal here is not to claim
+that arbitrary incremental compressors will automatically become modular, but rather to propose
+a class of causal IC update rules that are designed to satisfy the CCL hypotheses and to illustrate
+how the general theory informs the design.
+
+8.1    Incremental-compression-style causal coding and continual learning
+Informally, the difference between ordinary WILLIAM-style incremental compression and the causal-
+incremental version here is about how much the system remembers which patterns were learned for
+which contexts, and how it adapts its bias toward sharing structure across contexts versus keeping
+it separate.
+    In plain incremental compression (as in WILLIAM), there is a single global feature library.
+Whenever new data arrives, the system just tries to improve overall compression on that data: it
+adds new features, refits old ones, and may prune features that no longer help. If the stream of
+data is a mixture of many contexts, then from the compressor’s point of view there is just one
+big distribution. It has no explicit reason to protect features that were important for some earlier
+context but are not helpful for the current batch, nor to regulate how aggressively features are
+shared across contexts.
+    Depending on hyperparameters, this can fail in two opposite ways:
+
+    • If refitting and pruning are aggressive, then when a new context arrives the search procedure
+      will happily reshape or delete features that used to explain an old context well. Compression
+      on the new context improves, but compression on the old one can get much worse. This is a
+      form of catastrophic forgetting.
+
+    • If we make the system very conservative (strong regularization, weak refitting, strict pruning
+      thresholds) to avoid forgetting, then the global library becomes biased toward the earliest or
+      most frequent contexts. New contexts are forced to reuse old features even when they are not
+      a good fit, so adaptation to new contexts becomes slow and brittle.
+
+   The causal-incremental scheme described below tries to thread the needle. We still use incre-
+mental compression and refitting, but we:
+
+    • organize the feature library into modules;
+
+    • measure, per context, how much each module actually helps compression (a kind of do-
+      influence);
+
+    • update only the modules that really matter for the current context, freezing the others;
+
+
+                                                   18
+   • add a clarity penalty so that features do not try to simultaneously explain many unrelated
+     contexts, and meta-learn the strength and shape of this penalty from experience so that the
+     system automatically chooses how much sharing versus separation is appropriate for a given
+     environment.
+
+    In the ideal limit, each context mostly updates its own subset of modules, shared modules only
+carry genuinely shared structure, and the meta-learned clarity penalties settle into a regime where
+useful sharing is kept and spurious overlap is discouraged. Updates for different contexts then
+almost commute, so training on contexts in different orders gives almost the same library and the
+same compression performance. This is exactly the situation captured by the discrete/categorical
+Causal-Continual-Learning theorems: context updates are almost factorwise endomorphisms, so
+sequential multi-context learning has bounded forgetting. The construction below should be read
+as a design pattern that realizes these hypotheses for incremental compression, not as a claim that
+arbitrary IC schemes will converge to a modular representation on their own.
+
+8.2    Contexts, feature libraries, and modules
+Fix string length N and a family of contexts c ∈ C, each given by a distribution Pc over {0, 1}N . For
+a given context c and string x ∼ Pc , an incremental decomposition is a sequence of features F =
+(f1 , . . . , fs ) and residual rs as in the incremental compression framework: a feature is an invertible,
+length-preserving program f with description length K(f ), residuals evolve via ri = fi (ri−1 ), and
+the total two-part code length is
+                                                    s
+                                                    X
+                                    Ls (F ; x) :=         K(fi ) + K(rs ),
+                                                    i=1
+
+with efficiency
+                                                 N − Ls (F ; x)
+                                   η(F ; x) :=                  ∈ [0, 1].
+                                                  N − K(x)
+    The learner does not start from scratch for each context; instead it maintains a global feature
+library and reuses it. Formally, the internal state is
+
+                                         Θ = (F (1) , . . . , F (K) ),
+
+where each F (k) is a finite set of short features and the K blocks are treated as modules or causal
+factors. Think of F (1) as “low-level image patches”, F (2) as “layout templates”, F (3) as “text
+overlays”, and so on, but in a purely algorithmic/incremental-coding sense.
+    In addition, we will allow each module to carry a small collection of meta-parameters controlling
+clarity and sharing, for example per-feature or per-module clarity weights. For notational simplicity
+we continue to write Θ for the whole library state, understanding that these meta-parameters live
+inside the modules alongside the features.
+    Given Θ and a context c, the compressor is allowed to use features from all modules, but we will
+explicitly track how much each module matters. Let Lc (Θ) denote the expected two-part description
+length (over Pc ) when we run some fixed incremental-coding search (for example greedy-with-refit
+or PGM-guided search) using only features from Θ. We define a simple metric on states:
+
+                                   d(Θ, Θ0 ) := sup Lc (Θ) − Lc (Θ0 ) .
+                                                 c∈C
+
+
+
+
+                                                       19
+Context supports and do-influence. For each context c and module k, define a do-influence
+number by the counterfactual compression gap
+
+                                    I(c, k; Θ) := Lc (Θ\k ) − Lc (Θ),
+
+where Θ\k is obtained from Θ by disabling all features in F (k) (we run the same incremental search
+but are not allowed to use those features). Intuitively, I(c, k; Θ) is how many bits we lose on context
+c if we intervene to delete module k.
+     Given a threshold τ > 0, we define the support of context c at state Θ as
+
+                                    Sc (Θ) := {k : I(c, k; Θ) ≥ τ }.
+
+Modules outside Sc (Θ) are (at this scale) causally irrelevant for compressing c.
+
+8.3   An incremental-causal update rule for a new context
+We now describe a “causal coding esque” update rule Uc : Θ → Θ for training on a batch of data
+from context c.
+   Given current library Θ and a finite sample Dc = {x(1) , . . . , x(m) } from Pc , one update step for
+context c proceeds as follows.
+
+  1. Estimate do-influences and supports. Approximate Lc (Θ) and Lc (Θ\k ) by running the
+     incremental compressor on Dc with and without module k, and compute I(c, k; Θ). Form the
+     support
+                                Sc := Sc (Θ) = {k : I(c, k; Θ) ≥ τ }
+      for a chosen threshold τ . Optionally define soft gates rc,k := ψ(I(c, k; Θ)) ∈ [0, 1] with some
+      monotone schedule ψ.
+
+  2. Context-local feature refinement (within support). For each k ∈ Sc , run a one- or
+     few-step incremental-compression search restricted to features in F (k) plus candidate new
+     features proposed from the residuals on Dc , using some algorithm such as greedy-with-refit,
+     beam search, or PGM-guided search. Within each module we:
+
+        • add new short features f that achieve positive net gain on Dc ;
+        • refit all features in F (k) ∪ {f } jointly against Dc , so that they re-center on the structure
+          specific to k (preventing earlier features from absorbing higher-level structure, as in the
+          single-context refit analysis);
+        • keep track, for each f ∈ F (k) , of its per-context gain γc (f ) and cost τ (f ).
+
+  3. Clarity / de-overlap across contexts, with meta-learned strength. To prevent mod-
+     ules from becoming entangled across contexts, we introduce a clarity penalty that discourages
+     features from carrying redundant mass for many unrelated contexts. Concretely, maintain
+     for each feature f the vector γc (f ) of per-context gains and define its cross-context overlap
+                                                  X
+                                 Overlap(f ) :=       min{γc (f ), γc0 (f )}.
+                                                   c6=c0
+
+      Rather than fixing a single hand-chosen penalty weight, we treat a family of clarity weights
+      λf ≥ 0 (or, more coarsely, λk per module) as part of the state Θ, and update them by a slow
+      meta-learning rule.
+
+                                                   20
+      During refitting for context c we minimize an objective of the schematic form
+                                                       X
+                                   L̃c (Θ) := Lc (Θ) +   λf Overlap(f ),
+                                                       f
+
+      and after processing several contexts we take meta-steps that adjust the λf to improve long-
+      run multi-context performance, for example by approximately decreasing a global meta-loss
+                                                         X
+                           Lmeta (Θ, λ) := Ec∼π Lc (Θ) + κ     λf Overlap(f )
+                                                              f
+
+      for some sampling distribution π over contexts and tradeoff parameter κ. Intuitively, the
+      meta-learner increases λf when a feature’s overlap looks like unhelpful “diffuse sharing” (small
+      extra compression in many contexts that could be better explained by more local features),
+      and decreases λf when sharing truly improves compression on multiple related contexts.
+      Operationally, this encourages the learner to:
+
+        • keep truly shared structure in a dedicated “shared” module with appropriately small
+          penalties;
+        • split features that mix unrelated contexts into separate, more local features;
+        • prune features that contribute only tiny extra compression on many contexts (that is,
+          weak, diffusive features).
+
+      This is the analogue of clarity or diffusion penalties in causal coding, but now with the
+      penalty strengths themselves adapted online so that the amount of enforced separation or
+      sharing matches the environment.
+
+  4. Freezing outside support. For k ∈       / Sc , we freeze the module: no new features are added
+     to F (k) and existing features in F (k) are not refit on Dc . In practice one can allow extremely
+     small meta-updates (for example annealed smoothing of global statistics or of clarity weights),
+     but we assume these are bounded by a small εleak in the metric d defined above.
+
+    The net result is a map Uc : Θ → Θ0 which only significantly modifies the modules in Sc , and
+does so using an incremental-compression objective that explicitly penalizes cross-context overlap
+with penalty strengths that are themselves meta-learned from experience. This Uc is by construction
+designed to satisfy the discrete CCL hypotheses with small leakage and overlap, making it a concrete
+instantiation of the general theory.
+
+8.4   Structural assumptions for multi-context incremental compressibility
+To connect this to the general CCL theorem, we need the analogue of “causal modularity” for
+incremental compression.
+    Assume that:
+
+   • Each context c is generated by a short-feature hierarchical generative model (SF-HGM) with
+     kc levels and bounded cross-information δ between levels, as in the incremental-compression
+     analysis. This implies that strings from Pc admit kc -incremental decompositions with high
+     efficiency η ≥ 1 − O(δkc ), using short features with small overlaps.
+
+
+
+                                                 21
+   • The contexts themselves are not maximally entangled: there is a factorization of the causal
+     structure such that, after an appropriate change of variables, each context c uses only a subset
+     Sc of the modules, and cross-context mutual information between modules is bounded (same
+     spirit as bounded cross-information, now across contexts rather than across levels).
+
+   • The incremental search (greedy-with-refit, PGM-guided, and so on) is strong enough to re-
+     cover near-optimal, low-overlap features for each context when restricted to its support mod-
+     ules, as in the single-context results; and the meta-learning rule for the clarity weights λf
+     converges (in a coarse sense) to a regime where features with large, unhelpful cross-context
+     overlap are either moved into explicitly shared modules or pruned, so that the residual “dif-
+     fusive” overlap remains uniformly small.
+
+    Under these assumptions, we can choose the modules Θk so that each context’s best incremen-
+tal decomposition lives almost entirely inside its support modules, and the meta-learned clarity
+penalties keep cross-context overlaps small, making the confusion graph sparse and the discrete
+CCL bounds tight.
+
+8.5   Incremental-Compression Causal-Continual-Learning Theorem
+We now state a discrete CCL theorem specialized to this setting.
+
+Theorem 3 (Incremental-compression CCL). Let Θ be a feature library factorized into modules
+Θ = (Θ1 , . . . , ΘK ), with metric
+
+                                 d(Θ, Θ0 ) = sup |Lc (Θ) − Lc (Θ0 )|.
+                                             c∈C
+
+Let {Uc : Θ → Θ}c∈C be the context-update maps defined by the gated, refit-and-clarify rule above,
+including the slow meta-updates of the clarity weights.
+    Assume:
+
+  1. Context-locality. For each context c there is a support Sc ⊆ {1, . . . , K} such that, for all
+     states Θ in the training region,
+                                                            
+                  d Uc (Θ), Θ ≤ εtot ,  d πk (Uc (Θ)), πk (Θ) ≤ εleak for all k ∈/ Sc ,
+
+      where πk projects Θ to its kth module and εleak  εtot measures leakage outside the support.
+
+  2. Non-expansiveness. Each Uc is 1-Lipschitz with respect to d, i.e.
+
+                            d Uc (Θ), Uc (Θ0 ) ≤ d(Θ, Θ0 ) for all Θ, Θ0 .
+                                              
+
+
+  3. Small cross-context overlap. The combination of SF-HGM structure and the meta-learned
+     clarity weights enforces that whenever c 6= c0 and k ∈ Sc \ Sc0 , the incremental gain of context
+     c0 from features in module k is at most εoverlap in normalized units. Equivalently, after the
+     meta-learner has had time to adapt, any feature that still carries large overlap for many
+     unrelated contexts must live in a dedicated shared module whose contribution is accounted for
+     separately, and the remaining “context-specific” modules are nearly disjoint in their effective
+     support.
+
+
+
+
+                                                   22
+   Then there is a constant K0 (depending only on the number of modules) and an aggregate locality
+parameter                                                      
+                                    εIC := K0 εleak + εoverlap
+such that:
+
+  1. Small commutators. For any two contexts c, c0 and any state Θ,
+                                                            
+                                d Uc (Uc0 (Θ)), Uc0 (Uc (Θ)) ≤ εIC .
+
+  2. Sequential vs. joint training. Let c1 , . . . , cT be a finite sequence of contexts and let
+
+                                         Θseq := UcT ◦ · · · ◦ Uc1 (Θ0 )
+
+      be the result of training on them once in that order. LetPUΣ denote an idealized joint update
+      that optimally improves compression on the mixture T1 t Pct . Then
+
+                                       d Θseq , UΣ (Θ0 ) ≤ O(T 2 εIC ),
+                                                        
+
+
+      with Appendix A giving refined bounds in terms of the number of confusing pairs.
+
+  3. Forgetting bound. For any old context c that appears early in the sequence and any interme-
+     diate state Θ, the degradation in compression of Pc caused by a later update Uc0 satisfies
+                                                                  
+                                     Lc (Uc0 (Θ)) − Lc (Θ) ≤ O εIC ,
+
+      and the total loss on Pc after training on c1 , . . . , cT is bounded by O(T 2 εIC ). In particular,
+      catastrophic forgetting is ruled out in the regime εIC → 0 with moderate T .
+
+Idea of proof. The context-locality and small-overlap assumptions imply that each Uc acts as an
+almost identity on modules outside Sc and as a local endomorphism on modules in Sc , with only
+εleak disturbance elsewhere. This is an instance of the discrete CCL setting: the modules play
+the role of causal factors, the supports Sc are context supports, and εleak and εoverlap bound the
+deviation from perfect factorwise updates.
+    The discrete CCL theorem then gives that the commutator Uc ◦ Uc0 versus Uc0 ◦ Uc is bounded
+by a constant times the leakage, yielding item (1). Standard estimates on compositions of non-
+expansive maps with small pairwise commutators give the O(T 2 εIC ) bound between sequential
+and joint updates, and the forgetting bound follows by applying the mean value inequality to
+the context-wise losses Lc along the interpolating path between Θseq and UΣ (Θ0 ). The refined
+approximate categorical theorem shows how to replace the T 2 factor by a dependence on the
+number of confusing pairs.
+    Intuitively, updates for different contexts almost commute because they work on almost disjoint
+sets of modules, and where they do overlap, the clarity penalty (with meta-learned weights) ensures
+the incremental-compression overlap is small. This directly mirrors the neural-network story where
+small mixed Hessian blocks imply small gradient commutators.
+
+8.6   Categorical viewpoint
+Categorically, this example fits the general picture by taking:
+
+
+
+                                                    23
+   • P to be the category whose objects are feature libraries, morphisms are incremental-compression
+     update procedures (including their associated meta-learned clarity weights), and the monoidal
+     product ⊗ is componentwise concatenation of modules;
+
+   • Θ ≈ Θ1 ⊗ · · · ⊗ ΘK to be the factorization of the feature library into modules;
+
+   • each Uc to be a context-local endomorphism that is (up to the small errors above) the identity
+     on all factors k ∈
+                      / Sc .
+                                                                                          N (k)
+    In the idealized zero-leakage limit εleak = εoverlap = 0, each Uc literally factors as k Uc with
+  (k)
+Uc = id for k ∈   / Sc , so the categorical GCL theorem applies and context updates with disjoint
+supports commute on the nose. The incremental-compression CCL theorem above then quantifies
+how this picture degrades gracefully when the supports are only approximately disjoint and overlaps
+are small but nonzero, and the meta-learned clarity weights act as an automatic regulator that keeps
+the system in the good regime.
+
+8.7   One more step: McBride-inspired gradient guidance for causal incremental
+      compression
+We now outline one more possibly interesting step toward “causal coding”-izing incremental com-
+pression.
+    The incremental-compression update rule in the previous subsections treats the feature library
+Θ as a purely discrete object: at each context c the learner proposes a finite set of candidate
+edits (adding, removing, or modifying short features) and accepts those that improve a two-part
+code-length objective. In this subsection we sketch how to augment this search with a light-weight,
+“McBride-derivative-inspired” gradient and curvature estimate on library space, so that candidate
+edits are ranked not only by their raw local compression gain but by an approximate information-
+geometric score.
+    The formal justification for viewing feature libraries as living on a smooth manifold, and for
+defining a Fisher metric and natural gradient on this manifold using McBride-style derivatives of
+programs, is left to a companion paper. Here we only describe the practical pattern: how to use
+gradient-ish and Hessian-ish quantities to guide otherwise discrete incremental-compression moves.
+
+Mathematical idea (informal). Fix a context c and a current library Θ. As before, let Lc (Θ)
+denote the expected two-part code length on data from context c when we run a fixed incremental-
+compression search using Θ.
+   We conceptually treat the library as a vector of coordinates
+
+                                           Θ = (θf )f ∈F ,
+
+with one coordinate θf per feature f (or per small group of features, or per module; the exact
+granularity is a design choice). For each feature f we estimate a “directional derivative”
+
+                                                     ∂Lc (Θ)
+                                         gc [f ] ≈           ,
+                                                      ∂θf
+
+measuring how much Lc would change if we nudged the presence or strength of f . Concretely, we
+approximate gc [f ] using compression gaps already computed by the incremental compressor, e.g.
+by comparing Lc (Θ) with the loss when f (or the module containing f ) is disabled.
+
+
+                                                 24
+   Similarly, we approximate a diagonal Fisher (or Gauss-Newton) term
+
+                              Gc [f, f ] ≈ Ex∼Pc (∂θf log pΘ (x))2 ,
+                                                                 
+
+
+which heuristically measures curvature or “stiffness” of the loss in the direction of f . In practice
+we estimate Gc [f, f ] from the variability of the per-example compression effect of f , again using
+quantities the incremental compressor already computes.
+   Now consider a discrete candidate move m that edits the library in a small way: add a feature,
+remove a feature, or refine a feature inside some module. We associate to m a sparse “move vector”
+δΘm with components
+                                   
+                                   +1 if m adds or strengthens feature f ,
+                                   
+                         δΘm [f ] = −1 if m removes or weakens feature f ,
+                                   
+                                     0     otherwise.
+                                   
+
+In these coordinates, the first-order change in Lc predicted by a Taylor expansion is
+                                                         X
+                                                >
+                           ∆(1)
+                             c (m) ≈ ∇Θ Lc (Θ) δΘm =         gc [f ] δΘm [f ].
+                                                              f
+
+The second-order term, using a diagonal Fisher / Gauss-Newton surrogate, is
+                                   1                  1X
+                      ∆(2)
+                       c (m) ≈       δΘ>
+                                       m Gc (Θ) δΘm =    Gc [f, f ] (δΘm [f ])2 .
+                                   2                  2
+                                                             f
+
+We then define a simple information-geometric score for move m as
+
+                Scorec (m) := −∆(1)            (2)
+                                c (m) − λcurv ∆c (m) − λclar ClarityPenalty(m),                  (1)
+
+where λcurv , λclar ≥ 0 are hyperparameters and ClarityPenalty(m) is any cross-context overlap
+penalty of the kind already used in the causal IC clarity term. Intuitively:
+         (1)
+   • −∆c (m) is the predicted first-order benefit of m for context c (measured in bits saved).
+       (2)
+   • ∆c (m) penalizes moves that push strongly into directions where the loss is already highly
+     curved or “stiff” in the Fisher sense.
+
+   • ClarityPenalty(m) discourages edits that further entangle contexts or modules.
+
+   Ranking candidate discrete moves by Scorec (m) and applying only those with positive score gives
+a purely combinatorial search that is nevertheless guided by a McBride-inspired natural gradient
+on the underlying program space.
+
+Algorithmic recipe. We now sketch one possible implementation of the above idea, phrased
+entirely in terms of quantities an incremental compressor already maintains. The key point is that
+we never need to explicitly construct a continuous parameter manifold or a true McBride derivative;
+we only need per-feature compression statistics and simple proxy formulas.
+    We assume:
+
+   • A feature library Θ = (F (1) , . . . , F (K) ) factorized into modules, as before.
+
+                                                    25
+   • A batch Dc of strings from context c.
+
+   • Existing code that, given Θ and Dc , runs an incremental compression search (e.g. greedy-
+     with-refit) and returns, for each feature f used during compression on Dc , its net bits saved
+     on that batch.
+
+A single McBride-guided causal IC update for context c can then be written as follows.
+
+
+
+
+                                                26
+Algorithm 1 Causal IC update with McBride-inspired gradient guidance
+Require: Current library Θ, context c, data batch Dc
+Require: Hyperparameters λcurv , λclar ≥ 0
+Ensure: Updated library Θ0
+ 1: Run the usual incremental compressor on Dc using Θ, obtaining:
+
+      • baseline code length estimate Lc (Θ);
+      • per-feature statistics: for each feature f , usage count and net bits saved on Dc .
+ 2: For each feature f , estimate a gradient-like quantity
+
+                                        gc [f ] ≈ −BitsSavedc (f ).
+
+ 3: For each feature f , estimate a diagonal Fisher-like quantity Gc [f, f ], for example by
+
+                             Gc [f, f ] ≈ Average over strings in Dc gc [f ]2 .
+                                                                             
+
+
+ 4: Using the existing IC machinery, construct a finite set Mc of candidate discrete moves m (add,
+    remove, or modify features and modules) that are locally promising according to standard
+    incremental-compression heuristics.
+ 5: for each move m ∈ Mc do
+ 6:     Define a sparse move vector δΘm [f ] with entries +1 or −1 for features touched by m and 0
+    otherwise.
+ 7:     Compute the first-order gain
+                                                    X
+                                  lin gain(m) = −       gc [f ] δΘm [f ].
+                                                           f
+
+ 8:    Compute the curvature cost (using diagonal Fisher)
+                                                 1X
+                               quad cost(m) =       Gc [f, f ] (δΘm [f ])2 .
+                                                 2
+                                                       f
+
+ 9:    Compute a clarity penalty ClarityPenalty(m) by summing the existing cross-context overlap
+    penalties over all features touched by m.
+10:    Define the McBride-inspired IG score
+
+               Scorec (m) = lin gain(m) − λcurv quad cost(m) − λclar ClarityPenalty(m).
+
+11: end for
+12: Sort Mc in decreasing order of Scorec (m).
+13: for each move m in this sorted order do
+14:    if Scorec (m) ≤ 0 then
+15:        break                                   . No further candidate move is predicted to help
+16:    end if
+17:    Tentatively apply m to Θ to obtain a candidate library Θm .
+18:    Optionally run a short local refit inside the affected modules of Θm on Dc .
+19:    Accept the move: set Θ ← Θm .
+20: end for
+21: return Θ0 ← Θ
+
+
+
+                                                  27
+    This procedure leaves the core incremental-compression machinery unchanged. It only adds
+a scoring layer on top of the usual candidate-move generator, using quantities that are already
+available (or cheap to compute) in a WILLIAM-style compressor. In this sense it is a “McBride-
+inspired gradient descent”: we treat discrete edits of a library of short programs as approximate
+steps along a hidden smooth manifold, and use a Fisher-style metric to decide which steps are most
+promising. The formal analytic details required to mathematically justify this sort of approach are
+more involved and are deferred to a separate information-geometric treatment of program spaces,
+but the algorithmic picture is relatively simple and we hope we have presented it clearly.
+
+
+A     A categorical formulation of causal continual learning
+In this subsection we sketch a categorical formulation of the General Causal-Continual-Learning
+Theorem. The goal is to isolate the structural ingredients that make continual learning / con-
+tinual adaptation possible, in a way that is agnostic to whether the underlying state spaces are
+continuous (manifolds, vector spaces) or discrete (finite sets, graphs). Both the continuous and
+discrete instances in the main text then appear as special cases of the same abstract pattern, and
+the approximate variants with explicit error bounds live naturally in this categorical setting.
+
+A.1    Three layers of description as categories
+We distinguish three levels of description, each naturally organized as a category:
+
+    • An environment category E whose objects are data-generating contexts E (e.g. different do-
+      mains, datasets, prompts, goals, or interaction regimes), and whose morphisms encode coarse
+      transformations between contexts (restriction, domain shift, conditioning, etc.).
+
+    • A category C of causal models (e.g. structural causal models or predictive-coding style gener-
+      ative models). Objects C ∈ C are causal descriptions of contexts (variables plus mechanisms);
+      morphisms are structure-preserving maps between such models.
+
+    • A symmetric monoidal category (P, ⊗, I) of parameterized learners. Objects are parameter
+      spaces (or state spaces) Θ, and morphisms U : Θ → Θ0 are update procedures or learning
+      transforms. The monoidal product ⊗ represents factorized composition of subsystems; I is
+      the trivial (unit) system. Endomorphisms EndP (Θ) model learning dynamics that map a
+      parameter object back to itself.
+
+    The flow “environment → causal model → learner” is captured by functors
+
+                                    J : E → C,        M : C → P.
+
+Given a context E ∈ E, J(E) is its causal model, and M (J(E)) is the corresponding learner-side
+object (e.g. a PC/CC network configured to operate in that context). For simplicity we will assume
+a fixed parameter object Θ ∈ Ob(P) shared across contexts, equipped with context-conditioned
+update endomorphisms Ut : Θ → Θ.
+
+A.2    Contexts as endomorphisms and continual learning as path-independence
+A context t (in some index set of contexts) is represented at the learner level by an endomorphism
+
+                                            Ut : Θ → Θ,
+
+                                                 28
+intuitively “update the learner once under context t with a small step size”. A continual-learning
+/ continual-adaptation schedule for contexts t1 , . . . , tT then corresponds to the composite
+                                        UtT ◦ · · · ◦ Ut1 : Θ → Θ.
+In contrast, an idealized joint multi-context learner for a finite multiset of contexts {t1 , . . . , tT }
+would be represented by a single “all-at-once” update
+                                              UΣ : Θ → Θ,
+obtained (informally) by training on, or adapting under, all contexts simultaneously. Catastrophic
+forgetting or interference is precisely the failure of path-independence: different orders of composing
+the Ut lead to substantially different effective maps, and these differ from UΣ .
+    Categorically, good continual learning corresponds to the existence of canonical isomorphisms
+                                     ασ : Utσ(T ) ◦ · · · ◦ Utσ(1) ⇒ UΣ
+for each permutation σ of {1, . . . , T }, satisfying the usual coherence conditions. In the strict case
+ασ = id for all σ, the Ut form a commuting family inside the monoid EndP (Θ):
+                                   Uti ◦ Utj = Utj ◦ Uti    for all i, j.
+The analytic commutator-based results in the gradient-flow setting (Section 3) give a quantita-
+tive version of this statement in the smooth-manifold case, where the defect of commutativity is
+measured by Lie brackets of vector fields.
+
+A.3    Causal factorization as monoidal structure
+The categorical step where causality enters is the assumption that contexts admit a factorization
+into causal components, and that this factorization is respected functorially all the way down to
+the learner.
+    Formally, we assume:
+
+   • The causal-model category C is symmetric monoidal with product ⊗ and unit IC .
+   • For each context E, its causal model decomposes as
+                                       J(E) ∼
+                                            = C1 (E) ⊗ · · · ⊗ CK (E),
+      where the Ck (E) are “causal factors” (subsystems whose internal dynamics are richly coupled,
+      but whose cross-factor couplings are weak or absent after appropriate interventions).
+   • The learner functor M is strong monoidal : there are natural isomorphisms
+                             M (C ⊗ C 0 ) ∼
+                                          = M (C) ⊗ M (C 0 ),             M (IC ) ∼
+                                                                                  = I
+      that are coherent in the usual sense. Thus
+                           Θ(E) := M (J(E)) ∼
+                                            = M (C1 (E)) ⊗ · · · ⊗ M (CK (E)).
+      In words: causal factorization of a context induces a tensor factorization of the learner’s
+      internal representation.
+
+   We will henceforth suppress the explicit dependence on E when it is clear from context, writing
+simply
+                          Θ ∼= Θ1 ⊗ · · · ⊗ ΘK with Θk := M (Ck ).
+
+                                                    29
+A.4    Context-locality as factorwise endomorphisms
+Causal coding is designed so that each context t “lives” on a subset of the causal factors. Categor-
+ically, this is expressed by:
+
+Definition 3 (Context-local update). Given a factorization Θ ∼  = Θ1 ⊗ · · · ⊗ ΘK , a context t is local
+to a subset St ⊆ {1, . . . , K} if its update endomorphism Ut : Θ → Θ factors (up to the canonical
+associativity/symmetry isomorphisms of P) as
+                                                    (1)          (K)
+                                              Ut ∼
+                                                 = Ut ⊗ · · · ⊗ Ut ,
+        (k)                       (k)
+where Ut      : Θk → Θk and Ut          = idΘk for all k ∈
+                                                         / St .
+                    (k)
+    Intuitively, Ut is the part of the update that adjusts the parameters devoted to causal factor
+k, and the identity elsewhere means that factor is left untouched when adapting under context t.
+Perfect causal disentangling would make St exactly the set of factors that are genuinely relevant
+for that context.
+    The central categorical observation is that the tensor product in a symmetric monoidal category
+automatically makes such context-local updates commute when their supports are disjoint.
+
+Lemma 2 (Disjoint-support commutativity). Let (P, ⊗, I) be a symmetric monoidal category, and
+Θ∼ = Θ1 ⊗ · · · ⊗ ΘK . Suppose Us and Ut are context-local endomorphisms with supports Ss , St ⊆
+{1, . . . , K} and Ss ∩ St = ∅. Then
+                                       Us ◦ Ut ∼
+                                               = Ut ◦ Us
+via the canonical symmetry/associativity isomorphisms of P. In particular, they commute strictly
+if we regard Θ as a strictly associative tensor and choose a fixed parenthesization.
+
+Sketch. Up to canonical isomorphisms, we can write
+                                               K                             K
+                                                                                    (k)
+                                    Us ∼                              Ut ∼
+                                               O                             O
+                                       =             Us(k) ,             =         Ut ,
+                                               k=1                           k=1
+
+       (k)                              (k)
+with Us = id for k ∈  / Ss and Ut = id for k ∈
+                                             / St . Because Ss and St are disjoint, for each factor
+                   (k)   (k)
+k at least one of Us , Ut is the identity. Composition distributes factorwise:
+                                  K                                                K
+                                                     (k)                                  (k)
+                      Us ◦ Ut ∼                                       Ut ◦ Us ∼
+                                  O                                                O
+                                          Us(k) ◦ Ut                                             ◦ Us(k) .
+                                                                                                        
+                              =                              ,                =           Ut
+                                   k=1                                             k=1
+
+              (k)   (k)
+If one of Us , Ut is id, the two compositions coincide on that factor; on all other factors both
+are the identity. By the symmetry and associativity coherence laws, these factorwise equalities
+assemble into an isomorphism Us ◦ Ut ∼      = Ut ◦ Us . In a strict monoidal presentation (Mac Lane
+strictification), this is an actual equality.
+
+   Thus, in the idealized case where causal coding succeeds perfectly and each context only adjusts
+the factors it truly depends on, we obtain a commuting family of context updates for all contexts
+that do not share causal support. The next subsection explains how to relax these conditions and
+quantify approximate commutativity in terms of small locality errors and sparse overlaps between
+supports.
+
+
+                                                                 30
+A.5    Categorical General Causal-Continual-Learning Theorem
+We can now state a purely categorical version of the general theorem.
+
+Theorem 4 (Categorical GCL, factorized form). Let (P, ⊗, I) be a symmetric monoidal category.
+Let Θ ∈ Ob(P) admit a factorization Θ ∼= Θ1 ⊗ · · · ⊗ ΘK . Let {Ut : Θ → Θ}t∈T be a family of
+context-conditioned update endomorphisms such that for each t:
+
+  1. Ut is context-local with support St ⊆ {1, . . . , K} in the sense above; and
+
+  2. the supports are causally minimal, i.e. no Ut contains within St a factor on which it acts as
+     the identity while still being required to preserve performance in that context.
+
+   Then for any finite multiset {t1 , . . . , tT } whose supports are pairwise disjoint ( Sti ∩ Stj =
+∅ for i 6= j ), the corresponding updates commute (up to the canonical symmetry/associativity
+isomorphisms):
+                               Utσ(T ) ◦ · · · ◦ Utσ(1) ∼
+                                                        = UtT ◦ · · · ◦ Ut1
+for every permutation σ of {1, . . . , T }. Consequently, there is a well-defined joint multi-context
+update
+                                          UΣ := UtT ◦ · · · ◦ Ut1
+independent (up to isomorphism) of the order in which the contexts are seen, i.e. no catastrophic
+forgetting or interference among these contexts.
+
+Idea of proof. By Lemma 2, any pair Uti , Utj with disjoint supports commutes up to canonical
+isomorphism. The coherence axioms for symmetric monoidal categories ensure that these pairwise
+commutations extend to arbitrary finite products: any two permutations of a tensor of commuting
+endomorphisms are connected by a unique canonical isomorphism built out of symmetries and
+associators. Applying this to the family {Ut1 , . . . , UtT } yields the claimed path-independence of
+their composite.
+    The causal minimality assumption rules out trivial factorizations where a context’s support is
+artificially enlarged by inserting identity actions on extra factors; this matters when we connect
+the abstract theorem back to the tradeoff results about independence versus explicit couplings and
+to the “weakness” principle.
+
+    In this categorical form, the role of causal modeling and causal coding is to engineer a factor-
+ization Θ ∼
+              N
+           = k Θk and context-local updates Ut that satisfy the hypotheses of the theorem as well
+as possible. The continuous-variable and discrete-variable specializations in the main text simply
+instantiate P as, respectively, a category of smooth manifolds with smooth maps and a category of
+finite sets (or graphs) with structure-preserving maps; the statement and the proof pattern remain
+the same at a structural level. In the next subsection we move to an approximate formulation, in
+which locality and commutativity are only satisfied up to explicit error terms and the conclusions
+degrade smoothly with these errors.
+
+A.6    Connection to the tradeoff between preprocessing and disentangling
+The categorical picture also makes precise how the Route A vs. Route B tradeoff (preprocessing
+for independence vs. internal disentangling) fits into continual learning across contexts.
+
+
+
+
+                                                 31
+   • Route A (preprocessing for independence). Here we choose the environment-to-causal-
+     model functor J : E → C so that J(E) is as close as possible to a tensor product of weakly
+     coupled factors, i.e. the causal graph for typical contexts is sparse and low-treewidth after
+     appropriate interventions. Categorically, this is a choice of strong-monoidal structure on
+     J that pushes correlation structure “upstream” into a small number of explicitly modeled
+     couplings.
+   • Route B (disentangling inside the learner). Here we keep J relatively generic and
+     instead invest in a strong monoidal functor M : C → P and in the architecture of P so that Θ
+     acquires an internal factorization aligned with the causal factors. This corresponds to making
+     the update endomorphisms Ut as block-diagonal as possible in the monoidal decomposition.
+    The tradeoff theorem says that any architecture attaining a given information-efficiency target
+must, in effect, pay for independence either via Route A (more aggressive transforms and factor-
+ization at the causal-model level) or Route B (more explicit multi-ary couplings and richer internal
+disentangling). In categorical terms, both routes are choices about how strongly monoidal the
+composite M ◦ J : E → P can be made, relative to the underlying dependency structure of the
+environment.
+    From the standpoint of Theorem 4, the key quantity is how close the actual Ut are to perfectly
+context-local, factorwise endomorphisms. Route A improves this by simplifying the causal graph
+before it reaches the learner; Route B improves it by restructuring the learner so that its parameter
+object Θ realizes the causal product structure more faithfully. Causal coding is precisely the design
+discipline of using both routes, guided by interventional influence, to enlarge the class of contexts
+for which the hypotheses of the categorical GCL theorem are approximately satisfied, and hence
+to enlarge the regime where continual learning works without catastrophic forgetting.
+
+A.7     Approximate categorical CCL: enriched setting and confusing pairs
+In practice the hypotheses of the categorical Causal-Continual-Learning Theorem never hold ex-
+actly. Contexts are only approximately local to a subset of causal factors; supports only approx-
+imately disjoint; and the induced update maps commute only approximately. What we want is a
+statement of the form
+      If the factorization / locality / commutativity assumptions are satisfied up to small
+      errors, then path-dependence and forgetting are also small, with a dependence on those
+      errors that is controlled and not catastrophically sensitive.
+    This subsection sketches such an “approximate” version in a metric-enriched categorical setting,
+and shows how the global error scales (i) linearly in the local errors of the premises and (ii) linearly
+in the number of genuinely “confusing” context pairs. We then indicate how this plugs into the
+causal-coding neural-net and incremental-compression instantiations.
+
+A.7.1    Metric-enriched monoidal setting and approximate locality
+We work in a symmetric monoidal category (P, ⊗, I) that is enriched over Lawvere metric spaces.
+Concretely, we assume:
+   • For each pair of objects X, Y there is a (pseudo-)metric
+                               dX,Y : HomP (X, Y ) × HomP (X, Y ) → [0, ∞)
+      and we write dX for dX,X on endomorphisms of X.
+
+                                                  32
+   • Composition is non-expansive in each argument:
+
+                       dZ (V ◦ U, V ◦ U 0 ) ≤ dY (U, U 0 ),        dZ (U ◦ V, U 0 ◦ V ) ≤ dX (U, U 0 )
+
+      whenever the composites are defined.
+
+   • The monoidal product is also non-expansive:
+
+                          dX⊗X 0 ,Y ⊗Y 0 (U ⊗ U 0 , V ⊗ V 0 ) ≤ dX,Y (U, V ) + dX 0 ,Y 0 (U 0 , V 0 ).
+
+   As before, we fix a parameter object
+
+                                               Θ∼
+                                                = Θ1 ⊗ · · · ⊗ ΘK
+
+and regard EndP (Θ) as a metric monoid with metric dΘ . Contexts c ∈ C act at the learner level
+via endomorphisms
+                                        Uc : Θ → Θ.
+    In the exact theorem, each Uc factors as a tensor product of per-factor maps that are identities
+outside a support Sc ⊆ {1, . . . , K}, and updates for contexts with disjoint supports commute
+strictly. To move to the approximate case, we introduce:
+
+Definition 4 (Approximate context-locality). Given a factorization Θ ∼      = Θ1 ⊗ · · · ⊗ ΘK , a context
+c has intended support Sc ⊆ {1, . . . , K} if there exists an “ideal” local update
+
+                                        Vc ∼
+                                           = Vc(1) ⊗ · · · ⊗ Vc(K) : Θ → Θ
+        (k)
+with Vc       = idΘk for all k ∈
+                               / Sc , such that the actual learner update Uc satisfies
+
+                                                  dΘ (Uc , Vc ) ≤ εc .
+
+We call εc ≥ 0 the locality error for context c.
+
+   We also assume each Uc is non-expansive with respect to dΘ (this is automatic if it is built from
+non-expansive primitives in P).
+
+A.7.2     Pairwise commutator defects and confusing pairs
+The “defect of commutativity” for a pair of contexts c, c0 at the ideal level is
+
+                                          ∆c,c0 := dΘ (Vc ◦ Vc0 , Vc0 ◦ Vc ).
+
+In the exact factorized theorem, ∆c,c0 = 0 whenever the supports Sc and Sc0 are disjoint. In practice,
+these defects are small but nonzero whenever contexts overlap weakly or the factorization is only
+approximate.
+    A first observation is that the commutator of the actual updates is controlled by the locality
+errors and the ideal commutator:
+
+Lemma 3 (Approximate pairwise commutativity). For any two contexts c, c0 ,
+                                            
+                      dΘ Uc ◦ Uc0 , Uc0 ◦ Uc ≤ 2(εc + εc0 ) + ∆c,c0 .
+
+
+
+                                                          33
+Sketch. Expand Uc and Uc0 around Vc , Vc0 and use non-expansiveness plus the triangle inequality:
+                dΘ (Uc ◦ Uc0 , Uc0 ◦ Uc ) ≤ dΘ (Uc ◦ Uc0 , Vc ◦ Uc0 ) + dΘ (Vc ◦ Uc0 , Vc ◦ Vc0 )
+                                            + dΘ (Vc ◦ Vc0 , Vc0 ◦ Vc ) + dΘ (Vc0 ◦ Vc , Vc0 ◦ Uc )
+                                            + dΘ (Vc0 ◦ Uc , Uc0 ◦ Uc )
+                                         ≤ εc + εc0 + ∆c,c0 + εc + εc0 ,
+using non-expansiveness to pull dΘ (Uc0 , Vc0 ) and dΘ (Uc , Vc ) out of composites. Collecting terms
+gives the claim.
+   This suggests defining a per-pair confusion cost
+                                         δc,c0 := 2(εc + εc0 ) + ∆c,c0 ,
+and calling a pair (c, c0 ) confusing if δc,c0 exceeds some small threshold τpair . Intuitively, confus-
+ing pairs are ones where either the contexts share significant causal support or the approximate
+factorization is poor.
+
+A.7.3    Approximate CCL with linear dependence on confusing pairs
+Consider a finite multiset of contexts
+                                               Σ = {c1 , . . . , cT }
+and the associated family of updates Uci : Θ → Θ. For any permutation σ of {1, . . . , T }, write
+                                         Uσ := Ucσ(T ) ◦ · · · ◦ Ucσ(1) .
+Fix once and for all a canonical ordering of contexts (for instance by some index) and let σcan be
+the permutation that lists the multiset Σ in that canonical order; write Ucan := Uσcan .
+    The key combinatorial fact is that any permutation can be transformed into the canonical one
+by a sequence of adjacent swaps, and we can choose this sequence so that every unordered pair of
+indices (i, j) is swapped at most once (this is just the usual sorting-by-inversions picture). Using
+Lemma 3, each adjacent swap of Uci and Ucj changes the overall composite by at most δci ,cj in the
+metric dΘ . Summing over the swaps then gives:
+Theorem 5 (Approximate categorical CCL with confusing pairs). Let (P, ⊗, I) be a symmetric
+monoidal category enriched over Lawvere metric spaces as above, and let Θ ∼   = Θ1 ⊗ · · · ⊗ ΘK .
+Suppose each context c has an intended support Sc and an ideal local update Vc with locality error
+εc , and define confusion costs δc,c0 as above.
+     For any finite multiset of contexts Σ = {c1 , . . . , cT }, let
+                                         
+                            Econf (Σ) := {i, j} : 1 ≤ i < j ≤ T, δci ,cj > 0
+be the set of unordered confusing pairs among these contexts. Then there is a constant CP (depend-
+ing only on the enrichment constants of P) such that for any permutation σ,
+                                                      X
+                                dΘ Uσ , Ucan ≤ CP              δci ,cj .
+                                                           {i,j}∈Econf (Σ)
+
+   In particular, if we put a uniform bound δci ,cj ≤ δ and write M := |Econf (Σ)| for the number of
+confusing pairs, then                              
+                                     dΘ Uσ , Ucan ≤ CP δ M,
+so the path-dependence error grows at most linearly in the number of confusing pairs and linearly
+in the pairwise commutator/locality errors.
+
+                                                        34
+Idea of proof. As in the exact case, the composite Uσ changes only when adjacent factors are
+swapped. For any adjacent swap exchanging Uci and Ucj , Lemma 3 and non-expansiveness of pre-
+and post-composition give
+                                                                             
+                     dΘ · · · ◦ Ucj ◦ Uci ◦ · · · , · · · ◦ Uci ◦ Ucj ◦ · · · ≤ CP δci ,cj
+
+for some fixed CP that depends only on the enrichment constants. Now sort σ to σcan by adjacent
+swaps using any sorting algorithm that realizes each inversion pair (i, j) at most once (for example:
+repeatedly bubble the correct element into position 1, then 2, etc.; once an element is in place it
+never moves again).
+    Each unordered pair {i, j} that is already in canonical relative order is never swapped; each
+pair that is out of order is swapped exactly once. The total change in the composite between σ
+and σcan is thus bounded by the sum of CP δci ,cj over those pairs that are actually swapped, which
+is a subset of Econf (Σ). This gives the stated bound.
+
+    Conceptually: the approximate categorical premises amount to small locality errors εc and small
+ideal commutator defects ∆c,c0 for most pairs. The theorem says that the resulting path-dependence
+and forgetting error depends smoothly (indeed, linearly) on those premise-errors, and only for the
+pairs of contexts that actually interact in a confusing way. In the worst case, when every pair is
+confusing, M = O(T 2 ) and we recover the familiar quadratic dependence. But in many realistic
+regimes the confusion graph is sparse, and M scales like O(T ) or O(T log T ) instead.
+    Probabilistic variants are immediate: if the εc and ∆c,c0 are random with small expectations
+(or tails), then linearity plus the triangle inequality gives corresponding expectation and high-
+probability bounds on dΘ (Uσ , Ucan ).
+
+A.7.4   Connection to causal-coding neural networks
+In the PC/CC neural-network instantiation, we can take:
+
+   • Objects of P to be parameter manifolds (or Euclidean parameter spaces) equipped with a
+     metric dΘ that measures performance distance, for example a supremum over per-task loss
+     differences:
+                                 dΘ (θ, θ0 ) := sup Lc (θ) − Lc (θ0 ) .
+                                                 c∈C
+
+   • Morphisms to be update operators (gradient steps, PC-style inference/learning updates), and
+     enrichment to come from Lipschitz continuity of the training dynamics under this metric.
+
+   • The factorization Θ ∼= Θ1 ⊗ · · · ⊗ ΘK to be a block decomposition into modules (layers, heads,
+     slots, routing blocks) engineered by causal coding.
+
+   • Locality errors εc to measure how much updating on context c perturbs layers that have neg-
+     ligible do-influence for c (for example, via norms of gradients or influence-function estimates
+     on non-support modules).
+
+   • Ideal commutator defects ∆c,c0 (or their surrogates) to be controlled by mixed Hessian blocks
+     or Lie brackets of gradient vector fields:
+                                                                    
+                            [gc , gc0 ] ≈ 0 ⇒ dΘ Uc ◦ Uc0 , Uc0 ◦ Uc small.
+
+
+
+
+                                                 35
+    From this viewpoint, the approximate categorical theorem says: if causal coding succeeds in
+making cross-context mixed Hessians small outside a sparse pattern of genuinely interacting context
+pairs, and if updates on a context mostly stay within its do-influence support, then sequential
+PC/CC training behaves almost like joint training. The deviation scales linearly with (i) the
+magnitude of the mixed Hessian / commutator terms and (ii) the number of context pairs for
+which those terms are non-negligible.
+    Operationally, this gives an architecture- and data-dependent way to estimate how far one is
+from the ideal continual-learning regime: measure empirical εc and pairwise commutator proxies for
+a sample of contexts, build an approximate confusion graph, and then plug those into Theorem 5
+to bound the expected path-dependence of training.
+
+A.7.5    Connection to incremental compression and IC-based causal coding
+In the incremental-compression setting, we already have an explicit metric
+
+                                 d(Θ, Θ0 ) := sup Lc (Θ) − Lc (Θ0 )
+                                              c∈C
+
+on feature libraries, and the context updates Uc were assumed 1-Lipschitz with respect to d. The
+factorization Θ ∼
+                = Θ1 ⊗ · · · ⊗ ΘK is given by the modular decomposition of the feature library, and
+the context-locality and small-overlap assumptions translate directly into:
+
+    • locality errors εc controlled by leakage outside the support modules (εleak in the IC-CCL
+      theorem);
+    • pairwise commutator bounds δc,c0 controlled by cross-context incremental compression overlap
+      (εoverlap and the clarity penalty).
+
+    The “Incremental-compression CCL” theorem can thus be read as a concrete instance of The-
+orem 5: the metric-enriched category is the category of feature libraries with d-non-expansive
+incremental-compression updates; the supports Sc are given by do-influence on modules; and the
+confusion graph encodes which pairs of contexts actually share significant compressive structure.
+The linear-in-T 2 bounds in the earlier discrete statement are the worst-case specialization where
+every pair is potentially confusing. When the confusion graph is sparse, applying the approximate
+categorical theorem tightens this to linear dependence on the number of confusing pairs, exactly as
+in the neural setting.
+    In both the neural and IC cases, the moral is the same: causal coding tries to engineer a world
+in which (i) most contexts are approximately local to small supports, and (ii) only a sparse set of
+context pairs share substantial causal/compressive structure. The approximate categorical CCL
+theorem then guarantees that, in such a world, continual learning is robust: the errors induced by
+approximate factorization and nonzero commutators accumulate in a controlled, essentially linear
+way, rather than exploding combinatorially with the total number of contexts.
+
+
+B     Illustrative example: causal coding in a PC Transformer with
+      overlapping textual contexts
+Here we walk through a hypothetical example of causal coding in a PC transformer, at a moderate
+level of detail.
+    In real life, a single prompt can blend instructions, narrative, mathematics, programming,
+and social chit-chat. So one cannot think about discrete task types but needs to think in terms of
+
+                                                 36
+contexts: soft, overlapping regions in a high-dimensional space of situations that shape what counts
+as good prediction.
+    Here we sketch how causal coding might operate in a PC Transformer in the presence of such
+overlapping contexts, and how this still fits the general causal-continual-learning picture.
+
+B.1    Two fuzzy, overlapping contexts
+Consider a PC Transformer trained on mixed internet text. Among many possible contexts, focus
+on two qualitative ones:
+
+   • a technical-math context cmath in which the model is expected to manipulate formulas, perform
+     small derivations, and keep symbols consistent;
+
+   • a conversational-explanation context cexplain in which the model is expected to speak in a
+     friendly, informal tone and adapt to the user’s wording.
+
+   These are not disjoint: a prompt like
+
+      “Can you walk me through how to solve a quadratic equation step by step, but in a
+      casual way as if you were explaining to a friend?”
+
+   sits in the overlap. It simultaneously demands mathematically correct symbolic reasoning
+(pulling toward cmath ) and informal, dialogue-like phrasing (pulling toward cexplain ).
+   We can formalize this by associating to each input sequence x a context embedding c(x) ∈ Rd
+and a soft context mixture wc (x) over a small dictionary of prototypical contexts {cα }α∈A :
+                                      X                        X
+                         wα (x) ≥ 0,      wα (x) = 1, c(x) ≈       wα (x) cα .
+                                      α∈A                        α
+
+For our running example, A would contain at least cmath and cexplain , and the prompt above would
+yield some nontrivial mixture wmath (x), wexplain (x) ∈ (0, 1).
+
+B.2    Context-conditioned do-influence at the head/channel level
+In a PC Transformer, each layer ` has multiple self-attention heads h = 1, . . . , H` and feed-forward
+channels. Predictive coding endows these with latent “value” nodes z (`,h) and local error units ε(`) ,
+updated via inference dynamics until a fixed point is reached.
+    Causal coding adds an interventional layer to this picture:
+
+  1. For a given input x, run PC inference to an equilibrium {z (`,h) (x), ε(`) (x)}.
+
+  2. Define context-conditioned error functionals that emphasize different aspects of the prediction
+     quality. For example,
+
+                   Lmath (x) = loss on tokens classified as formulas / code / numeric,
+
+          Lexplain (x) = loss on tokens in natural-language explanations, style constraints, etc.
+      These are not separate training runs; they are different ways of reading the same prediction
+      trace through different lenses.
+
+
+
+                                                  37
+  3. For each head (`, h) and each prototypical context α ∈ A, estimate an interventional influence
+
+                          (α)    ∂                                                   
+                     C`,h ≈             Lα equilibrium under do(z (`,h) ← z (`,h) + δ) .
+                                ∂ δ δ=0
+                    (α)
+      In practice, C`,h is obtained via a Schur-Fisher, natural-gradient, or Schrödinger-bridge sur-
+      rogate rather than literal finite differences, but conceptually it measures: “if I nudge this
+      head, how much does context-α loss change after PC relaxation?”
+
+  4. Turn these influences into context-specific gates on head (`, h):
+                                               (α)
+                                 (α)         |C`,h |p
+                                r`,h   = P     (α) p
+                                                            ,   p ∈ [1, 2], κ > 0.
+                                          h0 |C`,h0 | + κ
+
+
+    Now, when we process a particular input x with soft context weights wα (x), we define an
+effective gate for each head:
+                                                       (α)
+                                            X
+                                 r`,h (x) =    wα (x) r`,h .
+                                                     α∈A
+
+These gates modulate both inference (how much the head’s latent activity is allowed to move in
+response to errors) and learning (how strongly we update that head’s parameters on this example).
+    Intuitively, a “math-logic” head that carries strong influence on Lmath but little on Lexplain will
+       (math)     (explain)
+have r`,h      r`,h        . For a purely conversational prompt, wmath (x) ≈ 0, so that head is mostly
+frozen. For a purely technical derivation, wmath (x) ≈ 1, so the head learns aggressively. For a
+blended prompt, it receives an intermediate weight.
+
+B.3    Overlapping contexts and approximate modularity
+Crucially, we never assume that contexts are disjoint or that examples belong to a single context.
+Instead:
+
+   • Each context α exposes one direction in loss space, given by Lα , and one pattern of head/
+                        (α)
+     channel influence C`,h .
+
+   • Causal coding attempts to find a representation in which each context α is supported mostly
+     by a relatively small subset of heads/channels (its “support”), and in which mixed influence
+     terms across very different contexts are small (weak cross-Hessian blocks).
+
+   • The soft mixture wα (x) simply interpolates between these context-specific supports at training
+     time.
+
+   In a mature model we might see, for example:
+
+   • A cluster of heads in middle layers that are heavily used whenever wmath (x) is large (they
+     encode algebraic patterns, symbol matching, and numeric regularities), and are mostly gated
+     off for conversational small talk.
+
+   • Another cluster of heads that activate whenever wexplain (x) is large (they track pronouns,
+     politeness, discourse markers, etc.), and are only weakly involved in raw formula manipulation.
+
+
+
+                                                     38
+   • A small overlapping subset of “bridge” heads that respond to both contexts: they know how
+     to wrap a derivation in a friendly explanation or how to embed a formula inside a sentence.
+     Their influence appears in both C (math) and C (explain) , but even here causal coding tries to
+     keep their effects disentangled (e.g. separate subchannels for content vs style).
+    From the perspective of the General Causal-Continual-Learning Theorem, each prototypical
+context α defines an update operator Uα (or a gradient field Xα ) corresponding to optimizing Lα
+with context-specific gates. The causal-coding machinery pushes these operators to be context-
+local : Uα mostly adjusts the head/channel modules that have strong C (α) influence, leaving others
+nearly fixed. This is exactly the “small residual gradient and small cross-Hessian” condition in
+the manifold version of the theorem, or the “almost identity outside support” condition in the
+discrete and categorical versions, up to the approximate error terms made explicit in the enriched
+categorical setting.
+    In the overlapping example:
+   • On pure math prompts, Umath is active and mostly acts on the math-logic heads; Uexplain is
+     nearly the identity.
+   • On pure conversational prompts, the roles reverse.
+   • On blended prompts, both operators act, but because their supports are largely distinct (with
+     a small, carefully-structured overlap), their gradient flows almost commute. Doing a “math
+     update” then an “explanation update” is nearly the same as doing them in the opposite
+     order, and both are close to a joint step on Lmath + Lexplain . The residual non-commutativity
+     is controlled by the pairwise confusion costs between these two contexts.
+    Thus, even without any hard partition of training into separate tasks, the model can achieve
+continual-learning-like robustness with respect to contexts: improving its behavior for one slice of
+the prompt space (e.g. technical-math) will not dramatically degrade its behavior for another slice
+(e.g. conversational explanation), as long as causal coding keeps their effective modules weakly
+entangled and the confusion graph remains sparse.
+
+B.4    Why this does not require discrete context labels
+The story above used two named contexts for clarity, but the machinery does not require explicit
+labels. In practice one can:
+   • maintain a small bank of context prototypes cα discovered unsupervised (for example via
+     clustering of prompts or of error patterns);
+   • define Lα by reweighting the same underlying token-level loss with attention to different
+     subsets of tokens or features;
+   • estimate do-influences C (α) and gates r(α) for these prototypes, then let wα (x) be inferred by
+     a learned context encoder.
+    The key requirement for the general theorem is not that the contexts be named or sharply de-
+fined, but that the resulting family of context-conditioned update operators {Uα } be approximately
+local in a shared causal factorization of the Transformer. Causal coding at the head and channel
+level is precisely the mechanism that tries to enforce this: it continuously re-arranges and prunes
+the internal structure so that context-conditioned gradients stay as factorized as the data allow,
+making the corresponding flows nearly commuting and, therefore, making context-wise continual
+learning robust in the approximate sense formalized by the enriched categorical CCL theorem.
+
+                                                 39
+C     Asymptotic equivalence and acceleration of causal IC
+We now explore the nature of the advantage obtained by augmenting standard incremental com-
+pression with causal coding type methodologies. Throughout this section we explicitly restrict
+attention to a best-case regime in which there exists a feature library that is both globally optimal
+for plain incremental compression and perfectly modular according to the clarity penalty. Outside
+this regime, plain IC and causal IC will in general converge to different optima, and the analysis
+here does not apply directly; instead, causal IC then trades off some raw compression performance
+for improved modularity and continual-learning behavior.
+    At a high level, incremental compression with causal coding (IC+CC) is meant to change how
+the learner gets to its long-run feature library, not what it can ultimately represent.
+    • A plain IC learner maintains a single global feature library and keeps adding/refitting features
+      to minimize expected two-part code length across all contexts. Nothing stops it from letting
+      the same feature do double duty for multiple unrelated contexts, or from letting older features
+      slowly drift as it tries to accommodate new contexts.
+    • A causal IC learner uses do-influence and clarity penalties to nudge the search toward modular
+      libraries: features are grouped into modules that mainly serve particular context families (plus
+      possibly a “shared” module), and cross-context, cross-module overlap is actively discouraged.
+    If the environment really has an underlying modular structure, there should be (at least one)
+representation that is both globally code-length optimal and perfectly modular. In that case, adding
+a clarity penalty does not change what the best long-run solution is; it only makes the learner
+prefer paths that get there via modular libraries instead of entangled ones. The picture we want is:
+      Plain IC and causal IC converge (in the limit) to the same optimal incremental code,
+      but causal IC converges faster in a multi-context setting because the clarity penalty im-
+      proves the local curvature (condition number) of the optimization problem and shrinks
+      cross-context interference.
+    Below we state a simple version of this, in the same spirit as the discrete/categorical CCL
+theorem, but now with an explicit comparison between plain IC and IC+CC. We emphasize again
+that this theorem is conditional on the existence of a modular optimum that is also globally optimal
+for plain IC; in more general situations, regularization by R moves the optimum and the leading
+effect of IC+CC is to bias the learner toward different, more modular solutions.
+
+Setup: average loss and clarity penalty. Let C be a family of contexts c, each with a distri-
+bution Pc over {0, 1}N . Let π be a mixing distribution over contexts (the long-run frequency with
+which contexts appear). A feature library state is Θ = (Θ1 , . . . , ΘK ) where each Θk is a module as
+in the previous subsection.
+    For a library Θ and context c, let Lc (Θ) be the expected two-part description length on Pc
+given Θ, using some fixed incremental-coding search (greedy-with-refit, beam+refit, or PGM-guided
+search). Define the long-run average code length
+                                       F (Θ) := Ec∼π [Lc (Θ)].
+    To measure lack of modularity across contexts, we use a clarity penalty R(Θ) of the kind
+introduced earlier: for each feature f we track per-context gains γc (f ) and set
+                                X                                   X
+                Overlap(f ) :=     min{γc (f ), γc0 (f )}, R(Θ) :=        Overlap(f ),
+                               c6=c0                                 f ∈Θ
+
+
+                                                  40
+optionally normalized. Intuitively, R(Θ) is large when many features carry significant mass for
+many different, potentially unrelated contexts.
+   We consider two learners on the same environment:
+
+   • Plain IC. Updates the library by approximately minimizing F (Θ) (via incremental search
+     and refitting), with no explicit clarity penalty.
+
+   • Causal IC (IC+CC). Updates the library by approximately minimizing
+
+                                         Fλ (Θ) := F (Θ) + λR(Θ)
+
+     for some fixed λ > 0 (or a slowly varying schedule λt ). Gates and freezing outside the
+     context support Sc (Θ) implement the “approximately minimizing Fλ ” part, as in the previous
+     incremental-CC update rule.
+
+    We compare the long-run behaviour of these two learners under the following idealized assump-
+tions.
+
+Assumptions.
+  1. SF-HGM with modular optimum. Strings in each context c are generated by a short-
+     feature hierarchical generative model (SF-HGM) with cross-information bound δ, so that
+     there exist high-efficiency incremental decompositions with short features and small overlaps.
+     Moreover, there exists at least one library Θ? such that:
+
+        • Θ? globally minimizes F (Θ);
+        • Θ? is perfectly modular in the sense that all strong features for context c live in its
+          support modules Sc (Θ? ), and each feature either serves a small family of related contexts
+          or a dedicated “shared” module;
+        • this modularity is exactly what R rewards: R(Θ? ) = 0 and R(Θ) > 0 for all Θ 6= Θ?
+          with F (Θ) ≤ F (Θ? ) + O(log N ).
+
+  2. Smoothness and local strong convexity. In a neighbourhood N of Θ? , the average
+     loss F (Θ) admits a smooth surrogate F̃ (Θ) (think: differentiable meta-objective over feature
+     parameters) with L-Lipschitz gradient and strong convexity constant µ > 0. Likewise R
+     admits a smooth surrogate R̃ with LR -Lipschitz gradient and Hessian ∇2 R̃(Θ? )  νI on the
+     “entanglement directions” (those that change cross-context overlaps but not F to first order).
+
+  3. Shared optimum. For all λ in a range [0, λmax ], the combined objective F̃λ := F̃ + λR̃
+     has the same unique minimizer Θ? on N . (This is enforced by the “modular optimum”
+     assumption: Θ? is the only point that simultaneously minimizes F and R in that region.)
+
+  4. IC updates approximate gradient steps. Both plain IC and IC+CC implement stochas-
+     tic update rules of the form
+
+                                     Θt+1 = Θt − ηt (∇F̃ (Θt ) + ξt ),
+
+                             Θcc     cc            cc          cc     cc
+                              t+1 = Θt − ηt (∇F̃ (Θt ) + λ∇R̃(Θt ) + ξt ),
+
+     where {ξt } and {ξtcc } are martingale-noise terms coming from finite samples and approximate
+     search, withPbounded variance;    and the step sizes satisfy standard stochastic-approximation
+     conditions t ηt = ∞, t ηt2 < ∞.
+                               P
+
+
+                                                 41
+Theorem (Asymptotic equivalence and acceleration of causal IC).                Under Assumptions
+1-4 above, and for any fixed λ ∈ (0, λmax ], the following hold:
+
+  1. Same asymptotic optimum. Both plain IC and causal IC converge (in probability, or
+     almost surely under standard stochastic-approximation conditions) to the same modular op-
+     timum Θ? :
+                                      Θt → Θ? ,     Θcc
+                                                     t →Θ .
+                                                            ?
+
+
+     In particular, in the long run IC+CC learns the same SF-HGM structure as plain IC (up
+     to the usual incremental-compression non-uniqueness). This does not hold in general; it is
+     specific to the special case where Θ? simultaneously minimizes both F and R.
+
+  2. Improved local curvature. In the neighbourhood N , the Hessian of F̃λ satisfies
+
+                             ∇2 F̃λ (Θ) = ∇2 F̃ (Θ) + λ∇2 R̃(Θ)  (µ + λν)I
+
+     on the entanglement directions, while its gradient is (L + λLR )-Lipschitz. Thus F̃λ has an
+     improved condition number
+                                             L + λLR   L
+                                    κcc :=           ≤   =: κplain ,
+                                              µ + λν   µ
+     with strict inequality whenever ν > 0 and λ > 0.
+
+  3. Faster linear convergence rate (in the noise-free limit). Consider for simplicity noise-
+     less gradient descent with a fixed step size η ∈ (0, 2/(L + λLR )). Then
+
+                              kΘt+1 − Θ? k ≤ (1 − ηµ) kΘt − Θ? k,
+                              kΘcc     ?                      cc   ?
+                                t+1 − Θ k ≤ (1 − η(µ + λν)) kΘt − Θ k.
+
+     Since µ + λν > µ, the causal-IC iterates contract toward Θ? strictly faster:
+
+                   kΘcc   ?
+                     t − Θ k . exp(−t η(µ + λν)),          kΘt − Θ? k . exp(−t ηµ).
+                                                                                √
+     With stochastic noise present, the same comparison holds up to the usual O( ηt ) fluctuation
+     terms.
+
+Interpretation.    The assumptions are idealized and reflect a best-case regime:
+
+   • SF-HGM plus “modular optimum” says that there really is a representation in which each
+     context family uses its own subset of modules, with only genuinely shared structure kept
+     in shared modules, and that this representation is already near-optimal in plain IC’s sense.
+     This is not guaranteed in general; when no such perfectly modular optimum exists, plain IC
+     and IC+CC will converge to (typically different) local optima that trade off raw compression
+     against modularity.
+
+   • The clarity penalty R is chosen so that it is minimized exactly at such modular representations
+     and penalizes cross-context, cross-module overlap. Thus, under Assumption 3, adding λR
+     does not move the location of the best solution, it just increases curvature in directions that
+     correspond to entangling contexts.
+
+
+
+                                                 42
+   • In that regime, IC+CC behaves like a preconditioned version of plain IC: it has the same
+     fixed point Θ? , but the local condition number of its objective is smaller, so gradient-like
+     updates converge faster in the multi-context setting.
+
+    Intuitively: if you run plain incremental compression long enough on many contexts, you will,
+under SF-HGM assumptions and the existence of a modular global optimum, eventually discover
+a good hierarchy of features. Adding causal coding and clarity does not change what the best
+hierarchy is under those assumptions; it just biases the search so that features which mix unrelated
+contexts are disfavored early, and context-local modules emerge faster. The CCL-style almost-
+commuting update results then give you better continual-learning behavior en route, on top of
+this accelerated convergence. Outside this special regime, IC+CC converges to a different, more
+modular optimum than plain IC, and the analysis here should be read as a local picture around
+hypothetical modular solutions rather than a universal convergence claim.
+
+
+
+
+                                                43
+

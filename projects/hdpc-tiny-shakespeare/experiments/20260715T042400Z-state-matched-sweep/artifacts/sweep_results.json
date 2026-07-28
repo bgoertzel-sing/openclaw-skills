@@ -1,0 +1,857 @@
+{
+  "Ts": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "description": "State-matched ePC lambda/T sweep (post-AdamW-step student)",
+  "lambdas": [
+    0.005,
+    0.01,
+    0.02,
+    0.03,
+    0.05
+  ],
+  "pass_criterion": "energy_strict_monotone=True AND energy_nontrivial=True",
+  "post_step_kd_loss": -7.468117502185123e-08,
+  "results": [
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.482255881541278e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -1.4138379356154473e-10,
+      "energy_moved": 1.4138379356154473e-10,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.482255881541278e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.000000074505806,
+          "mean_norm_ratio": 0.9999309778213501
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999701976776,
+          "mean_norm_ratio": 0.9998975445826849
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9998991936445236
+        }
+      },
+      "lambda": 0.005
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.597132878345292e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -1.4138379356154473e-10,
+      "energy_moved": 1.2901537616016867e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.482255881541278e-08,
+        -7.597132878345292e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000447034836,
+          "mean_norm_ratio": 0.9997803717851639
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000099341075,
+          "mean_norm_ratio": 0.999814455707868
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 0.9997879912455877
+        }
+      },
+      "lambda": 0.005
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.921828171220113e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 3.662144365534914e-09,
+      "energy_moved": 4.537106690349901e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.482255881541278e-08,
+        -7.597132878345292e-08,
+        -8.288042607773605e-08,
+        -7.921828171220113e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000149011612,
+          "mean_norm_ratio": 0.9992365390062332
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999751647314,
+          "mean_norm_ratio": 0.9991928438345591
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999652306238,
+          "mean_norm_ratio": 0.9991849611202875
+        }
+      },
+      "lambda": 0.005
+    },
+    {
+      "T": 8,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.445478982821442e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 3.662144365534914e-09,
+      "energy_moved": 9.773614806363184e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.482255881541278e-08,
+        -7.597132878345292e-08,
+        -8.288042607773605e-08,
+        -7.921828171220113e-08,
+        -8.011485164161058e-08,
+        -8.082314195689833e-08,
+        -8.468471435207903e-08,
+        -8.445478982821442e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999998807907104,
+          "mean_norm_ratio": 0.9983951896429062
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000099341075,
+          "mean_norm_ratio": 0.998222271601359
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.9982097198565801
+        }
+      },
+      "lambda": 0.005
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.597132878345292e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -1.2901537616016867e-09,
+      "energy_moved": 1.2901537616016867e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.597132878345292e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000447034836,
+          "mean_norm_ratio": 0.9997803717851639
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000099341075,
+          "mean_norm_ratio": 0.999814455707868
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 0.9997879912455877
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.920407085748593e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -1.2901537616016867e-09,
+      "energy_moved": 4.522895835634699e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.597132878345292e-08,
+        -7.920407085748593e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000298023224,
+          "mean_norm_ratio": 0.9992338865995407
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999552965164,
+          "mean_norm_ratio": 0.9991892675558726
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999751647314,
+          "mean_norm_ratio": 0.9991817226012548
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.437508114411685e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -1.2901537616016867e-09,
+      "energy_moved": 9.693906122265616e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.597132878345292e-08,
+        -7.920407085748593e-08,
+        -8.070367840673498e-08,
+        -8.437508114411685e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999998956918716,
+          "mean_norm_ratio": 0.9983895570039749
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000198682149,
+          "mean_norm_ratio": 0.9982126255830129
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999900658926,
+          "mean_norm_ratio": 0.9982015987237295
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 8,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.357363867617096e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 8.006516338809888e-09,
+      "energy_moved": 8.892463654319727e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.597132878345292e-08,
+        -7.920407085748593e-08,
+        -8.070367840673498e-08,
+        -8.437508114411685e-08,
+        -8.33347897355452e-08,
+        -9.448290683167215e-08,
+        -8.647639049286227e-08,
+        -8.357363867617096e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999998062849045,
+          "mean_norm_ratio": 0.9964046776294708
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.995790014664332
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999552965164,
+          "mean_norm_ratio": 0.995834469795227
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.920762357116473e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -4.5264485493135e-09,
+      "energy_moved": 4.5264485493135e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.920762357116473e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.000000074505806,
+          "mean_norm_ratio": 0.9992336183786392
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000198682149,
+          "mean_norm_ratio": 0.9991886715094248
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999354283015,
+          "mean_norm_ratio": 0.9991810669501623
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.453692146304093e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -4.5264485493135e-09,
+      "energy_moved": 9.855746441189694e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.920762357116473e-08,
+        -8.453692146304093e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.999999925494194,
+          "mean_norm_ratio": 0.9983741939067841
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000149011612,
+          "mean_norm_ratio": 0.9981966763734818
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9981763362884521
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.360266434692676e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 1.0884242840347724e-08,
+      "energy_moved": 8.921489325075527e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.920762357116473e-08,
+        -8.453692146304093e-08,
+        -9.448690718727448e-08,
+        -8.360266434692676e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999997764825821,
+          "mean_norm_ratio": 0.9963872134685516
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 0.9957623978455862
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999602635702,
+          "mean_norm_ratio": 0.9958079506953558
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 8,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.227350806715549e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 1.0884242840347724e-08,
+      "energy_moved": 2.407666954695742e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -7.920762357116473e-08,
+        -8.453692146304093e-08,
+        -9.448690718727448e-08,
+        -8.360266434692676e-08,
+        -8.106578519573304e-08,
+        -7.945608615500532e-08,
+        -8.033742204816008e-08,
+        -7.227350806715549e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999987930059433,
+          "mean_norm_ratio": 0.9932209849357605
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0,
+          "mean_norm_ratio": 0.9924113750457764
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999552965164,
+          "mean_norm_ratio": 0.9924091448386511
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.057062217403654e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -5.889447152185312e-09,
+      "energy_moved": 5.889447152185312e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.057062217403654e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0,
+          "mean_norm_ratio": 0.9987614452838898
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000149011612,
+          "mean_norm_ratio": 0.9987308979034424
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999900658926,
+          "mean_norm_ratio": 0.998717317978541
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -9.080564922214762e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -5.889447152185312e-09,
+      "energy_moved": 1.612447420029639e-08,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.057062217403654e-08,
+        -9.080564922214762e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.999999925494194,
+          "mean_norm_ratio": 0.9972169548273087
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000248352687,
+          "mean_norm_ratio": 0.9967738389968872
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999652306238,
+          "mean_norm_ratio": 0.996799091498057
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.936910861872093e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 1.3715492741539492e-08,
+      "energy_moved": 4.687933596869698e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.057062217403654e-08,
+        -9.080564922214762e-08,
+        -7.709015648060813e-08,
+        -7.936910861872093e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999994039535522,
+          "mean_norm_ratio": 0.9949357211589813
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 0.9943538804848989
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999900658926,
+          "mean_norm_ratio": 0.9943355172872543
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 8,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -6.407654495887982e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 1.4259136094096903e-08,
+      "energy_moved": 1.060463006297141e-08,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.057062217403654e-08,
+        -9.080564922214762e-08,
+        -7.709015648060813e-08,
+        -7.936910861872093e-08,
+        -7.648618804978469e-08,
+        -7.333027696176941e-08,
+        -7.833568105297672e-08,
+        -6.407654495887982e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999974519014359,
+          "mean_norm_ratio": 0.9904185086488724
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000099341075,
+          "mean_norm_ratio": 0.9892679899930954
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.9892329027255377
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.33453981385901e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": -8.664223116738867e-09,
+      "energy_moved": 8.664223116738867e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.33453981385901e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999999552965164,
+          "mean_norm_ratio": 0.9977095574140549
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0,
+          "mean_norm_ratio": 0.997358371814092
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999751647314,
+          "mean_norm_ratio": 0.9973726868629456
+        }
+      },
+      "lambda": 0.05
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -8.11051421578668e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 2.2402559807233047e-09,
+      "energy_moved": 6.4239671360155626e-09,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.33453981385901e-08,
+        -8.11051421578668e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999995231628418,
+          "mean_norm_ratio": 0.9956241101026535
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.9949819147586823
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999751647314,
+          "mean_norm_ratio": 0.9950077583392462
+        }
+      },
+      "lambda": 0.05
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -7.46436086274116e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 8.169436682692321e-09,
+      "energy_moved": 3.75663944396365e-11,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.33453981385901e-08,
+        -8.11051421578668e-08,
+        -7.293570547517447e-08,
+        -7.46436086274116e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999981373548508,
+          "mean_norm_ratio": 0.9917636066675186
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9908348172903061
+        },
+        "transformer.h.1": {
+          "mean_cosine": 1.0000000248352687,
+          "mean_norm_ratio": 0.9908007731040319
+        }
+      },
+      "lambda": 0.05
+    },
+    {
+      "T": 8,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "post_step_kd_loss": -7.468117502185123e-08,
+        "seed": 0,
+        "seq_len": 256,
+        "student_state": "one AdamW step from teacher (matching original smoke)",
+        "train_lr": 0.0001
+      },
+      "energy_final": -5.7042750967184475e-08,
+      "energy_initial": -7.468117502185123e-08,
+      "energy_max_increase": 1.6170965011497174e-08,
+      "energy_moved": 1.7638424054666757e-08,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": false,
+      "energy_trace": [
+        -7.468117502185123e-08,
+        -8.33453981385901e-08,
+        -8.11051421578668e-08,
+        -7.293570547517447e-08,
+        -7.46436086274116e-08,
+        -6.392177454017656e-08,
+        -4.775080952867938e-08,
+        -5.615104115008762e-08,
+        -5.7042750967184475e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999938309192657,
+          "mean_norm_ratio": 0.9851536899805069
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.9835757662852606
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 0.983491395910581
+        }
+      },
+      "lambda": 0.05
+    }
+  ],
+  "student_state": "deepcopy(teacher) + one AdamW step at lr=1e-4 on KD loss",
+  "tolerance_definition": "tol = 1e-3 * abs(energy_initial) if nonzero else 1e-12"
+}

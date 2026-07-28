@@ -1,0 +1,3453 @@
+{
+  "schema_version": 1,
+  "bridgelearn_version": "0.3.0",
+  "controller_mode": "shadow",
+  "variant": "scheduled",
+  "seed": 0,
+  "device": "cpu",
+  "steps": 1500,
+  "batch_size": 128,
+  "eval_every": 150,
+  "base_lr": 0.002,
+  "scheduler": "torch.optim.lr_scheduler.OneCycleLR",
+  "block_labels": [
+    "embeddings",
+    "routing",
+    "operator_core",
+    "readout"
+  ],
+  "statistics_notes": {
+    "variance": "population variance of flattened parameters per block",
+    "sharpness": "absolute gradient secant at evaluation boundaries, EMA alpha=0.5",
+    "realized_transition": "sqrt(eval-boundary variance ratio), innovation set to zero",
+    "cadence_limitation": "Bridge prediction is one-step while realization spans the evaluation interval"
+  },
+  "elapsed_seconds": 139.25588703155518,
+  "observations": [
+    {
+      "step": 0,
+      "loss": 2.1000592708587646,
+      "eval_accuracy": 0.1175130233168602,
+      "grad_norm": 0.23296578228473663,
+      "onecycle_lr": 8.002349884566793e-05,
+      "observed_variance": [
+        1.0615601161254529,
+        0.8380066281941151,
+        0.0003895320017283136,
+        0.014751004654366814
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9999988854818557,
+          0.9999864538804794,
+          1.0000057240419706,
+          0.9999617249195836
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817
+        ],
+        "innovation": [
+          6.749294037880013e-23,
+          6.749294037880013e-23,
+          6.749294037880013e-23,
+          6.749294037880013e-23
+        ]
+      },
+      "predicted_variance": [
+        1.0613651540135176,
+        0.8378735551832277,
+        0.0003894551351067603,
+        0.01474939171293085
+      ],
+      "calibration_error": [
+        0.00019496211193525959,
+        0.00013307301088738566,
+        7.68666215533319e-08,
+        1.6129414359637023e-06
+      ],
+      "sharpness_estimate": [
+        2.1278968089900685,
+        0.5244009675119308,
+        0.5779512000100228,
+        12.23594820884408
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.8221188003905076e-20,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05558182402571221,
+        "max_relative_error": 0.05235850451385096,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 11,
+        "nominal_horizon": 11,
+        "reference_contraction": [
+          0.99992,
+          0.99992,
+          0.99992,
+          0.99992
+        ],
+        "reference_innovation": [
+          1e-12,
+          1e-12,
+          1e-12,
+          1e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.2988291058273685e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.0057833299878054,
+          0.79399559261409,
+          0.0003690600555212303,
+          0.013976992042963939
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909094,
+        "progress_per_compute": 0.09090909090909094
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          9.294673941826264e-05,
+          9.294673941826264e-05,
+          9.294673941826264e-05,
+          9.294673941826264e-05
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 8.002349884566793e-05
+    },
+    {
+      "step": 150,
+      "loss": 2.0439870357513428,
+      "eval_accuracy": 0.1809895783662796,
+      "grad_norm": 0.15288138389587402,
+      "onecycle_lr": 0.0005677768883848523,
+      "observed_variance": [
+        1.0662543279191932,
+        0.846329173295733,
+        0.0005265157458254095,
+        0.014723795280744049
+      ],
+      "realized_transition": {
+        "contraction": [
+          1.0022085578204125,
+          1.004953411614825,
+          1.1626101508057736,
+          0.9990772854698033
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9998021608344503,
+          0.9999512443228508,
+          0.9999462655413291,
+          0.9988623744473323
+        ],
+        "innovation": [
+          1.4997408106142667e-15,
+          2.3439001104752825e-19,
+          4.0936058767169076e-18,
+          8.367197055163694e-14
+        ]
+      },
+      "predicted_variance": [
+        1.0611401213401632,
+        0.8379249150249278,
+        0.0003894901402705537,
+        0.014717461505436543
+      ],
+      "calibration_error": [
+        0.005114206579029945,
+        0.008404258270805154,
+        0.00013702560555485586,
+        6.333775307506423e-06
+      ],
+      "sharpness_estimate": [
+        1.07517681308993,
+        0.26550725129557856,
+        0.2890587740354038,
+        6.24633101381013
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 0.00700324789530557,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.060853976697312184,
+        "max_relative_error": 0.05762145928110866,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9998021608344503,
+          0.9999512443228508,
+          0.9999462655413291,
+          0.9988623744473323
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 10,
+        "nominal_horizon": 10,
+        "reference_contraction": [
+          0.9999172915475649,
+          0.9999211410679935,
+          0.9999210125096845,
+          0.9998930250983791
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.298827900487872e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.000286144642851,
+          0.7896377502211415,
+          0.00036704758594996494,
+          0.013899641362815155
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909083,
+        "progress_per_compute": 0.09090909090909083
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          9.297404118182423e-05,
+          9.297404118182423e-05,
+          9.297404118182423e-05,
+          9.297404118182423e-05
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0005677768883848523
+    },
+    {
+      "step": 300,
+      "loss": 1.9784067869186401,
+      "eval_accuracy": 0.201171875,
+      "grad_norm": 0.19122116267681122,
+      "onecycle_lr": 0.0015296622845812394,
+      "observed_variance": [
+        1.0698666947059217,
+        0.8868933427601302,
+        0.0009107717147152164,
+        0.015066043728675515
+      ],
+      "realized_transition": {
+        "contraction": [
+          1.0016925194470643,
+          1.0236842979024674,
+          1.315222062606482,
+          1.0115555252785648
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.99929074603452,
+          0.9998248547880195,
+          0.9998093187285613,
+          0.9958795288483635
+        ],
+        "innovation": [
+          2.847548855376841e-14,
+          4.875817122450337e-14,
+          1.173004234343463e-15,
+          1.7419957507990892e-12
+        ]
+      },
+      "predicted_variance": [
+        1.0647423740684911,
+        0.8460327382527202,
+        0.0005263149715866584,
+        0.014602707319848147
+      ],
+      "calibration_error": [
+        0.005124320637430513,
+        0.040860604507410025,
+        0.00038445674312855796,
+        0.00046333640882736775
+      ],
+      "sharpness_estimate": [
+        0.5380050411915649,
+        0.1376853616748165,
+        0.1446964931876049,
+        3.1258093869462753
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.0031895886484676,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06711555000211777,
+        "max_relative_error": 0.08476567039467815,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.99929074603452,
+          0.9998248547880195,
+          0.9998093187285613,
+          0.9958795288483635
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 9,
+        "nominal_horizon": 9,
+        "reference_contraction": [
+          0.999901458984776,
+          0.9999189843695241,
+          0.9999184585076555,
+          0.9997898386738224
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.0076802864273636e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.2620658362919456e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9976268240663734,
+          0.7915078215850275,
+          0.0004816718907600507,
+          0.013783204438208973
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909094,
+        "progress_per_compute": 0.09090909090909094
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.0006596626311552358,
+          0.0006596626311552358,
+          0.0006596626311552358,
+          0.0006596626311552358
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0015296622845812394
+    },
+    {
+      "step": 450,
+      "loss": 1.8198866844177246,
+      "eval_accuracy": 0.2496744841337204,
+      "grad_norm": 0.2388848513364792,
+      "onecycle_lr": 0.001999982096080777,
+      "observed_variance": [
+        1.052360729180213,
+        0.9973317481610542,
+        0.0016295799718446737,
+        0.01784711400150112
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9917848788985126,
+          1.0604351740431606,
+          1.3376209801759595,
+          1.088389609551061
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.999043849896868,
+          0.9997553036446023,
+          0.9997428433633675,
+          0.9944447677273058
+        ],
+        "innovation": [
+          5.116319002838888e-13,
+          3.646589278678759e-11,
+          2.957709735743882e-14,
+          1.8165124330287076e-11
+        ]
+      },
+      "predicted_variance": [
+        1.0678217665022325,
+        0.8864593567632939,
+        0.0009103033529919119,
+        0.014899117949387437
+      ],
+      "calibration_error": [
+        -0.015461037322019422,
+        0.11087239139776028,
+        0.0007192766188527618,
+        0.0029479960521136828
+      ],
+      "sharpness_estimate": [
+        0.2717127330593304,
+        0.07190534187593764,
+        0.07242099458174213,
+        1.5635232604398144
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 2.2626420060761943,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05469118547273655,
+        "max_relative_error": 0.09482416526191116,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.999043849896868,
+          0.9997553036446023,
+          0.9997428433633675,
+          0.9944447677273058
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 11,
+        "nominal_horizon": 8,
+        "reference_contraction": [
+          0.99987972623462,
+          0.9999150964752915,
+          0.9999142646493756,
+          0.9996527005317677
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.1039463176832804e-12,
+          1.000000000000001e-12,
+          1.0891597421328367e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.16176037093467e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.013130581029496,
+          0.8371941529449722,
+          0.0008239285677961726,
+          0.014254654594348676
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.0017772140220364597,
+          0.0017772140220364597,
+          0.0017772140220364597,
+          0.0017772140220364597
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.001999982096080777
+    },
+    {
+      "step": 600,
+      "loss": 1.7245240211486816,
+      "eval_accuracy": 0.3170572817325592,
+      "grad_norm": 0.44556084275245667,
+      "onecycle_lr": 0.0018983568048100473,
+      "observed_variance": [
+        1.028412765145047,
+        1.0922847674556355,
+        0.0027584353151210534,
+        0.021966865773601324
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.98855631037072,
+          1.0465214071847853,
+          1.3010487295248074,
+          1.1094303674694102
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9993686353370943,
+          0.9998329173188777,
+          0.9998317191236621,
+          0.9963669227968892
+        ],
+        "innovation": [
+          9.795879299631131e-12,
+          3.1990586253862986e-10,
+          2.890887783450889e-13,
+          3.0266264046087794e-11
+        ]
+      },
+      "predicted_variance": [
+        1.0510323019293824,
+        0.9969985025981916,
+        0.0016290315639894974,
+        0.017717669714245876
+      ],
+      "calibration_error": [
+        -0.02261953678433537,
+        0.09528626485744396,
+        0.001129403751131556,
+        0.004249196059355448
+      ],
+      "sharpness_estimate": [
+        0.1369190807776778,
+        0.03627185034711717,
+        0.0363953086358327,
+        0.7828281445523249
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.083572321765056,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.0459025200771761,
+        "max_relative_error": 0.0849930825523844,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9993686353370943,
+          0.9998329173188777,
+          0.9998317191236621,
+          0.9963669227968892
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 15,
+        "nominal_horizon": 10,
+        "reference_contraction": [
+          0.9998670318295395,
+          0.9999133292991419,
+          0.999912491489118,
+          0.9995693089599841
+        ],
+        "reference_innovation": [
+          1.0612620939520815e-12,
+          1.296885194120429e-12,
+          1.000000000000001e-12,
+          1.192611374719888e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          9.852740359838977e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.0120889176322232,
+          0.9510959825210155,
+          0.001490518686176431,
+          0.017007377302256144
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.0023236476840701337,
+          0.0023236476840701337,
+          0.0023236476840701337,
+          0.0023236476840701337
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0018983568048100473
+    },
+    {
+      "step": 750,
+      "loss": 1.5875240564346313,
+      "eval_accuracy": 0.3274739682674408,
+      "grad_norm": 0.41676610708236694,
+      "onecycle_lr": 0.001618801722972566,
+      "observed_variance": [
+        1.011414237147573,
+        1.1647409391531087,
+        0.0035360394951049244,
+        0.02537781226163308
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9917011160891939,
+          1.0326347404249332,
+          1.1322104302941591,
+          1.074838073798054
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9996980145696079,
+          0.9999199996795481,
+          0.9999197273829168,
+          0.9982734130786377
+        ],
+        "innovation": [
+          2.0396317611327478e-11,
+          1.4327847801502889e-09,
+          1.3341780972755867e-12,
+          6.16850739261434e-11
+        ]
+      },
+      "predicted_variance": [
+        1.0277917276087454,
+        1.0921100096162566,
+        0.002757992480586143,
+        0.021891075914466568
+      ],
+      "calibration_error": [
+        -0.016377490461172428,
+        0.07263092953685213,
+        0.0007780470145187816,
+        0.0034867363471665115
+      ],
+      "sharpness_estimate": [
+        0.06907130958492605,
+        0.03149286310195272,
+        0.018458100666285594,
+        0.3970796038697351
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 4.0,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05117739110952457,
+        "max_relative_error": 0.08951586052526007,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9996980145696079,
+          0.9999199996795481,
+          0.9999197273829168,
+          0.9982734130786377
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 14,
+        "reference_contraction": [
+          0.9998632232365923,
+          0.9999138637127497,
+          0.9999130440059901,
+          0.9995376470771283
+        ],
+        "reference_innovation": [
+          1.1492800698850077e-12,
+          1.5840191531157784e-12,
+          1.000000000000001e-12,
+          1.3304566577417484e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          7.374411433868331e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9925325564916923,
+          1.040932618506732,
+          0.002511061395238381,
+          0.02082725718350621
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.0022055759407445643,
+          0.0022055759407445643,
+          0.0022055759407445643,
+          0.0022055759407445643
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.001618801722972566
+    },
+    {
+      "step": 900,
+      "loss": 1.54150390625,
+      "eval_accuracy": 0.373046875,
+      "grad_norm": 0.4163050055503845,
+      "onecycle_lr": 0.0012166861630443278,
+      "observed_variance": [
+        0.999152086368188,
+        1.2173224712306054,
+        0.003962425238785378,
+        0.028066026800717795
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9939196309434908,
+          1.0223230414359599,
+          1.0585758625095076,
+          1.0516309949120302
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.999870092112509,
+          0.9999407688758009,
+          0.9999652843868306,
+          0.9992531809109386
+        ],
+        "innovation": [
+          1.1352217123441832e-11,
+          5.96527965326976e-10,
+          8.310354366626072e-13,
+          4.515173414923085e-11
+        ]
+      },
+      "predicted_variance": [
+        1.0111514728537594,
+        1.164602966005474,
+        0.0035357939886389747,
+        0.02533992119170294
+      ],
+      "calibration_error": [
+        -0.011999386485571417,
+        0.05271950522513147,
+        0.0004266312501464034,
+        0.0027261056090148554
+      ],
+      "sharpness_estimate": [
+        0.03739775298338848,
+        0.01607724441016529,
+        0.009900750249785399,
+        0.20019434002182582
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.69061989698901,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05405660447541871,
+        "max_relative_error": 0.08793876105752771,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.999870092112509,
+          0.9999407688758009,
+          0.9999652843868306,
+          0.9992531809109386
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998639721568455,
+          0.9999149183803356,
+          0.9999147562856556,
+          0.9995322338704075
+        ],
+        "reference_innovation": [
+          1.2199916818072377e-12,
+          1.8755467315319086e-12,
+          1.000000000000001e-12,
+          1.4655893211387276e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          5.875704198118605e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9788890649102931,
+          1.1105463615300553,
+          0.003224833180684764,
+          0.024020376910229492
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.001880779273937071,
+          0.001880779273937071,
+          0.001880779273937071,
+          0.001880779273937071
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0012166861630443278
+    },
+    {
+      "step": 1050,
+      "loss": 1.4008108377456665,
+      "eval_accuracy": 0.4140625,
+      "grad_norm": 0.40034428238868713,
+      "onecycle_lr": 0.0007716540432928246,
+      "observed_variance": [
+        0.9920634873020042,
+        1.245644428461737,
+        0.004187588548360385,
+        0.030040770165089818
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9964463785439289,
+          1.011566003951446,
+          1.0280197567548341,
+          1.0345823463219592
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9999471349983616,
+          0.9999772734059059,
+          0.9999860044217521,
+          0.9997170077539701
+        ],
+        "innovation": [
+          8.247094866768955e-12,
+          1.7688723818190518e-10,
+          4.4859213724397567e-13,
+          2.8809188379358068e-11
+        ]
+      },
+      "predicted_variance": [
+        0.999046448815408,
+        1.217267140848867,
+        0.003962314327145154,
+        0.028050144141260887
+      ],
+      "calibration_error": [
+        -0.006982961513403829,
+        0.02837728761287006,
+        0.00022527422121523116,
+        0.0019906260238289307
+      ],
+      "sharpness_estimate": [
+        0.0447479162053218,
+        0.014085239584978511,
+        0.006460849893999562,
+        0.10127072113931139
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.201234905597118,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06202329426038866,
+        "max_relative_error": 0.09489159557479204,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999471349983616,
+          0.9999772734059059,
+          0.9999860044217521,
+          0.9997170077539701
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 16,
+        "reference_contraction": [
+          0.9998666879522826,
+          0.9999168840001011,
+          0.999916952213911,
+          0.9995389596437925
+        ],
+        "reference_innovation": [
+          1.28040258670605e-12,
+          2.1303761802438597e-12,
+          1.000000000000001e-12,
+          1.5882146711453715e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          5.126105952739099e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9655745797970677,
+          1.1552438465884782,
+          0.00358630834778503,
+          0.02638225062766713
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.001413587646878587,
+          0.001413587646878587,
+          0.001413587646878587,
+          0.001413587646878587
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0007716540432928246
+    },
+    {
+      "step": 1200,
+      "loss": 1.425323486328125,
+      "eval_accuracy": 0.4345703125,
+      "grad_norm": 0.39024341106414795,
+      "onecycle_lr": 0.0003718494329956121,
+      "observed_variance": [
+        0.9877429868613838,
+        1.2586281334577731,
+        0.0042820186065084375,
+        0.03138607817642598
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9978200917675251,
+          1.0051981314558467,
+          1.011212136402688,
+          1.0221461443390796
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9999598819676191,
+          0.9999873721025316,
+          0.999994207627813,
+          0.9999092073460747
+        ],
+        "innovation": [
+          3.808158339846595e-12,
+          2.870451482744773e-11,
+          2.207920851409193e-13,
+          7.58400835625559e-12
+        ]
+      },
+      "predicted_variance": [
+        0.9919838896322805,
+        1.2456129689488273,
+        0.004187540036578801,
+        0.03003531545781059
+      ],
+      "calibration_error": [
+        -0.004240902770896615,
+        0.013015164508945798,
+        9.447856992963674e-05,
+        0.0013507627186153913
+      ],
+      "sharpness_estimate": [
+        0.037807744344387426,
+        0.007441972690353172,
+        0.005535342324498361,
+        0.0640433584867503
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.048749144860875,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06075981131316288,
+        "max_relative_error": 0.09013382588498929,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999598819676191,
+          0.9999873721025316,
+          0.999994207627813,
+          0.9999092073460747
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998696514164,
+          0.9999190514121358,
+          0.9999192940812653,
+          0.9995504464756356
+        ],
+        "reference_innovation": [
+          1.311109445523529e-12,
+          2.2826139372325246e-12,
+          1.000000000000001e-12,
+          1.6495680684102195e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.750892842943159e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9609681018867234,
+          1.1848531576356645,
+          0.003810091908590068,
+          0.02828419307014416
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.0008965340910373367,
+          0.0008965340910373367,
+          0.0008965340910373367,
+          0.0008965340910373367
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 0.0003718494329956121
+    },
+    {
+      "step": 1350,
+      "loss": 1.3387221097946167,
+      "eval_accuracy": 0.4423828125,
+      "grad_norm": 0.4262191653251648,
+      "onecycle_lr": 9.645853850381977e-05,
+      "observed_variance": [
+        0.9865167402346192,
+        1.2627955834617777,
+        0.004307748971891375,
+        0.031928008592788645
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9993790755973271,
+          1.0016541843760245,
+          1.0029999668879466,
+          1.00859634440478
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9999836660183449,
+          0.999996784863855,
+          0.9999976085804231,
+          0.9999723315140643
+        ],
+        "innovation": [
+          7.272130658247142e-13,
+          1.2168025631542433e-11,
+          4.5079577157791425e-14,
+          1.8450106744150727e-12
+        ]
+      },
+      "predicted_variance": [
+        0.987710719573985,
+        1.2586200401613417,
+        0.004281998126371756,
+        0.03138434139177325
+      ],
+      "calibration_error": [
+        -0.001193979339365825,
+        0.004175543300436013,
+        2.575084551961846e-05,
+        0.0005436672010153965
+      ],
+      "sharpness_estimate": [
+        0.019979412275145592,
+        0.04788261257729244,
+        0.0089933983957453,
+        0.061570658175706436
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 2.5308710113829056,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06566427690996113,
+        "max_relative_error": 0.09591770368700642,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999836660183449,
+          0.999996784863855,
+          0.9999976085804231,
+          0.9999723315140643
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 16,
+        "reference_contraction": [
+          0.9998731401102592,
+          0.9999213968509719,
+          0.9999216535094102,
+          0.9995632186467703
+        ],
+        "reference_innovation": [
+          1.3004982668917506e-12,
+          2.378633022355955e-12,
+          1.000000000000001e-12,
+          1.6402892930914187e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.5977781397943974e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9550584344935332,
+          1.1929557632513805,
+          0.003871272136712292,
+          0.029397206680383
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.00043202740439339846,
+          0.00043202740439339846,
+          0.00043202740439339846,
+          0.00043202740439339846
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 9.645853850381977e-05
+    },
+    {
+      "step": 1499,
+      "loss": 1.4378174543380737,
+      "eval_accuracy": 0.4137369692325592,
+      "grad_norm": 0.440617173910141,
+      "onecycle_lr": 1.2475989823096844e-08,
+      "observed_variance": [
+        0.9864174157390071,
+        1.2633912819313156,
+        0.004309670658972323,
+        0.03200625994263662
+      ],
+      "realized_transition": {
+        "contraction": [
+          0.9999496577241244,
+          1.0002358371543678,
+          1.0002230251605995,
+          1.00122468431352
+        ],
+        "innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "predicted_transition": {
+        "contraction": [
+          0.9999977609305816,
+          0.9999946338514857,
+          0.9999989921203367,
+          0.999993099848189
+        ],
+        "innovation": [
+          7.224307273119366e-14,
+          1.0232455105827819e-12,
+          3.8939923744660835e-15,
+          1.2739568580350217e-13
+        ]
+      },
+      "predicted_variance": [
+        0.9865123224807096,
+        1.2627820308018756,
+        0.004307740288514478,
+        0.031927567978223576
+      ],
+      "calibration_error": [
+        -9.490674170253843e-05,
+        0.0006092511294399916,
+        1.9303704578447697e-06,
+        7.869196441304127e-05
+      ],
+      "sharpness_estimate": [
+        0.5154675231218684,
+        0.5628571513028898,
+        0.0534505372269273,
+        0.35682667580465666
+      ],
+      "bridge_diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.0214638854956015,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06218730374849635,
+        "max_relative_error": 0.09048335472076395,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999977609305816,
+          0.9999946338514857,
+          0.9999989921203367,
+          0.999993099848189
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998768880914042,
+          0.9999236163848378,
+          0.9999239778794259,
+          0.9995761439168962
+        ],
+        "reference_innovation": [
+          1.2902874836147691e-12,
+          2.317595401835237e-12,
+          1.000000000000001e-12,
+          1.6161171410916741e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.556492123484898e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9558298124294848,
+          1.2005947270533792,
+          0.003917956153750701,
+          0.030006923241344283
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "bridge_proposed_controls": {
+        "step_size": [
+          0.00011206883303726238,
+          0.00011206883303726238,
+          0.00011206883303726238,
+          0.00011206883303726238
+        ],
+        "effective_batch": 128.0
+      },
+      "shadow_invariant_lr_before_next_plan": 1.2475989823096844e-08
+    }
+  ],
+  "bridge_trace": [
+    {
+      "channel": "weights",
+      "step": 1,
+      "requested_progress": 0.09090909090909094,
+      "accepted_progress": 0.09090909090909094,
+      "feasible": true,
+      "target_variance": [
+        1.0057833299878054,
+        0.79399559261409,
+        0.0003690730438122886,
+        0.013976992042963939
+      ],
+      "predicted_variance": [
+        1.0613651540135176,
+        0.8378735551832277,
+        0.0003894551351067603,
+        0.01474939171293085
+      ],
+      "controls": {
+        "step_size": [
+          9.294673941826264e-05,
+          9.294673941826264e-05,
+          9.294673941826264e-05,
+          9.294673941826264e-05
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.8221188003905076e-20,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05558182402571221,
+        "max_relative_error": 0.05235850451385096,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817,
+          0.9999070532605817
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 11,
+        "nominal_horizon": 11,
+        "reference_contraction": [
+          0.99992,
+          0.99992,
+          0.99992,
+          0.99992
+        ],
+        "reference_innovation": [
+          1e-12,
+          1e-12,
+          1e-12,
+          1e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.2988291058273685e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.0057833299878054,
+          0.79399559261409,
+          0.0003690600555212303,
+          0.013976992042963939
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909094,
+        "progress_per_compute": 0.09090909090909094
+      },
+      "observed_variance": [
+        1.0615601161254529,
+        0.8380066281941151,
+        0.0003895320017283136,
+        0.014751004654366814
+      ],
+      "extra": {
+        "training_step": 0,
+        "onecycle_lr_start": 7.999999999999999e-05,
+        "onecycle_lr_end": 8.002349884566793e-05,
+        "realized_transition": {
+          "contraction": [
+            0.9999988854818557,
+            0.9999864538804794,
+            1.0000057240419706,
+            0.9999617249195836
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9999070532605817,
+            0.9999070532605817,
+            0.9999070532605817,
+            0.9999070532605817
+          ],
+          "innovation": [
+            6.749294037880013e-23,
+            6.749294037880013e-23,
+            6.749294037880013e-23,
+            6.749294037880013e-23
+          ]
+        },
+        "calibration_error": [
+          0.00019496211193525959,
+          0.00013307301088738566,
+          7.68666215533319e-08,
+          1.6129414359637023e-06
+        ],
+        "sharpness_estimate": [
+          2.1278968089900685,
+          0.5244009675119308,
+          0.5779512000100228,
+          12.23594820884408
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 2,
+      "requested_progress": 0.18181818181818177,
+      "accepted_progress": 0.18181818181818177,
+      "feasible": true,
+      "target_variance": [
+        1.000286144642851,
+        0.7896377502211415,
+        0.0003670605742289698,
+        0.013899641362815155
+      ],
+      "predicted_variance": [
+        1.0611401213401632,
+        0.8379249150249278,
+        0.0003894901402705537,
+        0.014717461505436543
+      ],
+      "controls": {
+        "step_size": [
+          9.297404118182423e-05,
+          9.297404118182423e-05,
+          9.297404118182423e-05,
+          9.297404118182423e-05
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 0.00700324789530557,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.060853976697312184,
+        "max_relative_error": 0.05762145928110866,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9998021608344503,
+          0.9999512443228508,
+          0.9999462655413291,
+          0.9988623744473323
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 10,
+        "nominal_horizon": 10,
+        "reference_contraction": [
+          0.9999172915475649,
+          0.9999211410679935,
+          0.9999210125096845,
+          0.9998930250983791
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.298827900487872e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.000286144642851,
+          0.7896377502211415,
+          0.00036704758594996494,
+          0.013899641362815155
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909083,
+        "progress_per_compute": 0.09090909090909083
+      },
+      "observed_variance": [
+        1.0662543279191932,
+        0.846329173295733,
+        0.0005265157458254095,
+        0.014723795280744049
+      ],
+      "extra": {
+        "training_step": 150,
+        "onecycle_lr_start": 8.002349884566793e-05,
+        "onecycle_lr_end": 0.0005677768883848523,
+        "realized_transition": {
+          "contraction": [
+            1.0022085578204125,
+            1.004953411614825,
+            1.1626101508057736,
+            0.9990772854698033
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9998021608344503,
+            0.9999512443228508,
+            0.9999462655413291,
+            0.9988623744473323
+          ],
+          "innovation": [
+            1.4997408106142667e-15,
+            2.3439001104752825e-19,
+            4.0936058767169076e-18,
+            8.367197055163694e-14
+          ]
+        },
+        "calibration_error": [
+          0.005114206579029945,
+          0.008404258270805154,
+          0.00013702560555485586,
+          6.333775307506423e-06
+        ],
+        "sharpness_estimate": [
+          1.07517681308993,
+          0.26550725129557856,
+          0.2890587740354038,
+          6.24633101381013
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 3,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9976268240663734,
+        0.7915078215850275,
+        0.0004816845114184136,
+        0.013783204438208973
+      ],
+      "predicted_variance": [
+        1.0647423740684911,
+        0.8460327382527202,
+        0.0005263149715866584,
+        0.014602707319848147
+      ],
+      "controls": {
+        "step_size": [
+          0.0006596626311552358,
+          0.0006596626311552358,
+          0.0006596626311552358,
+          0.0006596626311552358
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.0031895886484676,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06711555000211777,
+        "max_relative_error": 0.08476567039467815,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.99929074603452,
+          0.9998248547880195,
+          0.9998093187285613,
+          0.9958795288483635
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 9,
+        "nominal_horizon": 9,
+        "reference_contraction": [
+          0.999901458984776,
+          0.9999189843695241,
+          0.9999184585076555,
+          0.9997898386738224
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.000000000000001e-12,
+          1.0076802864273636e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.2620658362919456e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9976268240663734,
+          0.7915078215850275,
+          0.0004816718907600507,
+          0.013783204438208973
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.09090909090909094,
+        "progress_per_compute": 0.09090909090909094
+      },
+      "observed_variance": [
+        1.0698666947059217,
+        0.8868933427601302,
+        0.0009107717147152164,
+        0.015066043728675515
+      ],
+      "extra": {
+        "training_step": 300,
+        "onecycle_lr_start": 0.0005677768883848523,
+        "onecycle_lr_end": 0.0015296622845812394,
+        "realized_transition": {
+          "contraction": [
+            1.0016925194470643,
+            1.0236842979024674,
+            1.315222062606482,
+            1.0115555252785648
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.99929074603452,
+            0.9998248547880195,
+            0.9998093187285613,
+            0.9958795288483635
+          ],
+          "innovation": [
+            2.847548855376841e-14,
+            4.875817122450337e-14,
+            1.173004234343463e-15,
+            1.7419957507990892e-12
+          ]
+        },
+        "calibration_error": [
+          0.005124320637430513,
+          0.040860604507410025,
+          0.00038445674312855796,
+          0.00046333640882736775
+        ],
+        "sharpness_estimate": [
+          0.5380050411915649,
+          0.1376853616748165,
+          0.1446964931876049,
+          3.1258093869462753
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 4,
+      "requested_progress": 0.36363636363636365,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        1.013130581029496,
+        0.8371941529449722,
+        0.000823940185399882,
+        0.014254654594348676
+      ],
+      "predicted_variance": [
+        1.0678217665022325,
+        0.8864593567632939,
+        0.0009103033529919119,
+        0.014899117949387437
+      ],
+      "controls": {
+        "step_size": [
+          0.0017772140220364597,
+          0.0017772140220364597,
+          0.0017772140220364597,
+          0.0017772140220364597
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 2.2626420060761943,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05469118547273655,
+        "max_relative_error": 0.09482416526191116,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.999043849896868,
+          0.9997553036446023,
+          0.9997428433633675,
+          0.9944447677273058
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 11,
+        "nominal_horizon": 8,
+        "reference_contraction": [
+          0.99987972623462,
+          0.9999150964752915,
+          0.9999142646493756,
+          0.9996527005317677
+        ],
+        "reference_innovation": [
+          1.000000000000001e-12,
+          1.1039463176832804e-12,
+          1.000000000000001e-12,
+          1.0891597421328367e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          1.16176037093467e-08,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.013130581029496,
+          0.8371941529449722,
+          0.0008239285677961726,
+          0.014254654594348676
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        1.052360729180213,
+        0.9973317481610542,
+        0.0016295799718446737,
+        0.01784711400150112
+      ],
+      "extra": {
+        "training_step": 450,
+        "onecycle_lr_start": 0.0015296622845812394,
+        "onecycle_lr_end": 0.001999982096080777,
+        "realized_transition": {
+          "contraction": [
+            0.9917848788985126,
+            1.0604351740431606,
+            1.3376209801759595,
+            1.088389609551061
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.999043849896868,
+            0.9997553036446023,
+            0.9997428433633675,
+            0.9944447677273058
+          ],
+          "innovation": [
+            5.116319002838888e-13,
+            3.646589278678759e-11,
+            2.957709735743882e-14,
+            1.8165124330287076e-11
+          ]
+        },
+        "calibration_error": [
+          -0.015461037322019422,
+          0.11087239139776028,
+          0.0007192766188527618,
+          0.0029479960521136828
+        ],
+        "sharpness_estimate": [
+          0.2717127330593304,
+          0.07190534187593764,
+          0.07242099458174213,
+          1.5635232604398144
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 5,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        1.0120889176322232,
+        0.9510959825210155,
+        0.0014905285389167908,
+        0.017007377302256144
+      ],
+      "predicted_variance": [
+        1.0510323019293824,
+        0.9969985025981916,
+        0.0016290315639894974,
+        0.017717669714245876
+      ],
+      "controls": {
+        "step_size": [
+          0.0023236476840701337,
+          0.0023236476840701337,
+          0.0023236476840701337,
+          0.0023236476840701337
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.083572321765056,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.0459025200771761,
+        "max_relative_error": 0.0849930825523844,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9993686353370943,
+          0.9998329173188777,
+          0.9998317191236621,
+          0.9963669227968892
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 15,
+        "nominal_horizon": 10,
+        "reference_contraction": [
+          0.9998670318295395,
+          0.9999133292991419,
+          0.999912491489118,
+          0.9995693089599841
+        ],
+        "reference_innovation": [
+          1.0612620939520815e-12,
+          1.296885194120429e-12,
+          1.000000000000001e-12,
+          1.192611374719888e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          9.852740359838977e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          1.0120889176322232,
+          0.9510959825210155,
+          0.001490518686176431,
+          0.017007377302256144
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        1.028412765145047,
+        1.0922847674556355,
+        0.0027584353151210534,
+        0.021966865773601324
+      ],
+      "extra": {
+        "training_step": 600,
+        "onecycle_lr_start": 0.001999982096080777,
+        "onecycle_lr_end": 0.0018983568048100473,
+        "realized_transition": {
+          "contraction": [
+            0.98855631037072,
+            1.0465214071847853,
+            1.3010487295248074,
+            1.1094303674694102
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9993686353370943,
+            0.9998329173188777,
+            0.9998317191236621,
+            0.9963669227968892
+          ],
+          "innovation": [
+            9.795879299631131e-12,
+            3.1990586253862986e-10,
+            2.890887783450889e-13,
+            3.0266264046087794e-11
+          ]
+        },
+        "calibration_error": [
+          -0.02261953678433537,
+          0.09528626485744396,
+          0.001129403751131556,
+          0.004249196059355448
+        ],
+        "sharpness_estimate": [
+          0.1369190807776778,
+          0.03627185034711717,
+          0.0363953086358327,
+          0.7828281445523249
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 6,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9925325564916923,
+        1.040932618506732,
+        0.0025110687696498148,
+        0.02082725718350621
+      ],
+      "predicted_variance": [
+        1.0277917276087454,
+        1.0921100096162566,
+        0.002757992480586143,
+        0.021891075914466568
+      ],
+      "controls": {
+        "step_size": [
+          0.0022055759407445643,
+          0.0022055759407445643,
+          0.0022055759407445643,
+          0.0022055759407445643
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 4.0,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05117739110952457,
+        "max_relative_error": 0.08951586052526007,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9996980145696079,
+          0.9999199996795481,
+          0.9999197273829168,
+          0.9982734130786377
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 14,
+        "reference_contraction": [
+          0.9998632232365923,
+          0.9999138637127497,
+          0.9999130440059901,
+          0.9995376470771283
+        ],
+        "reference_innovation": [
+          1.1492800698850077e-12,
+          1.5840191531157784e-12,
+          1.000000000000001e-12,
+          1.3304566577417484e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          7.374411433868331e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9925325564916923,
+          1.040932618506732,
+          0.002511061395238381,
+          0.02082725718350621
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        1.011414237147573,
+        1.1647409391531087,
+        0.0035360394951049244,
+        0.02537781226163308
+      ],
+      "extra": {
+        "training_step": 750,
+        "onecycle_lr_start": 0.0018983568048100473,
+        "onecycle_lr_end": 0.001618801722972566,
+        "realized_transition": {
+          "contraction": [
+            0.9917011160891939,
+            1.0326347404249332,
+            1.1322104302941591,
+            1.074838073798054
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9996980145696079,
+            0.9999199996795481,
+            0.9999197273829168,
+            0.9982734130786377
+          ],
+          "innovation": [
+            2.0396317611327478e-11,
+            1.4327847801502889e-09,
+            1.3341780972755867e-12,
+            6.16850739261434e-11
+          ]
+        },
+        "calibration_error": [
+          -0.016377490461172428,
+          0.07263092953685213,
+          0.0007780470145187816,
+          0.0034867363471665115
+        ],
+        "sharpness_estimate": [
+          0.06907130958492605,
+          0.03149286310195272,
+          0.018458100666285594,
+          0.3970796038697351
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 7,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9788890649102931,
+        1.1105463615300553,
+        0.003224839056388962,
+        0.024020376910229492
+      ],
+      "predicted_variance": [
+        1.0111514728537594,
+        1.164602966005474,
+        0.0035357939886389747,
+        0.02533992119170294
+      ],
+      "controls": {
+        "step_size": [
+          0.001880779273937071,
+          0.001880779273937071,
+          0.001880779273937071,
+          0.001880779273937071
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.69061989698901,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.05405660447541871,
+        "max_relative_error": 0.08793876105752771,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.999870092112509,
+          0.9999407688758009,
+          0.9999652843868306,
+          0.9992531809109386
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998639721568455,
+          0.9999149183803356,
+          0.9999147562856556,
+          0.9995322338704075
+        ],
+        "reference_innovation": [
+          1.2199916818072377e-12,
+          1.8755467315319086e-12,
+          1.000000000000001e-12,
+          1.4655893211387276e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          5.875704198118605e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9788890649102931,
+          1.1105463615300553,
+          0.003224833180684764,
+          0.024020376910229492
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        0.999152086368188,
+        1.2173224712306054,
+        0.003962425238785378,
+        0.028066026800717795
+      ],
+      "extra": {
+        "training_step": 900,
+        "onecycle_lr_start": 0.001618801722972566,
+        "onecycle_lr_end": 0.0012166861630443278,
+        "realized_transition": {
+          "contraction": [
+            0.9939196309434908,
+            1.0223230414359599,
+            1.0585758625095076,
+            1.0516309949120302
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.999870092112509,
+            0.9999407688758009,
+            0.9999652843868306,
+            0.9992531809109386
+          ],
+          "innovation": [
+            1.1352217123441832e-11,
+            5.96527965326976e-10,
+            8.310354366626072e-13,
+            4.515173414923085e-11
+          ]
+        },
+        "calibration_error": [
+          -0.011999386485571417,
+          0.05271950522513147,
+          0.0004266312501464034,
+          0.0027261056090148554
+        ],
+        "sharpness_estimate": [
+          0.03739775298338848,
+          0.01607724441016529,
+          0.009900750249785399,
+          0.20019434002182582
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 8,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9655745797970677,
+        1.1552438465884782,
+        0.0035863134738909827,
+        0.02638225062766713
+      ],
+      "predicted_variance": [
+        0.999046448815408,
+        1.217267140848867,
+        0.003962314327145154,
+        0.028050144141260887
+      ],
+      "controls": {
+        "step_size": [
+          0.001413587646878587,
+          0.001413587646878587,
+          0.001413587646878587,
+          0.001413587646878587
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.201234905597118,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06202329426038866,
+        "max_relative_error": 0.09489159557479204,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999471349983616,
+          0.9999772734059059,
+          0.9999860044217521,
+          0.9997170077539701
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 16,
+        "reference_contraction": [
+          0.9998666879522826,
+          0.9999168840001011,
+          0.999916952213911,
+          0.9995389596437925
+        ],
+        "reference_innovation": [
+          1.28040258670605e-12,
+          2.1303761802438597e-12,
+          1.000000000000001e-12,
+          1.5882146711453715e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          5.126105952739099e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9655745797970677,
+          1.1552438465884782,
+          0.00358630834778503,
+          0.02638225062766713
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        0.9920634873020042,
+        1.245644428461737,
+        0.004187588548360385,
+        0.030040770165089818
+      ],
+      "extra": {
+        "training_step": 1050,
+        "onecycle_lr_start": 0.0012166861630443278,
+        "onecycle_lr_end": 0.0007716540432928246,
+        "realized_transition": {
+          "contraction": [
+            0.9964463785439289,
+            1.011566003951446,
+            1.0280197567548341,
+            1.0345823463219592
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9999471349983616,
+            0.9999772734059059,
+            0.9999860044217521,
+            0.9997170077539701
+          ],
+          "innovation": [
+            8.247094866768955e-12,
+            1.7688723818190518e-10,
+            4.4859213724397567e-13,
+            2.8809188379358068e-11
+          ]
+        },
+        "calibration_error": [
+          -0.006982961513403829,
+          0.02837728761287006,
+          0.00022527422121523116,
+          0.0019906260238289307
+        ],
+        "sharpness_estimate": [
+          0.0447479162053218,
+          0.014085239584978511,
+          0.006460849893999562,
+          0.10127072113931139
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 9,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9609681018867234,
+        1.1848531576356645,
+        0.003810096659482911,
+        0.02828419307014416
+      ],
+      "predicted_variance": [
+        0.9919838896322805,
+        1.2456129689488273,
+        0.004187540036578801,
+        0.03003531545781059
+      ],
+      "controls": {
+        "step_size": [
+          0.0008965340910373367,
+          0.0008965340910373367,
+          0.0008965340910373367,
+          0.0008965340910373367
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 3.048749144860875,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06075981131316288,
+        "max_relative_error": 0.09013382588498929,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999598819676191,
+          0.9999873721025316,
+          0.999994207627813,
+          0.9999092073460747
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998696514164,
+          0.9999190514121358,
+          0.9999192940812653,
+          0.9995504464756356
+        ],
+        "reference_innovation": [
+          1.311109445523529e-12,
+          2.2826139372325246e-12,
+          1.000000000000001e-12,
+          1.6495680684102195e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.750892842943159e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9609681018867234,
+          1.1848531576356645,
+          0.003810091908590068,
+          0.02828419307014416
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        0.9877429868613838,
+        1.2586281334577731,
+        0.0042820186065084375,
+        0.03138607817642598
+      ],
+      "extra": {
+        "training_step": 1200,
+        "onecycle_lr_start": 0.0007716540432928246,
+        "onecycle_lr_end": 0.0003718494329956121,
+        "realized_transition": {
+          "contraction": [
+            0.9978200917675251,
+            1.0051981314558467,
+            1.011212136402688,
+            1.0221461443390796
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9999598819676191,
+            0.9999873721025316,
+            0.999994207627813,
+            0.9999092073460747
+          ],
+          "innovation": [
+            3.808158339846595e-12,
+            2.870451482744773e-11,
+            2.207920851409193e-13,
+            7.58400835625559e-12
+          ]
+        },
+        "calibration_error": [
+          -0.004240902770896615,
+          0.013015164508945798,
+          9.447856992963674e-05,
+          0.0013507627186153913
+        ],
+        "sharpness_estimate": [
+          0.037807744344387426,
+          0.007441972690353172,
+          0.005535342324498361,
+          0.0640433584867503
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 10,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9550584344935332,
+        1.1929557632513805,
+        0.003871276734490432,
+        0.029397206680383
+      ],
+      "predicted_variance": [
+        0.987710719573985,
+        1.2586200401613417,
+        0.004281998126371756,
+        0.03138434139177325
+      ],
+      "controls": {
+        "step_size": [
+          0.00043202740439339846,
+          0.00043202740439339846,
+          0.00043202740439339846,
+          0.00043202740439339846
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 2.5308710113829056,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06566427690996113,
+        "max_relative_error": 0.09591770368700642,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999836660183449,
+          0.999996784863855,
+          0.9999976085804231,
+          0.9999723315140643
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 16,
+        "nominal_horizon": 16,
+        "reference_contraction": [
+          0.9998731401102592,
+          0.9999213968509719,
+          0.9999216535094102,
+          0.9995632186467703
+        ],
+        "reference_innovation": [
+          1.3004982668917506e-12,
+          2.378633022355955e-12,
+          1.000000000000001e-12,
+          1.6402892930914187e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.5977781397943974e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9550584344935332,
+          1.1929557632513805,
+          0.003871272136712292,
+          0.029397206680383
+        ],
+        "reference_consistent": true,
+        "horizon_governed": false,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        0.9865167402346192,
+        1.2627955834617777,
+        0.004307748971891375,
+        0.031928008592788645
+      ],
+      "extra": {
+        "training_step": 1350,
+        "onecycle_lr_start": 0.0003718494329956121,
+        "onecycle_lr_end": 9.645853850381977e-05,
+        "realized_transition": {
+          "contraction": [
+            0.9993790755973271,
+            1.0016541843760245,
+            1.0029999668879466,
+            1.00859634440478
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9999836660183449,
+            0.999996784863855,
+            0.9999976085804231,
+            0.9999723315140643
+          ],
+          "innovation": [
+            7.272130658247142e-13,
+            1.2168025631542433e-11,
+            4.5079577157791425e-14,
+            1.8450106744150727e-12
+          ]
+        },
+        "calibration_error": [
+          -0.001193979339365825,
+          0.004175543300436013,
+          2.575084551961846e-05,
+          0.0005436672010153965
+        ],
+        "sharpness_estimate": [
+          0.019979412275145592,
+          0.04788261257729244,
+          0.0089933983957453,
+          0.061570658175706436
+        ]
+      }
+    },
+    {
+      "channel": "weights",
+      "step": 11,
+      "requested_progress": 0.2727272727272727,
+      "accepted_progress": 0.2727272727272727,
+      "feasible": true,
+      "target_variance": [
+        0.9558298124294848,
+        1.2005947270533792,
+        0.0039179607102428245,
+        0.030006923241344283
+      ],
+      "predicted_variance": [
+        0.9865123224807096,
+        1.2627820308018756,
+        0.004307740288514478,
+        0.031927567978223576
+      ],
+      "controls": {
+        "step_size": [
+          0.00011206883303726238,
+          0.00011206883303726238,
+          0.00011206883303726238,
+          0.00011206883303726238
+        ],
+        "effective_batch": 128.0
+      },
+      "diagnostics": {
+        "step_saturated_fraction": 0.0,
+        "batch_saturated": true,
+        "requested_batch": 128.0,
+        "invalid_curvature_fraction": 0.0,
+        "coefficient_slew_limited_fraction": 0.0,
+        "edge_of_stability_fraction": 0.0,
+        "curvature_endogeneity_fraction": 0.0,
+        "curvature_funnel_relative_width": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "robust_stability_satisfied": true,
+        "continuous_batch": 128.0,
+        "resource_objective": 1.0214638854956015,
+        "compute_units": 1.0,
+        "compute_price": 0.0,
+        "batch_quantized": 0.0,
+        "max_absolute_error": 0.06218730374849635,
+        "max_relative_error": 0.09048335472076395,
+        "robust_funnel_projection": true,
+        "lower_edge_contraction": [
+          0.9999977609305816,
+          0.9999946338514857,
+          0.9999989921203367,
+          0.999993099848189
+        ],
+        "probe_type": "white",
+        "probe_active_fraction": 0.25,
+        "probe_external_innovation": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "probe_innovation_composed_once": true,
+        "planner": "reference_bridge",
+        "candidate_horizon": 17,
+        "nominal_horizon": 15,
+        "reference_contraction": [
+          0.9998768880914042,
+          0.9999236163848378,
+          0.9999239778794259,
+          0.9995761439168962
+        ],
+        "reference_innovation": [
+          1.2902874836147691e-12,
+          2.317595401835237e-12,
+          1.000000000000001e-12,
+          1.6161171410916741e-12
+        ],
+        "probe_innovation": [
+          0.0,
+          0.0,
+          4.556492123484898e-09,
+          0.0
+        ],
+        "probe_signal": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "bridge_next_variance": [
+          0.9558298124294848,
+          1.2005947270533792,
+          0.003917956153750701,
+          0.030006923241344283
+        ],
+        "reference_consistent": true,
+        "horizon_governed": true,
+        "observer_confidence_min": 0.25,
+        "observer_confidence_mean": 0.25,
+        "guard_tripped": false,
+        "progress_delta": 0.0,
+        "progress_per_compute": 0.0
+      },
+      "observed_variance": [
+        0.9864174157390071,
+        1.2633912819313156,
+        0.004309670658972323,
+        0.03200625994263662
+      ],
+      "extra": {
+        "training_step": 1499,
+        "onecycle_lr_start": 9.645853850381977e-05,
+        "onecycle_lr_end": 1.2475989823096844e-08,
+        "realized_transition": {
+          "contraction": [
+            0.9999496577241244,
+            1.0002358371543678,
+            1.0002230251605995,
+            1.00122468431352
+          ],
+          "innovation": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "predicted_transition": {
+          "contraction": [
+            0.9999977609305816,
+            0.9999946338514857,
+            0.9999989921203367,
+            0.999993099848189
+          ],
+          "innovation": [
+            7.224307273119366e-14,
+            1.0232455105827819e-12,
+            3.8939923744660835e-15,
+            1.2739568580350217e-13
+          ]
+        },
+        "calibration_error": [
+          -9.490674170253843e-05,
+          0.0006092511294399916,
+          1.9303704578447697e-06,
+          7.869196441304127e-05
+        ],
+        "sharpness_estimate": [
+          0.5154675231218684,
+          0.5628571513028898,
+          0.0534505372269273,
+          0.35682667580465666
+        ]
+      }
+    }
+  ],
+  "calibration_report": {
+    "count": 11,
+    "blocks": 4,
+    "bias": [
+      -0.006230610190006521,
+      0.03882584303254384,
+      0.00035657744155243644,
+      0.0016222786455540087
+    ],
+    "mae": [
+      0.008127608249714834,
+      0.03882584303254384,
+      0.00035657744155243644,
+      0.0016222786455540087
+    ],
+    "rmse": [
+      0.010802053559655373,
+      0.05407021291867687,
+      0.0005051739200980635,
+      0.00218754681416459
+    ],
+    "correlation": [
+      0.9637520455272092,
+      0.9762144757114569,
+      0.9751739510255703,
+      0.9775874338252122
+    ],
+    "interval_coverage": null,
+    "nominal_coverage": null,
+    "residual_quantiles": {
+      "q05": [
+        -0.0194985136227539,
+        0.00037116207016368863,
+        1.0036185396990508e-06,
+        3.973358371735063e-06
+      ],
+      "q50": [
+        -0.004240902770896615,
+        0.02837728761287006,
+        0.00022527422121523116,
+        0.0013507627186153913
+      ],
+      "q95": [
+        0.005119263608230229,
+        0.10307932812760212,
+        0.0009537253828251688,
+        0.0038679662032609797
+      ]
+    }
+  },
+  "control_effort": {
+    "compute_units": 11.0,
+    "accepted_progress": 0.2727272727272727,
+    "progress_per_compute": 0.024793388429752063,
+    "positive_variance_excess": 1.086155170181276
+  },
+  "final_eval_accuracy": 0.4137369692325592
+}

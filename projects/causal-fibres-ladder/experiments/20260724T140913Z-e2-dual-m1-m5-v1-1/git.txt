@@ -1,0 +1,19 @@
+# Git State
+Captured UTC: 2026-07-24T14:09:13Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1
+Commit: 85bfefb123a0ffe5c4f448290ee7db2fb5d26333
+Branch: agent/e1-guarded-homotopy
+Remote names: 
+
+## Status
+## agent/e1-guarded-homotopy
+?? artifacts/
+?? configs/e1_homotopy_calibration.json
+?? scripts/run_e1_calibration_multi.py
+?? scripts/run_e2_dual_battery.py
+?? src/relaleap/hdpc/e2_battery.py
+?? tests/test_e2_battery.py
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

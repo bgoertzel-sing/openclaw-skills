@@ -1,0 +1,465 @@
+    A Function-Pinned Testbed for the Commutator Critic:
+Implications of Homotopy-Distilled PC–GPT-2 for the RelaLeap
+                       V4 Programme,
+    with Engineering-Plan Amendments and the C4′ Stage
+                        Specification
+      Companion note to The Commutator Critic (v1.1) and to Mesto (2026),
+     Homotopy Distillation of a Transformer into a Predictive-Coding Network
+
+                                            July 2026
+
+
+                                             Abstract
+       Mesto’s technical report establishes that a pretrained GPT-2 (124M) can be re-expressed,
+   near-losslessly and reproducibly, as an error-parameterised predictive-coding (PC) network
+   by homotopy distillation: a continuous deformation from a backpropagation anchor (T =1)
+   to a fully relaxed PC regime (terminal τ =6.4), with student–teacher prompt KL ∼ 10−5 nats
+   at every milestone, now extended to a completed 5 × 107 -token production run (worst mile-
+   stone KL 3.1 × 10−5 , 35.7 A100-hours). This note works out what that result means for the
+   commutator-critic programme (RelaLeap V4) and its supporting library (comcrit). Five im-
+   plications are developed. (1) Because fidelity holds at every rung, the homotopy is a function-
+   preserving family: every quantity the critic measures — propagator response, module-level
+   commutators, confusion structure — can be measured as a function of the learning rule
+   with the function pinned, which is precisely the controlled experiment the Causal-Continual-
+   Learning (CCL) theorem needs, and it yields a pre-registerable prediction for Mesto’s planned
+   continual-learning benchmark. (2) Mesto’s headline gradient-alignment result (per-block
+   PC/BP cosine ≥ 0.998) is an h=1, feature-level statement; by the insufficient-statistics
+   proposition and its executable sandbox demonstrations, it does not determine horizon-h
+   counterfactual behaviour — the interesting object is the trajectory linear response, which
+   is exactly what the exact-D tangent machinery measures. (3) The homotopy solves the
+   cold-start problem for the critic’s equilibrium (IFT) branch by validation continuation from
+   the already-validated T =1 case. (4) The measured error-mass rank frontier (top 5% of cells
+   ≈ 90% of squared update mass, concentrated in blocks 2–5, teacher-free) is an empirically
+   supplied footprint: a pair-action sparsifier, a testable prediction about where gating effects
+   live, and a reminder that in the PC form gating is architecturally native — there is no global
+   backward pass to intercept. (5) The two programmes’ reproducibility methodologies are the
+   same discipline independently arrived at, and each has one export the other needs: the strict-
+   envelope threshold rule flows into the C-stage protocol; the 5σ effect-size precheck flows into
+   Mesto’s E-line. The second half of the note converts these into engineering: amendments to
+   the comcrit roadmap (a PC step adapter, the IFT branch pulled forward under homotopy-
+   continuation validation, a frontier sparsifier behind an admission gate, settle-tangent cost
+   levers), a pre-registration protocol binding CCL to the continual-learning benchmark, and a
+   complete agent-executable C4′ stage specification with frozen numerics and an A100 budget
+   comparable to the production run itself.
+
+
+                                                 1
+AI acknowledgement. Drafted with help from Claude Fable 5.
+
+Scope note. This note takes Mesto’s results as reported (replicated fidelity, gradient-space
+homotopy, rank-frontier measurements, MORK companion) and the V4 programme as specified
+in The Commutator Critic v1.1 with its validated sandbox and the comcrit v0.1.1 skeleton.
+Nothing here re-litigates either; the subject is their composition.
+
+
+Contents
+1 The two programmes, and the joint they now form                                                 2
+  1.1 What Mesto’s report establishes . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+  1.2 What the critic programme supplies . . . . . . . . . . . . . . . . . . . . . . . . .        2
+
+2 Implication 1: the homotopy is the controlled experiment the CCL theorem
+  needs                                                                    3
+
+3 Implication 2: cosine 0.998 is the h=1 shadow, and the sandbox already
+  showed why that settles nothing                                        3
+
+4 Implication 3: validation continuation for the equilibrium branch                               4
+
+5 Implication 4: the rank frontier as measured footprint, and gating as a native
+  operation                                                                      5
+
+6 Implication 5: methodology flows both ways                                                      5
+
+7 Engineering-plan amendments                                                                     6
+  7.1 comcrit roadmap changes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       6
+  7.2 Pre-registration protocol for the CCL bridge . . . . . . . . . . . . . . . . . . . . .      6
+
+8 Stage C4′ : the critic on the homotopy (agent-executable specification)                         7
+  8.1 Substrate and rungs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     7
+  8.2 Decision states, actions, horizons . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+  8.3 Truth, backbone, floors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     8
+  8.4 Gates . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   8
+  8.5 Budget, stop conditions, deliverables . . . . . . . . . . . . . . . . . . . . . . . . .     8
+
+9 Risks and honest uncertainties                                                                  9
+
+
+1     The two programmes, and the joint they now form
+1.1   What Mesto’s report establishes
+Three results, in his own careful framing. First, expressivity at scale: the PC parameterisation,
+with prediction errors εℓ as the only free inference variables and weight updates local to each
+block, holds a modern 124M transformer — prompt KL to the teacher ∼ 10−5 nats at every
+milestone of the deformation, across five replicate runs and a completed 5×107 -token production
+run, evaluated teacher-free at ε=0. Second, the gradient-space homotopy: the per-block PC
+
+                                                 2
+weight update grows from the anchor identity η at T =1 to full backpropagation magnitude
+(ratio 0.98) while the minimum per-block cosine to the backpropagation gradient never leaves
+[0.998, 1]. Third, the rank frontier : at terminal τ the top 5% of the 4.72M error cells carry
+≈90% of squared update mass, the frontier sits in blocks 2–5 (66% of frontier cells; the last
+three blocks hold 0.2%), and the structure survives replacing the distillation objective with
+teacher-free cross-entropy (91.6% vs 90.0%).
+    Equally important is what the report explicitly does not claim: that PC trains from scratch at
+this scale, or that the PC form forgets less or transfers better. The continual-learning comparison
+— the reason to prefer PC at all — is designed but unrun, listed as the immediate next milestone.
+
+1.2   What the critic programme supplies
+The V4 programme, validated end-to-end at toy scale, is a measurement instrument for exactly
+the question Mesto has queued: given a modular learner mid-training, what is the causal,
+horizon-h, paired counterfactual effect of protecting a module from an incoming update —
+measured through an analytic backbone (exact injected perturbation of the full optimizer state,
+forward-mode linear response along the CRN baseline, exact cross-curvature synergy identity)
+rather than learned from summary features. Its theoretical spine is the CCL theorem: forgetting
+is governed by module-level gradient-field commutators, and the critic is the instrument that
+measures the realized commutator/confusion structure.
+    The joint is then plain to state. Mesto has built the substrate on which the CCL-
+motivated questions about predictive coding become measurable rather than aspi-
+rational; the critic is the instrument that makes his forthcoming benchmark mech-
+anistic rather than aggregate. The rest of this note makes that composition precise and
+turns it into an engineering plan.
+
+
+2     Implication 1: the homotopy is the controlled experiment the
+      CCL theorem needs
+The single most consequential property of the result is easy to pass over: fidelity holds at
+every rung, not merely at the endpoint. The homotopy is therefore a function-preserving
+family of learners {Lτ }τ ∈[η, 6.4] : the input–output map is pinned (to KL ∼ 10−5 ) while the
+parameterisation, the inference dynamics, and hence the learning rule vary continuously.
+    Every quantity the commutator critic measures is a property of the learning rule, not of the
+function: the injected perturbation u, the update-map Jacobian and its products (the propa-
+gator), the per-module first-order conflict ⟨gA , DPm gB ⟩, the cross-curvature terms, the realized
+commutator matrix. In ordinary comparisons (PC-trained model vs BP-trained model) these
+quantities confound learning rule with function: the two models differ in what they compute,
+so differences in measured confusion structure cannot be attributed. Along Mesto’s homotopy
+the confound is removed by construction. Measuring the critic’s quantities at the anchor and at
+terminal τ on the same GPT-2 isolates the learning rule as cleanly as the field currently knows
+how to do.
+    This composes with the CCL theorem into a pre-registerable bridge to Mesto’s benchmark.
+Write Kmn (τ ) for the realized module-level commutator/confusion matrix measured at homo-
+topy parameter τ (modules = the 12 blocks; estimator = the critic backbone’s first-order and
+
+
+
+                                                3
+cross-curvature terms, plus discrete paired measurements where wanted). CCL bounds forget-
+ting by bilinear forms in K; therefore:
+
+Prediction 1 (CCL bridge, to be pre-registered before the E-line runs). If the PC form exhibits a
+continual-learning advantage over backpropagation fine-tuning at matched compute and matched
+seeds, then the measured K(τ =6.4) differs from K(τ =η) in the direction the CCL bound requires
+(smaller realized cross-module commutator mass on the task pair used, or a better-conditioned
+confusion graph). Conversely, if K(τ ) is τ -invariant within measurement noise, CCL predicts
+the benchmark finds no advantage attributable to the parameterisation.
+
+   Both directions are informative, and the second is cheap insurance: it converts a null bench-
+mark outcome — a live possibility, see §3 — from a disappointment into a theorem-consistent
+measurement with a mechanism attached. The critic’s distinctive contribution here may well be
+a mechanistic null.
+
+
+3    Implication 2: cosine 0.998 is the h=1 shadow, and the sand-
+     box already showed why that settles nothing
+ Mesto’s gradient-space figure is the natural headline: through the whole deformation the per-
+ block cosine between PC and BP weight gradients never falls below 0.998. A tempting reading
+ is that the PC form is dynamically equivalent to backpropagation, so the continual-learning
+ comparison is foregone. The V4 analysis says precisely why that reading is unlicensed.
+     Instantaneous per-block gradient alignment is a feature-level statement — norms and cosines
+ of current gradients. The insufficient-statistics proposition, made executable in the sandbox,
+ demonstrated that such features determine the h=1 first-order counterfactual exactly (D6a: τ1
+ coincides to 5 × 10−15 across feature-identical states) while leaving horizon-h behaviour un-
+ determined (τ10 spans sign-flipping ranges across the same states), and the MLP stress test
+ showed the propagator — the trajectory’s linear response, running through the optimizer’s mo-
+ ment recursions — is where horizon transport actually lives (frozen-D collapsing to Spearman
+ ∼0.16/−0.05/0.20 while exact-D held ≥ 0.997). Cosine 0.998 at each instant is compatible with
+ materially different trajectory response, because the settle changes the update map’s Jacobian,
+ interacts with Adam’s preconditioner, and imposes the rank-frontier sparsity on which directions
+ transport.
+     So the live hypotheses after Mesto’s Figure 2 are exactly two: (a) PC ≈ BP in continual-
+ learning behaviour despite the settle — the instantaneous agreement propagates; or (b) PC
+̸= BP because of the settle — the agreement is an h=1 shadow and the propagators diverge.
+ Only propagator-level measurement distinguishes them, and that is the critic’s native object:
+ the exact-D tangent through settle-plus-update. This is worth stating to Mesto directly: his
+ Figure 2 is the h=1 shadow of the object his E-line cares about; the machinery to measure the
+ h ≫ 1 object exists and is validated.
+
+Prediction 2. If the E-line finds a PC/BP difference in forgetting at matched compute, the
+difference will be visible in the measured horizon-h propagator response and commutator terms
+at the corresponding τ , and will not be predictable from instantaneous per-block gradient geom-
+etry (norms/cosines) — i.e. the black-box feature ceiling of sandbox D6b will reproduce on this
+substrate.
+
+
+
+                                               4
+4    Implication 3: validation continuation for the equilibrium
+     branch
+The critic’s CAROM/PC specialization has always had a cold-start problem: the fixed-point
+(IFT) backbone — equilibrium sensitivities ∂z ∗ /∂θ = −(∂F/∂z)−1 ∂F/∂θ obtained by CG solves
+— would be validated against nudged finite differences on a substrate where nothing else was yet
+trusted. Mesto’s homotopy dissolves this. His settle-then-local-update is a pure step function
+of (θ, m, v; batch, t): T steps of ε-descent with weights frozen (asserted at runtime), then a local
+AdamW step. At T =1 this step is the standard transformer update up to the anchor identity,
+where the exact-D tangent backbone is already validated (sandbox; C4). The validation plan is
+therefore a continuation: validate at T =1, ascend the rungs T ∈ {1, 2, 4, . . . } checking backbone-
+vs-paired-rollout agreement at each, switch the tangent from unrolled-jvp to IFT/CG when T
+makes unrolling uneconomic, and require the two tangent modes to agree at the crossover rung.
+At no point is the instrument validated cold — which is Mesto’s own methodological principle
+(never leave a regime in which the object is a faithful copy of something trusted) applied to the
+instrument itself.
+    Cost accounting, honestly: exact-D through a T -step settle multiplies the per-step tangent
+cost by O(T ). Two levers exist, both already in the programme’s idiom. Tangent-column
+batching (comcrit Patch 1) amortises the linearisation across the action set. And Mesto’s rank
+frontier is a cost lever for the critic, not only for training: a frontier-compressed settle used
+inside the tangent propagation is a frozen-D-shaped approximation, and it is admitted the same
+way — probe-state agreement against the full-settle tangent (cosine ≥ 0.95, magnitude ratio in
+[0.5, 2]), never by assumption.
+
+
+5    Implication 4: the rank frontier as measured footprint, and
+     gating as a native operation
+The V4 transformer plan sparsifies the quadratic pair-action space with HDC footprint codes:
+encode each module’s do-footprint, propose pairs by approximate-nearest-neighbour search, mea-
+sure only proposed edges. Mesto’s frontier measurement supplies an empirically given footprint
+on this substrate, for free: which cells (hence blocks) carry update mass, stable across τ at fixed
+depth, robust to removing the teacher. Three uses follow.
+    (a) A sparsifier with an admission gate. Propose pair actions and cross-curvature
+measurements on frontier-heavy block pairs (blocks 2–5 dominate). Like every surrogate in the
+programme, the frontier proposer is admitted by measurement: on a probe set, the top-k frontier
+pairs must recover ≥ 80% of the total measured cross-curvature mass that exhaustive pairing
+finds, or the HDC path is used instead. The two proposers can also be run head-to-head cheaply
+at 12 modules (66 pairs — exhaustive is feasible at this scale, which is exactly why the admission
+statistics gathered here transfer credibly to GPT-2-medium and beyond).
+    (b) A registered prediction. The frontier should be where the causal action is:
+
+Prediction 3. Modules (blocks) carrying larger frontier mass exhibit larger median |τhA | under
+single-module gating at matched α and h, with rank agreement (Spearman over the 12 blocks)
+≥ 0.6. Failure of this prediction is itself a finding: it would mean settle-energy attribution and
+causal update attribution dissociate at 124M, which bears directly on using the frontier for settle
+compression.
+
+
+                                                 5
+    (c) Gating is architecturally native in PC. In the BP form, the critic’s gate intercepts a
+global backward pass. In the PC form there is no global pass to intercept: the weight update of
+block ℓ is local in εℓ , so gating is attenuating εℓ (or masking frontier cells) before a local update —
+an in-place, sparse, incremental operation, which is also exactly the write pattern the MORK trie
+maintains well (his companion result). The V4 corollary “policy as commutator suppression”
+— the critic-driven router as an online enforcement mechanism for the CCL hypotheses —
+becomes mechanically cheaper in the PC form than in the BP form. This is a genuine point
+in PC’s favour that Mesto’s report does not claim and the critic can quantify: even at zero
+continual-learning advantage from the parameterisation alone, the PC form may admit cheaper
+commutator suppression, which is an advantage of a different and measurable kind.
+
+
+6     Implication 5: methodology flows both ways
+Mesto’s §4 lesson — thresholds frozen from a single pilot sat inside run-to-run noise; recalibrate
+to the strict envelope over n ≥ 3 replicates under a rule fixed in advance; judge configuration
+comparisons at matched seeds on per-seed deltas — is the V-series fail-closed discipline indepen-
+dently rediscovered, down to the preference for rank and scale-invariant statistics. Two exports,
+one in each direction:
+    Into the C-stage protocol: adopt the strict-envelope rule explicitly. Where a C-stage
+gate threshold was frozen after C1 from limited replication, the protocol now states: thresholds
+touching run-to-run variability are set as the envelope over n ≥ 3 replicates, under a rule fixed
+before the final replicate is seen. (The gates this touches: the probe-agreement acceptance bands
+and the validity-radius ρ/e thresholds as applied per-seed.)
+    Into Mesto’s E-line: the 5σ effect-size precheck with measured noise floors. Forgetting
+deltas between PC and BP fine-tuning at matched compute are exactly the kind of signal that
+can sit below replicate noise — the V2 tiny-utility regime, which the sandbox reproduced live
+and the precheck caught. Before burning the comparison grid, the E-line should measure its
+noise floor (≥ 64 CRN replicate pairs at ≥ 20 probe configurations) and verify the planted
+domain shifts produce forgetting differences ≥ 5σ between the arms’ controls; if not, strengthen
+the shift (bounded iterations, recorded), never the thresholds.
+
+
+7     Engineering-plan amendments
+7.1    comcrit roadmap changes
+ 1. New: PCStepAdapter (v0.2). A step-function wrapper for settle-then-local-update learn-
+    ers: settle(state, batch, T, eta eps) composed with the local weight step, pure end to
+    end, with the weight-frozen-during-settle assertion imported from Mesto’s runtime checks.
+    Two tangent modes: unrolled (jvp through the T -step settle; exact-D default) and ift
+    (CG solve on the settle fixed point; promoted from v0.3, see next). The adapter is substrate-
+    agnostic — FabricPC graphs and the causal-fibres sidecar satisfy the same protocol.
+
+ 2. IFT branch pulled forward (v0.3 → v0.2.5), gated by continuation. The equilibrium
+    tangent is admitted only where it agrees with the unrolled tangent at the crossover rung
+    (cosine ≥ 0.95, magnitude ratio [0.5, 2], ≥ 30 probe states), per §4. CG numerics inherit the
+    C5 spec: tol 10−6 , max 200 iterations, warm-started along the trajectory.
+
+
+
+                                                   6
+ 3. New: FrontierSparsifier. Pair-action proposal from an externally supplied error-mass
+    ranking, behind the admission gate of §5(a); interface-compatible with the HDC proposer so
+    the two are interchangeable and comparable. Frontier data enters as a plain ranked index
+    list — comcrit does not compute settles it does not own.
+
+ 4. Settle-tangent cost lever. A compressed settle option on PCStepAdapter tangent
+    propagation (top-k frontier cells only), admitted by probe agreement against the full-settle
+    tangent; this is the critic-side twin of Mesto’s planned rank-frontier settle compression, and
+    the admission statistics should be shared between the two uses.
+
+ 5. Confusion export gains a concrete consumer. The ConfusionGraph dict export is
+    extended with a writer targeting store-expression form (block-pair terms as sparse incre-
+    mental writes), aligning with the MORK companion; Atomspace typed-link export remains
+    the v0.4 item but is now specified against a real store layout rather than speculatively.
+
+ 6. Protocol text: the strict-envelope threshold rule (§6) is added to the numerical-hygiene
+    policy, which is binding on all stages.
+
+7.2   Pre-registration protocol for the CCL bridge
+To be frozen before Mesto’s continual-learning benchmark runs: (i) the estimator of Kmn (τ )
+(backbone first-order conflict on the diagonal blocks; measured cross-curvature on edges; both
+margin-qualified against measured floors); (ii) the τ rungs at which K is measured (anchor,
+one mid rung, terminal); (iii) the task pair (matching the E-line’s sequential domains); (iv) the
+statistic and direction of Predictions 1–3; (v) matched seeds and per-seed deltas throughout, per
+the shared methodology. The pre-registration is a one-page addendum, and its value is exactly
+its timing: after the benchmark runs, the bridge becomes storytelling.
+
+
+8     Stage C4′ : the critic on the homotopy (agent-executable spec-
+      ification)
+C4′ complements C4 (the from-scratch toy transformer); it does not replace it. C4 validates the
+machinery where everything is cheap; C4′ deploys it on the first real, function-pinned substrate.
+Prerequisites: C0 gates green on the target install (comcrit.selftest()); PCStepAdapter
+unrolled mode passing its unit tests; Mesto’s checkpoints and settle code importable with the
+weight-frozen assertion intact. All V-series discipline applies: CRN pairing, exhaustive tables at
+train states, measured floors, effect-size precheck, per-seed reporting, frozen thresholds, one-line
+deviation log.
+
+8.1   Substrate and rungs
+  Model: the PC–GPT-2 (124M) student. Rungs: τ ∈ {η (T =1 anchor), ≈ 1.0, 6.4 (terminal)},
+   using the production-run checkpoints (η = 0.10 family). The anchor rung is the go/no-go: it
+   must reproduce C4-class backbone behaviour (the step is the standard update there) before
+   any settle-bearing rung is run.
+
+  Modules: the 12 blocks (M =12); the head is a 13th module in the action table but excluded
+   from pair proposals.
+
+
+                                                 7
+  Tasks: Task A = the OpenWebText shard’s held-out split (retention; frozen 200-batch eval
+   set, seq len 512). Task B = a disjoint-domain shard (code or PubMed-style text; choose once,
+   record); 400 adaptation updates at the production run’s optimiser settings, gradient clip 1.0.
+   Same task pair to be used by the E-line, so the K(τ ) measurements speak to Prediction 1
+   directly.
+
+8.2   Decision states, actions, horizons
+  Decision states every 5 adaptation updates: 80 per rung per seed; seeds: 3, matched across
+   rungs (the homotopy’s function-pinning is only an isolation if the seeds are).
+
+  Actions: ordinary; 12 single-block gates at α ∈ {0.5, 0.1} (24); head gate at α=0.1; top-5
+   frontier-proposed block pairs at α=0.1 (§5a), plus 2 control pairs from the frontier’s bottom
+   quartile. Behaviour-policy mix and propensity logging as in V3.
+
+  Horizons: h ∈ {1, 5, 10, 25} weight updates (each update containing its settle).
+
+  Gating locus, fixed now to avoid agent improvisation: the gate multiplies block ℓ’s local
+   weight-update gradient εℓ ∂fℓ /∂Wℓ (equivalently, attenuates εℓ in the weight step only) — it
+   does not perturb the settle itself. Settle-side gating (masking frontier cells during inference)
+   is a distinct action family, deferred to a C4′′ if C4′ passes.
+
+8.3   Truth, backbone, floors
+  Truth: CRN paired rollouts — both arms share the batch sequence, settle initialisations, and
+   RNG; snapshot/restore of (θ, m, v) bit-exact (import the V3 restoration test; add Mesto’s
+   weight-frozen settle assertion to it).
+
+  Backbone: exact-D via PCStepAdapter.unrolled — jvp through settle and AdamW jointly;
+   tangent-column batching mandatory (Patch 1). At the terminal rung additionally compute
+   the ift tangent and the compressed settle tangent (top-5% frontier) at 30 probe states
+   each; admission bands: cosine ≥ 0.95, magnitude ratio [0.5, 2] against unrolled exact-D.
+
+  Floors and precheck: σnoise (h) from 64 CRN replicate pairs at 30 probe states per rung
+   (replicates resample the continuation batch sequence); mandatory 5σ effect-size precheck at
+   (h∗ , α∗ ) selection, bounded strengthening (increase domain-shift strength of Task B, ≤ 3
+   iterations, recorded).
+
+  Curvature: true HVPs for cross-curvature at 124M are affordable at probe-state counts;
+   empirical-Fisher block surrogates computed alongside at every state and reported with agree-
+   ment statistics (this is the calibration a GPT-2-medium stage will rely on).
+
+8.4   Gates
+1. Anchor go/no-go: at τ =η, backbone Spearman ≥ 0.4 vs paired truth at h ≤ 10 among
+   margin-qualified states, per seed (the C4 gate, verbatim). Failure halts C4′ — the substrate
+   integration, not the science, is broken.
+
+2. Rung validity maps: full (ρh , eh ) maps per rung; the settle-bearing rungs must show
+   a nonempty validity region at h ≤ 5; report how the radius moves with τ (this curve is
+
+
+                                                8
+      itself a result: it is the first measurement of how PC inference depth affects second-order
+      predictability of intervention effects).
+ 3. Tangent-mode agreement: ift and compressed settle admitted per their bands; dis-
+    agreement is reported, not patched.
+ 4. Prediction gates: Prediction 3 evaluated as specified (Spearman ≥ 0.6 over blocks); Pre-
+    diction 2’s feature-ceiling arm: a ridge/kNN regressor on per-block norm/cosine features
+    must trail the backbone by the D6b pattern on this substrate — reported descriptively,
+    pre-registered directionally.
+ 5. K(τ ) deliverable: the module-level confusion matrices at the three rungs, margin-qualified,
+    per seed, exported via ConfusionGraph — the artefact Prediction 1 consumes when the E-
+    line runs.
+
+8.5     Budget, stop conditions, deliverables
+Anchor rung: ≤ 8 A100-hours (no settle in the tangent; costs are C4-like at 124M with batched
+tangents and 80 states). Mid rung (T ∼10): ≤ 12 A100-hours. Terminal rung (T =64-class):
+≤ 20 A100-hours with compressed settle carrying the tangent load where admitted, else re-
+duce action-table size per the frozen budget-cut rule (cut sweeps and pair actions, never seeds,
+probes, floors, or replicates). Programme ceiling for C4′ : 45 A100-hours — comparable to the
+production run that built the substrate, which is the right order for an instrument deployment.
+Stop conditions: anchor gate failure; no valid cell at h ≤ 5 on both settle rungs (report as
+a substantive negative about second-order theory under deep settles); ceiling reached. Deliv-
+erables: RESULTS.md in the V-series format, the three K(τ ) exports, the validity-radius-vs-τ
+curve, tangent-mode agreement tables, and the pre-registration addendum (§6.2) — filed before
+the E-line’s first seed is opened.
+
+
+9     Risks and honest uncertainties
+(1) The gating locus in PC admits variants (weight-step vs settle-side); C4′ freezes one and
+defers the other — a reviewer may reasonably prefer the union, but improvising both under one
+budget is how protocols die. (2) Exact-D through deep settles may be costlier than estimated
+if jvp memory forces recomputation; the compressed-settle lever and the IFT crossover are the
+mitigations, both gated. (3) The function-pinning argument of §2 pins the function, not the
+loss landscape geometry around it; attribution of K differences to “the learning rule” means the
+parameterisation-plus-inference-dynamics package, and the note says so rather than implying
+finer resolution. (4) Prediction 3 may fail — settle-energy and causal attribution can dissociate;
+the spec treats that as a finding with direct consequences for frontier-based settle compression,
+not as a gate failure. (5) All of this leans on Mesto’s checkpoints and settle code being importable
+with their runtime assertions intact; the anchor go/no-go exists to catch integration rot before
+any settle-rung spend.
+
+
+Closing
+Mesto’s report ends by calling its two results halves of one programme — learning-side and
+inference-side of a store-native transformer. The composition drawn here adds the third half,
+
+                                                 9
+in the only sense in which a programme can have three: the measurement side. A function-
+pinned family of learners, an instrument validated from toy scale upward with its failure modes
+turned into regression tests, and a theorem that tells both what to predict — that is a complete
+experimental loop, and every piece of it now exists. The engineering content of this note is small
+precisely because the two programmes were already converging on the same discipline; what
+remains is to run C4′ and file the pre-registration before the E-line makes it moot.
+
+
+References
+  Mesto, A. Homotopy Distillation of a Transformer into a Predictive-Coding Network. Tech-
+   nical report, UNSW Sydney, July 26, 2026.
+
+  The Commutator Critic (RelaLeap V4 proposal), v1.1 with sandbox validation, July 2026;
+   companion sandbox (quadratic demo.py, mlp demo jax.py) and comcrit v0.1.1 with Patches
+   0001–0002.
+
+  Goertzel, B. Causal Coding and the General Causal-Continual-Learning Theorem. Manuscript,
+   December 2025.
+
+  MORK: the MeTTa Optimal Reduction Kernel. github.com/trueagi-io/MORK.
+
+  Goemaere, C., Oliviers, G., Bogacz, R., Demeester, T. ePC: fast and deep predictive coding
+   in digital simulation. arXiv:2505.20137. (Recalled from model memory via Mesto’s bibliog-
+   raphy; verify before use.)
+
+
+
+
+                                               10
+

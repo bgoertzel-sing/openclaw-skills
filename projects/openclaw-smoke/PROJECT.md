@@ -3,7 +3,7 @@
 - Slug: `openclaw-smoke`
 - Status: `completed`
 - Created: `2026-06-25`
-- Last reviewed: `2026-06-25`
+- Last reviewed: `2026-07-27`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -35,8 +35,11 @@ external repositories.
 ## Current state
 
 Smoke test completed on 2026-06-25. The local research workspace is installed
-and indexed. Optional or approval-gated setup remains: install general
-prerequisites such as `gh` and `tmux`, then authenticate GitHub if desired.
+and indexed. On 2026-07-27 a systemd `ExecStartPre` endpoint-readiness gate was
+installed after a boot-time Telegram network race crashed the gateway three
+times and tripped channel-autostart suppression. Verification showed the gate
+completed three stable Telegram DNS/HTTPS probes in six seconds, the gateway
+was active, and both Telegram and Slack live probes passed.
 
 ## Repositories
 

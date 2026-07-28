@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd /home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1
+/usr/bin/env PYTHONPATH=src /home/openclaw/research-agent/projects/causal-fibres-ladder/.venv/bin/python scripts/summarize_e4_channel_diagnostic.py --inputs /home/openclaw/research-agent/projects/causal-fibres-ladder/experiments/20260724T202640Z-e4-channel-diagnostic-seed-12011-v2/artifacts/result.json /home/openclaw/research-agent/projects/causal-fibres-ladder/experiments/20260724T202651Z-e4-channel-diagnostic-seed-13121-v2/artifacts/result.json /home/openclaw/research-agent/projects/causal-fibres-ladder/experiments/20260724T202703Z-e4-channel-diagnostic-seed-14251-v2/artifacts/result.json --output /home/openclaw/research-agent/scratch/e4-channel-diagnostic-summary-v2.json 

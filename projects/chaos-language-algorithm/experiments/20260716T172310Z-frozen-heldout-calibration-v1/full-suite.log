@@ -1,0 +1,4 @@
+The initial monolithic quiet-suite capture did not survive the automation PTY
+lifetime and produced no test result. It is not verification evidence. The
+complete 143-test suite was then run in five bounded foreground shards, all of
+which passed; exact shard counts are recorded in RUN.md.

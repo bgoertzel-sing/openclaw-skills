@@ -1,0 +1,48 @@
+# Git State
+Captured UTC: 2026-07-27T23:37:52Z
+Working directory: /home/openclaw/research-agent/projects/protomegabot2/worktrees/petta-memory-shadow-consumer
+Commit: 32ca916d6bdc29373e5a379972cda7a5eed275e8
+Branch: phase2-mech-4-5
+Remote names: 
+
+## Status
+## phase2-mech-4-5
+ M ../../NOTES.md
+ M ../../PROJECT.md
+ M ../../TASKS.md
+ M ../../local/mech3-boundary.jsonl
+ M ../../local/mech5/store/l2/events.log
+ M ../../local/mech5/store/l3/events.log
+ M ../../local/protomegabot2-supervisor.sh
+ M ../../local/run-protomegabot2.sh
+ M ../../src/continuity/mech5_continuity_records.metta
+ M ../../src/continuity/mech5_structural_signature.metta
+ M ../../tests/mech3_mutation_mock_loop.metta
+ M ../../tests/mech3_mutation_pure.metta
+ M ../../tests/mech5_l1_continuity_truth.metta
+ M ../../tests/mech5_l2_boundary_store.metta
+ M ../../tests/mech5_l3_mock_loop.metta
+?? ../../experiments/20260721T212047Z-threadkeeper-persistent-integration-gate-v4/
+?? ../../experiments/20260721T212101Z-threadkeeper-live-preflight/
+?? ../../experiments/20260721T212121Z-threadkeeper-live-preflight-fixture/
+?? ../../local/verify-threadkeeper-live-preflight.sh
+
+## Diff summary
+ NOTES.md                                        |  14 ++
+ PROJECT.md                                      |   8 +
+ TASKS.md                                        |  34 +++++
+ local/mech3-boundary.jsonl                      |   2 +
+ local/mech5/store/l2/events.log                 |   2 +-
+ local/mech5/store/l3/events.log                 |   6 +-
+ local/protomegabot2-supervisor.sh               |   7 +
+ local/run-protomegabot2.sh                      |  23 ++-
+ src/continuity/mech5_continuity_records.metta   | 189 ++++++++----------------
+ src/continuity/mech5_structural_signature.metta |   6 +-
+ tests/mech3_mutation_mock_loop.metta            |   5 +-
+ tests/mech3_mutation_pure.metta                 |   8 +-
+ tests/mech5_l1_continuity_truth.metta           |  22 +--
+ tests/mech5_l2_boundary_store.metta             |  10 +-
+ tests/mech5_l3_mock_loop.metta                  |  10 +-
+ 15 files changed, 184 insertions(+), 162 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

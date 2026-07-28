@@ -1,0 +1,539 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setlist{nosep,leftmargin=1.5em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\obs}{\textbf{Observed:} }
+\newcommand{\infv}{\textbf{Inferred:} }
+\newcommand{\hyp}{\textbf{Hypothesis:} }
+\newcommand{\decision}{\textbf{Decision:} }
+
+\title{\textbf{CAROM BridgeLearn Shadow-Mode v2}\\
+Exact Experiment, Parameters, Complete Recorded Results, and Interpretation}
+\author{ZeroBot research record for Benjamin Goertzel}
+\date{22 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report documents the exact CAROM BridgeLearn v0.3.0 shadow-mode v2
+calibration run.  The run observed all 1,500 AdamW updates at matched
+per-update cadence while leaving the OneCycleLR schedule unchanged.  It
+recorded parameter-variance transitions, split-batch noise estimates,
+random-direction Hessian-vector curvature probes, sharpness forecasts, and
+AR(2) dynamics for four parameter blocks.  The key positive result is that
+one-step predicted and realized parameter variances agree almost perfectly
+(correlations 0.999996--0.999999), showing that the large discrepancy in the
+earlier cadence-mismatched run was mainly a horizon artifact.  The active
+control gate nevertheless fails: predicted innovation is orders of magnitude
+below empirical transition innovation, sharpness intervals are extremely
+wide and near-zero-confidence, and the AdamW trajectory is stably second
+order rather than adequately AR(1).  These failures are not all equivalent
+to ordinary scalar hyperparameter mistuning.  Some parameters require
+calibration, but the innovation mapping and state model require structural
+changes before active BridgeLearn control is scientifically justified.
+\end{abstract}
+
+\tableofcontents
+
+\section{Question and status}
+
+The experiment asked:
+\begin{quote}
+Does matched per-update observation, Hessian-vector-product sharpness,
+split-batch innovation measurement, and an AR(2) diagnostic make BridgeLearn
+sufficiently calibrated for an active CAROM control experiment?
+\end{quote}
+
+\obs The command exited with status 0.  All 1,500 shadow non-mutation checks
+passed, all telemetry is finite strict JSON, and the run produced 1,500
+per-update observations, 30 split-batch measurements, 1,498 available AR(2)
+fits, and 11 evaluation summaries.
+
+\decision The mechanical shadow integration passes.  Activation does not:
+BridgeLearn must remain in shadow mode until innovation, sharpness, and
+momentum-state adequacy gates pass.
+
+\section{Exact provenance and environment}
+
+\begingroup\sloppy\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.27\textwidth}X}
+\toprule
+Item & Recorded value \\
+\midrule
+Experiment ID & \code{20260722T200000Z-bridgelearn-shadow-mode-v2} \\
+Experiment directory &
+\code{projects/carom/experiments/20260722T200000Z-bridgelearn-shadow-mode-v2/} \\
+CAROM repository & \code{projects/carom/repos/carom} \\
+Workspace branch & \code{agent/chat-room-identity-phase1} \\
+Recorded workspace commit & \code{ffdc2934e8006a27ed9e0f7d0e7137f8456833fd} \\
+Runner status & Runner and experiment were uncommitted in a shared dirty
+workspace; exact runner content is preserved by SHA-256. \\
+Runner SHA-256 &
+\code{9443bb973b7885131aaf6c3506403c408e3b427d5e10e17b5b04f105e38ac2c5} \\
+BridgeLearn & Version 0.3.0, dedicated local virtual environment \\
+Python & 3.10.12 \\
+PyTorch & 2.13.0+cpu \\
+Platform & Linux x86\_64, CPU only \\
+Elapsed wall time & 703.929 s in telemetry; 11:46.49 from \code{/usr/bin/time -v} \\
+CPU utilization & 461 percent aggregate \\
+Maximum resident set & 1,008,852 KiB \\
+Exit status & 0 \\
+\bottomrule
+\end{tabularx}
+\endgroup
+
+This was not a paid or remote run.  No RunPod resource was active.
+
+\section{Exact command}
+
+\begin{Verbatim}[fontsize=\small]
+cd /home/openclaw/research-agent/projects/carom/repos/carom
+/usr/bin/time -v \
+  /home/openclaw/research-agent/scratch/bridgelearn-carom-venv/bin/python \
+  run_carom_bridge_shadow_v2.py scheduled \
+  --steps 1500 \
+  --seed 0 \
+  --device cpu \
+  --output \
+  /home/openclaw/research-agent/projects/carom/experiments/\
+20260722T200000Z-bridgelearn-shadow-mode-v2/telemetry.json
+\end{Verbatim}
+
+All unspecified command-line arguments took the runner defaults listed below.
+
+\section{Complete parameter specification}
+
+\subsection{Task and model}
+
+\begin{longtable}{p{0.34\textwidth}p{0.58\textwidth}}
+\toprule
+Parameter & Exact value or behavior \\
+\midrule
+\endhead
+Execution variant & \code{scheduled}; commands are applied sequentially in
+presentation order. \\
+Workspace & Six slots over $\mathbf{Z}_8$. \\
+Program length & Uniform integer from 2 through 5 for each example; padded
+with trailing no-ops to length 5. \\
+Command vocabulary & Ten tokens: no-op, increment, double, negate, reverse,
+shift-right, swap-first-two, cumulative modular sum, increment synonym, and
+reverse synonym. \\
+Input generation & Procedural; six independently uniform values in
+$\{0,\ldots,7\}$ followed by exact execution of the sampled command list. \\
+Model width & $d=48$. \\
+Operator count & $K=8$. \\
+Routing & Learned command embedding with $K$ logits, softmax temperature
+$\tau=1.0$. \\
+Shared operator core & Eight parallel read-transform-gate-write operators,
+with attention, GELU transform, sigmoid gate, and residual workspace update. \\
+Embeddings & Symbol embedding for nine values including blank; six position
+embeddings. \\
+Readout & LayerNorm, linear $48\rightarrow96$, GELU, linear
+$96\rightarrow8$. \\
+Parameter blocks & embeddings; routing; shared operator core; readout plus
+any otherwise unassigned parameters. \\
+Training loss & Cross-entropy over all six output slots. \\
+Training batch size & 128. \\
+Evaluation batch size & 512, newly generated from the same procedural
+distribution. \\
+Seed & 0 for Python \code{random}, NumPy, and PyTorch. \\
+HVP random seed & 173 (training seed plus 173). \\
+\bottomrule
+\end{longtable}
+
+\subsection{Optimizer and schedule}
+
+\begin{longtable}{p{0.34\textwidth}p{0.58\textwidth}}
+\toprule
+Parameter & Exact value or behavior \\
+\midrule
+\endhead
+Optimizer & PyTorch AdamW. \\
+Learning-rate argument / OneCycle maximum & $2.0\times10^{-3}$. \\
+OneCycleLR unspecified defaults & \code{pct_start=0.3},
+\code{anneal_strategy='cos'}, \code{cycle_momentum=True},
+\code{base_momentum=0.85}, \code{max_momentum=0.95},
+\code{div_factor=25}, \code{final_div_factor=10000},
+\code{three_phase=False}. \\
+Initial LR & $8.0\times10^{-5}$. \\
+Peak LR & Approximately $2.0\times10^{-3}$ near update 450. \\
+Final recorded pre-update LR & $8.0\times10^{-9}$ at update 1499. \\
+AdamW defaults not overridden & $\beta_1=0.9$, $\beta_2=0.999$,
+$\epsilon=10^{-8}$, AMSGrad false, maximize false. \\
+Weight decay & $10^{-4}$. \\
+Gradient clipping & Global norm clipped to 1.0 before each optimizer update. \\
+Updates & 1,500. \\
+Evaluation cadence & Every 150 updates and at final update. \\
+\bottomrule
+\end{longtable}
+
+\subsection{BridgeLearn observer and planner parameters}
+
+\begin{longtable}{p{0.38\textwidth}p{0.54\textwidth}}
+\toprule
+Component & Exact parameters \\
+\midrule
+\endhead
+Controller mode & \code{shadow}; proposed controls were recorded but not
+applied to optimizer or scheduler state. \\
+Observation cadence & Before and after every optimizer update. \\
+Empirical transition & Paired pre/post-update flattened parameter samples,
+separately for four blocks. \\
+Split-batch noise & Batch divided into two halves every 50 updates; floor
+$10^{-12}$; exponential filter $\alpha=0.2$; latest estimate reused between
+measurements. \\
+Sharpness probe & One independent random unit vector per block and update;
+absolute Rayleigh quotient $|v^\top H v|$ computed with autograd HVP. \\
+Sharpness filter & Exponential filter $\alpha=0.1$. \\
+Sharpness plant & Default BridgeLearn \code{SharpnessPlant}; consecutive
+filtered HVP values; progress signal fixed to one. \\
+AR(2) batch observer & Rolling window 128 updates; 16 evenly spaced fixed
+parameter coordinates per block; minimum 24 samples. \\
+AR(2) online cross-check & Forgetting-factor recursive least squares with
+forgetting 0.99. \\
+AR(1) adequacy threshold & 0.5. \\
+Initial curvature & 1.0 per block. \\
+Initial noise scale & $10^{-8}$ per block. \\
+Initial AR(1) adequacy & 0.5 per block. \\
+Commanded contraction & $1-\eta h(\eta)$. \\
+Commanded innovation &
+$\max(\eta^2\,\mathrm{noise}/\mathrm{effective\ batch},10^{-15})$. \\
+Reference filter & $\alpha=0.03$; maximum contraction change 0.01; maximum
+log-innovation change 0.20. \\
+Step actuator bounds & $10^{-7}$ to $5\times10^{-3}$; maximum log-step change
+0.15. \\
+Batch actuator & Fixed at 128; quantum 128. \\
+Planner terminal variance & Half the initial block variance, floored at
+$10^{-12}$. \\
+Planner horizon & 1,500; maximum horizon multiplier 16; approximate progress
+permitted. \\
+Probe policy & Confidence threshold 0.4; cold variance 0.01; maximum probe
+innovation $10^{-7}$; maximum total probe $10^{-5}$. \\
+Momentum handling & First-order momentum permitted; AR(1) and structural
+diagnostics recorded but not required for shadow planning. \\
+\bottomrule
+\end{longtable}
+
+\section{Evaluation trajectory}
+
+\begin{center}
+\small
+\begin{tabular}{rrrrr}
+\toprule
+Update & LR & Train loss & Eval accuracy & Max $|$variance error$|$ \\
+\midrule
+0    & 8.000e-5 & 2.1001 & 0.1175 & 2.270e-5 \\
+150  & 5.619e-4 & 2.0440 & 0.1810 & 1.916e-4 \\
+300  & 1.524e-3 & 1.9784 & 0.2012 & 4.148e-4 \\
+450  & 2.000e-3 & 1.8199 & 0.2497 & 1.055e-3 \\
+600  & 1.900e-3 & 1.7245 & 0.3171 & 8.795e-4 \\
+750  & 1.621e-3 & 1.5875 & 0.3275 & 4.829e-4 \\
+900  & 1.220e-3 & 1.5415 & 0.3730 & 3.937e-4 \\
+1050 & 7.746e-4 & 1.4008 & 0.4141 & 2.586e-4 \\
+1200 & 3.742e-4 & 1.4253 & 0.4346 & 1.613e-4 \\
+1350 & 9.774e-5 & 1.3387 & 0.4424 & 3.259e-5 \\
+1499 & 8.000e-9 & 1.4378 & 0.4137 & 1.475e-8 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Across all 1,500 stochastic training batches, mean loss was 1.66668, minimum
+loss was 1.19589, mean training accuracy was 0.31809, and maximum single-batch
+training accuracy was 0.52474.  These summaries are descriptive only: the run
+was designed to calibrate observers, not to estimate final model efficacy.
+
+\section{Transition and variance calibration}
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Block & Bias & MAE & RMSE & Max abs. error & Correlation \\
+\midrule
+Embeddings & $-4.63$e-5 & 6.58e-5 & 1.03e-4 & 5.33e-4 & 0.9999961 \\
+Routing & $+3.74$e-4 & 3.74e-4 & 4.84e-4 & 1.24e-3 & 0.9999982 \\
+Operator core & $+2.62$e-6 & 2.62e-6 & 3.62e-6 & 1.04e-5 & 0.9999988 \\
+Readout & $+1.19$e-5 & 1.21e-5 & 1.60e-5 & 5.08e-5 & 0.9999988 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The residual 5th, 50th, and 95th percentiles were:
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Block & q05 & q50 & q95 \\
+\midrule
+Embeddings & $-2.27$e-4 & $-1.71$e-5 & $+6.05$e-5 \\
+Routing & $+2.63$e-6 & $+3.03$e-4 & $+9.30$e-4 \\
+Operator core & $+1.30$e-8 & $+1.96$e-6 & $+7.68$e-6 \\
+Readout & $-6.01$e-7 & $+1.08$e-5 & $+3.13$e-5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Contraction MAEs for embeddings, routing, operator core, and readout were,
+respectively, $3.19\times10^{-5}$, $1.76\times10^{-4}$,
+$7.42\times10^{-4}$, and $2.68\times10^{-4}$.  The maximum variance error
+occurred in routing at update 444, near the OneCycleLR peak.
+
+\infv The earlier v1 maximum variance error of 0.111 and contraction gap of
+0.338 were primarily caused by comparing one-step predictions with realized
+statistics separated by 149--150 optimizer updates.  At matched horizon the
+variance model is exceptionally accurate.  The small positive routing bias is
+real in this trace but is not the main activation blocker.
+
+\section{Innovation mismatch}
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Block & Median predicted & Median empirical & Median split-batch unit noise \\
+\midrule
+Embeddings & 1.09e-12 & 9.25e-8 & 1.96e-4 \\
+Routing & 2.07e-11 & 3.07e-7 & 6.17e-3 \\
+Operator core & 5.11e-14 & 1.06e-7 & 1.15e-5 \\
+Readout & 1.09e-11 & 6.62e-8 & 1.08e-3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Mean absolute predicted-versus-empirical innovation gaps were 2.25e-7,
+7.52e-7, 2.16e-7, and 1.39e-7 in block order.
+
+\obs The controller's current innovation estimate is several orders of
+magnitude smaller than the empirical parameter-transition innovation.
+
+\hyp Possible contributors are the current $\eta^2/B$ conversion, AdamW
+preconditioning, momentum, weight decay, the split-batch estimator's scale,
+and the fact that empirical innovation is inferred across parameter
+coordinates rather than from replicated stochastic trajectories beginning at
+the same parameter state.
+
+\infv This is not yet identifiable as a single scalar tuning problem.  A
+replicated same-state transition experiment is needed to determine whether a
+constant scale correction suffices or whether the mapping must model optimizer
+state and blockwise covariance.
+
+\section{Sharpness estimates and forecast calibration}
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Block & Filtered HVP range & Center MAE & Median relative width & Final confidence \\
+\midrule
+Embeddings & 2.04e-5--6.99e-3 & 9.84e-5 & 73x & 5.47e-7 \\
+Routing & 1.60e-6--9.77e-2 & 1.59e-3 & 3.70x & 5.47e-7 \\
+Operator core & 4.94e-6--8.28e-4 & 1.81e-5 & 537x & 5.47e-7 \\
+Readout & 1.88e-3--1.49e-2 & 2.27e-4 & 16.0x & 5.47e-7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nominal empirical interval coverage was 99.8--100 percent.  This high coverage
+is not evidence of a useful forecast because the intervals are extremely
+wide and confidence is essentially zero.  The v1 gradient-secant values were
+many orders larger than the v2 HVP values; the secant proxy should not be
+treated as Hessian sharpness.
+
+\hyp This component may admit parameter improvement---for example plant
+warm-start, regularization, or better filter constants---but the single random
+Rayleigh direction does not estimate the largest curvature eigenvalue.
+Multiple HVP probes or a short power iteration is a structural estimator
+upgrade, not merely parameter tuning.
+
+\section{AR(2) dynamics and the AR(1) failure}
+
+AR(1) adequacy was zero at threshold 0.5 for every block on every available
+fit.  Mean adequacy scores were $1.18\times10^{-8}$,
+$4.00\times10^{-10}$, $8.67\times10^{-9}$, and $6.41\times10^{-9}$.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Block & Final $\phi_1$ & Final $\phi_2$ & Spectral radius & Stable-fit fraction \\
+\midrule
+Embeddings & 1.631 & -0.641 & 0.971 & 97.8\% \\
+Routing & 1.818 & -0.823 & 0.971 & 90.5\% \\
+Operator core & 1.567 & -0.579 & 0.970 & 100.0\% \\
+Readout & 1.518 & -0.528 & 0.979 & 99.2\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The fitted dynamics are mostly stable under the Jury criterion; this is not a
+finding of explosive optimization.  The negative second lag and spectral
+radii just below one are consistent with persistent optimizer momentum.
+
+\infv A scalar AR(1) model is structurally mismatched to this AdamW trajectory.
+Tuning its coefficient cannot in general represent a stable AR(2)-like process.
+A companion-state or explicit momentum adapter is the direct repair.
+
+\section{What ``parameter tuning issue'' means here}
+
+The data divide the problem into three categories:
+
+\begin{enumerate}
+\item \textbf{Already calibrated after measurement repair.}  One-step
+parameter-variance prediction is highly accurate.  No major retuning is
+indicated for this component, although routing has a small positive bias.
+
+\item \textbf{Potential parameter and estimator calibration.}  Sharpness EMA,
+plant warm-start, confidence regularization, number of HVP probes, and probe
+policy thresholds should be swept in shadow mode.  Some are scalar parameters;
+the move from one random direction to an eigenvalue-oriented estimate changes
+the estimator itself.
+
+\item \textbf{Structural mismatch before tuning.}  The innovation conversion
+has not been calibrated against replicated same-state stochastic updates, and
+the AR(1) state model omits AdamW momentum.  Sweeping controller gains on top
+of these mismatches risks obtaining apparent calibration for the wrong reason.
+\end{enumerate}
+
+\decision The next experiment should remain shadow-only and should first
+identify the innovation map and momentum state.  Only after those are fixed
+should ordinary controller hyperparameters be tuned for active operation.
+
+\section{Recommended bounded next gate}
+
+\begin{enumerate}
+\item Freeze selected parameter states at early, peak-LR, descending-LR, and
+terminal schedule phases.
+\item From each state, execute replicated stochastic updates with identical
+parameters and optimizer state but independent batches.  Estimate blockwise
+innovation covariance directly.
+\item Fit and test candidate mappings: scalar rescale; $\eta^2/B$ with
+AdamW-preconditioned gradient covariance; and a companion-state model that
+includes first-moment momentum.
+\item Compare AR(1), AR(2), and explicit AdamW-state predictions on held-out
+update intervals using the same per-update cadence.
+\item Replace the one-direction curvature probe with multiple probes or short
+power iteration; tune EMA and plant regularization only after estimator
+repeatability is quantified.
+\item Require held-out calibration error, useful interval width, nontrivial
+confidence, stability margins, and strict LR non-mutation before considering
+active control.
+\end{enumerate}
+
+This sequence discriminates true parameter mistuning from model misspecification
+without another expensive training run.
+
+\section{Limitations}
+
+\begin{itemize}
+\item One seed and one CAROM scheduled variant were tested.
+\item The training and evaluation data are procedurally sampled from the same
+distribution; this is an observer-calibration run, not a generalization study.
+\item The runner was uncommitted in a shared dirty workspace.  Its exact hash
+is preserved, but commit-only reproduction is unavailable.
+\item Sharpness uses one random direction per block per update and absolute
+Rayleigh quotient; it is neither a trace estimate averaged over probes nor a
+largest-eigenvalue estimate.
+\item Split-batch and empirical innovations are not measurements of precisely
+the same stochastic object.
+\item AR(2) uses 16 fixed coordinates per block rather than the full parameter
+state.
+\item Evaluation points use fresh stochastic batches, so small endpoint
+accuracy changes should not be overinterpreted.
+\item BridgeLearn proposed controls were not applied.  This run provides no
+evidence that active BridgeLearn control improves CAROM accuracy or stability.
+\end{itemize}
+
+\section{Telemetry field dictionary}
+
+Every per-update record contains:
+\begin{description}[style=nextline]
+\item[\code{step}, \code{loss}, \code{training_accuracy}] Update index and
+current stochastic-batch outcomes.
+\item[\code{lr}, \code{lr_after_scheduler}] Four block learning rates before
+and after the OneCycleLR scheduler step.
+\item[\code{observed_variance}, \code{predicted_variance},
+\code{calibration_error}] Per-block realized parameter population variance,
+BridgeLearn forecast, and realized minus predicted value.
+\item[\code{predicted_transition}, \code{realized_transition}] Per-block
+contraction and innovation objects.
+\item[\code{sharpness_raw}, \code{sharpness_estimate}] Raw and EMA-filtered
+absolute random-direction HVP Rayleigh values.
+\item[\code{sharpness_funnel}] Lower, center, upper, confidence, realized
+error, and coverage for the forecast made on the prior update.
+\item[\code{split_batch_innovation}] Per-block observation every 50 updates;
+null on intervening updates.
+\item[\code{ar2_adequacy}] Availability, $\phi_1$, $\phi_2$, innovation,
+spectral radius, AR(1) residual autocorrelation, adequacy score, regressor
+condition, Jury margins, stability verdict, and online RLS cross-check.
+\item[\code{bridge_proposed_controls}] Controls proposed by BridgeLearn but
+not applied.
+\item[\code{shadow_lr_invariant}] Exact per-update Boolean that the shadow
+apply did not mutate LR.
+\item[\code{grad_norm}] Global gradient norm before clipping to 1.0.
+\end{description}
+
+The top-level telemetry also records schema and BridgeLearn versions, mode,
+variant, seed, device, steps, batch sizes and cadences, block labels, elapsed
+seconds, evaluation summaries, calibration report, control effort, final
+evaluation accuracy, and serialized sharpness-plant state.  The complete
+1,500-row, approximately 8.2 MB JSON is the authoritative raw-data appendix;
+reprinting it verbatim inside the PDF would reduce usability without adding
+information.
+
+\section{Artifact verification}
+
+\begin{longtable}{p{0.32\textwidth}p{0.62\textwidth}}
+\toprule
+Artifact & SHA-256 \\
+\midrule
+\endhead
+\code{telemetry.json} &
+\code{0b9b18d6b91452cdfc15928dea79ad7d39da3e2d3f23cdb7cc7460a32c25dc2c} \\
+\code{stdout.log} &
+\code{609c94ad70151409e54c17fc36debde6042d97b4ee19b04c0ccb14daab49af7c} \\
+\code{stderr.log} &
+\code{93cb210d703a0853e0ed14f7c4575c088a97dcff519184e35585631617bba6ec} \\
+\code{command.sh} &
+\code{618577204571c126f62e0a79d52ee8e03df9c0bfacc9b8a4f5b5cdc04fb28ead} \\
+\code{run_carom_bridge_shadow_v2.py} &
+\code{9443bb973b7885131aaf6c3506403c408e3b427d5e10e17b5b04f105e38ac2c5} \\
+\bottomrule
+\end{longtable}
+
+\section{Bottom line}
+
+\obs Matching the prediction and observation horizon removed the dramatic v1
+variance anomaly.  BridgeLearn follows one-step block variance extremely well,
+even near peak OneCycleLR.
+
+\obs Innovation calibration, sharpness informativeness, and AR(1) adequacy
+still fail.
+
+\infv The remaining problem is partly tunable but not purely a conventional
+hyperparameter issue.  The evidence specifically favors (i) direct
+same-state innovation identification, (ii) an explicit momentum/AR(2)
+state model, and (iii) a repeatable multi-probe curvature estimator, followed
+by bounded shadow-mode tuning.
+
+\decision Active control should not begin from the present scalar AR(1)
+configuration.
+
+\end{document}

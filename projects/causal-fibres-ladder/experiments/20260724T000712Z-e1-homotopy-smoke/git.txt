@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-24T00:07:12Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1
+Commit: 66227e0b926621413305b2605e4b3f4cdbacecd4
+Branch: agent/e1-guarded-homotopy
+Remote names: 
+
+## Status
+## agent/e1-guarded-homotopy
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

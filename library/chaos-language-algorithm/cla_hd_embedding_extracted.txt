@@ -1,0 +1,64 @@
+Grammar-Preserving Dimensional Embedding for Strange-Attractor Language Analysis in High Dimension
+Chaos Language Algorithm Project
+2026-07-10
+
+Captured from Ben's Telegram PDF upload `cla_hd_embedding---56acc870-3e99-49c0-9c6b-427875c32b57.pdf` on 2026-07-10. This is a textual working representation/synthesis for local search, not a byte-preserved PDF extraction.
+
+Abstract / thesis:
+CLA degradation above roughly dimension 10 is diagnosed primarily as a partition-cardinality problem: fixed rectangular M1 symbolization with b bins per axis creates up to b^D compound symbols, causing almost every timestep to fall in a unique cell. The grammar may still be present in the trajectory, but the partition destroys symbol recurrence before CLA can compress.
+
+Two separable fixes:
+1. Fix partition cardinality by replacing the b^D grid with a data-adaptive partition, e.g. clustering, where alphabet size k is chosen directly, usually tens of symbols.
+2. Fix the coordinate system by partitioning in a low-dimensional dynamics-aware embedding rather than raw R^256, so distances are meaningful, noise is suppressed, and boundaries align with generating directions that carry itinerary information.
+
+Precondition:
+Estimate intrinsic attractor dimension DA before selecting embedding dimension d. Use correlation dimension or participation ratio / spectral elbow of time-lagged eigenvalue spectrum. If DA is ~3-5, d ~5-7 may preserve most grammar. If DA is ~15, d=5-10 is lossy and the deliverable should be grammar-vs-d curves.
+
+Recommended embedding:
+Use a time-lagged transfer-operator kinetic map: TICA/VAMP. Estimate slow dynamical modes from correlations across lag tau rather than instantaneous geometry. Fast noise is suppressed at finite lag while slow grammar-carrying modes survive. Use shrinkage-regularized covariances C00, C0tau, Ctautau and solve the singular/generalized eigenproblem for leading Koopman singular functions psi_i. Use kinetic-map scaling phi(x)=(sigma_1 psi_1(x), ..., sigma_d psi_d(x)).
+
+Important choices:
+- Use VAMP singular functions without reversibility/detailed balance; do not symmetrize away directional symbolic grammar.
+- If non-stationary, use windowed/streaming covariance or coherent-set/dynamic-Laplacian methods.
+- Select lag tau, embedding dimension d, and features by cross-validated VAMP-2 score; use implied-timescales plateau and singular-value spectral gaps.
+- Linear cost is covariance estimation plus small generalized eigensolve, O(n m^2) in trajectory length n and feature count m; use existing library such as deeptime where practical.
+
+Symbolization and CLA coupling:
+Cluster kinetic-map points into microstates with k-means, k about 30-100, and use these as CLA base alphabet Sigma_0. Use microstates, not PCCA+ macrostates. PCCA+ macrostates are almost-invariant and can make the stream nearly first-order Markov, leaving little supra-Markov grammar for CLA. Sample below the MSM Markov plateau and tune k/sampling interval to maximize held-out grammar, not Markovianity.
+
+PCCA+ memberships:
+Use PCCA+ soft memberships to seed CLA meta-symbol categories. Chunks remain syntagmatic n-gram/suffix-trie motifs; meta-symbols are paradigmatic substitutable microstates. Microstates in the same metastable set are category candidates. Recalibrate category overhead downward from the tested flat 14.0 units and raise n_max from 5-6 toward 8-12 for cleaner low-cardinality streams.
+
+CLA variant taxonomy:
+1. Linear/kernel TICA kinetic map + hard microstate clustering + Standard CLA. Default starting point. Alphabet is k adaptive symbols; categories seeded from PCCA+; run below Markov plateau; recalibrate MDL constants.
+2. Learned embedding via VAMPnet or Koopman autoencoder with commuting-square loss ||phi(F(x))-G(phi(x))|| plus reconstruction loss + soft partition + probabilistic-symbol CLA. Each timestep is a distribution over states; assignment entropy is included in MDL data cost. Reconstruction loss is required to prevent collapse of low-variance dynamically decisive branching directions.
+3. Delay-embed top 1-2 slow coordinates only + full hierarchical CLA. Especially useful when a dominant folding coordinate exists, e.g. Lorenz-63 z-maxima/cusp-map-like symbolic dynamics.
+
+Validation / grammar survival metrics:
+1. Surrogate excess compression: shuffle symbol stream to destroy temporal grammar but preserve symbol frequencies, rerun CLA, and compute Delta_grammar = gain(real) - gain(shuffled).
+2. Held-out next-symbol log-loss: fit grammar on an initial portion and measure predictive perplexity on held-out continuation; use as y-axis for grammar rate-distortion curves across d.
+3. Ground-truth validation: Lorenz-63 and Roessler high-D lifts should recover known forbidden words / periodic-orbit structure before trusting real AI embeddings.
+4. Calibrate MDL to real bits so cross-embedding comparison and surrogate subtraction are apples-to-apples.
+
+Roadmap:
+Phase 0: instrumentation. Calibrate CLA MDL to bits, add surrogate-shuffle harness, held-out next-symbol log-loss evaluator, and adaptive k-means symbolizer alongside M1.
+Phase 1: ground-truth high-D lift. Lift Lorenz-63 into R^256 via random orthogonal map plus small noise; estimate intrinsic dimension; TICA kinetic map to d=3-6; k-means microstates; Standard CLA with PCCA+-seeded categories; surrogate and held-out metrics. Success: recover Lorenz grammar from 256-D lift with compression-over-surrogate gain that raw-M1 baseline cannot achieve.
+Phase 2: control battery. Non-chaotic and periodic controls, shuffled surrogates, multi-seed confidence intervals, matched brute-force-vs-trie benchmark with peak memory.
+Phase 3: d-sweep / grammar rate-distortion. Sweep d={3,5,8,10,...} and k; plot held-out grammar quality vs d and report minimum d retaining a target fraction of recoverable grammar.
+Phase 4: learned embeddings where linear TICA saturates. Add VAMPnets / Koopman autoencoder and probabilistic-symbol CLA.
+Phase 5: real AI-system embeddings such as OmegaSim traces / D~256 AI vector embeddings; report intrinsic dimension, chosen d, recovered grammar, surrogate excess compression, held-out perplexity, and error bars.
+
+Suggested defaults:
+Embedding: shrinkage-regularized TICA/VAMP kinetic map.
+Embedding dimension: d=5-10 chosen by VAMP-2 CV + spectral gap.
+Lag tau: below MSM Markov plateau; scan implied timescales.
+Reversibility: off.
+Partition: k-means microstates, k~30-100.
+CLA variant: Standard CLA first.
+Category seeds: PCCA+ soft memberships.
+n_max: raise from 5-6 toward 8-12.
+Category overhead: recalibrate downward from 14.0.
+Controls: surrogate shuffle + held-out log-loss always.
+
+One-line synthesis:
+Embed high-D trajectories with time-lagged transfer-operator statistics into a d~5-10 kinetic map; symbolize with low-cardinality microstate partitions rather than b^D grids or PCCA+ macrostates; run Standard CLA with PCCA+-seeded categories; quantify grammar survival with surrogate excess compression and held-out perplexity as a function of d.

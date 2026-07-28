@@ -1,0 +1,465 @@
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 401,
+  "config": {
+    "train_updates": 160,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ],
+    "fixture": "complementary",
+    "task_b_label_permutation": "none",
+    "normalize_weights": true,
+    "cmcp_estimator": "response"
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "teacher_task_b": {
+    "teacher_a": {
+      "loss": 2.856907606124878,
+      "perplexity": 17.407612423051656,
+      "accuracy": 0.0481770820915699,
+      "ece": 0.12751335673965514
+    },
+    "teacher_b": {
+      "loss": 2.1778281132380166,
+      "perplexity": 8.827113932588976,
+      "accuracy": 0.2369791716337204,
+      "ece": 0.04211852449225262
+    }
+  },
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.608042041460673,
+        "perplexity": 13.572450523756512,
+        "accuracy": 0.0520833320915699,
+        "ece": 0.11642652191221714
+      },
+      "task_b": {
+        "loss": 2.1461329460144043,
+        "perplexity": 8.551724393079391,
+        "accuracy": 0.23046875,
+        "ece": 0.06054626063746582
+      },
+      "task_a_loss_change": -0.11955078442891454,
+      "task_a_retention_loss_increase": 0.453176180521647,
+      "task_a_midpoint": {
+        "loss": 2.154865860939026,
+        "perplexity": 8.626732919500542,
+        "accuracy": 0.2083333283662796,
+        "ece": 0.023948327754624188
+      },
+      "mean_effective_precision": 1.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.039162158221006
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.6126925150553384,
+        "perplexity": 13.635715839352594,
+        "accuracy": 0.0520833320915699,
+        "ece": 0.11680508032441139
+      },
+      "task_b": {
+        "loss": 2.143021583557129,
+        "perplexity": 8.52515822877224,
+        "accuracy": 0.23046875,
+        "ece": 0.06013872932817321
+      },
+      "task_a_loss_change": -0.11490031083424901,
+      "task_a_retention_loss_increase": 0.45723636945088675,
+      "task_a_midpoint": {
+        "loss": 2.1554561456044516,
+        "perplexity": 8.631826650883506,
+        "accuracy": 0.20703125,
+        "ece": 0.021678343939129263
+      },
+      "mean_effective_precision": 4.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.0356492787599563
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.615546623865763,
+        "perplexity": 13.674689246782657,
+        "accuracy": 0.0520833320915699,
+        "ece": 0.1172709483653307
+      },
+      "task_b": {
+        "loss": 2.1407782634099326,
+        "perplexity": 8.50605500489449,
+        "accuracy": 0.2317708283662796,
+        "ece": 0.06099088938208297
+      },
+      "task_a_loss_change": -0.1120462020238242,
+      "task_a_retention_loss_increase": 0.4606961806615191,
+      "task_a_midpoint": {
+        "loss": 2.154850443204244,
+        "perplexity": 8.626599915845667,
+        "accuracy": 0.2083333283662796,
+        "ece": 0.023950622358825058
+      },
+      "mean_effective_precision": 1.7008463323407341,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.044037499278784
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.615614136060079,
+        "perplexity": 13.675612486224905,
+        "accuracy": 0.0520833320915699,
+        "ece": 0.117286192253232
+      },
+      "task_b": {
+        "loss": 2.14070733388265,
+        "perplexity": 8.505451695830418,
+        "accuracy": 0.2317708283662796,
+        "ece": 0.06097700382815674
+      },
+      "task_a_loss_change": -0.11197868982950832,
+      "task_a_retention_loss_increase": 0.4607712427775068,
+      "task_a_midpoint": {
+        "loss": 2.1548428932825723,
+        "perplexity": 8.62653478593787,
+        "accuracy": 0.2083333283662796,
+        "ece": 0.02395122777670622
+      },
+      "mean_effective_precision": 2.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.046407037228346
+    }
+  },
+  "wall_seconds": 14.815098542254418
+}
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 503,
+  "config": {
+    "train_updates": 160,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ],
+    "fixture": "complementary",
+    "task_b_label_permutation": "none",
+    "normalize_weights": true,
+    "cmcp_estimator": "response"
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "teacher_task_b": {
+    "teacher_a": {
+      "loss": 2.6740574836730957,
+      "perplexity": 14.49867815682955,
+      "accuracy": 0.02213541604578495,
+      "ece": 0.15092708077281713
+    },
+    "teacher_b": {
+      "loss": 2.1180874506632485,
+      "perplexity": 8.315219003506689,
+      "accuracy": 0.2734375,
+      "ece": 0.08834261074662209
+    }
+  },
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.668939471244812,
+        "perplexity": 14.424663307850015,
+        "accuracy": 0.015625,
+        "ece": 0.17790865525603294
+      },
+      "task_b": {
+        "loss": 2.0584944089253745,
+        "perplexity": 7.834165876378812,
+        "accuracy": 0.2864583432674408,
+        "ece": 0.09072013758122921
+      },
+      "task_a_loss_change": 0.017759203910827637,
+      "task_a_retention_loss_increase": 0.5329278707504272,
+      "task_a_midpoint": {
+        "loss": 2.1360116004943848,
+        "perplexity": 8.465605987946644,
+        "accuracy": 0.2643229067325592,
+        "ece": 0.07553631602786481
+      },
+      "mean_effective_precision": 1.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 1.993996398895979
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.673487901687622,
+        "perplexity": 14.490422322348737,
+        "accuracy": 0.01692708395421505,
+        "ece": 0.17642320599406958
+      },
+      "task_b": {
+        "loss": 2.056715726852417,
+        "perplexity": 7.820243771147876,
+        "accuracy": 0.2838541567325592,
+        "ece": 0.08811986609362066
+      },
+      "task_a_loss_change": 0.022307634353637695,
+      "task_a_retention_loss_increase": 0.537148118019104,
+      "task_a_midpoint": {
+        "loss": 2.136339783668518,
+        "perplexity": 8.468384713331249,
+        "accuracy": 0.2643229067325592,
+        "ece": 0.0757327969186008
+      },
+      "mean_effective_precision": 4.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 1.9916006967425346
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.67904802163442,
+        "perplexity": 14.571215209470253,
+        "accuracy": 0.015625,
+        "ece": 0.1783419931307435
+      },
+      "task_b": {
+        "loss": 2.0533609787623086,
+        "perplexity": 7.7940527799448045,
+        "accuracy": 0.28515625,
+        "ece": 0.08870433433912694
+      },
+      "task_a_loss_change": 0.027867754300435532,
+      "task_a_retention_loss_increase": 0.5430090824762983,
+      "task_a_midpoint": {
+        "loss": 2.1360389391581216,
+        "perplexity": 8.465837429465713,
+        "accuracy": 0.2643229067325592,
+        "ece": 0.07556233031209558
+      },
+      "mean_effective_precision": 1.717189391035936,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 1.9984814636409283
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.6791518131891885,
+        "perplexity": 14.572727657039996,
+        "accuracy": 0.01692708395421505,
+        "ece": 0.1770579107105732
+      },
+      "task_b": {
+        "loss": 2.0532750686009726,
+        "perplexity": 7.793383220374416,
+        "accuracy": 0.2825520932674408,
+        "ece": 0.0860802298411727
+      },
+      "task_a_loss_change": 0.027971545855204116,
+      "task_a_retention_loss_increase": 0.5431151390075684,
+      "task_a_midpoint": {
+        "loss": 2.13603667418162,
+        "perplexity": 8.465818254564587,
+        "accuracy": 0.2643229067325592,
+        "ece": 0.07556469703558832
+      },
+      "mean_effective_precision": 2.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.0006627798080445
+    }
+  },
+  "wall_seconds": 14.959329559002072
+}
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 607,
+  "config": {
+    "train_updates": 160,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ],
+    "fixture": "complementary",
+    "task_b_label_permutation": "none",
+    "normalize_weights": true,
+    "cmcp_estimator": "response"
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "teacher_task_b": {
+    "teacher_a": {
+      "loss": 2.7061612208684287,
+      "perplexity": 14.971692041497795,
+      "accuracy": 0.0338541679084301,
+      "ece": 0.13848982844501734
+    },
+    "teacher_b": {
+      "loss": 2.2772845029830933,
+      "perplexity": 9.750167876685284,
+      "accuracy": 0.20703125,
+      "ece": 0.04467817407567054
+    }
+  },
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.514983296394348,
+        "perplexity": 12.366402213881091,
+        "accuracy": 0.0690104141831398,
+        "ece": 0.09685623273253441
+      },
+      "task_b": {
+        "loss": 2.1936017672220864,
+        "perplexity": 8.967453699103675,
+        "accuracy": 0.2421875,
+        "ece": 0.07531430013477802
+      },
+      "task_a_loss_change": -0.18481131394704198,
+      "task_a_retention_loss_increase": 0.29167497158050537,
+      "task_a_midpoint": {
+        "loss": 2.2233083248138428,
+        "perplexity": 9.237842149845166,
+        "accuracy": 0.203125,
+        "ece": 0.03163616172969341
+      },
+      "mean_effective_precision": 1.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.027493640780449
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.516865054766337,
+        "perplexity": 12.389694703323695,
+        "accuracy": 0.0690104141831398,
+        "ece": 0.09673506394028664
+      },
+      "task_b": {
+        "loss": 2.192622343699137,
+        "perplexity": 8.958675063712572,
+        "accuracy": 0.2421875,
+        "ece": 0.07546205818653107
+      },
+      "task_a_loss_change": -0.1829295555750532,
+      "task_a_retention_loss_increase": 0.2931729555130005,
+      "task_a_midpoint": {
+        "loss": 2.2236920992533364,
+        "perplexity": 9.241388077913111,
+        "accuracy": 0.203125,
+        "ece": 0.03105126740410924
+      },
+      "mean_effective_precision": 4.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.0237863175570965
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.517731269200643,
+        "perplexity": 12.400431485218746,
+        "accuracy": 0.0690104141831398,
+        "ece": 0.09692672453820705
+      },
+      "task_b": {
+        "loss": 2.1920194228490195,
+        "perplexity": 8.95327531969993,
+        "accuracy": 0.2395833283662796,
+        "ece": 0.07266406528651714
+      },
+      "task_a_loss_change": -0.18206334114074707,
+      "task_a_retention_loss_increase": 0.2944008906682334,
+      "task_a_midpoint": {
+        "loss": 2.2233303785324097,
+        "perplexity": 9.23804588086261,
+        "accuracy": 0.203125,
+        "ece": 0.03165350202471018
+      },
+      "mean_effective_precision": 1.6973277366138064,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.029797548800707
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.5176854530970254,
+        "perplexity": 12.399863358779685,
+        "accuracy": 0.0690104141831398,
+        "ece": 0.0969229768961668
+      },
+      "task_b": {
+        "loss": 2.1920679410298667,
+        "perplexity": 8.953709726869302,
+        "accuracy": 0.2395833283662796,
+        "ece": 0.07266931235790253
+      },
+      "task_a_loss_change": -0.18210915724436472,
+      "task_a_retention_loss_increase": 0.29437923431396484,
+      "task_a_midpoint": {
+        "loss": 2.2233062187830606,
+        "perplexity": 9.237822694685724,
+        "accuracy": 0.203125,
+        "ece": 0.03165165800601244
+      },
+      "mean_effective_precision": 2.0,
+      "mean_applied_kd_mass": 1.0,
+      "optimizer_updates": 160,
+      "teacher_packet_count": 640,
+      "teacher_calls": 160,
+      "energy_monotone": true,
+      "mean_training_objective": 2.032120081037283
+    }
+  },
+  "wall_seconds": 15.115555404219776
+}

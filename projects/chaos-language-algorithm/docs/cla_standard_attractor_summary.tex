@@ -1,0 +1,286 @@
+% CLA Standard Attractor Benchmark Summary
+% Generated 2026-07-07
+% ASCII-only, pdflatex-safe
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  breaklines=true,
+  showstringspaces=false,
+}
+
+\title{Chaos Language Algorithm: Standard Attractor Benchmark Summary}
+\author{ZeroBot / ProtoCosmoBot}
+\date{2026-07-07}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+
+This report summarises the Chaos Language Algorithm (CLA) pure-Python MVP
+work on five standard chaotic dynamical systems. The CLA pipeline
+comprises: trajectory generation, fixed-partition M1 symbolization,
+n-gram chunk mining with non-overlapping rewrite and exact expansion,
+deterministic context category proposal (exact or JS-divergence clustered),
+greedy MDL acceptance loop, JSON persistence with edit-log replay, and
+stable text rendering.
+
+All code is in \texttt{projects/chaos-language-algorithm/repos/chaoslang}
+(GitHub: \texttt{bgoertzel-sing/chaos-language-algorithm}), branch
+\texttt{main}, latest commit \texttt{847390c}. All 64 unit tests pass.
+
+\section{Systems Benchmark Suite}
+
+Five standard chaotic systems were implemented as deterministic,
+dependency-free Python generators:
+
+\subsection{Logistic Map}
+
+One-dimensional discrete map:
+\begin{equation}
+x_{t+1} = r \, x_t (1 - x_t), \quad r = 4.0, \; x_0 = 0.123
+\end{equation}
+
+Fully chaotic at $r=4$. Produces 4 unique M1 symbols (4 bins on $[0,1)$).
+The CLA discovers 8 chunk rules including nested hierarchies
+($N_0 \to N_3 \, N_9$, $N_0 \to N_4 \, N_5$). MDL score: 113.2 bits
+(0.44 bits/symbol). Exact reconstruction verified.
+
+\subsection{Lorenz-63}
+
+Three-dimensional continuous-time flow:
+\begin{align}
+\dot{x} &= \sigma(y - x) \\
+\dot{y} &= x(\rho - z) - y \\
+\dot{z} &= xy - \beta z
+\end{align}
+with $\sigma = 10$, $\rho = 28$, $\beta = 8/3$, $dt = 0.01$, RK4 integration,
+initial condition $(1, 1, 1)$.
+
+The classic strange attractor. Produces 21 unique M1 symbols from the 3D
+trajectory. CLA discovers 8 chunk rules with nested references. MDL score:
+187.2 bits (0.73 bits/symbol). Exact reconstruction verified.
+
+\subsection{R\"ossler}
+
+Three-dimensional continuous-time flow:
+\begin{align}
+\dot{x} &= -y - z \\
+\dot{y} &= x + ay \\
+\dot{z} &= b + z(x - c)
+\end{align}
+with $a = 0.2$, $b = 0.2$, $c = 5.7$, $dt = 0.05$, RK4 integration,
+initial condition $(0.1, 0, 0)$.
+
+Simpler attractor structure than Lorenz-63 (single-band fold). Produces 24
+unique M1 symbols. CLA discovers 8 chunk rules. MDL score: 189.2 bits
+(0.74 bits/symbol). Exact reconstruction verified. Similar complexity to
+Lorenz-63 as expected.
+
+\subsection{Mackey-Glass}
+
+Scalar delay-differential equation:
+\begin{equation}
+\frac{dx}{dt} = \beta \frac{x_{\tau}}{1 + x_{\tau}^n} - \gamma \, x
+\end{equation}
+with $\beta = 0.2$, $\gamma = 0.1$, $\tau = 17$, $n = 10$, $dt = 0.1$,
+Euler method with discrete delay buffer, initial history $x = 0.5$.
+
+Delayed-feedback chaotic system; the closest textbook analog to
+OmegaSim-style delayed-coupling dynamics. Produces only 4 unique M1 symbols
+(scalar trajectory, narrow dynamic range with these parameters). CLA
+discovers 6 chunk rules including nested hierarchy
+($N_0 \to N_1 \to N_5$). Best compression ratio: 0.17 bits/symbol. MDL
+score: 44.4 bits. Exact reconstruction verified.
+
+\subsection{Lorenz-96}
+
+$N$-dimensional continuous-time flow:
+\begin{equation}
+\dot{x}_i = (x_{i+1} - x_{i-2}) \, x_{i-1} - x_i + F, \quad
+i = 0, \ldots, N-1 \pmod{N}
+\end{equation}
+with $F = 8.0$, $dt = 0.01$, RK4 integration. Dimension inferred from
+initial condition. Default: $N = 5$ with initial $[8.0, 8.0, 8.0, 8.0, 8.01]$.
+
+Chaotic for $F \geq 4$ and $N \geq 4$. This is the primary scalability
+benchmark because dimension is freely configurable.
+
+\section{Dimensionality Scaling Results (Lorenz-96)}
+
+Benchmark runs at dimensions $N \in \{5, 8, 12, 16, 20, 24\}$ with
+4 bins per axis, 256 post-discard steps, 8 MDL iterations:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+Dim & Unique Symbols & Rules & MDL Score (bits) & Bits/Symbol \\
+\midrule
+5  & 56  & 8 & 234.2 & 0.91 \\
+8  & 78  & 8 & 229.2 & 0.90 \\
+12 & 107 & 6 & 241.4 & 0.94 \\
+16 & 121 & 3 & 248.7 & 0.97 \\
+20 & 127 & 6 & 251.4 & 0.98 \\
+24 & 148 & 5 & 251.5 & 0.98 \\
+\bottomrule
+\end{tabular}
+\caption{Lorenz-96 dimensionality scaling. At dim $\geq 16$, the symbol
+stream approaches near-incompressibility with 4 bins and 256 steps:
+most symbols are unique. CLA maintains exact reconstruction at all
+tested dimensions.}
+\end{table}
+
+Key observations:
+\begin{itemize}
+\item Unique symbols grow rapidly with dimension: $4^N$ possible symbols,
+so at $N=16$ there are $\sim 4.3 \times 10^9$ possible symbols versus
+256 actual observations. Most are unique.
+\item MDL score approaches the raw-entropy ceiling ($\log_2 256 = 8$ bits/symbol
+is the trivial upper bound; actual unique-symbol entropy approaches
+$\sim 8$ bits/symbol at high $N$).
+\item Chunk rule count drops at high dimension because few repeated n-grams
+exist in 256 steps. Longer trajectories or coarser binning would help.
+\item At dim $= 20$, the experiment notes state this is comparable to
+OmegaSim starter-vector dimensionality ($\sim 17$ state variables per hive,
+$\sim 20$--$30$ when including cross-hive coupling fields).
+\item At dim $= 24$, 58\% of symbols are unique, yet CLA still finds
+5 repeatable chunk rules and maintains exact reconstruction.
+\end{itemize}
+
+\section{CLA Pipeline Architecture}
+
+\subsection{Trajectory Generation}
+
+Five deterministic generators in \texttt{benchmarks/attractors.py}:
+\texttt{logistic\_map}, \texttt{lorenz63}, \texttt{rossler},
+\texttt{mackey\_glass}, \texttt{lorenz96}. Continuous systems use
+fixed-step RK4; Mackey-Glass uses Euler with discrete delay buffer;
+logistic map is a direct discrete iteration. All are seed-deterministic
+(no RNG).
+
+\subsection{M1 Symbolization}
+
+Fixed rectangular partition: for each trajectory point $\mathbf{x} \in
+\mathbb{R}^d$, each axis $i$ is binned into $B$ equal-width bins over
+$[\min_i, \max_i]$. The symbol is a concatenated label:
+\texttt{m1:d0\_2|d1\_0|d2\_3} for a 3D point. Bounds are inferred once
+from the full trajectory (or supplied externally for cross-trajectory
+comparison). Values outside supplied bounds are clamped to edge bins.
+
+\subsection{Chunk Mining}
+
+N-gram pattern miner (\texttt{mining/ngram.py}): scans for repeated
+n-grams of length $n \in [n_{\min}, n_{\max}]$ with minimum use count.
+Non-overlapping rewrite replaces occurrences with a new nonterminal
+token. Pruning removes productions whose nonterminal is no longer
+referenced after rewrite (fixes dangling-nonterminal bug).
+
+\subsection{Context Categories}
+
+Two category induction methods:
+\begin{enumerate}
+\item \textbf{Exact} (\texttt{ContextCategoryInducer}): groups tokens
+by exact context signature (left/right neighbour distribution).
+Category occurrences preserve the observed member for exact reconstruction.
+\item \textbf{JS-divergence} (\texttt{JSCategoryInducer}): clusters tokens
+whose context histograms have Jensen-Shannon divergence below a
+threshold. Implemented in \texttt{categorization/js.py} with greedy
+sorted-key clustering against centroid. Integrated into category proposal
+generation as an alternative to exact grouping.
+\end{enumerate}
+
+\subsection{MDL Scoring}
+
+Two-part MDL (\texttt{scoring/mdl.py}): model cost = sum of rule
+overhead ($0.8$ bits/production) + production RHS length + category
+overhead ($14.0$ bits/category) + member set size + edit-log cost
+($0.1$ bits/edit). Data cost = token count for base tokens +
+$1 - \log_2 p(\text{member}|\text{category})$ for category occurrences.
+Greedy acceptance: a chunk/category proposal is accepted iff total MDL
+decreases.
+
+\subsection{Persistence}
+
+JSON state serialization (\texttt{persistence.py}): round-trips
+\texttt{GrammarState} to/from JSON with sorted keys for determinism.
+Edit-log replay reconstructs state from initial symbols + edit sequence.
+\texttt{grammar\_to\_text} provides stable human-readable grammar
+rendering. All round-trips preserve exact reconstruction.
+
+\section{Common Benchmark Parameters}
+
+All experiments use:
+\begin{itemize}
+\item \texttt{steps = 256} (post-discard)
+\item \texttt{discard = 64} (transient removal)
+\item \texttt{bins = 4} (M1 partition granularity per axis)
+\item \texttt{iterations = 8} (MDL loop iterations)
+\item \texttt{seed = 0} (for CLA's internal RNG used in tie-breaking)
+\end{itemize}
+
+\section{OmegaSim Dimensionality Context}
+
+The current OmegaSim A6 single-hive model has 17 state variables per
+hive: 4 motivation, 4 fatigue, 4 threshold, plus scalars (artifact,
+provenance\_debt, risk, prediction\_error, last\_action). A three-hive
+A8 configuration would have $\sim 51$ state variables plus inter-hive
+coupling fields.
+
+The CLA Lorenz-96 scaling experiments at dim $= 20$--$24$ are directly
+comparable to single-hive OmegaSim dimensionality. At these dimensions CLA
+maintains exact reconstruction but approaches raw-entropy compression
+limits with 4 bins and 256 steps.
+
+The next step is selecting toy attractor systems with dimensionality
+$\sim 17$--$30$ to bridge from textbook benchmarks to OmegaSim-scale
+traces, and testing whether CLA can recover known grammatical structure
+at that scale with longer trajectories and/or coarser binning.
+
+\section{Summary Table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+System & Dim & Unique Symbols & Rules & Bits/Symbol \\
+\midrule
+Logistic Map   & 1  & 4   & 8 & 0.44 \\
+Mackey-Glass   & 1  & 4   & 6 & 0.17 \\
+Lorenz-63      & 3  & 21  & 8 & 0.73 \\
+R\"ossler      & 3  & 24  & 8 & 0.74 \\
+Lorenz-96 (5)  & 5  & 56  & 8 & 0.91 \\
+Lorenz-96 (8)  & 8  & 78  & 8 & 0.90 \\
+Lorenz-96 (12) & 12 & 107 & 6 & 0.94 \\
+Lorenz-96 (16) & 16 & 121 & 3 & 0.97 \\
+Lorenz-96 (20) & 20 & 127 & 6 & 0.98 \\
+Lorenz-96 (24) & 24 & 148 & 5 & 0.98 \\
+\bottomrule
+\end{tabular}
+\caption{All 5 standard attractor systems with Lorenz-96 dimensionality
+scaling. All runs: 256 steps, 4 bins, 8 iterations, exact reconstruction
+verified.}
+\end{table}
+
+\section{Repository State}
+
+\begin{itemize}
+\item Repository: \texttt{bgoertzel-sing/chaos-language-algorithm}
+\item Branch: \texttt{main}
+\item Latest commit: \texttt{847390c} (persistence complete)
+\item Tests: 64 passing (Python 3.9 on MacBook)
+\item Dependencies: pure Python stdlib (no numpy, scipy, or torch)
+\item Sprint tasks 1--5 complete: symbolic MVP, M1 attractor controls,
+benchmark experiments, JS-divergence clustering, persistence.
+\end{itemize}
+
+\end{document}

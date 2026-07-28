@@ -61,9 +61,10 @@ done
 
 # Non-secret local operational wrappers/templates. Exclude env/log/state/cache/build-heavy paths.
 if [[ -d "$project/local" ]]; then
-  rsync -a \
+  rsync -a --delete --delete-excluded \
     --exclude='*.env' --exclude='.env*' --exclude='*.log' --exclude='*.pid' \
     --exclude='__pycache__' --exclude='*.pyc' \
+    --exclude='.venv' --exclude='venv' --exclude='*venv*' \
     --exclude='swipl-*' --exclude='huggingface' --exclude='sentence_transformers' \
     "$project/local/" "$repo/omegaclaw/local/"
 fi
@@ -105,7 +106,7 @@ __pycache__/
 *.pid
 EOF
 
-if grep -RInE '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|bot[0-9]{8,}:[A-Za-z0-9_-]{30,}|sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' "$repo" \
+if grep -RInE '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|bot[0-9]{8,}:[A-Za-z0-9_-]{30,}|sk-(proj-)?[A-Za-z0-9]{32,}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' "$repo" \
   --exclude-dir=.git --exclude='backup-protomegabot-recovery.sh'; then
   echo "Potential secret pattern found; inspect before committing." >&2
   exit 3

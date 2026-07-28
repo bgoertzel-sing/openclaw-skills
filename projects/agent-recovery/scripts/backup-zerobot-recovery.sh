@@ -83,6 +83,7 @@ find projects -maxdepth 3 -type f \
   done
 
 cp -p projects/agent-recovery/scripts/backup-zerobot-recovery.sh "$repo/scripts/"
+cp -p projects/agent-recovery/scripts/push-recovery-repos.sh "$repo/scripts/"
 
 cat > "$repo/.gitignore" <<'EOF'
 .env
@@ -101,7 +102,7 @@ __pycache__/
 EOF
 
 # Lightweight fail-closed scan for obvious secret material in staged snapshot.
-if grep -RInE '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|bot[0-9]{8,}:[A-Za-z0-9_-]{30,}|sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' "$repo" \
+if grep -RInE '(BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|bot[0-9]{8,}:[A-Za-z0-9_-]{30,}|sk-(proj-)?[A-Za-z0-9]{32,}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})' "$repo" \
   --exclude-dir=.git --exclude='backup-zerobot-recovery.sh'; then
   echo "Potential secret pattern found; inspect before committing." >&2
   exit 3

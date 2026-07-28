@@ -1,0 +1,16 @@
+# Git State
+Captured UTC: 2026-07-15T04:13:10Z
+Working directory: projects/hdpc-tiny-shakespeare/repos/hdpc-tiny-shakespeare
+Commit: 0a55ca12b8705475a7a36bf7e796823dca1ec2a6
+Branch: agent/two-step-trainer-smoke
+Remote names: 
+
+## Status
+## agent/two-step-trainer-smoke
+ M src/hdpc_tiny_shakespeare/train_distill.py
+
+## Diff summary
+ src/hdpc_tiny_shakespeare/train_distill.py | 68 ++++++++++++++++++++++++++++--
+ 1 file changed, 64 insertions(+), 4 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

@@ -1,0 +1,5 @@
+## agent/e1-guarded-homotopy
+?? artifacts/
+?? configs/e1_homotopy_calibration.json
+?? scripts/run_e1_calibration_multi.py
+?? src/relaleap.egg-info/

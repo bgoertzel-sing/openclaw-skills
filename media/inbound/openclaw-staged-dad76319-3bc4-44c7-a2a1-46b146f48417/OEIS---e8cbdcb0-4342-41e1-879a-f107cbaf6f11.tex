@@ -1,0 +1,457 @@
+%% OEIS Program Synthesis, Verified Semantics, and Graded Similarity
+%%
+%% A collecting account of the OEIS-synthesis line of work: a verified domain-specific
+%% language for integer-sequence programs, a neural synthesizer whose contracts are the
+%% prover's theorems, and a graded (probabilistic-logic) similarity layer over the corpus.
+%%
+%% Build:
+%%   pdflatex OEIS.tex
+
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\setlength{\emergencystretch}{3em}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\sig}{\ensuremath{\sigma}}
+\newtheorem{obligation}{Obligation}
+\newtheorem{property}{Property}
+
+\title{OEIS Program Synthesis, Verified Semantics, and Graded Similarity:\\
+       A Unified Account}
+\author{Zarathustra J.\ Goertzel}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We collect an ongoing line of work built around the On-Line Encyclopedia of Integer
+Sequences (OEIS) as a testbed for verified program synthesis. Three strands meet here.
+First, a small domain-specific language (DSL) of integer-sequence programs is given a
+machine-checked operational semantics in Lean, together with a token \emph{recognizer},
+a big-step generative-semantics (GSLT) layer with modal emission specifications, and a
+family of formal \emph{obligations} that a synthesizer must respect. Second, a neural
+sequence-to-graph synthesizer is organized so that the network's operational
+contracts---a legality mask, a canonical form, relabeling invariance---are exactly the
+theorems the prover discharges; the architecture is read as a specification. Third, a
+graded similarity layer expressed in probabilistic-logic truth values $\langle
+\text{strength},\text{confidence}\rangle$ recovers the structure that an exact
+deduplication hash discards: it audits train/test leakage and, via a \emph{sound abstract
+interpreter}, attaches provable properties (totality, sign, parity) to each program. We
+report concrete measurements over a corpus of $104{,}083$ synthesized programs, and we
+argue that the same provable-property machinery serves two roles in an OEIS synthesis
+loop: it \emph{filters} candidate programs and it \emph{measures} them theoretically,
+turning a leakage audit into a verified conjecture generator.
+\end{abstract}
+
+\section{Introduction}
+
+The OEIS is a natural benchmark for program synthesis: each entry is an integer sequence,
+and a solution is a program that reproduces its terms. Recent self-learning systems
+synthesize such programs at scale from a small combinator DSL, discovering programs for a
+large fraction of the OEIS without human-written training
+data~\cite{gauthier2023,gauthier2025}. Our contribution is not another synthesizer but a
+\emph{verified and measured} account of the objects a synthesizer manipulates.
+
+We separate three concerns that are often conflated:
+\begin{itemize}
+  \item \textbf{What a program \emph{is}} --- its syntax over a fixed operator vocabulary,
+        and the machine-checked semantics of running it (Sections~\ref{sec:dsl}--\ref{sec:gslt}).
+  \item \textbf{What a program \emph{does}} --- its input/output behaviour on a finite probe
+        window (its \emph{signature} \sig), the extensional object
+        (Section~\ref{sec:extensional}).
+  \item \textbf{What a program \emph{provably has} as properties} --- totality, sign,
+        parity, growth: the intensional object, obtained by sound static analysis rather
+        than read off finitely many outputs (Section~\ref{sec:intensional}).
+\end{itemize}
+The payoff of keeping these apart is a clean division of labour: the extensional layer
+gives cheap graded evidence but can never certify behaviour beyond the probe window; the
+intensional layer certifies properties for all inputs but is conservative. Combined, they
+sharpen both benchmark hygiene and the discovery of conjectures.
+
+\section{The OEIS synthesis DSL}
+\label{sec:dsl}
+
+Programs are postfix token streams over a $16$-operator vocabulary evaluated on a
+two-register integer state. The operators are constants \code{zero}, \code{one},
+\code{two}; the index variable \code{x} $=n$ and an inner variable \code{y}; binary
+arithmetic \code{addi}, \code{diff}, \code{mult}, \code{divi}, \code{modu}; a conditional
+\code{cond} (test $\le 0$); bounded iterators \code{loop} and \code{loop2}; an unbounded
+search \code{compr} (the $a$-th $n\ge 0$ satisfying a predicate); and stack operators
+\code{push}, \code{pop}. Table~\ref{tab:ops} summarizes the arities and the partiality
+character of each operator, which is decisive for the analysis of
+Section~\ref{sec:intensional}.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+operator & arity & role & partiality / termination \\
+\midrule
+\code{zero},\code{one},\code{two} & $0$ & constants & total \\
+\code{x},\code{y} & $0$ & variables ($n\ge 0$; inner $\ge 0$) & total \\
+\code{addi},\code{diff},\code{mult} & $2$ & arithmetic & total (resource: overflow) \\
+\code{divi},\code{modu} & $2$ & division / modulo & \emph{genuine}: error on zero divisor \\
+\code{cond} & $3$ & branch on $\le 0$ & total given branches \\
+\code{loop},\code{loop2} & $3,5$ & bounded iteration & terminating (resource: timeout) \\
+\code{compr} & $2$ & unbounded search & \emph{genuine}: may not terminate \\
+\code{push} & $2$ & stack push & total (resource: push limit) \\
+\code{pop} & $1$ & stack pop & \emph{genuine}: error on empty \\
+\bottomrule
+\end{tabular}
+\caption{The synthesis DSL. Only \code{divi}/\code{modu} (zero divisor), \code{pop}
+(empty stack), and \code{compr} (non-terminating search) introduce \emph{genuine}
+partiality; \code{loop}/\code{loop2}, overflow, and timeouts are \emph{resource} limits.
+This three-way character drives the totality analysis.}
+\label{tab:ops}
+\end{table}
+
+A closed form illustrates the language: the factorial $n!$ is
+\code{loop(mult(x,y),\,x,\,one)} --- fold multiplication by the running counter $n$ times
+starting from $1$. The counting sequence $a(n)=n+1$ is \code{addi(x,one)}.
+
+\section{Verified GSLT semantics}
+\label{sec:gslt}
+
+The DSL is given a machine-checked operational semantics in Lean. On top of it we build a
+generative-semantics layer as a triple $(T,E,R)$: terms $T$, an equational theory $E$
+(a setoid), and a rewrite relation $R$ with left/right coherence laws. The coarse
+\emph{big-step GSLT} rewrites a program to the integer value its fuel-bounded evaluator
+emits; a completed-value term is never reflexively a program, so non-triviality is
+load-bearing. Two modalities express synthesis goals:
+\begin{align*}
+  \Diamond(\text{emits } v \text{ at } k) &\iff \exists\, s',\ \code{eval}\ \mathit{fuel}\ \mathit{sig}\ p\ (\code{seed}\ k)\ = \code{some}(v,s'),\\
+  \code{EmitsPrefix}\ p\ \ell &\iff \forall i\, v,\ \ell_i = v \Rightarrow \Diamond(\text{emits } v \text{ at } i).
+\end{align*}
+\code{EmitsPrefix} is precisely the OEIS synthesis specification: ``$p$ reproduces the
+observed prefix $\ell$.''
+
+\paragraph{Obligations.} A synthesizer that claims correctness must respect a family of
+formal obligations. We single out three that are discharged as machine-checked theorems,
+axiom-clean (each theorem's \code{\#print axioms} footprint lies within
+$\{\text{propext}, \text{Quot.sound}\}$):
+\begin{obligation}[Recognizer completeness / mask equivalence]
+The legality predicate \code{maskLegal} on token streams coincides with the executable
+recognizer (\code{recognize\_iff\_maskLegal}), and every well-formed program is recognized
+(\code{recognize\_complete}). Hence a constrained decoder that emits only mask-legal tokens
+can generate exactly the well-formed programs.
+\end{obligation}
+\begin{obligation}[Relabeling invariance]
+Evaluation is invariant under a signature isomorphism
+(\code{eval\_relabel\_signature\_iso}): renaming primitives consistently does not change the
+computed sequence. Behaviour depends on structure, not on operator names.
+\end{obligation}
+\begin{obligation}[Canonicalization soundness]
+A flag-driven canonical form (sorting the children of commutative operators, etc.) is
+semantics-preserving (\code{canonicalize\_sound}, \code{orgCanonicalize\_sound}), so
+deduplicating by canonical form never merges behaviourally distinct programs.
+\end{obligation}
+Further obligations (equational-theory soundness, eval-congruence for the modalities,
+finite-probe rigidity, small-step/big-step agreement) organize the remaining work. Finite-
+probe rigidity---whether agreement on a finite probe entails equality---is the formal
+shadow of the leakage phenomenon in Section~\ref{sec:extensional}.
+
+\section{The synthesizer as specification}
+\label{sec:synth}
+
+The neural synthesizer maps a sequence prefix to a program graph (sequence-to-graph). Its
+decoder is \emph{execution-guided}: at each step a legality mask restricts the token set to
+those that can extend a well-formed program, and the mask is exactly the recognizer of
+Obligation~1. The training ladder A0--A3 rises from a plain conditioned decoder (A0) to
+retrieval-augmented and contrastive variants (A3) that consult a similarity index. The
+central design stance is that the network's operational contracts are the prover's
+theorems: the mask's soundness, the canonical form's soundness, and relabeling invariance
+are not engineering conveniences but the denotational safety envelope of the synthesizer.
+
+\section{Leakage-safe data and the extensional layer}
+\label{sec:extensional}
+
+\paragraph{Exact deduplication and splits.} Each program's probe signature \sig{} is its
+output vector on $n=0,\dots,31$ at a fixed fuel, with $\bot$ (\code{None}) marking a
+timeout. Programs with identical \sig{} form an exact behavioural equivalence class
+(``E-class''); the train/val/test split is assigned by whole connected component so that no
+exact behavioural duplicate straddles the split boundary. Over $104{,}083$ programs this
+gate is leak-tight for exact duplicates: all $3{,}007$ exact-\sig{} duplicate pairs lie in
+the same split.
+
+\paragraph{Graded similarity.} Exact equality is brittle. We express graded similarity as a
+probabilistic-logic truth value $\langle s,c\rangle$~\cite{pln2009}: the extensional
+strength is behavioural agreement over the \emph{defined} domain,
+$s = |{\text{agree}}| / |{\text{informative}}|$, and confidence follows the evidence-count
+law $c = m/(m+k)$ with $m$ the number of informative probe positions. Exact equality is the
+degenerate case $s=1,\ m=32$. A locality-sensitive index over signatures generates
+near-equivalent candidate pairs without an $O(n^2)$ scan.
+
+\paragraph{Soft-leakage audit.} The graded layer surfaces \emph{near}-duplicates the exact
+gate cannot see. Table~\ref{tab:leak} reports pairs whose two programs sit in different
+splits. The benchmark-integrity figure is the fraction of evaluation programs with a near
+behavioural twin in \emph{train}: at strength $\ge 0.95$, $1.84\%$ of test and $1.84\%$ of
+val programs (lower bounds---the index can miss a pair, never invent one). A
+disagreement-locus analysis separates genuine near-twins (disagreements confined to a
+single term, none in the tail) from ``false friends'' that agree only on a shared trivial
+tail; the trustworthy signal concentrates in the $\ge 0.95$ band. This vindicates gating on
+\emph{exact} full-signature equality rather than a similarity threshold, which would either
+over-merge on trivial tails or miss single-term twins.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+strength band & cross-split pairs & train$\leftrightarrow$test pairs \\
+\midrule
+$0.80$--$0.90$ & $17{,}250$ & $6{,}365$ \\
+$0.90$--$0.95$ & $2{,}614$  & $909$ \\
+$0.95$--$0.99$ & $502$      & $150$ \\
+\bottomrule
+\end{tabular}
+\caption{Soft leakage: near-equivalent program pairs ($d\ge 1$, not byte-identical) placed
+in different splits by the exact gate. Distinct evaluation programs with a train near-twin:
+$1.84\%$ (test and val) at $\ge 0.95$; $5.4$--$5.8\%$ at $\ge 0.90$.}
+\label{tab:leak}
+\end{table}
+
+\section{The intensional layer: provable properties}
+\label{sec:intensional}
+
+Where the extensional layer reads behaviour off finitely many outputs, the intensional
+layer \emph{proves} properties of the function for all inputs by sound abstract
+interpretation~\cite{cousot1977}. Each transfer function over-approximates the concrete
+operator, so a claim of ``always $\ge 0$'' or ``always even'' holds by construction; loops
+are handled by Kleene fixpoints in finite lattices. We compute three properties.
+
+\begin{property}[Totality]
+A program is \emph{provably total} when only resource limits can stop it: it contains
+neither \code{compr} nor \code{pop}, and every \code{divi}/\code{modu} divisor is provably
+nonzero. This is a conservative lower bound---``unknown'' does not mean partial.
+\end{property}
+\begin{property}[Sign]
+A sign-domain analysis (with $\code{x}=n\ge 0$, and $a\bmod b\ge 0$ for $b>0$) proves the
+OEIS keyword \code{nonn} (nonnegativity) for many programs.
+\end{property}
+\begin{property}[Parity]
+A $\mathbb{Z}/2$ analysis proves ``always even'' / ``always odd'' (e.g.\ \code{mult} by an
+even factor is even).
+\end{property}
+
+\paragraph{Soundness gates.} Two independent checks validate the implementation. A static
+gate compares every sign/parity claim against the real signatures: $0$ violations across
+all $104{,}083$ programs ($\approx 3.3$M value-checks). An empirical totality gate re-runs
+the real evaluator on $500$ provably-total programs to $n=48$ (beyond the probe window):
+$0$ genuine errors, only resource timeouts. Table~\ref{tab:props} gives the distribution.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+provable property & count & share \\
+\midrule
+total          & $37{,}996$ & $36.5\%$ \\
+nonnegative (\code{nonn}) & $45{,}251$ & $43.5\%$ \\
+positive       & $14{,}907$ & $14.3\%$ \\
+even           & $2{,}725$  & $2.6\%$ \\
+odd            & $2{,}926$  & $2.8\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Provable-property distribution over $104{,}083$ programs. Shares are lower bounds:
+the analysis is conservative.}
+\label{tab:props}
+\end{table}
+
+\paragraph{Disambiguating the signature.} A $\bot$ in \sig{} is ambiguous: is the program
+genuinely partial, or merely slow at the probe budget? Totality resolves it. Of the
+$12{,}966$ programs carrying a $\bot$, $2{,}345$ are provably total---their $\bot$ is a
+\emph{resource artefact}, not partiality---while $10{,}621$ are not provably total, with
+attributed cause: $6{,}539$ \code{compr} (non-terminating search), $3{,}023$ \code{pop}
+(empty list), $1{,}059$ \code{divi}/\code{modu} (possible zero divisor). The intensional
+layer thereby cleans the extensional signal.
+
+\section{Filtering and measuring in the OEIS loop}
+\label{sec:filter}
+
+Both roles Table~\ref{tab:props} enables are useful inside a synthesis loop.
+
+\paragraph{Filtering.} An OEIS target often carries known properties---its keywords
+(\code{nonn}, \code{sign}, \code{mult}), or properties provable from a few terms. A
+candidate program whose \emph{provable} properties contradict the target's is provably
+wrong and can be pruned before it is ever run: if the target is nonnegative, every
+provably-negative candidate is rejected soundly. Lifted into the decoder, this is a
+\emph{verified semantic mask} on top of the syntactic legality mask of
+Section~\ref{sec:synth}: constrain generation to programs provably producing outputs of the
+required sign/parity. Because the properties are sound, such filtering never discards a
+correct program.
+
+\paragraph{Measuring.} The same properties are theoretical measurements of a program and of
+a sequence. Totality distinguishes a genuinely partial sequence from a slow-to-compute total
+one; the sign/parity certificates are machine-checked versions of OEIS keywords, so the
+corpus can be scored---and OEIS annotations predicted and \emph{verified}---at scale. More
+finely, the graded truth values give each program pair a calibrated similarity, and the
+provable properties give certain-confidence intensional features that pool with behavioural
+evidence by probabilistic-logic revision. The corpus becomes not merely programs and
+outputs but programs, outputs, and \emph{proofs}.
+
+\section{The loop compounds: a three-seed cumulative replication}
+\label{sec:loop}
+
+The construction above is only interesting if the loop it serves actually runs. It does. We
+report a prospectively registered replication of the self-learning regime of
+\cite{gauthier2023} using a typed-action decoder over the verified skeleton of
+Section~\ref{sec:synth}: the network never emits program text, only \emph{legal construction
+actions} over an exact state, and the checker disposes.
+
+The protocol is the cumulative one. Each of three independently seeded worlds---seeds are
+random-number labels only, controlling initialisation, minibatch order, dropout, and search
+tie-breaking; the data pool ($79{,}249$ rows) and the $240$ search tasks are shared---trains
+on its accumulated verified corpus, searches under a fixed budget, checks every candidate
+against the whole OEIS, adds newly covered sequences to its corpus, and repeats. The
+endpoint is cumulative coverage $C_g$ and its increment $D_g = C_g - C_{g-1}$; no
+comparison against held-back external data governs continuation, since in the deployed
+regime no such reservoir exists.
+
+The shared initial corpus is not chosen freely: it is the reference system's own public
+bootstrap seed \code{sol0}~\cite{gauthier2023}, $3{,}771$ sequences found by \emph{random}
+program search with no learning, and the very origin from which that system subsequently
+grew its full published corpus through many iterations of the loop we are running here.
+Starting from that seed rather than from a mature corpus is deliberate, with three
+consequences. The origin is reproducible and learning-free, a fixed public artefact anyone
+can replay from. Our run is then the \emph{same} self-learning process re-executed---not a
+fork of another system's answers---so a rediscovery is a genuine held-out generalisation
+within our own lineage rather than a lookup. And the base stays small enough that a world's
+own discoveries form a measurable share of the training signal instead of being drowned by
+it, which is what makes the loop's dynamics observable at all. Coverage per world:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+world & initial & after gen.\ 1 & after gen.\ 2 \\
+\midrule
+17 & 3{,}771 & 3{,}789 & 3{,}846 \\
+29 & 3{,}771 & 3{,}841 & 3{,}891 \\
+43 & 3{,}771 & 3{,}807 & 3{,}862 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At generation three we registered, before any update, a three-way comparison of how the
+accumulated discoveries enter training: \emph{uniform} replay (literal pooling, under which
+the $194$ cumulative discoveries receive their natural $0.24\%$ of sampling mass);
+\emph{balanced} replay ($25\%$ discovery mass); and balanced replay with the auxiliary
+predictive heads disabled. All three arms continue from the same per-world parent
+checkpoint under identical update counts and search budgets, and are judged solely by new
+whole-OEIS A-numbers beyond the pooled $3{,}986$ already known. New A-numbers, generation
+three:
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+setting & world 17 & world 29 & world 43 & pooled \\
+\midrule
+uniform replay & 48 & 39 & 72 & 159 \\
+balanced replay, aux.\ off & 65 & 155 & 88 & 308 \\
+balanced replay, aux.\ on & 135 & 155 & 177 & \textbf{467} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every setting is positive in every world: nine of nine cells extend coverage, so the loop
+compounds rather than saturating at this scale. Two registered contrasts separate the
+mechanism. Balanced replay is worth $+308$ pooled over uniform---at literal pooling the
+model's own discoveries are numerically drowned by the base corpus, and the loop is starved
+of exactly the signal it exists to generate. The auxiliary heads are worth a further $+159$.
+The generation-three increment under the selected setting exceeds the generation-two
+increment by roughly threefold, and the setting carried into generation four was fixed by
+the registered selection rule rather than chosen after inspection.
+
+Two negative results bound the claim, and we record them because they cost us the
+distinction. First, an ablation asking whether a world's own discoveries beat an equal mass
+of \emph{unused external certified examples} answers no, in all three worlds
+($162$ versus $253$ pooled): feedback submitted more candidates yet explored fewer distinct
+programs ($5{,}540$ versus $6{,}233$), a diversity contraction rather than a fitting
+failure. That comparison is a legitimate ablation and a poor objective---the fresh arm is an
+oracle-advantaged comparator that does not exist in the deployed loop, where the corpus is
+whatever the loop has verified. Second, no arm in any generation solved its own assigned
+held-out target within budget. The evidence therefore concerns learned \emph{discovery}
+guidance over the catalogue---the regime \cite{gauthier2023} operates in---and not
+target-conditioned synthesis, which remains open.
+
+What the verified layer contributes here is attributability rather than yield. Because the
+legality mask is machine-checked, a discovery cannot be an artefact of a malformed
+candidate slipping past a hand-written filter; because ranking is provably
+recall-preserving, guidance changes search order and cannot manufacture or destroy
+solutions; and because every accepted program is checked against the whole corpus, the
+increments above are exact rather than estimated. The loop's growth and the loop's
+trustworthiness are established by different machinery, and both are needed.
+
+\section{From leakage to conjecture}
+\label{sec:conjecture}
+
+Near-equivalence is dual to conjecture: what threatens a benchmark as contamination is, read
+the other way, a discovered near-identity. The sharpest instance is the pairing of the
+\emph{fastest} and the \emph{smallest} program for a sequence. These minimize opposite terms
+of Levin's $Kt$ complexity, $Kt(x)=\min_p |p|+\log t(p)$~\cite{levin1973}: program length
+and running time. Two quasi-independent searches, under different inductive biases,
+converging on the same total function is strong corroboration that the function is the
+intended sequence---never entailment (finitely many terms cannot pin an infinite sequence),
+but Bayesian evidence, and in probabilistic-logic terms the revision of two independent
+estimates into higher confidence. \emph{Proving} the two programs equivalent on all $n$
+converts finite-prefix agreement into total agreement; the induction predicates such proofs
+require are exactly what recent conjecturing systems learn to
+generate~\cite{gauthier2025}. Our verified layer offers to discharge them as kernel-checked
+theorems rather than trusted external calls. The interesting conjectures live where
+extensional similarity is high but \emph{syntactic} intensional similarity is low---two
+unlike programs computing one sequence---and shared \emph{provable} properties become lemmas
+toward the identity proof.
+
+\section{Status and roadmap}
+\label{sec:roadmap}
+
+The verified DSL semantics, recognizer, big-step modalities, and the three crown obligations
+are machine-checked and axiom-clean. The synthesizer's data pipeline, exact split gate, and
+the WM-PLN extensional and intensional layers are implemented and measured over the current
+corpus, with the numbers reported above; the self-learning loop of Section~\ref{sec:loop}
+compounds under three registered replay settings across three worlds. Near-term work: (i) bind the Lean canonical policy
+to the exported operator-table metadata so the ML mask and the proved canonical form share
+one source of truth; (ii) lift the sound Python properties to Lean theorems, closing the
+verified-semantic-mask loop; (iii) retain the fastest and smallest program per sequence so
+the within-sequence equivalence-conjecture analysis of Section~\ref{sec:conjecture} becomes
+runnable; (iv) add growth-class and monotonicity to the abstract interpreter. The unifying
+aim is an OEIS synthesis loop in which every accepted program is both behaviourally
+corroborated and provably constrained.
+
+\begin{thebibliography}{9}
+\bibitem{gauthier2023} T.~Gauthier and J.~Urban.
+  \emph{Learning Program Synthesis for Integer Sequences from Scratch}.
+  AAAI 2023; arXiv:2202.11908.
+\bibitem{gauthier2025} T.~Gauthier and J.~Urban.
+  \emph{Learning Conjecturing from Scratch}. arXiv:2503.01389, 2025.
+\bibitem{oeis} OEIS Foundation Inc.
+  \emph{The On-Line Encyclopedia of Integer Sequences}. \url{https://oeis.org}.
+\bibitem{cousot1977} P.~Cousot and R.~Cousot.
+  \emph{Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by
+  Construction or Approximation of Fixpoints}. POPL 1977.
+\bibitem{levin1973} L.~A.~Levin.
+  \emph{Universal Sequential Search Problems}. Problems of Information Transmission,
+  9(3):265--266, 1973.
+\bibitem{pln2009} B.~Goertzel, M.~Ikl\'e, I.~Goertzel, and A.~Heljakka.
+  \emph{Probabilistic Logic Networks}. Springer, 2009.
+\end{thebibliography}
+
+\end{document}

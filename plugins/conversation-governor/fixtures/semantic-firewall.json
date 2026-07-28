@@ -1,0 +1,1 @@
+{"candidate":{"schema_version":"1.0.0","event_id":"evt_111111111111111111111","agent_id":"zero","text":"fact one fact two","send_intent":true,"timestamp":"2026-07-27T22:00:00.000Z","egress_decision":"REPAIR_THEN_SEND"},"repair":{"kind":"truncation","text":"fact one"},"expected":{"no_claim_added":true}}

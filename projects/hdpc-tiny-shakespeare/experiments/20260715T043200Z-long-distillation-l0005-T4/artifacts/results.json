@@ -1,0 +1,116 @@
+{
+  "abort_reason": "Step 3: energy increase 4.68e-09 exceeds threshold 1.37e-09 (10.0% of |energy_init|=1.37e-08)",
+  "aborted": true,
+  "config": {
+    "T": 4,
+    "batch_size": 4,
+    "beta": 2.0,
+    "early_abort_threshold": 0.1,
+    "eval_every": 20,
+    "lambda_lr": 0.005,
+    "model": "sshleifer/tiny-gpt2",
+    "seed": 0,
+    "seq_len": 256,
+    "steps": 300,
+    "weight_lr": 0.0001
+  },
+  "final_eval": {
+    "delta_ppl": 0.71484375,
+    "loss": 10.823525428771973,
+    "ppl": 50187.70703125,
+    "teacher_loss": 10.823511123657227
+  },
+  "initial_eval": {
+    "delta_ppl": 0.0,
+    "loss": 10.823511123657227,
+    "ppl": 50186.9921875,
+    "teacher_loss": 10.823511123657227
+  },
+  "steps": [
+    {
+      "T": 4,
+      "all_finite": true,
+      "energy_max_increase": 1.5644616897139826e-23,
+      "energy_monotone": true,
+      "energy_trace": [
+        0.0,
+        2.2834462425836034e-24,
+        9.08817382165544e-24,
+        2.0346360420889133e-23,
+        3.599097731802896e-23
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999999403953552,
+          "mean_norm_ratio": 1.0
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999701976776,
+          "mean_norm_ratio": 1.0
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999850988388,
+          "mean_norm_ratio": 1.0
+        }
+      },
+      "step": 0
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "energy_max_increase": 1.5354224558450369e-09,
+      "energy_monotone": true,
+      "energy_trace": [
+        -4.6464357694731007e-08,
+        -4.6199811976066485e-08,
+        -4.6203428638591504e-08,
+        -4.5833111528281734e-08,
+        -4.42976890724367e-08
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000149011612,
+          "mean_norm_ratio": 0.999335378408432
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999060134092966,
+          "mean_norm_ratio": 0.9971656451622645
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999980131785074,
+          "mean_norm_ratio": 0.9987296760082245
+        }
+      },
+      "step": 1
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "energy_max_increase": 2.7243913791608065e-08,
+      "energy_monotone": true,
+      "energy_trace": [
+        3.686973855110409e-07,
+        3.550036637989251e-07,
+        3.822475775905332e-07,
+        3.9946058905115933e-07,
+        3.9312618582698633e-07
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000149011612,
+          "mean_norm_ratio": 0.9957953095436096
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9984684884548187
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999992996454239,
+          "mean_norm_ratio": 0.9992200483878454
+        }
+      },
+      "step": 2
+    }
+  ],
+  "total_time_seconds": 13.565428018569946
+}

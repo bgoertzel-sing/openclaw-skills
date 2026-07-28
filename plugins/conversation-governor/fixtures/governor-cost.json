@@ -1,0 +1,1 @@
+{"decision":{"schema_version":"1.0.0","event_id":"evt_111111111111111111111","timestamp":"2026-07-27T22:00:00.000Z","mode":"shadow","decision":"ADMIT","reason_codes":["HUMAN_QUESTION"],"cost":{"cpu_ms":0,"model_calls":0,"tokens_used":0}},"expected":{"model_calls":0,"tokens_used":0}}

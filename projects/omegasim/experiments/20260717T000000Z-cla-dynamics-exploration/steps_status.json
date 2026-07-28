@@ -1,0 +1,178 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": 0.176,
+    "stdout": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/tests.stdout.log",
+    "stderr": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/tests.stderr.log",
+    "name": "unit_tests"
+  },
+  {
+    "name": "tight_c0.35-d0",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d0.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.35",
+      "--delays",
+      "0",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d0.json"
+  },
+  {
+    "name": "tight_c0.35-d3",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d3.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.35",
+      "--delays",
+      "3",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d3.json"
+  },
+  {
+    "name": "tight_c0.35-d7",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d7.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.35",
+      "--delays",
+      "7",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.35-d7.json"
+  },
+  {
+    "name": "tight_c0.60-d0",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d0.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.6",
+      "--delays",
+      "0",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d0.json"
+  },
+  {
+    "name": "tight_c0.60-d3",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d3.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.6",
+      "--delays",
+      "3",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d3.json"
+  },
+  {
+    "name": "tight_c0.60-d7",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/run_cla_detector.py",
+      "--output",
+      "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d7.json",
+      "--seeds",
+      "101,103,107,109,113",
+      "--couplings",
+      "0.6",
+      "--delays",
+      "7",
+      "--steps",
+      "1024",
+      "--burn",
+      "128",
+      "--surrogates",
+      "5"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": null,
+    "recovery_note": "Validated and reused after attempt 1 broad-import failure; original elapsed time was not persisted.",
+    "output": "/home/openclaw/research-agent/projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/artifacts/tight-shards/c0.60-d7.json"
+  },
+  {
+    "name": "broad_balanced_12_point",
+    "command": [
+      "internal ProcessPoolExecutor",
+      "workers=4"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds": 826.267,
+    "tasks": 72
+  }
+]

@@ -1,13 +1,391 @@
 
+- [x] Bind frozen provider-free usability inference admission to the exact
+  bounded PLN program text reconstructed from its two declared runtime
+  sentences, derived query term, and expected result. A fully rehashed
+  executable-text substitution now fails closed. Focused 16-test and full
+  622-test verification passed with repository-local `git diff --check`;
+  local commit `f68be17` (2026-07-28 13:02 PDT / 20:02 UTC). Runtime
+  invocation, promotion/write, live integration, dependency changes, and
+  remote actions remain closed.
+
+- [x] Bind frozen provider-free usability inference admission to the exact
+  non-live program boundary and provenance-preserving runtime-stamp policy.
+  Fully rehashed replacements claiming live integration or discarded source
+  provenance now fail closed. Focused 15-test and full 621-test verification
+  passed with repository-local `git diff --check`; local commit `3c4d3e2`
+  (2026-07-28 11:00 PDT / 18:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependency changes, and remote actions remain closed.
+
+- [x] Bind frozen provider-free usability inference admission to the exact
+  patham9/PLN derivation-program schema, read-only two-premise mode, and member
+  set. A fully rehashed result using an unreviewed program schema now fails
+  closed. Focused 13-test and full 619-test verification passed with
+  repository-local `git diff --check`; local commit `b7230cc` (2026-07-28
+  09:02 PDT / 16:02 UTC).
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  and remote actions remain closed.
+
+- [x] Close JSON boolean/integer type confusion in frozen usability inference
+  admission. All three `semantic_markers` counts now require exact integers;
+  a fully rehashed result using `true` for `passed_true_count` fails closed
+  even though Python compares it equal to `1`. Focused 9-test and full
+  615-test verification passed with repository-local `git diff --check`;
+  local commit `74859ec` (2026-07-28 03:00 PDT / 10:00 UTC). Runtime
+  invocation, promotion/write, live integration, dependency changes, and
+  remote actions remain closed.
+
+- [x] Semantically close frozen usability inference admission. Require the
+  patham9/PLN result schema, zero process/classifier return codes, a positive
+  passed-marker count, semantic success, and zero false/error markers; a fully
+  rehashed bare `{"status":"passed"}` result now fails closed. Focused 8-test
+  and full 614-test verification passed with repository-local `git diff
+  --check`; local commit `8e9c567` (2026-07-28 01:00 PDT / 08:00 UTC).
+  Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Semantically close the frozen usability journal checksum sidecars:
+  require exact `sha256sum` record framing for `journal.metta` and require
+  each recorded digest to equal the independently recomputed journal digest.
+  A fully rehashed false-sidecar adversary fails closed. Focused 6-test and
+  full 612-test verification passed with repository-local `git diff --check`;
+  local commit `08abbde` (2026-07-27 21:01 PDT / 2026-07-28 04:01 UTC).
+  Promotion/write, runtime invocation, live integration, dependency changes,
+  and remote actions remain closed.
+
+- [x] Close the frozen provider-free usability summary to its exact schema-v2
+  member set, rejecting undeclared fields even when all declared artifact
+  digests and non-live claims are valid. Focused 5-test and full 611-test
+  verification passed with repository-local `git diff --check`; local commit
+  `7ef5748` (2026-07-27 19:00 PDT / 2026-07-28 02:00 UTC). Promotion/write,
+  runtime invocation, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Add a producer-owned, read-only admission API for frozen provider-free
+  usability bundles. `validate_provider_free_usability_bundle()` requires the
+  exact schema-v2 ten-file inventory, bounded regular non-symlink artifacts,
+  unambiguous UTF-8 JSON, every declared digest, byte-identical restart
+  retrieval, passed inference, and explicit non-live authority. Tampered,
+  extra-artifact, and promotion-authorized bundles fail closed. Focused 4 and
+  full 610 tests passed with repository-local `git diff --check`; local commit
+  `0971225` (2026-07-27 17:03 PDT / 2026-07-28 00:03 UTC). No canonical write,
+  promotion, runtime invocation, live integration, dependency change, or
+  remote action.
+
+- [x] Integrity-bind the complete non-self-referential provider-free usability
+  evidence bundle. Summary schema v2 now records SHA-256 digests for the
+  persistent journal lock and both journal checksum sidecars as well as the
+  original six evidence files; the regression independently recomputes every
+  declared artifact digest except `summary.json` itself. Focused verification
+  passed 5 tests; full discovery passed 606 tests; repository-local `git
+  diff --check` passed in local commit `41dfdda` (2026-07-27 15:00 PDT /
+  22:00 UTC). No promotion/write, live integration, paid compute, dependency
+  change, or remote action.
+
+- [x] Version the provider-free usability summary and enumerate its exact
+  evidence bundle, including the journal lock, checksum sidecars, and summary
+  itself. The regression rejects undeclared output artifacts. Focused
+  verification passed 5 tests; full discovery passed 606 tests; repository-local
+  `git diff --check` passed in local commit `3773908` (2026-07-27 13:05 PDT /
+  20:05 UTC). No promotion/write, live integration, paid compute, dependency
+  change, or remote action.
+
+- [x] Make provider-free reproducibility evidence self-describing: include the
+  restarted retrieval artifact in `summary.json`, assert its digest equals the
+  pre-restart retrieval, and record the semantic inference status. Focused
+  verification passed 5 tests; full discovery passed 606 tests; repository-local
+  `git diff --check` passed in local commit `8861980` (2026-07-27 09:00 PDT /
+  16:00 UTC). No promotion/write, live integration, paid compute, dependency
+  change, or remote action.
+
+- [x] Require the provider-free usability output directory's immediate parent
+  to exist and replace recursive `mkdir -p` with a single-directory create.
+  A nested request with a missing parent now exits 2 without creating any
+  filesystem entry. Focused verification passed 5 tests; full discovery passed
+  606 tests; repository-local `git diff --check` passed in local commit
+  `ac64440` (2026-07-27 07:01 PDT / 14:01 UTC). No runtime promotion/write,
+  upstream/remote action, paid compute, dependency change, or live integration.
+
+- [x] Add an automated no-overwrite regression for the provider-free usability
+  gate. An existing output directory containing operator-owned data is rejected
+  with exit 2 before fixture ingestion or runtime work, and its exact entry
+  bytes/mode remain unchanged. Focused verification passed 1 test; full
+  discovery passed 602 tests; repository-local `git diff --check` passed
+  in local regression commit `a64e7b1` (2026-07-26 13:00 PDT / 20:00 UTC).
+  No runtime invocation, promotion/write, upstream/remote action, paid compute,
+  dependency change, or live integration.
+
+- [x] Add a fully rehashed PeTTaChainer manifest resource-budget adversary.
+  Setting `budget.max_steps` to zero and recomputing both the typed manifest
+  digest and outer document checksum still fails closed during typed
+  reconstruction. Focused and full 601-test verification passed with
+  repository-local `git diff --check`; local regression commit `3364939`
+  (2026-07-26 11:00 PDT / 18:00 UTC). Runtime invocation, promotion/write,
+  upstream/remote action, paid compute, and live integration remain closed.
+
+- [x] Add a fully rehashed PeTTaChainer manifest temporal-order adversary.
+  Moving `finished_at` before `started_at` and recomputing both the typed
+  manifest digest and outer document checksum still fails closed at typed
+  reconstruction. Focused and full 601-test verification passed with
+  repository-local `git diff --check`; local regression commit `11b853a`
+  (2026-07-26 07:00 PDT / 14:00 UTC). Runtime invocation, promotion/write,
+  upstream/remote action, paid compute, and live integration remain closed.
+
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for chart-anchor
+  drift. Replacing `chart_fingerprint` and recomputing both the typed manifest
+  digest and outer document checksum still fails closed against the supplied
+  compiler contract. Focused and full 601-test verification passed with
+  repository-local `git diff --check`; local regression commit `387c2fa`
+  (2026-07-25 23:00 PDT / 2026-07-26 06:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action,
+  paid compute, or live integration.
+
+- [x] Add a fully rehashed rule-attribution adversary: replace the attribution
+  artifact's bound result identity, recompute its internal attribution digest
+  and outer document checksum, and require reload to reject it against the
+  supplied admitted result. Local regression commit `a27984a`; focused and
+  full 601-test verification passed with `git diff --check` (2026-07-25 13:00
+  PDT / 20:00 UTC). No runtime invocation, promotion/write, upstream/remote
+  action, paid compute, or live integration.
+
+- [x] Add a fully rehashed manifest-attribution adversary: replace the
+  PeTTaChainer manifest's attribution identity, recompute its internal manifest
+  digest and outer document checksum, and require reload to reject the artifact
+  against the supplied compiler-bound attribution. Local regression commit
+  `48c278f`; focused and full 601-test verification passed with `git diff
+  --check` (2026-07-25 11:00 PDT / 18:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Extend the PeTTaChainer two-cycle clean-room reload gate across the new
+  compiler-bound rule-attribution artifact. Result, manifest, and attribution
+  identities remain stable, and wrong artifact classes fail closed. Local
+  regression commit `3835baf`; focused and full 601-test verification passed
+  with `git diff --check` (2026-07-25
+  07:00 PDT / 14:00 UTC). No runtime invocation, promotion/write,
+  upstream/remote action, paid compute, or live integration.
+
+- [x] Bind typed PeTTaChainer validator/runtime stream captures to their exact
+  stage labels. Correctly rehashed captures with swapped or relabeled stage
+  roles now fail closed. Local implementation commit `6cef687`; focused and
+  full 601-test verification passed, plus
+  `git diff --check` (2026-07-25 01:00 PDT / 08:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Close typed PeTTaChainer derived-result provenance cardinality. Both fact
+  and rule evidence-basis collections must now contain exactly one entry per
+  retained stamp, even when a malformed caller recomputes the result digest.
+  Local implementation commit `aabc3fa`; focused and full 601-test verification
+  passed, plus `git diff --check` (2026-07-24 17:00 PDT / 2026-07-25 00:00
+  UTC). No runtime invocation, promotion/write, upstream/remote action, paid
+  compute, or live integration.
+
+- [x] Lock literal-LF captured-result admission against CR and CRLF framing.
+  The existing verbatim boundary already rejected both forms; regressions now
+  prevent future newline-normalization from admitting them. Local regression
+  commit `60aacb2`; focused and full 601-test verification passed, plus `git
+  diff --check` (2026-07-24 09:00 PDT / 16:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote
+  action, paid compute, or live integration.
+
+- [x] Reconciled `docs/implementation-status.md` with the completed
+  PeTTaChainer typed capture/result and episode-manifest persistence gates. The
+  status no longer incorrectly advertises those gates as open; the remaining
+  boundaries are trace/rule attribution, reviewed promotion/write, upstream
+  repair adoption, and live integration. Documentation consistency check and
+  the full test suite passed (2026-07-24 07:00 PDT / 14:00 UTC). No runtime,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Reconciled the specialized compiled-input kernel gate against the completed
+  PeTTaChainer path. The original stock patham9 probe remains a valid negative
+  result (`[()]` and a failed generic inversion test), but it is no longer the
+  only route: immutable `compile_episode_inputs()` output now adapts to a
+  checked PeTTaChainer contract, the exact single-import candidate completes
+  bounded `compileadd` plus a one-rule non-stored derivation, TotalMP truth is
+  independently recomputed, and typed result/manifest persistence reloads
+  against the compiler contract. Fresh full verification passed 601 tests and
+  `git diff --check` (2026-07-24 01:00 PDT / 08:00 UTC). Stock patham9 generic
+  build support remains unsupported rather than weakened; promotion/write,
+  upstream adoption, and live integration remain closed.
+
+- [x] Completed the Phase-1 archived process-capture adversary matrix: clean-room manifest reload now explicitly rejects stderr and return-code drift in addition to stdout and program-commitment drift. Local regression commit `6de6912`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 19:00 PDT / 2026-07-24 02:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Made the Phase-1 no-unlogged-filesystem-effects success criterion executable. The combined clean-room regression now inventories the exact six initial artifacts, proves all reload/query admission steps leave that inventory unchanged, and admits only the explicitly constructed stale-descriptor adversary afterward. Local regression commit `e7602a9`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 13:00 PDT / 20:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Made the Phase-1 clean-room provenance distinction explicit for a newly asserted post-reload memory. A different statement, snapshot, and chart produce identities distinct from the loaded compiled sentence, and neither the frozen replay validator nor archived manifest admits the old derived result against that new assertion. Local regression commit `6ed4a63`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 09:00 PDT / 16:00 UTC). No schema/runtime change, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Added the duplicate-anchor adversary to the Phase-1 clean-room gate. Two valid, distinctly content-addressed evidence snapshots claiming the same logical `snapshot_id` are rejected by archive lookup, preventing filesystem order from choosing a runtime memory state. Local regression commit `2ef2505`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 07:01 PDT / 14:01 UTC). No schema/runtime change, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Added the explicit same-named cross-run collision adversary to the Phase-1 clean-room gate. A second compiled state reuses every human-readable archive identifier while changing evidence content; the resulting chart fingerprint and compiled sentence drift are rejected by archived result and manifest/program admission. Local regression commit `96b736f`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 05:00 PDT / 12:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Extended the Phase-1 clean-room gate across the current PeTTaChainer runtime descriptor/capture class. Two isolated create-once reload cycles preserve the derived result, validator stream, runtime stream, and manifest identities and retain the frozen `(T a)` query plus non-promotion classification. Cross-class reads and a valid but cross-contract manifest pairing fail closed. Local implementation commit `94d749c`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 03:00 PDT / 10:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+
+- [x] Closed direct Phase-1 manifest reload over result-to-compiled stamp provenance. When both immutable artifacts are supplied, every result stamp must exist in the compiled stamp map and its ordered evidence-basis IDs must match exactly; a forged, checksummed manifest/result pair now fails closed. Local implementation commit `ef9aeb3`; focused 1 and full 600 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Closed late parent-directory drift at the legacy pi-PLN audit boundary. A public evidence-snapshot load now has a constructed regression in which the parent inode changes between initial admission and final revalidation; the artifact is rejected before typed reconstruction. Local regression commit `48d3e49`; focused 1 and full 598 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Closed the create-once artifact-creation cleanup branch. When descriptor-anchored exclusive creation fails and closing the already-open parent directory also fails, the artifact-creation error remains primary, the parent-close diagnostic is attached, and no artifact exists. Local implementation commit `fb6bfbb`; focused 1 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Closed the remaining combined cleanup branch when create-once PeTTaChainer publication cannot wrap the new artifact descriptor as a text stream and closing both the artifact descriptor and parent descriptor also fails. The primary stream-open failure is preserved, both cleanup notes remain observable, and the partial path is absent. Local implementation commit `d5d8f2a`; focused 1 and full 596 tests passed, plus `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Added the PeTTaChainer-specific EpisodeManifest adapter required by the retained-stream model. `PeTTaChainerEpisodeManifest` content-addresses the complete immutable contract and binds the compiler-closed result, validator/runtime capture identities, repaired source/profile, runtime/controller identities, budget, seed, and timestamps. It rejects contract/result sidecar drift and cannot set `promotion_authorized=True`. Local implementation commit `7656d29`; focused 115 and full 570 tests passed, plus `py_compile` and `git diff --check`. Next: add create-once checksummed manifest persistence/reload before any promotion/write/upstream/live gate.
+
+- [x] Added create-once, checksummed JSON persistence for `PeTTaChainerDerivedResultCapture`. Reload reconstructs both nested `PeTTaChainerStageCapture` records and typed result digest, rejects document/schema drift, and requires exact episode/query plus fact/rule proof, stamp, and evidence-basis agreement with the supplied immutable compiler contract. Local implementation commit `57e60f0`; focused persistence regression and full 570 tests passed, plus `py_compile` and `git diff --check`. Next: design a PeTTaChainer-specific EpisodeManifest adapter without opening promotion/write/upstream/live boundaries.
+
+- [x] Defined the typed PeTTaChainer process/result capture boundary required before manifest work. `PeTTaChainerStageCapture` content-addresses bounded validator/runtime diagnostics; `PeTTaChainerDerivedResultCapture` binds those captures to the immutable compiler fact/rule digests, proof IDs, stamps, evidence bases, canonical derived atom, and TotalMP STV. Construction fails closed on gate/contract drift, non-unique or missing retained answers, proof/STV mismatch, or malformed stream identity. A fresh isolated pinned `e4db5ca` single-import probe admitted result digest `f77be2210dc63e507140d025645aae1d2d5e6c5f65407f7dbf7326716bb7ca24`. Local implementation commit `011a4a0`; artifact: `repos/petta-memory/artifacts/pettachainer_typed_derived_capture_2026-07-18T0300PDT.json`, SHA-256 `ccb9d1f4d54c2f5fd6dc2066f59d48f47d3d5848bf6a006a0dbdaf85b323d411`. Focused 115 and full 570 tests passed, plus `py_compile` and `git diff --check`. Next: add create-once persistence/reload before any PeTTaChainer-specific EpisodeManifest adapter; no promotion/write/upstream/live change.
+
+- [x] Remeasured the first post-repair downstream rung on the exact single-import PeTTaChainer candidate. Public `compile` and direct `compile_` each returned one identical clause in 0.420 s (previously 256 versus 128), so the old wrapper 2x factor was coupled to duplicate registration too. Local implementation commit `0f59d71`; focused 92 and full 547 tests passed, plus `py_compile` and `git diff --check`. Artifact: `artifacts/pettachainer_repaired_wrapper_2026-07-17T0500PDT.json`, SHA-256 `51b12b5c3a4f6fec7aeed9d5c98f86a2b4b96e867c1e27db0587f5a434d8d3ef`. Next: remeasure fact-KB, predicate, annotation, `mm2stmt`, and collector rungs before another repair or `compileadd` retry; no upstream/live/write change.
+
+- [x] Admitted the first isolated PeTTaChainer source repair under an exact critical-file gate. Removing only `context_generation.metta`'s duplicate `chainer/compile` import in a copied pinned `e4db5ca` checkout reduced direct `compile_` from 128 copies of one clause to one normalized-equivalent output, not the provisional 64. Added reusable before/after source/runtime gates and three regressions in local commit `a345255`; focused 90/full 545 tests, `py_compile`, and `git diff --check` passed. Next: rerun public-wrapper, fact-KB, predicate, annotation, `mm2stmt`, and collector rungs on the single-import candidate before any second repair or `compileadd` retry. Artifact: `artifacts/pettachainer_duplicate_import_repair_2026-07-17T0300PDT.json`; no upstream/live/write change.
+
+- [x] Closed the complete measured PeTTaChainer concrete-fact multiplicity into a source-repair plan. A typed helper requires the empirical counts to close exactly (`1*8*4*2*2*2=256` for public compile; `1*2*2=4` for the deduplicated collector), rejects malformed/stale counts, and ranks isolated duplicate-registration removal first, exclusive zero-premise `mm2stmt` matching second, remaining matcher/evaluator investigation third, and byte-identical set collapse only as a separately parity-tested fallback. Plan: `docs/pettachainer_fact_fanout_repair_plan.md`; local commit `914083d`; focused 87/full 542 tests passed. Next: test the import repair only in an isolated pinned PeTTaChainer checkout and rerun existing compile rungs; keep `compileadd`/query/result/manifest gates closed.
+
+- [x] Closed the final unexplained twofold factor within the single registered PeTTaChainer fact dispatcher. Under the exact pinned annotated-head and fact-ladder source gate, identical local bodies returned 64 copies through `(@ $stmt (: $prf $Type $tv))` versus 32 through direct structural `(: $prf $Type $tv)` matching, with one unique clause in each result. Local commit `05fbb37`; focused 85/full 540 tests passed. Next remains a reviewed upstream/deduplication strategy before retrying `mm2compile`/`compileadd`; no matcher/import patch or add/query/result gate is approved.
+
+- [x] Separated the public `compile` wrapper from direct `compile_` dispatch. An exact source gate confirms the pinned wrapper is only `(compile_ $kb $stmt)`, yet the same bounded runtime returned 256 public-wrapper copies versus 128 direct-dispatch copies of one unique clause in 0.547 s. This assigns one 2x evaluator factor to the wrapper boundary and leaves a 16x factor inside direct `compile_` above the already-unique literal fact branch. Local implementation commit `546696a`; focused 76 and full 531 tests passed, plus `py_compile` and `git diff --check`. Next: isolate the nested `is-var` / implication / bidirectional condition ladder before evaluating any set collapse; keep `mm2compile`/`compileadd`/query/result/manifest gates closed.
+
+- [x] Closed the residual twofold direct-`compile_` fan-out with an exact import-path and single-registration gate. `petta_chainer.metta` imports `chainer/compile` directly and again through `context_from_kb -> context_generation`; one source-equivalent local registration returned 64 copies versus 128 from direct `compile_`, with one unique clause in both cases. Local commit `8150d69`; focused 82/full 537 tests passed. The full fact-dispatch multiplicity is now source-localized, but no upstream deduplication/import change or add/query/result gate is approved.
+
+- [x] Isolated the remaining PeTTaChainer fact-branch fan-out above the literal branch. The exact source-gated copied ladder substituted the unique literal KB for `compile-fact-kb`; its base clause, explicit-empty arm, and real empty `compile-outputs` arm each returned one copy in 0.460 s. Combined with the separately measured eight-copy `compile-fact-kb` and 256-copy public `compile`, this places the unexplained 32x factor in the wrapper/`compile_` dispatch path. Local implementation commit `4a2e9a7`; focused 72 and full 527 tests passed, plus `py_compile` and `git diff --check`. Next: isolate `compile` versus direct `compile_` and then the nested dispatch conditions before evaluating set collapse; keep `mm2compile`/`compileadd`/query/result/manifest gates closed.
+
 - [x] Current progress slice pinned the read-only `live-goal-bridge --run-patham9-runtime` to exact result/program schema identities. Wrong but non-empty patham9 query-smoke schemas now fail closed before GoalChainer appraisal. Verification: local implementation commit `f42d293`; full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 440 tests; `git diff --check` passed. Boundaries preserved: no PeTTaChainer `compileadd`, no memory write, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill/task claim.
 
 - [x] Hardened the read-only `live-goal-bridge` GoalChainer decision-status boundary. The bridge now rejects missing/non-string/unknown decision statuses before emitting a bridge artifact; allowed review statuses are `recommended`, `candidate`, `held`, `weak`, and `blocked`. Verification: focused live-bridge tests pass 20 cases; local implementation commit `0d376e9`; full unittest discovery passes 433 tests; `git diff --check` passes. Boundaries preserved: no PeTTaChainer `compileadd`, no memory write, no inferred-belief promotion, no patham9/PLN source change, no OmegaClaw skill/task claim.
 
 # Tasks
 
+- [x] 2026-07-27: Integrate the frozen provider-free PeTTa-memory evidence
+  bundle with ProtoMegaBot2 as a read-only shadow consumer. Deliverable: a
+  narrow public-interface adapter that retrieves one known episode and its
+  recorded pi-PLN result, emits one bounded candidate-context annotation, and
+  remains provider-free and write-free. Acceptance test: clean-checkout replay
+  passes; source journal/index/evidence hashes are byte-identical before and
+  after; restart output is identical; malformed, missing, tampered,
+  wrong-version, and ambiguous inputs fail before ThreadKeeper state changes.
+  Completed in ProtoMegaBot2 branch `agent/petta-memory-shadow-consumer` at
+  commit `fc30964`; eight focused tests and the recorded restart/hash gate
+  passed. Evidence:
+  `projects/petta-memory/experiments/20260727T233914Z-protomegabot2-shadow-consumer-branch/`.
+  Cross-project link: `projects/protomegabot2/TASKS.md`.
+
+- [x] Extend the Phase-1 clean-room reload gate across the frozen Phase-0 replay-anchor class: preserve exact source/output commitments over two isolated cycles and reject stale source content before admission. Local commit `f84d45d`; focused 1 and full 600 tests passed; runtime and live boundaries remain closed.
+
 Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
+
+- [x] Reject a fully rehashed PeTTaChainer episode manifest whose seed is
+  negative. The typed deterministic-input invariant remains binding even when
+  both manifest digests are recomputed (focused and full 601-test verification
+  plus `git diff --check`; local regression commit `d3ca892`; 2026-07-26
+  09:00 PDT / 16:00 UTC). Runtime
+  invocation, promotion/write, upstream/remote action, paid compute, and live
+  integration remain closed.
+
+- [x] Reject a fully rehashed PeTTaChainer episode manifest that flips
+  `promotion_authorized` to true. The typed non-live invariant remains binding
+  even when both the manifest digest and document checksum are recomputed
+  (`4ba88fb`; focused and full 601-test verification plus `git diff --check`;
+  2026-07-26 03:00 PDT / 10:00 UTC). Runtime invocation, promotion/write,
+  upstream/remote action, paid compute, and live integration remain closed.
+
+- [x] **Phase-1 runtime capture/reload gate.** Implemented a bounded, non-live clean-room roundtrip over current PeTTaChainer captures/manifests, legacy πPLN compiled/result/manifest artifacts, and frozen Phase-0 replay manifests. Two isolated cycles retain stable identities and frozen-query behavior; stale source and output, malformed descriptors, provenance mismatch, duplicate anchors, wrong artifact classes, and cross-run collisions fail closed. Final frozen-output regression commit `cf8ed5d`; focused test passed. Promotion, external writes, upstream adoption, and live integration remain closed.
+
+  **Scope:**
+  - Cover three artifact classes: current runtime descriptors, legacy πPLN artifacts, and frozen replay manifests.
+  - Adversarial cases: stale descriptors, provenance mismatch, duplicate anchors, wrong artifact class, cross-run descriptor collision.
+  - Promotion, writes outside the sandbox, upstream adoption, and live integration remain explicitly closed.
+
+  **Success gate:**
+  - Deterministic reload.
+  - Semantic equivalence on frozen probes.
+  - 100% rejection of malformed or provenance-invalid artifacts.
+  - No unlogged filesystem effects.
+  - Stable descriptor identity across repeated capture/reload cycles.
+  - The reloaded system can use admitted memories for frozen queries without confusing "loaded from archive," "derived during capture," and "newly asserted after reload."
+
+  **Failure gate:**
+  - Semantic drift, nondeterminism, an admitted stale/mismatched descriptor, an unexplained write, or inability to distinguish artifact provenance after reload.
+  - On failure: declare the specific failure mode and pause; do not open an unbounded hardening branch.
+
+  **Boundary:** No new accessors, no provenance schema changes, no chemistry changes. Filesystem hardening is frozen unless the gate exposes a concrete admission flaw.
+
+- [x] Filesystem hardening frozen (2026-07-22). The descriptor-anchored admission boundary covers ownership, group-writable, inode drift, symlinks, hard links, special files, duplicate JSON members, byte ceilings, nonblocking opens, trusted-parent metadata stability, and Unicode noncharacters across all four legacy πPLN audit loaders and the PeTTaChainer artifact boundary. 599 tests pass. No specific unresolved admission flaw remains; further edge-case hardening has diminishing returns unless the Phase-1 gate exposes a concrete gap.
+
+- [x] Route the frozen Phase-0 patham9 replay-anchor manifest through the shared bounded, duplicate-safe, no-follow JSON loader. A regression proves duplicate top-level members are rejected rather than silently resolved by `json.loads`. Local implementation commit `5baedac`; focused 2 and full 599 tests passed; `git diff --check` passed. No runtime replay, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Require current-user ownership at the legacy pi-PLN audit boundary. The shared loader rejects a foreign-owned parent or artifact before JSON admission, and the create-once publisher rejects a foreign-owned parent before artifact creation. Local implementation commit `f726454`; focused 1 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Assess `iCog-Labs-Dev/metta-attention` at a pinned commit for integration
+  with petta-memory, OmegaSelf, and the OmegaClaw emotion framework. Acceptance:
+  inspect architecture/source/tests/CI; identify non-PLN uses, semantic and
+  governance conflicts, a recommended boundary, and a staged validation plan;
+  preserve the assessment in `docs/metta_attention_integration_assessment.md`.
+  Completed 2026-07-21. Evidence: upstream commit
+  `9196f38db749ddedeb591229dffddfa71664c38d`, successful upstream CI run
+  `29728552904`, and the assessment document. Local Python synapse tests were
+  not run because host Python lacks the declared `igraph` dependency; no
+  dependency installation was performed.
+
+- [x] Close the create-once stream-construction descriptor boundary. A failed `os.fdopen` now explicitly closes the already-created artifact descriptor; regressions require cleanup to remove the artifact and preserve the primary stream-open failure with any descriptor-close failure attached. Local implementation commit `be5c6d7`; focused 1 and full 596 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Close the successful create-once publication/parent-close boundary. A regression now requires a post-fsync parent-directory descriptor close error to propagate while preserving the readable create-once artifact. Local implementation commit `1e36bdf`; focused 1 and full 595 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Preserve both PeTTaChainer artifact cleanup diagnostics after a successful bounded read. A regression now requires the artifact-stream close error to remain primary when parent-descriptor close also fails, with the parent cleanup diagnostic attached. Local implementation commit `827a0c0`; focused 1 and full 595 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Preserve early PeTTaChainer artifact admission failures across parent-descriptor close failure. Unsafe-parent rejection and artifact-open failure now remain primary while the secondary close diagnostic is attached, including a Python 3.10-compatible note fallback. Local implementation commit `f07d5b1`; focused 2 and full 588 tests passed; `py_compile` and `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Reject trusted-parent metadata drift during PeTTaChainer artifact admission. The descriptor-anchored loader now compares parent device, inode, mode, link count, owner, and group before and after the bounded artifact read; regressions cover permission and ownership drift. Local implementation commit `39ba877`; focused 131 and full 586 tests passed; `py_compile` and `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Reject hard-link aliases during PeTTaChainer artifact admission. The bounded no-follow loader now requires exactly one filesystem link and includes link count in its before/after stability identity, preventing an admitted checksummed artifact from remaining mutable through another pathname. Local implementation commit `a167fef`; focused 3 and full 573 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Preserve PeTTaChainer artifact admission failures across descriptor-close failure. The bounded no-follow regular-file loader now retains the original rejection and attaches a secondary close diagnostic; successful admission still reports close failure normally. Local implementation commit `0a9f0fd`; focused regression and full 570 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Anchor PeTTaChainer create-once artifact publication to one opened parent directory. The shared durable writer now opens the parent once, creates the leaf relative to that descriptor, and fsyncs that same descriptor, closing a parent-path substitution race. The existing artifact is not removed when exclusive creation fails, partial pre-sync output is cleaned up, and file-synced output remains retained on directory-sync failure. Local implementation commit `019154a`; focused regression and full 570 tests passed; `git diff --check` passed. No promotion/write, upstream, remote, paid-compute, or live change.
+
+- [x] Preserve create-once semantics across parent-directory fsync failure. Once a PeTTaChainer artifact has been fully written and file-synced, a later directory-sync error now propagates without deleting the completed artifact; a regression proves it remains valid and cannot be recreated. Local implementation commit `6aad801`; focused and full 570 tests passed, plus `py_compile` and `git diff --check`. No promotion/write, upstream, remote, paid-compute, or live change.
+
+- [x] Made PeTTaChainer derived-capture and episode-manifest create-once persistence crash-durable across the directory-entry boundary. The shared writer now fsyncs the completed file and its parent directory; regressions require both syncs for both artifact types. Local implementation commit `5c1f0d7`; focused 115 and full 570 tests passed, plus `py_compile` and `git diff --check`. No promotion/write, upstream, remote, paid-compute, or live change.
+
+- [x] PeTTaChainer derived-capture and episode-manifest reload now opens the artifact itself with no-follow semantics and requires a regular file before bounded reading, preventing an otherwise valid checksummed artifact from being admitted through a mutable symlink target or special file. Local implementation commit `3f37f1c`; focused 115 and full 570 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+
+- [x] Bounded PeTTaChainer derived-capture and episode-manifest reload to 1,000,000 bytes before decode/parse. Oversized artifacts now fail closed alongside duplicate-member, checksum, type, and provenance checks. Local implementation commit `1d96182`; focused 115 and full 570 tests passed; `py_compile` and `git diff --check` passed. No runtime, promotion/write, upstream, or live change.
+
+- [x] Hardened create-once PeTTaChainer derived-capture and episode-manifest reload against duplicate JSON object members at every depth. Ambiguous JSON now fails before checksum, typed reconstruction, or compiler-provenance admission. Local commit `145b902`; focused regression and full 570 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, or live integration change.
+
+- [x] Closed the first typed PeTTaChainer derived-result/process capture. Immutable records content-address the validator/runtime stream identities and bind the canonical one-rule answer to exact compiler input/proof/stamp/evidence identities. Fresh pinned repaired runtime admission produced result digest `f77be221...`; persistence and manifest adaptation remain the next separate gate.
+
+- [x] Bound the repaired TotalMP derivation gate to an immutable compiler-emitted two-statement `PeTTaChainerEpisodeContract`. `run_repaired_pettachainer_rule_episode_contract_gate()` rejects contracts unless they contain exactly one fact and one implication and query a non-stored target, then retains sentence digests, content-addressed proof IDs, stamps, and evidence-basis IDs while delegating to the exact proof/source/truth-formula runtime gate. Local implementation commit `d5abd83`; focused 113 and full 568 tests passed, plus `py_compile` and `git diff --check`. Next: define a typed PeTTaChainer derived-result/capture artifact before considering an EpisodeManifest; no promotion/write/upstream/live change.
+
+- [x] Passed the first repaired PeTTaChainer one-rule derivation gate. Under the exact single-import candidate, `(S a)` plus `S→T` returned exactly `(: (rule-proof rule_s_t fact_a) (T a) (STV 0.7600000000000001 0.52))` in 0.377 s. The gate requires exact validators, fact/rule dispatch identities, a non-stored target, exact proof provenance, target-only answers, finite unit-interval STVs, and content-addressed streams. Local commit `b5cd150`; focused 110 and full 565 tests passed, plus `py_compile` and `git diff --check`. Artifact: `repos/petta-memory/artifacts/pettachainer_repaired_one_rule_derivation_2026-07-17T2100PDT.json`, SHA-256 `598d2dea624d4664ca029eb16150559bd5343205f16375d681e3d6ba5461e925`. Next: bind the rule/result to immutable compiler inputs and validate truth-formula provenance before any manifest; no promotion/write/upstream/live change.
+
+- [x] Bound the exact single-import PeTTaChainer recall path back to one immutable compiler-emitted `PeTTaChainerEpisodeContract`. The gate requires exact public validator admission with content-addressed streams, the existing repair/source/storage checks, and a complete answer set containing only the typed input fact. A fresh run returned one answer and is classified only as `stored-fact-retrieval`. Local commit `9036dd2`; focused 109/full 564 tests, `py_compile`, and `git diff --check` passed. Artifact: `artifacts/pettachainer_repaired_typed_episode_contract_2026-07-17T1900PDT.json`, SHA-256 `0e68d1a9d459439db79004f7376ab83df412bbec30a820788c5d8b5064bb30ee`. Derived PLN inference, diagnostic interpretation, manifests, promotion/write, upstream adoption, and live integration remain closed.
+
+- [x] Closed repaired exact-fact query admission over the entire result set, rejecting expected-plus-unrelated answers; fresh repaired probe returned exactly one expected answer and zero unexpected answers (`4cb2482`, 559 tests).
+
+- [x] Passed the repaired PeTTaChainer exact stored-fact query gate under the exact single-import source repair. One gated `compileadd`, exact internal `&kb` check, and one-step query completed in 0.391 s with one unique answer matching the added proof/type/STV; numeric rendering normalized `0.70` to `0.7`. Local implementation commit `95ade3f`; focused 102 and full 557 tests passed, plus `py_compile` and `git diff --check`. Artifact: `artifacts/pettachainer_repaired_exact_fact_query_2026-07-17T1300PDT.json`, SHA-256 `11897c26895d1cc96798aee75eec85fb623c385353a496c66f16658fda6e91bb`. The captured runtime remained noisy (608,129 stdout, 142 stderr characters), so the next gate is exact typed episode-contract/result admission with diagnostics classified; no inferred-result promotion, write, upstream, or live integration change.
+
+- [x] Passed the repaired PeTTaChainer `compileadd`-only gate under the exact single-import source repair. One promoted-fact statement completed in 0.362 s, returned one expected external fact, and produced one exact internalized `&kb` membership match. The new gate fails closed on source drift or missing storage and stops before query compilation/execution. Local implementation commit `df61d85`; focused 99 and full 554 tests passed, plus `py_compile` and `git diff --check`. Artifact: `artifacts/pettachainer_repaired_compileadd_add_only_2026-07-17T1100PDT.json`, SHA-256 `de979532a71ebdcd5ec3bb903d7ceb83237b7d2034fabfb883d1a7480af327c0`. Next: add a separately bounded exact-fact query rung; do not relax result admission or enable promotion/write/live integration.
+
+- [x] Ran the real repaired PeTTaChainer `mm2compile` entry point after the exact single-import source gate. The one-statement fact path completed in 0.367 s with one unique expected fact; local commit `4cf97bf`, focused 96/full 551 tests, `py_compile`, and `git diff --check` passed. Artifact: `artifacts/pettachainer_repaired_full_mm2compile_2026-07-17T0900PDT.json`, SHA-256 `8547d988e26783039ae403b11c0f13b8d57f9d3d8d499b1b358796a73982a66b`. Next: retry repaired `compileadd` in an isolated add-only gate before any query; do not relax result admission or enable writes/live integration.
+
+- [x] Resolve the first real compiled-input kernel gate at the specialized patham9/PeTTaChainer boundary. The stock patham9 generic probe remains a recorded negative result and its stderr/result admission was not relaxed. The alternate PeTTaChainer branch now consumes actual `compile_episode_inputs()` output through `build_pettachainer_episode_contract()`, completes source-gated bounded `compileadd` and one-rule derivation, independently checks TotalMP truth, and closes typed capture plus a non-promoting `PeTTaChainerEpisodeManifest` against the immutable compiler contract. Reconciled 2026-07-24 after full 601-test verification; stock generic patham9 support remains explicitly unsupported rather than inferred from the specialized `SMOKES.so`.
+
+  - [x] Established the exact inert PeTTaChainer input contract with `build_pettachainer_episode_contract()`: compiler-emitted patham9 Sentences map deterministically to `(: pm-<full-sentence-digest> term (STV strength confidence))`, the query maps to `(: $prf term $tv)`, and the otherwise-unrepresentable patham9 stamps/evidence bases remain closed in typed audit sidecars. Local PeTTaChainer `check_stmt`/`check_query` admitted the exact shapes (`1.0` each). Focused 60 and full 501 tests passed, plus `py_compile` and `git diff --check`. Next gate: the already-required isolated `compileadd`/query runtime probe; do not route these atoms into stock patham9 `PLN.Query` or construct a manifest yet.
+  - [x] Added a bounded fail-closed runtime probe for the typed episode contract in local commit `d9ee9f5`. It requires exact numeric `1.0` from every public statement validator and the query validator before entering a single isolated add/query subprocess; timeout, error, malformed stages, or an empty query result leaves `runtime_admitted=false`. Against pinned local PeTTaChainer `e4db5ca`, one exact typed statement and query validated in 0.073 s, but combined `compileadd`/query timed out at the 15 s wall bound, so no result or manifest was admitted. Focused 49 and full 504 tests passed, plus `py_compile` and `git diff --check`. Query/add bottleneck diagnosis remains open; do not relax the gate.
+  - [x] Localized the exact contract's first add-path bottleneck beyond validation. A compiler-emitted lambda-free statement completed `materialize-stmt-lambdas` as identity in 0.479 s, but fanned out to 512 duplicate results (one unique atom; 796,938 captured stdout characters); direct `mm2compile`/collapse then timed out at 5 s. Materializer profile artifacts now keep exact multiplicity/uniqueness counts and at most 16 result samples. Local implementation commit `312efc2`; focused 51 and full 506 tests passed, plus `py_compile` and `git diff --check`. Next: inspect/instrument `mm2compile`/fact-assertion dispatch under this exact contract; keep `compileadd`/query/result/manifest gates closed.
+  - [x] Isolated the exact contract's `compile_` fact-assertion dispatch from `mm2compile`. A source-gated bounded `compile` probe completed in 0.502 s and produced 256 copies of one unique base-fact clause (796,897 captured stdout characters), retaining only 16 samples. This locates substantial duplicate fan-out before `mm2compile`'s `mm2stmt`/temporary-context collection rather than proving add readiness. Local implementation commit `3ba8d3a`; focused 54 and full 509 tests passed, plus `py_compile` and `git diff --check`. Next: isolate `mm2stmt` conversion and temporary `ctx` collection on one deduplicated compiled clause; keep `compileadd`/query/result/manifest gates closed.
+  - [x] Isolated `mm2stmt` and temporary `ctx` inspection from the compiler's duplicate fan-out. One source-equivalent base-fact clause converted in 0.469 s to two copies of one unique expected fact, while a separately cleared/read `ctx` contained zero atoms; runtime initialization still emitted 797,385 stdout and 168 stderr characters, so this is diagnostic completion rather than result admission. Local implementation commit `4cca4cd`; focused 58 and full 513 tests passed, plus `py_compile` and `git diff --check`. Next: isolate why `mm2stmt` doubles a single clause and whether `mm2compile` multiplies compiler and converter fan-out before any `compileadd`/query/result/manifest gate is reopened.
+  - [x] Closed the source-level cause of the one-clause `mm2stmt` doubling. Pinned `compile.metta` defines both a specialized `(() |- ($ccl))` case arm and a general `($prms |- ($ccl))` arm, so empty premises unify with both and produce the two identical outputs already observed. `inspect_mm2stmt_fact_case_overlap()` records the exact bounded definition and fails closed on source drift. Local implementation commit `125cb6e`; focused 60 and full 515 tests passed, plus `py_compile` and `git diff --check`. Next: isolate the 256-copy `compile` dispatcher fan-out or measure a bounded deduplicated `mm2compile` equivalent without changing upstream semantics; keep `compileadd`/query/result/manifest gates closed.
+  - [x] Measured the bounded deduplicated `mm2compile` equivalent without changing upstream semantics. `inspect_mm2compile_collection_shape()` closes the exact pinned clear/convert/collect source form before a copied expression replaces only `compile` with one canonical fact clause. The runtime completed in 0.461 s and returned four copies of one unique expected fact, separating another 2x collector multiplicity from the compiler's 256-copy input. Local implementation commit `fecb51c`; focused 65 and full 520 tests passed, plus `py_compile` and `git diff --check`. Next: inspect the 256-copy `compile` cause or test a reviewed set-collapse boundary before any `compileadd`/query/result/manifest gate is reopened.
+  - [x] Isolated the exact fact branch's two components below `compile`. A source-drift-sensitive gate copied no upstream semantics and measured `compile-fact-kb` at eight copies of one unique KB term; `compile-outputs` produced no adapter outputs for the promoted fact shape. Local implementation commit `cbdb5de`; focused 69 and full 524 tests passed, plus `py_compile` and `git diff --check`. This accounts for one 8x factor inside the 256-copy dispatcher result. Next: isolate the remaining branching multiplicity around the fact clause before evaluating a reviewed set-collapse boundary; keep `mm2compile`/`compileadd`/query/result/manifest gates closed.
+
+- [x] Closed the remaining Phase-2 program/capture substitution seam. `run_kernel_subprocess()` now records a canonical content commitment to the exact program delivered on stdin, and `build_captured_episode_manifest()` rejects a capture whose commitment differs from the manifest's `complete_program`. Local implementation commit `904b707`; focused 60 and full 501 tests passed, plus `py_compile` and `git diff --check`. No real compiled-input inference, rule/trace identity, promotion/write, or live integration claim.
+
+- [x] Closed the Phase-2 capture-to-manifest substitution seam with `build_captured_episode_manifest()`: the exact immutable capture admitted by `validate_kernel_capture_result()` now supplies the manifest's return code, stdout, and stderr directly. Regressions cover successful end-to-end construction plus nonzero, noisy, and detached-result captures. Local implementation commit `9806fbb`; focused 1 and full 501 tests passed; `py_compile` and `git diff --check` passed. A real compiled-input episode, manifest persistence, rule/trace identity, promotion/write, and live integration remain open.
+
+- [x] Executed and admitted the first fresh pinned Phase-0 Smokes replay through the bounded subprocess runner. New `validate_phase0_reference_replay()` fails closed on nonzero exit, stderr, output byte-count/checksum drift, and absent semantic markers. The real pinned MeTTa executable (`53455bfb...`) returned 0, empty stderr, and byte-identical 6,021-byte stdout (`fd5a6133...`). Local commit `bf2ea91`; focused 2 and full 499 tests passed, plus `py_compile` and `git diff --check`. Constructing a Phase-2 `EpisodeManifest` remains the next separate gate.
+
+- [x] Added the missing fail-closed admission boundary for the frozen Phase-0 replay anchor in local implementation commit `cdc3b5d`. The validator closes manifest schema, local source/output hashes, exact output bytes, duplicate-run determinism hashes, canonical query, semantic result/pass marker presence, full patham9 commit, pinned runtime digest, and non-live flags. The real Smokes artifact admits; tampered output and relaxed boundary regressions fail. Focused 1 and full 498 tests passed, plus `py_compile` and `git diff --check`. Fresh pinned-runtime execution and EpisodeManifest construction remain the next separate gate.
 
 - [x] Closed incomplete Phase-2 kernel program delivery in local commit `b3d631f`. The subprocess runner now flushes stdin and fails closed when the child closes its input before the complete bounded program is written, rather than returning a raw capture that could be mistaken for execution of the supplied program. Focused 4 and full 497 tests passed; `py_compile` and `git diff --check` passed. No semantic-result, promotion/write, or live-integration authority changed.
 
@@ -197,6 +575,23 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Added local commit `a2dc693` and attempted the first non-live GoalChainer smoke wrapper using a hand-picked `goalchainer-handoff-cache` fixture under timeout. The wrapper/CLI/test contract requires ranked decision payload provenance and rejects directive/task-claim output; the external GoalChainer run currently fails before payload with SWI `stack_limit=8g` exceeded in PeTTaChainer `compileadd`. Failure artifact: `artifacts/goalchainer_smoke_failure_2026-07-03T0400Z.json` (sha256 `a35c65c0e771a86551fd481dae1e837d2a1796eb43e424d76a8948087f4945cd`).
 
 ## Next
+- [x] Require distinct fact and rule compiler identities in typed
+  PeTTaChainer derived captures and compiler-bound rule attribution, preventing
+  a correctly rehashed TotalMP artifact from reusing one sentence/proof on
+  both sides. Local commit `19fb7a9`; fresh full 601 tests and `git diff
+  --check` passed (2026-07-25 03:00 PDT / 10:00 UTC). No runtime,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Close TotalMP premise independence in typed PeTTaChainer result captures
+  and compiler-bound rule attribution: fact and rule stamp sets and
+  evidence-basis sets must be mutually disjoint, so a correctly rehashed
+  artifact cannot double-count one provenance source on both sides. Focused 1
+  and full 601 tests passed; `git diff --check` passed; local commit `1198954`
+  (2026-07-24 21:02 PDT / 2026-07-25 04:02 UTC). No runtime, promotion/write,
+  upstream/remote action, paid compute, or live integration.
+- [x] Close the Phase-1 clean-room reload gate over the exact archived kernel program. `read_episode_manifest(..., complete_program=...)` now verifies the manifest program CID, exact-once compiled sentence inclusion, and validated-query inclusion; byte-different cross-run program input fails closed. Local commit `58fa218`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-22 23:00 PDT / 2026-07-23 06:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Route all four legacy pi-PLN audit readers through bounded descriptor-anchored admission and prove their public APIs reject symlinked parents. Local commit `bfcc28b`; focused 4 and full 597 tests passed; `git diff --check` passed (2026-07-21 21:00 PDT / 2026-07-22 04:00 UTC). No runtime inference, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Added public-boundary regression coverage for all four pi-PLN writers unified in `fb7a71d`. Each now proves a group-writable parent is rejected without creating the requested artifact. Local regression commit `b3cbf00`; focused 4 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Closed the missing regression for simultaneous initial parent `fstat` failure and parent-descriptor close failure in checksummed PeTTaChainer artifact admission. The test proves `c50eb47` preserves the metadata error and attaches the secondary cleanup diagnostic. Focused 2 and full 590 tests passed; `py_compile` and `git diff --check` passed. No runtime, promotion/write, upstream/remote action, paid compute, or live integration.
 - [x] Hardened ranked-plan admitted handoff metadata consistency: embedded `admitted_handoff["item_count"]` is rewritten to the admitted subset length after recommendation filtering, with regression coverage for a 2-source/1-admitted handoff. Verification: focused ranked-plan tests pass 33 cases; full suite passes 405 tests; `git diff --check` passes. Non-live wrapper gate only; no `PLN.Query`/`PLN.Derive` or live integration.
 - [x] Reviewed the non-live GoalChainer EC handoff behavior against a second policy fixture (`goalchainer_conflicting_ec_smoke.metta`) with high STV but opposing EC counts; the precompiled gate remains bounded and non-live while evidence strength is reduced as expected.
 - [x] Added a source-level PeTTaChainer `compileadd` bottleneck map for `materialize-stmt-lambdas`, `mm2compile`, and downstream `compile_` dispatcher definitions without rerunning noisy runtime stages.
@@ -219,8 +614,11 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Reviewed Nil Geisweiller / trueagi-io experimental chaining repo. Cloned at `repos/trueagi-chaining` commit `bc9beb2`. Key findings recorded in NOTES.md (2026-07-02 entry): pure-MeTTa PLN prototypes under four representation strategies, PLN-based inference controller (`pln-inf-ctl.metta`), four iterations of backward-chaining continuation control, probabilistic backward chaining. Most relevant for the inference-control phase (roadmap item 4); no runtime integration needed now.
 - [x] Design OmegaClaw-specific inference-control mechanisms for context-rich experiential learning after the basic PeTTaChainer path is working and profiled. First pattern (probabilistic filtering) implemented as `probabilistic_inference_filter()`; second pattern (context selection) implemented as `context_selection_wrapper()`; third pattern (chained filter+select pipeline) implemented as `chained_inference_pipeline()` combining stages 1+2 with index remapping; fourth pattern (meta-learning benchmark) implemented as `build_meta_learning_benchmark_handoff()` and `run_meta_learning_benchmark()` creating a synthetic shortcut-vs-chain scenario and verifying the existing wrappers correctly prefer the high-confidence shortcut; fifth pattern (continuation predicate) implemented as `continuation_predicate_wrapper()` evaluating whether each handoff item should continue, terminate, or be rejected based on STV strength/confidence, derivation depth, domain, EC support ratio, and promotion rule; sixth pattern (controlled backward chainer) implemented as `controlled_backward_chainer()` simulating a bounded backward-chaining loop using the continuation predicate as a per-branch decision function with context updaters (accumulate_depth, accumulate_ec, fixed) tracking depth and EC accumulation between steps, max_steps/max_branches safety caps, and a derivation trace showing per-step decisions; seventh pattern (PLN estimator) implemented as `pln_estimator_wrapper()` converting handoff items into PLN viability prior parameters (alpha/beta) from EC counts or STV values, Thompson-sampling from the Beta posterior to rank exploration branches, producing EDCall (Estimated Delayed Call) records with exploration weight controlling the exploration/exploitation tradeoff. Eighth and final pattern (controller-as-chainer) implemented as `controller_as_chainer()` running a primary controlled backward chainer and then a controller chainer with stricter parameters that can confirm, override-terminate, or override-reject branches the primary would have continued. Override-terminate takes priority over override-reject because termination preserves the result as a final answer. All eight inference-control patterns from the trueagi-io/chaining survey are now implemented: four near-term (probabilistic filtering, context selection, chained pipeline, meta-learning benchmark), two medium-term (continuation predicate, controlled backward chainer), and two long-term (PLN estimator, controller-as-chainer). Local commits `23dc651` + `fd01014`; 360 tests pass; `git diff --check` passes.
 - [ ] Profile PeTTaChainer rule-application and truth-value-formula mechanics on larger narrow petta-memory/OmegaClaw-context workloads after add-stage bottlenecks are understood.
+- [x] Source-gate the first repaired one-rule result's exact truth formula and recompute its STV. `TotalMpConclusionFormula` uses the absent-complement fallback `(STV 0.2 0.2)` and `TotalMpFormula` yields `[0.7600000000000001, 0.52]` from fact `(0.8, 0.6)` and rule `(0.9, 0.8)`; the fresh runtime answer matched exactly. Focused 111 and full 566 tests passed, plus `py_compile` and `git diff --check`. Immutable compiler rule binding, manifests, promotion/write, and live integration remain closed. (2026-07-17 23:00 PDT)
 
 ## Done recently
+
+- [x] Source-gate and replay the three nested concrete-fact predicates inside direct PeTTaChainer `compile_` over a literal KB clause. The literal branch returned one clause; `bidirectional-implication-type?` introduced four identical copies, while implication and variable-type gates added none. Local commit `1f219a6`; focused 79/full 534 tests passed. Annotation/definition dispatch and the separately measured `compile-fact-kb` factor remain diagnostic; no add/query/write/live gate changed.
 
 - [x] Added local commit `32746a2` with non-live GoalChainer handoff mapping in `repos/petta-memory`: `MediumMemoryStore.goalchainer_handoff_cache(...)` and CLI `goalchainer-handoff-cache` repackage promoted PeTTaChainer handoff items as GoalChainer appraisal/acceptability evidence inputs, preserving belief/cluster/promotion provenance and explicitly disabling task claims, live OmegaClaw skills, memory writes, and inferred-belief status. Added `docs/goalchainer_handoff.md` with the non-live gate contract. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 72 tests; `git diff --check` passes.
 - [x] Added local commit `10f2579` with a non-live PeTTaChainer handoff cache in `repos/petta-memory`: `MediumMemoryStore.pettachainer_handoff_cache(...)` and CLI `pettachainer-handoff-cache` emit JSON containing promotion-eligible STV statements and EvidencePackets, labeled as `pln-ready-input-not-inferred-belief`, with optional runtime statement checking and `compileadd`/query still gated. Generated artifact `projects/petta-memory/artifacts/pettachainer_handoff_cache_2026-07-03T0000Z.json` (sha256 `fa6bccab591590c799685ff85c336b49329771183bc72433765ed37e1b0b97a2`) from a size-2 profile workload using `PeTTaChainer.check_stmt == 1.0` for STV statements; EvidencePackets carry explicit non-negative EC counts. Verification: `PYTHONPATH=src python3 -m unittest discover -s tests -v` passes 71 tests; `git diff --check` passes.
@@ -299,6 +697,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Close chart-to-snapshot provenance before Phase-2 compilation in local commit `820eed4`. `build_pi_chart()` now requires a validated `EvidenceSnapshot`, rejects context mismatch and selected packet IDs absent from that snapshot, records the snapshot fingerprint on `PiChart`, and includes it in chart identity so changed evidence content cannot reuse a compiled chart artifact under the same logical snapshot ID. Verification: focused 32 tests; full 473 tests; `git diff --check` passed. Provenance: progress worker, 2026-07-13 07:00 PDT / 14:00 UTC.
 - [x] Add compatibility adapters that explicitly label `ec_projected_stv()` as `adapter-weighted-v1` without changing serialized outputs. `EC_PROJECTED_STV_POLICY_ID` plus function introspection metadata make the legacy boundary explicit while regression coverage proves result dictionaries do not gain a new field. Local commit `8b4ac1d`; full suite passed 470 tests; `git diff --check` passed.
 - [ ] Phase 2: isolated episode compiler, legacy kernel backend, result validator, manifest, and exact replay.
+- [x] Bind a selected result atom to its bounded Phase-2 process capture before manifest construction. `validate_kernel_capture_result()` now rejects nonzero exit, any stderr, and result atoms absent from stdout, then closes accepted values through the typed stamp/evidence validator. Local commit `b2be8c7`; focused 1 and full 500 tests passed, plus `py_compile` and `git diff --check`. This does not yet construct/persist the end-to-end manifest or identify rules/traces.
 - [x] Bound the Phase-2 kernel executable argument vector before launch. `run_kernel_subprocess()` now enforces a positive 16 KiB default over the complete UTF-8 argv and rejects NUL-bearing arguments before invoking the OS. Local commit `c04bfaa`; focused 2 and full 492 tests passed; `py_compile` and `git diff --check` passed. The runner remains shell-free and non-live; this does not establish runtime/rule/trace identity or authorize promotion.
 - [x] Added deterministic bounded legacy-kernel query-program assembly in local commits `e0e2c16` and `9dc338b`. `assemble_legacy_kernel_query_program()` inserts immutable compiler-emitted Sentences and one canonical declarative query into fixed stock patham9 `PLN` import/init/query controls; callers cannot inject rules or executable program fragments. Positive limits, a 10,000-step ceiling, a 100,000-entry ceiling for each queue, and total program-size cap fail closed. Focused 47 tests and full 488 tests passed; `py_compile` and `git diff --check` passed. Kernel subprocess/capture, trace/rule attribution, promotion/write, and live integration remain open.
 - [x] Started Phase 2 with a pure deterministic episode-input compiler. `compile_episode_inputs()` validates chart/snapshot identity, exact packet and packet-derived-basis closure, ACTIVE/context boundaries, and rejects extra/missing inputs; it assigns deterministic basis stamps and emits canonical-projection patham9 `Sentence` atoms plus immutable `KernelSentenceMeta` sidecars. Focused 34 tests and full 475 tests passed; `py_compile` and `git diff --check` passed. Runtime execution, generated rule/program assembly, manifest persistence, result validation, and replay remain deferred.
@@ -307,6 +706,20 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Persist validated Phase-2 kernel results as immutable checksummed v1 JSON artifacts. `write_validated_kernel_result()` is create-once; `read_validated_kernel_result()` rejects schema/checksum/typed-content drift and requires episode/chart identity plus exact stamp-to-basis closure against the supplied immutable `CompiledEpisodeInputs`. Focused 43 tests and full 484 tests passed; `py_compile` and `git diff --check` passed; local commit `0e8942d`. This is persisted validated output only: runtime assembly, trace/rule identity, complete manifest, re-execution comparison, promotion, and live integration remain open.
 - [x] Added the first exact replay-comparison gate. `validate_exact_kernel_replay()` closes the expected result against immutable compiled inputs, validates a fresh raw result with the bounded result parser, and rejects any semantic digest drift in query, STV, stamps, or evidence bases while accepting harmless numeric/whitespace rendering differences. Local implementation commit `e979d52`; focused 44 tests and full 485 tests passed; `py_compile` and `git diff --check` passed. Kernel execution, runtime/rule/trace identity, promotion, and live integration remain open.
 - [x] Added a complete typed SDS section 16.2 `EpisodeManifest` constructor and create-once artifact in local commit `a8858d5`. The manifest binds exact chart/snapshot/compiler/result provenance to the bounded supplied complete program, stamp map, kernel/capability/rule/projection/controller identities, seed, resource budget, timezone-aware run interval, return code, and captured output digests. Program admission requires every compiler-emitted Sentence exactly once; persistence rejects recomputed-checksum typed drift. Focused 46 tests and full 487 tests passed; `py_compile` and `git diff --check` passed. Runtime execution, trace/rule attribution, promotion, and live integration remain open.
+- [x] Persist compiler-bound PeTTaChainer TotalMP attribution as a create-once
+  checksummed artifact and close reload against the exact supplied typed
+  derived-result capture. General decoded runtime traces remain deferred.
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for `result_cid`
+  drift. The loader rejects a self-consistent manifest whose result link no
+  longer matches the supplied admitted result, even while the attribution link
+  remains unchanged. Focused and full 601-test verification passed with `git
+  diff --check`; local regression commit `a744390` (2026-07-25 15:00 PDT /
+  22:00 UTC).
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for `contract_cid`
+  drift. The loader rejects a self-consistent manifest whose compiler-contract
+  link no longer matches the supplied immutable contract. Focused and full
+  601-test verification passed with repository-local `git diff --check`
+  (2026-07-25 17:00 PDT / 2026-07-26 00:00 UTC); local commit `effcba5`.
 - [ ] Later phases: external geodesic controller; proof classes/reversibility; atlas transitions/revision; native backend; curvature/descent; reviewed promotion.
 
 - [x] Added the next typed πPLN Phase-1 evidence-algebra slice in `repos/petta-memory`: immutable `EvidenceContribution`/`EvidenceCapsule` records and exact union-by-basis merge. Identical shared basis contributions are counted once; conflicting weights under the same basis ID fail closed. This implements specification equations 8.1-8.4 without claiming independence, residualizing partial overlap, changing runtime stamps, or touching live OmegaClaw/GoalChainer paths. Verification: focused 11 tests; full 451 tests; `git diff --check` passed. Provenance: progress worker, 2026-07-12 01:00 PDT / 08:00 UTC.
@@ -324,3 +737,181 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Hardened the pure Phase-2 piPLN compiler/runtime-input boundary. `compile_episode_inputs()` now parses and canonicalizes each packet statement as exactly one S-expression data term, recursively rejects MeTTa executable/control heads, and enforces positive sentence-count and aggregate emitted-atom character budgets. `CompiledSentence` reconstruction now derives the only admissible atom from typed canonical term/projection/stamp metadata, so a recomputed outer checksum and sentence digest cannot conceal atom/sidecar drift or executable-term smuggling. Verification: focused 38 tests; full 479 tests; `py_compile`; `git diff --check`. No patham9/PeTTa runtime, derive/query, memory write/promotion, or live OmegaClaw/GoalChainer path. Provenance: progress worker, 2026-07-13 13:00 PDT / 20:00 UTC.
 - [x] Bound the optional explicit Phase-2 kernel subprocess environment before launch: validate string mappings, reject process-invalid keys/values, enforce a positive aggregate UTF-8 byte ceiling, and prove rejection occurs before child execution. Full unittest discovery passed 494 tests; no inference, promotion/write, or live integration boundary changed. (2026-07-14)
 - [x] Add an opt-in pre-launch SHA-256 identity gate for the Phase-2 kernel executable, with a no-launch mismatch test. Completed 2026-07-14; full suite 495 tests passed. Follow-up: a later isolated runner must close the remaining path replacement/TOCTOU boundary if stronger runtime identity is required.
+- [x] Remeasured the post-repair `mm2stmt` and copied `mm2compile` collector rungs under the exact single-import source gate. One canonical fact now converts once and collects once (baseline: two and four), despite the unchanged overlapping `mm2stmt` definition. Local commit `28be231`; focused 94 and full 549 tests, `py_compile`, and `git diff --check` passed. Artifact: `artifacts/pettachainer_repaired_conversion_collection_2026-07-17T0700PDT.json`, SHA-256 `45edecff2d811c8b433e5089aeaf8a1d06b30eeefaa182d3864e77aa66b132d3`. Next: run full repaired `mm2compile`, then retry bounded `compileadd` only if that succeeds; do not apply a second source repair yet.
+- [x] Content-addressed captured stdout/stderr for completed isolated PeTTaChainer stages and made complete stream provenance a fail-closed requirement of repaired exact-fact query admission. Fresh real probe: one exact answer, zero unexpected answers; stdout 608,129 bytes SHA-256 `3eafb227...`; stderr 138 bytes SHA-256 `3207c3f2...`. Local commit `468d55a`; focused 106/full 561 tests, `py_compile`, and `git diff --check` passed. Next: classify the content-addressed diagnostics before typed episode-contract/result admission; no promotion/write/upstream/live change.
+- [x] Added create-once, checksummed persistence for the non-promoting `PeTTaChainerEpisodeManifest`. The loader reconstructs `EpisodeBudget` and all typed digest/timestamp/classification invariants and rejects contract, derived-result, validator-capture, or runtime-capture provenance drift. Local implementation commit `6bfc31e`; focused regression and full 570 tests passed; `py_compile` and `git diff --check` passed. No promotion/write authorization, upstream repair adoption, or live integration.
+- [x] Prevented special-file denial of service at the PeTTaChainer artifact boundary: derived-capture and episode-manifest JSON opens are nonblocking, then require a regular descriptor before bounded reading. A FIFO regression proves immediate rejection. Local implementation commit `e770f5e`; focused 115 and full 570 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, or live change.
+- [x] Preserve the primary PeTTaChainer artifact publication failure across a secondary parent-directory descriptor close failure; retain the secondary diagnostic on the original exception. Local implementation commit `882f3fe`; focused regression and full 570 tests passed, plus `py_compile` and `git diff --check`. No promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Require PeTTaChainer audit-artifact bytes read to equal stable descriptor size; regression simulates internally consistent metadata that disagrees with delivered bytes. Full 572 tests, `py_compile`, and `git diff --check` passed. (2026-07-19 11:00 PDT)
+- [x] Preserve a primary PeTTaChainer artifact stream read/metadata failure across secondary stream-close failure after descriptor ownership transfer; propagate stream-close failure normally when the read otherwise succeeded. Focused 3 and full 575 tests, `py_compile`, and `git diff --check` passed. (2026-07-19 15:00 PDT)
+- [x] PeTTaChainer checksummed artifact admission now rejects a descriptor whose declared regular-file size already exceeds the byte ceiling before constructing a stream or reading payload bytes. Local implementation commit `8c39ad3`; focused regression and full 576 tests passed, plus `py_compile` and `git diff --check`. Runtime, promotion/write, upstream, remote, paid-compute, and live-integration boundaries remain closed.
+- [x] Reject PeTTaChainer audit artifacts whose mode, owner, or group changes during the bounded descriptor read. Local implementation commit `6bcc26c`; focused regression and full 577 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change. (2026-07-19 19:00 PDT)
+- [x] Reject group- or world-writable PeTTaChainer checksummed JSON audit artifacts before payload read. The writer already publishes owner-only files; the loader now fails closed on broader write authority. Focused regression and full 578 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream/remote, paid-compute, or live integration action. (2026-07-19 21:00 PDT)
+- [x] Reject symlinked parent directories during create-once PeTTaChainer artifact publication. The durable writer now opens the supplied destination parent with `O_NOFOLLOW` where available, so a symlink cannot redirect the derived-capture or episode-manifest artifact into another directory. Local implementation commit `57ba221`; focused 1 and full 579 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Reject broadly writable PeTTaChainer audit-artifact publication parents before creating the destination leaf. Regression verifies a `0770` parent fails closed and remains empty. Local implementation commit `893e837`; focused 1 and full 580 tests passed, plus `py_compile` and `git diff --check`. No runtime invocation, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Detect parent-directory permission drift during PeTTaChainer create-once audit publication via a final check on the anchored descriptor; retain a file-synced artifact on rejection to preserve create-once semantics (`93e8fa0`; 581 tests).
+- [x] Reject PeTTaChainer artifact publication parent metadata drift. The durable create-once writer now requires stable device, inode, mode, link count, owner, and group identity across publication, closing ownership/group drift before directory fsync. Local implementation commit `b53e7bb`; focused 2 and full 582 tests passed, plus `py_compile` and `git diff --check`. No promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Anchor checksummed PeTTaChainer artifact reads to a non-symlinked parent directory descriptor and open the basename relative to it; reject broadly writable parents before admission. Commit `7eed3f6`; full 584 tests and `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Close the PeTTaChainer artifact parent descriptor when initial `fstat` fails, while retaining the primary admission error and secondary close provenance. Local implementation commit `c50eb47`; focused 1 and full 589 tests passed, plus `py_compile` and `git diff --check`. Provenance: progress worker, 2026-07-20 13:00 PDT / 20:00 UTC; no runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Close regression coverage for a final parent-metadata revalidation failure combined with parent-descriptor close failure during PeTTaChainer audit-artifact admission. The final metadata error remains primary and the cleanup failure is retained as a diagnostic note. Local commit `06e57c3`; focused 1 and full 591 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Cover the combined PeTTaChainer artifact-admission path where final trusted-parent metadata drift is detected and closing the parent descriptor also fails. The regression preserves the actionable drift rejection and retains the cleanup failure in `__notes__`; focused 1 and full 592 tests passed, plus `py_compile` and `git diff --check`.
+- [x] Cover the successful PeTTaChainer artifact-read path when closing the trusted parent descriptor fails. The loader propagates the close error rather than returning decoded JSON; local commit `5f4d675`; focused 1 and full 593 tests passed, plus `py_compile` and `git diff --check`. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Close the combined pre-stream artifact rejection + leaf descriptor close failure + parent descriptor close failure regression; preserve the primary rejection with both cleanup diagnostics (`664d592`, 594 tests).
+- [x] Preserve primary PeTTaChainer create-once publication failures across descriptor-backed text-stream close failures, while retaining a successfully file-synced artifact when close alone fails (`ff313b6`; focused 1 and full 596 tests passed; `py_compile`; `git diff --check`).
+- [x] Delivered a systematic 19-page, outside-reader-facing PDF evaluating `metta-attention` and its integration with petta-memory, OmegaClaw, OmegaSelf, and the emotion framework. The ASCII-safe LaTeX incorporates the pinned source assessment, two-strata C1--C5 synthesis, Recoverability Invariant, governed emotion modulation, OmegaSelf background sentinels, regenerative goals, adapter contracts, risks, decision matrix, and staged falsifiable experiments. `tectonic` compiled successfully with no overfull boxes; all 19 rendered pages were visually checked; `git diff --check` passed. Evidence: `docs/metta_attention_omegaclaw_integration.tex` SHA-256 `ac06d052e2ec797e1d48566151de451479714201b2c49f0bc121e3568d876782`; PDF SHA-256 `1859d101704dfc5f03732363d8ace0d6588be279db3aa8289d2dd4f7a20c305c`.
+- [x] Route the legacy pi-PLN episode-manifest, validated-result, evidence-snapshot, and compiled-input writers through the hardened descriptor-anchored create-once publication primitive. Commit `fb7a71d`; full 597 tests and `git diff --check` passed (2026-07-21).
+- [x] Add public-boundary regressions proving all four legacy pi-PLN writers reject a symlinked destination parent without creating an artifact in the symlink target. Local commit `fdf199d`; focused 4 and full 597 tests passed, plus `git diff --check` (2026-07-21 19:00 PDT / 2026-07-22 02:00 UTC). Runtime inference, promotion/write, upstream/remote action, paid compute, and live integration remain closed.
+- [x] Close hard-link alias admission for the four legacy pi-PLN audit artifacts. Public regressions now require episode manifests, validated kernel results, evidence snapshots, and compiled episode inputs to fail closed when an otherwise valid checksummed artifact has more than one filesystem link. Local implementation commit `21ff1ce`; focused 4 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Closed unsafe-parent admission coverage across the four legacy pi-PLN audit loaders. Existing episode manifests, validated kernel results, evidence snapshots, and compiled episode inputs are rejected when their parent is group-writable. Local regression commit `57b2e66`; focused 4 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Close current-user ownership enforcement at every public legacy pi-PLN persistence route. Added reusable regressions proving evidence snapshots, compiled episode inputs, and episode manifests reject foreign-owned parents/artifacts and refuse publication into a foreign-owned parent, complementing validated-result coverage. Local commit `b45839b`; focused 3 and full 597 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Closed late parent-directory drift at the legacy pi-PLN audit boundary. A public evidence-snapshot load now has a constructed regression in which the parent inode changes between initial admission and final revalidation; the artifact is rejected before typed reconstruction. Local regression commit `48d3e49`; focused 1 and full 598 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Add the first Phase-1 clean-room capture/reload regression without adding an archive schema or accessor. Existing compiled-input, validated-result, and episode-manifest artifacts are create-once persisted and admitted in two isolated directories; exact replay answers the frozen query and all three semantic identities remain stable. A manifest presented as compiled inputs and a result presented against a new-run compiled descriptor both fail closed. Local commit `19a6528`; focused 1 and full 600 tests passed; `git diff --check` passed. This advances but does not complete the Phase-1 gate: next combine the admitted Phase-0 reference-manifest class and expand the bounded stale/malformed provenance matrix. No runtime, promotion/write, upstream, remote, paid-compute, or live-integration change.
+- [x] Extend the Phase-1 clean-room gate across the frozen Phase-0 replay-anchor class. Two isolated reload cycles now admit identical source/output commitments, and a stale source is rejected by the existing bounded manifest admission contract. Focused 1 and full 600 tests passed; `git diff --check` passed. Next: cover the current PeTTaChainer runtime descriptor/capture class and duplicate-anchor/cross-run matrix without adding a schema.
+- [x] Extend the Phase-1 clean-room gate with a recomputed-checksum stale-descriptor attack and explicit provenance-class separation. A top-level episode substitution retaining the frozen stamp/sentence sidecars is rejected during typed reconstruction, while archived Phase-0, captured-derived, and post-reload assertion identities remain distinct. Local commit `535b1db`; focused 1 and full 600 tests passed; `git diff --check` passed. No runtime or live boundary opened.
+- [x] Close cross-artifact provenance during Phase-1 clean-room reload. `read_episode_manifest(..., compiled=..., result=...)` now verifies episode/stamp-map/result identity across independently checksummed artifacts and rejects cross-run descriptor/result collisions. Local commit `0bb6d8b`; focused 1 and full 600 tests passed; `git diff --check` passed. No runtime invocation, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Closed Phase-1 clean-room episode-manifest reload against supplied compiled chart and context identities, not only episode/stamp-map identity. Local commit `546318b`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-22 21:00 PDT / 2026-07-23 04:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Closed the Phase-2 archived manifest against its bounded process capture on reload. `read_episode_manifest(..., capture=...)` now requires exact return-code, stdout/stderr content commitments, and the capture's delivered-program commitment; output and program drift regressions fail closed. Local commit `10afdf1`; focused 1 and full 600 tests passed; `git diff --check` passed (2026-07-23 15:00 PDT / 22:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Close the typed boundary for bounded `KernelProcessCapture` provenance before clean-room manifest admission. Commit `09e774d` rejects empty/non-text argv, boolean/non-integer status, byte/non-text streams, and malformed optional program commitments at construction. Focused 1 and full 601 tests passed; `git diff --check` passed. No runtime, promotion/write, upstream/remote, paid-compute, or live-integration action.
+- [x] Closed ambiguous raw kernel-result capture admission. `validate_kernel_capture_result()` now accepts one result only when it occurs exactly once as a complete stdout line; substring-only and duplicate occurrences fail closed. Local implementation commit `f3882ae`; focused 2 and full 601 tests passed; `git diff --check` passed (2026-07-23 23:00 PDT / 2026-07-24 06:00 UTC). No runtime execution, promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Make the unique captured kernel-result line byte-exact rather than
+  whitespace-normalized. `validate_kernel_capture_result()` now rejects leading
+  or trailing whitespace around an otherwise valid result atom; focused 1 and
+  full 601 tests passed, plus `git diff --check`; local commit `bf27ee5`.
+  Provenance: progress worker,
+  2026-07-24 03:00 PDT / 10:00 UTC. No runtime, promotion/write, upstream,
+  remote, paid-compute, or live-integration boundary changed.
+- [x] Require literal LF framing for captured kernel-result records.
+  `validate_kernel_capture_result()` no longer uses Unicode-aware
+  `str.splitlines()`, so vertical-tab and U+2028 separators cannot manufacture
+  an apparent complete record. Focused 1 and full 601 tests passed with
+  `git diff --check`; local implementation commit `f3c569f`. Provenance:
+  progress worker, 2026-07-24 05:00 PDT / 12:00 UTC. No runtime,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Add explicit bounded rule attribution for the admitted one-rule
+  PeTTaChainer path. `build_pettachainer_rule_attribution()` content-addresses
+  TotalMP, exact rule/fact sentence and proof identities, stamps, evidence
+  bases, and the typed result identity, while requiring
+  `runtime_trace_decoded=False`. Local commit `e3a0d37`; focused 1 and full 601
+  tests passed, plus `git diff --check` (2026-07-24 11:00 PDT / 18:00 UTC).
+  General runtime trace decoding and promotion/write/live gates remain closed.
+- [x] Harden the compiler-bound rule-attribution constructor against
+  correctly rehashed malformed provenance collections. Rule and fact stamps
+  and evidence bases must each be non-empty, sorted, unique tuples with
+  non-negative integer stamps and non-blank string basis IDs. Focused 1 and
+  full 601 tests passed, plus `git diff --check`; local commit `39d5975`
+  (2026-07-24 13:00 PDT / 20:00 UTC). No runtime, promotion/write,
+  upstream/remote action, paid
+  compute, or live integration.
+- [x] Close compiler-bound PeTTaChainer rule attribution cardinality: each
+  rule/fact stamp must have exactly one retained evidence-basis ID. A
+  correctly rehashed mismatched tuple now fails closed. Local implementation
+  commit `e826c4e`; focused and full 601-test verification passed, plus `git
+  diff --check` (2026-07-24 15:00 PDT / 22:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Reject mutable list-backed stamp/evidence collections in typed
+  PeTTaChainer derived-result captures even when their digest is correctly
+  recomputed (`9f34631`; focused plus full 601 tests and `git diff --check`,
+  2026-07-24 19:00 PDT / 2026-07-25 02:00 UTC).
+- [x] Require distinct compiler identities for the fact and rule in typed
+  PeTTaChainer one-rule results and attributions. Correctly rehashed adversary
+  records that reuse the fact sentence digest/proof ID as the rule now fail
+  closed. Local implementation commit `19fb7a9`; focused and full 601-test
+  verification passed with `git diff
+  --check` (2026-07-24 23:00 PDT / 2026-07-25 06:00 UTC). No runtime,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Bind compiler-bound PeTTaChainer TotalMP attribution into episode-manifest
+  v2. The manifest commits `attribution_cid`; build/reload require exact
+  derivability from the supplied typed result, and cross-result pairing fails
+  closed. Local implementation commit `9ef4fef`; focused and full 601-test
+  verification passed with `git diff
+  --check` (2026-07-25 09:02 PDT / 16:02 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for
+  `validator_capture_cid` drift. The loader rejects a self-consistent manifest
+  whose validator-stage stream identity no longer matches the validator
+  capture nested in the supplied admitted result. Focused and full 601-test
+  verification passed with repository-local `git diff --check`; local
+  regression commit `947367a` (2026-07-25 19:00 PDT / 2026-07-26 02:00 UTC).
+  No runtime invocation, promotion/write, upstream/remote action, paid compute,
+  or live integration.
+- [x] Add the symmetric fully rehashed PeTTaChainer manifest adversary for
+  `runtime_capture_cid` drift. Reload rejects a self-consistent manifest whose
+  runtime-stage stream identity differs from the runtime capture nested in the
+  supplied admitted result. Focused and full 601-test verification passed with
+  repository-local `git diff --check`; local regression commit `bc2338c`
+  (2026-07-25 21:00 PDT / 2026-07-26 04:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for `episode_id`
+  drift. Reload rejects a self-consistent artifact whose episode anchor no
+  longer matches the supplied compiler contract. Local regression commit
+  `47022b3`; focused and full verification passed with repository-local `git
+  diff --check` (2026-07-26 01:00 PDT / 08:00 UTC). No runtime invocation,
+  promotion/write, upstream/remote action, paid compute, or live integration.
+- [x] Add a fully rehashed PeTTaChainer manifest adversary for
+  `result_classification`. Reload rejects a self-consistent artifact that
+  relabels the compiler-bound one-rule result as runtime-trace-derived at the
+  typed classification invariant. Focused and full 601-test verification
+  passed with repository-local `git diff --check`; local regression commit
+  `b21d1be` (2026-07-26 05:00 PDT / 12:00 UTC). No runtime invocation, promotion/write, upstream/remote action,
+  paid compute, or live integration.
+- [x] 2026-07-26: Run one provider-free production-path usability gate:
+  ingest → index → retrieve → local inference → restart → reproduce, then an
+  isolated read-only private canary. Acceptance: semantic patham9/PLN result
+  passes, restart retrieval is byte-identical, and the journal hash is unchanged
+  by canary reads. Evidence:
+  `repos/petta-memory/scripts/provider_free_usability_gate.sh` and
+  `experiments/20260726T185632Z-provider-free-usability-roundtrip-retry/`.
+  No live agent integration, promotion, or autonomous write was enabled.
+- [x] Reject dangling output-directory symlinks in the provider-free usability
+  gate before `mkdir`, preserving the link and leaving its absent target
+  untouched. Focused 2-test and full 603-test verification passed with
+  repository-local `git diff --check` (2026-07-27 01:00 PDT / 08:00 UTC).
+- [x] Close the provider-free usability gate's dangling-output-symlink case.
+  The create-new output boundary now rejects lexical path occupancy (`-e ||
+  -L`) before fixture ingestion or inference; regression coverage proves exit
+  2, exact symlink preservation, and no target creation. Focused 2 and full
+  603-test verification passed with repository-local `git diff --check`;
+  local regression commit `63f9a2e` (2026-07-27 01:00 PDT / 08:00 UTC). No
+  runtime invocation, promotion/write, upstream/remote action, paid compute,
+  dependency change, or live integration.
+- [x] Reject symlinked parent components at the provider-free usability
+  gate's create-new output boundary, with a regression proving the alias target
+  remains empty. Focused 3 and full 604 tests passed, plus repository-local
+  `git diff --check`; local commit `c7811d2`
+  (2026-07-27 03:00 PDT / 10:00 UTC).
+- [x] Make provider-free usability outputs private independently of the
+  caller's ambient umask. The gate now sets `umask 077`; a regression launches
+  it under `umask 000` and verifies the new directory is `0700` and every
+  generated file is `0600`. Focused 4-test and full 605-test verification plus
+  repository-local `git diff --check` passed; local commit `651a41a`
+  (2026-07-27 05:04 PDT / 12:04 UTC). No canonical memory write/promotion,
+  live integration, paid compute, dependency change, or remote action.
+- [x] Make the provider-free usability artifact state its non-live authority:
+  `summary.json` now records `canary_mode: read-only`,
+  `autonomous_writes_enabled: false`, and `promotion_authorized: false`.
+  Focused 5-test and full 606-test verification passed with repository-local
+  `git diff --check`; local commit `81e13d7` (2026-07-27 11:00 PDT / 18:00
+  UTC). No promotion/write, live integration, paid compute, dependency change,
+  or remote action.
+- [x] Semantically close the frozen usability inference artifact: parse
+  `inference.json` as an unambiguous UTF-8 JSON object and require its status
+  to equal the admitted passed summary claim. A fully rehashed failed result
+  fails closed. Focused 7-test and full 613-test verification passed with
+  repository-local `git diff --check`; local commit `ff3b552` (2026-07-27
+  23:00 PDT / 2026-07-28 06:00 UTC). Promotion/write, runtime invocation,
+  live integration, dependency changes, and remote actions remain closed.
+- [x] Close the frozen usability inference result to its exact producer member
+  sets at the top level and within `classification` and `semantic_markers`.
+  Fully rehashed undeclared promotion/live-integration authority fields now
+  fail closed. Focused 11-test and full 617-test verification passed with
+  repository-local `git diff --check`; local commit `15b11ce` (2026-07-28
+  05:05 PDT / 12:05 UTC).
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  and remote actions remain closed.
+- [x] Bind frozen usability inference admission to the exact
+  `patham9-pln-handoff-derivation-smoke` classifier and its clean success
+  diagnostics. A fully rehashed inference artifact using an unreviewed
+  classifier identity now fails closed. Focused 12-test and full 618-test
+  verification passed with repository-local `git diff --check`; local commit
+  `eb90064` (2026-07-28 07:00 PDT / 14:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependency changes, and remote actions remain closed.

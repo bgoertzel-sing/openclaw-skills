@@ -1,0 +1,18 @@
+# Git State
+Captured UTC: 2026-07-28T18:42:16Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/worktrees/v4-gpt2-pcstep
+Commit: ecf2f79db00365a3921152c19a06c1b54ee34771
+Branch: agent/v4-gpt2-pcstep
+Remote names: 
+
+## Status
+## agent/v4-gpt2-pcstep
+ M src/relaleap/hdpc/__init__.py
+?? src/relaleap/hdpc/pcstep_adapter.py
+?? tests/test_pcstep_adapter.py
+
+## Diff summary
+ src/relaleap/hdpc/__init__.py | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

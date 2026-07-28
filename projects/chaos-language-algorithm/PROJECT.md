@@ -1,5 +1,102 @@
 # Chaos Language Algorithm
 
+## 2026-07-27 01:15 PDT status
+
+The frozen E0 coder calibration executed exactly once against clean code
+commit `096cbb1` and failed its aggregate rule. All matching-coder entropy
+convergence, CTW sanity bands, historical provenance, and canonical-LZ78
+continuity checks passed. The sole failures were all five 100,000-symbol
+uniform-v16 adaptive-Markov-2 redundancy predicates, exceeding the frozen
+allowance by 274.625--438.455 bits. The one-shot run exited 0 in 15:40.45;
+post-run focused tests passed 4 and required discovery passed 283, with
+compileall/diff checks passing. No tuning or rerun is authorized. E1 is not
+promoted; E3 and the OmegaSim pause remain binding. Evidence:
+`experiments/20260726T171500Z-e0-coder-calibration-v1/RUN.md`.
+
+## 2026-07-26 12:15 PDT status
+
+The non-measuring E0 runner slice is complete at clean strict-replay commit
+`096cbb1`. It encodes the frozen source laws, analytical entropy rates, all
+ordinary coder arms, exact per-row predicates, aggregate decision, historical
+LZ78 reconstruction/byte/provenance checks, and raw-result schema. Declaration
+tests deliberately use only non-frozen seed 7; no E0 seed fixture or coder
+score was generated. Focused unittest passed 4; required discovery passed 283
+in 49.110 seconds; compileall and `git diff --check` passed. Next: create and
+declaration-test the frozen `20260726T171500Z` ledger wrapper, hashes, manifest,
+and exact command against `096cbb1`, commit cleanly, then execute E0 once.
+
+## 2026-07-26 08:30 PDT status
+
+M-A through M-F remain closed. At clean strict-replay commit `37d634e`, the
+exact E0 source laws, seeds, lengths, entropy calculation, redundancy bands,
+zero-entropy tolerance, and historical LZ78 references are frozen; no fixture
+or score has been generated. The declaration-tested runner and exact command
+must be frozen at a clean commit before E0 executes once. Ben authorized an E0-only
+`adaptive-markov-3` control; clean strict-replay commit `b1c501f` registers
+it with order 3 and KT `alpha=0.5`, without changing learner defaults or E1--E8
+configurations. Its deterministic reset/clone and registry tests pass. No E0
+fixture, seed output, runner, ledger, or score has been generated. Next: freeze
+the complete E0 fixture/seed/runner ledger before any measurement. E3 remains
+binding and OmegaSim remains paused until E7 resolves and E8a passes.
+
+## 2026-07-26 02:15 PDT status
+
+M-F is complete at clean strict-replay commit `4dc7304`. The public learner
+now exposes the opt-in `search_objective="prequential"` across greedy,
+Re-Pair/LZ77-SLP initialization, composites, and beam search while preserving
+all legacy defaults. Inline nested initializer grammars are emitted in
+dependency-first order, proposal ledgers separate parse/member/definition
+deltas without double counting, and final seven-field breakdowns equal the
+official score exactly. Focused unittest passed 32; required discovery passed
+278 in 46.333 seconds; compileall and `git diff --check` passed. No E0--E8
+measurement was opened; E3 and the OmegaSim pause remain binding.
+
+## 2026-07-26 00:15 PDT status
+
+M-F's bounded `PrequentialScorer` contract is acceptance-tested at clean
+strict-replay commit `1f7e7b5`. The scorer charges no separate
+model term, exposes exact parse/member/inline-definition components, caches by
+complete-state digest, and computes proposal deltas by exact immutable
+apply-and-rescore. Focused unittest passed 9; required discovery passed 276 in
+48.219 seconds; compileall and `git diff --check` passed. Contract SHA-256:
+`da823a203e1d13b75175b099b433ccd1e5d4d722df2c70550d135f1c0124d2d1`.
+No scorer registry/default was changed and no E0--E8 measurement was opened.
+
+## 2026-07-25 22:15 PDT status
+
+M-F's randomized decoder prerequisite is acceptance-tested at clean
+strict-replay commit `9402b07`. A fixed 100-seed property test covers nested ordinary chunks,
+categories, and generalized chunks under canonical first-definition order,
+checks deterministic re-encoding, and independently reconstructs every
+corpus. Focused unittest passed 5 and required discovery passed 272 in 46.427
+seconds. The next bounded slice is the frozen `PrequentialScorer` score/delta
+contract; no E0--E8 measurement was opened and E3/OmegaSim gates remain
+binding.
+
+## 2026-07-25 20:15 PDT status
+
+M-F has begun at clean active-worktree commit `edcd8be` with a frozen
+encoder/decoder-first inline-code contract. The first slice defines literals,
+ordinary chunks, and categories inline using canonical first-definition
+identities, a growing KT working alphabet, positive Elias-gamma length charges,
+and fresh adaptive member codes; its independent decoder reconstructs the
+original corpus exactly and rejects truncated or forward-reference streams.
+Focused unittest passed 4, required discovery passed 271, and compileall/diff
+checks passed. `PrequentialScorer` remains unimplemented pending
+generalized/nested randomized round-trip invariants; no E0--E8 measurement was
+opened and E3/OmegaSim gates remain binding.
+
+## 2026-07-25 18:18 PDT status
+
+M-E is closed at clean active-worktree commit `40749d7`. The milestone now
+contains deterministic pure-Python CSSR reconstruction, leakage-free
+prefix-fitted `CausalStateCoder` registry factories, and topology-equivalence
+`CSSRCategoryInducer` proposals, with automata invariants 14--16 passing.
+Focused M-E discovery passed 14 tests; required stdlib discovery passed 267
+tests in 64.747 seconds; compileall and `git diff --check` passed. This is
+unit-level implementation calibration only: E5 and all E0--E8 measurements
+remain unopened, E3 remains binding, and OmegaSim remains paused.
+
 ## 2026-07-25 16:15 PDT status
 
 The two remaining M-E automata unit invariants are acceptance-tested at clean

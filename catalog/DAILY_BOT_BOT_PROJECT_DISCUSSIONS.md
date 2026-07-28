@@ -15,7 +15,11 @@ Use short daily cross-agent discussions as a lightweight review layer for every 
 3. If a pivot, major status change, or major problem occurs, start the project discussion immediately rather than waiting for the next scheduled slot.
 4. If the normal scheduled slot arrives but that project already had a pivot/status/problem discussion within the preceding 24 hours, skip the scheduled discussion or emit no substantive duplicate.
 5. When a new project is launched with a subagent or ongoing worker, apply this protocol to it automatically: add it to the project catalog, give it a daily discussion slot or fold it into a near-term batch, and route major changes to ProtoBots-BotBotChats.
-6. Keep the main Protobots channel for concise human-facing summaries/directives only. Keep scheduled/progress updates in ProtoBots-updates except for the single daily 7AM Pacific summary.
+6. Keep main Protobots concise: at most one routine human-facing update per
+   project per day. Routine persistent workers run silently; do not post
+   textual progress to ProtoBots-updates. Ben may explicitly request more
+   frequent updates. Exceptional failure alerts remain separate from routine
+   progress.
 
 ## Discussion format
 

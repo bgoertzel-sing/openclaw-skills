@@ -1,0 +1,7 @@
+{
+  "checks_passed": 356,
+  "documentation_head": "a756315bcfa99e901975a944d13709423e31ad52",
+  "implementation_commit": "c1f7b57d274d808a27066bc3826153b2a503508e",
+  "result": "pass",
+  "schema": "threadkeeper.persistent-execution-accounting-gate.v1"
+}

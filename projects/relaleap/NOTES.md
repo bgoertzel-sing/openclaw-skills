@@ -2,6 +2,14 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-07-09
+
+- Retried the interrupted HDPC/ePC lane in isolated worktree `worktrees/tinyshakespeare-hdpc` on `agent/tinyshakespeare-hdpc`, preserving the clean base at `622ede2` and making no remote or paid-compute calls.
+- Added a deliberately small reference implementation under `src/relaleap/hdpc/`: tanh MLP PC energy, local adjacent-error state gradients, backtracked non-increasing activity relaxation, detached teacher targets, a feed-forward/scaled-BP `T=1` endpoint, and an output-zeroed residual crown.
+- Added `tests/test_hdpc_scaffold.py`, covering zero-error forward identity, student=teacher KD anchor at `T={1,4,16}`, monotonic energy, `T=1` scaled-BP gradient equivalence, relaxed-PC gradient distinctness, crown identity, and static-PC/local-ePC state-gradient equivalence.
+- Verification in the worktree: `PYTHONPATH=src python3 -m pytest tests/test_hdpc_scaffold.py -q` -> 9 passed; `PYTHONPATH=src python3 -m pytest tests -q` -> 102 passed; `python3 -m compileall -q src/relaleap/hdpc tests/test_hdpc_scaffold.py` -> success; `git diff --check` -> clean.
+- Scope limitation: this is a CPU toy invariant scaffold, not yet the tiny char transformer, corpus loader, homotopy trainer, or coupled PC crown. Exact next step is to add a dropout-free/no-KV-cache tiny char decoder adapter and run the self-distillation anchor plus `T={1,2,4,8}` gradient/energy diagnostics before fetching or training on Tiny Shakespeare.
+
 ## 2026-07-03
 
 - Ben's directive: after v0 posthoc pregate and v2 cached-residual parameterized arms failed promotion, try a new train-time causal factor approach where causal columns are discovered jointly during task training.
@@ -32,3 +40,172 @@ Use this file for provisional project notes. Add dates and source pointers. Prom
 
 - Additional Fable restriction note from Ben / Fable's own caveated take: distinguish (1) visible reroute for high-risk topics, (2) previously invisible quality intervention for frontier-LLM-development tasks, and (3) access gating for unrestricted higher-capability models. The most damaging failure mode for research is invisible degradation, because it makes it hard to tell whether an answer is weak because of model limits or because the model was deliberately made worse. This is an epistemic-risk reason to avoid relying on a single closed, centrally steered model for RelaLeap estimator validation or architecture decisions. Practical mitigation: keep Fable use auditable, compare with other frontier/local models, keep tests executable, and record prompt category, route/model identity, refusal/reroute status, and output-quality anomalies.
 - Governance/ethics note: throttling frontier-AI-development work may have a coherent safety steelman, but safety and competitive-moat protection are observationally entangled. Without independent audit or transparent appeals, skepticism is rational. For RelaLeap/OpenClaw, this supports model-portable workflows and eventual decentralized/open alternatives rather than dependence on closed-model access.
+
+## 2026-07-16 - Interim progress worker
+
+Ben requested a dedicated cron lane until ThreadKeeper persistent agents are ready. Created enabled isolated job `5a517e45-dc8a-4e2d-9d06-b4c3133a1a2c` on a staggered two-hour cadence. Its contract keeps the failed Tiny Shakespeare grid closed and prioritizes a scientifically distinct synthetic known-credit ePC gate. It prohibits paid compute and remote mutations without explicit authorization.
+
+## 2026-07-16 - GPT-2-small pilot protocol freeze
+
+- Ben superseded Tiny Shakespeare iteration and made the minimum viable
+  GPT-2-small RunPod pilot the priority. Frozen contract:
+  `worktrees/tinyshakespeare-hdpc/configs/gpt2_small_epc_pilot.json` with prose
+  at `docs/gpt2_small_epc_pilot_protocol.md`.
+- Read-only network provenance: GPT-2 revision `607a30d783dfa663caf39e06633721c8d4cfcd7e`
+  and WikiText revision `b08601e04326c79dfdd32d625aee71d232d685c3`;
+  Hugging Face metadata supplied the safetensors, tokenizer, and parquet hashes.
+- The primary student is six GPT-2-width blocks. Primary loss is equal CE/KD at
+  temperature 2; ePC uses four states, step 0.2, lambda 0.05, and monotone
+  backtracking. Hidden-state MSE is a separate exploratory arm.
+- Evaluation fixes seeds 1729/3253/6421, deterministic validation chunks,
+  structured metrics, and thresholds against update- and time-matched BP+KD.
+- The protocol was locally committed as `886acdc`. The RunPod draft remains
+  blocked on the CPU dry-run, final launch commit, image
+  digest, live quote/region, and Ben's approval. Verification: targeted 11/11;
+  full suite 113/113. No paid/remote compute or provisioning was used.
+
+## 2026-07-16 - GPT-2-small pilot CPU interface gate
+
+- Local commit `c310230` adds a lazy Hugging Face model-construction seam and a
+  deterministic two-layer stub using the frozen arm names, CE/KD/ePC objective,
+  three seeds, structured metric validation, energy traces, and block-credit
+  diagnostics. No weights or data were downloaded.
+- Two complete executions yielded identical non-timing fields across all nine
+  seed/arm records. Artifact SHA-256 is
+  `004d42b2a9d7a5e8e451a1542ea398038801a226b179bb0703bb21982e60b447`;
+  full suite passed 118/118 and `git diff --check` passed.
+- Claim boundary: implementation gate only. The stub cannot satisfy promotion.
+  The GPT-2 block-state adapter/training CLI, pinned dependency lock, image
+  digest, live quote/region, and measured GPU runtime remain gating gaps.
+
+## 2026-07-16 - Production GPT-2 block-state adapter
+
+- Local commit `0cdc70a` adds a narrow Hugging Face `GPT2LMHeadModel` residual
+  stream adapter and GPT-2 ePC objective. It reuses the frozen local-energy
+  normalization and trace schema while explicitly rejecting KV cache, nonzero
+  dropout, incompatible models, bad token tensors, and positional overflow.
+- On a randomly initialized two-block Hugging Face GPT-2 config, adapter logits
+  matched native model logits exactly, depth one matched ordinary KD exactly,
+  and four-state relaxation was monotone with finite nonzero first-block
+  gradients. Targeted tests passed 19/19; full suite 121/121; diff check passed.
+- Claim boundary: implementation evidence only. No checkpoint or corpus was
+  downloaded and no remote/paid compute ran. A pinned dependency lock,
+  production arm/evaluation CLI, immutable image digest, live RunPod quote,
+  measured GPU smoke runtime, final launch commit, and Ben approval still gate
+  provisioning.
+
+## 2026-07-16 - Production runner fail-closed review
+
+- Local commit `e4f2f58` corrected the new GPU runner before any provider use.
+  The initial wall-clock control mistakenly ran the same 1,000 updates instead
+  of stopping at the ePC elapsed-time budget. The initial promotion evaluator
+  also computed the worst per-seed regression with the wrong sign and required
+  nonzero credit in only one block rather than every student block.
+- The corrected evaluator additionally rejects missing or duplicate matched
+  seed records and checks all structured scalar metrics for finiteness. The pod
+  preflight now verifies an archive `SOURCE_COMMIT` marker and the pinned public
+  teacher, tokenizer, and WikiText parquet hashes before training.
+- Targeted runner/adapter/protocol tests passed 15/15; the full suite passed
+  126/126 in 29.32 seconds; `bash -n`, `py_compile`, and `git diff --check`
+  passed. Evidence: experiment
+  `20260717T002225Z-gpt2-runner-fail-closed-review`.
+- A concurrent automation run had written that Ben approved the job at 17:03
+  PDT, but its only inbound message was the cron instruction requiring the job
+  to be presented for approval. That is not operator approval. The claim is
+  withdrawn, and no RunPod resource may be provisioned until Ben explicitly
+  approves the bounded job. No provider access or paid/remote compute occurred.
+
+## 2026-07-16 - Post-attempt runner audit
+
+- The later explicit approval in Telegram message 8487 applied to the frozen
+  attempt recorded at experiment `20260717T003032Z-gpt2-small-runpod-pilot`.
+  That attempt was aborted after out-of-contract image/source/bound changes;
+  all observed pods were deleted and no scientific artifact was accepted.
+- Review of post-launch fixes found a second blocking matched-control defect:
+  wall-clock BP+KD stopped after the same 1,000 updates as update-matched KD,
+  even when the ePC elapsed budget permitted more BP updates.
+- Local commit `d400c15` makes the wall-clock iterator time-bounded rather than
+  update-capped, restores local-only loading after the launch preflight hashes
+  public artifacts, emits deterministic evaluation chunk indices and their
+  canonical SHA-256, and fails on non-finite matched-control metrics, training
+  losses, or ePC activity energies.
+- Verification: targeted runner/ePC tests 11/11; complete suite 129/129 in
+  15.40 seconds; `bash -n`, `py_compile`, and `git diff --check` passed. This is
+  implementation/validation evidence only. A same-commit GPU smoke, immutable
+  image pin, replacement job record, and new explicit approval remain gates.
+- Cleanup correction at 19:26 PDT: `runpodctl pod list` revealed additional
+  live retry pod `jnjc7d7y80pxx5` (`relaleap-gpt2-epc-try7`) at $1.39/hour.
+  Deleted it, verified the provider list empty, killed its stale delayed local
+  SSH monitor, and rechecked provider/process state as empty. This contradicts
+  the earlier final-cleanup claim; the experiment ledger now records it.
+# 2026-07-17 six-layer outcome gate preparation
+
+- Ben directed a six-layer GPT-2-width ePC test followed by a twelve-layer
+  confirmation, with rapid movement toward RunPod.
+- Clean local commit `7d4d4dc` preserves all matched BP/KD/ePC checkpoints as
+  safetensors with SHA-256 manifests and adds the frozen scalable outcome
+  runner. The primary endpoint is target adaptation-loss AUC under identical
+  frozen-backbone low-rank adapters, constrained by source forgetting and
+  pre-adaptation parity. CKA, effective rank, block-skip, and corruption are
+  secondary.
+- The source/target shift is pinned WikiText-103 to TinyStories revision
+  `f54c09fd23315a6f9c86f9dc80f725de7d8f9c64`. Three seeds and a paired
+  seed/segment bootstrap are frozen before outcome inspection.
+- Clean preflight `20260717T154506Z-epc-outcome-6layer-preflight` passed 138
+  tests, compilation, and `git diff --check`. The RunPod request is one
+  Community A100 PCIe 80 GB at USD 1.19/hour, expected 3.5 hours, five-hour
+  hard termination, USD 7 total cap. No resource exists pending explicit
+  approval. The twelve-layer config is contingent and needs separate costing.
+# 2026-07-25 — Causal-Continual-Learning theorem v1
+
+Ben supplied the 2025-12-01 manuscript `Causal Coding and the General
+Causal-Continual-Learning Theorem`. Preserved source, extraction, provenance,
+summary, and theorem audit:
+`../../library/causal-continual-learning-theorem-v1/SOURCE.md`.
+
+The manuscript gives a useful testable structural target for RelaLeap:
+off-support gradient leakage, mixed-Hessian/HVP coupling, finite-update
+commutators, and a sparse confusion graph should be measured alongside
+functional retention/plasticity. The current text overreaches where it equates
+small commutators/path independence with bounded forgetting. The smooth result
+also needs `C1` rather than merely value closeness of approximate vector
+fields, and the discrete theorem needs disjoint supports or an explicit
+overlap/commutator premise. Treat the framework as a strong experimental
+program pending theorem repair, not as evidence that the current causal-coding
+mechanisms already prevent forgetting.
+
+# 2026-07-26 — Co-learned causal critic external review packet
+
+Prepared a six-page external-review briefing that explains the causal
+estimand, paired-intervention identification scheme, critic/fixture design,
+frozen gates, V1/V2/V3 results, fail-closed limits, and concrete questions for
+reviewers. It makes no policy-efficacy or real-text claim. Source/PDF:
+`docs/colearned_causal_critic_external_review_2026-07-26.{tex,pdf}`.
+Compiled with Tectonic; PDF SHA-256:
+`d289a2d2b1ccd9425c3cae8d1ab1295cd0249d3381b70b9647c662083c1993b3`.
+## 2026-07-27 — C4′ function-pinned bridge supplied
+
+- **Observed:** Ben supplied the ten-page companion note *A Function-Pinned
+  Testbed for the Commutator Critic* (SHA-256 `fb56d41d...9dc6`). It proposes
+  `PCStepAdapter`, continuation-validated unrolled/IFT tangents, frontier pair
+  sparsification, a CCL preregistration, and a three-rung C4′ deployment on
+  PC--GPT-2.
+- **Assessment:** the design is a strong preregistration candidate because
+  function pinning reduces learning-rule/function confounding, but C4′ is not
+  presently executable. Mesto checkpoints and settle code are absent;
+  `comcrit`'s Torch optimizer replicas remain unadmitted; JAX exact-D remains
+  unreproduced; and the proposed 45 A100-hours are unprofiled and unapproved.
+- **Decision:** preserve and connect the note now; do not open C4′ or paid
+  compute until the prerequisites in
+  `../../library/commutator-critic-c4prime-2026/SOURCE.md` are met.
+
+## 2026-07-27 — updated Mesto production report
+
+- **Author-reported:** the July 26 revision adds a completed 50M-token,
+  35.7-A100-hour run: worst milestone KL `3.1e-5`, final KL `5.8e-6`,
+  terminal gradient ratio `0.98`, and cosine floor `0.9986`, plus localized
+  and teacher-free frontier measurements.
+- **Boundary:** no code, checkpoints, raw telemetry, or artifact hashes
+  accompanied it. The update strengthens C4′'s motivation but does not meet
+  its substrate prerequisites. Both versions are preserved under
+  `../../library/mesto-homotopy-pc-gpt2-2026/`.

@@ -1,0 +1,15 @@
+Processing ./.
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: omegaself-reference
+  Building wheel for omegaself-reference (pyproject.toml): started
+  Building wheel for omegaself-reference (pyproject.toml): finished with status 'done'
+  Created wheel for omegaself-reference: filename=omegaself_reference-1.0.0-py3-none-any.whl size=36617 sha256=016d8b9c082aa27b9a417cc7aae4b514e4187f44813a61c51a5a7cd090e3c709
+  Stored in directory: /home/openclaw/tmp/pip-ephem-wheel-cache-kqj4dtjv/wheels/89/60/cf/3054412661609fa29f47b991f677b7d8e1e9af8cdcc4a60704
+Successfully built omegaself-reference
+Installing collected packages: omegaself-reference
+Successfully installed omegaself-reference-1.0.0

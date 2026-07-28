@@ -1,0 +1,25 @@
+  error: subprocess-exited-with-error
+  
+  × Preparing metadata (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> [10 lines of output]
+      running dist_info
+      creating /home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info
+      writing /home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/PKG-INFO
+      writing dependency_links to /home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/dependency_links.txt
+      writing top-level names to /home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/top_level.txt
+      writing manifest file '/home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/SOURCES.txt'
+      reading manifest file '/home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/SOURCES.txt'
+      writing manifest file '/home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.egg-info/SOURCES.txt'
+      creating '/home/openclaw/tmp/pip-modern-metadata-3ykhcvm0/UNKNOWN.dist-info'
+      error: invalid command 'bdist_wheel'
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: metadata-generation-failed
+
+× Encountered error while generating package metadata.
+╰─> from file:///home/openclaw/research-agent/projects/omegaself/repos/omegaself-coding-agent-pack/python
+
+note: This is an issue with the package mentioned above, not pip.
+hint: See above for details.

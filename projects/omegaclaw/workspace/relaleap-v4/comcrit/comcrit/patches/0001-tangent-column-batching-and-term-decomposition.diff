@@ -1,0 +1,176 @@
+--- /tmp/backbone_jax.py.orig	2026-07-27 05:32:24.817477210 +0000
++++ src/comcrit/backbone_jax.py	2026-07-27 05:33:12.838133223 +0000
+@@ -69,21 +69,152 @@
+                 loss_A: Callable, loss_B: Callable | None = None,
+                 frozen_d: bool = False,
+                 loss_B_of_batch: Callable | None = None,
++                batched: bool = True,
++                decompose: bool = True,
++                partition: Mapping[str, Sequence[str]] | None = None,
+                 ) -> dict[str, dict[int, BackboneTerms]]:
+-        """Returns {repr(action): {h: BackboneTerms}}. Also stashes the
+-        injected theta-perturbation in terms.extras['u_theta'] at the first
+-        horizon, for synergy checks. One baseline pass serves all actions
+-        (tangents ride along); actions loop for clarity at skeleton stage —
+-        batch tangent columns before scaling up."""
++        """Returns {repr(action): {h: BackboneTerms}}.
++
++        batched=True (default): ONE baseline rollout serves all actions;
++        per step the update map is linearized once (jax.linearize) and the
++        linear map is vmapped over the stacked tangent columns. Injection
++        remains per-action (it is exact and costs one plain step each).
++        batched=False routes to the reference looped implementation, kept
++        for debugging and for the equivalence test.
++
++        decompose=True populates the Lemma-1 one-step terms (first_order,
++        drift, self_curv, and — for pair actions, when `partition` maps
++        module -> leaf names and params are a Mapping — cross_curv) on
++        every horizon's BackboneTerms. These are injection-time,
++        decision-time-observable quantities; the identity
++        first_order + drift + self_curv == tau^A(h=1) holds exactly for
++        quadratic losses and to O(step^3) generally. Costs 1-2 extra HVPs
++        of loss_A per action, at injection only.
++
++        The injected theta-perturbation is stashed in
++        terms.extras['u_theta'] at the first requested horizon (synergy
++        checks consume it).
++        """
++        if not batched:
++            return self._measure_looped(
++                state, t0, plan, actions, horizons, gate_of, loss_A,
++                loss_B, frozen_d, loss_B_of_batch, decompose, partition)
++
++        gate_o = gate_of(None)
++        maxh = max(horizons)
++
++        # --- injection: exact, per action (A+1 plain steps total)
++        st_base = self.step(state, plan.batches[0], t0, gate_o)
++        tans = [jtu.tree_map(lambda x, y: x - y,
++                             self.step(state, plan.batches[0], t0,
++                                       gate_of(act)), st_base)
++                for act in actions]
++
++        # --- one-step decomposition at the decision state
++        decos = self._decompose_all(state, st_base, tans, actions, loss_A,
++                                    partition) if decompose \
++            else [None] * len(actions)
++
++        # --- stack tangent columns: state-pytree with leading action axis
++        tanB = jtu.tree_map(lambda *xs: jnp.stack(xs), *tans)
++        tanBf = (jtu.tree_map(lambda *xs: jnp.stack(xs),
++                              *[self.params_of(t_) for t_ in tans])
++                 if frozen_d else None)
++
++        out: dict[str, dict[int, BackboneTerms]] = {
++            repr(a): {} for a in actions}
++        st = st_base
++        for k in range(1, maxh + 1):
++            if k > 1:
++                batch, t = plan.batches[k - 1], t0 + k - 1
++                fn = lambda s: self.step(s, batch, t, gate_o)
++                st_next, lin = jax.linearize(fn, st)     # primal ONCE
++                tanB = jax.vmap(lin)(tanB)               # all actions
++                if frozen_d:
++                    p = self.params_of(st)
++                    _, glin = jax.linearize(
++                        jax.grad(lambda q: loss_B_of_batch(q, batch)), p)
++                    hvpB = jax.vmap(glin)(tanBf)
++                    D = self.moments_view(st_next)
++                    tanBf = jtu.tree_map(
++                        lambda tf, dd, hh: tf - self.lr * dd * hh,
++                        tanBf, D, hvpB)
++                st = st_next
++            if k in horizons:
++                p = self.params_of(st)
++                _, linA = jax.linearize(loss_A, p)       # linearize ONCE
++                dthB = self.params_of(tanB)
++                tA = jax.vmap(linA)(dthB)
++                tB = None
++                if loss_B is not None:
++                    _, linB = jax.linearize(loss_B, p)
++                    tB = jax.vmap(linB)(dthB)
++                tAf = jax.vmap(linA)(tanBf) if frozen_d else None
++                for i, act in enumerate(actions):
++                    terms = BackboneTerms(
++                        action=act, horizon=k, mode="exact_d",
++                        tau_hat_A=float(tA[i]),
++                        tau_hat_B=None if tB is None else float(tB[i]))
++                    if decos[i] is not None:
++                        terms.first_order = decos[i]["first_order"]
++                        terms.drift = decos[i]["drift"]
++                        terms.self_curv = decos[i]["self_curv"]
++                        terms.cross_curv = decos[i]["cross_curv"]
++                    if frozen_d:
++                        terms.extras["tau_hat_A_frozen_d"] = float(tAf[i])
++                    if k == min(horizons):
++                        terms.extras["u_theta"] = self.params_of(tans[i])
++                    out[repr(act)][k] = terms
++        return out
++
++    # ---- one-step decomposition (Lemma 1, decision-time observable)
++    def _decompose_all(self, state, st_base, tans, actions, loss_A,
++                       partition):
++        p_t = self.params_of(state)
++        delta0 = jtu.tree_map(lambda x, y: x - y,
++                              self.params_of(st_base), p_t)
++        gA, glinA = jax.linearize(jax.grad(loss_A), p_t)  # H_A v = glinA(v)
++        decos = []
++        for act, tan in zip(actions, tans):
++            u = self.params_of(tan)
++            Hu = glinA(u)
++            d = {"first_order": tree_dot(gA, u),
++                 "drift": tree_dot(delta0, Hu),
++                 "self_curv": 0.5 * tree_dot(u, Hu),
++                 "cross_curv": None}
++            mods = act[0]
++            if (partition is not None and len(mods) == 2
++                    and isinstance(u, Mapping)):
++                m_leaves = set(partition[mods[0]])
++                n_leaves = set(partition[mods[1]])
++                u_m = {k: (v if k in m_leaves else jnp.zeros_like(v))
++                       for k, v in u.items()}
++                u_n = {k: (v if k in n_leaves else jnp.zeros_like(v))
++                       for k, v in u.items()}
++                d["cross_curv"] = tree_dot(u_m, glinA(u_n))
++            decos.append(d)
++        return decos
++
++    # ---- reference looped implementation (debugging / equivalence test)
++    def _measure_looped(self, state, t0, plan, actions, horizons, gate_of,
++                        loss_A, loss_B, frozen_d, loss_B_of_batch,
++                        decompose=False, partition=None):
+         gate_o = gate_of(None)
+         out: dict[str, dict[int, BackboneTerms]] = {}
+         maxh = max(horizons)
+-        for act in actions:
+-            st_base, tan = self.inject(state, plan.batches[0], t0,
+-                                       gate_of(act), gate_o)
++        st_base1 = self.step(state, plan.batches[0], t0, gate_o)
++        tans = [jtu.tree_map(lambda x, y: x - y,
++                             self.step(state, plan.batches[0], t0,
++                                       gate_of(act)), st_base1)
++                for act in actions]
++        decos = self._decompose_all(state, st_base1, tans, actions, loss_A,
++                                    partition) if decompose \
++            else [None] * len(actions)
++        for i, act in enumerate(actions):
++            tan = tans[i]
+             u_theta = self.params_of(tan)
+             tan_f = jtu.tree_map(jnp.array, u_theta) if frozen_d else None
+-            st, res = st_base, {}
++            st, res = st_base1, {}
+             for k in range(1, maxh + 1):
+                 if k > 1:
+                     batch = plan.batches[k - 1]
+@@ -110,6 +241,11 @@
+                         action=act, horizon=k, mode="exact_d",
+                         tau_hat_A=float(tA),
+                         tau_hat_B=None if tB is None else float(tB))
++                    if decos[i] is not None:
++                        terms.first_order = decos[i]["first_order"]
++                        terms.drift = decos[i]["drift"]
++                        terms.self_curv = decos[i]["self_curv"]
++                        terms.cross_curv = decos[i]["cross_curv"]
+                     if frozen_d:
+                         terms.extras["tau_hat_A_frozen_d"] = float(
+                             jvp(loss_A, (p,), (tan_f,))[1])

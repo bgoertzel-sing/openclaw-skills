@@ -1,0 +1,503 @@
+             Revised ePC Experimental Programme:
+    Homotopy Absorption, Fibre Emergence, and the Deployment
+                             Settle
+                  Working plan v1.0 — for implementation by coding agents
+
+
+                               Causal Fibres / Hyperon ePC effort
+
+                                             July 23, 2026
+
+                                                Abstract
+          This document restructures the ePC / causal-fibres experimental programme in light of
+      two external results due to Mesto (2026): (i) homotopy distillation of GPT-2 (124M) into an
+      error-parameterised predictive-coding (ePC) network, near-losslessly and reproducibly, via a
+      backpropagation-anchored deformation schedule; and (ii) a companion demonstration that the
+      same transformer’s forward pass runs natively inside the MORK symbolic store, with a strongly
+      rank-concentrated PC error field (top 5% of error cells carrying ≈ 90% of squared update mass).
+      Three structural changes follow for our programme: the direct-absorption stage previously
+      abandoned after the R8/R9 collapse is replaced by a guarded homotopy variant and re-run
+      first (E1); frontier-stability measurement is promoted to the keystone experiment deciding the
+      emergence question (E2); and MORK integration, previously a long-horizon item, is pulled
+      forward (E5). Two further experiments test whether fibre structure earns its keep over raw
+      rank concentration (E3) and whether any teacher-free settle objective closes the amortization
+      gap (E4). All experiments run on the six-layer synthetic-grammar rig, where ground-truth
+      generative factors and genuine do-operations are available. This document specifies, for each
+      experiment: hypothesis, setup, conditions, metrics with formulas, pre-registered acceptance
+      criteria, branch logic, and implementation notes.
+
+
+Contents
+
+1     Context: what changed and why the plan is being revised
+1.1   Prior internal results assumed known
+The reader (human or agent) is assumed to have access to the causal-fibres synthesis report and
+sandbox codebase. The facts this plan builds on:
+ 1. R8/R9 (absorption collapse). Direct ePC distillation of the six-layer GPT-2-style teacher
+    under energy-monotonicity training concentrated update credit in the final block and col-
+    lapsed representation rank. This motivated the frozen-backbone + sidecar architecture of
+    the causal-fibres design.
+ 2. S2 (energy descent ̸= causal correctness). Energy minimisation can coexist with
+    causally wrong credit assignment; correctness must be established by interventional diag-
+
+
+                                                    1
+      nostics, not by energy curves.
+ 3. S3/S4 (supplied-structure successes). With supplied supports and supplied fibres in
+    canonical coordinates, fibre-local plasticity gives zero unrelated drift, and transports must
+    be identified separately from routing. All positive sandbox evidence lives in this supplied-
+    structure regime; nothing yet tests emergence of fibre structure from a trained model.
+ 4. v0.3 JBD. The robust joint block diagonalizer recovers hidden common block structure from
+    context-conditioned operators and flags repeated-copy underidentification.
+
+1.2    External input: Mesto (2026)
+Two results, treated here as provisional but load-bearing:
+ 1. Homotopy distillation at 124M. A pretrained GPT-2 (124M) is deformed into an ePC
+    network along a schedule τ = ηT , T ∈ {1, 2, 4, . . . , 128}, anchored at the exact BP identity
+    at T =1 (at ε = 0 the forward pass is the vanilla network and one relaxation step reproduces
+    the backpropagation adjoint). Across five runs, student–teacher prompt KL stays near 10−5
+    nats at every milestone; held-out perplexity within 0.4%; per-block cosine to teacher ≥ 0.998;
+    while the mean per-block error-norm ratio rises 0.05 → 0.98.
+ 2. Error-mass concentration. At the terminal settle, the top 5% of the 4.72M error cells
+    carry ≈ 90% of squared update mass; fixed-depth Hill statistic α ≈ 1.68 at the top-5% tail,
+    nearly τ -invariant; no power-law plateau under tail-depth sweep.
+ 3. MORK companion. The full GPT-2 (124M) forward pass runs natively in the MORK
+    trie-backed store to 6.06 × 10−6 maximum relative logit error, with KV-caching derived as
+    incremental view maintenance and a blocked tensor format giving a 16× expression-count
+    reduction.
+Known open ambiguities in Mesto’s report (communicated to the author; our own experi-
+ments must not inherit them):
+   Clamped vs. deployed. The settle energy’s loss term is the distillation KL to the frozen teacher,
+    so all reported fidelity numbers are measured with teacher access during settle. The teacher-
+    free ε=0 feedforward fidelity of the terminal-τ student is unreported. Every fidelity metric
+    in this plan is therefore reported in both clamped and teacher-free conditions, always.
+   Depth distribution of the frontier. Concentration is reported over cells but not over blocks;
+    whether the top-k frontier piles into late layers (the R8/R9 pathology in slow motion) is
+    unknown. Every frontier measurement in this plan is reported per block as well as pooled.
+
+1.3    The three structural changes
+ 1. Absorption returns, homotopy-guarded (E1). The frozen-backbone compromise was
+    forced by R8/R9. If a BP-anchored homotopy with fidelity guards avoids the collapse on our
+    rig, absorption stops being the dangerous last stage.
+ 2. Emergence becomes the keystone (E2). Mesto’s concentration result supplies the raw
+    material (a small update frontier) but not the structure (stable, context-indexed subspaces).
+    Whether fibres emerge from a homotopied error field, under the most favourable conditions
+
+
+
+                                                 2
+      that will ever exist (few layers, few factors, ground-truth do-operations), decides the pro-
+      gramme’s central claim.
+ 3. MORK moves forward (E5). The store demonstrably hosts a model 20× larger than
+    ours. Hosting the six-layer PC model in MORK de-risks the long-term target and supplies
+    the substrate in which local credit assignment is an engineering constraint rather than an
+    aesthetic preference.
+
+
+2     Shared platform, notation, and methodology standards
+2.1     The rig
+All experiments use the existing six-layer GPT-2-style transformer rig trained on the synthetic
+compositional grammar with F ground-truth generative factors (F = 4 in the current configura-
+tion; TODO(agent): read F and factor names from the rig config rather than hard-coding). The
+rig provides:
+     a frozen teacher T (the trained six-layer model);
+     a context-signature map c(x) assigning each input its ground-truth factor configuration;
+     do-operations x 7→ xdo(j) producing counterfactual minimal pairs that intervene on factor
+      j only;
+     held-out splits: in-distribution (ID), and compositional shift (CS): factor-value combina-
+      tions excluded from training.
+
+2.2     ePC student parameterisation
+Following the Mesto/ePC form. Blocks fℓ , ℓ = 1, . . . , L (L=6), embedding output x0 , explicit
+error tensors εℓ as the only free inference leaves:
+
+                           xℓ = fℓ (xℓ−1 ) + εℓ ,          ẑ = head(LNf (xL )).              (1)
+
+Inference relaxes
+                                               L
+                                               X
+                                                     1      2
+                                      E(ε) =         2 ∥εℓ ∥ + L(ẑ(ε))                       (2)
+                                               ℓ=1
+
+by T steps of gradient descent from ε(0) =0 with weights frozen (assert at runtime). Weights then
+descend the local objective
+                              L
+                              X
+                                    1                          2
+                      EW =          2 ∥fℓ (x̄ℓ−1 ; Wℓ ) − x̄ℓ ∥ + L(head(LNf (x̄L ))),        (3)
+                              ℓ=1
+
+with settled states x̄ held constant; optimiser AdamW. The loss term L varies by experiment:
+distillation KL to T (E1, E2, E3), observed-token cross-entropy or symbolic-constraint energy
+(E4).
+
+
+
+
+                                                       3
+2.3     Homotopy schedule and guards (shared by E1–E3)
+     Schedule: T ∈ {1, 2, 4, . . . , Tmax } geometric; effective relaxation time τ = ηT , η fixed within
+      a run; start Tmax at 128 and reduce if the rig converges earlier.
+     Stage advance requires an energy-convergence hold criterion (energy-convergence ratio below
+      threshold for H consecutive evaluations); on failure, subdivide the τ step.
+     Divergence-abort guard: abort a run if clamped prompt KL to teacher exceeds a threshold
+      fixed in advance. Log guard status every milestone; report whether the guard ever fired.
+
+2.4     Methodology standards (apply to every experiment)
+These adopt the replicate-campaign lesson from Mesto §4 and our own S-series practice. They are
+mandatory; agents must implement them as shared harness code, not per-experiment ad hoc
+scripts.
+ 1. No thresholds from single runs. Acceptance thresholds are set as the strict envelope
+    over a replicate set of n ≥ 3 runs, under a rule fixed before the final replicates are inspected.
+ 2. Matched seeds for comparisons. Any A-vs-B configuration comparison runs both arms
+    at identical seeds and is judged on per-seed deltas.
+ 3. Pre-registration. Each experiment’s acceptance criteria (Appendix ??) are frozen in the
+    repo (versioned JSON) before the first full run; deviations are logged, not silently applied.
+ 4. Dual-condition fidelity. Every fidelity metric is reported both clamped (settle includes
+    teacher loss) and teacher-free (ε=0 feedforward, no settle, no teacher anywhere in the evalu-
+    ation path). The harness must make the teacher-free path a first-class evaluator, asserted to
+    touch no teacher weights.
+ 5. Per-block reporting. Any statistic over error cells is emitted both pooled and per block ℓ.
+ 6. Interventional validation. Any claim of causal credit correctness is validated against
+    do-operation ground truth, never against energy descent (S2).
+ 7. Artifacts. Every run emits: config hash, seed, git commit, per-milestone metrics (JSONL),
+    stored error-field histograms, and the standard figure set (§??).
+
+
+3     E1: Homotopy re-expression of the six-layer teacher (H-R8)
+3.1     Question and hypothesis
+Does a BP-anchored homotopy with fidelity guards avoid the R8/R9 pathology (final-block credit
+concentration and representation-rank collapse) that direct energy-monotonic ePC distillation
+produced on the same rig?
+Hypothesis 1. Under the homotopy schedule, the six-layer student reaches terminal τ with (i)
+teacher-free ε=0 fidelity within the acceptance envelope, (ii) a depth-distributed update frontier,
+and (iii) no representation-rank collapse relative to the teacher.
+
+
+
+
+                                                    4
+3.2   Setup
+   Teacher: frozen six-layer rig model. Student: initialised from teacher, ePC parameterisation,
+    L = KL(student ∥ teacher) at distillation temperature 2.
+   Homotopy and guards as in §2. Replicates: n ≥ 5 (2 seeds × 2 microbatch shapes + pilot),
+    matching Mesto’s design so results are directly comparable.
+   Contrast arm (required): re-run the original R8/R9 recipe (direct energy-monotonic train-
+    ing, no homotopy anchor, no guards) at matched seeds, same token budget, as the pathology-
+    positive control. If the historical run is reproducible from the archived config, reuse it;
+    otherwise rerun.
+
+3.3   Diagnostics
+D1 (teacher-free fidelity).
+   At every milestone and at terminal τ : prompt KL and held-out task metric for (a) clamped
+   settle, (b) ε=0 feedforward. Primary result is (b); (a) is the sanity ceiling.
+D2 (frontier depth histogram).
+   At terminal τ : fraction of top-k update-mass cells per block, k at the 5% depth, plus the full
+   per-block mass shares. Compare against the contrast arm’s histogram.
+D3 (representation rank).
+   Per
+    P block:Peffective rank (participation ratio of the activation covariance spectrum, PR =
+   ( i λi )2 / i λ2i ) of settled states, tracked across τ , compared to teacher and to the contrast
+   arm.
+D4 (concentration curve).
+   Cumulative squared-update-mass vs. rank-ordered cell fraction (Mesto Fig. 3 analogue),
+   pooled and per block; fixed-depth Hill statistic at top-5% with model-free sampling error,
+   plus the tail-depth sweep. Purpose: establish whether the 124M concentration phenomenol-
+   ogy reproduces at six layers, which calibrates how far the rig generalises.
+
+3.4   Acceptance and branches
+Acceptance thresholds per §2 standards; provisional targets in Appendix ??.
+Branch 3.1 (E1-A: homotopy clean). D1(b) within envelope, D2 depth-distributed (no block
+holds > 50% of top-k mass; TODO: freeze exact bar pre-run), D3 no collapse. Consequence: the
+frozen-backbone compromise is dissolved for this rig; E2 and E3 run on the homotopied whole
+model; sidecar variants become ablations rather than the primary architecture.
+Branch 3.2 (E1-B: pathology in slow motion). D1(b) passes but D2/D3 show late-block con-
+centration or rank decay trending with τ . Consequence: absorption remains unsafe; the sidecar
+architecture is necessary, not merely cautious; E2 runs on the sidecar error field instead; publish
+the negative result with the contrast arm.
+Branch 3.3 (E1-C: clamped-only fidelity). D1(a) passes but D1(b) fails badly. Consequence:
+function is held jointly by weights + teacher-clamped settle; E4 (deployment settle) is promoted
+to run immediately after E1, since nothing downstream is deployable without it; report the finding
+to Mesto as the resolution of the ambiguity flagged in §1.2.
+
+
+
+
+                                                 5
+4     E2: Frontier stability and fibre emergence (keystone)
+4.1    Question
+All prior positive fibre results are supplied-structure. E2 asks, on the terminal E1 student (or
+E1-B sidecar): does the settled error field contain emergent fibre structure — context-stable
+supports, common invariant subspaces recoverable by JBD, aligned with the grammar’s ground-
+truth factors? This is the emergence question posed under the most favourable conditions that
+will ever exist; a negative here bounds the programme’s ambitions honestly.
+
+4.2    Measurements
+All computed on settled error fields over a held-out probe set with balanced context signatures,
+with matched-size random-cell and shuffled-context nulls for every statistic.
+M1 (support stability).
+   For each context signature c, the mean top-k support set Sc (cells in the top-k by squared
+   update mass, majority-vote across inputs with signature c). Report the within-vs-between
+   contrast
+                       ∆Jacc = Ec Jacc(Sc(1) , Sc(2) ) − Ec̸=c′ Jacc(Sc , Sc′ ) ,
+                                                                            
+                                                                                           (4)
+             (1)   (2)
+      where Sc , Sc are supports from disjoint halves of the probe set. High within, low between
+      ⇒ stable, context-indexed frontier. Report at k ∈ {1%, 5%, 20%} depths, per block and
+      pooled.
+M2 (subspace stability).
+   Replace cell sets by subspaces: per context c and block ℓ, the top-r left singular subspace
+   Uc,ℓ of the stacked settled error matrix. Report principal angles between split-half estimates
+   of Uc,ℓ (within) and between Uc,ℓ , Uc′ ,ℓ (between), as a function of r.
+M3 (JBD recovery).
+   Form context-conditioned second-moment operators Mc,ℓ = E[εℓ ε⊤   ℓ | c] and run the v0.3
+   robust JBD across c per block. Report: recovered block structure, the underidentification
+   flags, and the factor-alignment score: mutual information between recovered block acti-
+   vation patterns and ground-truth factor values across the probe set (with permutation-null
+   calibration).
+M4 (interventional fingerprints).
+   For each factor j, the differential error field δj (x) = ε(xdo(j) ) − ε(x). Report whether δj
+   concentrates on the j-aligned recovered block (fingerprint selectivity matrix: fraction of ∥δj ∥2
+   landing in block b, for all j, b; success is a dominant diagonal after optimal matching).
+M5 (observability floor).
+   The existing εobs diagnostic applied to the E1 substrate: how much of the teacher–student
+   functional gap is linearly readable from the settled error field at all. M1–M4 are interpreted
+   relative to this floor.
+
+4.3    Branches
+Branch 4.1 (E2-A: emergence). ∆Jacc and M2 significantly above nulls, M3 recovers ≥ ⌈F/2⌉
+factor-aligned blocks, M4 diagonal dominant. Consequence: first positive emergence result; the
+
+
+                                                 6
+recipe is homotopy first, then identification; E3 proceeds with the recovered fibres as its structured
+arm.
+Branch 4.2 (E2-B: concentration without structure). Concentration reproduces but stability/JBD/fingerprints
+sit at null levels. Consequence: the “red regime” is real even under ideal conditions; the pro-
+gramme’s honest scope contracts to supplied-structure applications (engineered fibres for engi-
+neered subsystems); E3’s structured arm uses supplied fibres and is reframed as measuring the
+cost of imposing structure.
+Branch 4.3 (E2-C: blocked by observability). M5 shows the error field barely encodes the func-
+tional gap. Consequence: the substrate, not the identification machinery, is the binding constraint;
+revisit E1 configuration (deeper relaxation, alternative loss placement) before concluding anything
+about emergence.
+
+
+5     E3: Structured vs. unstructured frontier settle at matched bud-
+      get
+5.1    Question
+Mesto’s proposed rank-frontier settle is our routing apparatus with the structure deleted: an
+unstructured top-k gate. Does fibre structure buy anything over raw concentration — in settle
+cost, in-distribution quality, or (the real bet) out-of-distribution transfer?
+
+5.2    Conditions (all at matched settle evaluation budget)
+  1. Dense: full settle, T steps, all cells (reference).
+  2. Top-k: settle updates only the top-k cells by running magnitude (Mesto-style rank frontier;
+     k swept over {1%, 5%, 20%}).
+  3. Fibre-projected: settle updates projected onto the E2 fibres (recovered if E2-A, supplied
+     if E2-B), with transports applied across blocks; plasticity gates from the S3/S4 machinery
+     active.
+  4. Random-k (control): settle on a random cell set of matched size.
+“Matched budget” means equal total scalar update counts per token; the harness must meter and
+log this, not assume it.
+
+5.3    Evaluations
+V1 (ID quality).
+   Teacher-free and clamped fidelity on the ID split. Expected: dense ≈ top-k ≈ fibre ≫ random;
+   a tie here is the predicted outcome, not a failure.
+V2 (compositional shift).
+   Same metrics on the CS split (held-out factor combinations). This is the discriminating
+   condition: structured routing should degrade more gracefully than unstructured top-k if
+   fibre structure has content.
+V3 (transfer of routing).
+   Freeze each condition’s routing/gating state on ID data; evaluate settle quality on CS data
+
+
+                                                   7
+      without re-estimating the frontier. Measures whether the routing function itself generalises
+      — the evidence previously missing from the ladder.
+V4 (continual probe).
+   Sequential fine-tuning on factor-restricted streams; measure off-support drift per condition.
+   Prediction from S3/S4: protection tracks gating/supports, not PC locality per se; top-k
+   without supports drifts.
+
+
+6      E4: Deployment settle objectives (closing the amortization
+       gap)
+6.1     Question
+The teacher-clamped settle cannot be the deployed object. At deployment, L in Eq. (2) must
+be replaced by something available at test time, or the settle must be dropped (ε=0). Does
+any teacher-free settle objective beat the feedforward student? If not, the PC apparatus has no
+deployment value beyond what an adapter provides, and the programme’s deployment story must
+say so.
+
+6.2     Conditions
+On the terminal E1 student, evaluated teacher-free throughout:
+ 1. FF: ε=0 feedforward (lower anchor).
+ 2. TC: teacher-clamped settle (upper anchor; measures the gap available in principle, never
+    deployable).
+ 3. OT: observed-token settle: L is cross-entropy on the observed prefix tokens (self-supervised
+    settle on the prompt), free continuation.
+ 4. SC: symbolic-constraint settle: grammar rules expressed in MeTTa; L = λ·(constraint-violation energy from t
+    queried per settle step (batched; see E5 for the in-store path). This is the Stage-4 bet made
+    concrete: test-time information injected by the symbolic cap.
+ 5. OT+SC: combined.
+
+6.3     Evaluation and the decisive comparison
+Primary metric: task accuracy / next-token quality on ID and CS splits, plus constraint-satisfaction
+rate of generated continuations. The decisive number is
+                                               SC − FF
+                                          G=                                                     (5)
+                                               TC − FF
+per metric: the fraction of the in-principle settle gap recovered by symbolic clamping. The
+grammar rules are literally the generative truth of the rig; if G ≈ 0 here, symbolic clamping will
+not work anywhere easier, the amortization gap is fatal to the deployment story, and downstream
+design should treat the PC form as a training-time device only. If G is material on CS in particular
+(where FF should be weakest), the Stage-4 inversion is vindicated: the symbolic cap is where
+deployment value enters, and it should move up the staging accordingly.
+
+
+                                                 8
+Secondary: settle-step count to criterion per condition (cost of the recovered quality), and interac-
+tion with E3 conditions (does fibre-projected SC settle localise constraint corrections to the right
+blocks? cross-reference M4).
+
+
+7     E5: MORK hosting of the six-layer PC model
+7.1   Question and scope
+Mesto’s companion result hosts a 124M forward pass in MORK at 6 × 10−6 relative error with
+incremental decoding. Our model is ∼ 20× smaller; hosting it, including the error field and
+frontier writes, de-risks the store-native target and supplies the substrate in which local credit
+is an engineering constraint. Scope for this stage: inference + settle + frontier weight-writes
+in-store; from-scratch in-store training is out of scope.
+
+7.2   Work items
+ 1. W1 (forward). Six-layer forward as MORK rule application over blocked tensor expressions,
+    dense kernels (einsum, attention, normalisation) as sink operations, following Mesto’s blocked
+    format. Fidelity target: match the PyTorch reference to ≤ 10−5 maximum relative logit error;
+    exact argmax agreement on a decode probe set.
+ 2. W2 (settle in-store). The T -step relaxation as in-store iteration; error tensors as store
+    expressions. Verify settled states match the reference settle to a pre-registered tolerance.
+ 3. W3 (frontier writes as IVM). Weight updates restricted to the top-k frontier, applied
+    as incremental store writes; measure write volume vs. dense updates and verify the store’s
+    incremental maintenance reproduces the reference update to tolerance. This is the concrete
+    synergy claim (sparse frontier ↔ trie-backed incremental writes) tested rather than asserted.
+ 4. W4 (fibre registration). Register E2 fibres (if any) as MeTTa expressions: supports,
+    subspace bases, transports, factor bindings. This is the substrate E4’s SC condition queries,
+    and the interface the symbolic cap was always intended to have.
+ 5. W5 (cost accounting). Wall-clock and expression-count budgets for W1–W3, compared
+    against the PyTorch path, reported without spin: the store will be slower; the question is by
+    how much and where.
+
+
+8     Controls and baselines (run alongside, not after)
+C1 (BP-residual observability control).
+   The standing falsifier for the interface: a plain backprop-trained residual/adapter of matched
+   capacity on the frozen teacher, evaluated on every E3/E4 metric. If C1 matches the PC
+   apparatus everywhere teacher-free, the parameterisation is doing no deployment work and
+   the reports must say so.
+C2 (dictionary-learning baseline).
+   Sparse autoencoder / dictionary learning trained directly on settled error cells (per block),
+   same probe set as E2. Evaluate on M3’s factor-alignment score and M4’s fingerprint selec-
+   tivity. If sparse coding recovers the factors as well as JBD, the simpler method wins and
+
+
+
+                                                 9
+      the JBD machinery is repositioned as a verification tool. This baseline is mandatory in any
+      write-up of E2.
+C3 (matched-compute BP fine-tune).
+   For any continual-learning claim (E3 V4): backprop fine-tuning at matched compute and
+   matched seeds, per-seed deltas.
+
+
+9     Sequencing and decision tree
+Phase 1 (immediate, parallelisable): E1 (with its contrast arm) and the harness work in §2.
+C1 training can start immediately (it depends only on the frozen teacher).
+Phase 2: E2 on the Phase-1 substrate (choice of substrate per E1 branch). C2 runs on the same
+stored error fields — the harness must persist settled error tensors for the probe set precisely so
+that E2 and C2 consume identical data.
+Phase 3: E3 and E4 in parallel; both consume E2’s output (fibres or the finding that there are
+none). Exception: under branch E1-C, E4 jumps to Phase 2.
+Phase 4: E5, overlappable with Phase 3 for W1–W2 (which need only the E1 student).
+Reporting rule: each phase produces a short memo in the N-series style — established results,
+boundaries stated with the same force, branch taken and why — before the next phase’s configs
+are frozen.
+
+
+10      Implementation notes for coding agents
+     Repo layout. Extend the existing causal-fibres sandbox repo: experiments/e1 homotopy/,
+      e2 emergence/, e3 settle/, e4 deployment/, e5 mork/, controls/; shared code in harness/
+      (schedules, guards, dual-condition evaluators, metering, metrics JSONL, figure emitters).
+      TODO(agent): reconcile with actual repo structure before creating directories.
+     Config. One versioned JSON/YAML per run: seeds, schedule, guard thresholds, k depths,
+      probe-set spec, acceptance-criteria file hash. No thresholds in code.
+     Assertions. (i) weights frozen during settle; (ii) teacher-free evaluators provably teacher-free
+      (no teacher module import in that code path); (iii) matched-budget metering in E3 enforced,
+      not assumed; (iv) matched seeds enforced for all A/B comparisons.
+     Persisted artifacts. Settled error tensors for the E2/C2 probe set (single source of truth);
+      per-milestone metrics JSONL; error-mass histograms at fixed binning (so Hill statistics and
+      tail sweeps are recomputable without rerunning).
+     Standard figure set. Per run: fidelity-vs-milestone (clamped and teacher-free, log KL);
+      error-norm-ratio and cosine vs. τ ; concentration curve pooled and per block; frontier depth
+      histogram; effective-rank-vs-τ per block. E2 adds: ∆Jacc vs. k-depth with nulls; principal-
+      angle spectra; JBD block map; fingerprint selectivity matrix. E4 adds: the G bar per metric
+      per split.
+     Numerical hygiene. Hill statistics computed from stored histograms with the model-free
+      sampling-error estimate; never fit a power law; report the tail-depth sweep alongside any
+
+
+                                                  10
+     fixed-depth α.
+   Failure reporting. A run that trips a guard or fails acceptance is a result, not a discard:
+    it is logged, its artifacts kept, and it appears in the phase memo. No silent exclusion; the
+    n-of-runs reported must equal the n-of-runs launched.
+
+
+A      Provisional acceptance criteria
+Provisional targets below; final bars are frozen per the envelope rule (§2) before each experiment’s
+full campaign, and stored as versioned JSON. Deltas are per-seed unless noted.
+
+
+Exp.   Quantity                  Provisional bar                                 Notes
+E1     clamped prompt KL         within envelope of n≥3 replicates               guard at fixed multiple
+E1     teacher-free task delta   ≤ envelope over replicates                      primary
+E1     frontier depth            no block > 50% of top-5% mass                   freeze before run
+E1     effective rank            ≥ 0.8× teacher PR per block                     vs. contrast arm
+E2     ∆Jacc                     > 3σ above shuffled-context null                per k-depth
+E2     factor alignment (M3)     ≥ ⌈F/2⌉ blocks above permutation null           with JBD flags clean
+E2     fingerprint (M4)          diagonal share > 2× off-diagonal mean           after matching
+E3     ID tie                    top-k, fibre within envelope of dense           tie is expected
+E3     CS separation             fibre vs. top-k per-seed delta, sign test       discriminating
+E4     G                         report; material if > 0.2 on CS                 decisive number
+E5     W1 fidelity               ≤ 10−5 max rel. logit error; argmax exact       Mesto parity
+
+
+B      Metric definitions gathered
+   Squared update mass of cell i: mi = E[ε2i ] over the probe set at the terminal settle (store
+    per-sample values for split-half work).
+   Top-k support Sc : cells in the top k fraction of mi computed on inputs with signature c
+    (majority vote across samples).
+   Jaccard: Jacc(A, B) = |A ∩ B|/|A ∪ B|.
+   Effective rank (PR): ( i λi )2 / i λ2i over the eigenvalues of the per-block settled-state
+                             P         P
+    covariance.
+   Hill statistic at depth k: with order statistics m(1) ≥ · · · ≥ m(k) , α̂−1 = k1 ki=1 ln(m(i) /m(k) );
+                                                                                    P
+    report with the model-free dispersion-based standard error; descriptor only, not an exponent
+    estimate.
+   Fingerprint selectivity: matrix Φjb = E ∥Pb δj ∥2 /E ∥δj ∥2 for do-difference fields δj and
+                                                                 
+
+    recovered block projectors Pb ; optimal j−b matching by the Hungarian algorithm before
+    diagonal/off-diagonal comparison.
+   G (gap recovery): ( SC − FF )/( TC − FF ) computed per metric per split; undefined and
+    reported as such when TC − FF is within noise.
+
+
+
+
+                                                   11
+

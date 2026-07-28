@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd projects/omegaself/repos/protomegabot2-omegaclaw-record-only
+env OMEGASELF_RECORD_ONLY=1 OMEGASELF_DATA_DIR=/home/openclaw/research-agent/projects/omegaself/artifacts/record-only-smoke-20260715 PYTHONPATH=src /home/openclaw/research-agent/projects/protomegabot2/repos/PeTTa/.venv/bin/python -c import\ omegaself_bridge\ as\ b\;\ print\(b.init\(\)\)\;\ print\(b.record_cycle_start\(1\,\"synthetic\ canary\ message\"\)\)\;\ print\(b.record_parsed_calls\(\"\(synthetic-read-only\)\"\)\)\;\ print\(b.record_dispatch_result\(\"\(synthetic-read-only\)\"\,\"synthetic-ok\"\,\"\(\)\"\)\)\;\ print\(b.record_policy_load\(\"profile/policy.yaml\"\)\)\;\ print\(b.record_reasoner_invocation\(\"patham9-pln\"\,\"patham9-stv-unversioned@sha256:6b980321bbe9b49e5b12e2fcee0479ab1d5c7550c2104a67b0722a5b473da4ee\"\,\"synthetic-request\"\,\"\(stv\ 0.8\ 0.7\)\"\)\)\;\ print\(b.verify_ledger\(\)\) 

@@ -1,0 +1,80 @@
+{
+  "config": {
+    "discard": 2048,
+    "lorenz96": {
+      "dimension": 8,
+      "dt": 0.01,
+      "initial": [
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.09
+      ],
+      "positive_F": 8.0,
+      "shuffle_seed": 731922,
+      "stable_F": 1.0
+    },
+    "mackey_glass": {
+      "dt": 0.1,
+      "initial": 2.1,
+      "positive_tau": 17.0,
+      "shuffle_seed": 731921,
+      "stable_tau": 2.0
+    },
+    "score_interval_exclusive": [
+      0.02,
+      0.9
+    ],
+    "steps": 4096
+  },
+  "fixtures": [
+    {
+      "name": "mackey-glass-chaotic",
+      "promoted": true,
+      "role": "positive",
+      "score": 0.06422059520286665,
+      "symbol_count": 4095
+    },
+    {
+      "name": "mackey-glass-stable",
+      "promoted": false,
+      "role": "stable",
+      "score": 0.0,
+      "symbol_count": 4095
+    },
+    {
+      "name": "mackey-glass-shuffled",
+      "promoted": false,
+      "role": "shuffled",
+      "score": 0.9999092930137863,
+      "symbol_count": 4095
+    },
+    {
+      "name": "lorenz96-chaotic-full-state",
+      "promoted": true,
+      "role": "positive",
+      "score": 0.11190476994295277,
+      "symbol_count": 4095
+    },
+    {
+      "name": "lorenz96-stable-full-state",
+      "promoted": true,
+      "role": "stable",
+      "score": 0.0250289065248785,
+      "symbol_count": 4095
+    },
+    {
+      "name": "lorenz96-shuffled-full-state",
+      "promoted": true,
+      "role": "shuffled",
+      "score": 0.5845559856772865,
+      "symbol_count": 4095
+    }
+  ],
+  "stage_a_passed": false,
+  "stage_b_authorized": false
+}

@@ -1,0 +1,204 @@
+% CLA algorithm version used in recorded tests -- generated 2026-07-10
+% ASCII-only source.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{listings}
+
+\lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,frame=single,showstringspaces=false}
+\emergencystretch=2em
+
+\title{Chaos Language Algorithm: Particular Algorithm Version Used in the Recorded Tests}
+\author{Chaos Language Algorithm Project}
+\date{2026-07-10}
+
+\begin{document}
+\maketitle
+
+\section{Executive summary}
+
+The recorded CLA tests used the local pure-Python \texttt{chaoslang} prototype, not a Hyperon runtime and not the full theoretical CLA specification. The tested algorithm is best described as:
+
+\begin{quote}
+A deterministic, exact-reconstructing symbolic-stream grammar learner that first converts a continuous trajectory into fixed rectangular M1 symbols, then greedily accepts chunk and optional category edits that strictly reduce a simple two-part MDL-like score.
+\end{quote}
+
+There are two closely related tested versions:
+
+\begin{enumerate}[leftmargin=*]
+\item The 256-symbol attractor baseline and Lorenz-96 scaling records used the M1-control CLI with the then-current default CLA path: fixed-partition M1 symbolization, n-gram chunk proposals, exact-context category proposals, approximate MDL scoring, and eight greedy iterations.
+\item The later 1024-step by 20D smoke run used local commit \texttt{b344aa3c1a4b5a5eeef93fc2ea239a7f75c97429}, plus one uncommitted CLI-only modification exposing miner/category options and fit timing. The run selected \texttt{--miner suffix\_trie} and \texttt{--category-method js}. In that commit, the default \texttt{NGramPatternMiner} implementation had already been replaced internally by a bounded suffix trie.
+\end{enumerate}
+
+The core learning semantics are the same across both: exact reconstruction is asserted after edits; chunks are sequential productions; categories are substitutable sets whose occurrences retain the observed member as \texttt{M[v]}; and candidate edits are accepted only when the score decreases.
+
+\section{Code provenance}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+Component & Version/evidence & Role \\
+\midrule
+Repository & \texttt{bgoertzel-sing/chaos-language-algorithm} & Public GitHub repo \\
+Local path & \texttt{projects/chaos-language-algorithm/repos/chaoslang} & Tested source tree \\
+Package & \texttt{chaoslang} version \texttt{0.1.0} & Pure-Python prototype \\
+Sprint-1 commit & \texttt{4a7399c} & Symbolic-string MVP \\
+M1 controls commit & \texttt{cab962b} lineage & Attractor generators and M1 symbolizer \\
+Dim-scaling records & \texttt{adc005f}/\texttt{1501346} lineage & Lorenz-96 dim 8--24 records \\
+JS categories & \texttt{d1fd8f9} & JS context clustering path \\
+Persistence & \texttt{e64b1d0} & JSON/replay support, not central to tests \\
+Suffix-trie commits & \texttt{97cfb4f}, \texttt{b344aa3} & Bounded trie miner \\
+1024x20D run & \texttt{b344aa3} + dirty CLI mod & Exact recorded smoke run \\
+\bottomrule
+\end{tabular}
+\caption{Source versions relevant to the tests.}
+\end{table}
+
+At inspection on 2026-07-10, local \texttt{main} and \texttt{agent/suffix-trie-miner} both pointed to \texttt{b344aa3}; \texttt{origin/main} pointed to \texttt{847390c}. The local tree had one modified file, \texttt{src/chaoslang/benchmarks/m1\_controls.py}. That modification was not a learner semantic change; it added CLI flags \texttt{--miner}, \texttt{--category-method}, \texttt{--js-threshold}, and \texttt{fit\_wall\_time\_seconds} reporting.
+
+\section{Algorithm actually run}
+
+\subsection{Inputs}
+
+For the benchmark tests, the learner received a finite tuple of symbolic tokens. For attractor controls this tuple was produced as follows:
+
+\begin{enumerate}[leftmargin=*]
+\item Generate a deterministic trajectory using local stdlib numerical code.
+\item Discard an initial prefix.
+\item Infer per-axis min/max bounds from the retained trajectory unless explicit bounds are supplied.
+\item Divide each axis into equal-width bins.
+\item Convert each scalar or vector point into one compound token, e.g. \texttt{m1:d0i|d1j|...}.
+\end{enumerate}
+
+This is M1 fixed rectangular symbolization. It is not a learned partition, not a dimension-reduction method, and not a semantic OmegaSim state abstraction. For dimension \texttt{D} with four bins per axis, the direct compound-symbol space has up to \texttt{4\string^D} labels.
+
+\subsection{Initial grammar state}
+
+The initial state is a corpus and parse equal to the raw symbol stream:
+
+\begin{lstlisting}
+state = GrammarState.initial(stream)
+parse = corpus.symbols
+productions = {}
+categories = {}
+\end{lstlisting}
+
+The main invariant is:
+
+\begin{quote}
+Expanding the current parse through the current grammar must exactly reproduce the original corpus symbols.
+\end{quote}
+
+\subsection{Chunk proposal path}
+
+A chunk is a sequential nonterminal production, e.g. \texttt{N7 -> a b c}. Candidate chunks are repeated contiguous parse blocks. The tested default parameters were:
+
+\begin{itemize}[leftmargin=*]
+\item minimum n-gram length: 2
+\item maximum n-gram length: 5 in \texttt{CLA.simple}; the underlying bounded-trie class default is 6 when constructed directly
+\item minimum non-overlapping uses: 2
+\item greedy iterations in recorded benchmarks: 8
+\end{itemize}
+
+For older 256-symbol records, the miner was the then-current n-gram path. In the latest inspected code at \texttt{b344aa3}, \texttt{NGramPatternMiner} is implemented by a depth-bounded suffix trie. A separate legacy wrapper class \texttt{SuffixTrieMiner} remains selectable through \texttt{miner=\"suffix\_trie\"} and was selected in the 1024x20D run.
+
+Candidate chunk proposals are sorted deterministically and named \texttt{N0}, \texttt{N1}, etc. Accepted chunks replace non-overlapping occurrences in the parse. Productions whose use count drops below two are pruned and inlined, while exact reconstruction is reasserted.
+
+\subsection{Category proposal path}
+
+A category is not a sequential production. It is a substitutable set of tokens, with each parse occurrence preserving the observed member:
+
+\begin{lstlisting}
+M[x] expands as x
+M[y] expands as y
+\end{lstlisting}
+
+Thus categories can compress context-substitution patterns without losing exact reconstruction. Two category proposal mechanisms exist:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Exact context categories}: group tokens with identical immediate left/right context signatures.
+\item \textbf{Jensen-Shannon categories}: group tokens whose left/right context histograms cluster below a JS-divergence threshold.
+\end{enumerate}
+
+The 1024x20D smoke run selected JS categories with threshold 0.1. It exercised this path but accepted no category edit, so that run does not demonstrate a compression benefit from JS clustering.
+
+\subsection{Scoring and search}
+
+The search is greedy over candidate edits. At each iteration:
+
+\begin{enumerate}[leftmargin=*]
+\item score the current state;
+\item enumerate chunk proposals;
+\item optionally enumerate category proposals;
+\item apply each proposal to a copied state;
+\item score each candidate;
+\item choose the candidate with the lowest strictly smaller score;
+\item if no candidate improves the score, stop.
+\end{enumerate}
+
+Ties are broken deterministically by proposal class name and representation. Although the API accepts a seed and constructs a private RNG, the inspected fit loop does not use randomness in proposal selection.
+
+The scorer is a simple two-part MDL-like proxy in token-count units, not a calibrated bit code:
+
+\begin{itemize}[leftmargin=*]
+\item each ordinary parse entry costs 1.0 data unit;
+\item each chunk production costs \texttt{0.8 + rhs length} model units;
+\item each category costs \texttt{14.0 + member count} model units;
+\item each edit-log entry costs 0.1 model units;
+\item a category occurrence costs \texttt{1 - log2 p(member | category)} data units.
+\end{itemize}
+
+This score is sufficient for strict local improvement tests, but should not be interpreted as absolute entropy or bits per symbol.
+
+\section{Version-by-test matrix}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+Test group & Symbolization & Learner path & Notes \\
+\midrule
+Scalar/3D baselines & M1, 4 bins & n-gram chunks + exact categories & 256 symbols, 8 iterations \\
+Lorenz-96 dims 8--24 & M1, 4 bins & n-gram chunks + exact categories & 256 symbols, seed 0 \\
+1024x20D smoke & M1, 4 bins & suffix-trie chunks + JS categories & \texttt{b344aa3} + CLI mod \\
+Unit tests & direct symbols + M1 & all public paths & 71 tests passing on 2026-07-10 \\
+\bottomrule
+\end{tabular}
+\caption{Particular CLA version paths used by the recorded tests.}
+\end{table}
+
+\section{Not used in these tests}
+
+The following are part of the broader CLA/project plan, but were not the algorithm actually validated in the recorded experiments:
+
+\begin{itemize}[leftmargin=*]
+\item Hyperon or Atomspace runtime execution;
+\item learned dimension reduction or semantic state projection;
+\item McBride-derivative pre-ranking;
+\item joint chunk/category proposals based on emergent synergy;
+\item quantale-generalized scoring;
+\item natural-gradient or beam search;
+\item held-out prediction or attractor classification;
+\item actual OmegaSim trace ingestion.
+\end{itemize}
+
+\section{Current verification}
+
+The current local tree was rechecked while preparing this document:
+
+\begin{lstlisting}
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+\end{lstlisting}
+
+Result: 71 tests passed in 0.901 seconds. The test count differs from the earlier summary's 69 because the currently inspected tree includes all tests visible in the local working copy on 2026-07-10.
+
+\section{Bottom line}
+
+The algorithm version tested so far is a conservative MVP: fixed-partition trajectory symbolization plus deterministic exact-reconstructing grammar induction with chunk rules, member-preserving categories, and a simple MDL-like greedy acceptance rule. The 1024x20D test used the suffix-trie-enabled local version and JS category proposal path, but its accepted grammar still consisted only of chunk edits. Stronger CLA ideas from the formal plan remain engineering targets rather than validated components.
+
+\end{document}

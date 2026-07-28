@@ -1,5 +1,20 @@
 # Decisions
 
+## 2026-07-26: Add an E0-only adaptive Markov-3 control
+
+**Decision:** Ben authorized `adaptive-markov-3` for the E0 order-3 Markov
+source. It uses order 3, the fixture's declared vocabulary, and KT
+`alpha=0.5`; it is the matching-order and CTW reference coder for that source.
+
+**Rationale:** The frozen E0 source list includes an order-3 Markov process,
+but its registry had controls only through order 2, leaving the matching-order
+and CTW comparison undefined.
+
+**Boundary:** The arm is E0-only. It does not alter learner defaults, the E1--E8
+base coder, or any measured outcome. Implementation: strict-replay commit
+`b1c501f`; no E0 fixture, seed, runner, ledger, or score existed at this
+decision.
+
 ## 2026-07-24: Multi-depth beam ancestry is explicit
 
 Beam retention is not final scientific acceptance. Nodes carry canonical

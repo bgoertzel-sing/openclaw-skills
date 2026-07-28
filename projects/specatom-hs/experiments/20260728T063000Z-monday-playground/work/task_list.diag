@@ -1,0 +1,211 @@
+# SpecAtom-HS Diagnostics Report
+
+## Summary Counts
+| Metric | Value |
+| --- | --- |
+| total_objects | 10 |
+| total_obligations | 346 |
+| total_checks | 346 |
+| pass | 294 |
+| fail | 0 |
+| unknown | 1 |
+| refusals | 105 |
+| questions | 4 |
+| requirements | 2 |
+| acceptance_tests | 1 |
+| coverage_pass | 2 |
+| coverage_unknown | 1 |
+| concepts.defined | 0 |
+| concepts.external | 0 |
+| concepts.unresolved | 0 |
+
+## Per-property Breakdown
+| Property | Pass | Fail | Unknown |
+| --- | --- | --- | --- |
+| acceptance-test-covers-requirement | 1 | 0 | 0 |
+| check-has-evidence | 3 | 0 | 0 |
+| check-has-safe-identity | 3 | 0 | 0 |
+| check-has-safe-obligation-id | 3 | 0 | 0 |
+| check-has-safe-property | 3 | 0 | 0 |
+| check-has-safe-target | 3 | 0 | 0 |
+| check-has-valid-record-type | 3 | 0 | 0 |
+| check-identity-is-unique | 3 | 0 | 0 |
+| check-links-known-obligation | 3 | 0 | 0 |
+| check-status-is-known | 3 | 0 | 0 |
+| check-target-matches-obligation | 3 | 0 | 0 |
+| fact-arguments-are-backend-safe | 25 | 0 | 0 |
+| fact-has-supported-arity | 25 | 0 | 0 |
+| fact-references-known-targets | 25 | 0 | 0 |
+| fact-subject-matches-object | 25 | 0 | 0 |
+| item-file-is-indexed | 3 | 0 | 0 |
+| item-file-matches-section-file | 3 | 0 | 0 |
+| item-has-safe-fields | 3 | 0 | 0 |
+| item-has-safe-identity | 3 | 0 | 0 |
+| item-has-safe-link-identities | 3 | 0 | 0 |
+| item-has-safe-source-span | 3 | 0 | 0 |
+| item-has-section | 3 | 0 | 0 |
+| item-has-source-span | 3 | 0 | 0 |
+| item-has-valid-record-type | 3 | 0 | 0 |
+| item-identity-is-unique | 3 | 0 | 0 |
+| item-span-file-matches-item-file | 3 | 0 | 0 |
+| object-has-known-role | 4 | 0 | 0 |
+| object-has-known-semantic-level | 4 | 0 | 0 |
+| object-has-safe-identity | 4 | 0 | 0 |
+| object-has-safe-source-span-id | 4 | 0 | 0 |
+| object-has-source-or-generated-provenance | 4 | 0 | 0 |
+| object-has-valid-facts-container | 4 | 0 | 0 |
+| object-has-valid-record-type | 4 | 0 | 0 |
+| object-identity-is-unique | 4 | 0 | 0 |
+| object-supported-by-petta-reified-profile | 4 | 0 | 0 |
+| obligation-has-source-provenance | 3 | 0 | 0 |
+| obligation-target-is-declared | 3 | 0 | 0 |
+| plain-file-digest-matches-content | 1 | 0 | 0 |
+| plain-file-has-safe-fields | 1 | 0 | 0 |
+| plain-file-has-safe-identity | 1 | 0 | 0 |
+| plain-file-has-valid-record-type | 1 | 0 | 0 |
+| plain-file-identity-is-unique | 1 | 0 | 0 |
+| question-blocks-validation-obligation | 4 | 0 | 0 |
+| question-has-review-text | 4 | 0 | 0 |
+| requirement-has-acceptance-test | 1 | 0 | 1 |
+| section-file-is-indexed | 2 | 0 | 0 |
+| section-has-safe-fields | 2 | 0 | 0 |
+| section-has-safe-file-identity | 2 | 0 | 0 |
+| section-has-safe-identity | 2 | 0 | 0 |
+| section-has-safe-source-span | 2 | 0 | 0 |
+| section-has-source-span | 2 | 0 | 0 |
+| section-has-valid-record-type | 2 | 0 | 0 |
+| section-identity-is-unique | 2 | 0 | 0 |
+| section-span-file-matches-section-file | 2 | 0 | 0 |
+| source-span-has-safe-bounds | 5 | 0 | 0 |
+| source-span-has-safe-file-identity | 5 | 0 | 0 |
+| source-span-has-safe-identity | 5 | 0 | 0 |
+| source-span-has-valid-record-type | 5 | 0 | 0 |
+| source-span-identity-is-unique | 5 | 0 | 0 |
+| source-span-lines-match-byte-offsets | 5 | 0 | 0 |
+| source-span-within-file-bounds | 5 | 0 | 0 |
+| validation-obligation-has-reviewable-rationale | 3 | 0 | 0 |
+| validation-obligation-has-safe-identity | 3 | 0 | 0 |
+| validation-obligation-has-safe-property | 3 | 0 | 0 |
+| validation-obligation-has-safe-source-span-id | 3 | 0 | 0 |
+| validation-obligation-has-safe-target | 3 | 0 | 0 |
+| validation-obligation-has-valid-record-type | 3 | 0 | 0 |
+| validation-obligation-identity-is-unique | 3 | 0 | 0 |
+
+## FAIL Checks
+- (none)
+
+## UNKNOWN Checks
+- chk-cee649a493 `requirement-has-acceptance-test` target `req-3fe89800a9`: no explicit acceptance test found
+
+## Questions
+- question-86cf80445c: What acceptance test demonstrates this requirement?
+- question-cffe47615c: Should object 'obj-730c2aef23' be lifted above RawTextOnly before petta_reified_v0 export, or refused?
+- question-87b9c0f9cf: Should object 'obj-3fe89800a9' be lifted above RawTextOnly before petta_reified_v0 export, or refused?
+- question-6d57347c90: Should object 'obj-7f57182641' be lifted above RawTextOnly before petta_reified_v0 export, or refused?
+
+## Backend Refusals
+- unsupported-semantic-level-for-reified-emission obj-730c2aef23
+- unsupported-semantic-level-for-reified-emission obj-3fe89800a9
+- unsupported-semantic-level-for-reified-emission obj-7f57182641
+- validation-obligation-target-object-not-emitted vobl-d218a80b16
+- validation-obligation-target-object-not-emitted vobl-1d9930606b
+- validation-obligation-target-object-not-emitted vobl-d7d64ac3d7
+- validation-obligation-target-object-not-emitted vobl-bd328527f9
+- validation-obligation-target-object-not-emitted vobl-5dfa90805d
+- validation-obligation-target-object-not-emitted vobl-2fa54b4708
+- validation-obligation-target-object-not-emitted vobl-00e014df5c
+- validation-obligation-target-object-not-emitted vobl-3425210b7b
+- validation-obligation-target-object-not-emitted vobl-6d4b7257c3
+- validation-obligation-target-object-not-emitted vobl-c6e9104ecd
+- validation-obligation-target-object-not-emitted vobl-b744c9c718
+- validation-obligation-target-object-not-emitted vobl-eb8792ed31
+- validation-obligation-target-object-not-emitted vobl-01f60a7bb1
+- validation-obligation-target-object-not-emitted vobl-2a18ce2b55
+- validation-obligation-target-object-not-emitted vobl-bca7e533ab
+- validation-obligation-target-object-not-emitted vobl-a56ed5d83f
+- validation-obligation-target-object-not-emitted vobl-28c69856bd
+- validation-obligation-target-object-not-emitted vobl-a046e74bef
+- validation-obligation-target-object-not-emitted vobl-4ccf619df5
+- validation-obligation-target-object-not-emitted vobl-9fc4d8a7ce
+- validation-obligation-target-object-not-emitted vobl-0237d44300
+- validation-obligation-target-object-not-emitted vobl-9627a88210
+- validation-obligation-target-object-not-emitted vobl-a7be0b144d
+- validation-obligation-target-object-not-emitted vobl-d3d432745e
+- validation-obligation-target-object-not-emitted vobl-bca18c9e3d
+- validation-obligation-target-object-not-emitted vobl-7b926572d3
+- validation-obligation-target-object-not-emitted vobl-5d6fcce0bc
+- validation-obligation-target-object-not-emitted vobl-c1bf92b713
+- validation-obligation-target-object-not-emitted vobl-2bb97eabd1
+- validation-obligation-target-object-not-emitted vobl-24b3f18253
+- validation-obligation-target-object-not-emitted vobl-b622fdd50d
+- validation-obligation-target-object-not-emitted vobl-229bb753a8
+- validation-obligation-target-object-not-emitted vobl-92cef531dd
+- validation-obligation-target-object-not-emitted vobl-07f782b40e
+- validation-obligation-target-object-not-emitted vobl-00ffa1f2b6
+- validation-obligation-target-object-not-emitted vobl-6ff25fb8c6
+- validation-obligation-target-object-not-emitted vobl-dc4d7fbdd2
+- validation-obligation-target-object-not-emitted vobl-479c362abe
+- validation-obligation-target-object-not-emitted vobl-d67af6699b
+- validation-obligation-target-object-not-emitted vobl-e464280ce9
+- validation-obligation-target-object-not-emitted vobl-5c19aef87e
+- validation-obligation-target-object-not-emitted vobl-9ab6d93486
+- validation-obligation-target-object-not-emitted vobl-199966b407
+- validation-obligation-target-object-not-emitted vobl-7e87dea302
+- validation-obligation-target-object-not-emitted vobl-ffe7c8b099
+- validation-obligation-target-object-not-emitted vobl-74aff808de
+- validation-obligation-target-object-not-emitted vobl-4dec393753
+- validation-obligation-target-object-not-emitted vobl-b8edffb0ac
+- validation-obligation-target-object-not-emitted vobl-da3a4380eb
+- validation-obligation-target-object-not-emitted vobl-fecae27918
+- validation-obligation-target-object-not-emitted vobl-5252a70dce
+- check-obligation-not-emitted:vobl-d218a80b16 chk-e77e976d7d
+- check-obligation-not-emitted:vobl-1d9930606b chk-8375e26ebe
+- check-obligation-not-emitted:vobl-d7d64ac3d7 chk-32a9fae6ec
+- check-obligation-not-emitted:vobl-bd328527f9 chk-006f0ceacc
+- check-obligation-not-emitted:vobl-5dfa90805d chk-9628b3d3ea
+- check-obligation-not-emitted:vobl-2fa54b4708 chk-df9000a42e
+- check-obligation-not-emitted:vobl-00e014df5c chk-9eed2632d0
+- check-obligation-not-emitted:vobl-3425210b7b chk-80a1132b0d
+- check-obligation-not-emitted:vobl-6d4b7257c3 chk-153547cdb1
+- check-obligation-not-emitted:vobl-c6e9104ecd chk-fd987ae8a8
+- check-obligation-not-emitted:vobl-b744c9c718 chk-6f7512c941
+- check-obligation-not-emitted:vobl-eb8792ed31 chk-c1d02e6644
+- check-obligation-not-emitted:vobl-01f60a7bb1 chk-9239f67d68
+- check-obligation-not-emitted:vobl-2a18ce2b55 chk-b27d5ab9c5
+- check-obligation-not-emitted:vobl-bca7e533ab chk-0a547fc6e6
+- check-obligation-not-emitted:vobl-a56ed5d83f chk-2075d9b05a
+- check-obligation-not-emitted:vobl-28c69856bd chk-ac34a1c23f
+- check-obligation-not-emitted:vobl-a046e74bef chk-84f302c379
+- check-obligation-not-emitted:vobl-4ccf619df5 chk-db1e30dac0
+- check-obligation-not-emitted:vobl-9fc4d8a7ce chk-45af2a3068
+- check-obligation-not-emitted:vobl-0237d44300 chk-2919853f99
+- check-obligation-not-emitted:vobl-9627a88210 chk-2c4be846d8
+- check-obligation-not-emitted:vobl-a7be0b144d chk-ad949c6122
+- check-obligation-not-emitted:vobl-d3d432745e chk-3b127e5b11
+- check-obligation-not-emitted:vobl-bca18c9e3d chk-8827c060d4
+- check-obligation-not-emitted:vobl-7b926572d3 chk-869834d577
+- check-obligation-not-emitted:vobl-5d6fcce0bc chk-c81ed4f27b
+- check-obligation-not-emitted:vobl-c1bf92b713 chk-4ba48c5adb
+- check-obligation-not-emitted:vobl-2bb97eabd1 chk-e6d58e20cd
+- check-obligation-not-emitted:vobl-24b3f18253 chk-1471176413
+- check-obligation-not-emitted:vobl-b622fdd50d chk-f9cf8e5bb4
+- check-obligation-not-emitted:vobl-229bb753a8 chk-6a51ec232e
+- check-obligation-not-emitted:vobl-92cef531dd chk-2b626069c6
+- check-obligation-not-emitted:vobl-07f782b40e chk-57feb90abd
+- check-obligation-not-emitted:vobl-00ffa1f2b6 chk-c51e5db4b9
+- check-obligation-not-emitted:vobl-6ff25fb8c6 chk-3f395a4256
+- check-obligation-not-emitted:vobl-dc4d7fbdd2 chk-62a5ed1e69
+- check-obligation-not-emitted:vobl-479c362abe chk-08fa8ec39b
+- check-obligation-not-emitted:vobl-d67af6699b chk-7170411f6b
+- check-obligation-not-emitted:vobl-e464280ce9 chk-eafd5143ce
+- check-obligation-not-emitted:vobl-5c19aef87e chk-adbd15ab1c
+- check-obligation-not-emitted:vobl-9ab6d93486 chk-7fb2c72795
+- check-obligation-not-emitted:vobl-199966b407 chk-1ded0e0a39
+- check-obligation-not-emitted:vobl-7e87dea302 chk-4ff106f3d5
+- check-obligation-not-emitted:vobl-ffe7c8b099 chk-023f23f5b2
+- check-obligation-not-emitted:vobl-74aff808de chk-4726baca3d
+- check-obligation-not-emitted:vobl-4dec393753 chk-fdd259a025
+- check-obligation-not-emitted:vobl-b8edffb0ac chk-4f3aaa73ef
+- check-obligation-not-emitted:vobl-da3a4380eb chk-c1b45c4a82
+- check-obligation-not-emitted:vobl-fecae27918 chk-80a3ff1e5c
+- check-obligation-not-emitted:vobl-5252a70dce chk-68c4ed9669

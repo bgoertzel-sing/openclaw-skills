@@ -1,0 +1,27 @@
+{
+  "seed": 1729,
+  "n_train": 2048,
+  "n_validation": 1024,
+  "n_bootstrap": 1000,
+  "student_steps": 30,
+  "probe_steps": 220,
+  "batch_size": 128,
+  "d_model": 32,
+  "n_heads": 4,
+  "n_layers": 6,
+  "teacher_margin": 6.0,
+  "read_sites": ["block_0", "block_2", "block_4", "block_5", "blocks_0_2_4_5"],
+  "factors": ["subject_number", "object_number", "tense", "negation", "agreement"],
+  "arms": [
+    {"name": "linear", "kind": "linear", "capacity": 32},
+    {"name": "low_rank_r4", "kind": "low_rank", "capacity": 4},
+    {"name": "low_rank_r8", "kind": "low_rank", "capacity": 8},
+    {"name": "low_rank_r16", "kind": "low_rank", "capacity": 16},
+    {"name": "low_rank_r32", "kind": "low_rank", "capacity": 32},
+    {"name": "mlp_h32", "kind": "mlp", "capacity": 32},
+    {"name": "lora_r4", "kind": "low_rank", "capacity": 4, "lora_equivalent": true},
+    {"name": "lora_r8", "kind": "low_rank", "capacity": 8, "lora_equivalent": true},
+    {"name": "lora_r16", "kind": "low_rank", "capacity": 16, "lora_equivalent": true},
+    {"name": "lora_r32", "kind": "low_rank", "capacity": 32, "lora_equivalent": true}
+  ]
+}

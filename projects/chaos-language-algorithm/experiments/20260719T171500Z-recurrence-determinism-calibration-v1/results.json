@@ -1,0 +1,153 @@
+{
+  "false_negatives": [],
+  "false_positives": [
+    "lorenz96-stable-full-state"
+  ],
+  "manifest": {
+    "config": {
+      "determinism_threshold": 0.2,
+      "discard": 1536,
+      "evaluation_length": 512,
+      "min_diagonal": 2,
+      "prefix_length": 256,
+      "radius_quantile": 0.05,
+      "recurrence_fraction_range": [
+        0.01,
+        0.2
+      ],
+      "seed": 19071921,
+      "theiler": 1
+    },
+    "fixtures": [
+      {
+        "evaluation_sha256": "c410e99b7bf2e09d9de06e40845f56232ac5661e58e0ef019c10ee1ac46b58fa",
+        "kind": "positive",
+        "name": "mackey-glass-chaotic",
+        "prefix_sha256": "ae97d3f731a04b3e2d32de7e88b05f44d7596741e22906cad9d936c2f66699a4",
+        "radius": 0.004746859476244758,
+        "radius_index": 1619,
+        "trajectory_sha256": "649f759775cd516fc521264419f677480196d006413ed898e2e2458424ff650e"
+      },
+      {
+        "evaluation_sha256": "c14bfd7ebad638e700f9d570414f12f2d8ea814ad5d176dbc4aac51fd91425b6",
+        "kind": "shuffled",
+        "name": "mackey-glass-chaotic-shuffled",
+        "radius": 0.004746859476244758,
+        "shuffle_seed": 19071922
+      },
+      {
+        "evaluation_sha256": "6715e21e602767628fc34897e852cf8316bba70bc8e474afa7ebd5d4b416a55f",
+        "kind": "nonchaotic",
+        "name": "mackey-glass-stable",
+        "prefix_sha256": "25812e2a3e61aab91b0a22e2d8a1bf58ac0891ce843cf0b997bd85feff8d9fa1",
+        "radius": 0.0,
+        "radius_index": 1619,
+        "trajectory_sha256": "e111f7a997f6e41a46b957fce8441c3dd527691987cff62c4bca0adde98fa821"
+      },
+      {
+        "evaluation_sha256": "450828d88c37faabdaac630680c2dcc6e9c0a4f0e2ab8bfb03440818a6eea9cc",
+        "kind": "positive",
+        "name": "lorenz96-chaotic-full-state",
+        "prefix_sha256": "1a67864d4aa917e0d83891c755e309fc83e227cbdf8fe58e87c9a0a138fdea76",
+        "radius": 4.055310056249702,
+        "radius_index": 1619,
+        "trajectory_sha256": "46e1f2fd977f98d6057a4986412200f1d852e1f5226a5b328769be54c46a6e1a"
+      },
+      {
+        "evaluation_sha256": "b146795a4ccc221638801f7d4d70a6611f61008fcbdf3236b5310affd0fa0377",
+        "kind": "shuffled",
+        "name": "lorenz96-chaotic-full-state-shuffled",
+        "radius": 4.055310056249702,
+        "shuffle_seed": 19071924
+      },
+      {
+        "evaluation_sha256": "5b72d4b5dbeb78687d42046c93dbd9ec7d2429e52b5880d7266c6b69ea495011",
+        "kind": "nonchaotic",
+        "name": "lorenz96-stable-full-state",
+        "prefix_sha256": "bdb6920a582921fd0ac968db0cccdb540432c500d31ea4c6d868794977ff81a7",
+        "radius": 0.033628299064056344,
+        "radius_index": 1619,
+        "trajectory_sha256": "3354d6590faf66fcfa8cd4322458f1c8424e34f4193a7f783f7d1a8cd95d728d"
+      }
+    ],
+    "protocol": "recurrence-determinism-calibration-preregistration-v1",
+    "schema": "chaoslang.recurrence-determinism-calibration",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "both positives promoted; no shuffled or nonchaotic control promoted; degeneracy fails closed",
+  "results": [
+    {
+      "determinism": 0.8517532179316467,
+      "deterministic_points": 1919,
+      "eligible_points": 130305,
+      "kind": "positive",
+      "name": "mackey-glass-chaotic",
+      "nondegenerate": true,
+      "promoted": true,
+      "radius": 0.004746859476244758,
+      "recurrence_fraction": 0.01729020375273397,
+      "recurrence_points": 2253
+    },
+    {
+      "determinism": 0.034905310063126624,
+      "deterministic_points": 94,
+      "eligible_points": 130305,
+      "kind": "shuffled",
+      "name": "mackey-glass-chaotic-shuffled",
+      "nondegenerate": true,
+      "promoted": false,
+      "radius": 0.004746859476244758,
+      "recurrence_fraction": 0.0206668968957446,
+      "recurrence_points": 2693
+    },
+    {
+      "determinism": 0.9999923256974023,
+      "deterministic_points": 130304,
+      "eligible_points": 130305,
+      "kind": "nonchaotic",
+      "name": "mackey-glass-stable",
+      "nondegenerate": false,
+      "promoted": false,
+      "radius": 0.0,
+      "recurrence_fraction": 1.0,
+      "recurrence_points": 130305
+    },
+    {
+      "determinism": 1.0,
+      "deterministic_points": 3559,
+      "eligible_points": 130305,
+      "kind": "positive",
+      "name": "lorenz96-chaotic-full-state",
+      "nondegenerate": true,
+      "promoted": true,
+      "radius": 4.055310056249702,
+      "recurrence_fraction": 0.027312842945397337,
+      "recurrence_points": 3559
+    },
+    {
+      "determinism": 0.05873642645607108,
+      "deterministic_points": 238,
+      "eligible_points": 130305,
+      "kind": "shuffled",
+      "name": "lorenz96-chaotic-full-state-shuffled",
+      "nondegenerate": true,
+      "promoted": false,
+      "radius": 4.055310056249702,
+      "recurrence_fraction": 0.031096274126088792,
+      "recurrence_points": 4052
+    },
+    {
+      "determinism": 1.0,
+      "deterministic_points": 3720,
+      "eligible_points": 130305,
+      "kind": "nonchaotic",
+      "name": "lorenz96-stable-full-state",
+      "nondegenerate": true,
+      "promoted": true,
+      "radius": 0.033628299064056344,
+      "recurrence_fraction": 0.028548405663635316,
+      "recurrence_points": 3720
+    }
+  ]
+}

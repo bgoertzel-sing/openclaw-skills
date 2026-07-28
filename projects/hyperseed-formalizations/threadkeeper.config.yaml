@@ -1,0 +1,151 @@
+# ======================================================================
+# ThreadKeeper — hyperseed-formalizations worker
+# ======================================================================
+#
+# Autonomous background worker that processes Hyperseed formalization
+# tasks: dangling formalization notes first, then Ben's Substack posts
+# in reverse chronological order. Uses GLM-5.2 for cheap control/worker
+# loops and escalates to GPT-5.5 only for hard formalization subproblems
+# (definitions, theorems, proof sketches).
+#
+# NOTHING HERE IS A SECRET. Models referenced by name; API keys
+# referenced by environment variable NAME only.
+# ======================================================================
+
+version: 1
+
+# ----------------------------------------------------------------------
+# Node 1 — CONTROL LOOP
+# ----------------------------------------------------------------------
+# Holds thread state: which articles/notes are done, in progress, or
+# pending. Decides when to escalate to the cloud specialist.
+control_loop:
+  provider: OpenRouter
+  model: z-ai/glm-5.2
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+  max_output_tokens: 2000
+  notes: >
+    Cheap control node. Runs every iteration. Owns the work queue state
+    (articles done/pending, notes in progress), tracks token spend, and
+    decides escalate?/delegate? for hard formalization subproblems.
+
+# ----------------------------------------------------------------------
+# Node 2 — WORKER LOOP
+# ----------------------------------------------------------------------
+# Reads articles/notes, inventories claims, drafts informal Hyperseed
+# summaries, runs tectonic builds, commits and pushes. Bounded turns
+# per dispatch.
+worker_loop:
+  provider: OpenRouter
+  model: z-ai/glm-5.2
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+  max_output_tokens: 3000
+  default_tool_subset: [search, read-file, write-file, shell, append-file]
+  notes: >
+    Iterative legwork: fetch Substack articles via web fetch, inventory
+    intellectual claims, draft informal Hyperseed mappings, run
+    `tectonic` PDF builds, git commit and push. Bounded turns per
+    dispatch. Cheap enough to loop many times before escalation.
+
+# ----------------------------------------------------------------------
+# Node 3 — CLOUD SPECIALIST
+# ----------------------------------------------------------------------
+# Invoked ONLY for hard formalization: Hyperseed definitions, theorem
+# statements, proof sketches, nontrivial mathematical formulation.
+cloud_specialists:
+  - key: formalizer
+    provider: OpenAI
+    model: gpt-5.5
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    max_output_tokens: 4000
+    default_tool_subset: [read-file, write-file, search]
+    notes: >
+      Frontier-grade reasoning for formal LaTeX. Called only when the
+      worker hits a formalization subproblem that GLM-5.2 cannot
+      resolve (complex theorem statements, proof construction,
+      difficult Hyperseed category-theoretic definitions).
+
+# ----------------------------------------------------------------------
+# ADJUDICATOR  (disabled — three-node mesh)
+# ----------------------------------------------------------------------
+adjudicator:
+  enabled: false
+
+# ----------------------------------------------------------------------
+# BUDGET
+# ----------------------------------------------------------------------
+budget:
+  unit: tokens
+
+  # Thread ceiling: covers ~20 Substack articles or ~40 notes
+  # at 100k/50k tokens each respectively.
+  thread_token_ceiling: 2000000
+
+  # Below 50% of ceiling: escalate freely for hard subproblems.
+  # Between 50% and 100%: escalate only for genuinely hard subproblems.
+  escalation_soft_fraction: 0.5
+
+  # Iterate cheaply first: at least 2 local GLM-5.2 iterations
+  # before any GPT-5.5 escalation.
+  min_local_iterations_before_escalation: 2
+
+  # Per-1k-token rates (approximate, for cost reporting only)
+  rates_per_1k_tokens:
+    control_loop:     { input: 0.0004, output: 0.0012 }   # GLM-5.2
+    worker_loop:      { input: 0.0004, output: 0.0012 }   # GLM-5.2
+    cloud_specialist: { input: 0.005,  output: 0.015  }   # GPT-5.5
+
+# ----------------------------------------------------------------------
+# Governance
+# ----------------------------------------------------------------------
+governance:
+  usage_log: memory/hyperseed-usage.jsonl
+  escalation_log: memory/hyperseed-escalations.jsonl
+  record_escalation_decisions: true
+  escalation_policy_metta: src/escalation.metta
+
+# ----------------------------------------------------------------------
+# Work Queue
+# ----------------------------------------------------------------------
+# Ordered work items. Dangling threads first (quick wins), then
+# Substack articles in reverse chronological order.
+work_queue:
+  # --- Dangling formalization threads ---
+  - id: note-0004-revision
+    description: >
+      Revise note 0004 with 2026-07-01 OmegaSim feedback: bounded
+      thresholded cognitive appraisal, latent motivational state,
+      semantic/artifact fields, costly prediction, hysteresis,
+      residual-state lobe discovery, A6/A7/A8 experiment families.
+    token_budget: 50000
+    type: note-revision
+
+  - id: note-slt-residual-seeds
+    description: >
+      Draft Hyperseed formalization note: SLT-Guided Residual Seeds.
+      Sources: library/slt-residual-layers/, library/slt-hyperseed-synthesis/.
+      Connect weakness-as-evidence, LLC/additivity deviation, refinement
+      DAGs, causal fingerprints, transformer residual layers, AGI adaptation.
+    token_budget: 50000
+    type: note
+
+  - id: petta-chem-formalization
+    description: >
+      Formalize petta-chem experiment records using Hyperseed
+      scientific-experiment annotation style.
+    token_budget: 50000
+    type: note
+
+  # --- Substack articles (reverse chronological) ---
+  - id: substack-2026-06-26-tag-youre-not-it
+    description: >
+      Complete formalization of "Tag, You're Not It" (2026-06-26).
+      Folder already started; needs full formal Hyperseed mapping.
+    token_budget: 100000
+    type: substack-article
+
+  # Additional Substack articles will be appended here as the worker
+  # fetches the RSS feed and builds the full reverse-chronological queue.

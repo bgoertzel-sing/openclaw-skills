@@ -1,0 +1,14 @@
+# Git State
+Captured UTC: 2026-07-26T18:56:32Z
+Working directory: /home/openclaw/research-agent/projects/petta-memory/repos/petta-memory
+Commit: 3364939d615e38381db534e269e71b1a31a16389
+Branch: agent/parser-validation
+Remote names: origin
+
+## Status
+## agent/parser-validation...origin/agent/parser-validation [ahead 202]
+?? scripts/
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

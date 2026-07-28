@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
 cd /workspace/carom-e2-e3/source
 python3 run_carom_e2_e3.py \
   --outdir /workspace/carom-e2-e3/results \

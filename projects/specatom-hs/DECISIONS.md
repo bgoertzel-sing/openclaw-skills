@@ -1,5 +1,46 @@
 # Decision Log
 
+## D-20260726-no-whitespace-object-subtargets: Reject interior whitespace
+
+- Date: `2026-07-26`
+- Status: `accepted`
+- Related task/run: `projects/specatom-hs/TASKS.md` 11:30 PDT entry
+
+### Decision
+
+Object-scoped validation subtargets reject all whitespace code points,
+including interior ASCII and Unicode whitespace. Crisp validation, PeTTa
+export, and diagnostics share this fail-closed rule; the compiler does not
+normalize whitespace-bearing identities into different targets.
+
+## D-20260725-unassigned-object-subtargets: Reject unassigned Unicode code points
+
+- Date: `2026-07-25`
+- Status: `accepted`
+- Related task/run: `projects/specatom-hs/TASKS.md` 23:30 PDT entry
+
+### Decision
+
+Object-scoped validation subtargets reject Unicode general category `Cn`.
+An unassigned code point can acquire semantics under a later Unicode database,
+so accepting it would make stable validation identity dependent on runtime
+Unicode version. Crisp validation, PeTTa export, and diagnostics share this
+fail-closed rule.
+
+## D-20260724-canonical-object-subtargets: Require unpadded object-scoped validation subtargets
+
+- Date: `2026-07-24`
+- Status: `accepted`
+- Related task/run/commit: `projects/specatom-hs/TASKS.md` 21:30 PDT entry
+
+### Decision
+
+Treat leading or trailing whitespace in the suffix after a declared semantic
+object ID and colon as an invalid object-scoped validation target. Reject it
+in crisp validation and suppress the obligation and linked checks from PeTTa
+export and diagnostics rather than silently normalizing or reifying an
+ambiguous identity.
+
 ## D-20260629-separate-specatom-project: Track SpecAtom-HS compiler as its own software project
 
 - Date: `2026-06-29`
@@ -84,3 +125,40 @@ Freezing v0.1 avoids endless schema growth and creates a coherent demo deliverab
 ### Consequences
 
 v0.2 work should be chosen from the documented gap audit, with highest priority on methodology validation, information-flow/temporal availability checks, and security/privacy obligation scaffolding.
+
+## D-20260707-proceed-to-phase2-semantic-objects: Pivot SpecAtom-HS next work to Phase 2 semantic objects
+
+- Date: `2026-07-07`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+- Related task/run: `projects/specatom-hs/TASKS.md`; Telegram reply to daily reflection item 5
+
+### Context
+
+The v0.2 information-flow validation lane had been deepened through graph extraction, source/sink/reachability, cycles, redundant paths, temporal consistency, dependency depth, bottlenecks, graph summaries, and exact edge provenance. The daily reflection noted that recurring workers kept restating the fork between further information-flow validation and beginning Phase 2 semantic objects.
+
+### Decision
+
+Proceed to Phase 2 semantic objects next. Prioritize a small, tested first slice for `Scope`, `EpistemicStatus`, `Evidence`, `Interpretation`, and `Bridge` records, preserving the existing conservative behavior: no invented executable semantics, stable IDs, source provenance, validation obligations/checks, and profile-aware backend emission/refusal.
+
+### Rationale
+
+Ben explicitly chose the Phase 2 semantic-object direction on 2026-07-07. The information-flow validator is now broad enough to serve as a substrate; Phase 2 objects should make later methodology/security/information-flow checks less ad hoc by representing scope, evidence, interpretations, and bridge mappings directly.
+
+### Consequences
+
+Recurring SpecAtom-HS work should stop treating information-flow deepening vs Phase 2 as an open decision. Further information-flow checks are still allowed when needed, but the top priority is implementing semantic-object infrastructure and regression tests.
+
+## D-20260715-plain2metta-public-name: Publish as Plain2Metta
+
+- Date: `2026-07-15`
+- Status: `accepted and implemented`
+- Decision owner: Benjamin Goertzel
+- Remote: `https://github.com/bgoertzel-sing/plain2metta`
+
+Rename the existing `bgoertzel-sing/specatom-hs` remote to the public-facing
+repository name `plain2metta` and make it public. Preserve the technical
+`specatom_hs` package and intermediate-representation name; do not create a
+duplicate repository or perform a package-wide semantic rename. Update public
+branding through a task branch/draft PR rather than pushing directly to the
+default branch.

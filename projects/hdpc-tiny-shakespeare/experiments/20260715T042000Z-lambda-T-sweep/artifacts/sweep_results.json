@@ -1,0 +1,465 @@
+{
+  "Ts": [
+    1,
+    2,
+    4
+  ],
+  "description": "ePC lambda/T sweep on fixed batch, tiny-gpt2, CPU",
+  "lambdas": [
+    0.01,
+    0.02,
+    0.03,
+    0.05
+  ],
+  "pass_criterion": "energy_strict_monotone=True AND energy_nontrivial=True",
+  "results": [
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.0004366635112091899,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -4.691537469625473e-08,
+      "energy_moved": 4.691537469625473e-08,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004366635112091899
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.000007539987564,
+          "mean_norm_ratio": 0.9999567419290543
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000198682149,
+          "mean_norm_ratio": 0.999922126531601
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999751647314,
+          "mean_norm_ratio": 1.000066563487053
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043662538519129157,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -3.812601789832115e-08,
+      "energy_moved": 8.504139259457588e-08,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004366635112091899,
+        0.00043662538519129157
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000073909759521,
+          "mean_norm_ratio": 0.9999136626720428
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9998446255922318
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999602635702,
+          "mean_norm_ratio": 1.000132938226064
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.000436559523222968,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.9354047253727913e-08,
+      "energy_moved": 1.5090336091816425e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004366635112091899,
+        0.00043662538519129157,
+        0.0004365788772702217,
+        0.000436559523222968
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.000006765127182,
+          "mean_norm_ratio": 0.9998282343149185
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999602635702,
+          "mean_norm_ratio": 0.9996906518936157
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999998758236567,
+          "mean_norm_ratio": 1.000263397892316
+        }
+      },
+      "lambda": 0.01
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043659741641022265,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.1301017366349697e-07,
+      "energy_moved": 1.1301017366349697e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043659741641022265
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000073909759521,
+          "mean_norm_ratio": 0.9999130219221115
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999950329462,
+          "mean_norm_ratio": 0.9998434285322825
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999999701976776,
+          "mean_norm_ratio": 1.0001337329546611
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.0004365800996311009,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.7316779121756554e-08,
+      "energy_moved": 1.3032695278525352e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043659741641022265,
+        0.0004365800996311009
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000067353248596,
+          "mean_norm_ratio": 0.9998269826173782
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999900658926,
+          "mean_norm_ratio": 0.9996882776419321
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999998956918716,
+          "mean_norm_ratio": 1.0002650618553162
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043643551180139184,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.7316779121756554e-08,
+      "energy_moved": 2.7491478249430656e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043659741641022265,
+        0.0004365800996311009,
+        0.00043649051804095507,
+        0.00043643551180139184
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000041127204895,
+          "mean_norm_ratio": 0.9996579587459564
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999870856603,
+          "mean_norm_ratio": 0.9993823965390524
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999995778004328,
+          "mean_norm_ratio": 1.0005217790603638
+        }
+      },
+      "lambda": 0.02
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.0004365761997178197,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.3422686606645584e-07,
+      "energy_moved": 1.3422686606645584e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004365761997178197
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000071376562119,
+          "mean_norm_ratio": 0.9998688697814941
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999980131785,
+          "mean_norm_ratio": 0.9997640500466028
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999998907248179,
+          "mean_norm_ratio": 1.0002007881800334
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043649718281812966,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -7.9016899690032e-08,
+      "energy_moved": 2.1324376575648785e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004365761997178197,
+        0.00043649718281812966
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000056475400925,
+          "mean_norm_ratio": 0.9997400492429733
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999999205271403,
+          "mean_norm_ratio": 0.9995308717091879
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999997218449911,
+          "mean_norm_ratio": 1.000396579504013
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.0004362866748124361,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -7.9016899690032e-08,
+      "energy_moved": 4.237517714500427e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.0004365761997178197,
+        0.00043649718281812966,
+        0.00043639473733492196,
+        0.0004362866748124361
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999999552965164,
+          "mean_norm_ratio": 0.99948950111866
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999997317790985,
+          "mean_norm_ratio": 0.9990759938955307
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999989867210388,
+          "mean_norm_ratio": 1.0007748951514561
+        }
+      },
+      "lambda": 0.03
+    },
+    {
+      "T": 1,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043650949373841286,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -2.009328454732895e-07,
+      "energy_moved": 2.009328454732895e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043650949373841286
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.000006228685379,
+          "mean_norm_ratio": 0.999779462814331
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.999999925494194,
+          "mean_norm_ratio": 0.9996018807093302
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.999999796350797,
+          "mean_norm_ratio": 1.0003358870744705
+        }
+      },
+      "lambda": 0.05
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.0004363182233646512,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.912703737616539e-07,
+      "energy_moved": 3.922032192349434e-07,
+      "energy_nontrivial": false,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043650949373841286,
+        0.0004363182233646512
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000020861625671,
+          "mean_norm_ratio": 0.9995655715465546
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999998261531194,
+          "mean_norm_ratio": 0.9992138346036276
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999992996454239,
+          "mean_norm_ratio": 1.000658353169759
+        }
+      },
+      "lambda": 0.05
+    },
+    {
+      "T": 4,
+      "all_finite": true,
+      "config": {
+        "batch_size": 4,
+        "beta": 2.0,
+        "model": "sshleifer/tiny-gpt2",
+        "seed": 0,
+        "seq_len": 256
+      },
+      "energy_final": 0.00043608740088529885,
+      "energy_initial": 0.00043671042658388615,
+      "energy_max_increase": -1.1245720088481903e-07,
+      "energy_moved": 6.230256985872984e-07,
+      "energy_nontrivial": true,
+      "energy_strict_monotone": true,
+      "energy_trace": [
+        0.00043671042658388615,
+        0.00043650949373841286,
+        0.0004363182233646512,
+        0.0004362057661637664,
+        0.00043608740088529885
+      ],
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999876320362091,
+          "mean_norm_ratio": 0.9991594105958939
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999994039535522,
+          "mean_norm_ratio": 0.9984726955493292
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999972432851791,
+          "mean_norm_ratio": 1.00126447280248
+        }
+      },
+      "lambda": 0.05
+    }
+  ]
+}

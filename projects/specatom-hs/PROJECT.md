@@ -3,7 +3,7 @@
 - Slug: `specatom-hs`
 - Status: `active`
 - Created: `2026-06-29`
-- Last reviewed: `2026-07-25` (interior invisible-format-padding refusal)
+- Last reviewed: `2026-07-27` (data-flow spans after non-physical separators)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -51,6 +51,122 @@ Observable criteria:
 - Treating generated PeTTa/Rholang skeletons as verified unless validation evidence supports that claim.
 
 ## Current state
+
+As of the 2026-07-27 15:30 PDT worker, exact data-flow-edge occurrence spans
+also remain aligned after each of the eight non-CR/LF separators recognized by
+Python `splitlines()`. Ground truth verifies the extracted phrase slices the
+correct UTF-8 bytes after preceding non-ASCII text and remains on physical
+line 2.
+
+As of the 2026-07-27 13:30 PDT worker, concept-reference occurrence spans
+also remain exact after each of the eight non-CR/LF separators recognized by
+Python `splitlines()`. Ground truth verifies `:Café:` slices its exact UTF-8
+bytes and remains on physical line 2 after VT, FF, FS, GS, RS, NEL, U+2028,
+or U+2029.
+
+As of the 2026-07-27 11:30 PDT worker, semantic occurrence spans remain exact
+after each of the eight non-CR/LF separators recognized by Python
+`splitlines()`. Ground truth verifies an `Evidence:` atom after VT, FF, FS, GS,
+RS, NEL, U+2028, or U+2029 slices the exact non-ASCII UTF-8 bytes and remains
+on physical line 2.
+
+As of the 2026-07-27 09:30 PDT worker, derived occurrence-span alignment uses
+the same CR/LF/CRLF physical-line model as source indexing. A semantic marker
+on a lone-CR continuation line now compiles to its exact non-ASCII UTF-8 byte
+slice and correct physical line instead of failing alignment.
+
+As of the 2026-07-27 07:30 PDT worker, the explicit CR/LF/CRLF record
+splitter has ground-truth coverage for all eight other separators recognized
+by Python `splitlines()` (VT, FF, FS, GS, RS, NEL, U+2028, and U+2029).
+Each remains literal item content, preserves its exact UTF-8 byte slice, and
+does not create a phantom source line.
+
+As of the 2026-07-27 05:30 PDT worker, source record splitting and source-line
+numbering use the same explicit CR/LF/CRLF boundary model. Unicode separators
+such as U+2028 remain source content rather than creating phantom lines; exact
+UTF-8 ground truth verifies the item text, byte slice, and following line.
+
+As of the 2026-07-27 03:30 PDT worker, source-span line numbers recognize lone
+carriage returns as well as LF and CRLF boundaries. Mixed-newline ground truth
+confirms section/item line numbers and UTF-8 byte slices across all three
+styles without counting CRLF as two line breaks.
+
+As of the 2026-07-27 01:30 PDT worker, a UTF-8 byte-order mark at the start of
+a Plain file no longer hides the first section heading. The BOM remains inside
+the exact section source span, subsequent item offsets remain true UTF-8 byte
+positions, and paired ground truth slices both spans from the encoded source.
+
+As of the 2026-07-26 13:30 PDT worker, `SourceSpan.start_byte` and
+`SourceSpan.end_byte` are true UTF-8 byte offsets even when headings or item
+text contain non-ASCII characters. Exact ground truth round-trips a
+non-ASCII section, item, `:Café:` concept occurrence, and semantic `Evidence:`
+occurrence from the encoded source; validators now check encoded file length
+and byte-relative lines.
+
+**Reproduced 2026-07-26:** a fresh virtual environment installed the local
+`plain2metta` console command and compiled `auth_service`, `task_manager`, and
+`ml_timeseries` from copied inputs into JSON, reified MeTTa, and Markdown
+diagnostic reports. All three commands exited zero; the preserved output
+hashes are in `experiments/20260726T185730Z-v01-three-spec-install-report/`.
+This demonstrates the narrow v0.1 install-to-report path, not general-English
+compilation or executable-code generation.
+
+As of the 2026-07-26 11:30 PDT worker, canonical object-scoped validation
+subtargets cannot contain interior whitespace. The shared crisp-validation,
+PeTTa-export, and diagnostics admission policy now refuses both ASCII space
+and Unicode em-space variants, closing a visually ambiguous identity gap.
+
+As of the 2026-07-26 09:30 PDT worker, crisp validation and PeTTa/diagnostics
+admission share one canonical object-subtarget identity policy. A ground-truth
+corpus verifies parity across canonical values and every supported refusal
+class, reducing the risk that later hardening changes drift between layers.
+
+As of the 2026-07-26 07:30 PDT worker, Unicode combining marks cannot appear
+inside object-scoped validation subtargets. Crisp validation rejects these
+visually modifying identities; PeTTa export suppresses the obligation and
+linked check; diagnostics exclude their evidence while admitting the
+unmodified neighboring target.
+
+As of the 2026-07-26 05:30 PDT worker, Unicode variation selectors cannot
+appear inside object-scoped validation subtargets. Crisp validation rejects
+these visually ambiguous identities; PeTTa export suppresses the obligation
+and linked check; diagnostics exclude their evidence while admitting the
+unmodified neighboring target.
+
+As of the 2026-07-26 03:30 PDT worker, object-scoped validation subtargets
+must also use Unicode NFKC. Crisp validation rejects compatibility-equivalent
+identities such as full-width Latin letters; PeTTa export suppresses the
+obligation and linked check; diagnostics exclude their evidence while
+admitting the ASCII neighbor.
+
+As of the 2026-07-26 01:30 PDT worker, object-scoped validation subtargets
+must use Unicode NFC. Crisp validation rejects decomposed canonically
+equivalent identities; PeTTa export suppresses the obligation and linked
+check; diagnostics exclude their evidence while admitting the NFC neighbor.
+
+As of the 2026-07-25 23:30 PDT worker, object-scoped validation subtargets
+cannot contain Unicode code points unassigned in the runtime Unicode database.
+Crisp validation rejects these version-unstable identities; PeTTa export
+suppresses the obligation and linked check; diagnostics exclude their evidence
+while admitting a canonical neighbor.
+
+As of the 2026-07-25 21:30 PDT worker, object-scoped validation subtargets
+cannot contain Unicode private-use code points. Crisp validation rejects these
+locally defined identities; PeTTa export suppresses the obligation and linked
+check; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 19:30 PDT worker, reserved Unicode noncharacters cannot
+appear inside object-scoped validation subtargets. Crisp validation rejects
+the non-portable identity; PeTTa export suppresses the obligation and linked
+check; diagnostics exclude their evidence while admitting a canonical
+neighbor.
+
+As of the 2026-07-25 17:30 PDT worker, object-scoped validation subtargets
+containing lone Unicode surrogates fail closed without crashing stable check-ID
+generation. Crisp validation rejects the non-scalar identity; PeTTa export
+suppresses the obligation and linked check; diagnostics exclude their evidence
+while admitting a canonical neighbor.
 
 As of the 2026-07-25 15:30 PDT worker, object-scoped validation subtargets
 cannot contain invisible Unicode control characters. A bell-character-bearing

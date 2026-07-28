@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1/scripts/run_e4_textlike_bridge.py", line 36, in <module>
+    from run_e4_information import headroom
+  File "/home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1/scripts/run_e4_information.py", line 12, in <module>
+    from run_e2_dual_battery import terminal_model
+  File "/home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1/scripts/run_e2_dual_battery.py", line 14, in <module>
+    from causal_fibres.operators.joint_diag import JointBlockDiagonalizer
+ModuleNotFoundError: No module named 'causal_fibres'

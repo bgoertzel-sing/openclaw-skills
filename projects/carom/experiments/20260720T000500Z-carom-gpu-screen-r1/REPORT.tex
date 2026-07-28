@@ -1,0 +1,332 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{array}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  columns=fullflexible,
+}
+
+\title{CAROM: Content-Addressable Recurrent Operator Machine \\
+\large GPU Mechanism Screen Report --- Experiment r1}
+\author{Research Agent}
+\date{2026-07-20}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+CAROM is a differentiable register machine that separates control (command tokens route computation via a learned routing table) from data (workspace slots operated on by a shared operator core). A single \texttt{OperatorCore} module ($K$ parallel read--transform--gate--write operators) supports three execution semantics: \textbf{scheduled} (external clock), \textbf{fixed-point} (deep equilibrium with contraction pressure), and \textbf{itinerant} (GLV competition dynamics producing heteroclinic channels). This screen tests all four variants on a compositional sequence-transform task with a common operator core, common task, and shared seed. The itinerant-fixed (hand-built chain) variant achieves near-perfect accuracy (99.6\%), dramatically outperforming scheduled (77.1\%) and fixed-point (56.0\%). The free-rho itinerant variant reaches 86.5\%, confirming that learned inhibition can produce useful itinerant dynamics without a hand-built chain.
+\end{abstract}
+
+\section{Summary}
+
+\textbf{Experiment ID:} \texttt{20260720T000500Z-carom-gpu-screen-r1} \\
+\textbf{Status:} completed (all four arms, exit code 0) \\
+\textbf{Pod:} \texttt{00e42nckt4vm1v} (A100 SXM4 80GB, Secure Cloud) \\
+\textbf{Cost bound:} USD 10.00 \\
+\textbf{Approval:} Ben Goertzel, 2026-07-19
+
+\section{Task}
+
+The task is a compositional sequence-transform problem over a workspace of $n = 6$ slots in $\mathbb{Z}_8$. Programs consist of up to $L = 5$ commands drawn from a vocabulary of 10 tokens (8 distinct transforms plus 2 synonyms that force routing reuse). Commands include increment, double, negate, reverse, shift, swap, and cumulative-sum. A program is executed in presentation order; shorter programs are padded with \texttt{noop}.
+
+The model receives the command sequence $C$ and the initial workspace $X$, and must predict the final workspace $Y = f_C(X)$.
+
+\section{Architecture}
+
+\subsection{Operator Core}
+
+The shared \texttt{OperatorCore} implements $K = 16$ parallel operators. Each operator performs:
+
+\begin{enumerate}
+    \item \textbf{Read:} Compute attention-weighted read from workspace $w$ using concatenated content and positional features.
+    \item \textbf{Transform:} Two-layer MLP with GELU activation.
+    \item \textbf{Gate:} Sigmoid gate $g = \sigma(W_g z + b_g)$ controls write amplitude.
+    \item \textbf{Write:} Produce update $u = g \cdot \tanh(z)$.
+\end{enumerate}
+
+The core parameters are:
+\begin{itemize}
+    \item $W_q, W_k, W_v \in \mathbb{R}^{K \times 3d \times d}$ (attention projections)
+    \item $T_1 \in \mathbb{R}^{K \times 4d \times 2d}$, $T_2 \in \mathbb{R}^{K \times 2d \times d}$ (transform MLP)
+    \item $W_g \in \mathbb{R}^{K \times d \times d}$, $b_g \in \mathbb{R}^{K \times d}$ (gate)
+    \item LayerNorm on workspace content
+\end{itemize}
+
+Model dimension $d = 64$, $K = 16$ operators, total parameters $\approx 1.32\text{M}$.
+
+\subsection{Execution Semantics}
+
+\subsubsection*{Scheduled}
+External clock iterates for $T = 5$ steps. At step $t$, routing weights $\beta_t = \text{softmax}(\text{route}(C_t) / \tau)$ select a mixture over operators:
+\[
+w \leftarrow w + \sum_{k=1}^{K} \beta_{t,k} \, u_k
+\]
+
+\subsubsection*{Fixed-Point (Deep Equilibrium)}
+Starting from $w_0$, iterate the operator mixture for 8 sweeps with relaxation factor $\alpha = 0.5$:
+\[
+w \leftarrow (1 - \alpha) \, w + \alpha \left(w + \sum_k \beta_k \, u_k\right)
+\]
+Contraction pressure $\|r_{\text{last}}\|$ is added to the loss. Residuals $\|w_{t+1} - w_t\|$ are logged per sweep.
+
+\subsubsection*{Itinerant (GLV Competition)}
+Operators compete via Generalized Lotka--Volterra dynamics over $T_{\text{dyn}} = 70$ steps with step size $\Delta t = 0.1$, fatigue, and leak. The activity vector $a(t) \in \mathbb{R}^K$ evolves as:
+\[
+\dot{a}_k = a_k \left(r_k - \sum_j M_{kj} a_j - \phi_k\right)
+\]
+where $M$ is the inhibition matrix, $r_k$ is the intrinsic growth rate, and $\phi_k$ is a fatigue term. In the \textbf{fixed-chain} variant, $M$ is hand-built to produce a predetermined heteroclinic channel visiting operators in sequence. In the \textbf{free-rho} variant, $M$ is learned.
+
+\section{Configuration}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Seed & 7 \\
+Steps & 4000 \\
+Batch size & 128 \\
+Model dimension $d$ & 64 \\
+Operators $K$ & 16 \\
+Optimizer & AdamW ($\text{lr}=2\text{e-}3$, $\text{wd}=1\text{e-}4$) \\
+Scheduler & OneCycleLR \\
+Gradient clip & 1.0 \\
+Fixed-point sweeps & 8, $\alpha=0.5$ \\
+Itinerant dynamics steps & 70, $\Delta t=0.1$ \\
+Eval batch & 512 \\
+Eval frequency & every 100 steps \\
+Checkpoints & at steps 0, 1000, 2000, 3000, 3999 \\
+GPU & NVIDIA A100-SXM4-80GB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Results}
+
+\subsection{Final Accuracy}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Variant} & \textbf{Final Accuracy} & \textbf{Time (s)} & \textbf{Parameters} \\
+\midrule
+Scheduled & 0.771 & 82 & 1,322,472 \\
+Fixed-Point & 0.560 & 203 & 1,322,792 \\
+Itinerant-Fixed & 0.996 & 1,403 & 1,326,925 \\
+Itinerant-Free & 0.865 & 1,417 & 1,326,925 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Learning Curves}
+
+\subsubsection*{Scheduled}
+\begin{lstlisting}
+Step     0: loss=2.1033  acc=0.1416  |g|=0.3321  t=0s
+Step   100: loss=2.0524  acc=0.1634  |g|=0.2158  t=3s
+Step   500: loss=1.8065  acc=0.2751  |g|=0.3357  t=11s
+Step  1000: loss=1.1893  acc=0.5417  |g|=0.7741  t=21s
+Step  2000: loss=0.6308  acc=0.7803  |g|=0.2982  t=42s
+Step  3000: loss=0.4709  acc=0.8167  |g|=0.1497  t=62s
+Step  3999: loss=0.4092  acc=0.7965  |g|=0.2374  t=82s
+\end{lstlisting}
+Rapid early learning, plateaus around 0.78--0.82 after step 2000. Loss stabilizes near 0.41 but does not converge.
+
+\subsubsection*{Fixed-Point}
+\begin{lstlisting}
+Step     0: loss=2.1040  acc=0.1416  |g|=0.3321  t=0s   res_last=0.0007
+Step   100: loss=2.0598  acc=0.1576  |g|=0.2183  t=5s   res_last=0.0012
+Step   500: loss=1.9347  acc=0.2161  |g|=0.2256  t=26s  res_last=0.0248
+Step  1000: loss=1.7429  acc=0.3255  |g|=0.4034  t=51s  res_last=0.0413
+Step  2000: loss=1.4228  acc=0.4492  |g|=0.3736  t=102s res_last=0.0515
+Step  3000: loss=1.0729  acc=0.5999  |g|=0.4891  t=153s res_last=0.0542
+Step  3999: loss=0.9462  acc=0.6081  |g|=0.4116  t=203s res_last=0.0541
+\end{lstlisting}
+Slowest learning. Convergence is poor despite contraction pressure. Residuals initially near zero, grow to $\sim$0.054 and stabilize---indicating the fixed-point iteration does not fully converge within 8 sweeps.
+
+\textbf{Per-sweep residuals (final evaluation):}
+\begin{lstlisting}
+Sweep 0: 0.100161
+Sweep 1: 0.089658
+Sweep 2: 0.076235
+Sweep 3: 0.066389
+Sweep 4: 0.060115
+Sweep 5: 0.055893
+Sweep 6: 0.052934
+Sweep 7: 0.050774
+\end{lstlisting}
+Residuals decrease monotonically (validating contraction), but the final residual (0.051) is non-negligible.
+
+\subsubsection*{Itinerant-Fixed (Hand-Built Chain)}
+\begin{lstlisting}
+Step     0: loss=2.1032  acc=0.1416  |g|=0.3357  t=1s
+Step   100: loss=2.0455  acc=0.1592  |g|=0.2204  t=35s
+Step   500: loss=1.6875  acc=0.3141  |g|=0.5610  t=180s
+Step  1000: loss=0.7018  acc=0.7214  |g|=0.8027  t=353s
+Step  2000: loss=0.5029  acc=0.8288  |g|=0.6838  t=701s
+Step  3000: loss=0.0333  acc=0.9935  |g|=0.7993  t=1055s
+Step  3999: loss=0.0093  acc=0.9977  |g|=0.2981  t=1403s
+\end{lstlisting}
+Slow start (each step is $\sim$17$\times$ more expensive than scheduled due to 70-step GLV integration), but after step 2000, accuracy climbs steeply to near-perfect. Final loss 0.009 indicates near-convergence.
+
+\textbf{Final activity mean (5 slots):} [0.0595, 0.0611, 0.0520, 0.0500, 0.0518] \\
+\textbf{Active operators at final step:} 0 (all decayed)
+
+\textbf{Itinerary order (sampled dynamics steps):}
+\begin{lstlisting}
+Step  0: active=[0]
+Step  3: active=[0, 1]
+Step  6: active=[1]
+Step  9: active=[1, 2]
+Step 12: active=[2]
+Step 15: active=[2, 3]
+Step 18: active=[3]
+Step 21: active=[]
+Steps 24-69: active=[] (all decayed)
+\end{lstlisting}
+Clean sequential visitation: operator $0 \to 0{+}1 \to 1 \to 1{+}2 \to 2 \to 2{+}3 \to 3 \to$ empty. This is the expected heteroclinic channel for the hand-built chain.
+
+\subsubsection*{Itinerant-Free (Learned Inhibition)}
+\begin{lstlisting}
+Step     0: loss=2.1033  acc=0.1416  |g|=0.3355  t=1s
+Step   100: loss=2.0478  acc=0.1644  |g|=0.2181  t=36s
+Step   500: loss=1.8504  acc=0.2643  |g|=0.3268  t=175s
+Step  1000: loss=1.3220  acc=0.4180  |g|=0.6413  t=353s
+Step  2000: loss=0.5489  acc=0.8135  |g|=0.5365  t=707s
+Step  3000: loss=0.2261  acc=0.8968  |g|=0.2709  t=1065s
+Step  3999: loss=0.1943  acc=0.8802  |g|=0.1942  t=1417s
+\end{lstlisting}
+Learns faster than fixed-point but slower than itinerant-fixed. Plateaus around 0.88---good but clearly below the hand-built chain.
+
+\textbf{Final activity mean (5 slots):} [0.0544, 0.0688, 0.0508, 0.0819, 0.9597] \\
+\textbf{Active operators at final step:} 0.053 (near-zero)
+
+The high activity in slot 4 (0.960) suggests one operator remains partially active---a different dynamics regime than the fixed-chain.
+
+\textbf{Itinerary order (sampled dynamics steps):}
+\begin{lstlisting}
+Step  0: active=[0]
+Step  3: active=[0, 1]
+Step  6: active=[0, 1]
+Step  9: active=[1]
+Step 12: active=[1, 2]
+Step 15: active=[1, 2]
+Step 18: active=[2]
+Step 21: active=[2]
+Step 24: active=[2]
+Step 27: active=[2, 3]
+Step 30: active=[2, 3]
+Step 33: active=[3]
+Step 36: active=[3]
+Step 39: active=[3]
+Step 42: active=[]
+Steps 45-69: active=[] (all decayed)
+\end{lstlisting}
+The learned inhibition produces a sequential visitation but with more overlap and dwell time at each operator. The sequence is correct but less crisp than the hand-built chain.
+
+\section{Analysis}
+
+\subsection{Itinerant Dynamics Are Decisive}
+The itinerant-fixed variant's near-perfect accuracy (99.6\%) vs scheduled (77.1\%) demonstrates that sequential operator activation via heteroclinic channels is a powerful execution paradigm for compositional tasks. The key advantage: the itinerant dynamics enforce a temporal ordering on operator application that the scheduled variant must learn implicitly through routing alone.
+
+\subsection{Fixed-Point Convergence Is the Bottleneck}
+The fixed-point variant's poor performance (56.0\%) is explained by incomplete convergence: residuals decrease monotonically across sweeps but stabilize at $\sim$0.051, indicating the equilibrium is not reached within 8 sweeps. This is consistent with the CPU sandbox finding that residuals grow without contraction pressure. The contraction penalty is necessary but not sufficient.
+
+\subsection{Learned Inhibition Works But Needs Refinement}
+The free-rho variant (86.5\%) confirms that learned GLV inhibition can produce useful heteroclinic channels without a hand-built chain. The itinerary is sequentially correct but has more overlap and dwell time, suggesting the inhibition matrix needs stronger off-diagonal terms or longer dynamics steps for crisper transitions.
+
+\subsection{Routing Bottleneck}
+All variants share the same routing table $A$ mapping command tokens to operator mixtures. The two synonym tokens (\texttt{inc\_syn}, \texttt{rev\_syn}) force the same routing as their primary counterparts---a bottleneck that tests whether the operator core can generalize across shared routing. The itinerant-fixed variant's near-perfect accuracy suggests this bottleneck is not the limiting factor for compositional generalization.
+
+\subsection{Compute Cost}
+The itinerant variants are $\sim$17$\times$ more expensive per step than scheduled (35s/100 steps vs 2s/100 steps) due to 70-step GLV integration. This is the dominant cost. For larger tasks, amortizing the dynamics (e.g., learned step count or adaptive stopping) will be essential.
+
+\section{Artifact Provenance}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{File} & \textbf{SHA-256} \\
+\midrule
+\texttt{summary.json} & \texttt{74b3e0796693fec3...0ff0b7f} \\
+\texttt{scheduled.json} & \texttt{8dbc397adcf96f39...0e85315c} \\
+\texttt{fixedpoint.json} & \texttt{fef5fc7d803d82f3...cd2c731e} \\
+\texttt{itinerant-fixed.json} & \texttt{322d279ad80bc7e9...f8f2d4e52} \\
+\texttt{itinerant-free.json} & \texttt{78d35512b66d54a3...035b321d1} \\
+\texttt{mechanism\_screen.log} & \texttt{dd2fefac4dfdad73...68e0fa52} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Artifacts stored at: \texttt{projects/carom/experiments/20260720T000500Z-carom-gpu-screen-r1/artifacts/carom\_screen/}
+
+\section{Validity Gates}
+
+\begin{itemize}
+    \item[$\checkmark$] Fixed-point residuals decrease monotonically across sweeps (contraction confirmed)
+    \item[$\checkmark$] Hand-built chain itinerancy is distinct from free-rho itinerancy (different activity patterns, different accuracy)
+    \item[$\checkmark$] All four variants share common task, operator core, and seed
+    \item[$\checkmark$] Exit code 0, all artifacts retrieved and verified
+\end{itemize}
+
+\section{Limitations}
+
+\begin{enumerate}
+    \item \textbf{Single seed.} No variance estimate. The ranking is clear but confidence intervals are unknown.
+    \item \textbf{Toy task.} 6 slots, 8 values, 5 commands. Generalization to larger workspaces or longer programs is untested.
+    \item \textbf{No implicit-gradient DEQ.} Fixed-point variant uses explicit sweeps, not backward-through-fixed-point. Performance may differ with implicit gradients.
+    \item \textbf{No hyperparameter search.} All variants use the same lr, batch size, and schedule. Itinerant-specific tuning may improve free-rho.
+    \item \textbf{One-off screen.} Not a broad claim of algorithmic superiority.
+\end{enumerate}
+
+\section{Conclusions}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.65\textwidth} p{0.3\textwidth}}
+\toprule
+\textbf{Finding} & \textbf{Status} \\
+\midrule
+Itinerant (fixed-chain) execution achieves near-perfect accuracy on compositional transforms & Observed \\
+Scheduled execution plateaus at $\sim$77\% on the same task & Observed \\
+Fixed-point execution is limited by incomplete convergence (residual $\sim$0.05) & Observed \\
+Learned (free-rho) GLV inhibition produces a correct but less crisp itinerary & Observed \\
+Temporal ordering via heteroclinic channels is the key mechanism for compositional generalization & Inferred \\
+Stronger inhibition or adaptive dynamics could close the free-rho gap & Hypothesis \\
+The routing bottleneck (synonym tokens) is not the limiting factor & Inferred \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Next Steps}
+
+\begin{enumerate}
+    \item Multi-seed (3--5 seeds) confirmation of the accuracy ranking.
+    \item Adaptive itinerant dynamics: learned step count or early stopping.
+    \item Stronger free-rho inhibition: sweep fatigue/leak or initialize from fixed-chain prior.
+    \item Larger tasks: longer programs, bigger workspace, more operators.
+    \item Implicit-gradient DEQ training for the fixed-point variant.
+    \item Scrambled-order discovery: can free-rho learn non-sequential itineraries?
+\end{enumerate}
+
+\vfill
+\noindent\textit{Report generated 2026-07-20 04:50 PDT. Source: experiment r1 artifacts, CAROM repository \texttt{projects/carom/repos/carom/}.}
+
+\end{document}

@@ -1,0 +1,23 @@
+{
+  "accepted_step_sizes": [],
+  "activity_energy_monotone": null,
+  "activity_energy_traces": [],
+  "arm": "bp_ce",
+  "backtrack_counts": [],
+  "credit_assignment": [],
+  "device": "cuda",
+  "elapsed_seconds": 268.8576603606343,
+  "kd_gap_nats": 3.7487296918407083,
+  "match_type": "update_matched",
+  "mode": "gpu_production",
+  "precision": "bf16",
+  "protocol_sha256": "ac073e74808a41c98c11a892f78ca0460f99d56a4177791fb342dd3eb4d744b8",
+  "schema": "relaleap.gpt2_epc_gpu_metrics.v1",
+  "seed": 1729,
+  "source_commit": "bcd1214",
+  "student_val_loss": 5.3009041883051395,
+  "student_val_perplexity": 200.51803409347747,
+  "teacher_val_loss": 4.115054652094841,
+  "teacher_val_perplexity": 61.25556191605238,
+  "update_count": 1000
+}

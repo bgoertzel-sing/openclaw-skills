@@ -70,4 +70,89 @@
 
 **Rationale:** Without a reliable grammar-of-attractors detector, OmegaSim experiments risk producing traces that cannot be evaluated for the intended complex strange-attractor property.
 
-**Next implication:** Do not run further OmegaSim expansion as the main lane. Focus first on CLA implementation and benchmark it on known strange attractors of varying dimensionality; defer very high-dimensional vectors until dimension reduction is designed.
+**Next implication:** Superseded on 2026-07-10 by the restart decision below; keep the fail-closed detector/benchmark guardrail.
+
+## 2026-07-10: Restart OmegaSim with CLA high-dimensional embedding detector
+
+**Decision:** Resume OmegaSim by rerunning the previous best OmegaSim experiments and using the CLA high-dimensional embedding variant as the detector front-end for grammatically interesting strange-attractor structure.
+
+**Directive from Ben:** "resurrect the Omega Sim project, rerunning the previous best Omega Sim experiments, leveraging the CLA algorithm with dimensional embedding to search for strange attractors with interesting grammatical structure."
+
+**Rationale:** The CLA lane now has a working high-dimensional embedding/symbolization slice: TICA/VAMP-style kinetic maps, deeptime backend, k-means microstates, surrogate excess compression, held-out log-loss, and suffix-trie grammar induction tests. This is not fully validated, but it is sufficient to restart OmegaSim as a fail-closed detector-instrumented experiment rather than continue waiting.
+
+**Next implication:** First rerun the A6 matched-excess region (`gain=5.0`, `coupling in {0.35,0.60}`, `delay in {0,3}`) with matched controls and CLA metrics. Preserve benchmark requirements: Mackey-Glass and Lorenz-96 should remain external detector checks before strong OmegaSim claims.
+# D-20260715-restart-with-cla
+
+- Date: `2026-07-15`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+
+Restart OmegaSim using the CLA detector under a fresh preregistration to learn whether the detector provides useful structure, without reusing outcome-sensitive thresholds from earlier runs. In parallel, produce a comprehensive updated PDF covering all CLA experiments to date, especially the newer higher-dimensional experiments missing from prior writeups. Detector validation and null controls remain prerequisites for substantive claims.
+
+# D-20260715-cla-roles8-replication
+
+- Date: `2026-07-15`
+- Status: `accepted`
+- Evidence: `experiments/20260715T153049Z-cla-detector-preregistered/RUN.md`
+
+Treat the coupling `0.60`, delay `3`, `roles8` promotion as bounded positive
+evidence under the frozen CLA proxy, not as a strange-attractor or semantic
+grammar claim. Replicate this exact cell on untouched seeds with no detector
+changes, and retain Mackey--Glass/Lorenz--96 calibration as a prerequisite for
+stronger claims.
+
+# D-20260716-cla-provenance-repair-and-replication
+
+- Date: `2026-07-16`
+- Status: `accepted`
+- Evidence: `docs/cla_detector_provenance_audit_20260716.md`; `experiments/20260716T164500Z-cla-roles8-untouched-replication/RUN.md`
+
+Fail closed on the 2026-07-15 discovery run as hypothesis-generating because
+its ledger omitted the imported `chaoslang` repository identity and dirty
+state. Accept the fully pinned untouched-seed `roles8` 4/5 result as a
+successful replication of the frozen proxy difference only. Do not infer
+chaos, strange-attractor geometry, or semantic grammar; Mackey--Glass and
+Lorenz--96 calibration remain prerequisites for those claims.
+
+# D-20260716-failed-external-calibration-remains-a-gate
+
+- Date: `2026-07-16`
+- Status: `accepted`
+- Evidence: `../chaos-language-algorithm/experiments/20260716T172310Z-frozen-heldout-calibration-v1/RUN.md`
+
+Treat the clean, preregistered Mackey--Glass/Lorenz--96 frozen held-out result
+as a failed detector-calibration gate: CLA aggregate total coding length was
+`65,976.621` bits against the unigram baseline's `6,588.443`. Do not tune on
+the held-out suffixes or promote any OmegaSim attractor/grammar claim. Because
+this benchmark used a different, stricter coding path than OmegaSim's frozen
+proxy detector, it does not retroactively negate the bounded 4/5 replication,
+but it also does not satisfy the same-path benchmark prerequisite. Detector
+changes remain owned by independently preregistered CLA work, never by
+OmegaSim outcomes.
+
+# D-20260716-bitwise-replay-closes-practical-environment-gap
+
+- Date: `2026-07-16`
+- Status: `accepted`
+- Evidence: `experiments/20260716T204500Z-cla-roles8-bitwise-replay/RUN.md`
+
+Preserve the original untouched-seed artifacts and treat the separate,
+environment-captured bitwise replay as reproducibility support. Exact equality
+of all 45 CSV rows and normalized JSON closes the practical replayability gap,
+but the replay is not independent evidence and does not relax the external
+calibration or attractor/grammar claim gates.
+
+# D-20260716-same-path-calibration-passes-with-bounded-meaning
+
+- Date: `2026-07-16`
+- Status: `accepted`
+- Evidence: `experiments/20260716T224635Z-cla-same-path-external-calibration/RUN.md`
+
+Accept the preregistered 5/5 Mackey--Glass and 5/5 Lorenz--96 matched-control
+results as validation that the exact frozen OmegaSim proxy detects temporal
+order under its configured train-fitted-k-means/surrogate/order-2 path. This
+closes the same-path benchmark prerequisite and supports continued bounded use
+of the proxy. Do not interpret it as integrator validation, proof of chaos,
+attractor identification, or semantic grammar, and do not use it to override
+the independent stricter held-out CLA coding failure. Detector changes remain
+owned by separately preregistered CLA work.

@@ -1,0 +1,24 @@
+# Git State
+Captured UTC: 2026-07-16T15:25:20Z
+Working directory: /home/openclaw/research-agent/projects/petta-chem/repos/petta-chem
+Commit: fe91b7fd4bcd4ee60eabeaa92ca4ed0fbb83100c
+Branch: agent/exp07-stochastic-doob-pilot
+Remote names: origin
+
+## Status
+## agent/exp07-stochastic-doob-pilot
+ M experiments/exp07/README.md
+ M experiments/exp07/smoke.metta
+ M src/chem_exp07.metta
+?? experiments/exp07/check_detector_invariance.py
+?? experiments/scratch_cat.metta
+?? scripts/run_exp07_detector_invariance.sh
+?? src/chem_catalysis.metta
+
+## Diff summary
+ experiments/exp07/README.md   | 12 ++++++++++++
+ experiments/exp07/smoke.metta | 12 ++++++++++++
+ src/chem_exp07.metta          | 18 ++++++++++++++++++
+ 3 files changed, 42 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

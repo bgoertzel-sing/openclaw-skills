@@ -1,5 +1,65 @@
 # Tasks
 
+- [x] 2026-07-27 01:15 PDT: freeze, commit, and execute E0 exactly once.
+  Ledger freeze commit `200c2c0`; code commit `096cbb1`. The command exited 0
+  and every convergence, CTW, provenance, and LZ78 continuity check passed,
+  but all five uniform-v16 M2 redundancy predicates failed by
+  274.625--438.455 bits beyond the frozen allowance. Aggregate E0 failed; do
+  not tune or rerun v1, and do not promote E1. Post-run focused tests passed 4,
+  required discovery passed 283, and compileall/diff checks passed. Evidence:
+  `experiments/20260726T171500Z-e0-coder-calibration-v1/RUN.md`.
+
+- [ ] 2026-07-27 08:15 PDT: E0 remains blocked after its frozen v1 failure.
+  A review-only amendment proposal now identifies that the iid Markov-2
+  allowance scales with contexts but omits the `|V|-1` multinomial parameter
+  factor. It proposes a fresh-seed E0b with a derived/cited, per-context
+  finite-sample KT-regret predicate, independent unit checking, a new ledger,
+  and two review points (protocol freeze and execution). No rerun or E1
+  promotion is authorized. Ben's decision is required before preparation
+  proceeds.
+
+- [x] 2026-07-26 02:15 PDT: close M-F at clean strict-replay commit
+  `4dc7304`. Expose opt-in `search_objective="prequential"` through the
+  existing greedy, initializer, composite, and beam seams; preserve legacy
+  defaults and exact reconstruction; topologically emit nested initializer
+  definitions; and route parse/member/definition deltas plus the exact
+  seven-field final breakdown through the proposal ledger. Focused unittest
+  passed 32; required discovery passed 278 in 46.333 seconds; compileall and
+  `git diff --check` passed. No E0--E8 measurement was opened. Next: audit the
+  frozen evaluation dependency/promotion map before preparing any authorized
+  post-M-F evaluation ledger; E3 and the OmegaSim pause remain binding.
+
+- [x] 2026-07-26 00:15 PDT: freeze and acceptance-test at clean strict-replay
+  commit `1f7e7b5` the bounded M-F `PrequentialScorer` score/delta contract.
+  Zero separate model bits, exact
+  parse/member/definition diagnostics, canonical complete-state caching, and
+  full immutable apply-and-rescore deltas are covered. Focused unittest passed
+  9; required discovery passed 276 in 48.219 seconds; compileall and
+  `git diff --check` passed. No public default, registry, or E0--E8 gate was
+  changed or opened. Next: audit the remaining M-F exposure/config and ledger
+  breakdown requirements before declaring M-F complete.
+
+- [x] 2026-07-25 22:15 PDT: close the M-F randomized decoder gate at clean
+  strict-replay commit `9402b07`. A fixed 100-seed property test constructs nested
+  ordinary chunks, category definitions, and generalized chunks with
+  first-definition ordering, then checks exact independent decode,
+  deterministic re-encoding, and nonzero definition/member charges across
+  multiple KT alphas. Focused unittest passed 5; required discovery passed
+  272 in 46.427 seconds. Next: freeze the bounded `PrequentialScorer`
+  score/delta contract; do not expose it or open E0--E8 until its exact
+  consistency invariant passes.
+
+- [x] 2026-07-25 20:15 PDT: begin M-F at clean active-worktree commit
+  `edcd8be` with the encoder/decoder-first inline grammar-code slice. Frozen
+  `docs/inline-grammar-coder-contract-v1.md`; added deterministic inline
+  literal, chunk, and category definitions, growing-KT ideal-bit accounting,
+  canonical first-definition identities, exact decoder reconstruction, and
+  fail-closed malformed-stream validation. Focused unittest passed 4; required
+  discovery passed 271; compileall and `git diff --check` passed. No
+  `PrequentialScorer`, registry/default change, or E0--E8 measurement was
+  opened. Next: add randomized generalized/nested grammar round-trip
+  invariants before exposing the scorer.
+
 - [x] 2026-07-25 16:15 PDT: freeze and acceptance-test at clean commit
   `40749d7` the remaining M-E automata invariants. Five of five planted
   golden-mean seeds recover exactly
@@ -820,7 +880,7 @@ Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_e
   unchanged LZ78 wrapper, registry, and applicable M-A tests. Evidence:
   active-worktree commit `6145e1d`; focused 14 tests and full 216-test stdlib
   discovery passed; `compileall` and `git diff --check` passed.
-- [ ] Implement M-B instrumentation next: proposal ledger, legacy replay
+- [x] Implement M-B instrumentation: proposal ledger, legacy replay
   6,232/6,296/+64 regression, exactly-one-record invariant, and final
   breakdown reconciliation. Acceptance command:
   `PYTHONPATH=src python3 -m unittest discover -s tests -v`.
@@ -860,4 +920,59 @@ Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_e
   ledger every cut once, and retain exact-score-only acceptance.
 - [x] Pass 23 focused and 249 required discovery tests, compileall, and
   `git diff --check`.
-- [ ] Begin M-E only after a fresh gate audit; do not open E0--E8 measurements.
+- [x] Begin M-E only after a fresh gate audit; do not open E0--E8 measurements.
+- [x] Close M-E at clean active-worktree commit `40749d7`: deterministic CSSR,
+  leakage-free causal-state coding and registry exposure, transition-action
+  category proposals, and automata invariants 14--16 all pass. Focused M-E
+  discovery passed 14 tests; required discovery passed 267 tests in 64.747
+  seconds; compileall and `git diff --check` passed. No E0--E8 measurement was
+  opened.
+- [x] Begin M-F only after a fresh gate audit. Implement the one-part inline
+  coder and decoder together before `PrequentialScorer`; preserve exact
+  round-trip semantics and do not open E0--E8 measurements.
+- [x] Close M-F at clean active-worktree commit `4dc7304`: randomized inline
+  round trips, `PrequentialScorer`, public opt-in integration, dependency-first
+  initializer definitions, and exact ledger reconciliation passed 32 focused
+  tests and the required 278-test discovery suite; compileall and
+  `git diff --check` passed.
+- [x] 2026-07-26 08:30 PDT: implement Ben-approved separately configured
+  `adaptive-markov-3` E0-only control at strict-replay commit `b1c501f`.
+  The registry fixes order 3 and ordinary KT `alpha=0.5` with the declared
+  fixture vocabulary; it is documented as the matching-order/CTW reference
+  for E0 source (d), without changing defaults or E1--E8 configuration.
+  Deterministic clone/reset/replay and registry coverage passed; focused
+  coding tests passed 8/8, full discovery passed 278/278, compilation and
+  `git diff --check` passed. No E0 fixture, seed, runner, ledger, or score was
+  generated.
+- [x] Freeze and execute the E0 coder-calibration ledger. Acceptance: a
+  separately frozen runner records fresh fixtures, seeds, code revision,
+  configuration hashes, and all raw scores; the E0 rule including M3/CTW
+  comparison is evaluated once without tuning. Next command: specify the
+  exact E0 source distributions, seed list, redundancy band, and LZ78
+  regression-artifact locations before writing any fixture. Evidence path:
+  `projects/chaos-language-algorithm/experiments/<timestamp>-e0-coder-calibration/`.
+  - 2026-07-26 10:15 PDT: clean strict-replay commit `37d634e` freezes the
+    exact five seeds, lengths, iid/Zipf/Markov/periodic source laws,
+    entropy-rate calculation, zero-entropy tolerance, M2 and CTW redundancy
+    bands, and four historical LZ78 bit references in
+    `docs/e0-coder-calibration-preregistration-v1.md`. Focused coding tests
+    passed 12; required discovery passed 279 in 45.049 seconds; compileall and
+    `git diff --check` passed. No fixture or coder score was generated. Next:
+    implement and declaration-test the ledger runner, freeze its hashes and
+    exact command at a new clean commit, then execute E0 once.
+  - 2026-07-26 12:15 PDT: clean strict-replay commit `096cbb1` implements the
+    non-measuring runner and four declaration tests, including exact per-cell
+    predicates, aggregate decision, and historical LZ78 provenance/continuity
+    checks. Full discovery passed 283 in 49.110 seconds; compileall and diff
+    check passed. No frozen seed fixture or score was generated. Next: create
+    and declaration-test the `20260726T171500Z` ledger wrapper, freeze all
+    hashes and its exact command against `096cbb1`, then execute once.
+  - 2026-07-27 01:15 PDT: the frozen command executed exactly once and exited
+    0 in 15:40.45. Integrity, matching-coder convergence, CTW, Markov-source
+    M2, iid-v2/v4, Zipf-v16, and all LZ78 predicates passed. All five
+    iid-uniform-v16 adaptive-Markov-2 rows exceeded the frozen redundancy
+    allowance by 274.625--438.455 bits, so the aggregate E0 rule failed.
+    `results.json` SHA-256 is
+    `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`.
+    E1 is not promoted; do not tune, rescore, or open a replacement E0
+    without a separately reviewed amendment and fresh freeze.

@@ -1,0 +1,1 @@
+{"consecutive_errors": 0, "current_task_queue_path": null, "current_task_started_at": null, "error_count": 0, "finished_at": 1784048345.91248, "pid": 1354297, "remaining_queue_tasks": 0, "started_at": 1784048013.946816, "status": "finished", "stop_reason": "max_tasks", "tasks_attempted": 1, "tasks_completed": 1}

@@ -1,5 +1,160 @@
 # Notes
 
+## 2026-07-27 01:15 PDT — E0 failed narrowly on uniform-v16 M2 redundancy
+
+- The complete E0 ledger was declaration-tested without frozen-seed sampling
+  and committed at notebook commit `200c2c0`; code remained clean at
+  `096cbb1`. The exact `bash command.sh` then ran once, exit 0, empty stderr.
+- Matching-order entropy convergence passed for every source/seed, every CTW
+  band passed, Markov-source and smaller/Zipf iid M2 comparisons passed, and
+  historical provenance plus four canonical-LZ78 continuity rows passed.
+- All five uniform-v16 100k adaptive-Markov-2 redundancy predicates failed.
+  Excesses beyond the fixed allowance were 274.625, 317.872, 318.820,
+  417.373, and 438.455 bits. Aggregate E0 therefore failed.
+- No tuning, threshold amendment, or rerun is permitted under v1. E1 is not
+  promoted. This is coder-calibration evidence only and does not change the
+  hierarchical-generativity/CSSR hypothesis, E3, or the OmegaSim pause.
+- Evidence: `experiments/20260726T171500Z-e0-coder-calibration-v1/RUN.md`;
+  result SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`.
+
+## 2026-07-26 08:30 PDT — E0 order-3 reference control authorized and added
+
+- Ben approved the separately configured adaptive order-3 control in Telegram.
+  Clean strict-replay commit `b1c501f` registers `adaptive-markov-3` with
+  order 3 and standard KT `alpha=0.5`; the declared source vocabulary remains
+  fixture-specific.
+- The E0 programme now identifies it as the matching-order and CTW reference
+  for source (d). It is explicitly E0-only: no learner default, E1--E8 base
+  coder, fixture, seed, runner, ledger, or scientific result changed.
+- Verification: focused coding unittest 8/8 and full stdlib discovery 278/278
+  passed; `compileall` and `git diff --check` passed before commit.
+- Next: freeze the still-unspecified E0 source matrices/distributions, seed
+  list, CTW redundancy band, and LZ78 regression artifacts before generating
+  any data or score. E3 remains binding and OmegaSim remains paused.
+
+## 2026-07-26 08:15 PDT — E0 blocker re-audited; Ben decision still required
+
+- The active implementation worktree
+  `/home/openclaw/research-agent/scratch/chaoslang-strict-replay` remains clean
+  at `4dc7304`; M-A through M-F remain closed in strict order.
+- The frozen E0 text still pairs an order-3 Markov source with a requirement
+  for an adaptive coder of matching order, but the frozen upgrade registry
+  defines adaptive orders 0--2 only. The CTW comparison to the best matched
+  Markov coder is consequently undefined for that source.
+- No E0 runner, fixture, suffix, fresh seed output, experiment directory, or
+  score was generated. Ben must approve and freeze either a separately named
+  `adaptive-markov-3` E0 control with exact configuration or an amendment to
+  the order-3 source/decision rule.
+- The supplied PDF SHA-256 was reverified as
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  The main checkout's two pre-existing untracked diagnostic report files were
+  left untouched. E3 remains binding; OmegaSim remains paused until E7
+  resolves and E8a passes.
+
+## 2026-07-26 04:15 PDT — E0 freezes on an undefined order-3 reference
+
+- A post-M-F gate audit confirms M-A through M-F are closed in strict order at
+  clean active-worktree commit `4dc7304`; the active worktree is clean.
+- E0 is authorized by dependencies, but its frozen design contains an order-3
+  Markov source while the governing upgrade registry and implementation expose
+  only `adaptive-unigram`, `adaptive-markov-1`, and
+  `adaptive-markov-2`. Its decision rule requires the adaptive coder of
+  matching order and requires CTW to remain within its band of the best
+  matched Markov coder. For source (d), both references are therefore
+  undefined.
+- No E0 runner, fixture, suffix, seed output, or score was generated. Adding
+  an unlisted M3 arm or silently interpreting M2 as matching order would mutate
+  the frozen gate. Ben's decision is required: explicitly freeze an
+  `adaptive-markov-3` E0-only/control arm and its config, or amend the
+  order-3 source/decision rule before measurement.
+- The mathematical-foundations PDF hash was reverified as
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Its hierarchical-generativity and sofic/CSSR statements remain hypotheses
+  under assumption and citation audit. E3 remains binding; OmegaSim remains
+  paused until E7 resolves and E8a passes.
+
+## 2026-07-26 02:15 PDT — M-F public integration and closure
+
+- The final M-F audit found that `PrequentialScorer` was implemented but not
+  selectable by the public learner, and generic ledger accounting would have
+  hidden inline definition costs inside data bits.
+- Clean strict-replay commit `4dc7304` adds the opt-in
+  `search_objective="prequential"` path without changing defaults. The same
+  scorer instance is used by greedy search, Re-Pair/LZ77-SLP pruning,
+  composites, and beam search; all tested paths reconstruct exactly.
+- Nested initializer grammars are now defined dependency-first in the inline
+  stream, with cycle detection. Ledger helpers separate parse/member/definition
+  deltas without double counting and emit a seven-field breakdown whose sum
+  equals the official score.
+- Evidence: focused unittest passed 32 in 0.116 seconds; required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 278 in
+  46.333 seconds (`47.19` seconds wall, `339348` KiB maximum RSS).
+  `python3 -m compileall -q src tests` and `git diff --check` passed.
+- This was unit-level implementation work only: no experiment ledger was
+  required, no E0--E8 fixture or score was opened, and no remote compute ran.
+  The claim that chunk CLA detects hierarchical generativity and should lose
+  to CSSR on positive-entropy sofic regimes remains a hypothesis. E3 remains
+  binding and OmegaSim remains paused until E7 resolves and E8a passes.
+
+## 2026-07-25 22:15 PDT — M-F randomized inline round trips
+
+- Added a deterministic 100-seed property test over nested ordinary chunks,
+  categories, and generalized chunks. Each generated state forces the decoder
+  through inner-chunk, outer-chunk, category, and generalized-chunk
+  first-definition order without giving the decoder the source grammar.
+- Every seed reconstructs the exact corpus, re-encodes to the identical
+  decision stream, and exercises definition/member accounting across
+  `alpha`/`member_alpha` values 0.25, 0.5, and 1.0.
+- Evidence: focused `PYTHONPATH=src python3 -m unittest
+  tests.test_inline_coder -v` passed 5/5; required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 272/272 in
+  46.427 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed; clean local commit: `9402b07`.
+- This is a non-measuring decoder calibration. No E0--E8 fixture, suffix, or
+  scientific score was opened; the hierarchical-generativity/CSSR framing
+  remains a hypothesis, E3 remains binding, and OmegaSim remains paused.
+  Next is a separately frozen bounded `PrequentialScorer` contract.
+
+## 2026-07-25 20:15 PDT — M-F inline encoder/decoder foundation
+
+- Fresh gate audit found M-E closed at `40749d7`; governing order therefore
+  permits M-F implementation but no E0--E8 measurement.
+- Frozen `docs/inline-grammar-coder-contract-v1.md` in the active worktree.
+- Commit `edcd8be` adds a one-part inline ideal decision stream and independent
+  decoder together. Literal, ordinary chunk, and category paths use canonical
+  definition-order identities, growing KT state, gamma-coded positive lengths,
+  and fresh per-category member KT state. Decode exactly reconstructs the
+  corpus; malformed/truncated and forward-reference inputs fail closed.
+- Evidence: focused unittest 4/4; required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -q` 271/271;
+  `python3 -m compileall -q src tests` and `git diff --check` passed.
+- This is non-measuring implementation calibration. No scorer/registry/default
+  changed, no E0--E8 fixture was opened, E3 remains binding, and OmegaSim
+  remains paused. Before `PrequentialScorer`, add randomized generalized and
+  nested-grammar round-trip coverage.
+
+## 2026-07-25 18:18 PDT — M-E milestone closure
+
+- Audited the governing upgrade/evaluation documents, the supplied
+  mathematical-foundations source and assumption/citation sidecar, project
+  records, recent run records, repository README/tests, git status, and log.
+  The mathematical claims remain hypotheses under their stated source-class
+  assumptions and do not amend any frozen evaluation gate.
+- Clean active-worktree commit `40749d7` contains all three M-E components:
+  deterministic pure-Python `CSSR`, leakage-free prefix-fitted
+  `CausalStateCoder` with parameterized registry factories, and
+  topology-equivalence `CSSRCategoryInducer`.
+- Focused command covering the complete M-E surface passed 14 tests in 1.310
+  seconds. Required `PYTHONPATH=src python3 -m unittest discover -s tests -v`
+  passed 267 tests in 64.747 seconds. `python3 -m compileall -q src tests` and
+  `git diff --check` passed.
+- No experiment ledger was required because this was a unit-level milestone
+  audit with no generated scientific measurement. No E0--E8 fixture, suffix,
+  score, remote compute, or OmegaSim work was opened. E3 remains binding.
+  The claim that chunk CLA detects hierarchical generativity and should lose
+  to CSSR on positive-entropy sofic regimes remains a scientific hypothesis.
+
 ## 2026-07-25 16:15 PDT — M-E planted automata acceptance invariants
 
 - Froze `docs/automata-acceptance-invariants-v1.md` in the active
@@ -2056,3 +2211,79 @@ expected CSSR advantage on positive-entropy sofic regimes remain hypotheses.
 - This was non-measuring: no registry exposure, E0--E8 fixture, held-out
   scientific score, remote compute, or OmegaSim work ran. Exact official
   scoring and the hierarchical-generativity/CSSR framing remain unchanged.
+## 2026-07-26 00:15 PDT — M-F prequential scorer contract
+
+The next bounded M-F slice was frozen at
+`scratch/chaoslang-strict-replay/docs/prequential-scorer-contract-v1.md`
+(SHA-256 `da823a203e1d13b75175b099b433ccd1e5d4d722df2c70550d135f1c0124d2d1`).
+`PrequentialScorer` wraps the independently decodable inline coder without a
+separate model charge, reports exact parse/member/definition components, caches
+immutable scores by the complete-state digest, and defines delta only as full
+immutable apply-and-rescore. The focused inline+scorer suite passed 9 tests;
+`PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 276 in 48.219
+seconds; compileall and `git diff --check` passed. This was non-measuring: no
+registry/default exposure, E0--E8 fixture, held-out suffix, or OmegaSim run was
+opened. The mathematical-foundations claims remain assumption/citation-audited
+hypotheses and did not alter any frozen gate.
+The coherent code slice was committed locally as `1f7e7b5`.
+## 2026-07-26 10:15 PDT — E0 source and threshold design frozen
+
+- Clean strict-replay commit `37d634e` adds
+  `docs/e0-coder-calibration-preregistration-v1.md` (SHA-256
+  `f9f4200b657844597c53a15cf1d9ca1320eda99c30697aa993ec1882bd399c1d`).
+- It freezes five fresh seeds, three lengths, exact iid uniform/Zipf,
+  Markov-1, Markov-3, and periodic laws, analytical entropy calculation, the
+  periodic absolute tolerance, M2/CTW redundancy bands, and the four LZ78
+  continuity values from historical manifest SHA-256
+  `88b4a4ca0920fd8a1ad80f28efa3bb855148913caf8f7dd558021fed37abf9e3`
+  and results SHA-256
+  `f638887f0868490011332fb035bd7ee6856106cf7bfaddc641fe21e1614252e1`.
+- Focused coding tests passed 12; full stdlib discovery passed 279 in 45.049
+  seconds; compileall and `git diff --check` passed. This slice generated no
+  fixture, suffix, score, or experiment outcome. E0 awaits a separately
+  declaration-tested, hashed, cleanly committed runner before its sole
+  execution. E3 remains binding and OmegaSim remains paused.
+## 2026-07-26 12:15 PDT — E0 runner implemented without measurement
+
+- Clean strict-replay commit `096cbb1` adds the E0 runner and declaration
+  tests. Import/declaration is non-measuring; the tests use only seed `7`, not
+  any frozen E0 seed.
+- The runner records raw bits and bits/symbol for every frozen source/seed/
+  length/coder cell, analytical entropy, stream hashes, every convergence/M2/
+  CTW predicate, aggregate disposition, and historical LZ78 exact-decode,
+  byte-stability, expected-bit, manifest-hash, results-hash, and regenerated
+  declaration checks.
+- Focused unittest passed 4. Required
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 283 in
+  49.110 seconds. `compileall` and `git diff --check` passed.
+- No frozen seed stream, fixture hash, coder score, suffix, or outcome was
+  generated or inspected. Next is the separately declaration-tested ledger
+  wrapper and hash freeze at the preregistered `20260726T171500Z` path.
+
+## 2026-07-27 08:15 PDT — E0 v2 amendment proposed, not authorized
+
+The completed E0 v1 result remains a binding aggregate failure. Its sole
+failed family was iid-uniform-v16 under the order-2-versus-unigram redundancy
+predicate. A review-only proposal at
+`scratch/chaoslang-strict-replay/docs/e0-coder-calibration-amendment-proposal-v2.md`
+records that the v1 allowance `2*K^2*log2(n)` counts order-2 contexts but
+omits the `K-1` free parameters in each K-way KT multinomial. The proposal
+does not select a replacement constant from the burned excess. It requires a
+derived or cited per-context finite-sample KT-regret predicate, independent
+non-measuring unit checks, five fresh seeds, a fresh ledger suffix, and
+separate review before execution. No fixture, score, rerun, or E1 promotion
+was opened. Ben's decision is required.
+
+## 2026-07-27 18:15 PDT — gate audit: E1 remains closed
+
+Rechecked the governing upgrade/evaluation specifications, the supplied
+mathematical-foundations source (PDF SHA-256
+`6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`),
+the completed E0 v1 ledger, and the clean strict-replay worktree at
+`f5a2b7b`. E0 v1 remains a binding aggregate failure, so E1 and all dependent
+measurements remain unauthorized. The reviewed M-D amendment and separately
+frozen, non-executable E5b proposal already satisfy the requested preparation
+work. No fixture, score, test, source change, or experiment was opened.
+Ben's explicit review of
+`docs/e0-coder-calibration-amendment-proposal-v2.md` is still the next
+critical-path decision.

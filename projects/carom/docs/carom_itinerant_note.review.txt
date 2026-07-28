@@ -1,0 +1,383 @@
+         From Scheduled Execution to Itinerant Dynamics:
+    Three Semantics for Content-Addressable Recurrent Operator
+                             Machines
+                                            Working note
+
+                                              July 2026
+
+
+                                              Abstract
+          CAROM (Content-Addressable Recurrent Operator Machine) is an architecture that sep-
+      arates control from data: opaque command tokens route computation over a small library
+      of reusable learned operators, which read, transform, gate, and write a register-like slot
+      workspace over a fixed sequence of recurrent steps. This note develops two successive re-
+      formulations of its execution model. First, a fixed-point (deep-equilibrium) semantics re-
+      places the externally imposed schedule with joint constraint satisfaction: the answer is the
+      workspace configuration self-consistent under all commands at once. This buys O(1) training
+      memory, adaptive computation, and bidirectional inference, at the cost of the directionality
+      that makes composition work. Second, an itinerant semantics recovers directionality without
+      reintroducing a clock: commands compete for control of the workspace through a learned
+      generalized Lotka–Volterra dynamic, and sequential order emerges as a stable heteroclinic
+      channel through metastable states. The scheduled and fixed-point models are exact special
+      cases of the itinerant one, obtained respectively by clamping and by symmetrizing a single
+      learned inhibition matrix. We give the coupled equations, the stability conditions under
+      which the construction is trainable, and a set of discriminating experiments.
+
+
+1     CAROM: a differentiable register machine
+1.1   Intuition
+CAROM is best understood as a CPU metaphor made differentiable. A CPU separates three
+things that a Transformer entangles: instructions (which computation to perform), registers
+(named locations whose contents evolve), and circuits (a small reusable set of functional units
+that many instructions share). CAROM reproduces this factorization. Command tokens are
+instructions: they never touch data directly, they only select circuitry. Workspace slots are
+registers: each has a fixed address, an immutable record of its initial contents, and a mutable
+current value. Operators are circuits: a small library of learned read–transform–gate–write
+units, shared across all commands, applied to all slots in parallel.
+    The bet is that this factorization is the right inductive bias for compositional computation.
+If commands can only act through a shared operator library, command semantics are forced to
+be combinations of reusable primitives; if slots separate address from value, variable binding
+is structural rather than learned. Empirically the architecture performs roughly on par with
+a Transformer on generic sequence tasks and shows an advantage when the task is to learn
+composable functions over sequences — i.e., the bias pays exactly where it was aimed.
+
+                                                   1
+1.2    Formal summary
+The input is a sequence containing C command tokens c1 , . . . , cC and n data tokens x1 , . . . , xn .
+Only data tokens become workspace slots. Slot i carries three vectors in Rd :
+                                  
+              ei = Norm Etok (xi )            (immutable evidence),
+               pi = Epos (i)                               (fixed address),
+              wit ∈ Rd ,         wi0 = ei                  (mutable content after t updates).
+
+Command-only routing. A learned table A ∈ RC×K assigns each command a softmax
+mixture over K operators,
+                                     exp(Ac,k /τr )
+                          ρk (c) = PK                  ,                   (1)
+                                    j=1 exp(Ac,j /τr )
+
+depending only on command identity. Distinct commands may share operators; with K small
+relative to the diversity of commands, the table is pressured to become a reusable instruction
+set.
+
+One operator. Operator k is a full micro-circuit acting on all slots in parallel. Reads are
+content-addressed attention over source slots j, with queries/keys/values built from [w; e; p] so
+that current content, original evidence, and address all participate in binding:
+                             n
+                                                               (qit,k )⊤ kjt,k
+                                                                               !
+                      t,k        t,k t,k      t,k
+                            X
+                     ri =       aij vj ,    aij = softmaxj          √            .            (2)
+                            j=1
+                                                                       d
+
+An operator-specific, command-independent transform ϕk produces zit,k = ϕk (rit,k , wit , ei , pi ); a
+sigmoid gate git,k = σ(WGk zit,k + b) ∈ (0, 1)d and a SwiGLUk head yield a gated update proposal
+ut,k
+  i .
+
+
+Scheduled mixing and recurrence. A fixed monotonic one-hot schedule γ t ∈ {e1 , . . . , eC }
+activates one command per recurrent step; the active command determines the operator mixture
+                                      C                                            K
+                                                                                         βkt ut,k
+                                      X                                            X
+                           βkt    =          t
+                                            γm ρk (cm ),       wit+1   =   wit +              i ,      (3)
+                                      m=1                                          k=1
+
+for t = 0, . . . , T − 1. After T steps a per-slot readout ŷi = arg maxy [Wout Norm(ϕo (wiT , ei , pi ))]y
+produces the output sequence; supervision applies only there.
+
+1.3    What is right and what binds
+Strengths. Structural variable binding (address/evidence/content decomposition); a learned
+reusable operator library; direct interpretability (the routing table A is a readable program dic-
+tionary, β t is an execution trace); stable residual gated recurrence; and the empirically observed
+compositional advantage.
+    The binding constraint is Eq. (3) itself. Three costs follow from the forced schedule. (i)
+Sequentiality: T strictly sequential steps, with O(T ) BPTT memory and O(T ) wall-clock depth,
+
+
+                                                           2
+against a Transformer’s parallel training. (ii) Static control flow : the mixture β t is fully deter-
+mined before any data is seen; there are no conditionals, no loops, no data-dependent dispatch,
+and the same command always routes identically regardless of context. (iii) Fixed budget: T
+is a hyperparameter with no halting mechanism. The remainder of this note is about relaxing
+Eq. (3) while keeping everything else.
+
+
+2     The fixed-point reformulation
+2.1   Intuition: from procedure to constraint
+Scheduled CAROM defines the answer procedurally: wT is whatever executing the commands
+in order produces. The fixed-point reformulation defines it declaratively: the answer is the
+workspace configuration that is self-consistent under all commands simultaneously. Each com-
+mand stops being an instruction executed at a moment and becomes a standing constraint —
+“slot contents should relate thus” — and inference is relaxation to the configuration on which
+all constraints agree. For a content-addressable workspace this is arguably the more natural
+semantics: the workspace settles into the interpretation jointly licensed by the commands. It is
+the denotational semantics of the same program whose operational semantics is Eq. (3).
+
+2.2   Formulation
+Define the simultaneous update field
+                                          C X
+                                          X K
+                                                    ρk (cm ) u(k) w, e, p, sm ,
+                                                                             
+                         F (w) = w +                                                             (4)
+                                          m=1 k=1
+
+where sm is a per-command step embedding carrying ordinal information into the operators’
+queries and keys (order survives as a feature, not as time). The model’s output is an equilibrium
+
+                                           w∗ = F (w∗ ),                                         (5)
+
+found by damped iteration w ← (1 − α)w + αF (w), Anderson acceleration, or a quasi-Newton
+solver, initialized at w0 = e. Readout applies to w∗ .
+
+Training. By the implicit function theorem, gradients require no backpropagation through
+the solver trajectory:
+                                ∂ℓ      ∂ℓ              −1 ∂F
+                                                 ∂F
+                                    =        I −  ∂w w ∗           ,                          (6)
+                               ∂θ      ∂w∗                   ∂θ w∗
+with the inverse applied by a cheap fixed-point iteration on vector–Jacobian products (the deep-
+equilibrium recipe). Consequences: O(1) activation memory independent of solver depth; no
+gradient path through “time” because there is none; and solver-independence — train with one
+solver, deploy with another, since the gradient is a property of the equilibrium, not the path.
+
+Well-posedness. Existence, useful uniqueness, and reachability of w∗ require F to be (lo-
+cally) contractive. CAROM’s components help — sigmoid gates bound update magnitudes,
+normalization controls scale — but in practice one adds spectral normalization or a Lipschitz
+penalty on the operators, damping α < 1, and a Jacobian regularizer penalizing an estimate
+
+
+                                                 3
+of ∥∂F/∂w∥ at the equilibrium. Failure modes if omitted: multiple equilibria (answers depend
+on initialization), limit cycles, or stiff equilibria where the backward solve in Eq. (6) dominates
+cost.
+
+2.3     Why this improves scheduled CAROM
+ (a) Parallelism and memory. Each solver sweep updates all slots under all commands simul-
+     taneously; sequential depth becomes “iterations to convergence,” a property of problem
+     hardness rather than program length, and training memory is O(1) by Eq. (6).
+
+ (b) Adaptive computation for free. Iterate to a residual tolerance: easy inputs converge fast,
+     hard inputs take more sweeps, and test-time compute scales cleanly — more iterations
+     buy a better answer to the same well-defined problem.
+
+    (c) Bidirectional inference. A late constraint under pressure propagates residual back and
+        revises earlier slots. Scheduled execution structurally forbids this; parsing-like, abductive,
+        and error-correcting tasks require it.
+
+ (d) A confidence channel. Per-slot residual magnitude at budget reports which parts of the
+     constraint system failed to settle.
+
+    Note also that Jacobi iteration of F from w0 = e simulates forward execution: in sweep one,
+only constraints grounded in raw evidence act; in sweep two, constraints depending on those
+results activate; and so on, so information traverses the dependency DAG in critical-path-many
+sweeps.
+
+2.4     What it loses
+Composition is directional: in f (g(x)), g’s result must inform f and not conversely. The schedule
+provided this by temporal order; the fixed point must encode it through the learned asymmetries
+induced by the step embeddings sm , and whether learned asymmetry suffices is an open empirical
+question. More fundamentally, a single global equilibrium has no internal phases: it cannot
+represent “first establish X, then, in the context of X, establish Y ” except by folding both into
+one simultaneous constraint set. This motivates the next section.
+
+
+3      Itinerant dynamics: order without a clock
+3.1     Intuition
+The scheduled model imposes order from outside; the fixed-point model deletes it. The itinerant
+model lets order emerge. The device is to promote the schedule from an input to a dynamical
+variable: introduce a low- dimensional control state in which commands compete for control of
+the workspace. The winning command’s operators push the workspace toward local consistency
+(a phase of constraint satisfaction); the changed workspace alters the competitive fitness of the
+other commands; a successor takes over. Computation becomes a trajectory through a chain
+of metastable way-stations — linger, work, hand off — and the visitation order is carved into
+a learned inhibition structure rather than clocked in. Because a command’s fitness reads the
+workspace, the itinerary is data-dependent: conditionals, loops, and halting arise as dynamical
+
+
+                                                   4
+phenomena. Within each phase one has equilibrium semantics (bidirectional constraint propa-
+gation); across phases, directional composition. The two semantics of Sections 1–2 coexist at
+different timescales of a single flow, and each is recovered exactly as a special case.
+    The relevant dynamical object is the stable heteroclinic channel (Afraimovich–Rabinovich):
+a chain of saddle equilibria connected by heteroclinic orbits which is itself an attracting set.
+Unlike a strange attractor, an SHC has no positive Lyapunov exponents — trajectories contract
+transversally into the channel — so the construction stays on trainable ground while occupying
+far wider computational territory than a fixed point.
+
+3.2   Formulation
+Augment the workspace w ∈ Rn×d with a control state a ∈ RM≥0 over M modes: one mode per
+command instance plus a distinguished halt mode. The coupled stochastic flow is
+                                          M
+                 dam              X       
+                     = am σm (w) −   ρmj aj + ηa ξm (t),                                      (7)
+                  dt
+                                          j=1
+                                     M          K
+                 dwi           X        X           (k)
+                     = −λ wi +   am (t)   ρk (cm ) ui (w, e, p) + ηw ζi (t).                  (8)
+                  dt
+                                    m=1         k=1
+
+Eq. (8) is the CAROM updateP   field of Section 1 — same operator library, same routing table —
+with mixture weights βk (t) = m am (t) ρk (cm ) now supplied by the control dynamics. Eq. (7)
+is generalized Lotka–Volterra competition: mode m grows at a rate σm (w) — a learned readout
+of the current workspace, the locus of data-dependence — and is suppressed by other modes
+through the learned inhibition matrix ρ ∈ RM ×M . Small noise terms ξ, ζ play a functional role
+given below. Optionally each mode carries a slow fatigue variable
+                             dfm
+                        τf       = am − fm ,        σm (w) 7→ σm (w) − κfm ,                  (9)
+                              dt
+which penalizes prolonged occupancy and guarantees motion.
+
+Containment of the earlier variants.
+
+Proposition 1 (Special cases). (i) Clamping a(t) to the externally forced one-hot sequence γ t
+reduces Eqs. (7)–(8) to scheduled CAROM, Eq. (3), in discretized time. (ii) If ρ is symmetric
+(and σ workspace-independent on the relevant region), the competition Eq. (7) admits a Lya-
+punov function and a(t) converges to a stable mixture a∗ ; the workspace flow then relaxes to the
+equilibrium of the static field F (· ; β(a∗ )), recovering the fixed-point model of Section 2.
+
+Thus the symmetry of one learned M × M matrix is the dial between declarative and procedural
+semantics. One may regularize ∥ρ − ρ⊤ ∥ toward zero for constraint-like tasks, toward a target
+chain for program-like tasks, or leave it free and observe which semantics the task induces.
+
+The itinerancy mechanism. In GLV competition the pure states “only mode m active”
+are equilibria; the entries of ρ decide whether each is a sink or a saddle. The Afraimovich–
+Rabinovich conditions state, qualitatively: let each mode inhibit its designated successor weakly
+enough that the successor can invade, let successors inhibit predecessors strongly enough to
+
+
+                                                    5
+extinguish them, and suppress all other competitors hard. Then the pure states become saddles
+chained by heteroclinic connections, and the chain is attracting — a stable heteroclinic channel
+— provided each saddle is dissipative:
+                                  |λstable
+                                    m      |
+                          νm =     unstable
+                                             > 1       at every station m.                     (10)
+                                  λm
+Trajectories are funneled into the channel, dwell near each saddle, and pass onward in the
+prescribed order. The inhibition matrix is therefore the program-order prior : a strict chain
+encodes a fixed sequence; a DAG encodes partial order with data-dependent resolution (σm (w)
+breaks ties); a cycle encodes iteration, exited when the workspace evolves to where some σexit
+dominates. Noise sets the clock: near a saddle with unstable rate λu , mean exit time scales as
+ln(1/ηa )/λu , so dwell time per phase is finite, tunable, and roughly uniform along the channel.
+Fatigue, Eq. (9), is the complementary mechanism: asymmetric inhibition proposes the itinerary,
+fatigue guarantees no station becomes a trap.
+
+Halting and readout. The halt mode has learned growth rate σhalt (w) — a “done” detector
+on the workspace — and is made absorbing (ρhalt,j large for all j, nothing inhibits it strongly).
+Readout fires on w when ahalt crosses threshold: variable-length computation with learned
+halting and no auxiliary halting machinery. A second output channel comes free: thresholding
+a(t) yields the itinerary — the sequence of saddles visited with dwell times — an emergent, data-
+dependent program trace, more informative than the scheduled model’s trace precisely because
+it was chosen rather than copied from the input.
+
+3.3   Timescale separation and training
+Take the workspace fast and the control slow (λ large relative to the scale of Eq. (7)). Then within
+each metastable phase, w approximately equilibrates under the currently dominant mixture:
+each phase is a small deep-equilibrium solve, differentiable by Eq. (6) at O(1) memory. The
+control trajectory a(t) is low-dimensional (M ≪ nd) and is backpropagated directly — pathwise
+gradients through the reparameterized noise — at negligible cost. Training is thus a chain of
+implicit solves stitched by a cheap explicit trajectory: no BPTT through the workspace history.
+Because the SHC has no positive Lyapunov exponents, the exploding and ill-defined gradients
+of chaotic regimes do not arise; the sensitive quantities are saddle passage times (logarithmic
+in noise, hence soft) and the discrete itinerary near decision boundaries of σm (w), handled by
+temperature on the σ readouts annealed toward sharpness.
+
+3.4   Why itinerancy improves on the fixed point
+ (a) Directionality restored, structurally. Phase order is a property of the channel, not a learned
+     feature hint: “first X, then Y in the context of X” is representable as two saddles, which
+     no single global equilibrium expresses.
+ (b) Data-dependent control flow. Since σm reads w, a command invades only when its pre-
+     condition pattern is present — content-triggered dispatch, which command-identity-only
+     routing forbids — and cycles in ρ with workspace-dependent exit give genuine loops.
+ (c) Both semantics at once. Within a phase: equilibrium relaxation, bidirectional constraint
+     propagation, error correction. Across phases: directional composition. The fixed point
+     offers only the former; the schedule only the latter.
+
+                                                   6
+ (d) Learned halting and emergent traces, as above; neither exists in the fixed-point model
+     except through solver tolerance.
+
+    (e) Strict containment. By Proposition 1, nothing is lost: the model can collapse to either pre-
+        decessor where a task rewards it, and which collapse a task induces is itself an experimental
+        observable.
+
+3.5     Failure modes and regularizers
+Channel collapse (a saddle becomes a sink; computation stalls): guaranteed against by fatigue,
+or monitored via saddle eigenvalues. Channel evaporation (νm < 1 somewhere; trajectories leak):
+regularize Eq. (10) with a margin along realized itineraries. Phase smearing (a stays diffuse;
+the soft-mixture blur returns): entropy penalty on a encouraging near-vertex dwell. Itinerary
+instability (noise resamples yield different routes on the same input): penalize itinerary variance
+across resamples on deterministic tasks — while noting that on genuinely ambiguous inputs
+route variance is the model sampling interpretations, a feature connected to stochastic- attractor
+readouts rather than a defect.
+
+
+4      Experiments
+Throughout, evaluate where the inductive bias lives: compositional splits, program execution,
+length and depth generalization — not perplexity.
+Experiment 1 (Localizing the value of recurrence). Unroll scheduled CAROM into L feed-
+forward layers sharing the operator library (schedule becomes layer assignment) and compare
+on the compositional tasks where CAROM beat the Transformer. If the advantage survives
+unrolling, the command/operator factorization and register workspace carry it and the cheap
+parallel version ships; if not, recurrence is load-bearing and the reformulations of Sections 2–3
+are the right investment.
+Experiment 2 (Forward composition vs. backward revision). Construct function-composition
+tasks in two regimes: (i) pure forward chains, and (ii) chains containing an embedded inverse
+problem, solvable only by propagating a late constraint back to revise earlier slots. Predictions:
+scheduled CAROM matches the fixed-point model on (i), with the fixed-point model’s sweep
+count tracking critical-path depth (measurable and falsifiable); the fixed-point model pulls ahead
+on (ii). Failure of the fixed-point model on (i) indicates that step-embedding asymmetry is
+insufficient and motivates causal masking of the constraint graph.
+Experiment 3 (Emergent order). Present composed functions with commands in scrambled
+order, so correct execution order must be discovered from data. Scheduled CAROM is struc-
+turally handicapped; the fixed-point model must absorb order into the equilibrium; the itinerant
+model can express order but must learn it. Success criterion: extracted itineraries (thresholded
+a(t)) match the ground-truth dependency order on held-out compositions. This is the sharpest
+test of the central claim — that a network’s trajectory through state space can be a readable,
+data-dependent program.
+Experiment 4 (Loops and halting). Tasks with data-dependent iteration counts (e.g., iterate
+a map until a predicate holds; string rewriting to normal form). Measure: halt-mode timing ac-
+curacy; generalization to iteration counts beyond the training range, where scheduled CAROM
+
+                                                  7
+cannot even represent the larger programs; dwell-time statistics against the ln(1/ηa )/λu predic-
+tion.
+
+Experiment 5 (Which semantics does the task induce?). Train the itinerant model with ρ
+unregularized on (i) constraint- satisfaction tasks and (ii) sequential-algorithmic tasks; track the
+asymmetry ∥ρ−ρ⊤ ∥ and the Lyapunov spectrum of the realized dynamics. Prediction: (i) drives
+ρ toward symmetry (equilibrium semantics rediscovered), (ii) toward chain asymmetry (proce-
+dural semantics rediscovered). Observing task-dependent selection of computational semantics
+within one architecture would be a more interesting result than either endpoint alone.
+
+Experiment 6 (Ablations on the itinerancy mechanism). (a) Fatigue only vs. asymmetric
+inhibition only vs. both, testing the claim that asymmetry proposes order while fatigue prevents
+traps. (b) Noise amplitude sweeps, testing dwell-time control and the deterministic limit. (c) σm
+made workspace-independent, ablating data-dependent dispatch: conditionals and loops should
+fail selectively.
+
+
+5    Closing remark
+The three models are one architecture under three execution semantics — operational (Sec-
+tion 1), denotational (Section 2), and itinerant (Section 3) — sharing a single operator library
+and routing table. The itinerant formulation contains the other two as limits of one learned ma-
+trix, and adds what both lack: emergent, data-dependent, interpretable control flow, realized as
+stable heteroclinic itinerancy rather than either an external clock or a single global equilibrium.
+Metastable attractor ruins as the phases of a computation, transitions as inference steps, the
+itinerary as the program: this is attractor dynamics as cognition, in a form that is trainable
+with current machinery.
+
+
+
+
+                                                 8
+

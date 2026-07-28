@@ -1,0 +1,454 @@
+{
+  "limitations": [
+    "Synthetic constant-length substitution competence only; no chaos, attractor, or semantic-grammar evidence.",
+    "Does not revise the Fibonacci generalization null or either Mackey--Glass/Lorenz--96 held-out coding null."
+  ],
+  "manifest": {
+    "config": {
+      "baselines": [
+        "literal",
+        "unigram",
+        "markov-1",
+        "markov-2"
+      ],
+      "learner": {
+        "enable_categories": false,
+        "enable_joint_categories": false,
+        "max_iterations": 8,
+        "max_ngram": 5,
+        "search_objective": "indexed",
+        "seed": 17071702
+      },
+      "prefix_length": 2048,
+      "shuffle_seed_base": 17071702,
+      "sources": [
+        {
+          "coding": {
+            "0": "0",
+            "1": "1"
+          },
+          "name": "period-doubling",
+          "rule": {
+            "0": "01",
+            "1": "00"
+          },
+          "seed_symbol": "0"
+        },
+        {
+          "coding": {
+            "a": "0",
+            "b": "0",
+            "c": "1",
+            "d": "1"
+          },
+          "name": "rudin-shapiro",
+          "rule": {
+            "a": "ab",
+            "b": "ac",
+            "c": "db",
+            "d": "dc"
+          },
+          "seed_symbol": "a"
+        }
+      ],
+      "suffix_length": 8192
+    },
+    "fixtures": [
+      {
+        "counts": {
+          "0": 6826,
+          "1": 3414
+        },
+        "kind": "positive",
+        "length": 10240,
+        "name": "period-doubling-positive",
+        "prefix_length": 2048,
+        "prefix_sha256": "18bf66bfe32e732cda7efc260368a893eefedff2790783746dffdb08d89b25c1",
+        "shuffle_seed": null,
+        "source": "period-doubling",
+        "stream_sha256": "9f67de57f265107f0e997e2616fce530a3ff84b8b43ab8133c7415ce26c9e30f",
+        "suffix_length": 8192,
+        "suffix_sha256": "b41e265bc8a2357b7d8c081336aa47fcbb442750703b99a328676b7ed292b2d0"
+      },
+      {
+        "counts": {
+          "0": 6826,
+          "1": 3414
+        },
+        "kind": "shuffled",
+        "length": 10240,
+        "name": "period-doubling-shuffled",
+        "prefix_length": 2048,
+        "prefix_sha256": "e748087302c3759c332b3be775cc7639ed82afe7a1f175ee54a2fa6abd4f63f8",
+        "shuffle_seed": 17071702,
+        "source": "period-doubling",
+        "stream_sha256": "94b0a0d6d882cf42d221368493afd40343bce4601cdf4cd21c300ec32c4ef91f",
+        "suffix_length": 8192,
+        "suffix_sha256": "2d08598ede7a846fbc2764476f8295919b672a324a255fd515b344a0c982d4fb"
+      },
+      {
+        "counts": {
+          "0": 5216,
+          "1": 5024
+        },
+        "kind": "positive",
+        "length": 10240,
+        "name": "rudin-shapiro-positive",
+        "prefix_length": 2048,
+        "prefix_sha256": "e5750fb3941d58f5a3b6241612c884881ed09c38808bbf88c4e9849ac8a61c7a",
+        "shuffle_seed": null,
+        "source": "rudin-shapiro",
+        "stream_sha256": "67b94608ed51d2db46389ccd14ed1caa571c31f5635d7b97b506d11be9341463",
+        "suffix_length": 8192,
+        "suffix_sha256": "2df02a1a7725273e6141947c93ad2bf25827c269e837aba8a1085db2d821a85f"
+      },
+      {
+        "counts": {
+          "0": 5216,
+          "1": 5024
+        },
+        "kind": "shuffled",
+        "length": 10240,
+        "name": "rudin-shapiro-shuffled",
+        "prefix_length": 2048,
+        "prefix_sha256": "7c44a514f5bf4381064cf9c1e5cac3a8dda430c0859e01cbafc742b7c02bcf2c",
+        "shuffle_seed": 17071703,
+        "source": "rudin-shapiro",
+        "stream_sha256": "327733031ec1c91ea78a17558a305f4699345ef0271df3b73909f1a0f0a7330a",
+        "suffix_length": 8192,
+        "suffix_sha256": "bd01051061d49c7b885366b6e13fd64cf82f11407540b252429d3bce35901354"
+      }
+    ],
+    "protocol": "synthetic-uniform-morphism-preregistration-v1",
+    "schema": "chaoslang.synthetic-uniform-morphism",
+    "version": 1
+  },
+  "pass": true,
+  "pass_rule": "all gates; indexed CLA beats the strongest baseline on both unseen 2-uniform positives and neither exact-marginal shuffled null",
+  "results": [
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "period-doubling-positive",
+      "primary_below_strongest": true,
+      "primary_history": [
+        "chunk N0 -> 0 1 0",
+        "chunk N2 -> chunk:N0 0 chunk:N0",
+        "chunk N3 -> chunk:N2 1 chunk:N2",
+        "chunk N5 -> chunk:N3 0 chunk:N3",
+        "chunk N6 -> chunk:N5 1 chunk:N5",
+        "chunk N8 -> chunk:N6 0 chunk:N6",
+        "chunk N9 -> chunk:N8 1 chunk:N8",
+        "chunk N11 -> chunk:N9 0 chunk:N9"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 0.665527711491482,
+          "canonical_hash": "6f5857e12eab7c3697c9386e3d6691c0a464435da2e30d38f38448df92d6c0b9",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 5400.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 52.0030125382213,
+          "total_bits": 5452.003012538221
+        },
+        {
+          "bits_per_symbol": 0.9610038667274047,
+          "canonical_hash": "d81bcdab68928ebc78871d2ab5117615374f52ca3938ae8590908a3195171f16",
+          "method_name": "markov-1",
+          "model_bits": 2400.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 5472.543676230899,
+          "total_bits": 7872.543676230899
+        },
+        {
+          "bits_per_symbol": 1.0212788783283668,
+          "canonical_hash": "32db45e6231bff460853153d025db4d0dff3a3d7aacd3af86acd7d927083c9f5",
+          "method_name": "markov-2",
+          "model_bits": 2888.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 5478.316571265981,
+          "total_bits": 8366.316571265981
+        },
+        {
+          "bits_per_symbol": 1.1114236486569165,
+          "canonical_hash": "5d618f1e544cad601af7f0aff0268ea97e2565f452a8631dcacf26fb72e8a778",
+          "method_name": "unigram",
+          "model_bits": 1576.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7528.7825297974605,
+          "total_bits": 9104.78252979746
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 0.9610038667274047,
+        "canonical_hash": "d81bcdab68928ebc78871d2ab5117615374f52ca3938ae8590908a3195171f16",
+        "method_name": "markov-1",
+        "model_bits": 2400.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 5472.543676230899,
+        "total_bits": 7872.543676230899
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "period-doubling-shuffled",
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 0 1",
+        "chunk N1 -> 0 0 chunk:N0",
+        "chunk N2 -> 1 0",
+        "chunk N3 -> 0 0 0 chunk:N1",
+        "chunk N4 -> 1 chunk:N2",
+        "chunk N5 -> chunk:N0 0",
+        "chunk N6 -> 1 1",
+        "chunk N7 -> chunk:N1 0"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.108755953486006,
+          "canonical_hash": "84616651a1c621429a521622922b3da9de6e5a07d3513fce490e5a5846ae0291",
+          "method_name": "unigram",
+          "model_bits": 1576.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7506.928770957361,
+          "total_bits": 9082.928770957362
+        },
+        {
+          "bits_per_symbol": 1.2183600616492636,
+          "canonical_hash": "21134c1d258c98bde7715cb998e9df5791376f66fb27c71b33f8a8ce28cbca66",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7516.805625030767,
+          "total_bits": 9980.805625030767
+        },
+        {
+          "bits_per_symbol": 1.326017193374727,
+          "canonical_hash": "cda20f3c81210e96a4c2c7e5a6d2d0def3d9956400f2f9fbb9384fb10b33b6c5",
+          "method_name": "markov-2",
+          "model_bits": 3336.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7526.732848125763,
+          "total_bits": 10862.732848125763
+        },
+        {
+          "bits_per_symbol": 2.041931714026854,
+          "canonical_hash": "702c8ef607107c2007a37f8a0f761cb183535a1f160febb4850428f745eefc59",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 6744.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 9983.504601307988,
+          "total_bits": 16727.50460130799
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.108755953486006,
+        "canonical_hash": "84616651a1c621429a521622922b3da9de6e5a07d3513fce490e5a5846ae0291",
+        "method_name": "unigram",
+        "model_bits": 1576.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 7506.928770957361,
+        "total_bits": 9082.928770957362
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "rudin-shapiro-positive",
+      "primary_below_strongest": true,
+      "primary_history": [
+        "chunk N0 -> 0 0 0 1",
+        "chunk N1 -> 1 0 1",
+        "chunk N2 -> 1 1 chunk:N0 0",
+        "chunk N3 -> 1 1 chunk:N1 chunk:N1",
+        "chunk N4 -> chunk:N0 0 0",
+        "chunk N5 -> 1 0 chunk:N0 1 chunk:N1",
+        "chunk N6 -> chunk:N3 chunk:N0 1 chunk:N1",
+        "chunk N7 -> chunk:N4 chunk:N5 chunk:N4 chunk:N1 chunk:N2"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.172156344755253,
+          "canonical_hash": "b092786d8a08aea0793a0bee8bfb0b6d176c00980dee36cc07593ad69a369935",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 7056.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 2546.3047762350316,
+          "total_bits": 9602.304776235032
+        },
+        {
+          "bits_per_symbol": 1.1930871962559613,
+          "canonical_hash": "e2bc16f52e3cd2e8b25860e42ea91fc7f3174a77d53f18a123eda690acf07318",
+          "method_name": "unigram",
+          "model_bits": 1576.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8197.770311728835,
+          "total_bits": 9773.770311728835
+        },
+        {
+          "bits_per_symbol": 1.3021818489935792,
+          "canonical_hash": "5056ecaa4e312ec7b744797d2154a9db9ab3239b401962b11c588decf02ef97b",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8203.473706955401,
+          "total_bits": 10667.473706955401
+        },
+        {
+          "bits_per_symbol": 1.4110049281554493,
+          "canonical_hash": "0c885faa645a0031706d10a140d852d8ebe471f6e2845ec04425604f6831c4e9",
+          "method_name": "markov-2",
+          "model_bits": 3344.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8214.95237144944,
+          "total_bits": 11558.95237144944
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.1930871962559613,
+        "canonical_hash": "e2bc16f52e3cd2e8b25860e42ea91fc7f3174a77d53f18a123eda690acf07318",
+        "method_name": "unigram",
+        "model_bits": 1576.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 8197.770311728835,
+        "total_bits": 9773.770311728835
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "rudin-shapiro-shuffled",
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1 1",
+        "chunk N1 -> 1 0 0",
+        "chunk N2 -> 0 1",
+        "chunk N3 -> 0 chunk:N0",
+        "chunk N4 -> 0 0",
+        "chunk N5 -> 1 1",
+        "chunk N6 -> chunk:N2 chunk:N0",
+        "chunk N7 -> 0 chunk:N1"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.1942122378054116,
+          "canonical_hash": "25ca12dbeb0a7e08b2090bbfc0c4171c909940133d562f663ae04a59a2d4490c",
+          "method_name": "unigram",
+          "model_bits": 1584.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8198.986652101932,
+          "total_bits": 9782.986652101932
+        },
+        {
+          "bits_per_symbol": 1.3025891379099312,
+          "canonical_hash": "4c7faf52f51c9f4d9245fad79c2b1701b98b98987e07bff867791bd796b0f41d",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8206.810217758157,
+          "total_bits": 10670.810217758157
+        },
+        {
+          "bits_per_symbol": 1.4112953793977958,
+          "canonical_hash": "81af51b4362793f670ff2633e69b2e1c1b77d39caf3bc200c09edd9c834af97b",
+          "method_name": "markov-2",
+          "model_bits": 3344.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8217.331748026743,
+          "total_bits": 11561.331748026743
+        },
+        {
+          "bits_per_symbol": 2.0374625419990835,
+          "canonical_hash": "087ec6e5216ef751e96a0e7153e8bf557f574ef714525615335e5c700eef2a70",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 6608.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 10082.893144056494,
+          "total_bits": 16690.893144056492
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.1942122378054116,
+        "canonical_hash": "25ca12dbeb0a7e08b2090bbfc0c4171c909940133d562f663ae04a59a2d4490c",
+        "method_name": "unigram",
+        "model_bits": 1584.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 8198.986652101932,
+        "total_bits": 9782.986652101932
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "arms": [
+    "bp_ce",
+    "bp_kd",
+    "epc_kd"
+  ],
+  "device": "cuda",
+  "promotion": {
+    "claim_if_passed": "promotion evidence for a larger confirmatory run; not causal-column or general ePC efficacy evidence",
+    "max_per_seed_regression_vs_update_matched_bp_kd_nats": 0.5689785704016685,
+    "mean_val_loss_gain_vs_update_matched_bp_kd_nats": -0.5208975474039713,
+    "mean_val_loss_gain_vs_wall_clock_matched_bp_kd_nats": -1.5590785322710872,
+    "passes_all": false,
+    "passes_no_seed_regression": false,
+    "passes_update_matched_gain": false,
+    "passes_wall_clock_matched_gain": false,
+    "require_finite_metrics": true,
+    "require_monotone_activity_energy": true,
+    "require_nonzero_credit_all_student_blocks": false,
+    "require_unique_complete_primary_records": true,
+    "required_seed_count": 3,
+    "seeds_run": 3
+  },
+  "protocol_sha256": "ac073e74808a41c98c11a892f78ca0460f99d56a4177791fb342dd3eb4d744b8",
+  "records": 12,
+  "schema": "relaleap.gpt2_epc_pilot_summary.v1",
+  "seeds": [
+    1729,
+    3253,
+    6421
+  ],
+  "source_commit": "dc61f3165a95653561e01d478eee5d3b75a7a50d"
+}

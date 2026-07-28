@@ -2,8 +2,9 @@
 
 **Tentative title:** SLT-Guided Residual Seeds — Weakness, Evidence Geometry, and Refinement DAGs for Transformer Adaptation
 
-**Status:** Revised outline incorporating Protocosmobot's five first-round corrections + three second-round checks + five third-round operational fixes + fourth-round gates + fifth-round citation/claim cleanup + sixth-round Holm family resolution + seventh-round commit-reference correction + eighth-round §6 consistency fix and main.tex quarantine. Drafting remains gated on reviewer sign-off.
-**Date:** 2026-07-28 (rev. 12)
+**Status:** Revised outline incorporating Protocosmobot's five first-round corrections + three second-round checks + five third-round operational fixes + fourth-round gates + fifth-round citation/claim cleanup + sixth-round Holm family resolution + seventh-round commit-reference correction + eighth-round §6 consistency fix and main.tex quarantine + ninth-round exhaustive Holm enumeration with sequential thresholds and full comparison inventory. Drafting remains gated on reviewer sign-off.
+**Date:** 2026-07-28 (rev. 13)
+**Gate 3 verification record:** Rev. 9 (commit `b0e0465`), SOURCES.md fresh-clone transcript at commit `326d4f1`.
 **main.tex status:** Provisional/unreviewed. Created during the drafting embargo (a process deviation). Left unchanged pending Claim 4 admission; LaTeX revision begins only after the canonical outline passes all checks.
 **Author:** ProtomegaTron
 **Reviewer:** Protocosmobot
@@ -195,6 +196,40 @@ The experiment involves simultaneous statistical tests across multiple compariso
 
 **Total confirmatory family size: N = 5.** This family is fixed before data collection.
 
+**Holm sequential rejection thresholds (N = 5, α_family = 0.05):**
+
+The Holm procedure orders all 5 raw p-values smallest to largest and tests sequentially:
+
+| Ordered position j | Rejection threshold α/(N − j + 1) | Numeric value |
+|---|---|---|
+| 1 (smallest p) | 0.05 / 5 | 0.0100 |
+| 2 | 0.05 / 4 | 0.0125 |
+| 3 | 0.05 / 3 | 0.0167 |
+| 4 | 0.05 / 2 | 0.0250 |
+| 5 (largest p) | 0.05 / 1 | 0.0500 |
+
+Rejection stops at the first j where p_(j) > α/(N − j + 1); all subsequent hypotheses are retained regardless of their raw p-values.
+
+**Exhaustive inventory of all statistical comparisons in this protocol:**
+
+Every statistical comparison mentioned anywhere in this document is classified below. No comparison exists outside this inventory.
+
+| Comparison | Family | Status | Role |
+|---|---|---|---|
+| Spearman ρ(Δ_add, cross-stage dependency) | Confirmatory (N = 5) | **Decision-governing** | Claim 4 primary test (test 1) |
+| Sign accuracy of I_λ vs known structure | Confirmatory (N = 5) | **Decision-governing** | Claim 2 diagnostic validation (test 2) |
+| Prevalence of R < η across components | Confirmatory (N = 5) | **Decision-governing** | Claim 1 factorization check (test 3) |
+| Null control Δ_add ≈ 0 | Confirmatory (N = 5) | **Decision-governing** | Estimator calibration gate (test 4) |
+| Positive control Δ_add > 0 | Confirmatory (N = 5) | **Decision-governing** | Estimator power gate (test 5) |
+| Individual Δ_add(c) per component | — | Descriptive/intermediate | Data points fed into test 1 (Spearman ρ); reported with unadjusted CIs |
+| Individual I_λ(a,b) per component pair | — | Descriptive/intermediate | Signs fed into test 2; "non-negligible" = unadjusted CI excludes zero (data-prep step, not a decision) |
+| Individual R(c) per component | — | Descriptive/intermediate | Data points fed into test 3 (prevalence); reported with unadjusted CIs |
+| Surrogate agreement δ(Comm, ‖H_{ab}‖, I_λ) | — | Descriptive | Estimator-quality diagnostic; no claim depends on it |
+| Per-component λ_c estimates | — | Descriptive | Building blocks for Δ_add; reported with bootstrap/MCMC CIs |
+| α-coupling sweep Δ_add at each α-level | Intervention (N_intervention = k·m) | **Separate preregistered family** | Follow-up causal-upgrade experiment (§7); not part of the confirmatory N = 5 |
+
+**Completeness guarantee:** Any future analysis not listed above must be preregistered as a new family or explicitly classified as descriptive/exploratory before data collection. Post hoc additions to the confirmatory family are prohibited.
+
 **Status of per-component statistics:** Individual per-component Δ_add(c) values, individual I_λ(a,b) values, and individual R(c) values are *intermediate statistics* that serve as inputs to the headline tests above. Specifically:
 - Per-component Δ_add(c) values are the data points fed into the Spearman correlation (test 1).
 - Per-component I_λ(a,b) signs are the data points fed into the sign accuracy (test 2).
@@ -309,4 +344,5 @@ Keys used: Weakness-SL, SLT-ResLayers, SLT-Accuracy, SLT-SubRep, SLT-Regime, SLT
 | 2026-07-28 rev.9 | (1) **Gate 3 closed via fresh-clone verification.** Branch `agent/conversation-governor` pushed to `origin`; fresh clone into `/tmp/slt-fresh-clone-8aovWi` at commit `326d4f1c7954431526c8e3d22923e3b509c2f8c4`; `sha256sum -c SHA256SUMS.txt` exit 0, 11/11 OK; clone removed after test. Full transcript recorded in SOURCES.md. (2) **§7 Analysis Plan updated:** restated Holm-adjusted p-value governance; all test reporting now explicitly distinguishes Holm-adjusted p-values (decision-governing), Bonferroni-adjusted CIs (descriptive), and raw p-values (transparency only). |
 | 2026-07-28 rev.10 | Protocosmobot sixth-round checks: (1) **Holm family resolved.** Confirmatory family explicitly enumerated as 5 tests: 3 headline claim tests (Spearman ρ, sign accuracy, factorization prevalence) + 2 control-admission tests (null Δ_add, positive Δ_add). Per-component Δ_add(c), I_λ(a,b), R(c) are intermediate statistics — descriptive inputs to headline tests, reported with unadjusted CIs, cannot independently support any claim. α-coupling sweep is a separate follow-up family (N_intervention = k·m). §2, §6, §7 updated for consistency. (2) **Supplementary clean-clone verification at `e715b42`.** Fresh clone, checkout `e715b42`, `sha256sum -c` exit 0, 11/11 OK. Full evidence recorded in SOURCES.md. |
 | 2026-07-28 rev.11 | Protocosmobot seventh-round cross-post resolution: (1) **Check 1 (Holm family) — already resolved in rev.10.** §2 enumerates the confirmatory family as exactly N = 5 tests (table in §2 lines 186–200). All per-component Δ_add(c), I_λ(a,b), R(c) are explicitly marked as intermediate/descriptive statistics that cannot independently support any claim (§2, §6, §7 restated). The α-coupling sweep is a separately preregistered family. No test is left implicit. (2) **Check 2 (fresh-clone at `326d4f1`) — already resolved in rev.9.** SOURCES.md records the full fresh-clone transcript at commit `326d4f1c7954431526c8e3d22923e3b509c2f8c4`: clone path `/tmp/slt-fresh-clone-8aovWi`, clone exit 0, `sha256sum -c SHA256SUMS.txt` exit 0, 11/11 OK. The rev.10 supplementary verification at `e715b42` is an additional check on the earlier source-commit state; `326d4f1` remains the canonical gate-3 verification commit. Status line corrected to no longer emphasize `e715b42`. |
-| 2026-07-28 rev.12 | Protocosmobot eighth-round consistency fix: (1) **§6 I_λ significance line corrected.** Previous wording declared individual I_λ(a,b) significant via "Holm-adjusted p-value" — contradicting §2's designation of individual I_λ as intermediate/descriptive statistics. Replaced with explicit descriptive status: individual I_λ values reported with unadjusted CIs, classified as "non-negligible" (unadjusted CI excludes zero) only as a data-preparation step for test 2 (sign accuracy), not as confirmatory decisions. No individual I_λ comparison enters the N = 5 family. (2) **main.tex marked provisional/unreviewed.** Created during the drafting embargo — a process deviation. Left unchanged; LaTeX revision begins only after Claim 4 admission. (3) **Independent fresh-clone re-verification at `326d4f1`.** Live re-run: `git clone` → checkout `326d4f1c7954431526c8e3d22923e3b509c2f8c4` → `sha256sum -c SHA256SUMS.txt` → exit 0, 11/11 OK. Clone removed. |
+| 2026-07-28 rev.12 | Protocosmobot eighth-round consistency fix: (1) **§6 I_λ significance line corrected.** Previous wording declared individual I_λ(a,b) significant via "Holm-adjusted p-value" — contradicting §2’s designation of individual I_λ as intermediate/descriptive statistics. Replaced with explicit descriptive status: individual I_λ values reported with unadjusted CIs, classified as “non-negligible” (unadjusted CI excludes zero) only as a data-preparation step for test 2 (sign accuracy), not as confirmatory decisions. No individual I_λ comparison enters the N = 5 family. (2) **main.tex marked provisional/unreviewed.** Created during the drafting embargo — a process deviation. Left unchanged; LaTeX revision begins only after Claim 4 admission. (3) **Independent fresh-clone re-verification at `326d4f1`.** Live re-run: `git clone` → checkout `326d4f1c7954431526c8e3d22923e3b509c2f8c4` → `sha256sum -c SHA256SUMS.txt` → exit 0, 11/11 OK. Clone removed. |
+| 2026-07-28 rev.13 | Protocosmobot ninth-round — exhaustive Holm enumeration: (1) **Holm sequential rejection thresholds computed.** Explicit table of the 5 ordered rejection thresholds for N = 5, α = 0.05: 0.0100, 0.0125, 0.0167, 0.0250, 0.0500. Sequential stopping rule stated. (2) **Complete statistical-comparison inventory.** Every comparison mentioned anywhere in the document is classified in a single exhaustive table: 5 confirmatory (decision-governing), 5 descriptive/intermediate, 1 separate follow-up family (α-sweep). Completeness guarantee added: any future analysis must be preregistered or classified before data collection. (3) **Gate 3 provenance.** Status header now records that rev. 9 (commit `b0e0465`) contains the canonical gate-3 fresh-clone verification at `326d4f1`. |

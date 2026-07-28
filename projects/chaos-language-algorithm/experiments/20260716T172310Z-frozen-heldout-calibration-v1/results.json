@@ -1,0 +1,248 @@
+{
+  "aggregate_total_bits": {
+    "frozen-cla": 65976.62062383528,
+    "literal": 48048.0,
+    "markov-1": 16708.254806561927,
+    "markov-2": 35315.34951182542,
+    "unigram": 6588.44287565288
+  },
+  "limitations": [
+    "Mackey-Glass uses fixed-step Euler; Lorenz-96 uses RK4.",
+    "Lorenz-96 calibration observes x0 only; it does not claim full-state grammar detection.",
+    "The current two-part proxy is reported on the prefix only and excluded from the held-out pass comparison."
+  ],
+  "manifest": {
+    "config": {
+      "bins": 8,
+      "cla": {
+        "enable_categories": true,
+        "max_iterations": 8,
+        "max_ngram": 5,
+        "seed": 0
+      },
+      "discard": 1024,
+      "lorenz96": {
+        "F": 8.0,
+        "dimension": 8,
+        "dt": 0.01,
+        "initial": [
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.0,
+          8.01
+        ],
+        "integrator": "fixed-step-rk4",
+        "observed_coordinate": 0
+      },
+      "mackey_glass": {
+        "beta": 0.2,
+        "dt": 0.1,
+        "gamma": 0.1,
+        "initial": 0.5,
+        "integrator": "fixed-step-euler",
+        "n": 10.0,
+        "tau": 17.0
+      },
+      "markov_orders": [
+        0,
+        1,
+        2
+      ],
+      "steps": 512,
+      "train_fraction": 0.7
+    },
+    "fixtures": [
+      {
+        "name": "mackey-glass",
+        "prefix_samples": 358,
+        "samples": 512,
+        "split_index": 358,
+        "suffix_samples": 154,
+        "symbol_stream_sha256": "b28b4e0ad063f0ee3e1d80685b2acc08681663dbd91c86fc613b7eef85095f98",
+        "symbolization": {
+          "bins": 8,
+          "bounds": [
+            [
+              0.6051222241182614,
+              1.2368126562293273
+            ]
+          ],
+          "method": "prefix-fitted-scalar-equal-width-m1",
+          "out_of_bounds": "clamp-to-edge-bin"
+        },
+        "trajectory_sha256": "c4cde4f71704d16127d327d5094fd015fe532c92264c4ca4b4a34e696e0181e6"
+      },
+      {
+        "name": "lorenz96-x0",
+        "prefix_samples": 358,
+        "samples": 512,
+        "split_index": 358,
+        "suffix_samples": 154,
+        "symbol_stream_sha256": "1ad155ff5fb7c2955d40641642e0bb6170a60b34c5c2a2c9ccb0eef8ac54a101",
+        "symbolization": {
+          "bins": 8,
+          "bounds": [
+            [
+              -5.395519408548922,
+              9.889904727307997
+            ]
+          ],
+          "method": "prefix-fitted-scalar-equal-width-m1",
+          "out_of_bounds": "clamp-to-edge-bin"
+        },
+        "trajectory_sha256": "80c9b9c7a9732be4ca894863ca6e20220dc600eb97299eab4f8c847d52e43d02"
+      }
+    ],
+    "protocol": "frozen-heldout-mdl-preregistration-v1",
+    "schema": "chaoslang.frozen-heldout-benchmark",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "all deterministic/reconstruction gates and frozen-cla aggregate strictly below strongest decodable baseline",
+  "results": [
+    {
+      "current_proxy_diagnostic": {
+        "comparable_for_pass": false,
+        "data_bits_proxy": 97.0,
+        "model_bits_proxy": 41.199999999999996,
+        "scope": "prefix-training-only-not-heldout-code",
+        "total_bits_proxy": 138.2
+      },
+      "gate": {
+        "canonical_fact_sha256": "86ef647f775ea7ae72ca8b2283363f6e64cc43ae4593b402d1f606da1121d35d",
+        "canonical_state_sha256": "804ea449324358d53b94f6c961bd22214ac32e2ae2aa38efc8420c0713ada9f3",
+        "deterministic_refit": true,
+        "edit_replay_twice": true,
+        "fact_projection_twice": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip_twice": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "mackey-glass",
+      "scores": [
+        {
+          "bits_per_symbol": 21.64552377799967,
+          "canonical_hash": "d502ef70d5bc94220436feb7f4f692ce00f3daaeeb40b889c7704b6503c1cc56",
+          "method_name": "unigram",
+          "model_bits": 2848.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 485.41066181194935,
+          "total_bits": 3333.4106618119495
+        },
+        {
+          "bits_per_symbol": 54.87693413398286,
+          "canonical_hash": "c266a0ad065fead7b71384e51f9f720b0197f111e40cbdada62e84d5d6912eb9",
+          "method_name": "markov-1",
+          "model_bits": 7768.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 683.0478566333597,
+          "total_bits": 8451.04785663336
+        },
+        {
+          "bits_per_symbol": 111.56219597860522,
+          "canonical_hash": "b8bf88e21813770dda493ff1fbc9c2f7b9894b3fa1926c319e70ce0ee2b32302",
+          "method_name": "markov-2",
+          "model_bits": 15856.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 1324.578180705205,
+          "total_bits": 17180.578180705204
+        },
+        {
+          "bits_per_symbol": 160.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 24640.0,
+          "total_bits": 24640.0
+        },
+        {
+          "bits_per_symbol": 212.24866817885678,
+          "canonical_hash": "10f5c7650d739f20dcc69774ee4c3292456c46b17193aff94b4006dd93f17ec2",
+          "method_name": "frozen-cla",
+          "model_bits": 32512.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 174.29489954394396,
+          "total_bits": 32686.294899543944
+        }
+      ]
+    },
+    {
+      "current_proxy_diagnostic": {
+        "comparable_for_pass": false,
+        "data_bits_proxy": 105.0,
+        "model_bits_proxy": 41.199999999999996,
+        "scope": "prefix-training-only-not-heldout-code",
+        "total_bits_proxy": 146.2
+      },
+      "gate": {
+        "canonical_fact_sha256": "c427d3bf8582d7dc3f886f7d853ca77e4ad5616567825c7aeb3b29c5b8cd10c4",
+        "canonical_state_sha256": "0cbc61563e218d82ab58fa607a04235906a5dc2f68d828dbcbbb4ab3b4bdbf3d",
+        "deterministic_refit": true,
+        "edit_replay_twice": true,
+        "fact_projection_twice": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip_twice": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "lorenz96-x0",
+      "scores": [
+        {
+          "bits_per_symbol": 21.136572817148895,
+          "canonical_hash": "143fea34fa60e9b2a6514ba2913e09ae54b5910314b0b3fb77f2311fe6c685df",
+          "method_name": "unigram",
+          "model_bits": 2784.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 471.03221384093024,
+          "total_bits": 3255.03221384093
+        },
+        {
+          "bits_per_symbol": 53.61822694758809,
+          "canonical_hash": "61b683d6776d625323cc5e0231ab5f24fc26e88b9d9bd5be03b2a34ffd4b945f",
+          "method_name": "markov-1",
+          "model_bits": 8032.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 225.2069499285671,
+          "total_bits": 8257.206949928566
+        },
+        {
+          "bits_per_symbol": 117.75825539688451,
+          "canonical_hash": "59b1436a1d1f8a8b04fb9f929ceaa4ae3221600a91e0b6aeb767c607260e42cd",
+          "method_name": "markov-2",
+          "model_bits": 17752.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 382.7713311202132,
+          "total_bits": 18134.771331120213
+        },
+        {
+          "bits_per_symbol": 152.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 23408.0,
+          "total_bits": 23408.0
+        },
+        {
+          "bits_per_symbol": 216.17094626163208,
+          "canonical_hash": "3327bceb76aeb8f649b5dbb92addb732c7e2f22c01a0899bcfbc61f396775386",
+          "method_name": "frozen-cla",
+          "model_bits": 32464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 826.3257242913422,
+          "total_bits": 33290.32572429134
+        }
+      ]
+    }
+  ],
+  "strongest_baseline": {
+    "method_name": "unigram",
+    "total_bits": 6588.44287565288
+  }
+}

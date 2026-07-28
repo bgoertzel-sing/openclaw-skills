@@ -1,0 +1,83 @@
+{
+  "antithetic_raw_variance": 0.130321,
+  "antithetic_signal_amplitude_from_policy": 0.361,
+  "antithetic_transfer_denominator": 13.0321,
+  "artifacts": {
+    "contrast_plot": "antithetic_contrast_error.png",
+    "information_plot": "antithetic_regressor_information.png",
+    "online_csv": "antithetic_online_rls.csv",
+    "online_se_plot": "antithetic_online_standard_error.png",
+    "signal_plot": "antithetic_probe_signals.png",
+    "trial_csv": "antithetic_trial_results.csv"
+  },
+  "burn_steps": 80,
+  "equal_realized_probe_width": 0.01,
+  "estimation_steps": 240,
+  "experiment": "antithetic_identification",
+  "improvement": {
+    "condition_white_vs_antithetic": 129.9714543737068,
+    "contrast_rmse_antithetic_vs_none": 30.977042341871677,
+    "contrast_rmse_antithetic_vs_white": 16.86927406374334,
+    "smallest_eigenvalue_antithetic_vs_white": 102.50374260180335
+  },
+  "modes": {
+    "antithetic": {
+      "added_state_variance": 0.009992505863811195,
+      "c1_mean": 1.799247147251188,
+      "c1_rmse": 0.0027599566155098415,
+      "c2_mean": -0.8107993021487835,
+      "c2_rmse": 0.0027268342612226356,
+      "contrast_mean": 2.6100464493999715,
+      "contrast_rmse": 0.002492780735661373,
+      "mean_state_variance": 0.013591557771120881,
+      "median_regressor_condition": 2.563819947049768,
+      "median_smallest_eigenvalue": 0.007809879503874982
+    },
+    "none": {
+      "added_state_variance": 0.0,
+      "c1_mean": 1.7929990294609583,
+      "c1_rmse": 0.038923499544162285,
+      "c2_mean": -0.804352513259305,
+      "c2_rmse": 0.038432162731904244,
+      "contrast_mean": 2.597351542720263,
+      "contrast_rmse": 0.07721897439758438,
+      "mean_state_variance": 0.0035990519073096855,
+      "median_regressor_condition": 340.7256773038712,
+      "median_smallest_eigenvalue": 2.2805724506145056e-05
+    },
+    "white": {
+      "added_state_variance": 0.00857941974004827,
+      "c1_mean": 1.7972635622941917,
+      "c1_rmse": 0.021113671145764484,
+      "c2_mean": -0.8076312238338145,
+      "c2_rmse": 0.021003297429550184,
+      "contrast_mean": 2.6048947861280065,
+      "contrast_rmse": 0.04205140141069144,
+      "mean_state_variance": 0.012178471647357957,
+      "median_regressor_condition": 333.2234072703783,
+      "median_smallest_eigenvalue": 7.619116439693376e-05
+    }
+  },
+  "online_rls_final": {
+    "antithetic": {
+      "contrast_estimate": 2.6098726898928426,
+      "contrast_standard_error": 0.021927308345512805
+    },
+    "none": {
+      "contrast_estimate": 2.5980827016938672,
+      "contrast_standard_error": 0.9270077340947716
+    },
+    "white": {
+      "contrast_estimate": 2.606151947929804,
+      "contrast_standard_error": 0.49303810201300274
+    }
+  },
+  "process_noise_sd": 0.004,
+  "seed": 1234,
+  "trials": 1000,
+  "true_c1": 1.8,
+  "true_c2": -0.81,
+  "true_contrast_c1_minus_c2": 2.6100000000000003,
+  "unit_white_state_variance_gain": 263.88686397434844,
+  "white_probe_raw_variance": 3.789502762430822e-05
+}

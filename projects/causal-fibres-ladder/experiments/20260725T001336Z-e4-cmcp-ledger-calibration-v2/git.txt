@@ -1,0 +1,12 @@
+## agent/e1-guarded-homotopy
+?? artifacts/
+?? configs/e1_homotopy_calibration.json
+?? configs/e4_cmcp_ledger_calibration_v1.json
+?? docs/e4_cmcp_ledger_protocol.md
+?? scripts/run_e1_calibration_multi.py
+?? scripts/run_e4_cmcp_calibration.sh
+?? scripts/run_e4_cmcp_ledger.py
+?? scripts/summarize_e4_cmcp_ledger.py
+?? src/relaleap.egg-info/
+?? src/relaleap/hdpc/e4_cmcp.py
+?? tests/test_e4_cmcp.py

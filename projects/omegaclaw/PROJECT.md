@@ -3,7 +3,7 @@
 - Slug: `omegaclaw`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-26`
+- Last reviewed: `2026-07-27`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -46,6 +46,200 @@ Second-phase success, not yet attempted:
 - Paid compute.
 
 ## Current state
+
+On 2026-07-28, ThreadKeeper commit `57c9ebf` on
+`agent/threadkeeper-hardening-next` made the local HTTP `/send` request body
+use strict JSON and exact string fields. Duplicate keys, non-standard
+`NaN`/`Infinity`, invalid UTF-8, non-object roots, and non-string
+`message`/`auth` values now fail closed before authentication or inbound
+message processing. Eleven focused checks and the 1099-test provider-free
+hardening gate passed.
+
+On 2026-07-28, ThreadKeeper commit `2dcab8e` on
+`agent/threadkeeper-hardening-next` made Mattermost REST and websocket
+responses use strict JSON. Duplicate keys, non-standard `NaN`/`Infinity`,
+invalid UTF-8, and non-object roots now fail closed before identity, profile,
+event, or post processing. Ten focused provider-free checks passed.
+
+On 2026-07-28, the motivational score-policy v0.2 combined evidence freeze
+content-addressed all three preregistration/execution pairs and recomputed 20
+executed cases with all four candidates reached. Five provider-free checks
+pass, including strict JSON, source/report identity, aggregate recomputation,
+and candidate-only authority. No calibration or runtime change was performed.
+
+On 2026-07-28, ThreadKeeper commit `123d84e` on
+`agent/threadkeeper-hardening-next` made Slack Web API responses use strict
+JSON. Duplicate keys, non-standard `NaN`/`Infinity`, invalid UTF-8,
+non-object roots, and non-boolean success markers now fail closed before
+Slack response processing. Seven focused checks and the 1095-test
+provider-free hardening suite passed.
+
+On 2026-07-28, ThreadKeeper commit `80c7fa0` on
+`agent/threadkeeper-hardening-next` made local RPC envelopes and their nested
+request/response payloads use strict JSON. Duplicate keys and non-standard
+`NaN`/`Infinity` now fail closed before RPC dispatch or response delivery.
+Eight focused checks and the 1111-test provider-free hardening suite passed.
+
+On 2026-07-28, an independent provider-free runner executed the sealed
+motivational score-policy v0.2 joint-feature holdouts. All seven selections
+reproduced while all three admitted inputs varied together. Six negative-path
+checks pass; candidate-only, ThreadKeeper effect `none`, and no calibration
+was performed.
+
+On 2026-07-28, ThreadKeeper commit `802fadd` on
+`agent/threadkeeper-hardening-next` made gateway authentication responses use
+strict JSON. Duplicate keys, non-standard `NaN`/`Infinity`, invalid UTF-8,
+non-object roots, and non-boolean authorization markers now fail closed before
+authentication state or token acceptance. Three focused checks and the
+1103-test provider-free hardening suite passed.
+
+On 2026-07-28, ThreadKeeper commit `900dc51` on
+`agent/threadkeeper-hardening-next` made Agentverse/Tavily search responses use
+strict JSON. Duplicate object keys and non-standard `NaN`/`Infinity` tokens
+now bypass structured result extraction instead of influencing search context.
+Three focused checks and the 1100-test provider-free hardening suite passed.
+
+On 2026-07-28, a seven-case motivational score-policy v0.2 joint-feature
+suite was preregistered before execution. Every out-of-sample case varies
+evidence sufficiency, clarification need, and sub-override review risk
+together, probing four candidate regions and conservative tie behavior. Eight
+provider-free contract checks pass; candidate-only, ThreadKeeper effect
+`none`, and no calibration was performed.
+
+On 2026-07-28, ThreadKeeper commit `297f362` on
+`agent/threadkeeper-hardening-next` made Telegram Bot API responses use strict
+JSON. Duplicate object keys, non-standard `NaN`/`Infinity` tokens, invalid
+UTF-8, non-object roots, and non-boolean success markers now fail closed
+before update/auth/message processing. Six focused checks and the 1097-test
+provider-free hardening suite passed.
+
+On 2026-07-27, ThreadKeeper commit `edee61f` on
+`agent/threadkeeper-hardening-next` made native Ollama-compatible provider
+responses use strict JSON. Duplicate object keys and non-standard
+`NaN`/`Infinity` tokens now fail closed as `provider_response_invalid` before
+response fields can influence worker output or accounting. Four focused checks
+and the 1091-test provider-free hardening suite passed.
+
+On 2026-07-27, an independent provider-free runner executed the sealed
+motivational score-policy v0.2 boundary holdouts. All eight exact/adjacent
+inspect/answer, inspect/request, and review-override cases reproduced. Five
+negative-path tests pass; candidate-only, ThreadKeeper effect `none`, and no
+calibration was performed.
+
+On 2026-07-27, ThreadKeeper commit `d726db4` on
+`agent/threadkeeper-hardening-next` made local-channel pricing overrides and
+usage-ledger records use strict JSON. Duplicate object keys and non-standard
+`NaN`/`Infinity` tokens can no longer influence displayed token or cost
+accounting. Three focused checks and the 1088-test provider-free hardening
+suite passed.
+
+On 2026-07-27, ThreadKeeper commit `749cc91` on
+`agent/threadkeeper-hardening-next` made persisted budget usage-ledger records
+use strict JSON. Duplicate object keys and non-standard `NaN`/`Infinity`
+tokens are ignored as malformed records rather than influencing token and cost
+accounting. Fourteen focused checks and the 1085-test provider-free hardening
+suite passed.
+
+On 2026-07-27, an eight-case motivational score-policy v0.2 boundary suite
+was preregistered before execution. It seals exact and adjacent
+inspect/answer and inspect/request boundaries plus the adjacent 799/800 review
+override. Seven provider-free contract checks pass; candidate-only,
+ThreadKeeper effect `none`, and no calibration was performed.
+
+On 2026-07-27, ThreadKeeper commit `1bd8008` on
+`agent/threadkeeper-hardening-next` made persisted async-worker lock metadata
+use strict JSON. Duplicate object keys and non-standard `NaN`/`Infinity`
+tokens now fail closed instead of influencing stale-worker diagnostics.
+Six focused checks and the 1084-test provider-free hardening suite passed.
+
+On 2026-07-27, ThreadKeeper commit `3779c9a` on
+`agent/threadkeeper-hardening-next` made inline task-contract objects use
+strict JSON. Duplicate object keys and non-standard `NaN`/`Infinity` tokens
+now fail closed as persistent `contract_invalid` records before escalation or
+worker/provider calls. Seven focused checks and the 1081-test provider-free
+hardening suite passed.
+
+On 2026-07-27, an independent provider-free runner executed the sealed
+motivational score-policy v0.2 witnesses without importing the
+preregistration validator or prior runners. All five selections reproduced,
+all four candidates were reachable, and the derived evidence gap was
+recomputed from admitted inputs. Eight checks pass; candidate-only,
+ThreadKeeper effect `none`, and no calibration was performed.
+
+On 2026-07-27, ThreadKeeper commit `d6b1b96` on
+`agent/threadkeeper-hardening-next` made persisted LLM rate/concurrency quota
+state use strict JSON. Duplicate object keys and non-standard
+`NaN`/`Infinity` tokens now fail closed before a quota reservation or provider
+call. Eight focused checks and the 1083-test provider-free hardening suite
+passed.
+
+On 2026-07-27, ThreadKeeper commit `6f4f10d` on
+`agent/threadkeeper-hardening-next` made persona configuration reads use
+strict JSON. Duplicate object keys and non-standard `NaN`/`Infinity` tokens
+now fail closed before provider/model/tool/task-contract selection or any
+worker call. Nine focused checks and the 1077-test provider-free hardening
+suite passed.
+
+On 2026-07-27, motivational score-policy v0.2 was preregistered as a
+candidate-only response to the independently confirmed v0.1 structural
+dominance result. It derives an exact evidence-gap feature from admitted
+inputs, rejects caller-supplied derived values, preserves conservative review
+behavior, and seals reachability witnesses for all four candidates. Eight
+provider-free checks pass; ThreadKeeper effect remains `none`.
+
+On 2026-07-27, ThreadKeeper commit `945de9e` on
+`agent/threadkeeper-hardening-next` made persisted control-record reads use
+strict JSON. Duplicate object keys and non-standard non-finite number tokens
+now fail closed in queued tasks, candidate transcripts, and run-index
+append/rotation/audit paths instead of being silently collapsed or accepted by
+Python's permissive decoder. Five new focused cases and the 1069-test
+provider-free hardening suite passed.
+
+On 2026-07-27, ThreadKeeper commit `8669f16` on
+`agent/threadkeeper-hardening-next` made the read-only run-index auditor reject
+malformed persisted entry containers and decision-relevant scalar fields
+before hashing, normalization, path resolution, or transcript reads. String
+metadata requires exact JSON strings; timestamps require finite JSON numbers
+or null. Fourteen focused checks and the 1064-test provider-free hardening
+suite passed.
+
+On 2026-07-27, an independent provider-free runner executed the sealed
+motivational score-policy feature-interaction suite without importing its
+validator or prior runners. All seven selections and reasons reproduced, and
+the frozen coefficient/tie-order check confirmed that `inspect_evidence` is
+structurally dominated throughout the valid domain. Eight checks pass;
+candidate-only, ThreadKeeper effect `none`, and no calibration was performed.
+
+On 2026-07-27, ThreadKeeper commit `4a141fd` on
+`agent/threadkeeper-hardening-next` made candidate transcript review fail
+closed unless every decision-relevant persisted field has its exact JSON
+type. Patch proposals, adjudication metadata, task contracts, statuses, and
+summaries are validated before truth testing, slicing, or construction of an
+operator-facing review result. Fifteen focused checks and the 1063-test
+provider-free hardening suite passed.
+
+On 2026-07-27, ThreadKeeper commit `e834d39` on
+`agent/threadkeeper-hardening-next` closed parent/operator path-argument
+boundaries for run-index audit, candidate transcript review, and worker
+stop-file controls. These paths now require exact built-in strings (or null
+where allowed) before truth testing, comparison, coercion, or filesystem path
+resolution. Eight focused checks and the 1054-test provider-free hardening
+suite passed.
+
+On 2026-07-27, ThreadKeeper commit `9091e2e` on
+`agent/threadkeeper-hardening-next` closed the direct `run_tools()` control
+boundary. Call batches are exact-type checked before truth testing; allowed
+tool containers/items and optional quotas are exact-type checked before
+iteration, membership, comparison, or coercion. Nine focused checks and the
+1051-test provider-free hardening suite passed.
+
+On 2026-07-27, an out-of-sample motivational score-policy feature-interaction
+suite was preregistered without changing parameters. Seven sealed cases probe
+joint feature pressure, two score crossovers, and the risk override. The
+contract also records the structural finding that `inspect_evidence` is
+dominated by `defer_for_review` across the valid v0.1 domain and is therefore
+unreachable. Nine provider-free checks pass. Candidate-only; ThreadKeeper
+effect `none`.
 
 On 2026-07-26, ThreadKeeper commit `896a38e` on
 `agent/threadkeeper-hardening-next` made the operator-facing queued-dispatch

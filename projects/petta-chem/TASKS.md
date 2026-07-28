@@ -1,10 +1,318 @@
 # Tasks
 
+- [x] 2026-07-26: prepared a systematic 13-page external-review PDF covering the
+  implemented PeTTa chemistry substrate, all experiment families and controls,
+  quantitative results, limitations, and prioritized next plans. Acceptance:
+  every material claim is traceable to repository commits, project records, or
+  experiment ledgers; observed results are separated from interpretation; the
+  source builds to a readable PDF; text extraction and visual inspection of the
+  first, middle, and final pages passed. The report also records the newly
+  reproduced exp03 duplicate-answer regression. PDF SHA-256:
+  `f74980653dac32aa31424c2613c4a2cc6a36bae4c025f48d4c2e20cdf51396db`.
+  Evidence:
+  `projects/petta-chem/docs/petta_chem_external_review_2026-07-26.{tex,pdf}`.
+- [x] **Completed 2026-07-26 10:30:** repair the current-head exp03 singleton
+  regression exposed by the report
+  audit. Acceptance: `exp03-exp02-after-3 random seed-11` has one logical
+  answer, `scripts/run_exp03.sh` exits 0 with no failure markers, and the full
+  canonical script matrix remains green. Removed duplicate local
+  `seed-number` mappings for seeds 11, 13, and 17 from
+  `src/chem_dynamics.metta`; the shared exp00 kernel is now the single owner.
+  The seed-11 result collapsed from eight identical proofs to one, and the
+  same masked 2^3 multiplicity was eliminated for seeds 13 and 17. Evidence:
+  `scripts/run_exp03.sh` plus the canonical
+  exp00/01/contract/02/03/04/05/06/07 script matrix all passed;
+  `git diff --check` passed. Commit `16b6f1a` pushed normally to GitHub `main`.
+
 - [x] 2026-07-07 10:30: Added PeTTa-native cap-6 deterministic selection/generation seams in exp00. `src/chem_exp00.metta` now has `seeded-choice-6`, `select-candidate-6`, `selected-candidate-from-list-6`, `chamber-tick-generated-6`, `exp00-candidate-cap-6`, and cap-6 pool clauses for 6/8-candidate pools. Exp00 smoke covers seed/tick choice, cap construction/truncation, direct cap-6 chamber ticking from a six-rule generated pool, and deterministic selection of the productive second candidate for seed-7. Checks: `scripts/run_exp00.sh`, `git diff --check`, and obvious secret-like diff scan. Commit `aecfab9` pushed to GitHub `main`. Commit `d3dde9f` pushed to GitHub `main`. Commit `3d476b6` pushed to GitHub `main`. Commit `db929ce` pushed to GitHub `main`.
 - [x] 2026-07-06 22:30: Extended cap-4 rich exp03 dynamics to seed-11/Q-family six-rule source pools. Added six-rule cap/generation support for 12-molecule states, Q-family chamber tick clauses, seed-11 cap-4 run-record atoms, and exp03 smoke tests for productive random dynamics, controls, replay, discrimination, and completeness. Checks: `scripts/run_exp03.sh`, `scripts/run_exp00.sh`, `git diff --check`, and obvious secret-like diff scan. Commit `db187ab` pushed to GitHub `main`.
 Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
+
+- [x] **Completed 2026-07-27 14:30 — priority reset:** freeze all proactive candidate-generator
+  source-list/arity expansion and do not run exp08's constructed-pathway
+  permutation study.  Preserve existing exp00--exp07 code and results as
+  controls.  Acceptance: the next change has a direct dependency on the
+  neutral-model/oracle plan below; no new fixed-rule-count milestone is added.
+  Evidence: `docs/petta_chem_external_review_2026-07-26.pdf`, §§Recommended
+  next plan; `DECISIONS.md` D-20260727-neutral-model-reset.
+
+- [x] **Completed 2026-07-27 14:30 — next scientific gate:** froze a minimal neutral random-catalytic
+  reaction-system protocol and an independent RAF-oracle validation plan.
+  The model must declare food set, polymer alphabet/maximum length, a
+  pathway-independent catalysis distribution, stochastic event/resource
+  dynamics, and the finite-size control parameter.  The oracle plan must
+  exhaustively check small systems against the PeTTa detector, including food
+  closure, multiple products/catalysts, degenerate self-catalysis, unreachable
+  cycles, edge-addition monotonicity, and deletion sensitivity.  Acceptance:
+  a preregistered design document names the model, endpoints, seeds/sweep, and
+  oracle interface; no sampled emergence outcome is inspected before the
+  oracle gate passes. Evidence:
+  `repos/petta-chem/docs/neutral_crs_oracle_protocol.md`; first-class
+  catalysis regression and `git diff --check` passed; commit `ad70a64` pushed
+  normally to GitHub `main`.
+
+- [x] **Completed 2026-07-28 06:30 — implementation/oracle gate:** implement the canonical neutral CRS
+  serialization and an independent exhaustive subset oracle, then pass the
+  seven frozen fixture families and 100 generated `L=3` tiny systems at four
+  catalysis values. Acceptance: exact agreement for every subset, maximal RAF,
+  and all irrRAFs; order invariance, edge monotonicity, and registered deletion
+  checks pass; the comparison manifest and source/runtime hashes are committed.
+  Do not inspect the calibration matrix. All 400 comparisons (100 graph seeds
+  at `f={0,1,2,4}`) passed exact agreement across 255 subset classifications,
+  maximal RAF, and every irrRAF. The manifest records detector/runtime/source
+  hashes while withholding structural incidence. Evidence:
+  `repos/petta-chem/artifacts/neutral_raf_generated_gate_manifest.json` and
+  `scripts/run_generated_raf_oracle_gate.sh`; commit `707dbcc` pushed normally
+  to GitHub `main`.
+
+- [x] **Completed 2026-07-27 16:30 — oracle slice:** implemented the
+  independent exhaustive Python subset oracle and strict canonical
+  `neutral-crs-v1` JSON loader for systems of at most 12 reactions. Nine tests
+  span all seven frozen fixture families, multiple irrRAFs, canonical
+  fail-closed validation, and order normalization. Exact outputs include every
+  RAF subset, the maximal RAF union, and all inclusion-minimal irrRAFs. The
+  focused suite and `git diff --check` pass. This is only the host-oracle half:
+  PeTTa serialization/detection and 100 generated tiny-system comparisons
+  remain open; no sampled emergence result was inspected. Evidence:
+  `oracle/raf_oracle.py`, `tests/test_raf_oracle.py`, and
+  `scripts/run_raf_oracle_tests.sh`; commit `73ddcde` pushed normally to
+  GitHub `main`.
+
+- [x] **Completed 2026-07-27 18:30 — PeTTa interface slice:** added the
+  canonical `neutral-crs-v1` PeTTa fact accessors and serialized all seven
+  frozen hand-fixture families in new reviewed files. The first run exposed
+  that bare binary tokens such as `01` collapse numerically in PeTTa; molecule
+  identities are therefore quoted strings and a focused regression preserves
+  `0`, `00`, `01`, and stoichiometric duplicates distinctly. Exhaustive PeTTa
+  subset detection and the 100 generated-system comparison remain open; no
+  calibration outcome was inspected. Evidence: `src/chem_neutral_raf.metta`,
+  `experiments/neutral_raf/smoke.metta`, and
+  `scripts/run_neutral_raf_fixtures.sh`.
+
+- [x] **Completed 2026-07-27 20:30 — PeTTa detector slice:** implemented a
+  generic PeTTa-native food-closure and structural RAF predicate over canonical
+  facts. Twenty focused checks cover closure depth, multiple products and
+  catalysts, food and self catalysis, unreachable cycles, edge addition, and
+  deletion sensitivity. Exhaustive subset enumeration and the 100 generated
+  tiny-system comparisons remain open; the calibration embargo remains active.
+
+- [x] **Completed 2026-07-27 22:30 — PeTTa enumeration slice:** implemented
+  exhaustive PeTTa-native reaction-subset enumeration for the frozen
+  tiny-system boundary and exact RAF-subset filtering. Focused fixtures match
+  the independent oracle's complete subset sets for a food-closure chain,
+  multiple products/catalysts with three irrRAFs, and an unreachable cycle.
+  Maximal RAF/irrRAF projections and 100 generated comparisons remain open;
+  no calibration endpoint was inspected.
+
+- [x] **Completed 2026-07-28 00:30 — PeTTa projection slice:** implemented
+  maximal-RAF union and exhaustive inclusion-minimal irrRAF projections over
+  PeTTa's complete tiny-system subset truth. Twenty-nine focused checks match
+  the independent oracle for the closure chain, three independent irrRAFs,
+  and the unreachable-cycle negative. The 100 generated `L=3` comparisons and
+  committed comparison manifest remain open; the calibration embargo remains
+  active.
+
+- [x] **Completed 2026-07-28 02:30 — canonical generated-system universe:**
+  froze the PeTTa-owned `R_3` catalog used by the generated tiny-system gate:
+  14 literal binary polymers, the six food polymers, 20 directed cleavages,
+  and 20 ordered ligations in canonical tuple order. Thirty-three focused
+  PeTTa checks pass, including exact catalog IDs and cardinalities. Seeded
+  eight-reaction selection, catalysis sampling, and the 100-system oracle
+  comparison remain open; no calibration endpoint was inspected.
+
+- [x] **Completed 2026-07-28 04:30 — generated-system sampling slice:**
+  implemented replayable PeTTa-owned eight-reaction sampling without
+  replacement from canonical `R_3` and independent keyed Bernoulli catalysis
+  at `p=f/40`. Focused checks cover exact selection, cardinality, replay, and
+  zero/full catalysis boundaries. The 100-system cross-oracle comparison and
+  manifest remain open; the calibration embargo remains active.
+
+- [ ] **Next implementation gate:** implement and test the frozen PeTTa-native
+  SSA arithmetic, seeded replay, event/resource invariants, and exact tiny-state
+  control baseline, then freeze the calibration ledger without inspecting any
+  calibration endpoint. **2026-07-28 08:30 slice:** exact integer propensity
+  numerators, resource-enablement guards, and a reversible two-event
+  tiny-state replay baseline now pass seventeen PeTTa checks. **2026-07-28
+  10:30 slice:** exact cumulative categorical selection, separately keyed
+  event/waiting-time uniforms, symbolic inverse-CDF waiting-time records, and
+  empty-event handling now pass twenty-three focused checks. **2026-07-28
+  12:30 slice:** canonical PeTTa-native influx, dilution, ligation, and
+  cleavage application plus resource guards now pass thirty focused checks; a
+  four-event trace preserves exact counts and replays identically. General
+  event enumeration and the ledger remain open.
+
+- [ ] **After SSA/control passage:** run the replicated neutral-model calibration
+  sweep, reporting separately structural RAF existence, dynamic reachability,
+  active/persistent RAF behaviour, and causal/productive effect.  Acceptance:
+  an experiment ledger has fixed parameters/seeds, uncertainty, replay
+  artifacts, and no stronger label than its measured endpoint.
+
+- [ ] **Deferred:** revisit Schrödinger-bridge/Doob control only after neutral
+  calibration, using an exact tiny-state bridge/control solution and
+  applicability-aware controls.  The prior weak-Doob and constructed-pathway
+  findings are not a reason to extend that line now.
+
+- [x] **Completed 2026-07-27 12:30:** extend bounded candidate generation and
+  source provenance to a 41-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 41 source
+  rules, the audit record reports thirty-three generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 564
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `851189a` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 10:30:** extend bounded candidate generation and
+  source provenance to a 40-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 40 source
+  rules, the audit record reports thirty-two generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 559
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `030ce18` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 08:30:** extend bounded candidate generation and
+  source provenance to a 39-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 39 source
+  rules, the audit record reports thirty-one generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 554
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `924fb77` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 06:30:** extend bounded candidate generation and
+  source provenance to a 38-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 38 source
+  rules, the audit record reports thirty generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 549
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `f802c30` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 04:30:** extend bounded candidate generation and
+  source provenance to a 37-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 37 source
+  rules, the audit record reports twenty-nine generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 544
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `5e0ec8d` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 02:32:** extend bounded candidate generation and
+  source provenance to a 36-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 36 source
+  rules, the audit record reports twenty-eight generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 539
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `a47cfca` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 00:58:** extend bounded candidate generation and
+  source provenance to a 35-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 35 source
+  rules, the audit record reports twenty-seven generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 534
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `2ccbba0` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-27 00:30:** extend bounded candidate generation and
+  source provenance to a 34-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 34 source
+  rules, the audit record reports twenty-six generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 529
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `4792097` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 14:30:** extend bounded candidate generation and
+  source provenance to a 33-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 33 source
+  rules, the audit record reports twenty-five generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 524
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `17db9f8` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 12:30:** extend bounded candidate generation and
+  source provenance to a 32-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 32 source
+  rules, the audit record reports twenty-four generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 519
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `5aae13a` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 06:30:** extend bounded candidate generation and
+  source provenance to a 31-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 31 source
+  rules, the audit record reports twenty-three generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 514
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `bfa0e47` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 04:30:** extend bounded candidate generation and
+  source provenance to a 30-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 30 source
+  rules, the audit record reports twenty-two generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 509
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `426712a` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 02:30:** extend bounded candidate generation and
+  source provenance to a 29-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 29 source
+  rules, the audit record reports twenty-one generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 504
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `a8dcdc6` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-26 00:30:** extend bounded candidate generation and
+  source provenance to a 28-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 28 source
+  rules, the audit record reports twenty generation omissions, and the cap-2
+  deterministic tick still fires productive `r0`. Exp00 passed with 499
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `6cc07bc` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 22:30:** extend bounded candidate generation and
+  source provenance to a 27-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 27 source
+  rules, the audit record reports nineteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 494
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `288138c` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 20:30:** extend bounded candidate generation and
+  source provenance to a 26-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 26 source
+  rules, the audit record reports eighteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 489
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `be9fd5d` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 18:30:** extend bounded candidate generation and
+  source provenance to a 25-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 25 source
+  rules, the audit record reports seventeen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 484
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `85a9ea2` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 16:30:** extend bounded candidate generation and
+  source provenance to a 24-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 24 source
+  rules, the audit record reports sixteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 479
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `69c3db6` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 14:30:** extend bounded candidate generation and
+  source provenance to a 23-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 23 source
+  rules, the audit record reports fifteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 474
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `b1a5a7a` pushed normally to GitHub `main`.
+
+- [x] **Completed 2026-07-25 12:30:** extend bounded candidate generation and
+  source provenance to a 22-rule four-molecule chamber. Generation retains
+  the stable first-eight prefix, ownership/count seams cover all 22 source
+  rules, the audit record reports fourteen generation omissions, and the
+  cap-2 deterministic tick still fires productive `r0`. Exp00 passed with 468
+  terminal true results and zero failure markers; `git diff --check` passed.
+  Commit `745d871` pushed normally to GitHub `main`.
 
 - [x] **Completed 2026-07-25 10:30:** extend bounded candidate generation and
   source provenance to a 21-rule four-molecule chamber. Generation retains

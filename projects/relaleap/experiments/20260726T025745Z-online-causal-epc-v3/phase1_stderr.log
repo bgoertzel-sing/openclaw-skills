@@ -1,0 +1,23 @@
+	Command being timed: "env PYTHONPATH=src:. /home/openclaw/research-agent/projects/relaleap/repos/relaleap/.venv/bin/python scripts/run_causal_coding_epc_5arm.py --seeds 8147 12289 24593 --teacher-updates 2000 --student-updates 2000 --adapt-updates 200 --batch-size 128 --eval-batch-size 64 --eval-batches 8 --teacher-learning-rate 0.002 --student-learning-rate 0.0008 --adaptation-learning-rate 0.0008 --kd-coefficient 0.02 --support-tau 0.35 --clarity-coefficient 0.001 --commutator-coefficient 0.001 --commutator-interval 50 --commutator-probe-learning-rate 0.0008 --data-dir data/tinyshakespeare --output /home/openclaw/research-agent/projects/relaleap/experiments/20260726T025745Z-online-causal-epc-v3/artifacts/shakespeare_results.json --checkpoint-dir /home/openclaw/research-agent/projects/relaleap/experiments/20260726T025745Z-online-causal-epc-v3/artifacts/checkpoints"
+	User time (seconds): 12902.87
+	System time (seconds): 437.93
+	Percent of CPU this job got: 390%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 56:58.69
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 8938060
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1118681
+	Minor (reclaiming a frame) page faults: 225116682
+	Voluntary context switches: 4035
+	Involuntary context switches: 160491
+	Swaps: 0
+	File system inputs: 8990600
+	File system outputs: 3520
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

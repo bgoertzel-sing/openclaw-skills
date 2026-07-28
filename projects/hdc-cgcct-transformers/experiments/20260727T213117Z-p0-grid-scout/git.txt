@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-27T21:31:17Z
+Working directory: /home/openclaw/research-agent/projects/hdc-cgcct-transformers/repos/hdc-cgcct-probes
+Commit: fa1172103a5a6bd7a126e1b776232bdf1479ccf0
+Branch: agent/p0-core
+Remote names: 
+
+## Status
+## agent/p0-core
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

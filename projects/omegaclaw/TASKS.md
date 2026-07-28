@@ -4,6 +4,275 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-07-28: Define the motivational score-policy v0.2 synthetic
+  dataset contract without generating data or fitting. Calibration and
+  confirmation identities and template families must be disjoint;
+  confirmation labels stay sealed until a calibration candidate is frozen;
+  both splits must cover all four candidates, boundary neighbors, and joint
+  feature variation. Eight provider-free contract checks pass at
+  `artifacts/ggb-capacity-gates/20260728-motivation-score-policy-v02-synthetic-dataset-contract/`.
+  Candidate-only; no runtime, memory, ThreadKeeper, provider, or Telegram
+  effect. Next: preregister a deterministic local generator and seed; do not
+  materialize either split yet.
+
+- [x] 2026-07-28: Close ThreadKeeper's local HTTP `/send` JSON boundary on
+  commit `57c9ebf`. Request bodies now reject duplicate keys, non-standard
+  `NaN`/`Infinity`, invalid UTF-8, non-object roots, and non-string
+  `message`/`auth` fields before authentication or inbound processing.
+  Eleven focused checks, Python compilation, `git diff --check`, completed
+  PR #1 safety-floor ancestry, and the 1099-test provider-free hardening gate
+  passed.
+
+- [x] 2026-07-28: Close ThreadKeeper's Mattermost JSON boundary on commit
+  `2dcab8e`. REST identity/profile responses and websocket event/post
+  envelopes now reject duplicate object keys, non-standard `NaN`/`Infinity`,
+  invalid UTF-8, and non-object roots before processing. Ten focused checks,
+  Python compilation, `git diff --check`, and completed PR #1 safety-floor
+  ancestry passed. A broad `Autotests/mock` invocation used an incomplete
+  environment and was interrupted after unrelated failures; no full-suite
+  claim is made.
+
+- [x] 2026-07-28: Freeze the combined motivational score-policy v0.2
+  evidence before any calibration proposal. The summary content-addresses the
+  reachability, boundary, and joint-feature preregistration/execution pairs,
+  recomputes 20 executed cases and four-candidate coverage, and verifies
+  candidate-only, adjudication-required authority. Five provider-free checks,
+  Python compilation, and strict JSON negative cases pass at
+  `artifacts/ggb-capacity-gates/20260728-motivation-score-policy-v02-evidence-freeze/`.
+  No calibration or runtime change. Next: draft a synthetic-only dataset
+  contract with disjoint calibration/confirmation identities; do not fit.
+
+- [x] 2026-07-28: Close ThreadKeeper's Slack Web API JSON boundary on commit
+  `123d84e`. Responses now reject duplicate object keys, non-standard
+  `NaN`/`Infinity`, invalid UTF-8, non-object roots, and non-boolean success
+  markers before Slack response processing. Seven focused checks, Python
+  compilation, `git diff --check`, completed PR #1 safety-floor ancestry, and
+  the 1095-test provider-free hardening suite passed.
+
+- [x] 2026-07-28: Close ThreadKeeper's local RPC JSON boundary on commit
+  `80c7fa0`. Outer RPC envelopes and nested request/response payloads now
+  reject duplicate object keys and non-standard `NaN`/`Infinity` tokens
+  before dispatch or response delivery. Eight focused checks, Python
+  compilation, `git diff --check`, completed PR #1 safety-floor ancestry, and
+  the 1111-test provider-free hardening suite passed.
+
+- [x] 2026-07-28: Independently execute the sealed motivational score-policy
+  v0.2 joint-feature holdouts without importing their validator or prior
+  runners. All seven selections reproduced while jointly varying all three
+  admitted inputs. Six provider-free checks cover strict JSON, sealed/source
+  identity, malformed and derived inputs, expectation/set drift, admission
+  weakening, and authority widening at
+  `artifacts/ggb-capacity-gates/20260728-motivation-score-policy-v02-joint-feature-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`; no calibration. Next: freeze a
+  combined v0.2 evidence summary before proposing any calibration dataset.
+
+- [x] 2026-07-28: Close ThreadKeeper's gateway-auth response JSON boundary on
+  commit `802fadd`. Auth status and token-verification responses now reject
+  duplicate object keys, non-standard `NaN`/`Infinity`, invalid UTF-8,
+  non-object roots, and non-boolean decision markers before authentication
+  state or token acceptance. Three focused checks, Python compilation,
+  `git diff --check`, completed PR #1 safety-floor ancestry, and the 1103-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-28: Close ThreadKeeper's Agentverse/Tavily response JSON
+  boundary on commit `900dc51`. Search responses now reject duplicate object
+  keys and non-standard `NaN`/`Infinity` tokens before structured result
+  extraction. Three focused checks, Python compilation, `git diff --check`,
+  completed PR #1 safety-floor ancestry, and the 1100-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-28: Preregister the motivational score-policy v0.2 joint-feature
+  holdout before further execution or calibration. Seven sealed out-of-sample
+  cases vary all three admitted inputs together below the review override,
+  probing inspect/answer and inspect/request rank changes, conservative review
+  tie resolution, and near-override request selection. Eight provider-free
+  contract checks pass at
+  `artifacts/ggb-capacity-gates/20260728-motivation-score-policy-v02-joint-feature-preregistration/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently execute the
+  sealed cases without importing this validator or prior runners.
+
+- [x] 2026-07-28: Close ThreadKeeper's Telegram Bot API JSON boundary on
+  commit `297f362`. API responses now reject duplicate object keys,
+  non-standard `NaN`/`Infinity` tokens, invalid UTF-8, non-object roots, and
+  non-boolean success markers before update/auth/message processing. Six
+  focused checks, Python compilation, `git diff --check`, completed
+  safety-floor ancestry, and the 1097-test provider-free suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's native-provider response JSON boundary
+  on commit `edee61f`. Ollama-compatible responses now reject duplicate object
+  keys and non-standard `NaN`/`Infinity` tokens as
+  `provider_response_invalid` before worker output or token accounting.
+  Four focused checks, Python compilation, `git diff --check`, completed
+  safety-floor ancestry, and the 1091-test provider-free suite passed.
+
+- [x] 2026-07-27: Independently execute the sealed motivational score-policy
+  v0.2 boundary holdouts without importing their validator or prior runners.
+  All eight exact/adjacent cases reproduced across the inspect/answer and
+  inspect/request crossovers and the 799/800 review override. Five
+  provider-free tests cover sealed/source identity, malformed and derived
+  inputs, expectation/set drift, admission weakening, and authority widening
+  at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-boundary-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`; no calibration. Next:
+  preregister a small out-of-sample suite varying two features jointly before
+  considering any empirical calibration.
+
+- [x] 2026-07-27: Close ThreadKeeper's local-channel accounting JSON boundary
+  on commit `d726db4`. Pricing overrides and usage-ledger records now reject
+  duplicate object keys and non-standard `NaN`/`Infinity` tokens before they
+  influence displayed token or cost totals; valid neighboring JSONL records
+  remain usable. Three focused checks, Python compilation, `git diff --check`,
+  completed safety-floor ancestry, and the 1088-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's persisted budget usage-ledger JSON
+  boundary on commit `749cc91`. Duplicate object keys and Python's
+  non-standard `NaN`/`Infinity` tokens are rejected per record rather than
+  influencing token/cost accounting; valid neighboring JSONL records remain
+  usable. Fourteen focused checks, Python compilation, `git diff --check`,
+  completed safety-floor ancestry, and the 1085-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-27: Preregister the motivational score-policy v0.2 boundary
+  holdout before any further execution or calibration. Eight sealed,
+  out-of-sample cases distinguish exact and adjacent inspect/answer and
+  inspect/request boundaries and the adjacent 799/800 review override where
+  the override replaces an otherwise winning inspection action. Seven
+  provider-free contract checks pass at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-boundary-preregistration/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently execute the
+  sealed cases without importing this validator or prior runners.
+
+- [x] 2026-07-27: Close ThreadKeeper's persisted async-worker lock-metadata
+  JSON boundary on commit `1bd8008`. Duplicate object keys and non-standard
+  `NaN`/`Infinity` tokens now fail closed before stale-worker metadata is
+  returned. Three new cases, six focused checks, Python compilation,
+  `git diff --check`, completed safety-floor ancestry, and the 1084-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's inline task-contract JSON boundary on
+  commit `3779c9a`. JSON goal objects now reject duplicate object keys and
+  Python's non-standard `NaN`/`Infinity` tokens as persistent
+  `contract_invalid` results before escalation policy or worker/provider
+  effects. Three new cases, seven focused checks, Python compilation,
+  `git diff --check`, completed safety-floor ancestry, and the 1081-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-27: Independently execute the sealed motivational score-policy
+  v0.2 reachability witnesses without importing its validator or prior
+  runners. All five selections reproduce, all four registered candidates are
+  reachable, and `evidence_gap` is recomputed solely from admitted inputs.
+  Eight provider-free checks cover sealed identity, caller-supplied derived
+  values, malformed scalars, policy/expectation drift, candidate
+  unreachability, admission weakening, and authority widening at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`. Next: preregister an
+  out-of-sample v0.2 boundary suite around the new `inspect_evidence` region
+  before calibration.
+
+- [x] 2026-07-27: Close ThreadKeeper's persisted LLM quota-state JSON boundary
+  on commit `d6b1b96`. Rate-limit and concurrency state now reject duplicate
+  object keys and Python's non-standard `NaN`/`Infinity` tokens before quota
+  reservation or provider effects, preserving the malformed evidence for
+  diagnosis. Eight focused checks, Python compilation, `git diff --check`,
+  completed safety-floor ancestry, and the 1083-test provider-free hardening
+  suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's persona-config JSON boundary on commit
+  `6f4f10d`. Persona files now reject duplicate object keys and Python's
+  non-standard `NaN`/`Infinity` tokens before provider, model, tool,
+  task-contract, or worker effects. Three new malformed-file cases, nine
+  focused checks, Python compilation, `git diff --check`, completed
+  safety-floor ancestry, and the 1077-test provider-free hardening suite
+  passed.
+
+- [x] 2026-07-27: Preregister motivational score-policy v0.2 as a
+  candidate-only response to the independently reproduced v0.1 structural
+  dominance result. The revision derives
+  `evidence_gap = 1000 - evidence_sufficiency` from the three admitted inputs,
+  forbids caller-supplied derived values, preserves the other candidate
+  weights/tie order/review override, and seals witnesses making all four
+  candidates reachable. Eight provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-preregistration/`.
+  ThreadKeeper effect `none`; no live behavior or calibration. Next:
+  independently execute the sealed witnesses without importing this validator
+  or prior runners.
+
+- [x] 2026-07-27: Close ThreadKeeper's strict persisted-JSON boundary on
+  commit `945de9e`. Duplicate object keys and Python-accepted `NaN`/`Infinity`
+  tokens now fail closed across bounded queued-task/candidate-transcript reads
+  and run-index append, rotation, and audit parsing. Five new focused cases,
+  Python compilation, `git diff --check`, and the 1069-test provider-free
+  hardening suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's persisted run-index entry boundary on
+  commit `8669f16`. The read-only audit now requires an exact JSON object,
+  exact strings for identity/status/path/hash fields, and finite numbers or
+  null for timestamps before hashing, normalization, path resolution, or
+  transcript reads. Malformed entries are reported as
+  `invalid_index_entry:ValueError`. Fourteen focused checks and the 1064-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-27: Independently execute the sealed motivational score-policy
+  feature-interaction suite without importing its validator or prior runners.
+  All seven selections/reasons reproduce, including both crossovers, the
+  conservative tie, and the review override. The runner also verifies directly
+  from frozen coefficients and tie order that `inspect_evidence` is dominated
+  across the valid domain. Eight provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-feature-interaction-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`; no calibration. Next: revise the
+  candidate set under a new preregistered policy version if an independently
+  selectable evidence-gathering action remains desired.
+
+- [x] 2026-07-27: Close ThreadKeeper's persisted candidate-review field
+  boundary on commit `4a141fd`. Decision-relevant transcript fields now
+  require exact JSON object/list/string/boolean types before truth testing,
+  slicing, or operator-facing review construction. Malformed patch proposals,
+  adjudication metadata, task contracts, statuses, and summaries fail closed
+  as `candidate_review_error`. Fifteen focused checks and the 1063-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's parent/operator path-argument
+  boundaries on commit `e834d39`. Run-index audit and candidate transcript
+  review paths now require exact built-in strings, while worker stop-file
+  controls require an exact built-in string or null, before truth testing,
+  comparison, coercion, or filesystem path resolution. Behavior-bearing
+  subclasses fail closed without acquiring the worker lock or touching the
+  requested filesystem path. Eight focused checks and the 1054-test
+  provider-free hardening suite passed.
+
+- [x] 2026-07-27: Close ThreadKeeper's direct tool-runner control boundary on
+  commit `9091e2e`. Call batches are exact-type checked before truth testing;
+  allowed tool containers/items and optional quotas are exact-type checked
+  before iteration, membership, comparison, or coercion. Behavior-bearing
+  subclasses fail closed before any tool effect. Nine focused checks and the
+  1051-test provider-free hardening suite passed.
+
+- [x] 2026-07-27: Preregister an out-of-sample motivational score-policy
+  feature-interaction suite without changing policy parameters. Seven sealed
+  cases cover joint evidence/clarification pressure, the answer/defer
+  crossover below/at/above equality, an answer/request tie, three high
+  features, and the review override against a higher request score. The
+  contract also records that `inspect_evidence` is structurally dominated by
+  `defer_for_review` under v0.1 and therefore unreachable. Nine provider-free
+  checks pass at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-feature-interaction-preregistration/`.
+  Contract SHA-256:
+  `1a7c0b3c60d9d3c66e3df415825b1a6b7fb5301cdd3df64d662ee6addfec258c`.
+  Candidate-only; ThreadKeeper effect `none`. Next: independently execute the
+  sealed suite without importing this validator or prior runners; do not
+  calibrate from the result.
+
+- [x] 2026-07-27: Independently execute the sealed motivational score-policy
+  boundary holdout without importing its validator or the prior runner. All
+  five preregistered selections and reasons reproduce, including conservative
+  exact ties, the one-unit request advantage, and adjacent 799/800 override.
+  Six provider-free checks pass at
+  `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-boundary-holdout-independent-runner/`.
+  Candidate-only; ThreadKeeper effect `none`; no calibration. Next:
+  preregister an out-of-sample feature-interaction suite before considering
+  any score-policy parameter change.
+
 - [x] 2026-07-26: Close ThreadKeeper's operator-facing queued-dispatch path
   boundary on commit `896a38e`. The path must be an exact non-empty built-in
   string; non-string values and behavior-bearing string subclasses return

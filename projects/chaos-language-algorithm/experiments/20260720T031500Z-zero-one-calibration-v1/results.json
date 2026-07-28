@@ -1,0 +1,116 @@
+{
+  "false_negatives": [
+    "mackey-glass-chaotic",
+    "lorenz96-chaotic-full-state"
+  ],
+  "false_positives": [],
+  "manifest": {
+    "config": {
+      "frequencies": [
+        0.37,
+        0.53,
+        0.71,
+        0.89,
+        1.07,
+        1.23,
+        1.41,
+        1.59,
+        1.77,
+        1.93,
+        2.11,
+        2.29,
+        2.47,
+        2.63,
+        2.81,
+        2.97
+      ],
+      "lorenz96_coordinate_reducer": "median",
+      "max_lag": 100,
+      "steps": 1024,
+      "threshold": 0.5
+    },
+    "fixtures": [
+      {
+        "kind": "positive",
+        "name": "mackey-glass-chaotic",
+        "observable": "scalar",
+        "trajectory_sha256": "deca7ae8df6b227b2be750d6df77e68f7cec171d627184e1dfe292ad1e377521"
+      },
+      {
+        "kind": "nonchaotic",
+        "name": "mackey-glass-stable",
+        "observable": "scalar",
+        "trajectory_sha256": "1df8a73a6c837b03b387318121e259f00a6021298bf0c139718709465dcf4e2a"
+      },
+      {
+        "kind": "positive",
+        "name": "lorenz96-chaotic-full-state",
+        "observable": "full-state",
+        "trajectory_sha256": "76f76752375f90b86b0103cc1dfdcff30f4dd9839d197e363b87284435610d46"
+      },
+      {
+        "kind": "nonchaotic",
+        "name": "lorenz96-stable-full-state",
+        "observable": "full-state",
+        "trajectory_sha256": "1fac6a03e68ad6f525d1e014bf707011c479f5ce30e0d49dd60ab63195a68491"
+      }
+    ],
+    "protocol": "zero-one-calibration-preregistration-v1",
+    "schema": "chaoslang.zero-one-calibration",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "both positives promoted; no stable control promoted; ties fail",
+  "results": [
+    {
+      "coordinate_scores": [
+        -0.376805550852384
+      ],
+      "kind": "positive",
+      "name": "mackey-glass-chaotic",
+      "promoted": false,
+      "score": -0.376805550852384
+    },
+    {
+      "coordinate_scores": [
+        -0.47027436499317354
+      ],
+      "kind": "nonchaotic",
+      "name": "mackey-glass-stable",
+      "promoted": false,
+      "score": -0.47027436499317354
+    },
+    {
+      "coordinate_scores": [
+        -0.0806443949488411,
+        -0.2046999514993938,
+        -0.28673982094129685,
+        -0.0775534655336253,
+        -0.07943046184984479,
+        -0.10793312517919526,
+        -0.17363058179327368,
+        -0.06401134756582522
+      ],
+      "kind": "positive",
+      "name": "lorenz96-chaotic-full-state",
+      "promoted": false,
+      "score": -0.09428876006401818
+    },
+    {
+      "coordinate_scores": [
+        -0.42276532221315943,
+        -0.43363682554720107,
+        -0.2631018057297732,
+        -0.28295361206944414,
+        -0.41946997437201994,
+        -0.45651472798287773,
+        -0.25467772400528965,
+        -0.275232340651261
+      ],
+      "kind": "nonchaotic",
+      "name": "lorenz96-stable-full-state",
+      "promoted": false,
+      "score": -0.35121179322073204
+    }
+  ]
+}

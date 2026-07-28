@@ -1,0 +1,34 @@
+BridgeLearn 0.3 sandbox experiment validation
+==============================================
+
+Validation date: 2026-07-22 UTC
+
+Checks completed
+----------------
+1. Compiled all Python sources with `python -m compileall -q .`.
+2. Installed the vendored BridgeLearn 0.3.0 wheel into an isolated target
+   directory with `pip install --no-deps --target ...`.
+3. Re-ran `run_all.py --output artifacts` from a fresh copy of the experiment
+   tree while forcing imports to use that isolated wheel target.
+4. The clean run produced all 27 expected artifact files.
+5. The following fixed-seed headline metrics matched the original run exactly:
+
+   - dynamic_sharpness.estimated_gamma_p = 0.027040723609381298
+   - dynamic_sharpness.estimated_gamma_r = 0.41506012331865794
+   - dynamic_sharpness.plant_one_step_rmse_against_true = 0.022796779053609027
+   - antithetic_identification.improvement.contrast_rmse_antithetic_vs_white = 16.86927406374334
+   - companion_stability.cases.near_repeated_root.max_covariance_amplification = 49.47223736565914
+   - momentum_reachability.minimum_horizon_at_mu_0.9 = 27
+
+Environment used for the recorded artifacts
+-------------------------------------------
+Python 3.13.5
+NumPy 2.3.5
+Matplotlib 3.10.8
+BridgeLearn 0.3.0
+
+Scope
+-----
+These checks establish reproducibility of the synthetic mechanism experiments
+under fixed random seeds. They are not neural-network, CAROM, predictive-coding,
+or reinforcement-learning performance validations.

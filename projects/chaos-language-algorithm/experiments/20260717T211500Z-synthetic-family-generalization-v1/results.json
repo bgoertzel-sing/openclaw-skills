@@ -1,0 +1,440 @@
+{
+  "limitations": [
+    "Synthetic morphic-family generalization only; no chaos, attractor, or semantic-grammar evidence.",
+    "Does not revise either Mackey--Glass/Lorenz--96 held-out coding null."
+  ],
+  "manifest": {
+    "config": {
+      "baselines": [
+        "literal",
+        "unigram",
+        "markov-1",
+        "markov-2"
+      ],
+      "learner": {
+        "enable_categories": false,
+        "enable_joint_categories": false,
+        "max_iterations": 8,
+        "max_ngram": 5,
+        "search_objective": "indexed",
+        "seed": 170717
+      },
+      "prefix_length": 2048,
+      "shuffle_seed_base": 170717,
+      "sources": [
+        {
+          "name": "thue-morse",
+          "rule": {
+            "0": "01",
+            "1": "10"
+          },
+          "seed": "0"
+        },
+        {
+          "name": "fibonacci-word",
+          "rule": {
+            "0": "01",
+            "1": "0"
+          },
+          "seed": "0"
+        }
+      ],
+      "suffix_length": 8192
+    },
+    "fixtures": [
+      {
+        "counts": {
+          "0": 5120,
+          "1": 5120
+        },
+        "kind": "positive",
+        "length": 10240,
+        "name": "thue-morse-positive",
+        "prefix_length": 2048,
+        "prefix_sha256": "0a7f6d150ad48ecfed0e99215414c3d4b7fe402c2e6a7e8e5be5c76290828e26",
+        "shuffle_seed": null,
+        "source": "thue-morse",
+        "stream_sha256": "626cb50b5140fea7bcc1f9a29b284267fa6b24a345be64f263edb622eb9ff39a",
+        "suffix_length": 8192,
+        "suffix_sha256": "69e0cd973d39788e5cc81659096c579f8fb3972a5efc5d7dc36f9809904e9719"
+      },
+      {
+        "counts": {
+          "0": 5120,
+          "1": 5120
+        },
+        "kind": "shuffled",
+        "length": 10240,
+        "name": "thue-morse-shuffled",
+        "prefix_length": 2048,
+        "prefix_sha256": "b24b0cea9b8a90bb65e0ab08bc5ae015736f0e65ee717c94345cae0d4db3a932",
+        "shuffle_seed": 170717,
+        "source": "thue-morse",
+        "stream_sha256": "60426e4d5f06ac28f695e3e7c366892be848958cc05d6b911ddfd4a06a702e38",
+        "suffix_length": 8192,
+        "suffix_sha256": "7d5c58392a989217400c52c1b2667d6657ea0a9a1bb54c249169445c41737807"
+      },
+      {
+        "counts": {
+          "0": 6329,
+          "1": 3911
+        },
+        "kind": "positive",
+        "length": 10240,
+        "name": "fibonacci-word-positive",
+        "prefix_length": 2048,
+        "prefix_sha256": "3ae0c7f67cdf05a9be70ad81b70688a3cef1b09f706f667a351076746dfd0b3a",
+        "shuffle_seed": null,
+        "source": "fibonacci-word",
+        "stream_sha256": "60557aa9880406aec49f3106f72baa832a35ff577788da63446fdac0b618e7cd",
+        "suffix_length": 8192,
+        "suffix_sha256": "1cf111869c86e6b5f02c10b70eacf418f419eab91f81f92f432ed26519a6ce20"
+      },
+      {
+        "counts": {
+          "0": 6329,
+          "1": 3911
+        },
+        "kind": "shuffled",
+        "length": 10240,
+        "name": "fibonacci-word-shuffled",
+        "prefix_length": 2048,
+        "prefix_sha256": "dcbcc6e24995a9436af0fb94b544eff5ac6a1f71e3788d0d74f3aa169988d035",
+        "shuffle_seed": 170718,
+        "source": "fibonacci-word",
+        "stream_sha256": "8925a6a71bc13f2fe877c6ee8576064dfe0f46344da6e22f36489f3ecf5e0f97",
+        "suffix_length": 8192,
+        "suffix_sha256": "8ae109d23abc4c44c5c9a11456ecf8a215055e7e88d6c4868a7c50cc8ec2ec04"
+      }
+    ],
+    "protocol": "synthetic-family-generalization-preregistration-v1",
+    "schema": "chaoslang.synthetic-family-generalization",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "all gates; indexed CLA beats the strongest baseline on both non-Zimin positives and neither exact-marginal shuffled null",
+  "results": [
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "fibonacci-word-positive",
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1 0 0 1",
+        "chunk N1 -> 0 0 1 chunk:N0",
+        "chunk N2 -> chunk:N0 chunk:N1 chunk:N0 chunk:N1 chunk:N1",
+        "chunk N3 -> chunk:N0 chunk:N1 chunk:N1 chunk:N2",
+        "chunk N4 -> chunk:N2 chunk:N3 chunk:N2 chunk:N3 chunk:N3",
+        "chunk N5 -> chunk:N2 chunk:N3 chunk:N3 chunk:N4"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 0.7132835949247299,
+          "canonical_hash": "a0cac789ec99cef4b3b0ad882cb9e41de96218efe78e7193c5b6d735ba00ca8a",
+          "method_name": "markov-2",
+          "model_bits": 2824.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3019.2192096233875,
+          "total_bits": 5843.2192096233875
+        },
+        {
+          "bits_per_symbol": 0.7484469991383663,
+          "canonical_hash": "0f8eb5d1a81f4760f3ff702efe4d5d5f517fa96d24a8fb4b101abd96d64db8c3",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 5904.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 227.2778169414966,
+          "total_bits": 6131.277816941497
+        },
+        {
+          "bits_per_symbol": 0.8873476515358002,
+          "canonical_hash": "e3a6cff51237a8f2571d4f7ed29a63e9c858d8b5bcf24919729386409f042a33",
+          "method_name": "markov-1",
+          "model_bits": 2400.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 4869.151961381275,
+          "total_bits": 7269.151961381275
+        },
+        {
+          "bits_per_symbol": 1.1525002987536639,
+          "canonical_hash": "2ee6aa491556c22130745c047464d790fbaedb07b8edcf9fb57d07391c0bc3a2",
+          "method_name": "unigram",
+          "model_bits": 1576.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7865.2824473900155,
+          "total_bits": 9441.282447390015
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 0.7132835949247299,
+        "canonical_hash": "a0cac789ec99cef4b3b0ad882cb9e41de96218efe78e7193c5b6d735ba00ca8a",
+        "method_name": "markov-2",
+        "model_bits": 2824.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 3019.2192096233875,
+        "total_bits": 5843.2192096233875
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "fibonacci-word-shuffled",
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 0 1",
+        "chunk N1 -> 1 0",
+        "chunk N2 -> 0 0 chunk:N0",
+        "chunk N3 -> chunk:N0 0",
+        "chunk N4 -> 1 chunk:N1",
+        "chunk N5 -> 0 0 0 chunk:N2",
+        "chunk N6 -> 1 1",
+        "chunk N7 -> chunk:N0 chunk:N1"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.1518884262024742,
+          "canonical_hash": "0c2943415b5c493af6adc11e5c23fb455602dd71bcaf1b0046f594f19bbd9525",
+          "method_name": "unigram",
+          "model_bits": 1576.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7860.26998745067,
+          "total_bits": 9436.269987450669
+        },
+        {
+          "bits_per_symbol": 1.26098703723041,
+          "canonical_hash": "5b7fa4e0398754230c1684b953989cd8814fcedaabc6c86acc7e232cb8a82b97",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7866.005808991519,
+          "total_bits": 10330.005808991518
+        },
+        {
+          "bits_per_symbol": 1.370060378500967,
+          "canonical_hash": "0a3b990e3b31a50b742f49524c7f0ba4e7ab6e45f0d070d45946487a05cae1a8",
+          "method_name": "markov-2",
+          "model_bits": 3344.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7879.534620679921,
+          "total_bits": 11223.534620679922
+        },
+        {
+          "bits_per_symbol": 2.0516854393378274,
+          "canonical_hash": "3ca014380fd74208b9f12f55b8941fdf9266fe701bba5b2935cd523d7380ff80",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 6736.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 10071.40711905548,
+          "total_bits": 16807.407119055482
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.1518884262024742,
+        "canonical_hash": "0c2943415b5c493af6adc11e5c23fb455602dd71bcaf1b0046f594f19bbd9525",
+        "method_name": "unigram",
+        "model_bits": 1576.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 7860.26998745067,
+        "total_bits": 9436.269987450669
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "thue-morse-positive",
+      "primary_below_strongest": true,
+      "primary_history": [
+        "chunk N0 -> 0 1 1 0",
+        "chunk N2 -> chunk:N0 1 0",
+        "chunk N3 -> 0 1 chunk:N0 chunk:N2",
+        "chunk N5 -> 0 1 chunk:N2",
+        "chunk N6 -> chunk:N0 chunk:N5 chunk:N3",
+        "chunk N7 -> chunk:N5 chunk:N0 chunk:N3 chunk:N6",
+        "chunk N8 -> chunk:N0 chunk:N3 chunk:N5 chunk:N6 chunk:N7",
+        "chunk N9 -> chunk:N0 chunk:N3 chunk:N7"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 0.8783597894455801,
+          "canonical_hash": "faeff7e5e0ba75643cf4817b6b612ea68748476717f38334b6212ce0b3856e6a",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 6600.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 595.5233951381928,
+          "total_bits": 7195.523395138192
+        },
+        {
+          "bits_per_symbol": 1.062021608913522,
+          "canonical_hash": "0d5f99ebd7ea93abc8b7f47141ccf1288fbd1af50d6015db2ce2da8c28745166",
+          "method_name": "markov-2",
+          "model_bits": 3216.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 5484.081020219573,
+          "total_bits": 8700.081020219572
+        },
+        {
+          "bits_per_symbol": 1.19406364401129,
+          "canonical_hash": "e58bcb8bc2c9627b551aca8f9bb90c35df939c601a25c3e2dba3dfa098009129",
+          "method_name": "unigram",
+          "model_bits": 1584.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8197.769371740487,
+          "total_bits": 9781.769371740487
+        },
+        {
+          "bits_per_symbol": 1.2205268286470392,
+          "canonical_hash": "d4c9813cb54934b60ba9ed9ea1b3dbe1190adf334c33dc302549b348b132799a",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 7534.555780276545,
+          "total_bits": 9998.555780276545
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.062021608913522,
+        "canonical_hash": "0d5f99ebd7ea93abc8b7f47141ccf1288fbd1af50d6015db2ce2da8c28745166",
+        "method_name": "markov-2",
+        "model_bits": 3216.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 5484.081020219573,
+        "total_bits": 8700.081020219572
+      }
+    },
+    {
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "thue-morse-shuffled",
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1",
+        "chunk N1 -> 0 0 chunk:N0",
+        "chunk N2 -> chunk:N0 1 1",
+        "chunk N3 -> 1 1",
+        "chunk N4 -> 0 chunk:N0",
+        "chunk N5 -> 0 chunk:N1",
+        "chunk N6 -> 1 chunk:N0",
+        "chunk N7 -> chunk:N2 chunk:N3"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.1941885098199274,
+          "canonical_hash": "4a74a1a07df35def2105e2694de51ed47f4f09c0f4629f3136dcb54f3277386f",
+          "method_name": "unigram",
+          "model_bits": 1584.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8198.792272444845,
+          "total_bits": 9782.792272444845
+        },
+        {
+          "bits_per_symbol": 1.3030976462078079,
+          "canonical_hash": "6f0c329b06ff5d36676c1a50f071cb2d47e70dbd61b1200c0f522e40ce0a86df",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8210.975917734362,
+          "total_bits": 10674.975917734362
+        },
+        {
+          "bits_per_symbol": 1.4121911359079222,
+          "canonical_hash": "e79a9fefaf888713d0c55b304f98243356a1dc0823cbabe824b5d7a3c1bce5a3",
+          "method_name": "markov-2",
+          "model_bits": 3344.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 8224.669785357699,
+          "total_bits": 11568.669785357699
+        },
+        {
+          "bits_per_symbol": 2.0438003901435438,
+          "canonical_hash": "6d53e313a15d4612997c9af0d6d207abe053e1868aaafffb3ca7b6211b92a56a",
+          "method_name": "frozen-cla-indexed",
+          "model_bits": 6608.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 10134.81279605591,
+          "total_bits": 16742.81279605591
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 327680.0,
+          "total_bits": 327680.0
+        }
+      ],
+      "strongest_baseline": {
+        "bits_per_symbol": 1.1941885098199274,
+        "canonical_hash": "4a74a1a07df35def2105e2694de51ed47f4f09c0f4629f3136dcb54f3277386f",
+        "method_name": "unigram",
+        "model_bits": 1584.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 8198.792272444845,
+        "total_bits": 9782.792272444845
+      }
+    }
+  ]
+}

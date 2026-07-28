@@ -1,0 +1,154 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,enumitem,hyperref,fancyhdr,lastpage}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,pdftitle={CMCP information geometry review}}
+\setlist{nosep,leftmargin=*}
+\pagestyle{fancy}\fancyhf{}\lhead{CMCP review note}\rhead{2026-07-25}\cfoot{\thepage/\pageref{LastPage}}
+\newcommand{\obs}{\textbf{Observed.} }
+\newcommand{\hypo}{\textbf{Hypothesis.} }
+\newcommand{\proposal}{\textbf{Proposal.} }
+\title{CMCP Evidence Accounting Beyond Linear Score Space\\\large Experimental findings, Schweizer--Sklar, and an information-geometric proposal}
+\author{ZeroBot (prepared for technical review with Benjamin Goertzel)}
+\date{25 July 2026}
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+CMCP is an evidence ledger for test-time constraint packets. Its original weight is a Schur-complement residual in a score-vector representation. Experiments establish useful accounting and replay-budget effects, but reveal a central limitation: a provenance-distinct systematic bit-flip can be almost fully novel in that linear score space. Distance-correlation novelty plus a Schweizer--Sklar t-norm suppresses this constructed bias, but calibration selects the product limit rather than a non-product t-norm. This review separates those observations from a proposed conditional distributional increment based on alpha divergence, with Fisher--Rao/Hellinger as the symmetric primary. The proposal is falsifiable; it is not established conditional mutual information or a guaranteed solution.
+\end{abstract}
+
+\section{Problem and current CMCP}
+CMCP packets contain a batch-aligned constraint-value vector, mechanism family, provenance/innovation identifiers, and a precision weight. Its role is to decide how much extra statistical weight a packet deserves given a ledger of stored packets. In reduced E4, this weight controls direct-logit constraint settlement and, in the parameter-learning follow-up, replay strength.
+
+For a candidate packet $j$, let $s_j\in\mathbb{R}^d$ be its standardized score residual. With stored scores $S=\{s_i\}$, the original conditional ratio is
+\begin{equation}
+r_{\mathrm{score}}(j\mid S)=
+\frac{F_{jj}-F_{jS}(F_{SS}+\lambda I)^\dagger F_{Sj}}{F_{jj}},
+\qquad F_{ab}=d^{-1}s_a^\top s_b,
+\label{eq:schur}
+\end{equation}
+clipped to $[0,1]$. It is zero for a score explained by the stored linear span and near one for an orthogonal score. A prior provenance gate selects one stable representative per innovation identifier.
+
+This criterion has genuine strengths: exact duplicate/descendant idempotence, retention of independent repeated evidence, and tested equivariance under supplied orthogonal score-coordinate alignment. But it is a linear conditional-energy criterion on selected features. It is neither general conditional mutual information nor a test for arbitrary deterministic dependence.
+
+\section{What was observed}
+\subsection{Accounting and persistent bursts}
+Five held-out single-shot confirmation seeds gave exact idempotence for exact duplicates and deterministic descendants, mean weight $0.997862$ for an independent second packet, and order invariance after canonicalization. Partial redundancy was high: $0.657531$ versus constructed oracle $0.5$. Naively counting a duplicate twice slightly improved immediate loss; the initial result was accounting, not performance evidence.
+
+The corrected eight-episode persistent experiment reused one explicitly identified cohort and changed extraction noise by episode. An earlier fresh-batch smoke was rejected because row-aligned packets were applied to unrelated examples. On five sealed confirmation seeds at episode 8:
+\begin{center}
+\begin{tabular}{lrrr}\toprule
+Metric & CMCP & oracle & naive accumulation\\\midrule
+Effective precision & 8.89433 & 9.0 & 26.0\\
+Task accuracy & 0.83281 & --- & 0.74844\\
+ECE (10-bin) & 0.07797 & --- & 0.12309\\
+Multiclass Brier score & 0.22596 & --- & 0.32489\\\bottomrule
+\end{tabular}
+\end{center}
+\obs CMCP prevented duplicate count from becoming precision inflation and improved same-cohort accuracy/calibration in this frozen-weight protocol.
+
+\subsection{Parameter learning and replay}
+A typed store now carries cohort and ordered-example identity, packet/provenance/innovation identity, mechanism family, precision, and values hash. It fails closed on row permutation, cohort mismatch, duplicate packet IDs, and conflicting innovation payloads. In a three-seed six-episode reversal, CMCP precision was $6.8364$--$7.9343$ against oracle $7.5$, while naive reached $21.0$. Yet naive retained Task A better on every seed and usually matched Task-B learning; five confirmation seeds were not opened.
+
+A replay-coefficient sweep produced a bounded plasticity signal. Increasing coefficient from $0.15$ to $0.30$ to $0.50$ moved mean CMCP/naive Task-B crossover from episode 6 to 5 to 3. At episode 6, CMCP minus naive Task-B accuracy was $+0.031$, $+0.099$, and $+0.133$. This supports CMCP as a replay-budget normalizer under stronger replay pressure. It does not establish a universal continual-learning win; naive had lower ECE in this exploratory sweep.
+
+\subsection{The technical failure}
+In a provenance-distinct systematic bit-flip smoke, raw score-space ratio was $0.9461$: nearly fully novel under Equation \ref{eq:schur}. Thus original score-space CMCP did not recognize the deterministic transformation. Earlier zero weight in a related test was explained by shared provenance, not by the Schur test. A deterministic systematic transformation can look linearly independent in chosen score features.
+
+\section{Schweizer--Sklar result}
+The prototype used raw-evidence novelty
+\begin{equation}
+r_{\mathrm{ev}}(j\mid S)=1-\max_{i\in S}\operatorname{dCor}(v_j,v_i),
+\end{equation}
+where dCor is the implemented finite-sample biased Szekely--Rizzo distance correlation, averaged factorwise. It combines score and evidence novelty by
+\begin{equation}
+T_p(x,y)=\left[\max\{0,x^p+y^p-1\}\right]^{1/p},\quad p>0,\qquad
+r_Q=T_p(r_{\mathrm{score}},r_{\mathrm{ev}}).
+\label{eq:ss}
+\end{equation}
+As $p\to0^+$, this tends to product $xy$; $p=1$ is the Lukasiewicz t-norm.
+
+On three calibration seeds with $p\in[0.05,1.5]$, selected endpoint was $p=0.05$:
+\begin{center}
+\begin{tabular}{lrrrr}\toprule
+Fixture & exact duplicate & bit-flip & independent & 50\% overlap\\\midrule
+Mean $r_Q$ & 0.000 & 0.000 & 0.870930 & 0.363021\\\bottomrule
+\end{tabular}
+\end{center}
+The selection score fell monotonically from $0.833950$ at $p=0.05$ to $0.553181$ at $p=1.5$. An auxiliary product-limit computation ($p=0.001$) was slightly better on the same constructed objective. A provenance-distinct bit-flip smoke assigned $1.0/0.0$ to original/biased packets with model weights unchanged.
+
+\obs Evidence dependence catches this constructed complement relation. The data supports a product-like score/evidence combination, not a specifically non-product Schweizer--Sklar geometry: the optimum is at a tested boundary. Biased finite-sample dCor and partial-overlap target $0.4$ are not independently calibrated truths.
+
+\section{Why not standard MI?}
+Mutual information requires a specified joint distribution over packets, targets/parameters, and conditioning ledger. Equation \ref{eq:schur} is a useful Gaussian-linear analogue, not general MI. A neural MI estimator would introduce a learned critic, substantial sample requirements, and a new route for fixture overfit.
+
+A more disciplined next object is an \emph{information-geometric distributional increment}: assess packets by the predictive distributions they induce on a fixed typed cohort. This is a testable estimator, not conditional MI unless a posterior or generative model makes that identification valid.
+
+\section{Proposed math: conditional distributional novelty}
+Fix a cohort $C$ with ordered example identity. Let $P_0(c)$ be feed-forward categorical prediction, $P_S(c)$ prediction after stored packets $S$, $P_j(c)$ after candidate $j$ alone, and $P_{S\cup\{j\}}(c)$ after ledger plus candidate. All four are computed by frozen-weight direct-logit settlement.
+
+Let $\bar D_\alpha$ be cohort-mean Amari alpha divergence:
+\begin{equation}
+D_\alpha(P\Vert Q)=\frac{4}{1-\alpha^2}
+\left[1-\sum_kP_k^{(1-\alpha)/2}Q_k^{(1+\alpha)/2}\right],
+\quad -1<\alpha<1.
+\label{eq:alpha}
+\end{equation}
+Its endpoints are directed KL divergences. At $\alpha=0$, $D_0=4(1-\sum_k\sqrt{P_kQ_k})$, four times squared Hellinger distance. This symmetric case is bounded for categorical predictions and locally induces the Fisher metric, making it a sound primary geometry.
+
+Define operational conditional novelty by
+\begin{equation}
+r_\alpha^{\mathrm{geom}}(j\mid S)=
+\operatorname{clip}_{[0,1]}
+\frac{\bar D_\alpha(P_S\Vert P_{S\cup\{j\}})}
+{\bar D_\alpha(P_0\Vert P_j)+\epsilon}.
+\label{eq:ratio}
+\end{equation}
+The numerator is residual predictive displacement after the ledger; denominator is candidate stand-alone displacement. No additional settled predictive change gives zero; disjoint effects should give a ratio near one.
+
+For a kernel formulation define alpha affinity
+\begin{equation}
+K_\alpha(P,Q)=|C|^{-1}\sum_{c\in C}\sum_k
+P_k(c)^{(1-\alpha)/2}Q_k(c)^{(1+\alpha)/2}.
+\end{equation}
+At $\alpha=0$, this is Bhattacharyya/Hellinger affinity: a positive-definite kernel on square-root probability vectors and directly Fisher--Rao motivated. Nonzero alpha is best treated as a directed divergence family, not casually as a symmetric kernel.
+
+\hypo A bit flip can be linearly orthogonal in present score features yet produce little residual \emph{predictive} displacement after source constraint is active. Equation \ref{eq:ratio} would then be low where Schur residualization was $0.9461$. Unlike raw dCor, it tests the model response to the packet intervention.
+
+This is not guaranteed. If bit-flip constraint genuinely moves predictions in a distinct direction, Fisher--Rao/alpha geometry should report novelty despite deterministic raw relation. Then suitable policy may require both typed provenance/dependence and geometric predictive increment. The proposal must therefore face counterexamples and held-out confirmation.
+
+\section{Falsification-first protocol}
+\begin{enumerate}
+\item \textbf{Estimator audit:} stable log-space alpha divergence, endpoint KL limits, Hellinger primary, and permutation or unbiased dependence baselines. Test non-negativity, identity, zero-probability stability, cohort-order invariance, frozen weights.
+\item \textbf{Broaden fixtures:} exact copies, bit flips, factor permutations, cross-factor deterministic maps, affine/logit maps, noisy copies across SNR, and independent packets.
+\item \textbf{Compare estimators:} linear Schur, product+dCor, Hellinger ratio, alpha grid. Calibration selects primary and thresholds; product remains a baseline.
+\item \textbf{Seal confirmation:} fresh seeds and fresh transform mixtures; require both discrimination and downstream replay-budget plasticity at fixed update counts.
+\item \textbf{Defer learning:} any learned copula or critic trains on a separate fixture-generating distribution and is evaluated on held-out mechanism families while retaining Hellinger/product baselines and typed-cohort contracts.
+\end{enumerate}
+
+\section{Questions for reviewers}
+\begin{enumerate}
+\item Is settled predictive displacement the right object, or must packet information first be defined by a posterior or likelihood model?
+\item Should primary geometry be symmetric Hellinger/Fisher--Rao ($\alpha=0$), or directed KL because updates are asymmetric?
+\item Does direct-logit settlement define a meaningful intervention, or should comparison live in parameter, natural-gradient, or belief space?
+\item Which invariances should a kernel respect: factor relabeling, known rotations, deterministic invertible maps, cohort permutation?
+\item Can this ratio distinguish useful correlated repetition from redundant repetition without silently preferring novelty?
+\item What held-out fixtures would rule out a learned kernel merely memorizing the present grammar?
+\end{enumerate}
+
+\section{Current decision}
+\proposal Do not replace CMCP in the main path yet. Retain provenance deduplication and product-like dCor as exploratory baselines. Implement Equation \ref{eq:ratio} as a separate preregistered estimator comparison with $\alpha=0$ Hellinger primary; treat nonzero-alpha selection as empirical, not a consequence of information geometry. A learned kernel is premature until a broad held-out fixture distribution and reliable geometric baseline exist.
+
+\section{Evidence and references}
+\begin{itemize}
+\item CMCP ledger confirmation: \texttt{experiments/20260725T001900Z-e4-cmcp-ledger-confirmation/RUN.md}.
+\item Persistent same-cohort confirmation: \texttt{experiments/20260725T015835Z-e4-cmcp-persistent-confirmation/RUN.md}.
+\item Typed retention calibration: \texttt{experiments/20260725T021200Z-e4-cmcp-typed-retention-calibration/RUN.md}.
+\item Replay sweep: \texttt{experiments/20260725T031220Z-e4-cmcp-replay-sweep-final/RUN.md}.
+\item Biased-injection smoke: \texttt{experiments/20260725T031257Z-e4-cmcp-biased-injection-smoke/RUN.md}.
+\item Schweizer--Sklar calibration and smoke: \texttt{experiments/20260725T034212Z-e4-quantale-calibration/RUN.md} and \texttt{20260725T034222Z-e4-quantale-biased-smoke/RUN.md}.
+\item S.-I. Amari, \emph{Information Geometry and Its Applications}, Springer, 2016.
+\item G. J. Szekely, M. L. Rizzo, N. K. Bakirov, Measuring and testing dependence by correlation of distances, \emph{Annals of Statistics}, 2007.
+\end{itemize}
+\end{document}

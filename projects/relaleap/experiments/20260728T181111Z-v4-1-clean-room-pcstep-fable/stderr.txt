@@ -1,0 +1,10 @@
+test_gate_and_batch_plan_fail_closed (test_pcstep.PCStepTests) ... ok
+test_settlement_freezes_weights_and_inputs (test_pcstep.PCStepTests) ... ok
+test_snapshot_restore_is_exact_and_replayable (test_pcstep.PCStepTests) ... ok
+test_step_is_pure_and_deterministic (test_pcstep.PCStepTests) ... ok
+test_t1_matches_independent_reference_update (test_pcstep.PCStepTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.027s
+
+OK

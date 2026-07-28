@@ -1,0 +1,647 @@
+                  PeTTa Abstract Algorithmic Chemistry
+                  Implementation, Experiments, Results, and Next-Step Questions
+                                             External-review packet
+
+
+                               Prepared by ZeroBot for Benjamin Goertzel
+
+                                                   26 July 2026
+
+                                                     Abstract
+          This report describes the PeTTa-Chem project from its ﬁrst executable chemistry kernel through its
+      most recent autocatalytic-set experiments. The project has built a substantial PeTTa-native symbolic
+      reaction substrate with deterministic replay, bounded candidate generation, explicit provenance, event
+      histories, ﬁrst-class catalysis relations, conservative cycle scanners, RAF detectors, controlled guidance
+      policies, causal ablations, and preregistered experiment matrices. The central scientiﬁc result so far
+      is negative but informative: the system reliably recovers planted and deliberately favorable RAF
+      structures, but no completed protocol supports spontaneous autocatalytic-set emergence. One frozen
+      guided condition produced a strong bounded uplift, but independent replication failed and a larger
+      successor made weak guidance worse than the unguided control. This packet is designed to let an
+      external adviser audit the engineering and experimental logic, identify the most valuable next scientiﬁc
+      question, and discourage further incremental infrastructure growth without a sharper objective.
+
+
+Contents
+1 Executive assessment                                                                                             3
+  1.1 What exists now . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            3
+  1.2 What the evidence currently says . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             3
+  1.3 Bottom line . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          3
+
+2 Project objective and epistemic vocabulary                                                                       3
+
+3 Implemented system                                                                                               4
+  3.1 Runtime and module organization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                4
+  3.2 Core data and transition contracts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             5
+  3.3 Bounded generation and execution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               5
+  3.4 Detection and causal analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            5
+  3.5 Guidance and intervention machinery . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                6
+
+4 Experiment history and outcomes                                                                                  6
+  4.1 Summary table . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            6
+  4.2 exp00–exp03: substrate and simple generated chemistry . . . . . . . . . . . . . . . . . . .                  7
+  4.3 exp04: favorable rich RAF and bias-reduction sweep . . . . . . . . . . . . . . . . . . . . .                 7
+  4.4 exp05–exp06: aﬃnity and bridge diagnostics . . . . . . . . . . . . . . . . . . . . . . . . . .               8
+  4.5 exp07: guided closure program . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              8
+      4.5.1 N=20 two-rule matrix . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               8
+      4.5.2 Rich shared-pool ensemble . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              8
+
+
+                                                          1
+PeTTa-Chem external review                                                                          26 July 2026
+
+
+         4.5.3 Ordered bootstrap . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        8
+         4.5.4 Independent ordered replication . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        8
+         4.5.5 Dual-bootstrap successor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         9
+   4.6   exp08 draft . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    9
+
+5 Current reproducibility audit                                                                                 9
+
+6 What is strong, what is weak, and what is missing                                                            10
+  6.1 Strong aspects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       10
+  6.2 Weak aspects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       10
+  6.3 Missing scientiﬁc components . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         11
+
+7 Recommended next plan                                                                                        11
+  7.1 Recommendation 0: stop feature accretion and repair reproducibility . . . . . . . . . . . .              11
+  7.2 Recommendation 1: deﬁne one neutral random-chemistry model . . . . . . . . . . . . . .                   11
+  7.3 Recommendation 2: validate the RAF detector against an oracle . . . . . . . . . . . . . .                11
+  7.4 Recommendation 3: separate four endpoints . . . . . . . . . . . . . . . . . . . . . . . . . .            12
+  7.5 Recommendation 4: only then revisit guidance . . . . . . . . . . . . . . . . . . . . . . . .             12
+  7.6 Recommendation 5: postpone exp08 in its current form . . . . . . . . . . . . . . . . . . .               12
+
+8 Questions for external advisers                                                                              12
+
+9 Reproduction and evidence map                                                                                13
+
+10 Conclusion                                                                                                  13
+
+
+
+
+                                                       2
+PeTTa-Chem external review                                                                 26 July 2026
+
+
+1     Executive assessment
+1.1   What exists now
+The repository contains a PeTTa/MeTTa chemistry kernel and experiment suite rather than a Python
+simulation with a symbolic facade. Chemistry state, reaction applicability, candidate generation,
+bounded selection, checked ﬁring, chamber evolution, event recording, replay, detector inputs, and the
+large exp07 trajectory matrices execute in PeTTa on the SWI-Prolog-backed PeTTa runtime. Python is
+restricted mainly to ﬁle serialization and two exp04 reference/reduction harnesses.
+At the audited head bfa0e47c2af4bb46dae830a6e7493de97de4051c, the repository has 308 commits
+and approximately 42,264 lines across PeTTa source, smoke ﬁxtures, and harness scripts. The active
+branch is agent/exp07-stochastic-doob-pilot. Three untracked items were present and were not
+treated as authoritative evidence: the draft exp08/ directory, experiments/scratch_cat.metta, and
+src/chem_catalysis.metta.
+
+1.2   What the evidence currently says
+• Planted pair and cycle detectors work on positive and negative controls.
+• Forty generated-unplanted eight-rule seeds, each evaluated under random, shuﬄed-catalyst, and no-
+  catalysis families, produced no detected cycles of lengths 2 through 7.
+• A deliberately success-biased 20-rule chemistry contains a genuine RAF under the implemented de-
+  tector, but the result is highly sensitive to catalyst routing and pool design and is not an unbiased
+  emergence result.
+• A frozen ordered-bootstrap experiment produced RAF incidence 0/8 unguided, 6/8 weak guidance,
+  and 0/8 shuﬄed, with all prespeciﬁed ablations collapsing the weak result. This was evidence for
+  bounded guided causal uplift in that exact constructed chemistry.
+• The independent primary replication failed: 1/16 unguided, 4/16 weak, 0/16 shuﬄed, below the
+  registered eﬀect thresholds.
+• A robustness cohort separated incidence but failed causal attribution: 8/16 unguided, 16/16 weak,
+  0/16 shuﬄed, while guidance removal retained 8/16.
+• The larger dual-bootstrap successor was negative: 13/32 unguided, 9/32 weak, 0/32 shuﬄed. Its
+  prospective mechanism audit labeled the failure applicability loss: weak guidance made 51 blocked
+  ﬁrst-absent selections versus 38 for unguided.
+
+1.3   Bottom line
+Observed: The project has a credible experimental substrate and has generated well-controlled negative
+results. It has not demonstrated spontaneous ACS/RAF emergence. The best positive guided result did
+not independently replicate.
+Interpretation: The main bottleneck is no longer absence of replay, detector checks, or candidate-cap
+provenance. It is experimental identiﬁability: the current chemistries confound catalytic organization
+with source ordering, resource availability, applicability, and hand-designed pathway structure.
+Boundary: No result in this report supports biological realism, open-ended evolution, semantic chem-
+istry, AGI, or spontaneous autocatalytic emergence.
+
+
+2     Project objective and epistemic vocabulary
+The project asks whether a bounded symbolic rewrite soup can produce autocatalytic organization that
+is:
+
+
+                                                  3
+PeTTa-Chem external review                                                                     26 July 2026
+
+
+1. not explicitly planted in the rule pool;
+2. detected by a validated ACS/RAF-like criterion;
+3. persistent across time rather than present only as a static graph;
+4. reproducible across seeds;
+5. discriminated from shuﬄed and no-catalysis controls; and
+6. intervention-relevant, so deleting catalytic structure or key rules destroys the measured eﬀect.
+The project deliberately distinguishes several notions:
+Static catalytic cycle
+     A graph-level product/catalyst cycle. It may be unreachable or dynamically irrelevant.
+RAF
+     A reﬂexively autocatalytic, food-generated reaction subset under the implemented closure test.
+Active RAF/ACS
+     A qualifying set that occurs in a realized event window.
+Causal RAF/ACS
+     An active set whose prespeciﬁed structural ablation removes the endpoint.
+Guided uplift
+     A diﬀerence caused by a ﬁxed selection policy in a constructed chemistry; this is not spontaneous
+     emergence.
+Spontaneous emergence
+     A stronger claim requiring non-planted chemistry, appropriate controls, replication, and causal
+     discrimination. Its status is currently none.
+
+
+3     Implemented system
+3.1    Runtime and module organization
+Version 0.1 targets the local PeTTa runtime backed by SWI-Prolog 9.3.x (initial validation used 9.3.36).
+The main source modules are:
+    Module                     Implemented responsibility
+    chem_dynamics.metta        Generic symbolic chemistry state and dynamics support.
+    chem_exp00.metta           Molecule/rule/state/chamber schemas, candidate generation, caps, de-
+                               terministic selection, applicability, checked ﬁring, event history, replay,
+                               hashes, bounded tick loops, attrition provenance, and stop dispositions.
+    chem_exp01.metta           Planted ACS ﬁxtures, pair scanner, catalytic cycle scanners through
+                               length seven, and replay-derived productivity ablation.
+    run_contract.metta         Consequential-run schema for conﬁguration, manifest, events, snap-
+                               shots, metrics, ACS candidates, ablations, summaries, and replay sta-
+                               tus.
+    chem_exp02.metta           Seeded generated rule families, random/shuﬄed/ no-catalysis controls,
+                               folded summaries, and cycle-scan reports.
+    chem_exp04.metta           Rich ligation/cleavage/modiﬁcation chemistry, ﬁrst-class catalysis facts,
+                               seeded positive RAF ﬁxtures, and PeTTa report atoms.
+    chem_exp05.metta           Soft aﬃnity-biased catalyst assignment and rotated controls.
+    chem_exp06.metta           Favorable-condition/bridge probes, bounded intervention tables, state-
+                               ful candidate-cap paths, and ACS boundary checks.
+
+
+
+
+                                                    4
+PeTTa-Chem external review                                                                      26 July 2026
+
+
+
+  Module                         Implemented responsibility
+  chem_exp07.metta               Weighted categorical policies, stateful ensembles, rolling RAF detec-
+                                 tors, matched controls, ordered and dual bootstrap chemistries, causal
+                                 ablations, exact replay, and mechanism diagnostics.
+
+
+3.2    Core data and transition contracts
+The core state is explicit and inspectable. Molecules carry symbolic identity and integer abundance.
+Rules carry stable ID, reactants, product, and catalyst. A chamber contains state, source rules, and
+event history. A candidate records the proposed executable reaction, while a candidate pool and cap
+record which bounded list was exposed to selection.
+The checked tick path is conceptually:
+      source chamber → bounded candidate generation → attrition/provenance validation → deter-
+      ministic or weighted selection → source-rule identity and applicability checks → ﬁring or explicit
+      no-op → new chamber and event history → exact replay check
+Important invariants include nonnegative abundances, exact source-rule ownership, stable candidate
+identity, fail-closed behavior for stale or foreign candidates, one evaluated generation path per tick,
+explicit dropped-candidate counts, and equality between recorded and replayed terminal chambers.
+
+3.3    Bounded generation and execution
+The exp00 driver has been extended from a one-reaction smoke to:
+• candidate caps from zero through eight, including nonpositive and oversized-cap behavior;
+• source-rule ownership and generation-count audits;
+• explicit requested/eﬀective cap, retained count, dropped count, remaining capacity, attrition stage,
+  and validity dispositions;
+• live histories of up to nine eight-tick sweeps and 64 retained events;
+• early stop-quiescent and explicit stop-bounded;
+• exact ﬁnal-chamber preservation and run-wide productive/no-op/ unaccounted outcome totals; and
+• total bounded generation for the current 31-rule/four-molecule ﬁxture, while preserving the stable
+  ﬁrst-eight generated preﬁx.
+The last point is engineering coverage, not a larger scientiﬁc sweep. At the current head, 31 source rules
+are auditable, eight are retained by the ﬁxed execution cap, and 23 omissions are reported explicitly.
+
+3.4    Detection and causal analysis
+Three detector families have been implemented:
+1. conservative exact product-as-catalyst cycle scanners for lengths 2–7;
+2. maximal-RAF pruning with food closure and greedy core minimization, initially mirrored by a host
+   reference and later fed by ﬁrst-class PeTTa catalyzes facts; and
+3. event-window detectors for realized three- and four-rule RAF pathways in exp07, coupled to replay
+   and structural ablations.
+Detector validation precedes scientiﬁc use. Planted cycles are recovered, distractors and no-catalysis
+ﬁxtures are rejected, the exp04 seeded positive returns maximal RAF 15/core 2 and empty-catalysis
+RAF 0, and repeated detector calls are invariant to intervening calls and path metadata.
+
+
+
+                                                      5
+PeTTa-Chem external review                                                                              26 July 2026
+
+
+3.5     Guidance and intervention machinery
+The later experiments compare:
+• unguided categorical selection;
+• weak Doob-h or frontier guidance;
+• shuﬄed guidance at matched shifted-mass cost;
+• guiding-term removal;
+• bootstrap deletion;
+• full catalyst-set deletion; and
+• individual pathway-rule deletion.
+These are bounded causal diagnostics on constructed chemistries. They do not implement an actual
+Schrödinger bridge solver over learned transition kernels; “Doob-h” denotes a frozen weak reweighting
+policy inspired by that formalism.
+
+
+4     Experiment history and outcomes
+4.1     Summary table
+ Exp.       Question                       Main result                            Status / limitation
+ 00         Does the PeTTa chemistry       Schemas,       bounded      genera-    Engineering validation; no emer-
+            kernel execute and replay      tion/selection/ﬁring,      64-event    gence endpoint.
+            exactly?                       histories, provenance, and stop
+                                           rules implemented.
+ 01         Can known ACS structures       Planted two-rule closure, cycles       Positive detector calibration only.
+            be recovered and ablated?      of length 3–7, distractor rejection,
+                                           and replay-derived productivity
+                                           drop pass.
+ 02         Do     simple  generated-      40 seeds × 3 families = 120            Negative for the tested generator
+            unplanted pools contain        records; zero cycles for every size    and strict cycle criterion.
+            cycles?                        2–7. Planted controls are de-
+                                           tected.
+ 03         Can generated pools drive      Productive bridges, controls, can-     Mostly constructed productive ﬁx-
+            multi-tick stateful dynam-     didate caps, event accumulation,       tures; a current-head singleton re-
+            ics?                           replay, and artifact exports imple-    gression is described in Section 5.
+                                           mented.
+ 04         Can a richer favorable         20-rule favorable pool: maximal        Positive but deliberately biased;
+            chemistry sustain a RAF?       RAF 15, core 2, no-catalysis RAF       shuﬄe sensitivity is large.
+                                           0; 56-event dynamics.
+ 05         Can soft catalyst aﬃnity re-   Aﬃnity and rotated-control             Plumbing and calibration only; no
+            place hard assignment?         pools feed ordinary tick machin-       RAF claim.
+                                           ery.
+ 06         Can     favorable-condition    Cap changes alter selected rules       Diagnostic path scaﬀold, not an
+            paths bridge ACS-negative      and paths, but tested boundary         optimized bridge or emergence re-
+            to RAF-rich states?            pairs are not ACS-positive.            sult.
+ 07         Does     weak     guidance     One ordered-bootstrap cohort           Program closed as negative for
+            causally increase realized     passed; independent replication        general guided uplift; spontaneous
+            RAF closure?                   and dual-bootstrap successor           emergence remains none.
+                                           failed.
+ 08         Is closure robust across       Draft only; no registered run.         Unfrozen/unexecuted with unre-
+            every source-order permu-                                             solved executable and conﬁdence-
+            tation against a degree-                                              bound gates.
+            preserving catalysis null?
+
+
+
+                                                         6
+PeTTa-Chem external review                                                                       26 July 2026
+
+
+4.2   exp00–exp03: substrate and simple generated chemistry
+exp00. The ﬁrst smoke implemented A+B –Cat–> AB; later commits generalized it into the common
+chamber kernel. The current body of work is strong on deterministic replay and fail-closed provenance.
+It is weak as scientiﬁc evidence because most ﬁxtures are deliberately constructed to exercise a code
+path.
+
+exp01. The planted reciprocal pair is recovered beside distractors, while a non-catalytic molecule cycle
+is rejected. Removing one planted rule reduces replayed productivity by one event. Dedicated ﬁxtures
+validate exactly one cycle at each size 3–7.
+
+exp02. The systematic deterministic sweep comprises four planted reciprocal-pair points and 40
+generated-unplanted points. Each point has random-polymer, shuﬄed-catalyst, and no-catalysis
+records.
+             Family                       Points      Records    Active records   Active pairs
+             Planted reciprocal control           4        12                4              7
+             Generated-unplanted                 40       120                0              0
+
+The generated-unplanted records also contain zero active cycles for every tested size 3–7. Thus the null
+is not “the detector never ﬁres”: the planted ﬁxtures ﬁre, while the tested generator does not.
+
+exp03. Stateful dynamics were built over the same source families, including productive cap-3 through
+cap-8 bridges, multi-tick accumulation, shuﬄed and no-catalysis controls, run exports, and artifact writ-
+ers. These ﬁxtures demonstrate mechanics and replay but do not establish non-planted ACS formation.
+
+4.3   exp04: favorable rich RAF and bias-reduction sweep
+The rich chemistry uses 20 hand-designed ligation, cleavage, and modiﬁcation rules over food molecules
+A–D. A speciﬁcity-ﬁltered structural catalyst map, food replenishment, and a slow basal trickle make it
+deliberately favorable.
+Observed: The strict host reference found maximal RAF size 15 and greedy core size 2 (lCD, lBCD2);
+the core passes the RAF predicate. Empty catalysis gives RAF size 0. A 56-tick run yields 56 events
+and maintains the food ﬂoor.
+The reduction sweep changed catalysis mode, basal interval, and pool construction. Representative rows
+are:
+              Pool                   Catalysis            RAF     Core   Events    Catalyzed
+              Hand-designed          speciﬁc, basal-4       15       2       56           42
+              Hand-designed          shuﬄed, basal-4        10       3       53           39
+              Hand-designed          none, basal-4           0       0       14            0
+              Generated template     speciﬁc, basal-4        0       0       14            0
+              Generated template     shuﬄed, basal-4         1       1       56           42
+
+Interpretation: The detector can identify a real RAF in the implemented sense, but the positive struc-
+ture is largely a property of the engineered pool/catalysis map. Several shuﬄes retain RAF-like structure,
+while the mechanically generated pool under speciﬁc catalysis is negative. This is an appropriate positive
+control and a warning against calling static RAF detection “emergence.”
+
+
+
+
+                                                      7
+PeTTa-Chem external review                                                                    26 July 2026
+
+
+4.4     exp05–exp06: aﬃnity and bridge diagnostics
+Exp05 assigns catalysts through token-overlap aﬃnity with a positive baseline and rotated-weight control,
+then projects the result into ordinary candidate pools. Exp06 deﬁnes a small intervention space spanning
+aﬃnity, basal replenishment, cap, and catalysis oﬀset. It includes a bounded shortest-path table and
+stateful cap probes.
+Observed: In the stateful cap probe, cap 1 repeats e5r0; cap 2 exposes e5r1; both later no-op after
+reactant A is exhausted. Neither selected two-rule path passes the product/catalyst closure boundary.
+Interpretation: Candidate access changes trajectories, but the current bridge scaﬀold does not yet
+establish a path into an ACS-positive region. It also does not estimate an uncontrolled transition kernel,
+solve a Schrödinger bridge, or separate guidance from ordinary resource/applicability eﬀects.
+
+4.5     exp07: guided closure program
+4.5.1    N=20 two-rule matrix
+Seeds 7–10, ticks 3–22, cap 2, and replenishment at ticks 8, 13, and 18 produced eight events per seed.
+RAF incidence was 4/4 in all three arms. This was correctly interpreted as an all-arms-positive pool:
+the chemistry closed independently of guidance.
+
+4.5.2    Rich shared-pool ensemble
+For seeds 11–18, rolling three-rule RAF incidence was 5/8 unguided, 7/8 weak, and 3/8 shuﬄed. Per-
+sistence totals were 13/49/11. Both controls remained positive, and guiding removal did not isolate a
+guidance-caused eﬀect.
+
+4.5.3    Ordered bootstrap
+The successor removed the initially available cycle catalyst and forced the path ob0 -> op1 -> op2 ->
+op0. On held-out seeds 19–26:
+
+                Arm              RAF incidence      Persistence total   Distinct-rule total
+                Unguided                     0/8                    0                42/64
+                Weak Doob-h                  6/8                   41                59/64
+                Shuﬄed                       0/8                    0                39/64
+
+All 24 trajectories replayed. Removing guidance, the bootstrap, all cycle catalysts, or any one cycle rule
+reduced weak incidence to zero. Under the frozen rule, this supported bounded guided causal RAF uplift
+in that exact chemistry.
+
+4.5.4    Independent ordered replication
+The exact-form cohort A used fresh seeds 101–116:
+                        Arm          Incidence     Persistence   Productive events
+                        Unguided         1/16               1                  259
+                        Weak             4/16              15                  263
+                        Shuﬄed           0/16               0                  250
+
+The weak advantage was below both preregistered six-seed thresholds, so the primary replication failed.
+Structural ablations were all null, but that did not rescue the failed primary comparison.
+
+
+                                                      8
+PeTTa-Chem external review                                                                     26 July 2026
+
+
+Cohort B changed order and draw hash. Incidence was 8/16 unguided, 16/16 weak, and 0/16 shuﬄed.
+The incidence separation passed, but removing guidance retained unguided 8/16, above the registered
+causal maximum of two. Order/hash robustness therefore failed.
+
+4.5.5    Dual-bootstrap successor
+The larger successor ﬁxed a six-step bootstrap/four-rule RAF, twelve-rule source, cap 8, seeds 201–232,
+and ticks 3–34.
+                         Arm         Incidence   Persistence      Events   Diversity
+                         Unguided        13/32             95       549         336
+                         Weak             9/32             51       523         278
+                         Shuﬄed           0/32              0       396         219
+
+All 96 trajectories replayed. Removing either bootstrap, all four cycle catalysts, or any cycle rule reduced
+weak incidence to 0/32. Removing guidance retained unguided 13/32. The frozen guided-uplift criterion
+failed.
+The post-result mechanism audit was prospectively speciﬁed before deriving new diagnostics. It repro-
+duced registered endpoints and applied a ﬁxed precedence rule. Weak guidance produced 51 blocked
+selections of the currently ﬁrst-absent pathway rule, versus 38 for unguided, yielding the label applicabil-
+ity loss. This explains the negative result descriptively: guidance often favored a frontier reaction before
+its reactants were available. It is not a new causal treatment result.
+
+4.6     exp08 draft
+The current untracked exp08 draft proposes all 24 permutations of four RAF rules, each paired with
+a degree-preserving catalyst-routing null, plus exact McNemar inference and mechanistic deletion. Its
+scientiﬁc intent is good: separate catalyst routing from catalytic degree and source order.
+It is not ready to run. The draft explicitly leaves unresolved:
+• the bit-exact run-0 reference trace and hash;
+• executable permutation and null constructors with invariance ﬁxtures;
+• shared paired random-stream/cap implementation;
+• serialized detector artifact;
+• a published lower conﬁdence-bound method for paired incidence diﬀerence; and
+• deletion-replay implementation and ﬁxtures.
+No exp08 result exists, and the draft must not be cited as a preregistered experiment.
+
+
+5     Current reproducibility audit
+On 26 July 2026 the canonical scripts were rerun locally at head bfa0e47. Counts below are terminal
+check marks printed by the PeTTa test harness.
+
+
+
+
+                                                     9
+PeTTa-Chem external review                                                                    26 July 2026
+
+
+
+            Script                                     Exit   Passed checks   Failed checks
+            run_exp00.sh                                  0             513              0
+            run_exp01.sh                                  0              68              0
+            run_contract.sh                               0              35              0
+            run_exp02.sh                                  0             517              0
+            run_exp03.sh                                  1              38              1
+            run_exp04.sh                                  0              79              0
+            run_exp04_first_class_catalysis.sh            0              79              0
+            run_exp05.sh                                  0              94              0
+            run_exp06.sh                                  0              61              0
+            run_exp07.sh                                  0             309              0
+
+The exp03 failure is a current-head reproducibility defect. The query exp03-exp02-after-3 random
+seed-11 returns eight identical chamber answers where the smoke expects one. The chamber value itself
+matches, but duplicate logical answers violate the singleton contract. The script exits 1. This must
+be ﬁxed and covered before declaring the entire current suite green. It does not alter the stored exp07
+endpoint values, which are pinned and independently replay-tested by exp07, but it weakens the claim
+that every historical layer composes cleanly at current head.
+
+
+6     What is strong, what is weak, and what is missing
+6.1   Strong aspects
+• PeTTa-ﬁrst implementation. Most scientiﬁc logic is in inspectable symbolic clauses.
+• Replay discipline. Large matrices require exact trajectory replay and preserve explicit event histo-
+  ries.
+• Negative controls. Shuﬄed, no-catalysis, guiding-removal, and structural deletion controls are
+  routine.
+• Detector calibration. Planted positives and negative ﬁxtures exist before detector use.
+• Preregistration discipline. Later protocols freeze seeds, horizons, pools, endpoints, costs, and
+  stopping rules.
+• Honest negative conclusions. Failed replication and causal gates were not rescued by post hoc
+  reinterpretation.
+
+6.2   Weak aspects
+• Excess infrastructure accretion. Hundreds of small commits expanded cap and provenance cov-
+  erage far beyond what was needed for the next scientiﬁc discrimination.
+• Constructed chemistry dependence. Most positive RAFs depend on hand-designed pathways,
+  replenishment, basal events, or guidance.
+• Applicability-blind guidance. Frontier weighting can increase mass on reactions that cannot yet
+  ﬁre.
+• Static/dynamic ambiguity. A pool can contain a RAF while realized dynamics never reaches or
+  maintains it; some reports mix these levels.
+• Limited statistical generalization. Several matrices use deterministic hash draws rather than a
+  clearly deﬁned stochastic process with estimable sampling uncertainty.
+• Current regression. exp03 violates a singleton answer invariant at current head.
+
+
+
+
+                                                  10
+PeTTa-Chem external review                                                                    26 July 2026
+
+
+6.3   Missing scientiﬁc components
+• A generative distribution over reaction rules and catalysis maps that is deﬁned independently of
+  desired RAF pathways.
+• A scalable, generic RAF implementation validated against a standard reference library or exhaustive
+  small-system oracle.
+• Separation of structural RAF existence, dynamical reachability, persistence, and causal productivity
+  into distinct endpoints.
+• Replicated parameter sweeps with uncertainty, rather than additional hand-selected pathway designs.
+• A neutral resource model: inﬂux, dilution/decay, reaction propensities, and population-size scaling.
+• A principled baseline from random catalytic network/RAF theory.
+
+
+7     Recommended next plan
+7.1   Recommendation 0: stop feature accretion and repair reproducibility
+Before new scientiﬁc work:
+1. ﬁx the exp03 duplicate-answer regression and add an explicit uniqueness test at the underlying clause
+   boundary;
+2. run the complete canonical suite with compact logs and archive a machine-readable test manifest;
+3. commit or archive the untracked exp08 draft and scratch ﬁles so the scientiﬁc source of truth is
+   unambiguous; and
+4. tag a review baseline commit.
+
+7.2   Recommendation 1: deﬁne one neutral random-chemistry model
+Replace the next pathway-speciﬁc chemistry with a small published-style random catalytic reaction-
+system model:
+• polymers over a ﬁxed alphabet with ligation/cleavage;
+• a declared food set and maximum polymer length;
+• catalysis edges sampled independently at rate p or from one explicitly declared structural kernel;
+• stochastic mass-action or Gillespie-like reaction events;
+• controlled inﬂux and dilution/decay; and
+• no pathway-aware selection or terminal target.
+The ﬁrst question should be calibration, not novelty: does the implementation recover the expected
+ﬁnite-size RAF transition as catalysis density varies? This gives an external theoretical anchor and tells
+us whether the detector and dynamics behave plausibly.
+
+7.3   Recommendation 2: validate the RAF detector against an oracle
+For small rule sets, enumerate every subset and compare the PeTTa maximal-RAF and core outputs
+with an independent reference implementation. Include:
+• food-generation closure;
+• catalyst-in-closure checks;
+• multiple catalysts and multiple products where supported;
+• degenerate self-catalysis;
+• unreachable static cycles;
+• monotonicity when catalysis edges are added; and
+• deletion sensitivity.
+
+                                                   11
+PeTTa-Chem external review                                                                       26 July 2026
+
+
+This is the highest-value application of the project’s “validate the miner ﬁrst” research rule.
+
+7.4   Recommendation 3: separate four endpoints
+Every future run should report, separately:
+1. structural: does the sampled reaction system contain a RAF?
+2. reachable: can its molecules be generated from food under the actual dynamics?
+3. active/persistent: does it ﬁre and persist for a speciﬁed fraction of a post-burn-in window?
+4. causal/productive: does deleting its catalysis reduce a declared productivity or persistence endpoint
+   against a matched null?
+Passing a weaker endpoint must never be described with the stronger label.
+
+7.5   Recommendation 4: only then revisit guidance
+If guidance remains scientiﬁcally interesting, make it applicability-aware: weight only currently exe-
+cutable reactions, or explicitly factor guidance into “reach prerequisite” and “close RAF” potentials.
+Compare against:
+• unguided stochastic dynamics;
+• an applicability-only heuristic with no RAF knowledge;
+• degree-preserving shuﬄed guidance;
+• matched compute/intervention cost; and
+• a true bridge/control solution on a tiny state space where the optimal policy can be computed exactly.
+The exact small-state solution is essential before using “Doob transform” or “Schrödinger bridge” as
+more than inspiration.
+
+7.6   Recommendation 5: postpone exp08 in its current form
+The 24-permutation paired catalyst-routing test is careful, but it studies the same constructed dual-
+bootstrap pathway whose general guided eﬀect has already failed. Running it now risks answering an
+increasingly narrow question about one artifact. Complete it only if external advisers believe catalyst-
+routing identiﬁability in that exact model is intrinsically valuable. Otherwise, reuse its good design
+ideas—paired degree-preserving nulls, exact replay, mechanistic deletion, and valid paired inference—
+inside the neutral random chemistry calibration.
+
+
+8     Questions for external advisers
+1. Is the recommended neutral random catalytic reaction-system model the right next substrate, or is
+   there a stronger standard framework/library we should adopt directly?
+2. Which established RAF algorithm and benchmark suite should be used as the independent oracle?
+3. What is the cleanest ﬁnite-size phase-transition calibration for this scale: catalysis probability, polymer
+   length, food-set size, or another control parameter?
+4. Should the scientiﬁc target be structural RAF formation, dynamically active RAF persistence, or
+   ecological selection among RAFs?
+5. Is an exact Schrödinger bridge/Doob-control baseline valuable here, or does it distract from unbiased
+   emergence?
+6. Are degree-preserving catalyst shuﬄes suﬃcient nulls, and what other invariants should be preserved?
+7. What minimal stochastic resource model avoids both trivial starvation and hidden terminal forcing?
+8. Which part of the present PeTTa implementation should be retained, simpliﬁed, or replaced before
+   the next experiment?
+
+                                                     12
+PeTTa-Chem external review                                                                 26 July 2026
+
+
+9    Reproduction and evidence map
+Repository: https://github.com/bgoertzel-sing/petta-chem. Audited local head: bfa0e47; the
+full object is recorded in the project status.
+Canonical local commands:
+scripts/run_exp00.sh
+scripts/run_exp01.sh
+scripts/run_contract.sh
+scripts/run_exp02.sh
+scripts/run_exp03.sh
+scripts/run_exp04.sh
+scripts/run_exp04_first_class_catalysis.sh
+scripts/run_exp05.sh
+scripts/run_exp06.sh
+scripts/run_exp07.sh
+Primary evidence pointers:
+• README.md: current implementation and experiment summary.
+• experiments/exp02_small_sweep_20260630/SUMMARY.md: 40-seed generated-unplanted cycle re-
+  sults.
+• experiments/exp04/RUN.md: rich RAF design and host reﬁnement.
+• experiments/exp04_reduction_sweep_20260708/SUMMARY.md: pool/catalysis/basal reduction ma-
+  trix.
+• experiments/exp07/PREREG_ORDERED_BOOTSTRAP.md: ﬁrst guided positive result.
+• experiments/exp07/PREREG_ORDERED_REPLICATION.md: failed primary replication and failed robust-
+  ness cohort.
+• experiments/exp07/PREREG_DUAL_BOOTSTRAP.md and DUAL_BOOTSTRAP_REPORT.md: larger negative
+  successor.
+• experiments/exp07/PREREG_DUAL_MECHANISM_AUDIT.md: prospective diagnostic plan; implementa-
+  tion result is applicability-loss.
+• project records under projects/petta-chem/: chronological status, decisions, tasks, and notes.
+
+
+10    Conclusion
+PeTTa-Chem has succeeded as an inspectable research-engineering substrate. It has not yet succeeded
+at its central scientiﬁc milestone. The accumulated evidence says:
+     The implementation can represent, replay, detect, guide, and ablate autocatalytic structures.
+     The tested simple random generators do not produce them; favorable hand-designed systems
+     do; and guidance eﬀects are fragile under independent replication and applicability/resource
+     changes.
+The most productive next move is therefore not another cap, seed family, or pathway-speciﬁc guidance
+protocol. It is a reset around a neutral random chemistry with an independently validated RAF oracle
+and a known ﬁnite-size baseline. That would convert the existing engineering investment into a cleaner
+scientiﬁc instrument.
+
+
+
+
+                                                  13
+

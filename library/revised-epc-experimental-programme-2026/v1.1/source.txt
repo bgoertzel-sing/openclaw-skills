@@ -1,0 +1,538 @@
+            Revised ePC Experimental Programme:
+   Homotopy Absorption, Fibre Emergence, and the Deployment
+                            Settle
+      Working plan v1.1 — mid-flight revision, for implementation by coding agents
+
+
+                                Causal Fibres / Hyperon ePC effort
+
+                       July 23, 2026      (supersedes v1.0 of the same date)
+
+                                                Abstract
+          Version 1.1 revises the v1.0 programme in light of clarifications and new measurements
+      from Mesto (author correspondence, July 23, 2026) that resolve both ambiguities v1.0 was
+      designed to guard against, and that materially change the interpretation of the homotopy
+      result. The central update: at 124M the settled ePC error field is, to high precision, the
+      backpropagation adjoint field — all fidelity numbers were teacher-free feedforward all along,
+      the errors are absolutely small (5.6 × 10−4 global L2), and the “error-norm ratio” curve is a
+      gradient-alignment probe (∥PC grad∥/∥BP grad∥ rising η → 0.98 at per-block cosine ≥ 0.998).
+      Consequences for this programme: the emergence battery (E2) gains a cheap adjoint-field track
+      that requires no homotopy and starts immediately; E3 gains gradient-sparsification baselines
+      and a proximal-step ablation; E4 is reframed — there is no amortization gap because nothing
+      is amortized, and the entire deployment question reduces to whether test-time information
+      injection beats the feedforward default; E1’s interesting content shifts from “does the homotopy
+      avoid collapse” (Mesto’s depth profile says it should) to localizing what in the R8/R9 recipe
+      caused collapse. Section 1 tells implementing agents exactly what to do with completed (E1)
+      and in-flight (E2) work; the remainder restates the full programme so this document is self-
+      contained and v1.0 can be retired.
+
+
+Contents
+1 Revision memo for implementing agents (v1.0 → v1.1)                                                    2
+  1.1 Why the revision . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         2
+  1.2 Interpretive frame carried through the rest of the document . . . . . . . . . . . . .              3
+  1.3 Action list, in priority order . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       3
+  1.4 Pre-registered predictions (freeze before the relevant unblinding) . . . . . . . . . .             4
+
+2 Context (revised)                                                                                      4
+  2.1 Prior internal results assumed known . . . . . . . . . . . . . . . . . . . . . . . . . .           4
+  2.2 External input: Mesto (2026), as now understood . . . . . . . . . . . . . . . . . . .              5
+  2.3 What the revision means for the programme’s three structural changes . . . . . . .                 5
+
+3 Shared platform, notation, and methodology standards                                                   5
+  3.1 The rig . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      5
+  3.2 ePC student parameterisation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           5
+
+
+                                                     1
+    3.3    Fields and substrates (new in v1.1) . . . . . . . . . . . . . . . . . . . . . . . . . . .    6
+    3.4    Methodology standards (unchanged from v1.0; mandatory) . . . . . . . . . . . . .             6
+
+4 E1 (complete): record, post-hoc checks, and optional arm E1b                                          6
+  4.1 Status . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      6
+  4.2 Post-hoc checks (cheap; run on stored artifacts) . . . . . . . . . . . . . . . . . . . .          6
+  4.3 E1b (optional, low priority): localize the R8/R9 cause . . . . . . . . . . . . . . . .            6
+
+5 E2 (in flight): dual-substrate frontier stability and fibre emergence                                 7
+  5.1 Question, restated for two substrates . . . . . . . . . . . . . . . . . . . . . . . . . .         7
+  5.2 New diagnostic M0 (field equivalence) . . . . . . . . . . . . . . . . . . . . . . . . .           7
+  5.3 The battery (unchanged definitions, both substrates) . . . . . . . . . . . . . . . . .            7
+  5.4 Branches (per track; the joint read follows M0) . . . . . . . . . . . . . . . . . . . .           8
+
+6 E3: structured vs. unstructured frontier settle at matched budget                                     8
+  6.1 Question . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      8
+  6.2 Conditions (matched total scalar-update budget, metered) . . . . . . . . . . . . . .              8
+  6.3 Evaluations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       8
+
+7 E4 (reframed): test-time information injection vs. the feedforward default                            9
+  7.1 Reframing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       9
+  7.2 Conditions (teacher-free evaluation throughout) . . . . . . . . . . . . . . . . . . . .           9
+  7.3 Decisive comparison . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         9
+
+8 E5: MORK hosting of the six-layer PC model                                                           10
+
+9 Controls and baselines                                                                               10
+
+10 Sequencing (revised) and decision points                                                            10
+
+11 Implementation notes for coding agents                                                              11
+
+A Acceptance criteria (v1.1)                                                                           11
+
+B Metric definitions gathered                                                                          12
+
+
+1     Revision memo for implementing agents (v1.0 → v1.1)
+Status assumed: E1 is complete under v1.0; E2 is in flight under v1.0. Nothing already run is
+wasted; this section lists the deltas, in priority order. Where v1.1 conflicts with v1.0, v1.1 governs.
+
+1.1       Why the revision
+Mesto’s reply corrects two misreadings of his report and adds new measurements:
+ 1. All fidelity numbers were teacher-free. Evaluation in his report is plain feedforward
+    (ε=0) on both student and teacher; the teacher enters only the training-time settle objective.
+    The v1.0 branch E1-C scenario (clamped-only fidelity) is off the table for his result.
+
+
+
+
+                                                    2
+  2. The rising curve is a gradient probe, not a state-space quantity. The “error-norm
+     ratio” is ∥∇W EW ∥/∥∇BPW L∥ per block, teacher-free under cross-entropy: it starts at exactly
+     η (the T =1 anchor identity, observed to the digit) and rises to 0.98, with per-block cosine
+     between the two gradients never below 0.998. Together with the tiny error norms (5.6 × 10−4
+     global L2 over 4.72M cells), the settled error field ≈ the BP adjoint field: the homotopy
+     interpolates the magnitude of the update from an η-scaled BP step to a full-magnitude local
+     update that never leaves BP’s direction.
+  3. Depth profile (new data). Top-5% frontier mass by block (1–12, % of frontier cells): 11.1,
+     18.7, 17.2, 14.8, 15.3, 11.3, 7.2, 2.8, 1.5, 0.1, 0.1, 0.0. Blocks 2–5 hold 66%; the last three
+     blocks hold 0.2%. This is the opposite of the R8/R9 late-block pile-up.
+  4. Objective-swap robustness (new data). Replacing the KD term with plain cross-entropy
+     on data (no teacher anywhere) preserves the structure: top-5% share 91.6% vs. 90.0%, same
+     depth shape (13.1, 20.8, 19.5, 15.9, 12.6, 8.2, 6.2, 2.4, 0.9, 0.2, 0.1, 0.0). Across fresh samples
+     under both objectives the top-5% share stays in 82–97%; the fixed-depth Hill statistic moves
+     1.38–2.00 and is a tail-weight descriptor only.
+  5. Deployment is trivially resolved in his frame. With the task term absent, the settle
+     energy is the pure quadratic in ε, minimized at ε=0: the deployed artifact is exactly the
+     feedforward student. PC in this construction is a learning-time device; nothing is amortized.
+
+1.2    Interpretive frame carried through the rest of the document
+At the terminal homotopy, PC is a local iterative scheme that computes backpropagation’s credit
+signal. This is a clean confirmation of the PC-approximates-BP correspondence at 103 × prior scale,
+and it has two programme-level corollaries. (a) The concentration measurement is a measurement
+of adjoint sparsity, obtainable on any trained model with plain autograd, no homotopy required
+— which is why E2 gains an adjoint-field track that starts immediately. (b) If the credit signal is
+the same signal, the PC parameterisation alone should confer approximately no continual-learning
+advantage; any advantage must enter via frontier gating (the S3/S4 lesson) or via the one residual
+structural difference, the proximal/implicitly-regularized character of a settle-based update versus
+a raw gradient step. Both corollaries are pre-registered as Predictions 1 and 2 below.
+
+1.3    Action list, in priority order
+  1. [E2, in flight — do not discard] Keep all v1.0 E2 work on the settled error field. Add
+     the adjoint-field track (§5): compute plain BP adjoint fields (teacher-free CE) on the same
+     persisted probe set and run the identical M1–M5 battery on them. Add the new equivalence
+     diagnostic M0 (error field vs. adjoint field, per block) — on our rig this verifies whether
+     Mesto’s 124M identification holds at six layers, and it determines how the two tracks’ results
+     are to be read against each other.
+  2. [E2] Pre-register the co-location prediction (Prediction 2) before unblinding fingerprint re-
+     sults: if factor-aligned structure exists, it should concentrate in the frontier’s home blocks
+     (early-to-middle by Mesto’s profile; use our own measured profile).
+  3. [E1, complete] Record the branch taken under v1.0 criteria in the phase memo, then run
+     the two cheap post-hoc checks in §4: (i) our own frontier depth profile vs. Mesto’s, KD and
+     CE variants; (ii) M0 on the E1 terminal student. Queue the new optional arm E1b (homotopy
+
+
+                                                   3
+      schedule with the energy-monotonicity term restored) at low priority — it localizes the cause
+      of the R8/R9 collapse but blocks nothing.
+ 4. [E3] Add two conditions: a gradient-sparsification baseline (top-k with error feedback /
+    momentum correction, DGC-style) as the externally-tuned null model for frontier settles;
+    and a proximal ablation (settle-based update vs. raw BP step at matched effective step size)
+    isolating the implicit-regularization difference. Details in §6.
+ 5. [E4] Reframe per §7: FF is the deployed default by construction; drop “amortization gap”
+    framing from configs, logs, and memos; the experiment now purely measures test-time in-
+    formation injection (SC, OT) against FF, with TC retained as a diagnostic upper anchor
+    only.
+ 6. [E5] No structural change; W3’s frontier writes are now to be documented and benchmarked
+    as sparsified-gradient writes (§8).
+ 7. [Harness] New shared components: adjoint-field extractor writing to the same artifact
+    schema as settled error fields; M0 evaluator; update the acceptance-criteria JSON to the
+    Appendix A v1.1 table (version bump, keep v1.0 file in place for the E1 record).
+
+1.4    Pre-registered predictions (freeze before the relevant unblinding)
+Prediction 1. In E3-V4 and any continual-learning comparison, the PC parameterisation alone
+(dense settle, no gating) shows no advantage over matched-compute, matched-seed BP fine-tuning
+beyond noise; advantages, if any, appear only in gated/support-restricted conditions or trace to
+the proximal ablation.
+Prediction 2. If E2 finds factor-aligned structure (M3/M4 above null), the aligned blocks co-
+locate with the frontier’s home blocks (the depth range holding the majority of top-5% mass), not
+with the readout-adjacent blocks.
+
+
+2     Context (revised)
+2.1    Prior internal results assumed known
+ 1. R8/R9 (absorption collapse). Direct ePC distillation of the six-layer teacher under
+    energy-monotonicity training concentrated update credit in the final block and collapsed
+    representation rank; this motivated the frozen-backbone + sidecar architecture.
+ 2. S2. Energy descent can coexist with causally wrong credit; correctness is established inter-
+    ventionally, never from energy curves.
+ 3. S3/S4. With supplied supports/fibres in canonical coordinates, fibre-local plasticity gives
+    zero unrelated drift; transports are identified separately from routing. All positive evidence
+    is supplied-structure.
+ 4. v0.3 JBD. Robust joint block diagonalization with repeated-copy underidentification flag-
+    ging.
+
+
+
+
+                                                 4
+2.2    External input: Mesto (2026), as now understood
+ 1. Homotopy distillation, 124M. GPT-2 deformed into ePC along τ = ηT , T ∈ {1, . . . , 128},
+    BP-anchored at T =1. Teacher-free feedforward fidelity: worst milestone KL 1.3 × 10−5 nats
+    over five runs including terminal τ ; held-out perplexity within 0.35%. Settled error field
+    5.6 × 10−4 global L2: the weights hold the function.
+ 2. Gradient-alignment reading. Per block, ∥PC grad∥/∥BP grad∥ rises η → 0.98 across
+    the homotopy at cosine ≥ 0.998 throughout: the settled local update converges to the full-
+    magnitude BP update in direction and scale. The error field is, to high precision, the adjoint
+    field.
+ 3. Adjoint sparsity. Top 5% of cells carry ≈ 90% (KD) / 91.6% (CE) of squared update mass;
+    range 82–97% over fresh samples; depth profile early-to-middle (blocks 2–5: 66% of frontier),
+    dying toward the readout; robust to the KD→CE objective swap; Hill 1.38–2.00, descriptor
+    only.
+ 4. Deployment. Deployed artifact = feedforward student exactly (energy minimum at ε=0
+    absent a task term); post-deployment learning settles under observed-token cross-entropy,
+    the same objective as the alignment probe.
+ 5. MORK companion. Full 124M forward in the trie-backed store at 6.06 × 10−6 max rela-
+    tive logit error; KV-cache as incremental view maintenance; 16× blocked-format expression
+    reduction.
+
+2.3    What the revision means for the programme’s three structural changes
+The v1.0 changes stand, with sharpened content: absorption returns homotopy-guarded (E1, now
+with a strong prior that it is clean and a new focus on localizing the R8/R9 cause); emergence
+remains the keystone (E2, now dual-substrate and startable immediately on adjoint fields); MORK
+stays pulled forward (E5, with W3 reframed as sparsified-gradient maintenance).
+
+
+3     Shared platform, notation, and methodology standards
+3.1    The rig
+Six-layer GPT-2-style transformer on the synthetic compositional grammar, F ground-truth fac-
+tors (F =4 current; TODO(agent): read from rig config). Provided: frozen teacher T ; context-
+signature map c(x); do-operations x 7→ xdo(j) ; ID and compositional-shift (CS) splits.
+
+3.2    ePC student parameterisation
+Blocks fℓ , ℓ = 1, . . . , L (L=6); xℓ = fℓ (xℓ−1 ) + εℓ ; ẑ = head(LNf (xL )); energy
+                                               X
+                                                    1      2
+                                      E(ε) =        2 ∥εℓ ∥ + L(ẑ(ε)),                        (1)
+                                                ℓ
+
+relaxed T steps from ε(0) =0, weights frozen (assert); local weight objective EW on settled states;
+AdamW.
+
+
+
+
+                                                      5
+3.3     Fields and substrates (new in v1.1)
+Two fields are first-class artifact types, sharing one schema:
+     Settled error field ε(x): the terminal-settle error tensors, per block, from an ePC student.
+     Adjoint field δ(x): the plain BP adjoints ∂L/∂xℓ of a standard model (teacher or E1 student
+      at ε=0), teacher-free CE, computed by autograd. No homotopy, no settle.
+The harness persists both for the shared probe set; every field-level statistic (concentration, depth
+profile, M1–M5) must run unmodified on either substrate.
+
+3.4     Methodology standards (unchanged from v1.0; mandatory)
+Envelope thresholds from n ≥ 3 replicates, rule fixed in advance; matched seeds and per-seed
+deltas for all comparisons; pre-registered acceptance criteria in versioned JSON; dual-condition
+fidelity (clamped and teacher-free) wherever a settle exists in training; per-block reporting for
+all cell statistics; interventional validation for causal claims (never energy curves); full artifact
+emission (config hash, seed, commit, JSONL metrics, histograms, standard figures); no silent
+exclusion — runs launched = runs reported.
+
+
+4     E1 (complete): record, post-hoc checks, and optional arm E1b
+4.1     Status
+E1 ran to completion under v1.0 (homotopy re-expression of the six-layer teacher, n ≥ 5, with
+the R8/R9 contrast arm). Agents: record the branch taken (E1-A/B/C per v1.0 criteria) in the
+Phase-1 memo; the v1.0 criteria file remains the criteria of record for E1.
+
+4.2     Post-hoc checks (cheap; run on stored artifacts)
+P1 (depth profile comparison).
+    Our top-5% frontier depth profile, terminal settle, KD objective and (if stored; else one re-
+    settle pass) CE objective, against Mesto’s twelve-block profiles rescaled to six blocks. Ques-
+    tion: does the early-to-middle locus and readout die-off reproduce at L=6 on a synthetic
+    task?
+P2 (M0 on E1).
+   The equivalence diagnostic of §5 applied to the E1 terminal student: per block, cosine and
+    magnitude ratio between the settled error field and the adjoint field of the same student at
+    ε=0 under matched loss, plus top-5% support overlap (Jacc). If M0 is high, our rig confirms
+    the adjoint identification and the E2 adjoint track is the fast path; if M0 is low at six layers,
+    that divergence is itself a finding (the identification is scale- or task-dependent) and both E2
+    tracks become independently necessary rather than mutually validating.
+
+4.3     E1b (optional, low priority): localize the R8/R9 cause
+Mesto’s depth profile makes late-block pile-up look like a property of the training pressure, not
+of PC. E1b tests this directly: the v1.0 homotopy schedule with the energy-monotonicity term
+restored, matched seeds against both E1 and the contrast arm. Outcome map: if E1b collapses, the
+energy-monotonicity objective is the cause; if E1b is clean, the cause lies in the schedule/anchor
+
+                                                 6
+difference; mixed outcomes localize further by term ablation. Blocks nothing downstream; run
+when capacity allows.
+
+
+5     E2 (in flight): dual-substrate frontier stability and fibre emer-
+      gence
+5.1    Question, restated for two substrates
+Does field structure — context-stable supports, common invariant subspaces, ground-truth factor
+alignment — emerge, (a) in the settled error field of the E1 student, and (b) in the plain adjoint
+field of the same/teacher model? Under the adjoint identification the two should agree; M0
+measures whether they do, and the adjoint track is runnable on any trained model immediately,
+no homotopy required.
+
+5.2    New diagnostic M0 (field equivalence)
+Per block ℓ, over the probe set: (i) cos(εℓ (x), δℓ (x)) distribution; (ii) magnitude ratio ∥εℓ ∥/∥δℓ ∥;
+(iii) top-5% support overlap Jacc(Sℓε , Sℓδ ); (iv) agreement of depth profiles. Report against a
+random-field null. M0 is computed before the rest of the battery is compared across tracks.
+
+5.3    The battery (unchanged definitions, both substrates)
+On settled error fields and adjoint fields alike, with matched-size random-cell and shuffled-context
+nulls throughout:
+M1 (support stability).
+                                                                                                   (1)  (2)
+   Context-conditional top-k supports Sc ; within-vs-between split-half contrast ∆Jacc = Ec [Jacc(Sc , Sc )]−
+   Ec̸=c′ [Jacc(Sc , Sc′ )], at k ∈ {1%, 5%, 20%}, per block and pooled.
+M2 (subspace stability).
+   Top-r singular subspaces Uc,ℓ of stacked fields; principal angles, split-half within vs. between
+   contexts, as a function of r.
+M3 (JBD recovery).
+   Context-conditioned second moments Mc,ℓ = E[ϕℓ ϕ⊤   ℓ | c] (with ϕ ∈ {ε, δ}); v0.3 robust JBD
+   per block; recovered blocks, underidentification flags, and the factor-alignment score (MI
+   between block activations and ground-truth factor values, permutation-calibrated).
+M4 (interventional fingerprints).
+   Do-difference fields ∆j (x) = ϕ(xdo(j) ) − ϕ(x); selectivity matrix Φjb (share of ∥∆j ∥2 in recov-
+   ered block b); success is a dominant diagonal after Hungarian matching.
+M5 (observability floor).
+   εobs on the error-field track. Adjoint-track analogue: linear decodability of factor values from
+   δℓ per block, reported as the ceiling against which M1–M4 are read.
+Co-location (pre-registered, Prediction 2): freeze, before unblinding M3/M4, the statement
+that factor-aligned blocks lie in the depth range holding the majority of top-5% mass (per our
+own P1 profile).
+
+
+
+                                                   7
+5.4   Branches (per track; the joint read follows M0)
+Branch 5.1 (E2-A: emergence). ∆Jacc /M2 above nulls, M3 recovers ≥ ⌈F/2⌉ factor-aligned
+blocks, M4 diagonal-dominant. If on the adjoint track: emergence is a property of trained-
+transformer credit structure generally, and the recipe simplifies to identification on adjoint fields,
+homotopy optional. If on the error-field track only (M0 low): the settle adds structure the raw
+adjoint lacks — a genuinely new claim; verify against C2 and re-run with settle-depth ablation
+before believing it.
+Branch 5.2 (E2-B: concentration without structure). Sparsity reproduces, structure sits at null
+on both tracks. The red regime is real under ideal conditions; the programme’s honest scope
+contracts to supplied-structure applications; E3’s structured arm uses supplied fibres and measures
+the cost of imposing structure.
+Branch 5.3 (E2-C: blocked by observability). M5 floors near zero. The substrate, not identi-
+fication, binds; revisit E1 configuration (relaxation depth, loss placement) before concluding on
+emergence.
+
+
+6     E3: structured vs. unstructured frontier settle at matched bud-
+      get
+6.1   Question
+Does fibre structure buy anything over raw adjoint sparsity — in settle cost, ID quality, or (the
+real bet) out-of-distribution transfer? v1.1 adds the externally-tuned null (gradient sparsification)
+and the mechanism ablation (proximal character).
+
+6.2   Conditions (matched total scalar-update budget, metered)
+ 1. Dense: full settle (reference).
+ 2. Top-k: settle restricted to top-k cells by running magnitude, k ∈ {1%, 5%, 20%}.
+ 3. Sparsified-gradient (new): top-k with error feedback / momentum correction in the
+    style of deep gradient compression — the decade-tuned null model for frontier updates.
+    TODO(agent): implement residual accumulation exactly (accumulate unsent mass, not merely
+    re-rank).
+ 4. Fibre-projected: updates projected onto E2 fibres (recovered if E2-A, supplied if E2-B),
+    transports across blocks, S3/S4 plasticity gates.
+ 5. Random-k (control).
+ 6. Proximal ablation (new): dense settle-based update vs. raw BP step at matched effective
+    step size (calibrate via the E1 magnitude-ratio curve), isolating the implicit regularization
+    of iterative settling. Run as a separate matched-seed pair; report per-step divergence and
+    cumulative trajectory divergence over training.
+
+6.3   Evaluations
+V1 (ID quality).
+   Teacher-free fidelity/task metrics, ID split. Expected: dense ≈ top-k ≈ sparsified ≈ fibre ≫
+   random; ties are the predicted outcome.
+
+                                                  8
+V2 (compositional shift).
+   Same on CS. Discriminating condition: structured routing should degrade more gracefully if
+   fibre structure has content; sparsified-gradient is the bar to beat, not plain top-k.
+V3 (transfer of routing).
+   Routing/gating state frozen on ID, evaluated on CS without re-estimation — does the routing
+   function generalise?
+V4 (continual probe).
+   Sequential factor-restricted streams; off-support drift per condition; C3 (matched-compute
+   BP fine-tune) as the outside comparison. Prediction 1 governs the read: parameterisation
+   alone ≈ nothing; protection tracks gates/supports; any residual effect should co-vary with
+   the proximal ablation’s divergence measure.
+
+
+7     E4 (reframed): test-time information injection vs. the feedfor-
+      ward default
+7.1    Reframing
+In the corrected picture there is no amortization gap: absent a task term the energy minimizes at
+ε=0, so FF is the deployed artifact by construction. The deployment question is therefore
+not “does the settle survive removal of the teacher” but purely: can a settle clamped to test-time
+information the feedforward pass does not use — observed tokens, symbolic constraints — beat FF,
+and where? This isolates the Stage-4 bet exactly: the symbolic cap is the only channel through
+which inference-time value can enter.
+
+7.2    Conditions (teacher-free evaluation throughout)
+ 1. FF: ε=0 feedforward — the deployed default and the baseline to beat.
+ 2. TC: teacher-clamped settle — diagnostic upper anchor only (measures headroom available
+    to any information injection; never deployable; label it as diagnostic in all outputs).
+ 3. OT: observed-token settle (CE on the observed prefix, free continuation).
+ 4. SC: symbolic-constraint settle — grammar rules in MeTTa; L = λ · constraint-violation
+    energy queried from the store (batched; in-store path via E5-W4).
+ 5. OT+SC: combined.
+
+7.3    Decisive comparison
+Per metric and split, the headroom-recovery statistic
+                                              SC − FF
+                                         G=           ,                                        (2)
+                                              TC − FF
+reported as undefined when TC − FF is within noise. The grammar rules are the generative truth
+of the rig; if G ≈ 0 here, symbolic clamping will not work anywhere easier, and the deployment
+story for the whole programme is “PC is a training-time device” — to be stated plainly. If G is
+material on CS (where FF is weakest), the Stage-4 inversion is vindicated and the symbolic cap
+
+
+                                                9
+moves up the staging. Secondary: settle steps to criterion (cost of recovered quality); interaction
+with E3 fibre-projection (do SC corrections localize to M4’s factor blocks?).
+
+
+8    E5: MORK hosting of the six-layer PC model
+Scope unchanged: inference + settle + frontier weight-writes in-store; from-scratch in-store train-
+ing out of scope.
+ 1. W1 (forward). Six-layer forward as MORK rule application, blocked tensor format, dense
+    kernels as sink ops; target ≤ 10−5 max relative logit error, exact argmax on a decode probe.
+ 2. W2 (settle in-store). T -step relaxation as in-store iteration; settled states match reference
+    to pre-registered tolerance.
+ 3. W3 (frontier writes as IVM), reframed. Top-k updates as incremental store writes
+   — document and benchmark these as sparsified-gradient maintenance: the store-side twin
+    of E3’s sparsified-gradient condition, including the error-feedback accumulator as a store-
+    resident structure. Measure write volume vs. dense; verify reproduction of the reference
+    update to tolerance.
+ 4. W4 (fibre registration). E2 fibres (if any) as MeTTa expressions: supports, bases, trans-
+    ports, factor bindings; the substrate E4-SC queries.
+ 5. W5 (cost accounting). Wall-clock and expression counts vs. the PyTorch path, reported
+    without spin.
+
+
+9    Controls and baselines
+C1 (BP-residual observability control).
+   Matched-capacity BP residual/adapter on the frozen teacher, run on every E3/E4 metric. If
+   C1 matches the PC apparatus everywhere teacher-free, the parameterisation does no deploy-
+   ment work and reports must say so.
+C2 (dictionary-learning baseline).
+   SAE/dictionary learning on both substrates (settled error cells and adjoint cells), per block,
+   same probe set; scored on M3 factor alignment and M4 selectivity. If sparse coding matches
+   JBD, the simpler method wins and JBD is repositioned as verification. Mandatory in any E2
+   write-up.
+C3 (matched-compute BP fine-tune).
+   For all continual claims: matched compute, matched seeds, per-seed deltas.
+
+
+10     Sequencing (revised) and decision points
+Now: E2 continues (both tracks; adjoint track and M0 first, since they are cheap and calibrate
+the rest); E1 post-hoc checks P1/P2 on stored artifacts; harness deltas of §1.
+Next: E3 and E4 in parallel once E2’s M0 and first-pass M1–M4 land (they consume E2’s
+fibres-or-absence); E5 W1–W2 can start any time (needs only the E1 student); W3 after E3’s
+sparsified-gradient condition exists (shared implementation); W4 after E2.
+
+
+                                                10
+Deferred: E1b when capacity allows.
+Reporting rule unchanged: each phase closes with an N-series-style memo — established results,
+boundaries stated with equal force, branch taken and why, predictions checked against their pre-
+registered statements — before the next phase’s configs freeze.
+
+
+11     Implementation notes for coding agents
+   Repo. As v1.0 (experiments/e1 homotopy/ ...e5 mork/, controls/, harness/), plus
+    harness/fields/ implementing the two-substrate artifact schema (§3) and the M0 evaluator.
+    TODO(agent): reconcile with the tree as built during E1/E2.
+   Criteria files. Add criteria v1 1.json; do not modify the v1.0 file (E1’s record). E2-
+    in-flight items already run under v1.0 criteria are valid; new items (M0, co-location, adjoint
+    track) run under v1.1.
+   Assertions. Weights frozen during settle; teacher-free evaluators import no teacher module;
+    E3 budget metering enforced; matched seeds enforced; error-feedback accumulator in the
+    sparsified-gradient condition verified against a dense-update reference on a unit test before
+    campaign runs.
+   Persisted artifacts. Settled error tensors and adjoint tensors for the shared probe set
+    (single source of truth for E2 tracks and C2); per-milestone JSONL; fixed-binning error-mass
+    histograms (Hill and tail sweeps recomputable offline).
+   Standard figures. v1.0 set, plus: M0 per-block cosine/ratio/ overlap panel; dual-substrate
+    concentration and depth-profile overlays (ours vs. Mesto’s rescaled profiles); the co-location
+    panel (factor-aligned blocks over the frontier depth profile); E3 adds the sparsified-gradient
+    and proximal-ablation curves; E4’s G bars per metric per split with TC labelled diagnostic.
+   Numerical hygiene. Hill from stored histograms with model-free dispersion errors; never
+    fit a power law; always report the tail-depth sweep next to any fixed-depth α.
+   Failure reporting. Guard trips and acceptance failures are results: logged, artifacts kept,
+    included in memos; runs launched = runs reported.
+
+
+A     Acceptance criteria (v1.1)
+Provisional bars below; final bars frozen per the envelope rule before each campaign, versioned
+JSON. E1 rows retained for the record (criteria of record: v1.0 file). Deltas per-seed unless noted.
+
+
+
+
+                                                11
+Exp.     Quantity                Provisional bar                                           Notes
+E1       (complete)              per v1.0 file                                             record branch in memo
+E1-P2    M0 support overlap      report; “high” = Jacc ≥ 0.5 at top-5%                     interpretation gate
+E2       M0 cosine               report per block vs. random-field null                    compute first
+E2       ∆Jacc                   > 3σ above shuffled-context null                          per k, per substrate
+E2       factor alignment (M3)   ≥ ⌈F/2⌉ blocks above permutation null                     JBD flags clean
+E2       fingerprint (M4)        diagonal share > 2× off-diag mean                         after matching
+E2       co-location             Prediction 2 checked as stated                            frozen pre-unblind
+E3       ID tie                  top-k, sparsified, fibre within envelope of dense         tie expected
+E3       CS separation           fibre vs. sparsified-gradient per-seed delta, sign test   bar raised vs. v1.0
+E3       proximal ablation       report per-step and cumulative divergence                 mechanism, not bar
+E4       G                       report; material if > 0.2 on CS                           TC diagnostic only
+E5       W1 fidelity             ≤ 10−5 max rel. logit error; argmax exact                 Mesto parity
+E5       W3 reproduction         sparsified update matches reference to tolerance          incl. accumulator
+
+
+B       Metric definitions gathered
+   Fields. εℓ (x): settled error tensors. δℓ (x) = ∂L/∂xℓ : BP adjoints at ε=0, teacher-free CE,
+    autograd. Shared artifact schema; ϕ ∈ {ε, δ} below.
+   Squared update mass: mi = E[ϕ2i ] over the probe set; per-sample values stored for split-
+    half statistics.
+   Top-k support Sc : cells in the top k fraction of mi on inputs with signature c (majority
+    vote across samples).
+   M0: per block, distributions of cos(εℓ , δℓ ) and ∥εℓ ∥/∥δℓ ∥; Jacc(Sℓε , Sℓδ ) at top-5%; depth-
+    profile agreement.
+   ∆Jacc : within-vs-between context split-half Jaccard contrast (§5).
+   Effective rank (PR): ( i λi )2 / i λ2i of per-block settled-state covariance spectra.
+                             P        P
+
+   Hill at depth k: α̂−1 = k1 ki=1 ln(m(i) /m(k) ) on order statistics; model-free dispersion error;
+                               P
+    descriptor, not exponent.
+   Fingerprint selectivity: Φjb = E[∥Pb ∆j ∥2 ]/E[∥∆j ∥2 ], Hungarian-matched before diagonal
+    comparison.
+   G: (SC − FF)/(TC − FF) per metric per split; undefined when the denominator is within
+    noise.
+   Proximal divergence: per-step ∥∆Wsettle − ∆WBP ∥/∥∆WBP ∥ at matched effective step
+    size, and cumulative parameter-trajectory distance over a training run.
+
+
+
+
+                                                    12
+

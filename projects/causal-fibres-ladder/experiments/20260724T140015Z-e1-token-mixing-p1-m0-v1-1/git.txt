@@ -1,0 +1,25 @@
+# Git State
+Captured UTC: 2026-07-24T14:00:15Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1
+Commit: 6a4c32cb7c50f42e7473f4261399ae7c08070e6c
+Branch: agent/e1-guarded-homotopy
+Remote names: 
+
+## Status
+## agent/e1-guarded-homotopy
+ M scripts/run_e1_m0_depth_sweep.py
+ M src/relaleap/hdpc/e1_homotopy.py
+ M tests/test_e1_homotopy.py
+ M tests/test_e1_posthoc_m0.py
+?? artifacts/
+?? configs/e1_homotopy_calibration.json
+?? scripts/run_e1_calibration_multi.py
+
+## Diff summary
+ scripts/run_e1_m0_depth_sweep.py |  2 ++
+ src/relaleap/hdpc/e1_homotopy.py | 54 ++++++++++++++++++++++++++++++++++++++++
+ tests/test_e1_homotopy.py        | 11 ++++++++
+ tests/test_e1_posthoc_m0.py      | 19 +++++++++++++-
+ 4 files changed, 85 insertions(+), 1 deletion(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

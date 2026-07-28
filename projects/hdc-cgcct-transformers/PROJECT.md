@@ -93,6 +93,19 @@ commit `e4e1d65`. A reduced CPU replay smoke passed 18 tests and generated two
 byte-identical payloads, but is explicitly gate-ineligible. The full frozen
 grid has not yet run, so no calibration criteria or P1A result are claimed.
 
+The frozen P1A full grid subsequently completed successfully with payload
+SHA-256 `b7fabae33494ed090fe1cd73b85fff0ad3f36fe7f3c6f986ed1a30ab0197195b`.
+All 60 F0/F1 curves were interior, but 31/60 missed the frozen Spearman
+monotonicity threshold; this is calibration evidence, not a confirmation
+verdict. P1B's exact planted-PCFG, six-layer causal decoder, residual/readout,
+manifest, and CPU smoke are implemented at nested commit `b4593f4`; 22 tests
+and two byte-identical smoke/manifest replays passed. Remote provisioning
+remains blocked. The frozen P1B target-code layer and reduced ridge/artifact
+replay are implemented at `7f46c5a`; 24 tests pass and two payloads are
+byte-identical. The reduced run is gate-ineligible: the full trainer,
+controls, raw artifact contract, metrics, and criteria freezer remain required
+before recording a fresh priced offer or provisioning.
+
 ## Repositories
 
 | Role | Remote | Local path | Branch/default | Pinned/reference commit |

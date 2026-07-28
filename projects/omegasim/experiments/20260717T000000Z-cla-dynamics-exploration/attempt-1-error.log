@@ -1,0 +1,12 @@
+Attempt 1 top-level exit status: 1
+
+The six official tight detector shards completed and produced their JSON/CSV
+artifacts. The experiment then failed before broad measurement because the
+ProcessPool workers did not have the OmegaSim repository root on `sys.path`:
+
+ModuleNotFoundError: No module named 'scripts'
+
+The failure occurred in experiment-local `broad_task` while importing
+`scripts.run_cla_detector.evaluate_trace`. Recovery adds only the OmegaSim
+repository root to worker `sys.path`, validates and reuses the completed tight
+artifacts without overwriting them, and leaves the frozen detector unchanged.

@@ -1,0 +1,287 @@
+                   The Commutator Critic:
+A Grey-Box Counterfactual Update Critic for Modular Continual
+                           Learning,
+      with Specializations to Transformers and CAROM
+    RelaLeap V4 proposal — companion to the V1–V3 negative-results briefing
+
+             July 2026 — v1.1, incorporating toy-scale sandbox validation
+
+
+                                                Abstract
+       The co-learned global causal critic program (RelaLeap V1–V3) attempted to learn, from
+   decision-time summary features, a randomized paired counterfactual estimate of which module-
+   level gradient intervention would improve a retention–plasticity tradeoff. V2 failed every dis-
+   crimination and calibration gate; V3’s positive controls lost their declared orderings along the
+   optimizer trajectory before confirmation could open. This document argues, on the basis of
+   the General Causal-Continual-Learning (CCL) theorem, that both failures were predictable
+   consequences of the problem formulation rather than of the causal question: (i) the summary
+   features used were not sufficient statistics for the estimand, which to second order in the step
+   size is an explicit functional of local gradients, curvature, and the trajectory’s linear-response
+   propagator; and (ii) the estimand is intrinsically state-dependent, so any trajectory-invariant
+   “declared ordering” must eventually fail, and the V3 audit criterion — not the fixture —
+   was the defective component. We then propose the repair: a grey-box commutator critic
+   whose backbone is measured at decision time (per-module gradient inner products, module-
+   restricted Hessian-vector products, and a tangent-propagated linear-response term computed
+   by forward-mode automatic differentiation along the common-random-number baseline roll-
+   out), with a small learned head restricted to the residual that the second-order theory does
+   not capture. Pair synergy becomes an exact cross-curvature identity, resolving the global-
+   versus-additive comparator ambiguity; the positive control becomes a block-quadratic fixture
+   whose ground truth is recomputed analytically at every state, so orderings cannot “break,”
+   only the expansion’s validity radius can shrink — and that radius becomes a measured gate.
+   We give the mathematics, the conceptual reframing, a software design that reuses the V3
+   paired-restoration machinery, specializations to Transformer head/channel modules (with
+   HDC-footprint confusion-graph sparsification of the pair-action space) and to CAROM in
+   its scheduled, fixed-point, and itinerant semantics (tangent propagation, implicit-function-
+   theorem sensitivities, and measured discrete commutators respectively), and an appendix
+   specifying a staged, gated, agent-executable experimental programme with concrete numer-
+   ics chosen to preclude the shortsighted choices — unmeasured noise floors, under-powered
+   effect sizes, leaky standardization, single-precision fixtures — that would otherwise corrupt
+   the results. A toy-scale sandbox implementation (Section 10; a NumPy block-quadratic
+   suite with exact closed-form truth, and a JAX MLP-plus-Adam learner with CRN paired
+   rollouts) validates every backbone mechanism where truth is exact — including the synergy
+   identity, the provably-aligned null, the constructive insufficient-statistics demonstration, and
+   the margin-decay reinterpretation of the V3 audit failure — and yields concrete protocol
+   amendments, the sharpest being that differentiating through the Adam moment recursions
+   (exact-D) is load-bearing rather than a refinement.
+
+
+                                                  1
+AI acknowledgement. Drafted with help from Claude Fable 5.
+
+Citation caution. The handful of external citations in this note were recalled from model
+memory during drafting and must be verified against the literature before being relied upon or
+propagated.
+
+
+Contents
+1 Introduction and diagnosis                                                                       2
+  1.1 What V1–V3 tried . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+  1.2 Two failure theorems, informally . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+  1.3 The repair in one sentence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     3
+
+2 Setting and estimand                                                                             3
+
+3 The analytic backbone                                                                            3
+  3.1 One-step expansion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     3
+  3.2 Horizon h: the tangent propagator . . . . . . . . . . . . . . . . . . . . . . . . . .        4
+  3.3 Local commutator form and the CCL connection . . . . . . . . . . . . . . . . . .             5
+  3.4 Pair actions: additivity at first order, synergy as cross-curvature . . . . . . . . .        5
+  3.5 Preconditioner differentiation and surrogates . . . . . . . . . . . . . . . . . . . .        6
+
+4 Why the black-box critic could not work                                                          6
+
+5 The grey-box critic                                                                              7
+  5.1 Architecture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+  5.2 Validity gate: the expansion’s trust region . . . . . . . . . . . . . . . . . . . . . .      7
+  5.3 Decision rule . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    8
+  5.4 Revised gate suite . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     8
+
+6 The trajectory-stable positive control: a block-quadratic fixture                                8
+
+7 Specialization to Transformers                                                                    9
+  7.1 Module partition and cost . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       9
+  7.2 Sparsifying the pair-action space with HDC footprints . . . . . . . . . . . . . . .           9
+  7.3 Retained-gradient estimation and CMCP . . . . . . . . . . . . . . . . . . . . . .            10
+
+8 Specialization to CAROM                                                                          10
+
+9 Software design                                                                                  11
+  9.1 Placement and layout . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       11
+  9.2 Interfaces . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   11
+  9.3 Numerical hygiene (binding on all stages) . . . . . . . . . . . . . . . . . . . . . .        11
+  9.4 Test inventory . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   12
+
+
+
+
+                                                  2
+10 Toy-scale sandbox validation and lessons learned                                                 12
+   10.1 Setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   12
+   10.2 Results: quadratic suite (exact truth) . . . . . . . . . . . . . . . . . . . . . . . .      13
+   10.3 Results: MLP + Adam (truth = CRN paired rollouts) . . . . . . . . . . . . . . .             13
+   10.4 Lessons learned . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   14
+
+11 What would falsify this proposal                                                                 14
+
+A Agent experiment programme: stages C0–C6                                                          15
+  A.1 Stage C0: infrastructure and self-tests (CPU, ≤ 2 h) . . . . . . . . . . . . . . . .          15
+  A.2 Stage C1: quadratic fixture — backbone validation and controlled autopsy (CPU,
+       ≈ 4–8 h) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   15
+  A.3 Stage C2: real MLP learner — backbone against paired rollouts (CPU, ≈ 6–12 h)                 16
+  A.4 Stage C3: residual head (CPU, ≈ 4–8 h) . . . . . . . . . . . . . . . . . . . . . . .          17
+  A.5 Stage C4: small Transformer (first GPU stage, ≤ 12 GPU-h) . . . . . . . . . . .               17
+  A.6 Stage C5: CAROM track (CPU or ≤ 4 GPU-h) . . . . . . . . . . . . . . . . . . .                18
+  A.7 Stage C6: policy pilot (only if C2 and C4 pass) . . . . . . . . . . . . . . . . . . .         19
+  A.8 Frozen choices and allowed knobs . . . . . . . . . . . . . . . . . . . . . . . . . . .        19
+  A.9 Budgets and global stop conditions . . . . . . . . . . . . . . . . . . . . . . . . . .        19
+  A.10 Report format . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    19
+
+
+1     Introduction and diagnosis
+1.1   What V1–V3 tried
+The V-series program targets a genuinely causal object. At learner state St , candidate action
+a (attenuate one module’s incoming-task gradient, or a pair’s, before the optimizer step), or-
+dinary action a0 , and horizon h, the estimand is the common-random-number (CRN) paired
+counterfactual effect
+                            τh (St , a) = E[ Yt+h (a) − Yt+h (a0 ) | St ] ,                (1)
+with Y a vector of outcomes (retained-task loss LA , incoming-task loss LB , and diagnostics),
+measured by executing the learner from an exact snapshot under both arms with identical
+randomness. This estimand, the randomized behavior policy, the exhaustive action tables, and
+the fail-closed gate discipline are all correct and are retained unchanged in what follows.
+    What failed was the estimator. V2 asked a three-branch MLP to map summary features —
+gradient norms, cosines, support ratios, activation statistics, Adam second moments — to τh ,
+and obtained Spearman correlations below 0.065 in every family. V3 enriched the features and
+scaled the data tenfold, but stopped earlier: at the final audit checkpoint, every positive-control
+family had lost the intervention ordering declared for it at construction time.
+
+1.2   Two failure theorems, informally
+Both outcomes are consequences of structure the CCL theorem makes explicit.
+
+
+
+
+                                                  3
+Failure 1: the features are not sufficient statistics. To second order in the step size, τh
+is an explicit functional of the local gradients gA , gB , the local Hessians HA , HB (through their
+module-restricted blocks), the optimizer preconditioner, and the trajectory’s linear-response
+propagator (Section 3). Norms, cosines, and moment summaries quotient out precisely the
+curvature-weighted inner products on which the estimand depends: two states can agree on
+every V2 feature and have τh of opposite sign (Proposition 1). A critic trained on a non-sufficient
+statistic converges, at best, to the conditional mean over the induced equivalence class; near-zero
+rank correlation and amount-heads inventing their own output scale are exactly the predicted
+symptoms.
+
+Failure 2: the estimand has no trajectory-invariant ordering. τh depends on the state
+through gA (θt ) and gB (θt ). As incoming-task optimization converges, the perturbation injected
+by a gate shrinks proportionally to ∥gB ∥, and the retained-side alignment term can change sign
+as the trajectory crosses level sets of LA (Proposition 2 gives the closed form in the quadratic
+case, including the geometric decay rate of the action margin). A “declared family ordering” is
+therefore an implicit claim of trajectory invariance that the estimand does not possess. The V3
+audit did its job — it detected that the criterion, not the physics, was wrong.
+
+1.3   The repair in one sentence
+Do not train a critic to rediscover τh from summary features; measure the first- and second-
+order terms that the CCL theorem says constitute τh in the expansion-valid regime, and train a
+small model only on the residual — with a positive control whose ground truth is recomputed
+analytically per state, so that the only thing that can fail is the expansion’s validity radius,
+which is itself turned into a measured, reportable quantity.
+
+
+2     Setting and estimand
+Parameters θ ∈ Rd are partitioned into M modules by disjoint index sets I1 , . . . , IM ; Pm ∈ Rd×d
+is the coordinate projector onto Im (implemented as an index mask, never a dense matrix). The
+learner performs preconditioned stochastic updates on the incoming task B:
+
+           θt+1 = Ta (θt , st , ξt ) = θt − η D(st ) Ga g(θt , ξt ),   g(θ, ξ) = ∇L
+                                                                                 b B (θ; ξ),    (2)
+
+where st is optimizer
+               √       state,
+                             D(st ) is the (diagonal, positive) preconditioner (D = I for SGD;
+Dt = diag 1/( v̂t + ϵ) with momentum folded in for Adam), ξt is minibatch randomness, and
+Ga is the action gate applied after backward and before the optimizer step, exactly as in V2/V3:
+
+        Ga0 = I,        G(m,α) = I − (1 − α)Pm ,          G({m,n},α) = I − (1 − α)(Pm + Pn ),   (3)
+
+with retention factor α ∈ [0, 1] (α = 1 is ordinary; α = 0 freezes the module for that step). The
+intervention is applied at a single step t; both arms then evolve under ordinary updates with
+shared ξt+1 , . . . , ξt+h−1 (CRN). Outcomes are evaluated at t + h:
+                                           a0                                          a0 
+        τhA (St , a) = E LA (θt+h
+                                a
+                                                     τhB (St , a) = E LB (θt+h
+                                                                           a
+                                                                    
+                                  ) − LA (θt+h ) ,                             ) − LB (θt+h ) . (4)
+
+We deliberately treat the outcome as a vector (τhA , τhB ) and defer scalarization (the V-series
+utility Uh ) to a separately specified decision rule; this answers Question 3 of the V3 briefing in
+the affirmative, and Section 3 shows the theory predicts each component separately anyway.
+
+                                                     4
+   Throughout, write gA = ∇LA (θ), gB = ∇LB (θ), HA = ∇2 LA (θ), HB = ∇2 LB (θ), evaluated
+where stated.
+
+
+3     The analytic backbone
+3.1    One-step expansion
+Define the injected perturbation of action a = (m, α) at step t:
+                                         a      a0
+                              ut (a) := θt+1 − θt+1 = η(1 − α) Dt Pm gB (θt ),                           (5)
+i.e. the gated arm subtracts less of the incoming gradient, so it sits at the ordinary arm’s
+parameters plus ut (a). Writing δ0 = −ηDt gB for the ordinary step and Taylor-expanding both
+arms around θt :
+Lemma 1 (One-step intervention effect). For LA ∈ C 3 ,
+           τ1A (St , a) =      ⟨gA , ut (a)⟩         + δ0⊤ HA ut (a) + 12 ut (a)⊤ HA ut (a) + O(η 3 ),   (6)
+                               | {z }                  |    {z     }   |        {z        }
+                            first order: alignment      drift correction      self-curvature
+
+with all quantities evaluated at θt , and identically for τ1B with (gB , HB ) in place of (gA , HA ).
+     Three immediate readings. First, the leading term is the preconditioner-weighted, module-
+restricted gradient alignment η(1 − α) ⟨gA , Dt Pm gB ⟩: protecting module m helps retention
+at first order exactly when the two tasks conflict there (⟨gA , Dt Pm gB ⟩ < 0), which recovers
+gradient-surgery intuitions (PCGrad and kin; recalled from memory, verify) as the h = 1,
+first-order shadow of the causal estimand. Second, the incoming-task cost is analytic too:
+τ1B ≈ η(1 − α) gB ⊤D P g
+                      t m B ≥ 0 for positive Dt — gating always costs incoming progress at
+first order, quantifying the “harm tolerance” side of the V-series policy without any learning.
+Third, the Adam second moments that V2 fed to the MLP as generic features enter here in their
+correct structural position: inside Dt , weighting the inner product coordinate-wise. This is the
+difference between giving a model the ingredients and giving it the recipe.
+
+3.2    Horizon h: the tangent propagator
+For h > 1 the perturbation ut (a) is transported by the linearization of the update map along
+the baseline trajectory. Let
+                            ∂Ta0           ∂ 
+                                               Dk g(θ, ξk ) a0 ≈ I − η Dk HB (θka0 ),
+                                                           
+                Jk :=            a0
+                                    = I −η                                                               (7)
+                             ∂θ θk         ∂θ                θk
+
+where the approximation freezes the preconditioner within the differentiation (exact treatment
+differentiates through the moment recursions as well; both modes are implemented and compared
+in Stage C2). Then to first order in ∥u∥,
+                    ∆θt+h ≈ Φt+h←t+1 ut (a),                     Φt+h←t+1 := Jt+h−1 · · · Jt+1 ,         (8)
+and the horizon-h backbone prediction is
+                                                          a0 
+                                  τbhA (St , a) =     gA θt+h  , Φt+h←t+1 ut (a)                         (9)
+
+and identically for τbhB .
+
+                                                             5
+Why CRN makes this the right object. Because the two arms share minibatches, opti-
+mizer state, and RNG streams, the realized paired difference is the response of the (stochastic)
+baseline trajectory to the perturbation ut (a) under the same noise realization. The linear re-
+sponse along the realized baseline path is therefore the exact first-order value of the paired
+estimand, with no additional Monte Carlo variance beyond that of the baseline rollout itself.
+The CRN design of V1–V3, built to control variance, turns out to be precisely the design under
+which the backbone is computable.
+
+Computation. Equation (9) is one forward-mode tangent pass: initialize tangent v ← ut (a),
+and at each baseline step propagate v ← Jk v, which costs one Hessian-vector product (HVP) of
+the minibatch loss (a jvp through the gradient computation) plus the elementwise preconditioner
+action. For A candidate actions, stack tangents into a d × A matrix and batch the JVPs (vmap
+over tangent columns). Total cost: O(A · h) HVPs per decision state, i.e. roughly 2Ah extra
+backward-equivalents — for the Phase-0 scales below, tens of milliseconds per state on CPU,
+and easily amortized on GPU. Crucially, no learned component participates: the backbone is a
+measurement.
+
+3.3   Local commutator form and the CCL connection
+When retained-task replay is interleaved with incoming updates (rather than LA merely being
+evaluated), the deviation between action arms over a window is governed, per the CCL theorem’s
+continuous specialization, by the gradient field commutator
+                         [XA , XB ](θ) = HB (θ) gA (θ) − HA (θ) gB (θ),                    (10)
+restricted through the module blocks that the gate touches. The propagator form (9) is the
+trajectory-exact refinement of the Baker–Campbell–Hausdorff second-order bound in CCL The-
+orem 1: where the CCL theorem bounds forgetting by Kij hi hj εcomm uniformly, the backbone
+evaluates the corresponding bilinear form on the realized trajectory. Two corollaries worth
+recording:
+                                                                                        
+Corollary 1 (The critic estimates the confusion graph). The matrix of backbone terms ⟨gA , DPm gB ⟩   m
+and cross-curvature terms (Lemma 2) is a per-state, per-module empirical estimate of the CCL
+confusion structure δc,c′ restricted to the module partition. A working commutator critic is there-
+fore simultaneously the measurement instrument that the approximate categorical CCL theorem
+(and the CGCCT commutator loss) requires.
+Corollary 2 (Policy as commutator suppression). The conservative policy “gate module m when
+the calibrated benefit is high” is, in backbone terms, “suppress the update components 

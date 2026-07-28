@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-17T15:45:06Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/worktrees/tinyshakespeare-hdpc
+Commit: 7d4d4dc9ee0f141bef1e6da48249f92bb4021b7e
+Branch: agent/epc-outcome-probes
+Remote names: 
+
+## Status
+## agent/epc-outcome-probes
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

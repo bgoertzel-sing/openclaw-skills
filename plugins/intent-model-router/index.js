@@ -8,9 +8,13 @@ import {
   expandHome,
   isFableRef,
   modelParts,
+  preserveCallerSelectedFable,
+  preserveFixedAgentSelection,
   resolveModels,
+  selectedModelRef,
   resolveRoutingDecision,
   sanitizeUsage,
+  shouldSuppressIntentionalRoutingFallbackNotice,
   budgetDayKey,
   DEFAULT_BUDGET_TZ,
   DEFAULT_FABLE_DAILY_BUDGET_USD,
@@ -21,13 +25,35 @@ export * from "./router-core.js";
 export default definePluginEntry({
   id: "intent-model-router",
   name: "Intent Model Router",
-  description: "Routes routine turns to GLM, serious turns to GPT-5.5/default, optional Fable escalations, and logs Fable cost telemetry.",
+  description: "Routes routine turns to GLM, semi-routine turns to Terra, advanced turns to Sol/default, optional Fable escalations, and logs Fable cost telemetry.",
   register(api) {
     const lastDecisionByRun = new Map();
 
     api.on("before_model_resolve", (event, ctx) => {
       const config = asConfig(api.pluginConfig);
       if (config.enabled === false) return;
+
+      const models = resolveModels(config);
+      const selectedRef = selectedModelRef(ctx);
+
+      if (preserveFixedAgentSelection(ctx, config)) {
+        if (config.logDecisions === true) {
+          api.logger.info?.(`intent-model-router: preserving fixed agent=${ctx.agentId} model=${selectedRef}; session=${ctx.sessionKey || "unknown"}`);
+        }
+        return;
+      }
+
+      // A caller-selected Fable session/run (for example sessions_spawn with an
+      // explicit model) is already a stronger routing decision than prompt
+      // classification. Do not rewrite it to the deep default merely because
+      // fableMode defaults to off or the prompt itself lacks routing words.
+      // Usage is still captured by llm_output cost telemetry.
+      if (preserveCallerSelectedFable(ctx, models.fableModel)) {
+        if (config.logDecisions === true) {
+          api.logger.info?.(`intent-model-router: preserving caller-selected model=${selectedRef}; session=${ctx.sessionKey || "unknown"}`);
+        }
+        return;
+      }
 
       const decision = resolveRoutingDecision({
         prompt: event.prompt,
@@ -45,6 +71,17 @@ export default definePluginEntry({
 
       if (decision.tier === "deep" && (!config.deepModel || decision.targetModel === "openai/gpt-5.5")) return;
       return modelParts(decision.targetModel);
+    }, { priority: 100, timeoutMs: 100 });
+
+    api.on("reply_payload_sending", (event) => {
+      if (asConfig(api.pluginConfig).suppressFalseFallbackNotices === false) return;
+      const decision = event.runId ? lastDecisionByRun.get(event.runId) : undefined;
+      if (!shouldSuppressIntentionalRoutingFallbackNotice({ payload: event.payload, decision })) return;
+
+      if (asConfig(api.pluginConfig).logDecisions === true) {
+        api.logger.info?.(`intent-model-router: suppressing false fallback notice for intentional route model=${decision.targetModel}; run=${event.runId}`);
+      }
+      return { cancel: true, reason: "intentional_model_route" };
     }, { priority: 100, timeoutMs: 100 });
 
     api.on("llm_output", (event, ctx) => {

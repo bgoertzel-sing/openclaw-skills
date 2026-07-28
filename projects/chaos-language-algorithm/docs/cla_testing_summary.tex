@@ -1,0 +1,165 @@
+% CLA Testing Summary -- generated 2026-07-10
+% ASCII-only punctuation throughout
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\title{Chaos Language Algorithm: Testing Summary}
+\author{Chaos Language Algorithm Project}
+\date{2026-07-10}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document summarizes all testing performed on the Chaos Language Algorithm (CLA) prototype as of 2026-07-10. The pure-Python \texttt{chaoslang} library has been tested on five deterministic dynamical control systems (logistic map, Lorenz-63, Rossler, Mackey-Glass, Lorenz-96) across dimensions 1 through 24, plus a 1024-step $\times$ 20-dimensional OmegaSim-scale smoke run. Every recorded experiment preserves exact symbolic reconstruction. The prototype learns chunk grammars under an approximate MDL objective, with a bounded suffix-trie miner and Jensen-Shannon category proposal path. No non-chaotic controls, shuffled surrogates, held-out evaluation, matched brute-force comparison, or actual OmegaSim traces have been tested yet.
+\end{abstract}
+
+\section{Systems Tested}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lll}
+\toprule
+System & Dimension & Integration \\
+\midrule
+Logistic map & 1 & Discrete iteration ($r{=}4.0$, $x_0{=}0.123$) \\
+Lorenz-63 & 3 & RK4 ($\sigma{=}10$, $\rho{=}28$, $\beta{=}8/3$, $dt{=}0.01$) \\
+Rossler & 3 & RK4 ($a{=}0.2$, $b{=}0.2$, $c{=}5.7$, $dt{=}0.05$) \\
+Mackey-Glass & 1 & Euler with 17-step delay ($dt{=}0.1$) \\
+Lorenz-96 & 5--24 & RK4 ($F{=}8.0$, $dt{=}0.01$) \\
+\bottomrule
+\end{tabular}
+\caption{Dynamical control systems.}
+\end{table}
+
+\section{Experiment Matrix}
+
+\subsection{256-symbol baseline suite}
+
+All runs: 256 retained symbols, 64 discarded, 4 bins/axis, 8 greedy iterations, seed 0.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+System & Dim & Unique & Rules & Score & Exact \\
+\midrule
+Mackey-Glass & 1 & 4 & 6 & 44.4 & yes \\
+Logistic map & 1 & 4 & 8 & 113.2 & yes \\
+Lorenz-63 & 3 & 21 & 8 & 187.2 & yes \\
+Rossler & 3 & 24 & 8 & 189.2 & yes \\
+Lorenz-96 & 5 & 56 & 8 & 234.2 & yes \\
+Lorenz-96 & 8 & 78 & 8 & 229.2 & yes \\
+Lorenz-96 & 12 & 107 & 6 & 241.4 & yes \\
+Lorenz-96 & 16 & 121 & 3 & 248.7 & yes \\
+Lorenz-96 & 20 & 127 & 6 & 251.4 & yes \\
+Lorenz-96 & 24 & 148 & 5 & 251.5 & yes \\
+\bottomrule
+\end{tabular}
+\caption{256-symbol baseline runs. Score = approximate MDL proxy units.}
+\end{table}
+
+\subsection{1024-symbol OmegaSim-scale smoke}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr}
+\toprule
+Parameter & Value \\
+\midrule
+System & Lorenz-96 \\
+Dimension & 20 \\
+Steps & 1024 \\
+Discard & 256 \\
+Bins & 4 \\
+Iterations & 8 \\
+Miner & suffix\_trie \\
+Category method & JS (threshold 0.1) \\
+Seed & 0 \\
+Commit & b344aa3 (+ dirty CLI mod) \\
+\midrule
+Unique symbols & 510 \\
+Rules learned & 8 \\
+Score & 1021.2 \\
+Fit wall time & 2.55 s \\
+Exact reconstruction & yes \\
+\bottomrule
+\end{tabular}
+\caption{1024-step $\times$ 20D suffix-trie smoke run.}
+\end{table}
+
+\section{Unit Tests}
+
+The repository test suite grows across sprints:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llr}
+\toprule
+Date & Milestone & Tests \\
+\midrule
+2026-07-03 & Sprint 1: symbolic-string MVP & 19 \\
+2026-07-04 & M1 controls + JS seam & 26 \\
+2026-07-09 & Suffix-trie miner + JS integration & 69 \\
+\bottomrule
+\end{tabular}
+\caption{Unit-test growth. All tests passing at each checkpoint.}
+\end{table}
+
+Test coverage includes: exact expansion after edits, chunk identity, category identity with $M[v]$ member retention, frame generalization, MDL rejection of rare-symbol categories, rule pruning, determinism, compound-symbol mining equivalence, bounded trie node counts, and M1 symbolization round-trip for all five attractor systems.
+
+\section{Key Findings}
+
+\begin{enumerate}
+\item \textbf{Exact reconstruction holds universally.} All 11 recorded experiments (10 baselines + 1 OmegaSim-scale smoke) verify that the learned grammar expands to the original symbol stream.
+
+\item \textbf{Compression degrades with dimension.} At dim 1--3, scores range 44--189 (0.17--0.74 units/symbol). At dim 16--24, scores plateau near 249--252 (0.97--0.98 units/symbol), approaching raw parse cost. This reflects the $4^D$ compound-symbol explosion under direct M1 binning, not absence of dynamical structure.
+
+\item \textbf{Mackey-Glass is most compressible.} Only 4 unique symbols and score 44.4, consistent with its quasi-periodic behavior at these parameters.
+
+\item \textbf{OmegaSim-scale smoke succeeds.} The 1024 $\times$ 20D run completed in 2.55 s with exact reconstruction, 510 unique symbols, and 8 chunk rules. No category edit was accepted, so the JS path was exercised but not validated as beneficial on this run.
+
+\item \textbf{Suffix-trie miner is functional.} The bounded trie miner handles high-cardinality 20D streams without OOM. However, no matched brute-force comparison exists to quantify speedup or memory savings.
+\end{enumerate}
+
+\section{Limitations}
+
+\begin{itemize}
+\item No non-chaotic controls, shuffled surrogates, or periodic baselines: sensitivity/specificity for chaos detection is unknown.
+\item No held-out evaluation: M1 bounds are inferred from the full trajectory.
+\item Score is a heuristic proxy, not a calibrated information code.
+\item Single-run per parameter setting: no confidence intervals or perturbation sweeps.
+\item Peak memory not recorded for any run.
+\item No matched brute-force vs.\ trie benchmark.
+\item 256-symbol records lack raw stdout, environment captures, and commit identifiers.
+\item No actual OmegaSim trace tested: ``OmegaSim-scale'' refers to stream length and dimensionality only.
+\item No category edit was accepted in the 1024 $\times$ 20D run; JS clustering benefit is unvalidated.
+\end{itemize}
+
+\section{Repository State}
+
+\begin{itemize}
+\item GitHub: \texttt{bgoertzel-sing/chaos-language-algorithm} (public)
+\item Local: \texttt{projects/chaos-language-algorithm/repos/chaoslang}
+\item HEAD: \texttt{b344aa3} (local \texttt{main}, 2 commits ahead of \texttt{origin/main})
+\item Branch \texttt{agent/suffix-trie-miner} merged to local \texttt{main}
+\item Test command: \texttt{PYTHONPATH=src python3 -m unittest discover -s tests -v}
+\end{itemize}
+
+\section{Next Steps}
+
+\begin{enumerate}
+\item Matched brute-force vs.\ suffix-trie benchmark with peak RSS capture.
+\item Non-chaotic and surrogate controls for classification validation.
+\item Held-out and multi-seed evaluation protocol.
+\item Dimension-reduction symbolization beyond direct 4-bin compound M1.
+\item McBride-derivative pre-ranking (M-MD1) and joint chunk/category proposals (M-MD2).
+\item Per-iteration MDL trajectory logging (M-MD3).
+\item Run on actual OmegaSim traces after export schema is fixed.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,55 @@
+{
+  "abstract_joint": {
+    "data_bits": 38.0,
+    "delta_bits": -1.0,
+    "formula": "model=(14+r)+(0.8+3)+0.2; data=2r",
+    "model_bits": 37.0,
+    "total_bits": 75.0
+  },
+  "classification": "greedy_or_representation_blindness",
+  "configuration": {
+    "category_method": "exact",
+    "enable_categories": true,
+    "max_iterations": 8,
+    "min_uses": 2,
+    "miner": "ngram",
+    "n_max": 5,
+    "n_min": 2,
+    "seed": 0
+  },
+  "environment": {
+    "platform": "Linux-7.0.11-76070011-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "fixture": {
+    "frame_count": 19,
+    "middle_symbol_count": 19,
+    "separator_symbol_count": 19,
+    "sha256": "c828bafa0955f0e30ee947865a944e03ac3081203e6bc9e5d34578951310af89",
+    "token_count": 76
+  },
+  "greedy": {
+    "category_count": 0,
+    "deterministic_repeat": true,
+    "exact_reconstruction": true,
+    "history": [],
+    "improved": false,
+    "production_count": 0,
+    "score": {
+      "data_bits": 76.0,
+      "model_bits": 0.0,
+      "total_bits": 76.0
+    }
+  },
+  "initial_score": {
+    "data_bits": 76.0,
+    "model_bits": 0.0,
+    "total_bits": 76.0
+  },
+  "proposal_audit": {
+    "intended_category_proposed_initially": false,
+    "member_agnostic_generalized_chunk_available_after_manual_category": false
+  },
+  "schema": "chaoslang.joint-chunk-category-diagnostic.v1",
+  "status": "synthetic_diagnostic_not_chaos_or_predictive_evidence"
+}

@@ -1,0 +1,5 @@
+0b9b18d6b91452cdfc15928dea79ad7d39da3e2d3f23cdb7cc7460a32c25dc2c  telemetry.json
+609c94ad70151409e54c17fc36debde6042d97b4ee19b04c0ccb14daab49af7c  stdout.log
+93cb210d703a0853e0ed14f7c4575c088a97dcff519184e35585631617bba6ec  stderr.log
+618577204571c126f62e0a79d52ee8e03df9c0bfacc9b8a4f5b5cdc04fb28ead  command.sh
+9443bb973b7885131aaf6c3506403c408e3b427d5e10e17b5b04f105e38ac2c5  ../../repos/carom/run_carom_bridge_shadow_v2.py

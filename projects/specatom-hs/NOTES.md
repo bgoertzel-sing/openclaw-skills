@@ -1,5 +1,167 @@
 # Working Notes
 
+## 2026-07-27 15:30 PDT - Data-flow occurrences after non-physical separators
+
+- Extended the physical-line alignment corpus to exact `DataFlowEdge`
+  occurrence spans.
+- For VT, FF, FS, GS, RS, NEL, U+2028, and U+2029, an edge following
+  non-ASCII prefix text slices the exact matched phrase from UTF-8 source and
+  remains on physical line 2.
+- This supplies ground truth for a third derived-span path without broadening
+  the conservative ASCII noun-phrase grammar used by edge extraction.
+
+Verification: focused 10-test source-indexer suite passed in 1.904s; full
+stdlib discovery passed 468 tests in 421.913s; `git diff --check` passed. No
+paid compute, remote writes, or secrets/access/security changes.
+Local implementation commit `de5a2b6`; unpushed.
+
+## 2026-07-27 13:30 PDT - Concept occurrences after non-physical separators
+
+- Extended the non-physical separator corpus from semantic `Evidence:` atoms
+  to `:Concept:` reference occurrences.
+- For VT, FF, FS, GS, RS, NEL, U+2028, and U+2029, `:Café:` now has explicit
+  ground truth requiring its exact UTF-8 byte slice and physical line 2.
+- This verifies concept indexing shares the CR/LF/CRLF physical-line model and
+  does not regress to Python's broader `splitlines()` interpretation.
+
+Verification: focused 9-test source-indexer suite passed in 0.829s; full
+stdlib discovery passed 467 tests in 411.814s; `git diff --check` passed. No
+paid compute, remote writes, or secrets/access/security changes.
+Local implementation commit `8f9f610`; unpushed.
+
+## 2026-07-27 09:30 PDT - Derived spans honor lone-CR continuations
+
+- Fixed all three raw-text-to-source alignment paths so CR and CRLF boundaries
+  consume the normalized newline in `PlainItem.raw_text` exactly once.
+- Centralized physical line lookup through the source indexer's CR/LF/CRLF
+  model instead of counting only LF bytes in derived occurrence spans.
+- Exact ground truth places a non-ASCII `Evidence: docs/café.md` marker on a
+  lone-CR continuation line and verifies its UTF-8 byte slice and line 3.
+
+Verification: focused 7-test indexer suite passed; 168 semantic-object and
+information-flow tests passed; full discovery passed 465 tests in 414.697s;
+`git diff --check` passed. Local implementation commit `64f53cc`; unpushed.
+No paid compute or remote mutation was used.
+
+## 2026-07-27 07:30 PDT - Full non-physical-separator ground truth
+
+- Extended the U+2028 regression to every other separator Python
+  `splitlines()` recognizes beyond the compiler's deliberate CR/LF/CRLF
+  physical-line model: VT, FF, FS, GS, RS, NEL, U+2028, and U+2029.
+- For each case, the separator remains literal item content, the item span
+  slices the exact encoded source, and the following item begins on line 3.
+
+Verification: focused source-indexer suite passed 6 tests in 0.047s; full
+stdlib discovery passed 464 tests in 409.971s; `git diff --check` passed. No
+paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `7e5befd`;
+unpushed.
+
+## 2026-07-27 05:30 PDT - Unicode separators remain source content
+
+- Python `str.splitlines(keepends=True)` recognizes separators beyond the
+  compiler's CR/LF/CRLF source-line model, while `_line_starts` deliberately
+  counted only those three newline forms. U+2028 could therefore split source
+  records without advancing line metadata.
+- Physical record splitting now explicitly recognizes CR, LF, and CRLF.
+  Unicode separators remain within item content and exact UTF-8 provenance.
+- Ground truth verifies U+2028-bearing item text and byte slice and confirms
+  that the next item begins on physical line 3.
+
+Verification: focused source-indexer suite passed 6 tests; full stdlib
+discovery passed 464 tests in 424.099s; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+
+## 2026-07-27 03:30 PDT - Mixed newline line-number indexing
+
+- `splitlines(keepends=True)` already recognized lone carriage returns as
+  record boundaries, but `_line_starts` recognized only LF. Sections and items
+  after a lone CR therefore retained correct byte spans but incorrect line 1
+  metadata.
+- Line-start indexing now recognizes CR, LF, and CRLF, replacing the tentative
+  post-CR start when LF completes a CRLF pair so the pair counts once.
+- Mixed-newline ground truth checks lines 1--4 and exact encoded slices,
+  including non-ASCII text after both CR and CRLF boundaries.
+
+Verification: focused source-indexer suite passed 5 tests; full stdlib
+discovery passed 463 tests in 408.322s; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `4b28d16`;
+unpushed.
+
+## 2026-07-27 01:30 PDT - UTF-8 BOM preserves first-heading indexing
+
+- A leading UTF-8 BOM previously made the first `***section***` line invisible
+  to the heading recognizer, leaving all following bullets without a section.
+- Recognition now removes the BOM only from the temporary regex input. The
+  preserved source and section span still include its three encoded bytes, so
+  provenance and all later byte offsets remain exact.
+- Ground truth slices the section and following item from the original encoded
+  bytes and verifies the item remains on line 2.
+
+Verification: exact 4-test source-indexer suite and 90-test
+source/concept/semantic-object suite passed; `git diff --check` passed. No paid
+compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes. Local implementation commit `ac841f8`;
+unpushed.
+
+## 2026-07-26 07:30 PDT - Combining-mark identities fail closed
+
+- Object-scoped validation subtargets now reject every Unicode mark category
+  (`Mn`, `Mc`, and `Me`), closing NFC/NFKC-stable visual modifications such
+  as a combining long solidus overlay.
+- Crisp declaration validation and PeTTa admission use the same rule, so the
+  malformed obligation and linked check cannot affect exported atoms or
+  diagnostics.
+- Exact ground truth covers `object:child:fact<U+0338>:0` and confirms the
+  unmodified neighboring target remains emitted and counted.
+
+Verification: exact 2-test regression passed; full stdlib discovery passed
+459 tests in 446.439s; `git diff --check` passed. No paid compute, remote
+writes, push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `f06254a`; unpushed.
+
+## 2026-07-26 05:30 PDT - Unicode variation selectors fail closed
+
+Unicode variation selectors (`U+FE00`--`U+FE0F` and
+`U+E0100`--`U+E01EF`) are combining marks, so the existing category exclusions
+did not catch them, and they survive NFC/NFKC normalization. They can change
+presentation while leaving validation targets visually hard to distinguish.
+The crisp validator and PeTTa/diagnostics admission gate now reject them.
+Paired malformed/canonical ground truth confirms the malformed obligation and
+linked evidence neither emit nor affect diagnostics.
+
+Verification: exact 2-test regression passed; full stdlib discovery passed 457
+tests in 442.607s; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `85e5fff`; unpushed.
+
+## 2026-07-25 23:30 PDT - Unassigned Unicode subtargets fail closed
+
+U+0378 has Unicode general category `Cn` (unassigned), but was accepted inside
+an object-scoped validation subtarget. Adding `Cn` to the shared crisp-validator
+and PeTTa admission exclusions prevents target identity semantics from silently
+changing when a future Unicode version assigns the code point. Exact validator
+and end-to-end exporter/diagnostics regressions retain a canonical neighboring
+target. The exact 2-test regression and 208 relevant tests passed; `git diff
+--check` passed.
+
+## 2026-07-25 17:30 PDT - Non-scalar Unicode subtargets fail closed
+
+A lone UTF-16 surrogate (`U+D800`, Unicode category `Cs`) in an object-scoped
+validation subtarget exposed a crash while stable validation-check IDs encoded
+failure evidence as UTF-8. Stable IDs now use Python's deterministic
+`surrogatepass` encoding, allowing validation to record the failure, while the
+crisp validator and shared PeTTa/diagnostics admission gate reject surrogate
+subtargets. Paired malformed/canonical ground truth confirms the malformed
+obligation and linked evidence neither emit nor affect diagnostics.
+
+Verification: exact 2-test regression passed; validation/backend slice passed
+176 tests in 5.512s; full stdlib discovery passed 445 tests in 714.128s;
+`git diff --check` passed. Local implementation commit `a02074d`; unpushed.
+No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+
 ## 2026-07-25 07:30 PDT - Invisible format padding after target separator
 
 Python's `str.strip()` treats ordinary and many Unicode spaces as padding but
@@ -4351,3 +4513,145 @@ Verification: exact 2-test regression passed; full stdlib discovery passed
 443 tests in 501.447s; `git diff --check` passed. No paid compute, remote
 writes, push/merge/force-push/delete, or secrets/access/security changes.
 Local implementation commit `24c8f10`; unpushed.
+
+## 2026-07-25 19:30 PDT - Reserved Unicode noncharacters fail closed
+
+- Crisp target declaration now rejects reserved Unicode noncharacters
+  (U+FDD0--U+FDEF and the U+FFFE/U+FFFF endings of every Unicode plane) inside
+  object-scoped validation subtargets.
+- The PeTTa admission gate applies the same test, suppressing malformed
+  obligations and linked checks before diagnostics can consume their evidence.
+- Exact ground truth covers `object:child:fact:<U+FDD0>0` and confirms a
+  canonical neighboring target remains emitted and counted.
+
+Verification: exact 2-test regression passed; validation/backend suites passed
+178 tests in 2.519s; full stdlib discovery passed 447 tests in 511.660s;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `f069218`; unpushed.
+
+## 2026-07-25 21:30 PDT - Unicode private-use identities fail closed
+
+- Crisp target declaration now rejects Unicode private-use code points inside
+  object-scoped validation subtargets because their interpretation is local
+  rather than portable.
+- The PeTTa admission gate applies the same rule, suppressing malformed
+  obligations and linked checks before diagnostics can consume their evidence.
+- Exact ground truth covers `object:child:fact:<U+E000>0` and confirms a
+  canonical neighboring target remains emitted and counted.
+
+Verification: exact 2-test regression and 180 relevant validation/backend
+tests passed; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `3372def`; unpushed.
+## 2026-07-26 01:30 PDT - Canonically equivalent Unicode identities fail closed
+
+- Object-scoped validation subtargets must now equal their Unicode NFC
+  normalization, preventing decomposed and precomposed spellings from naming
+  distinct validation targets.
+- Crisp declaration validation rejects decomposed `cafe<U+0301>`; the PeTTa
+  admission gate suppresses its obligation and linked check before diagnostics
+  consume the evidence.
+- Exact ground truth confirms the NFC neighbor `caf<U+00E9>` remains emitted
+  and counted.
+
+Verification: exact 2-test regression passed; validation/backend/diagnostics
+suite passed 210 tests in 121.256s; full stdlib discovery passed 453 tests in
+442.232s; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `a881927`; unpushed.
+
+## 2026-07-26 03:30 PDT - Compatibility-equivalent identities fail closed
+
+- Object-scoped validation subtargets must now equal their Unicode NFKC
+  normalization in addition to NFC, preventing compatibility variants such as
+  full-width Latin letters from naming distinct validation targets.
+- Crisp declaration validation rejects `object:child:<FULLWIDTH f>act:0`; the
+  PeTTa admission gate suppresses its obligation and linked check before
+  diagnostics consume the evidence.
+- Exact ground truth confirms the canonical ASCII neighbor
+  `object:child:fact:0` remains emitted and counted.
+
+Verification: exact 2-test regression passed; validation/backend/diagnostics
+suite passed 212 tests in 121.427s; full stdlib discovery passed 455 tests in
+440.653s; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+Local implementation commit `63d2667`; unpushed.
+
+## 2026-07-26 09:30 PDT - Canonical subtarget policy deduplicated
+
+- Moved the canonical object-subtarget identity predicate into
+  `specatom_hs.identities` and used it from both crisp declaration validation
+  and PeTTa/diagnostics admission.
+- Added a compact ground-truth corpus that checks accepted ASCII/NFC
+  identities and all existing Unicode refusal classes against the backend
+  gate, making policy drift directly testable.
+- This is a behavior-preserving consolidation: existing exact refusal and
+  neighboring-target regressions remain intact.
+
+Verification: focused identity/validation/backend suite passed 191 tests in
+2.372s; full stdlib discovery passed 460 tests in 453.376s;
+`git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+
+## 2026-07-27 11:30 PDT - Semantic spans survive non-physical separators
+
+- Extended the item-level separator corpus to generated semantic occurrences.
+- An `Evidence:` marker after each of VT, FF, FS, GS, RS, NEL, U+2028, and
+  U+2029 must slice the exact UTF-8 source bytes and remain on physical line 2.
+- This locks derived atoms to the same explicit CR/LF/CRLF model already used
+  by the source indexer instead of Python's broader `splitlines()` behavior.
+
+Verification: focused 8-test source-indexer suite passed in 0.484s; full
+stdlib discovery passed 466 tests in 413.106s; `git diff --check` passed. No
+paid compute, remote writes, push/merge/force-push/delete, or
+secrets/access/security changes.
+Local implementation commit `ba1cadf`; unpushed.
+Local implementation commit `ce1e9cd`; unpushed.
+# 2026-07-26 11:30 PDT - Interior whitespace identities fail closed
+
+- Extended the shared canonical object-subtarget predicate to reject any
+  whitespace code point inside a subtarget, rather than only edge padding.
+- Ground truth now covers `fact 0` and `fact<EM SPACE>0`, and verifies the
+  crisp validator and PeTTa/diagnostics admission gate agree.
+- This prevents visually ambiguous validation identities without normalizing
+  or silently rewriting user-supplied targets.
+
+Verification: the identity regression passed; validation/backend/diagnostics
+suites passed 216 tests in 122.925s; full stdlib discovery passed 460 tests in
+459.501s; `git diff --check` passed. No paid compute, remote writes,
+push/merge/force-push/delete, or secrets/access/security changes.
+# 2026-07-26 — v0.1 clean-install usability gate
+
+**Reproduced:** `scripts/usability-gate.sh` creates a fresh virtual environment
+(using only host build tooling), installs local `plain2metta`, and runs the
+console command over the auth-service, task-manager, and ML/time-series
+examples. The recorded `20260726T185730Z-v01-three-spec-install-report` run
+completed with exit status zero. The first two harness attempts exposed a
+missing-wheel build-tooling constraint and then a case-sensitive report-header
+assertion; both are preserved as failed experiment records rather than erased.
+# 2026-07-26 13:30 PDT - UTF-8 source spans use real byte offsets
+
+- Corrected the source indexer, which previously stored Python character
+  indexes in fields documented and exported as byte offsets.
+- Updated the three source-marker alignment paths to slice UTF-8 bytes and
+  translate matched character positions back to byte positions.
+- Updated source-span validation to compare against encoded file size and
+  count lines relative to bytes.
+- Added exact ground truth using a non-ASCII heading and `:Café:` marker,
+  checking section, item, and concept-occurrence byte slices.
+
+Verification: 193 source/validation/backend tests passed in 2.614s; 65
+source/concept/semantic-object tests passed; `git diff --check` passed. No
+paid compute or remote mutation was used.
+
+## 2026-07-27 01:00 PDT - UTF-8 semantic-occurrence ground truth
+
+- Strengthened the UTF-8 byte-offset regression so an `Evidence:` marker and
+  non-ASCII artifact name occurring after `:Café:` must round-trip from its
+  exact semantic-object source span.
+- Four focused source, semantic, data-flow, and temporal provenance tests
+  passed in 1.249s; `git diff --check` passed. A larger cross-layer run was
+  stopped after several minutes because the established suite is slow; all
+  tests completed before interruption passed.
+- Local implementation commit: `e861052` (unpushed).

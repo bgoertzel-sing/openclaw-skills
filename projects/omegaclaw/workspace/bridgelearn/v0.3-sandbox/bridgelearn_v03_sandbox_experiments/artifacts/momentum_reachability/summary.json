@@ -1,0 +1,223 @@
+{
+  "artifacts": {
+    "horizon_csv": "momentum_horizon_curve.csv",
+    "horizon_plot": "momentum_minimum_horizon.png",
+    "lower_bound_csv": "momentum_lower_bound_sweep.csv",
+    "lower_bound_plot": "momentum_lower_bound_sweep.png",
+    "one_step_csv": "momentum_one_step_results.csv",
+    "one_step_plot": "momentum_one_step_reachability.png"
+  },
+  "experiment": "momentum_reachability",
+  "grid_horizon_near_mu_0.9": 27,
+  "initial_amplitude_floor": 0.9486832980505138,
+  "initial_covariance_floor": 0.9,
+  "initial_momentum": 0.9,
+  "initial_variance": 0.08,
+  "minimum_horizon_at_mu_0.9": 27,
+  "one_step": {
+    "adaptive_momentum_feasible_count": 5,
+    "adaptive_results": [
+      {
+        "feasible": true,
+        "lyapunov_condition": 79.50330908053505,
+        "mode": "adaptive_mu",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 0.9499999999999997,
+        "regime": "overdamped",
+        "relative_target_error": 0.0,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.025320565519103666,
+        "spectral_radius": 0.9746794344808963,
+        "target_variance_ratio": 0.95
+      },
+      {
+        "feasible": true,
+        "lyapunov_condition": 39.50702271882786,
+        "mode": "adaptive_mu",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 0.8999999999999999,
+        "regime": "overdamped",
+        "relative_target_error": 0.0,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.05131670194948623,
+        "spectral_radius": 0.9486832980505138,
+        "target_variance_ratio": 0.9
+      },
+      {
+        "feasible": true,
+        "lyapunov_condition": 19.515928669676455,
+        "mode": "adaptive_mu",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 0.8000000000000002,
+        "regime": "overdamped",
+        "relative_target_error": 1.734723475976807e-16,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.10557280900008403,
+        "spectral_radius": 0.894427190999916,
+        "target_variance_ratio": 0.8
+      },
+      {
+        "feasible": true,
+        "lyapunov_condition": 12.860739849599652,
+        "mode": "adaptive_mu",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 0.7000000000000002,
+        "regime": "overdamped",
+        "relative_target_error": 8.673617379884035e-17,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.16333997346592433,
+        "spectral_radius": 0.8366600265340757,
+        "target_variance_ratio": 0.7
+      },
+      {
+        "feasible": true,
+        "lyapunov_condition": 7.563017928136332,
+        "mode": "adaptive_mu",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 0.5000000000000001,
+        "regime": "overdamped",
+        "relative_target_error": 0.0,
+        "selected_momentum": 0.0,
+        "selected_step_size": 0.2928932188134524,
+        "spectral_radius": 0.7071067811865476,
+        "target_variance_ratio": 0.5
+      }
+    ],
+    "fixed_momentum_feasible_count": 0,
+    "fixed_results": [
+      {
+        "feasible": false,
+        "lyapunov_condition": 10.888074548173558,
+        "mode": "fixed_mu_0.9",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 1.3808033240997226,
+        "regime": "underdamped",
+        "relative_target_error": 0.43080332409972283,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.30953109183489325,
+        "spectral_radius": 0.9486832980505138,
+        "target_variance_ratio": 0.95
+      },
+      {
+        "feasible": false,
+        "lyapunov_condition": 9.97242976713018,
+        "mode": "fixed_mu_0.9",
+        "momentum_floor_binding": false,
+        "predicted_variance_ratio": 1.3308033240997226,
+        "regime": "underdamped",
+        "relative_target_error": 0.43080332409972266,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.3355272282652759,
+        "spectral_radius": 0.9486832980505138,
+        "target_variance_ratio": 0.9
+      },
+      {
+        "feasible": false,
+        "lyapunov_condition": 8.456594495191194,
+        "mode": "fixed_mu_0.9",
+        "momentum_floor_binding": true,
+        "predicted_variance_ratio": 1.2308033240997232,
+        "regime": "underdamped",
+        "relative_target_error": 0.43080332409972316,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.3897833353158735,
+        "spectral_radius": 0.9486832980505139,
+        "target_variance_ratio": 0.8
+      },
+      {
+        "feasible": false,
+        "lyapunov_condition": 7.248085381856267,
+        "mode": "fixed_mu_0.9",
+        "momentum_floor_binding": true,
+        "predicted_variance_ratio": 1.1308033240997235,
+        "regime": "underdamped",
+        "relative_target_error": 0.43080332409972333,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.4475504997817137,
+        "spectral_radius": 0.9486832980505139,
+        "target_variance_ratio": 0.7
+      },
+      {
+        "feasible": false,
+        "lyapunov_condition": 5.419578746645742,
+        "mode": "fixed_mu_0.9",
+        "momentum_floor_binding": true,
+        "predicted_variance_ratio": 0.9308033240997232,
+        "regime": "underdamped",
+        "relative_target_error": 0.43080332409972316,
+        "selected_momentum": 0.9,
+        "selected_step_size": 0.5771037451292418,
+        "spectral_radius": 0.948683298050514,
+        "target_variance_ratio": 0.5
+      }
+    ],
+    "total_targets": 5
+  },
+  "target_ratio_0.70_lower_bound_sweep": [
+    {
+      "feasible": true,
+      "momentum_lower_bound": 0.0,
+      "predicted_variance_ratio": 0.7000000000000002,
+      "relative_target_error": 8.673617379884035e-17,
+      "selected_momentum": 0.0,
+      "selected_step_size": 0.16333997346592433,
+      "spectral_radius": 0.8366600265340757
+    },
+    {
+      "feasible": true,
+      "momentum_lower_bound": 0.1,
+      "predicted_variance_ratio": 0.7053185595567866,
+      "relative_target_error": 0.0053185595567864855,
+      "selected_momentum": 0.1,
+      "selected_step_size": 0.1949189208343456,
+      "spectral_radius": 0.7762579162648899
+    },
+    {
+      "feasible": false,
+      "momentum_lower_bound": 0.3,
+      "predicted_variance_ratio": 0.7478670360110802,
+      "relative_target_error": 0.047867036011080104,
+      "selected_momentum": 0.3,
+      "selected_step_size": 0.25807681557118767,
+      "spectral_radius": 0.5477225575051662
+    },
+    {
+      "feasible": false,
+      "momentum_lower_bound": 0.5,
+      "predicted_variance_ratio": 0.8329639889196679,
+      "relative_target_error": 0.13296398891966785,
+      "selected_momentum": 0.5,
+      "selected_step_size": 0.3212347103080295,
+      "spectral_radius": 0.7071067811865475
+    },
+    {
+      "feasible": false,
+      "momentum_lower_bound": 0.7,
+      "predicted_variance_ratio": 0.9606094182825484,
+      "relative_target_error": 0.26060941828254836,
+      "selected_momentum": 0.7,
+      "selected_step_size": 0.3843926050448718,
+      "spectral_radius": 0.8366600265340753
+    },
+    {
+      "feasible": false,
+      "momentum_lower_bound": 0.85,
+      "predicted_variance_ratio": 1.0842659279778393,
+      "relative_target_error": 0.38426592797783915,
+      "selected_momentum": 0.85,
+      "selected_step_size": 0.43176102609750355,
+      "spectral_radius": 0.9219544457292888
+    },
+    {
+      "feasible": false,
+      "momentum_lower_bound": 0.9,
+      "predicted_variance_ratio": 1.1308033240997235,
+      "relative_target_error": 0.43080332409972333,
+      "selected_momentum": 0.9,
+      "selected_step_size": 0.4475504997817137,
+      "spectral_radius": 0.9486832980505139
+    }
+  ],
+  "terminal_variance": 0.005,
+  "variance_ratio": 0.0625
+}

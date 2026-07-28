@@ -1,0 +1,538 @@
+{
+  "limitations": [
+    "Synthetic phase-robustness calibration only; no chaos, attractor, or semantic-grammar evidence.",
+    "Does not revise prior synthetic results or either Mackey--Glass/Lorenz--96 held-out coding null."
+  ],
+  "manifest": {
+    "config": {
+      "continuity_control": "frozen-cla-indexed-json-v1",
+      "external_controls": [
+        "literal",
+        "unigram",
+        "markov-1",
+        "markov-2",
+        "lz78-canonical-v1"
+      ],
+      "learner": {
+        "enable_categories": false,
+        "enable_joint_categories": false,
+        "max_iterations": 8,
+        "max_ngram": 5,
+        "search_objective": "indexed",
+        "seed": 18071811
+      },
+      "lz78_accounting": "entire self-contained suffix byte stream at eight bits per byte",
+      "phases": [
+        0,
+        1
+      ],
+      "prefix_length": 1024,
+      "primary": "frozen-cla-compact-indexed-v1",
+      "shuffle_seed_base": 18071811,
+      "source": {
+        "coding": {
+          "a": "0",
+          "b": "1",
+          "c": "1"
+        },
+        "name": "cyclic-3state-2uniform",
+        "rule": {
+          "a": "ab",
+          "b": "ca",
+          "c": "bc"
+        },
+        "seed_symbol": "a"
+      },
+      "suffix_length": 4096
+    },
+    "fixtures": [
+      {
+        "counts": {
+          "0": 1707,
+          "1": 3413
+        },
+        "kind": "positive",
+        "length": 5120,
+        "name": "phase-0-positive",
+        "phase": 0,
+        "prefix_length": 1024,
+        "prefix_sha256": "29b97a421f883578e00f007402382110b285514cac955c559d1df6eeac3b442e",
+        "shuffle_seed": null,
+        "source": "cyclic-3state-2uniform",
+        "stream_sha256": "5ed59c11a86d6ec4a8b92a478fc13fe9300a4981e63d28ff4b7e7439e55e0fb6",
+        "suffix_length": 4096,
+        "suffix_sha256": "ce5e45f6b3c815689670d39c26f6671d6ba168c2edba2001fd370936ec0f1a5b"
+      },
+      {
+        "counts": {
+          "0": 1707,
+          "1": 3413
+        },
+        "kind": "shuffled",
+        "length": 5120,
+        "name": "phase-0-shuffled",
+        "phase": 0,
+        "prefix_length": 1024,
+        "prefix_sha256": "9ff2a55b1dca688ef02b3372b575a491cdb8b65294fa5d1e5e5083110bffb033",
+        "shuffle_seed": 18071811,
+        "source": "cyclic-3state-2uniform",
+        "stream_sha256": "84cafa14d17120592c95c24bedacc473f346924696c4870556a28e41feaf939d",
+        "suffix_length": 4096,
+        "suffix_sha256": "582094bc2eef693beb3155dcca35f0d171a98bdeaf33c9ca0240169616c2ed92"
+      },
+      {
+        "counts": {
+          "0": 1706,
+          "1": 3414
+        },
+        "kind": "positive",
+        "length": 5120,
+        "name": "phase-1-positive",
+        "phase": 1,
+        "prefix_length": 1024,
+        "prefix_sha256": "43d7f3bb75669d9e151c5540468860cdf2261b573e9d4a1513e30f9664484c36",
+        "shuffle_seed": null,
+        "source": "cyclic-3state-2uniform",
+        "stream_sha256": "c273e61d0eb1ee3c37a7d95d5bb4be19eb8a47765866c62db847940f996f6cda",
+        "suffix_length": 4096,
+        "suffix_sha256": "56a8b4236d0aa8665dd8994a2d0b8cc8450a54be5639995eead1a0a14df385d3"
+      },
+      {
+        "counts": {
+          "0": 1706,
+          "1": 3414
+        },
+        "kind": "shuffled",
+        "length": 5120,
+        "name": "phase-1-shuffled",
+        "phase": 1,
+        "prefix_length": 1024,
+        "prefix_sha256": "348ea2b07876fa554c5e96b4ca126b56b71b100cac6a58d5e4c2251f39596e4d",
+        "shuffle_seed": 18071812,
+        "source": "cyclic-3state-2uniform",
+        "stream_sha256": "a55728c73133909c0184e0afa911250d3e11085744f11c6c95b1fb41908c04f4",
+        "suffix_length": 4096,
+        "suffix_sha256": "e3bff3693916ec77745f0c81f9acf128ba07bbd65f7d29fbb1a007a6300f1793"
+      }
+    ],
+    "protocol": "synthetic-phase-robustness-preregistration-v1",
+    "schema": "chaoslang.synthetic-phase-robustness",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "all gates; compact CLA beats every external complete-code control at both phases, beats JSON CLA everywhere, and neither shuffled null",
+  "results": [
+    {
+      "gate": {
+        "compact_json_suffix_equal": true,
+        "compact_model_byte_stable": true,
+        "compact_model_decode": true,
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "json_model_byte_stable": true,
+        "json_model_decode": true,
+        "lz78_byte_stable": true,
+        "lz78_exact_reconstruction": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "phase-0-positive",
+      "primary_below_json": true,
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1 1",
+        "chunk N1 -> chunk:N0 chunk:N0 chunk:N0 chunk:N0 chunk:N0",
+        "chunk N3 -> chunk:N1 chunk:N1 chunk:N1 chunk:N1",
+        "chunk N4 -> chunk:N3 chunk:N3 chunk:N3 chunk:N3"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 0.673828125,
+          "canonical_hash": "c23c19237be1656510a5d311ad092d14c983c983e2a3271dbfef6d030ea606bc",
+          "method_name": "lz78-canonical-v1",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 2760.0,
+          "total_bits": 2760.0
+        },
+        {
+          "bits_per_symbol": 0.6780568485560131,
+          "canonical_hash": "16a2ae3d053fa2abd82a7691119ce275009981661138581def3dc1a2b467a36f",
+          "method_name": "markov-2",
+          "model_bits": 2760.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 17.320851685429563,
+          "total_bits": 2777.3208516854297
+        },
+        {
+          "bits_per_symbol": 1.039306640625,
+          "canonical_hash": "05a70924eb52cab7947fc8ea307929337fe49e2e8dbce29773a94f78b78ee7a1",
+          "method_name": "frozen-cla-compact-indexed-v1",
+          "model_bits": 4096.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 161.0,
+          "total_bits": 4257.0
+        },
+        {
+          "bits_per_symbol": 1.121337890625,
+          "canonical_hash": "2d35e842ba69702492e1c4b3f0525572bd26e16b32f7443a4c6f56eb803c2b37",
+          "method_name": "frozen-cla-indexed-json-v1",
+          "model_bits": 4432.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 161.0,
+          "total_bits": 4593.0
+        },
+        {
+          "bits_per_symbol": 1.2552591712605228,
+          "canonical_hash": "6656aa553a3bf81982fd6edf073f2b0c6e2a6a29b89ff9550ebaaf6dfd8a3214",
+          "method_name": "markov-1",
+          "model_bits": 2400.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 2741.541565483101,
+          "total_bits": 5141.541565483101
+        },
+        {
+          "bits_per_symbol": 1.3024368670040258,
+          "canonical_hash": "5fcae53ba4416bb4a07f6abc24c1d46ae9bed97cc8e77cd068375f1e0f6f69e5",
+          "method_name": "unigram",
+          "model_bits": 1568.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3766.78140724849,
+          "total_bits": 5334.78140724849
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 163840.0,
+          "total_bits": 163840.0
+        }
+      ],
+      "strongest_external_control": {
+        "bits_per_symbol": 0.673828125,
+        "canonical_hash": "c23c19237be1656510a5d311ad092d14c983c983e2a3271dbfef6d030ea606bc",
+        "method_name": "lz78-canonical-v1",
+        "model_bits": 0.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 2760.0,
+        "total_bits": 2760.0
+      }
+    },
+    {
+      "gate": {
+        "compact_json_suffix_equal": true,
+        "compact_model_byte_stable": true,
+        "compact_model_decode": true,
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "json_model_byte_stable": true,
+        "json_model_decode": true,
+        "lz78_byte_stable": true,
+        "lz78_exact_reconstruction": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "phase-0-shuffled",
+      "primary_below_json": true,
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1 1",
+        "chunk N1 -> chunk:N0 1 1 1",
+        "chunk N2 -> 1 0",
+        "chunk N3 -> 1 chunk:N0",
+        "chunk N4 -> 0 0",
+        "chunk N5 -> chunk:N1 1 1",
+        "chunk N6 -> 0 chunk:N2",
+        "chunk N7 -> 1 chunk:N2"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.3006632007489394,
+          "canonical_hash": "14f0f27217d3a9aca93a71367c78530cd1d3662eb94129bd190f68a7df20bf4a",
+          "method_name": "unigram",
+          "model_bits": 1568.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3759.516470267656,
+          "total_bits": 5327.516470267656
+        },
+        {
+          "bits_per_symbol": 1.5211353719233496,
+          "canonical_hash": "1cd44b870206df04f08d9485a4216d1af405d991ff689dc45fd83a9517705419",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3766.57048339804,
+          "total_bits": 6230.57048339804
+        },
+        {
+          "bits_per_symbol": 1.7340015934804835,
+          "canonical_hash": "f735090b2d392428fbc64dd528bb9f63fa2e0c86c766559b008b53c572ee1b86",
+          "method_name": "markov-2",
+          "model_bits": 3312.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3790.47052689606,
+          "total_bits": 7102.470526896061
+        },
+        {
+          "bits_per_symbol": 2.5859375,
+          "canonical_hash": "f36fd77e6ef8888b503548521317cecc9767e33e8b09019173ecc181ebb07714",
+          "method_name": "lz78-canonical-v1",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 10592.0,
+          "total_bits": 10592.0
+        },
+        {
+          "bits_per_symbol": 2.9843208213840238,
+          "canonical_hash": "e8413dd60c09b495142d93e57ad31a6cf51035d72a4320038bc7e86113ef7add",
+          "method_name": "frozen-cla-compact-indexed-v1",
+          "model_bits": 6064.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 6159.778084388961,
+          "total_bits": 12223.778084388961
+        },
+        {
+          "bits_per_symbol": 3.1444770713840238,
+          "canonical_hash": "1f92b0458a59d67d3e1ed05938ce5f67ddd73dd7c004e0adbd7d5fb6f881419d",
+          "method_name": "frozen-cla-indexed-json-v1",
+          "model_bits": 6720.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 6159.778084388961,
+          "total_bits": 12879.778084388961
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 163840.0,
+          "total_bits": 163840.0
+        }
+      ],
+      "strongest_external_control": {
+        "bits_per_symbol": 1.3006632007489394,
+        "canonical_hash": "14f0f27217d3a9aca93a71367c78530cd1d3662eb94129bd190f68a7df20bf4a",
+        "method_name": "unigram",
+        "model_bits": 1568.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 3759.516470267656,
+        "total_bits": 5327.516470267656
+      }
+    },
+    {
+      "gate": {
+        "compact_json_suffix_equal": true,
+        "compact_model_byte_stable": true,
+        "compact_model_decode": true,
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "json_model_byte_stable": true,
+        "json_model_decode": true,
+        "lz78_byte_stable": true,
+        "lz78_exact_reconstruction": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "phase-1-positive",
+      "primary_below_json": true,
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 1 0 1",
+        "chunk N1 -> chunk:N0 chunk:N0 chunk:N0 chunk:N0 chunk:N0",
+        "chunk N3 -> chunk:N1 chunk:N1 chunk:N1 chunk:N1",
+        "chunk N4 -> chunk:N3 chunk:N3 chunk:N3 chunk:N3"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 0.673828125,
+          "canonical_hash": "8bc67eb99893d090d00b0d6c99d95a83678f49b2cf8aa11326146ab6bf16ddae",
+          "method_name": "lz78-canonical-v1",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 2760.0,
+          "total_bits": 2760.0
+        },
+        {
+          "bits_per_symbol": 0.6780568485560131,
+          "canonical_hash": "a9717638f8b9e6ece16ae6ca53792604704981468221af9b5093271a95d13aad",
+          "method_name": "markov-2",
+          "model_bits": 2760.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 17.320851685429563,
+          "total_bits": 2777.3208516854297
+        },
+        {
+          "bits_per_symbol": 1.008544921875,
+          "canonical_hash": "c4040d25223c7e7ad82b032fbb525ecf0eb08db89779fd4c9e8f29d1731bd682",
+          "method_name": "frozen-cla-compact-indexed-v1",
+          "model_bits": 4096.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 35.0,
+          "total_bits": 4131.0
+        },
+        {
+          "bits_per_symbol": 1.090576171875,
+          "canonical_hash": "0d87b8e461ab3045b61fec188f6387aaa19f63ee4c1de53ab9a8a7b3fa07c95a",
+          "method_name": "frozen-cla-indexed-json-v1",
+          "model_bits": 4432.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 35.0,
+          "total_bits": 4467.0
+        },
+        {
+          "bits_per_symbol": 1.2555027965665295,
+          "canonical_hash": "6326eaec97fb458e311d014eb3be1be33fc20b4cdc835cfe84c15fa94e0a9620",
+          "method_name": "markov-1",
+          "model_bits": 2400.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 2742.539454736505,
+          "total_bits": 5142.539454736505
+        },
+        {
+          "bits_per_symbol": 1.302435320291686,
+          "canonical_hash": "e9e8d04aed1b095c0fa3c6603090169efbe2c85019bc96799152f7237a66c870",
+          "method_name": "unigram",
+          "model_bits": 1568.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3766.775071914746,
+          "total_bits": 5334.775071914746
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 163840.0,
+          "total_bits": 163840.0
+        }
+      ],
+      "strongest_external_control": {
+        "bits_per_symbol": 0.673828125,
+        "canonical_hash": "8bc67eb99893d090d00b0d6c99d95a83678f49b2cf8aa11326146ab6bf16ddae",
+        "method_name": "lz78-canonical-v1",
+        "model_bits": 0.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 2760.0,
+        "total_bits": 2760.0
+      }
+    },
+    {
+      "gate": {
+        "compact_json_suffix_equal": true,
+        "compact_model_byte_stable": true,
+        "compact_model_decode": true,
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "json_model_byte_stable": true,
+        "json_model_decode": true,
+        "lz78_byte_stable": true,
+        "lz78_exact_reconstruction": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "phase-1-shuffled",
+      "primary_below_json": true,
+      "primary_below_strongest": false,
+      "primary_history": [
+        "chunk N0 -> 0 1 1",
+        "chunk N1 -> chunk:N0 1 1",
+        "chunk N2 -> 1 0",
+        "chunk N3 -> chunk:N1 1 1 1 1",
+        "chunk N4 -> 1 chunk:N0",
+        "chunk N5 -> chunk:N2 0",
+        "chunk N6 -> 1 chunk:N1",
+        "chunk N7 -> chunk:N0 0"
+      ],
+      "scores": [
+        {
+          "bits_per_symbol": 1.3015245864762592,
+          "canonical_hash": "8c714c09cbd49dc972a3afefb8ef5cff46ae7d79baae924709a563cb47cad439",
+          "method_name": "unigram",
+          "model_bits": 1568.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3763.0447062067583,
+          "total_bits": 5331.044706206758
+        },
+        {
+          "bits_per_symbol": 1.521505652691438,
+          "canonical_hash": "eaa9486b132cb81868da2af3d72e00256fce0fba77f6d269b4339e7b51a2e708",
+          "method_name": "markov-1",
+          "model_bits": 2464.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3768.0871534241296,
+          "total_bits": 6232.08715342413
+        },
+        {
+          "bits_per_symbol": 1.730441513483771,
+          "canonical_hash": "90e884b958a4c512019dcfebc10856c5894066c7077ed7de9d507a506acf3aa9",
+          "method_name": "markov-2",
+          "model_bits": 3312.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 3775.8884392295263,
+          "total_bits": 7087.888439229526
+        },
+        {
+          "bits_per_symbol": 2.599609375,
+          "canonical_hash": "1c47321c742ec650fb529ccc606196b197cd8f5d79a74eb9e9f9c7c0bc6fe617",
+          "method_name": "lz78-canonical-v1",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 10648.0,
+          "total_bits": 10648.0
+        },
+        {
+          "bits_per_symbol": 2.7790126961240995,
+          "canonical_hash": "ffa878136498f26aa80da3b82c58653cfcba94d6faa416bf0d1dbefaa981bea8",
+          "method_name": "frozen-cla-compact-indexed-v1",
+          "model_bits": 6120.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 5262.836003324311,
+          "total_bits": 11382.836003324312
+        },
+        {
+          "bits_per_symbol": 2.9411220711240995,
+          "canonical_hash": "572ef3389cf1c046b332281d6a9ac256e87ecbdc3f491ca0b0738eec913b6d40",
+          "method_name": "frozen-cla-indexed-json-v1",
+          "model_bits": 6784.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 5262.836003324311,
+          "total_bits": 12046.836003324312
+        },
+        {
+          "bits_per_symbol": 40.0,
+          "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "method_name": "literal",
+          "model_bits": 0.0,
+          "reconstruction_ok": true,
+          "suffix_bits": 163840.0,
+          "total_bits": 163840.0
+        }
+      ],
+      "strongest_external_control": {
+        "bits_per_symbol": 1.3015245864762592,
+        "canonical_hash": "8c714c09cbd49dc972a3afefb8ef5cff46ae7d79baae924709a563cb47cad439",
+        "method_name": "unigram",
+        "model_bits": 1568.0,
+        "reconstruction_ok": true,
+        "suffix_bits": 3763.0447062067583,
+        "total_bits": 5331.044706206758
+      }
+    }
+  ]
+}

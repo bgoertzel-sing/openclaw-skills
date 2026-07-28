@@ -30,3 +30,31 @@ benchmark over `D={8192,12288,16384}`, `k={32,64}`, one seed took 36.21 seconds
 and 688,628 KiB maximum RSS. The frozen full-grid command was then relaunched
 detached with unbuffered logging and an exit-status sidecar. No fixture,
 criterion, seed, trial count, or hyperparameter changed.
+
+## 2026-07-28T07:58Z worker checkpoint
+
+The detached frozen full-grid process remains healthy after 3:58:31 elapsed:
+PID `162123`, state `R`, 99.9% CPU, 441,760 KiB RSS. The runner emits only its
+final payload, so `run.log` remains empty by design; neither the output payload
+nor `exit-status.txt` exists while it is running. This is continuing execution,
+not a gate result. P1B implementation and all remote provisioning remain
+deferred behind this priority-one run.
+
+## Completion
+
+The detached process exited `0` at 2026-07-28T04:50:16 local
+(2026-07-28T11:50:16Z). It wrote 1,275 cells and 75 curves with
+`scientific_gate_eligible=true`. The payload is 1,060,830 bytes and has
+SHA-256 `b7fabae33494ed090fe1cd73b85fff0ad3f36fe7f3c6f986ed1a30ab0197195b`.
+All 18 implementation tests passed after completion.
+
+Calibration fit: 60 F0/F1 curves were interior, 15 F2 pathology curves were
+right-censored, `alpha_hat=1.4506361516460744`, and the fitted
+`[b0,b_k,b_M]` coefficients were
+`[4.6456356439528586,1.1922932291366184,-0.7050253292125505]`.
+No F0/F1 curve had a statistically resolved adjacent accuracy decrease
+greater than 0.02. However, 31 of 60 F0/F1 calibration curves had Spearman
+correlation below the frozen 0.90 monotonicity threshold (minimum
+`0.5601120336112039`). This is material calibration evidence and a warning
+for P1-G1, but not a confirmation-seed gate verdict. Criteria were not changed
+and confirmation seeds were not opened.

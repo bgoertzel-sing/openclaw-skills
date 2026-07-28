@@ -1,0 +1,168 @@
+{
+  "d1_weight_spectral_by_arm": {
+    "bp_ce": {
+      "layer0_attn_c_attn_spectral_norm_mean": 1.7501190106074016,
+      "layer0_attn_c_proj_spectral_norm_mean": 0.5192707379659017,
+      "layer0_mlp_c_fc_spectral_norm_mean": 2.220155874888102,
+      "layer0_mlp_c_proj_spectral_norm_mean": 0.9508909384409586,
+      "layer1_attn_c_attn_spectral_norm_mean": 2.9749138355255127,
+      "layer1_attn_c_proj_spectral_norm_mean": 0.6582041184107462,
+      "layer1_mlp_c_fc_spectral_norm_mean": 2.254427115122477,
+      "layer1_mlp_c_proj_spectral_norm_mean": 0.8585707545280457,
+      "layer2_attn_c_attn_spectral_norm_mean": 2.8362266222635903,
+      "layer2_attn_c_proj_spectral_norm_mean": 0.6262933611869812,
+      "layer2_mlp_c_fc_spectral_norm_mean": 2.491994619369507,
+      "layer2_mlp_c_proj_spectral_norm_mean": 0.9648789763450623,
+      "layer3_attn_c_attn_spectral_norm_mean": 2.3318363030751548,
+      "layer3_attn_c_proj_spectral_norm_mean": 0.5329077939192454,
+      "layer3_mlp_c_fc_spectral_norm_mean": 2.6411667664845786,
+      "layer3_mlp_c_proj_spectral_norm_mean": 0.961784303188324,
+      "layer4_attn_c_attn_spectral_norm_mean": 2.06406569480896,
+      "layer4_attn_c_proj_spectral_norm_mean": 0.5051601926485697,
+      "layer4_mlp_c_fc_spectral_norm_mean": 2.7987995942433677,
+      "layer4_mlp_c_proj_spectral_norm_mean": 1.0422439972559612,
+      "layer5_attn_c_attn_spectral_norm_mean": 1.8597544034322102,
+      "layer5_attn_c_proj_spectral_norm_mean": 0.5345966617266337,
+      "layer5_mlp_c_fc_spectral_norm_mean": 2.996297756830851,
+      "layer5_mlp_c_proj_spectral_norm_mean": 1.251611351966858
+    },
+    "bp_kd": {
+      "layer0_attn_c_attn_spectral_norm_mean": 2.3781259854634604,
+      "layer0_attn_c_proj_spectral_norm_mean": 0.49428974588712055,
+      "layer0_mlp_c_fc_spectral_norm_mean": 2.2652865250905356,
+      "layer0_mlp_c_proj_spectral_norm_mean": 1.0039000511169434,
+      "layer1_attn_c_attn_spectral_norm_mean": 3.0457992553710938,
+      "layer1_attn_c_proj_spectral_norm_mean": 0.6627755165100098,
+      "layer1_mlp_c_fc_spectral_norm_mean": 2.4887656370798745,
+      "layer1_mlp_c_proj_spectral_norm_mean": 0.9921713272730509,
+      "layer2_attn_c_attn_spectral_norm_mean": 2.472144842147827,
+      "layer2_attn_c_proj_spectral_norm_mean": 0.5457639098167419,
+      "layer2_mlp_c_fc_spectral_norm_mean": 2.5567426681518555,
+      "layer2_mlp_c_proj_spectral_norm_mean": 1.0528312921524048,
+      "layer3_attn_c_attn_spectral_norm_mean": 2.2728315194447837,
+      "layer3_attn_c_proj_spectral_norm_mean": 0.5421939094861349,
+      "layer3_mlp_c_fc_spectral_norm_mean": 2.85046656926473,
+      "layer3_mlp_c_proj_spectral_norm_mean": 1.0725067853927612,
+      "layer4_attn_c_attn_spectral_norm_mean": 2.147545417149862,
+      "layer4_attn_c_proj_spectral_norm_mean": 0.5031510790189108,
+      "layer4_mlp_c_fc_spectral_norm_mean": 3.0541277726491294,
+      "layer4_mlp_c_proj_spectral_norm_mean": 1.2192741235097249,
+      "layer5_attn_c_attn_spectral_norm_mean": 2.0970800320307412,
+      "layer5_attn_c_proj_spectral_norm_mean": 0.5150212049484253,
+      "layer5_mlp_c_fc_spectral_norm_mean": 3.037001927693685,
+      "layer5_mlp_c_proj_spectral_norm_mean": 1.4713282585144043
+    },
+    "epc_kd": {
+      "layer0_attn_c_attn_spectral_norm_mean": 2.2273635864257812,
+      "layer0_attn_c_proj_spectral_norm_mean": 0.515471875667572,
+      "layer0_mlp_c_fc_spectral_norm_mean": 2.746833562850952,
+      "layer0_mlp_c_proj_spectral_norm_mean": 1.925792932510376,
+      "layer1_attn_c_attn_spectral_norm_mean": 2.5209924379984536,
+      "layer1_attn_c_proj_spectral_norm_mean": 1.0903025269508362,
+      "layer1_mlp_c_fc_spectral_norm_mean": 21.331798553466797,
+      "layer1_mlp_c_proj_spectral_norm_mean": 11.98614533742269,
+      "layer2_attn_c_attn_spectral_norm_mean": 9.81626001993815,
+      "layer2_attn_c_proj_spectral_norm_mean": 5.507203102111816,
+      "layer2_mlp_c_fc_spectral_norm_mean": 31.089548746744793,
+      "layer2_mlp_c_proj_spectral_norm_mean": 20.821207682291668,
+      "layer3_attn_c_attn_spectral_norm_mean": 19.60291035970052,
+      "layer3_attn_c_proj_spectral_norm_mean": 10.205303192138672,
+      "layer3_mlp_c_fc_spectral_norm_mean": 25.891464869181316,
+      "layer3_mlp_c_proj_spectral_norm_mean": 18.048132578531902,
+      "layer4_attn_c_attn_spectral_norm_mean": 19.853497823079426,
+      "layer4_attn_c_proj_spectral_norm_mean": 10.019151369730631,
+      "layer4_mlp_c_fc_spectral_norm_mean": 20.732004801432293,
+      "layer4_mlp_c_proj_spectral_norm_mean": 14.500654220581055,
+      "layer5_attn_c_attn_spectral_norm_mean": 41.123453776041664,
+      "layer5_attn_c_proj_spectral_norm_mean": 18.384186426798504,
+      "layer5_mlp_c_fc_spectral_norm_mean": 41.74696604410807,
+      "layer5_mlp_c_proj_spectral_norm_mean": 34.34828567504883
+    }
+  },
+  "d2_effective_rank_by_arm": {
+    "bp_ce": {
+      "layer0_effective_rank_mean": 1.488419810930888,
+      "layer1_effective_rank_mean": 1.4870418707529705,
+      "layer2_effective_rank_mean": 1.8693109353383381,
+      "layer3_effective_rank_mean": 2.1035767793655396,
+      "layer4_effective_rank_mean": 2.125082810719808,
+      "layer5_effective_rank_mean": 2.0740553538004556
+    },
+    "bp_kd": {
+      "layer0_effective_rank_mean": 1.535374919573466,
+      "layer1_effective_rank_mean": 2.017553766568502,
+      "layer2_effective_rank_mean": 3.4159783522288003,
+      "layer3_effective_rank_mean": 4.496128877003987,
+      "layer4_effective_rank_mean": 4.285201708475749,
+      "layer5_effective_rank_mean": 3.5963863531748452
+    },
+    "epc_kd": {
+      "layer0_effective_rank_mean": 1.5452934900919597,
+      "layer1_effective_rank_mean": 1.0036439100901287,
+      "layer2_effective_rank_mean": 1.0003288586934407,
+      "layer3_effective_rank_mean": 1.0001801649729412,
+      "layer4_effective_rank_mean": 1.00013534228007,
+      "layer5_effective_rank_mean": 1.2328259547551472
+    }
+  },
+  "d3_cka_cross_arm": {
+    "bp_ce_vs_bp_kd": 0.22735461075457608,
+    "bp_ce_vs_epc_kd": 0.1153185478816297,
+    "bp_kd_vs_bp_ce": 0.0063567946310199444,
+    "bp_kd_vs_epc_kd": 0.09162315333932862,
+    "epc_kd_vs_bp_ce": 0.0020798039484015178,
+    "epc_kd_vs_bp_kd": 0.0021478931538738487
+  },
+  "d3_cka_within_arm": {
+    "bp_ce": 0.007163181427001421,
+    "bp_kd": 0.0026706881305601986,
+    "epc_kd": 0.0028411737532137303
+  },
+  "d4_epc_sweep_summary": {
+    "seed1729_epc_kd": {
+      "energy_max": 2.2396761778509244e-06,
+      "energy_min": 2.2396761778509244e-08,
+      "energy_range": 2.217279416072415e-06,
+      "n_configs": 12
+    },
+    "seed3253_epc_kd": {
+      "energy_max": 3.236949851270765e-06,
+      "energy_min": 3.236949908114184e-08,
+      "energy_range": 3.2045803521896232e-06,
+      "n_configs": 12
+    },
+    "seed6421_epc_kd": {
+      "energy_max": -8.517599958679511e-09,
+      "energy_min": -8.517599781043828e-07,
+      "energy_range": 8.432423781457032e-07,
+      "n_configs": 12
+    }
+  },
+  "d5_gradient_norms_by_arm": {
+    "bp_ce": {
+      "layer0_grad_norm_mean": 30.327700305464948,
+      "layer1_grad_norm_mean": 13.51321001047915,
+      "layer2_grad_norm_mean": 9.844768464738527,
+      "layer3_grad_norm_mean": 8.397780966326051,
+      "layer4_grad_norm_mean": 7.816383692191265,
+      "layer5_grad_norm_mean": 8.598898383756548
+    },
+    "bp_kd": {
+      "layer0_grad_norm_mean": 17.603245216880836,
+      "layer1_grad_norm_mean": 9.974232825582497,
+      "layer2_grad_norm_mean": 7.567786883664368,
+      "layer3_grad_norm_mean": 5.800112815564386,
+      "layer4_grad_norm_mean": 4.590060715814697,
+      "layer5_grad_norm_mean": 4.325530476967919
+    },
+    "epc_kd": {
+      "layer0_grad_norm_mean": 26.218037032838854,
+      "layer1_grad_norm_mean": 14.54586737274139,
+      "layer2_grad_norm_mean": 14.837045106621824,
+      "layer3_grad_norm_mean": 13.773930105263133,
+      "layer4_grad_norm_mean": 11.678338833989137,
+      "layer5_grad_norm_mean": 26.307733575503633
+    }
+  },
+  "schema": "relaleap.gpt2_diagnostic_summary.v1"
+}

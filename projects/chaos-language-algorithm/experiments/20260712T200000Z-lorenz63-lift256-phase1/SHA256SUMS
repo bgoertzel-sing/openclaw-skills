@@ -1,0 +1,5 @@
+0a40f2cce1a23e8e293c3f61b066a983c6a3cceb0c39589d7b4a9698a50f37df  ../../experiments/20260712T200000Z-lorenz63-lift256-phase1/command.sh
+7c9b7666ae5ff0c41554c3cd2c2ba02f5c6aa9e696ad9a9825d4d7e1ee1165eb  ../../experiments/20260712T200000Z-lorenz63-lift256-phase1/environment.txt
+cf70e8abd345d5b5df33cf642d5d944011fd3b358bc83028c800e6d28617bfc7  ../../experiments/20260712T200000Z-lorenz63-lift256-phase1/stdout.json
+52f786b31a0976f8687dfec2eca063c00a4eda64de7e9cd72a232c281b350209  ../../experiments/20260712T200000Z-lorenz63-lift256-phase1/stderr.txt
+14bc52390679776e111ea503d88ecadb5a5729f8dbc3234156c45f8897fb2837  projects/chaos-language-algorithm/experiments/20260712T200000Z-lorenz63-lift256-phase1/RUN.md

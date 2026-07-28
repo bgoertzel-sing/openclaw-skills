@@ -1,0 +1,108 @@
+{
+  "config": {
+    "baselines": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2"
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 170717
+    },
+    "prefix_length": 2048,
+    "shuffle_seed_base": 170717,
+    "sources": [
+      {
+        "name": "thue-morse",
+        "rule": {
+          "0": "01",
+          "1": "10"
+        },
+        "seed": "0"
+      },
+      {
+        "name": "fibonacci-word",
+        "rule": {
+          "0": "01",
+          "1": "0"
+        },
+        "seed": "0"
+      }
+    ],
+    "suffix_length": 8192
+  },
+  "fixtures": [
+    {
+      "counts": {
+        "0": 5120,
+        "1": 5120
+      },
+      "kind": "positive",
+      "length": 10240,
+      "name": "thue-morse-positive",
+      "prefix_length": 2048,
+      "prefix_sha256": "0a7f6d150ad48ecfed0e99215414c3d4b7fe402c2e6a7e8e5be5c76290828e26",
+      "shuffle_seed": null,
+      "source": "thue-morse",
+      "stream_sha256": "626cb50b5140fea7bcc1f9a29b284267fa6b24a345be64f263edb622eb9ff39a",
+      "suffix_length": 8192,
+      "suffix_sha256": "69e0cd973d39788e5cc81659096c579f8fb3972a5efc5d7dc36f9809904e9719"
+    },
+    {
+      "counts": {
+        "0": 5120,
+        "1": 5120
+      },
+      "kind": "shuffled",
+      "length": 10240,
+      "name": "thue-morse-shuffled",
+      "prefix_length": 2048,
+      "prefix_sha256": "b24b0cea9b8a90bb65e0ab08bc5ae015736f0e65ee717c94345cae0d4db3a932",
+      "shuffle_seed": 170717,
+      "source": "thue-morse",
+      "stream_sha256": "60426e4d5f06ac28f695e3e7c366892be848958cc05d6b911ddfd4a06a702e38",
+      "suffix_length": 8192,
+      "suffix_sha256": "7d5c58392a989217400c52c1b2667d6657ea0a9a1bb54c249169445c41737807"
+    },
+    {
+      "counts": {
+        "0": 6329,
+        "1": 3911
+      },
+      "kind": "positive",
+      "length": 10240,
+      "name": "fibonacci-word-positive",
+      "prefix_length": 2048,
+      "prefix_sha256": "3ae0c7f67cdf05a9be70ad81b70688a3cef1b09f706f667a351076746dfd0b3a",
+      "shuffle_seed": null,
+      "source": "fibonacci-word",
+      "stream_sha256": "60557aa9880406aec49f3106f72baa832a35ff577788da63446fdac0b618e7cd",
+      "suffix_length": 8192,
+      "suffix_sha256": "1cf111869c86e6b5f02c10b70eacf418f419eab91f81f92f432ed26519a6ce20"
+    },
+    {
+      "counts": {
+        "0": 6329,
+        "1": 3911
+      },
+      "kind": "shuffled",
+      "length": 10240,
+      "name": "fibonacci-word-shuffled",
+      "prefix_length": 2048,
+      "prefix_sha256": "dcbcc6e24995a9436af0fb94b544eff5ac6a1f71e3788d0d74f3aa169988d035",
+      "shuffle_seed": 170718,
+      "source": "fibonacci-word",
+      "stream_sha256": "8925a6a71bc13f2fe877c6ee8576064dfe0f46344da6e22f36489f3ecf5e0f97",
+      "suffix_length": 8192,
+      "suffix_sha256": "8ae109d23abc4c44c5c9a11456ecf8a215055e7e88d6c4868a7c50cc8ec2ec04"
+    }
+  ],
+  "protocol": "synthetic-family-generalization-preregistration-v1",
+  "schema": "chaoslang.synthetic-family-generalization",
+  "version": 1
+}

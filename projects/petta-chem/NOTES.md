@@ -1,5 +1,286 @@
 # Notes
 
+## 2026-07-28 12:30 PDT — neutral SSA event application
+
+- Added canonical PeTTa-native application and resource guards for influx,
+  dilution, ligation, and cleavage events over ordered integer-count states.
+- A four-event influx/ligation/cleavage/dilution trace returns exactly to its
+  initial counts and reproduces the same final state on replay.
+- `scripts/run_neutral_ssa_tests.sh` passed thirty checks. General canonical
+  event enumeration and the calibration ledger remain pending; no calibration
+  endpoint was inspected and protected files were untouched.
+
+## 2026-07-28 08:30 PDT — neutral SSA arithmetic and tiny-state baseline
+
+- Added a new reviewed PeTTa-native SSA module using exact propensity
+  numerators, including catalytic load, distinct/identical ligation,
+  cleavage, and insufficient-resource guards.
+- A two-event ligation/cleavage control returns to its exact initial counts
+  and reproduces the same event stream and final state on replay.
+- `scripts/run_neutral_ssa_tests.sh` passed seventeen checks. Full seeded SSA
+  sampling and the calibration ledger remain pending; no calibration endpoint
+  was inspected and protected files were untouched.
+
+## 2026-07-28 06:30 PDT — generated tiny-system oracle gate passed
+
+- PeTTa generated 100 eight-reaction `L=3` systems at each frozen
+  `f={0,1,2,4}` value and computed exhaustive structural RAF truth.
+- All 400 systems agreed exactly with the independent Python oracle for every
+  one of 255 nonempty subsets, maximal RAF, and all irrRAFs.
+- The manifest commits comparison, detector-source, repository, and PeTTa
+  runtime hashes while deliberately withholding structural-incidence results.
+  No calibration endpoint was inspected; protected exp08 and scratch files
+  were untouched. Commit `707dbcc` was pushed normally to GitHub `main`.
+
+## 2026-07-28 04:30 PDT — PeTTa generated-system sampling
+
+- Added replayable PeTTa-owned sampling of eight canonical `R_3` reactions
+  without replacement and pathway-independent keyed Bernoulli catalysis with
+  probability `f/40`.
+- Focused checks cover exact seed-1 selection, cardinality, replay, and
+  zero/full edge boundaries. The 100 cross-oracle comparisons remain pending;
+  no calibration outcome was inspected and protected files were untouched.
+
+## 2026-07-28 02:30 PDT — canonical PeTTa R3 catalog
+
+- Added the PeTTa-owned full `L=3` source universe for the frozen generated
+  oracle gate: 14 molecules, six food molecules, 20 directed cleavages, and
+  20 ordered ligations with canonical IDs and ordering.
+- `scripts/run_neutral_raf_fixtures.sh` passed thirty-three checks and
+  `git diff --check` passed. Seeded selection/catalysis and the 100 generated
+  comparisons remain pending; no calibration result was inspected and
+  protected files were untouched.
+
+## 2026-07-28 00:30 PDT — PeTTa maximal RAF and irrRAF projections
+
+- Added maximal-RAF union and inclusion-minimal irrRAF projections over the
+  existing exhaustive PeTTa tiny-system subset enumeration.
+- Exact projections match independent oracle truth for a food-closure chain,
+  three independent RAF reactions, and an unreachable catalytic cycle.
+- `scripts/run_neutral_raf_fixtures.sh` passed twenty-nine checks and
+  `git diff --check` passed. The 100 generated comparisons and manifest remain
+  pending; no calibration result was inspected and protected files were
+  untouched.
+
+## 2026-07-27 22:30 PDT — PeTTa exhaustive RAF-subset enumeration
+
+- Added an intentionally exponential PeTTa-native powerset/filter path limited
+  in scope to the frozen at-most-12-reaction oracle boundary.
+- Complete RAF subset IDs match independent oracle truth for a two-step food
+  chain, all seven nonempty subsets of the three independent RAF reactions,
+  and an unreachable catalytic cycle with no RAF subsets.
+- The focused PeTTa fixture run passed twenty-three checks. Maximal RAF and
+  irrRAF projections plus 100 generated tiny comparisons remain pending; no
+  calibration result was inspected and protected files were untouched.
+
+## 2026-07-27 20:30 PDT — PeTTa structural RAF predicate
+
+- Added PeTTa-native food closure, existential catalyst availability, and
+  structural RAF classification over canonical `neutral-crs-v1` facts.
+- The focused fixture run passed twenty checks spanning all frozen semantic
+  families.
+- Exhaustive enumeration and 100 generated tiny comparisons remain pending.
+  No calibration outcome was inspected; protected exp08/scratch/catalysis
+  files were untouched.
+
+## 2026-07-27 18:30 PDT — PeTTa neutral-RAF fact boundary
+
+- Added PeTTa-native accessors and canonical facts for all seven frozen
+  hand-fixture families under the `neutral-crs-v1` oracle interface.
+- The first focused run revealed that unquoted binary polymer names collapse
+  numerically (`01` becomes `1`, `00` becomes `0`). Quoted strings now preserve
+  literal polymer identity and stoichiometric duplicates.
+- `scripts/run_neutral_raf_fixtures.sh` passed with ten true results. This is
+  serialization/interface progress only: exhaustive PeTTa subset detection
+  and 100 generated tiny-system comparisons remain open, and no calibration
+  endpoint was inspected.
+
+## 2026-07-27 16:30 PDT — independent exhaustive RAF oracle implemented
+
+- Added a serialization-only Python oracle for canonical `neutral-crs-v1`
+  JSON. It imports no chemistry implementation, caps exhaustive input at 12
+  reactions, enumerates every nonempty subset, and returns exact RAF,
+  maximal-RAF, and complete irrRAF sets.
+- Nine focused tests cover the seven frozen fixture families, including
+  multiple products/catalysts, food and self catalysis, unreachable cycles,
+  monotonic edge addition, reaction/edge deletion, and multiple irrRAFs.
+- The first run exposed two recorded test/interface errors: stoichiometric
+  lists need duplicates, and a food-enabled closure-chain prefix is itself a
+  RAF. Both were corrected without changing the frozen definition.
+- The focused suite and `git diff --check` passed. The PeTTa half and generated
+  tiny systems remain open; no calibration endpoint was inspected and the
+  protected exp08/scratch/catalysis files were untouched.
+- Commit `73ddcde` was pushed normally to GitHub `main`.
+
+## 2026-07-27 14:30 PDT — neutral CRS and RAF-oracle protocol frozen
+
+- Froze `neutral-crs-v1`: binary polymers of maximum length `L`, food through
+  length two, all directed ligations/cleavages, and pathway-independent
+  Bernoulli molecule/reaction catalysis controlled by expected reactions
+  catalyzed per molecule.
+- Declared PeTTa-native SSA influx/dilution/reaction dynamics, exact constants,
+  finite-size/control sweeps, graph and dynamics seeds, replay requirements,
+  and separate structural, reachable, active/persistent, and causal/productive
+  endpoints. No sampled calibration or emergence outcome was inspected.
+- Froze an independent exhaustive Python-oracle boundary and canonical
+  PeTTa/oracle facts. The gate covers food closure, multiple products and
+  catalysts, food catalysts, self-catalysis, unreachable cycles, catalysis-edge
+  monotonicity, deletion sensitivity, all irrRAFs, order invariance, and 100
+  generated tiny systems.
+- Standard RAF semantics allow any catalyst in food closure; they do not add
+  exp04's legacy generated-product restriction. A mismatch is fail-closed.
+- Evidence:
+  `repos/petta-chem/docs/neutral_crs_oracle_protocol.md`. Frozen untracked
+  exp08/scratch/catalysis material was not read, executed, or changed.
+- The first-class catalysis regression passed and `git diff --check` passed.
+  Commit `ad70a64` was pushed normally to GitHub `main`.
+
+## 2026-07-27 08:30 PDT — thirty-nine-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 38 to 39 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 39
+  rules. The attrition audit reports thirty-one generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 554 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `924fb77` pushed normally to GitHub `main`.
+
+## 2026-07-27 04:30 PDT — thirty-seven-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 36 to 37 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 37
+  rules. The attrition audit reports twenty-nine generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 544 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `5e0ec8d` pushed normally to GitHub `main`.
+
+## 2026-07-27 02:32 PDT — thirty-six-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 35 to 36 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 36
+  rules. The attrition audit reports twenty-eight generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 539 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `a47cfca` pushed normally to GitHub `main`.
+
+## 2026-07-27 00:58 PDT — thirty-five-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 34 to 35 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 35
+  rules. The attrition audit reports twenty-seven generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 534 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `2ccbba0` pushed normally to GitHub `main`.
+
+## 2026-07-26 14:30 PDT — thirty-three-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 32 to 33 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 33
+  rules. The attrition audit reports twenty-five generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 524 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `17db9f8` pushed normally to GitHub `main`.
+
+## 2026-07-26 12:30 PDT — thirty-two-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 31 to 32 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 32
+  rules. The attrition audit reports twenty-four generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 519 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `5aae13a` pushed normally to GitHub `main`.
+
+## 2026-07-26 — External-review PDF and reproducibility audit
+
+- Prepared `docs/petta_chem_external_review_2026-07-26.{tex,pdf}`, a 13-page
+  external-review packet covering the PeTTa-native implementation, exp00--exp08
+  designs and outcomes, claim boundaries, current weaknesses, and a prioritized
+  next plan. PDF SHA-256:
+  `f74980653dac32aa31424c2613c4a2cc6a36bae4c025f48d4c2e20cdf51396db`.
+- Reproduced at repository head `bfa0e47`: exp00 513 checks, exp01 68,
+  run-contract 35, exp02 517, exp04 79, first-class exp04 79, exp05 94, exp06
+  61, and exp07 309 all exited 0. Exp03 exited 1 after 38 passes and one failure:
+  `exp03-exp02-after-3 random seed-11` returned eight identical answers rather
+  than one. This is a current-head singleton/proof-duplication defect, not a
+  changed chemical endpoint.
+- Text extraction, required-section searches, `git diff --check`, and visual
+  inspection of pages 1, 7, and 13 passed. The report's main recommendation is
+  to repair reproducibility, freeze a review baseline, and pivot from further
+  cap/pathway accretion to a neutral random chemistry calibrated against an
+  independent RAF oracle and known finite-size behavior.
+## 2026-07-26 06:30 PDT — thirty-one-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 30 to 31 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 31
+  rules. The attrition audit reports twenty-three generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 514 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `bfa0e47` pushed normally to GitHub `main`.
+
+## 2026-07-26 00:30 PDT — twenty-eight-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 27 to 28 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 28
+  rules. The attrition audit reports twenty generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 499 terminal true results and zero failure markers;
+  `git diff --check` and an obvious secret-like diff scan passed. No chemistry
+  rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `6cc07bc` pushed normally to GitHub `main`.
+
+## 2026-07-25 18:30 PDT — twenty-five-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 24 to 25 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 25
+  rules. The attrition audit reports seventeen generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 484 terminal true results and zero failure markers;
+  `git diff --check` and an obvious secret-like diff scan passed. No chemistry
+  rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `85a9ea2` pushed normally to GitHub `main`.
+
 ## 2026-07-25 08:30 PDT — twenty-rule bounded generation boundary
 
 - Extended the four-molecule PeTTa-native generator from 19 to 20 retained
@@ -1241,6 +1522,22 @@ Dedicated 22:30 progress run added 6-rule catalytic cycle scanner to exp01 and e
 
 Dedicated 2026-07-06 22:30 progress run extended the cap-4 rich exp03 bridge to seed-11/Q-family six-rule source pools. The exp00 candidate seam now caps six-candidate pools and generates six-rule pools for 12-molecule states; exp03 adds Q-family 12-molecule chamber-tick clauses plus seed-11 cap-4 run configs/manifests/metrics/run-records. New smoke coverage checks 12 productive random-polymer events, zero no-catalysis events, reactant exhaustion, replay, controls discrimination, and run-record completeness. Commit `db187ab` pushed to GitHub `main` after checks: `scripts/run_exp03.sh`, `scripts/run_exp00.sh`, `git diff --check`, and an obvious secret-like scan. Remaining cap-4 rich extension target: seed-7/P-family.
 
+## 2026-07-27 — Corrective queue audit after external review
+
+**Observed:** after the external-review PDF was prepared, the recurring worker
+continued a 33-to-41 source-rule candidate-generator sequence.  The associated
+records state that no chemistry rule, trajectory, or scientific result changed.
+This violates the earlier demand-driven hardening freeze and the review's
+Recommendation 0 to stop feature accretion.
+
+**Decision:** D-20260727-neutral-model-reset supersedes the old work ordering.
+Freeze generator expansion and exp08 in its constructed-pathway form.  The
+next deliverable is a neutral random-catalytic model plus independent small
+RAF-oracle protocol, followed by calibration that separates structural,
+reachable, persistent, and causal endpoints.  Bridge/Doob control is deferred
+until an exact tiny-state control baseline is validated.  Existing work is
+preserved as control infrastructure.
+
 ## 2026-07-09 addendum — geoteleomic / Schrödinger Bridge substack post as exp06 inspiration
 
 Ben shared his substack post "Let's Get Chemical" (https://bengoertzel.substack.com/p/lets-get-chemical) as the inspiration for the exp06 bridge-to-ACS direction. Key points from the post that inform the PeTTa-native exp06 design:
@@ -1806,3 +2103,182 @@ untracked scratch files were left untouched.
   `git diff --check` passed. No chemistry rule or scientific claim changed.
 - Pre-existing untracked exp08/catalysis scratch work was left untouched.
 - Commit `2ed002a` pushed normally to GitHub `main`.
+
+# 2026-07-25 12:30 PDT — twenty-two-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 21 to 22 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 22
+  rules. The attrition audit reports fourteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 468 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `745d871` pushed normally to GitHub `main`.
+
+# 2026-07-25 14:30 PDT — twenty-three-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 22 to 23 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 23
+  rules. The attrition audit reports fifteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 474 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `b1a5a7a` pushed normally to GitHub `main`.
+
+# 2026-07-25 16:30 PDT — twenty-four-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 23 to 24 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 24
+  rules. The attrition audit reports sixteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 479 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `69c3db6` pushed normally to GitHub `main`.
+
+# 2026-07-25 20:30 PDT — twenty-six-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 25 to 26 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 26
+  rules. The attrition audit reports eighteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 489 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `be9fd5d` pushed normally to GitHub `main`.
+
+# 2026-07-25 22:30 PDT — twenty-seven-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 26 to 27 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 27
+  rules. The attrition audit reports nineteen generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 494 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `288138c` pushed normally to GitHub `main`.
+# 2026-07-26 02:30 PDT — twenty-nine-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 28 to 29 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 29
+  rules. The attrition audit reports twenty-one generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 504 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `a8dcdc6` pushed normally to GitHub `main`.
+
+# 2026-07-26 04:30 PDT — thirty-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 29 to 30 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 30
+  rules. The attrition audit reports twenty-two generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 509 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `426712a` pushed normally to GitHub `main`.
+
+# 2026-07-26 10:30 PDT — exp03 singleton regression repair
+
+- Diagnosed the seed-11 three-tick query's eight identical answers as a
+  duplicated `seed-number` proof path: the mapping was defined in both the
+  shared exp00 kernel and `chem_dynamics`, so three ticks yielded 2^3 proofs.
+- Removed redundant dynamics-local mappings for seeds 11, 13, and 17. The
+  seed-11 chamber is singleton again; fixing it also exposed and repaired the
+  same previously masked multiplicity at seeds 13 and 17.
+- Checks: `scripts/run_exp03.sh` and the full canonical
+  exp00/01/contract/02/03/04/05/06/07 script matrix passed on the recorded
+  local PeTTa/SWI stack; `git diff --check` passed. No chemistry rule,
+  trajectory, or scientific interpretation changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `16b6f1a` pushed normally to GitHub `main`.
+
+# 2026-07-27 00:30 PDT — thirty-four-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 33 to 34 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 34
+  rules. The attrition audit reports twenty-six generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 529 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `4792097` pushed normally to GitHub `main`.
+
+# 2026-07-27 06:30 PDT — thirty-eight-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 37 to 38 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 38
+  rules. The attrition audit reports thirty generation omissions, while the
+  cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 549 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `f802c30` pushed normally to GitHub `main`.
+
+# 2026-07-27 10:30 PDT — forty-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 39 to 40 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 40
+  rules. The attrition audit reports thirty-two generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 559 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `030ce18` pushed normally to GitHub `main`.
+
+# 2026-07-27 12:30 PDT — forty-one-rule bounded generation boundary
+
+- Extended the four-molecule PeTTa-native generator from 40 to 41 retained
+  source rules while preserving the stable first-eight candidate prefix.
+- Extended source rewrite ownership and bounded source-count provenance to 41
+  rules. The attrition audit reports thirty-three generation omissions, while
+  the cap-2 direct tick still deterministically selects and fires productive
+  `r0`.
+- Provenance/checks: local PeTTa/SWI stack via `scripts/run_exp00.sh` passed
+  with 564 terminal true results and zero failure markers;
+  `git diff --check` passed. No chemistry rule or scientific claim changed.
+- Pre-existing untracked exp08/catalysis scratch work was left untouched.
+- Commit `851189a` pushed normally to GitHub `main`.
+## 2026-07-28 10:30 — neutral SSA seeded-draw slice
+
+- Added PeTTa-native exact weight totals and cumulative categorical selection
+  over canonically ordered event/weight rows.
+- Event and waiting-time draws use separate deterministic keys. Waiting time
+  is retained as the exact symbolic inverse-CDF inputs rather than evaluated
+  through a host float.
+- Empty enabled-event lists fail closed as `no-enabled-event`; same manifest
+  inputs reproduce the same event and waiting-time record.
+- `scripts/run_neutral_ssa_tests.sh`: 23 passing checks, no failure markers.
+  `git diff --check` passed. No calibration endpoint was queried.

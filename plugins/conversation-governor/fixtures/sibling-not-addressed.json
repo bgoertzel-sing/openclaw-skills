@@ -1,0 +1,1 @@
+{"event":{"schema_version":"1.0.0","event_id":"evt_333333333333333333333","event_type":"bot_message","timestamp":"2026-07-27T22:00:00.000Z","source":{"channel_id":"telegram:group","sender_id":"omega","sender_kind":"bot","message_id":"3"},"content":{"text":"working"},"causality":{"origin_chain":["bot:omega"]}},"expected":{"decision":"DROP","reason":"SIBLING_NOT_ADDRESSED"}}

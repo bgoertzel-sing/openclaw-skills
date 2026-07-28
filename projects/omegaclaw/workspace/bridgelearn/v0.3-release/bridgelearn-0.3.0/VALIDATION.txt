@@ -1,0 +1,58 @@
+BridgeLearn 0.3.0 validation record
+===================================
+
+Scope
+-----
+This release modifies the software library only. It does not revise the
+scientific paper and it does not claim a new task-level or scientific benchmark.
+Dedicated sandbox experiments using the new sharpness, momentum, and probing
+components are intentionally deferred to the next requested stage.
+
+Static validation
+-----------------
+- Python source, tests, and examples compiled with:
+
+      python -m compileall -q src tests examples
+
+- Public package import checked from the source tree.
+- Reported package version: 0.3.0.
+
+Automated test suite
+--------------------
+Command:
+
+    PYTHONPATH=src pytest -q
+
+Result:
+
+    38 passed in 2.86s
+
+Coverage includes finite-horizon bridge math, planners, controller state,
+robust scales, centering, compute-priced resources, calibration, dynamic
+sharpness identification, funnel propagation, curvature-model adequacy,
+catapult jump latching, gray-box momentum reconstruction, instrumental
+variables, structural AR(2) adequacy, forgetting-factor slew contracts,
+order-2 antithetic probes, exact pair completion, two probe amplitudes, probe
+budget/no-double-counting, companion stability, Lyapunov conditioning,
+small-gain diagnostics, momentum step/batch actuation, shared-edge scaling, and
+PyTorch safety gates.
+
+Packaging validation
+--------------------
+- Built a PEP 517 wheel with:
+
+      python -m pip wheel . --no-deps --no-build-isolation -w dist
+
+- Wheel: bridgelearn-0.3.0-py3-none-any.whl
+- Installed the wheel with `--no-deps` in a separate virtual environment using
+  the system NumPy installation.
+- Imported `bridgelearn`, checked version 0.3.0, and instantiated:
+  `SharpnessPlant`, `AntitheticProbePolicy`, `MomentumStepBatchActuator`, and a
+  companion small-gain report.
+
+Scientific limitation
+---------------------
+Passing these tests establishes implementation consistency for the declared
+models. It does not establish that the sharpness plant is calibrated on neural
+training, that bridge control improves CAROM or RL performance, or that
+covariance tracking predicts generalization.

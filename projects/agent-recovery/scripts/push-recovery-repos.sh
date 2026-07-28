@@ -14,6 +14,16 @@ setup_repo() {
     git clone "$url" "$dir"
   fi
   git -C "$dir" remote set-url origin "$url"
+  git -C "$dir" fetch origin main --quiet
+}
+
+write_last_backup_marker() {
+  local dir="$1"
+  local ts status short_hash file_count
+  ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  short_hash="$(git -C "$dir" rev-parse --short HEAD)"
+  file_count="$(find "$dir" -not -path '*/.git/*' -type f | wc -l)"
+  printf '%s|ok|%s|%d files\n' "$ts" "$short_hash" "$file_count" > "$dir/LAST_BACKUP"
 }
 
 commit_and_push_if_changed() {
@@ -21,11 +31,22 @@ commit_and_push_if_changed() {
   local msg="$2"
   git -C "$dir" add -A
   if git -C "$dir" diff --cached --quiet; then
-    echo "No changes for $(basename "$dir")"
-    return 0
+    echo "No new snapshot changes for $(basename "$dir")"
+  else
+    git -C "$dir" commit -m "$msg"
   fi
-  git -C "$dir" commit -m "$msg"
-  git -C "$dir" push origin HEAD:main
+  git -C "$dir" pull --rebase --autostash origin main
+  if [[ "$(git -C "$dir" rev-list --count origin/main..HEAD)" != "0" ]]; then
+    git -C "$dir" push origin HEAD:main
+  else
+    echo "No unpushed commits for $(basename "$dir")"
+  fi
+  write_last_backup_marker "$dir"
+  git -C "$dir" add LAST_BACKUP
+  if ! git -C "$dir" diff --cached --quiet; then
+    git -C "$dir" commit -m "Update LAST_BACKUP marker"
+    git -C "$dir" push origin HEAD:main
+  fi
 }
 
 setup_repo zerobot-recovery

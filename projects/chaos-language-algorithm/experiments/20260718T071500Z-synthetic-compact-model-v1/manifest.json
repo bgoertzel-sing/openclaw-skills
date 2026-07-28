@@ -1,0 +1,96 @@
+{
+  "config": {
+    "continuity_control": "frozen-cla-indexed-json-v1",
+    "external_controls": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2",
+      "lz78-canonical-v1"
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 18071801
+    },
+    "lz78_accounting": "entire self-contained suffix byte stream at eight bits per byte",
+    "prefix_length": 1024,
+    "primary": "frozen-cla-compact-indexed-v1",
+    "shuffle_seed_base": 18071801,
+    "sources": [
+      {
+        "coding": {"0": "0", "1": "1"},
+        "name": "complementary-3uniform",
+        "rule": {"0": "001", "1": "110"},
+        "seed_symbol": "0"
+      },
+      {
+        "coding": {"a": "0", "b": "0", "c": "1", "d": "1"},
+        "name": "four-state-2uniform",
+        "rule": {"a": "ab", "b": "dc", "c": "cd", "d": "ba"},
+        "seed_symbol": "a"
+      }
+    ],
+    "suffix_length": 4096
+  },
+  "fixtures": [
+    {
+      "counts": {"0": 2560, "1": 2560},
+      "kind": "positive",
+      "length": 5120,
+      "name": "complementary-3uniform-positive",
+      "prefix_length": 1024,
+      "prefix_sha256": "6ba70dad929c0af23ed20a2c4e95f56ce870dc4e2d2f14243e35d51ff65486ae",
+      "shuffle_seed": null,
+      "source": "complementary-3uniform",
+      "stream_sha256": "e9a14b09a3e8eb2818f4525afda49fea5b8f50e57b910933b1dbfa971f693909",
+      "suffix_length": 4096,
+      "suffix_sha256": "841a8fcb11c70742b3034b8c3280a8715e1fff7e9c9310357ec3e2cd6dad7b03"
+    },
+    {
+      "counts": {"0": 2560, "1": 2560},
+      "kind": "shuffled",
+      "length": 5120,
+      "name": "complementary-3uniform-shuffled",
+      "prefix_length": 1024,
+      "prefix_sha256": "aa450870e3f1340d93721d2ffa233bedbecc5d3cc56d25209fa2083c77433157",
+      "shuffle_seed": 18071801,
+      "source": "complementary-3uniform",
+      "stream_sha256": "281822a7c3f673fa0202e2ea6578f80d7c562ad07ded4579d0b6d079bb6affa1",
+      "suffix_length": 4096,
+      "suffix_sha256": "b39a69d9c086780f9d56ba57c6de59b833e5b6fae58de2dfb69ce0d459a92c17"
+    },
+    {
+      "counts": {"0": 2560, "1": 2560},
+      "kind": "positive",
+      "length": 5120,
+      "name": "four-state-2uniform-positive",
+      "prefix_length": 1024,
+      "prefix_sha256": "b9102e223ea46928758600d1bcec13ed22cee1f18344631f7cb9912417e51e1f",
+      "shuffle_seed": null,
+      "source": "four-state-2uniform",
+      "stream_sha256": "2056b1b5c00c082e9ece03fdf60fa167b3f784f0b7fcc0a56ed9c23be3466666",
+      "suffix_length": 4096,
+      "suffix_sha256": "bcd5cb1166af402f7557273f44e6bee8d5aa35e93d3bc81fe000a3b7b13ce4cb"
+    },
+    {
+      "counts": {"0": 2560, "1": 2560},
+      "kind": "shuffled",
+      "length": 5120,
+      "name": "four-state-2uniform-shuffled",
+      "prefix_length": 1024,
+      "prefix_sha256": "ce6beabd47196f249ff7dbfa1674ccc8c48a4effa81e6d52887fb6d422428dfb",
+      "shuffle_seed": 18071802,
+      "source": "four-state-2uniform",
+      "stream_sha256": "58d30e7e75669637145289e849acc3bbc187fe42a5acb0e1b04f5ab4e7428520",
+      "suffix_length": 4096,
+      "suffix_sha256": "374bef82f986eceae05e524b3088e28f7126b7ca8413b00bced9f33de0a0a46f"
+    }
+  ],
+  "protocol": "synthetic-compact-model-preregistration-v1",
+  "schema": "chaoslang.synthetic-compact-model",
+  "version": 1
+}

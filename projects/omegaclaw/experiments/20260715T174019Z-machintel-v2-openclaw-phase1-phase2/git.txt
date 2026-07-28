@@ -1,0 +1,28 @@
+# Git State
+Captured UTC: 2026-07-15T17:40:19Z
+Working directory: projects/omegaclaw/repos/OpenClaw
+Commit: 2e0ed9e0384684cab23923f86bf12c25418ed32e
+Branch: agent/chat-room-identity-phase1
+Remote names: origin
+
+## Status
+## agent/chat-room-identity-phase1
+ M extensions/telegram/src/bot-message-context.session.ts
+ M extensions/telegram/src/inbound-identity.test.ts
+ M extensions/telegram/src/inbound-identity.ts
+ M src/auto-reply/tokens.test.ts
+ M src/auto-reply/tokens.ts
+ M src/config/types.telegram.ts
+ M src/config/zod-schema.providers-core.ts
+
+## Diff summary
+ .../telegram/src/bot-message-context.session.ts    |  1 +
+ extensions/telegram/src/inbound-identity.test.ts   | 42 +++++++++++++-
+ extensions/telegram/src/inbound-identity.ts        | 66 +++++++++++++++++-----
+ src/auto-reply/tokens.test.ts                      |  6 ++
+ src/auto-reply/tokens.ts                           |  9 +++
+ src/config/types.telegram.ts                       | 11 ++++
+ src/config/zod-schema.providers-core.ts            | 18 ++++++
+ 7 files changed, 138 insertions(+), 15 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

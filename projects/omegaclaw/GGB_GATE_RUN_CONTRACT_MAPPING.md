@@ -44,6 +44,10 @@ For non-chemistry gates, keep the existing `run-record` slots for compatibility 
 3. Start with one already-archived gate, preferably `20260701-petta-chem-run-contract`, because its source evidence already follows the run-contract convention.
 4. Test with a small parser/grep smoke first: all required files exist, one `run-summary` status is present, and every check in `RUN.md` has a corresponding `ggb-check` atom.
 
+## Runtime validation status
+
+As of 2026-07-13, `projects/omegaclaw/local/check-ggb-gate-petta-runtime.py` implements bounded real local PeTTa load/query gates for the canonical positional shape above and one current keyword-shaped ThreadKeeper fixture. It first applies the lightweight sibling-fixture checker, then loads `CONFIG.metta`, `MANIFEST.metta`, `EVENTS.metta`, `METRICS.metta`, and `SUMMARY.metta` together. For positional records it queries `run-summary` plus passed `ggb-check` labels; for simple keyword records it extracts one balanced top-level summary, gate ID/status, and passing gate-local checks, then queries their exact source atom shapes. `20260701-petta-chem-run-contract` and `20260713-threadkeeper-unicode-control-arg-hardening` pass. This is representative runtime coverage, not normalization of all historical keyword variants; define an explicit neutral schema before broadening universal assertions.
+
 ## Open design questions
 
 - Whether to define these GGB companion atoms in OmegaClaw only, or add a neutral `ggb_gate_contract.metta` fixture outside `petta-chem`.

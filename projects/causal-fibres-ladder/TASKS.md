@@ -4,6 +4,63 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [ ] Implement typed CMCP information-geometric protocol (Stages A-G).
+  Deliverable: geometry core (alpha-divergence, Hellinger, sqrt embedding,
+  spherical log/transport, response signatures, FR-Schur residual, tangent
+  magnitude/alignment, path audit, commutator norm); staged evaluator (guard,
+  conditional accounting, dependence alarm, intervention geometry, path audit,
+  typed classification, separate actuation); TypedEvaluationRecord with 5
+  distinct quantities; batch evaluator; Phase 0--2 tests. Acceptance: all
+  tests pass; existing suite unaffected; local commit. Completed 2026-07-25:
+  56 new tests pass (305 total). Commit `f848c97`. Next command: implement
+  Phase 3 estimator comparison and Phase 4 assimilation-vs-maintenance
+  experiment from the paper's Appendix A. Evidence:
+  `src/relaleap/hdpc/e4_cmcp_geometry.py`,
+  `src/relaleap/hdpc/e4_cmcp_typed.py`,
+  `tests/test_e4_cmcp_geometry.py`.
+
+- [x] Prepare a review-oriented CMCP information-geometry note before any
+  alpha-divergence implementation. Deliverable: PDF distinguishing observed
+  ledger, replay, biased-duplicate, and Schweizer--Sklar evidence from a
+  falsifiable Fisher--Rao/Hellinger conditional-displacement proposal;
+  include mathematical definition, limitations, review questions, sources, and
+  a preregistration sequence. Completed 2026-07-25: five-page PDF compiled
+  and text-checked. It records that the Schweizer--Sklar optimum was the
+  product-limit boundary, and explicitly rejects calling the proposed ratio
+  conditional MI without a generative model. Evidence:
+  `docs/cmcp_information_geometry_review_2026-07-25.pdf`.
+
+- [x] Implement and calibrate Schweizer--Sklar quantale-weak CMCP on
+  constructed evidence fixtures. Completed 2026-07-25. A pure-Torch
+  distance-correlation novelty channel combined with the existing score ratio
+  passed 9 focused and 12 compatibility tests. On three calibration seeds,
+  the smallest grid point `p=0.05` produced mean exact/biased/independent/
+  partial ratios `0/0/0.87093/0.36302`; a distinct-innovation biased smoke
+  also gave zero weight with unchanged model weights. The result supports the
+  dependence-novelty channel, not a non-product Schweizer--Sklar geometry:
+  selection worsened monotonically with `p`, and the product limit performed
+  slightly better under the constructed objective. Next command: implement an
+  unbiased or permutation-calibrated dependence null and test noisy nonlinear,
+  provenance-distinct transformations before confirmation. Evidence:
+  `experiments/20260725T034212Z-e4-quantale-calibration/` and
+  `experiments/20260725T034222Z-e4-quantale-biased-smoke/`.
+
+- [x] Sweep CMCP replay strength and test systematic biased duplicates.
+  Completed 2026-07-25. Across the three open calibration seeds, increasing
+  replay coefficient from `0.15` to `0.30` to `0.50` moved the mean Task-B
+  CMCP/naive crossover from episode 6 to 5 to 3; episode-6 CMCP advantages
+  were `+0.031`, `+0.099`, and `+0.133`. This supports a bounded-precision
+  plasticity advantage under stronger replay, but remains exploratory and
+  naive retained lower ECE. The biased-packet smoke was mechanistically
+  negative: provenance identity suppressed the packet, while its raw
+  conditional-information ratio was `0.9461`, so the current score did not
+  detect the systematic bit flip as redundant. Confirmation seeds remain
+  sealed. Evidence:
+  `experiments/20260725T031220Z-e4-cmcp-replay-sweep-final/` and
+  `experiments/20260725T031257Z-e4-cmcp-biased-injection-smoke/`.
+  Next command: build a provenance-distinct, score-collinear constructed
+  fixture and require raw Schur residualization to pass before a campaign.
+
 - [x] Implement and calibrate the typed CMCP retention experiment. Deliverable:
   an append-only typed store carrying cohort identity, ordered example
   identities, packet/provenance/innovation identity, mechanism family,

@@ -1,0 +1,7 @@
+# Git state
+
+- Branch: `agent/colearned-causal-critic-v1`
+- Base commit: `b490f52`
+- Implementation commit: `690c8f7e0d6bf8866dba6440574a94b74a1bbae4`
+- Remote: none configured in this isolated local worktree
+- Final worktree status: clean

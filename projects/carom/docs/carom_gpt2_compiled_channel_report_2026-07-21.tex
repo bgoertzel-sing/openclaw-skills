@@ -1,0 +1,323 @@
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=0.72in]{geometry}
+\usepackage{booktabs,longtable,array,tabularx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\definecolor{navy}{HTML}{153A5B}
+\definecolor{lightblue}{HTML}{EAF3F8}
+\definecolor{darkgray}{HTML}{444444}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=navy}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.3em}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\obs}{\textbf{Observed.}\ }
+\newcommand{\inferlabel}{\textbf{Inferred.}\ }
+\newcommand{\hyp}{\textbf{Hypothesis.}\ }
+\newcommand{\na}{\textemdash}
+
+\title{\textbf{CAROM Frozen-GPT-2 Compiled-Channel Experiment}\\
+Detailed protocol, checkpoint results, causal interventions, and next-run design}
+\author{CAROM research record}
+\date{21 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fcolorbox{navy}{lightblue}{\parbox{0.91\linewidth}{
+\textbf{Bottom line.} A single frozen-GPT-2-small CAROM arm learned a moderately
+accurate in-distribution executor (0.412 slot accuracy at 4,000 updates) with
+strongly ordered-looking trajectories ($\tau=0.904$). The natural trajectory
+became causally useful: replacing it by a shuffled schedule reduced accuracy
+from 0.412 to 0.297. This is meaningful mechanistic evidence, but accuracy is
+well below the matched TinyLM arm (0.709), and held-out length-5 transfer remains
+weak (0.214; 0.234 with a longer inference budget). A longer frozen-GPT-2 run is
+therefore justified as an optimization test, not yet as evidence of structural
+generalization or learned commutation.}}
+\end{center}
+
+\section{Question and scope}
+
+The experiment asked whether natural-language command spans encoded by a
+\emph{frozen} GPT-2-small model can drive a CAROM compiled heteroclinic channel.
+The task is synthetic compositional sequence transformation. Each example has
+six workspace slots containing symbols in $\mathbb{Z}_8$ and a program of two
+to five primitive transforms. Command descriptions are presented in scrambled
+surface order; the model must infer dependencies, produce a command-activity
+trajectory, mix reusable neural operators, and emit the final six symbols.
+
+Training used program lengths 2--4. Length 5 was held out structurally. Thus:
+
+\begin{itemize}
+\item L2--4 accuracy measures in-distribution compositional execution;
+\item L5 accuracy measures extrapolation to a longer program;
+\item edge accuracy measures dependency-graph prediction;
+\item itinerary diagnostics describe the ordering of dominant command modes;
+\item trajectory replacements test whether the learned activity trajectory is
+causally relevant rather than merely correlated with the answer.
+\end{itemize}
+
+This was one seed and one frozen evaluation corpus. It is a mechanism screen,
+not a population estimate.
+
+\section{Architecture and training protocol}
+
+\subsection{Language-conditioned compiler}
+
+GPT-2-small (124M parameters, hidden width 768, final hidden layer) was frozen.
+Span representations were produced using offset-mapped token spans. CAROM then
+used learned heads to (i) predict a directed dependency graph between command
+spans, (ii) compile that graph into generalized Lotka--Volterra inhibition, and
+(iii) route command representations onto a shared bank of neural workspace
+operators. Only the CAROM-side parameters were trained.
+
+The workspace has six slots, vocabulary size eight, and up to five commands.
+The recurrent controller executes 72 internal steps at training/default
+inference. The endpoint objective is slotwise cross-entropy. The training loss
+also includes directed-edge binary cross-entropy and an entry-command term.
+
+\subsection{Exact run configuration}
+
+\begin{tabularx}{\linewidth}{>{\bfseries}l X}
+\toprule
+Seed & 0 \\
+Training updates & 4,000 \\
+Batch size & 64 \\
+Optimizer & AdamW, learning rate $2\times10^{-3}$, weight decay $10^{-4}$ \\
+Schedule & OneCycleLR over 4,000 updates \\
+Gradient clipping & Global norm 1.0 \\
+Edge-loss coefficient & 1.0; entry term coefficient 0.2 \\
+Checkpoints & 0, 500, 1,000, \ldots, 4,000 \\
+Frozen L2--4 corpus & 256 examples; corpus seed 1234 \\
+Frozen L5 corpus & 128 examples; corpus seed 5678 \\
+Hardware & RunPod Secure Cloud, one NVIDIA A100 SXM4 80GB \\
+Image & \texttt{runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404} \\
+Price and lifetime & USD 1.49/hr; approximately 2h09m including orchestration and repair \\
+\bottomrule
+\end{tabularx}
+
+Training itself reached step 4,000 in 1,897 seconds (31.6 minutes). The original
+post-training pass then failed on malformed Python corpus unpacking. The repair
+loaded the missing \texttt{SP}, \texttt{E}, and \texttt{ENT} fields explicitly
+and added an \texttt{--interventions-only} continuation. It reused all retained
+checkpoints, evaluated nine checkpoints in about 40 seconds, and exited zero.
+
+\section{Evaluation instruments}
+
+\paragraph{Repaired itinerary panel.}
+At each internal step, the dominant live command mode is recorded; consecutive
+duplicates are collapsed into phases. Coverage is the fraction of true command
+modes visited. Exact order requires the deduplicated visited sequence to equal
+the true topological order. Kendall-style $\tau$ scores concordant versus
+discordant rank pairs among visited modes. Because incomplete trajectories can
+still have high $\tau$, tau must be read beside coverage and exact order.
+
+\paragraph{Trajectory interventions.}
+The natural learned trajectory is compared with three replacements on exactly
+the same frozen L2--4 examples:
+
+\begin{itemize}
+\item \textbf{forced}: true command order, equal dwell segments, amplitude 1.5;
+\item \textbf{shuffled}: an explicitly non-true command order with equal dwell;
+\item \textbf{smeared}: all live commands active simultaneously with equal mass.
+\end{itemize}
+
+Natural-minus-shuffled accuracy is a causal sensitivity diagnostic. The forced
+condition is not a perfect oracle: it changes amplitude and dwell statistics as
+well as order, so forced below natural is interpretable rather than contradictory.
+
+\paragraph{Integration-budget sweep.}
+The same L5 examples are evaluated with 72, 100, and 120 internal steps. A large
+increase would implicate insufficient settling time; a small increase leaves a
+structural or learned-computation limitation as the main explanation.
+
+\section{Checkpoint results}
+
+\begin{longtable}{rrrrrrrr}
+\caption{Frozen GPT-2 checkpoint panel. Accuracy is mean slot accuracy.}\\
+\toprule
+Step & L2--4 acc & Edge acc & $\tau$ & Coverage & Exact & L5 acc & Nat$-$shuf \\
+\midrule
+\endfirsthead
+\toprule
+Step & L2--4 acc & Edge acc & $\tau$ & Coverage & Exact & L5 acc & Nat$-$shuf \\
+\midrule
+\endhead
+0    & .139 & .297 & .040 & .383 & .000 & .135 & .000 \\
+500  & .206 & .703 & .477 & .500 & .043 & .163 & -.003 \\
+1000 & .240 & .703 & .945 & .695 & .309 & .176 & .003 \\
+1500 & .266 & .703 & .905 & .682 & .281 & .145 & -.007 \\
+2000 & .291 & .688 & .862 & .663 & .246 & .217 & .025 \\
+2500 & .331 & .702 & .871 & .662 & .262 & .232 & .060 \\
+3000 & .372 & .705 & .892 & .678 & .273 & .221 & .079 \\
+3500 & .402 & .709 & .904 & .700 & .285 & .225 & .089 \\
+4000 & .412 & .715 & .904 & .710 & .297 & .214 & .115 \\
+\bottomrule
+\end{longtable}
+
+\obs Accuracy rose from 0.139 to 0.412. Edge accuracy jumped to about 0.70 by
+step 500 and then largely plateaued; endpoint accuracy continued improving.
+Itinerary tau rose sharply and remained near 0.86--0.90 after step 1,500, while
+coverage slowly recovered to 0.710. Exact full order reached only 0.297.
+
+The high tau is therefore not equivalent to complete itinerary execution: the
+model orders the modes it visits fairly well but omits or fails to dominate with
+some modes. This distinction explains how tau can look strong while endpoint
+accuracy remains moderate.
+
+\section{Causal trajectory results}
+
+\begin{longtable}{rrrrrr}
+\caption{Endpoint accuracy under natural and replaced trajectories.}\\
+\toprule
+Step & Natural & Forced & Shuffled & Smeared & Natural$-$shuffled \\
+\midrule
+\endfirsthead
+\toprule
+Step & Natural & Forced & Shuffled & Smeared & Natural$-$shuffled \\
+\midrule
+\endhead
+0    & .139 & .139 & .139 & .139 & .000 \\
+500  & .206 & .209 & .209 & .208 & -.003 \\
+1000 & .240 & .236 & .238 & .236 & .003 \\
+1500 & .266 & .264 & .273 & .263 & -.007 \\
+2000 & .291 & .272 & .266 & .285 & .025 \\
+2500 & .331 & .278 & .272 & .264 & .060 \\
+3000 & .372 & .311 & .292 & .308 & .079 \\
+3500 & .402 & .317 & .314 & .318 & .089 \\
+4000 & .412 & .309 & .297 & .301 & .115 \\
+\bottomrule
+\end{longtable}
+
+\obs The intervention gap is essentially zero early and grows after step 2,000.
+At step 4,000, shuffling lowers accuracy by 11.5 percentage points relative to
+the natural trajectory. Smeared and forced schedules are similarly below
+natural. The learned trajectory has therefore become load-bearing for endpoint
+performance on the measured corpus.
+
+\inferlabel This rules out the strongest ``decorative trajectory'' account at the final
+checkpoint. It does not prove that every visited phase or every ordering detail
+is necessary, nor that the mechanism extrapolates beyond this task distribution.
+
+\section{Held-out length and integration depth}
+
+\begin{longtable}{rrrrr}
+\caption{L5 endpoint accuracy versus inference steps.}\\
+\toprule
+Step & Default L5 & $S=72$ & $S=100$ & $S=120$ \\
+\midrule
+\endfirsthead
+\toprule
+Step & Default L5 & $S=72$ & $S=100$ & $S=120$ \\
+\midrule
+\endhead
+0    & .135 & .135 & .135 & .135 \\
+500  & .163 & .163 & .164 & .163 \\
+1000 & .176 & .176 & .180 & .182 \\
+1500 & .145 & .145 & .155 & .168 \\
+2000 & .217 & .217 & .233 & .243 \\
+2500 & .232 & .232 & .237 & .249 \\
+3000 & .221 & .221 & .224 & .230 \\
+3500 & .225 & .225 & .227 & .224 \\
+4000 & .214 & .214 & .224 & .234 \\
+\bottomrule
+\end{longtable}
+
+\obs At the final checkpoint, adding 48 internal steps improves L5 accuracy by
+2.1 points. The best measured L5 value (0.249) occurs at step 2,500 with
+$S=120$, still far below in-distribution performance.
+
+\inferlabel Insufficient integration depth contributes slightly, but it is not the main
+L5 failure. The dominant limitation is learned computation/representation or
+structural extrapolation, not simply a short settling horizon.
+
+\section{Comparison with the retained TinyLM arm}
+
+The TinyLM comparison used the same nine checkpoint indices and intervention
+definitions, but its language encoder, batch/optimization details, and training
+artifact are not identical. It is contextual, not a controlled claim that one
+language model is intrinsically superior.
+
+\begin{tabular}{lrr}
+\toprule
+Final metric & TinyLM & Frozen GPT-2 \\
+\midrule
+L2--4 accuracy & .709 & .412 \\
+Itinerary $\tau$ & .825 & .904 \\
+Coverage & .911 & .710 \\
+Natural$-$shuffled & .227 & .115 \\
+L5 accuracy & .356 & .214 \\
+L5 at $S=120$ & .362 & .234 \\
+\bottomrule
+\end{tabular}
+
+GPT-2 shows higher ordering correlation among visited phases but markedly lower
+coverage, accuracy, causal sensitivity, and length transfer. A plausible
+optimization explanation is that the CAROM routing heads must extract useful
+signals from a wider, frozen 768-dimensional space under the same 4,000-update
+budget. This is a hypothesis, not established by the current arm; a longer run
+is the direct test.
+
+Importantly, these numbers do \emph{not} establish learned commutation. Learned
+commutation predicts declining order sensitivity, which requires the repaired
+nonlinear swap-discrepancy and JVP commutator-energy probes. Here the observed
+natural-minus-shuffled gap grows, so the measured trajectory becomes more, not
+less, causally consequential over training.
+
+\section{What the experiment establishes}
+
+\begin{itemize}
+\item \obs A frozen GPT-2 span encoder can support learning above the random
+endpoint baseline in this CAROM compiled-channel architecture.
+\item \obs Dependency prediction is learned early, but endpoint execution
+continues improving after edge accuracy plateaus.
+\item \obs The final natural trajectory is causally useful relative to shuffled,
+smeared, and fixed-dwell forced replacements.
+\item \obs High tau coexists with incomplete coverage and low exact-order rate;
+tau alone would overstate mechanism quality.
+\item \obs Extra inference depth only modestly improves held-out L5 accuracy.
+\item \textbf{Not established:} robust GPT-2 semantic compilation, multi-seed
+reliability, learned commutation, schedule-uniform stability, or structural
+length generalization.
+\end{itemize}
+
+\section{Higher-accuracy follow-up}
+
+The cleanest next test changes only the training budget: frozen GPT-2-small,
+seed 0, batch 64, losses and architecture unchanged, but 12,000 updates with a
+OneCycle schedule defined over all 12,000 updates and checkpoints every 1,000.
+This triples the number of training examples from 256,000 to 768,000 while
+preserving comparability. The same frozen corpora and intervention suite will be
+used. Primary success is final L2--4 accuracy above 0.55; a stronger target is
+0.65. Mechanism gates remain coverage, exact order, natural-minus-shuffled, and
+L5. If accuracy rises while these degrade, the optimization succeeds only at
+the endpoint and the mechanism claim weakens.
+
+Based on the measured 31.6-minute training time for 4,000 steps, expected
+training is about 95 minutes plus setup/checkpoint evaluation. The proposed
+guardrail is one Secure Cloud A100 SXM4 80GB at USD 1.49/hr, expected two hours
+(USD 2.98), hard cap three hours (USD 4.47), with auto-termination, immediate
+artifact retrieval and hash verification, then termination.
+
+\section{Provenance}
+
+Primary results are
+\nolinkurl{projects/carom/experiments/20260721T222400Z-carom-gpt2-arm/}.
+The retrieved package contains nine checkpoints, nine per-checkpoint JSON files,
+\texttt{summary.json}, logs, repaired source, and a SHA-256 manifest covering 20
+artifact files (105 MiB). The repaired runner SHA-256 is
+\begin{quote}\small\ttfamily
+211ae1387deec50c70d5f60b3571f17c\\
+8e89d8ebc555763ef78d1be5d2ac8cc0
+\end{quote}
+The compiled-channel source SHA-256 is
+\begin{quote}\small\ttfamily
+9171bcd065226d3f5ca96d7bb8f9f20d\\
+9f144a11f251923382cbefb7be112223
+\end{quote}
+
+\end{document}

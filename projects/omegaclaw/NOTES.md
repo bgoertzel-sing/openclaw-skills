@@ -1,3 +1,136 @@
+# 2026-07-28 - Strict local HTTP send JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`57c9ebf`, preserving the completed safety-floor ancestry. The local HTTP
+`/send` request body now rejects duplicate object keys, non-standard
+`NaN`/`Infinity`, invalid UTF-8, non-object roots, and non-string `message` or
+`auth` values before authentication or inbound message processing.
+
+Eleven focused checks, Python compilation, `git diff --check`, PR #1 ancestry,
+and the provider-free subagent/budget/local-JSON gate (`1099 passed`, LLM
+calls/minute guard disabled) passed. The first command used unavailable
+`python`; the second ancestry check used the absent local branch name; and one
+broad-gate invocation used an outdated budget test filename. Corrected
+commands passed. No provider, live queue/runtime, local-channel message,
+Telegram, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+# 2026-07-28 - Strict Slack API response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`123d84e`, preserving the completed safety-floor ancestry. Slack Web API
+responses now reject duplicate object keys, non-standard `NaN`/`Infinity`,
+invalid UTF-8, non-object roots, and non-boolean success markers before
+response processing.
+
+Seven focused checks, Python compilation, `git diff --check`, PR #1 ancestry,
+and the provider-free subagent/budget/JSON hardening gate (`1095 passed`, rate
+and concurrency guards disabled) passed. No provider, live queue/runtime,
+Slack, Telegram, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred. Two initial verification
+invocations used outdated test filenames; the corrected provider-free gate
+passed.
+
+# 2026-07-28 - Strict local RPC JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`80c7fa0`, preserving the completed safety-floor ancestry. Local RPC outer
+envelopes and nested request/response payloads now reject duplicate object
+keys and non-standard `NaN`/`Infinity` tokens before RPC dispatch or response
+delivery.
+
+Eight focused checks, Python compilation, `git diff --check`, PR #1 ancestry,
+and the provider-free subagent/budget/JSON hardening gate (`1111 passed`, rate
+and concurrency guards disabled) passed. No provider, live queue/runtime,
+Telegram, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+
+## 2026-07-28 - Strict gateway-auth response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`802fadd`, preserving the completed safety-floor ancestry. Gateway auth status
+and token-verification responses now reject duplicate object keys,
+non-standard `NaN`/`Infinity`, invalid UTF-8, non-object roots, and non-boolean
+decision markers before authentication state or token acceptance.
+
+Three focused checks, Python compilation, `git diff --check`, PR #1 ancestry,
+and the provider-free subagent/budget/JSON hardening gate (`1103 passed`, rate
+and concurrency guards disabled) passed. An initial suite invocation used the
+wrong rate-limit environment key and failed against the existing persistent
+ledger; the corrected documented key passed. No provider, live queue/runtime,
+Telegram, paid compute, secret/access/security change, push, merge, force-push,
+or remote-ref deletion occurred.
+
+## 2026-07-28 - Strict Agentverse search-response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`900dc51`, preserving the completed safety-floor ancestry. Agentverse/Tavily
+search responses now reject duplicate object keys and non-standard
+`NaN`/`Infinity` tokens before structured search-result extraction. Malformed
+responses retain the existing opaque-response fallback.
+
+Three focused checks, Python compilation, `git diff --check`, PR #1 ancestry,
+and the provider-free subagent/budget/JSON hardening gate (`1100 passed`, rate
+and concurrency guards disabled) passed. The first two focused invocations
+exposed missing source-path and optional `uagents` test dependencies; the
+provider-free test now supplies the dependency stub and passed. No provider,
+live queue/runtime, Telegram, paid compute, secret/access/security change,
+push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-27 - Strict inline task-contract JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`3779c9a`, preserving the completed safety-floor ancestry. Inline JSON goal
+objects now use the shared strict decoder: duplicate object keys and
+non-standard `NaN`/`Infinity` tokens fail closed as persistent
+`contract_invalid` records before escalation evaluation or worker/provider
+calls. Ordinary non-JSON prose goals retain their existing behavior.
+
+Three new malformed-contract cases (seven focused strict-JSON checks total),
+Python compilation, `git diff --check`, and the provider-free subagent/budget
+hardening gate (`1081 passed`, rate and concurrency guards disabled) passed.
+The first full-suite invocation used the wrong rate-limit environment key and
+hit the existing persistent ledger; the corrected rate key exposed stale
+concurrency state, and the established fully provider-free command with both
+guards disabled passed. No provider, live queue/runtime, Telegram, paid
+compute, secret/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+
+## 2026-07-27 - Independent motivational score-policy v0.2 runner
+
+Archived
+`artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-independent-runner/`.
+The provider-free runner binds the sealed v0.2 preregistration and both
+revision sources without importing the preregistration validator or any prior
+runner. It recomputes `evidence_gap = 1000 - evidence_sufficiency` from the
+three admitted inputs, reproduces all five witnesses, and reaches
+`inspect_evidence`, `answer_current`, `request_clarification`, and
+`defer_for_review`.
+
+Eight unit checks, Python compilation, and deterministic JSON replay passed.
+Negative cases cover sealed identity drift, caller-supplied derived values,
+boolean/fractional inputs, formula/weight/threshold/tie-order drift,
+expectation drift, candidate unreachability, admission weakening, and
+authority widening. This remains candidate-only with ThreadKeeper effect
+`none`; no calibration, provider, live queue/runtime, Telegram, memory write,
+paid compute, secret/access/security change, push, or merge occurred.
+
+## 2026-07-27 - Strict persisted JSON records
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`945de9e`, preserving the completed safety-floor ancestry. Persisted
+control-record reads now reject duplicate object keys and non-standard
+`NaN`/`Infinity` number tokens rather than accepting Python's permissive JSON
+extensions or silently keeping the last duplicate. The boundary covers bounded
+queued-task and candidate-transcript reads plus run-index append, rotation, and
+read-only audit parsing.
+
+Five new strict-JSON cases (seventeen focused boundary/read checks total),
+Python compilation, `git diff --check`, and the provider-free subagent/budget
+hardening gate (`1069 passed`, LLM calls/minute guard disabled) passed. No
+provider, live queue/runtime, Telegram, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
 ## 2026-07-26 - ThreadKeeper exact direct-dispatch scalar types
 
 Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
@@ -4249,6 +4382,7 @@ compilation and `git diff --check`. The first focused command used unavailable
 `python` and therefore ran no tests; the corrected `python3` commands passed.
 No provider, live queue/runtime, Telegram, paid compute, secret/access/security
 change, push, merge, force-push, or remote-ref deletion occurred.
+
 # 2026-07-23 - Cross-producer motivational registry canonicalization
 
 Added a provider-free candidate-only gate at
@@ -4424,6 +4558,7 @@ provider-free hardening suite (`964 passed`, LLM calls/minute guard disabled)
 passed. No provider, network, Telegram, live queue/runtime, paid compute,
 secret/access/security change, push, merge, force-push, or remote-ref deletion
 occurred.
+
 # 2026-07-25 - ThreadKeeper exact parser-container boundary
 
 Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
@@ -4600,5 +4735,236 @@ Nine focused checks and the provider-free subagent/budget hardening gate (`1047
 passed`, LLM calls/minute guard disabled) passed, along with Python compilation
 and `git diff --check`. An initial focused command used the unavailable
 `python` alias and failed before collection; the Python 3 rerun passed. No
+ provider, live queue/runtime, Telegram, paid compute, secret/access/security
+ change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-27 - Motivational feature-interaction preregistration
+
+Archived
+`artifacts/ggb-capacity-gates/20260727-motivation-score-policy-feature-interaction-preregistration/`.
+The content-addressed contract binds score-policy v0.1 and the prior independent
+boundary runner, then seals seven out-of-sample multi-feature cases before
+execution. It covers the answer/defer crossover immediately below, at, and
+above equality, an answer/request tie, joint high-feature cases, and the
+review-risk override against a higher request score.
+
+The gate also exposes a structural reachability limitation:
+`score(inspect_evidence) = review_risk - evidence_sufficiency` is always at
+most `score(defer_for_review) = review_risk`; when equal, the tie order selects
+defer. Thus `inspect_evidence` cannot be selected anywhere in the admitted
+feature domain under v0.1. This is a preregistered diagnostic, not calibration
+evidence or approval to change policy/runtime behavior.
+
+Nine provider-free checks, Python compilation, and diff checks pass. Contract
+SHA-256:
+`1a7c0b3c60d9d3c66e3df415825b1a6b7fb5301cdd3df64d662ee6addfec258c`.
+No provider/network/Telegram call, queue claim, memory write, runtime wiring,
+policy change, paid compute, secret access, push, or merge occurred.
+
+## 2026-07-27 - ThreadKeeper operator path argument types
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`e834d39`, preserving `fork/agent/threadkeeper-safety-floor` ancestry. The
+parent/operator run-index audit and candidate transcript review entry points
+now reject non-string values and behavior-bearing string subclasses before
+truth testing, coercion, or filesystem path resolution. The shared worker
+stop/cancel-file resolver similarly requires an exact built-in string or null;
+a hostile stop-file subclass now returns `worker_config_invalid` before lock
+acquisition.
+
+Eight focused checks and the provider-free subagent/budget hardening gate
+(`1054 passed`, LLM calls/minute guard disabled) passed, along with Python
+compilation, `git diff --check`, and completed safety-floor ancestry. No
 provider, live queue/runtime, Telegram, paid compute, secret/access/security
 change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-27 - ThreadKeeper candidate review record validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`4a141fd`, preserving `fork/agent/threadkeeper-safety-floor` ancestry. The
+read-only candidate transcript review now validates the exact JSON types of
+every field used to present a patch/adjudication decision: transcript
+container, status/summary strings, task-contract and adjudication objects,
+boolean review flags, patch-proposal list/object shapes, and proposal
+action/path strings. Malformed persisted records return
+`candidate_review_error` rather than being truth-tested, sliced, skipped, or
+presented as review-ready.
+
+Fifteen focused checks and the provider-free subagent/budget hardening gate
+(`1063 passed`, LLM calls/minute guard disabled) passed, along with Python
+compilation, `git diff --check`, and completed safety-floor ancestry. No
+provider, live queue/runtime, Telegram, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-27 - ThreadKeeper direct tool-runner control types
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`9091e2e`, preserving `fork/agent/threadkeeper-safety-floor` ancestry. The
+direct `run_tools()` boundary now validates the call batch's exact list type
+before truth testing. It also requires exact built-in list/tuple/set
+authorization containers with exact string items, and an optional exact
+non-negative integer quota, before iteration, membership, comparison, or
+coercion. Behavior-bearing subclasses therefore fail closed before registry,
+workspace, cancellation, or tool effects.
+
+Nine focused checks and the provider-free subagent/budget hardening gate (`1051
+passed`, LLM calls/minute guard disabled) passed, along with Python compilation
+and `git diff --check`. The completed safety-floor branch is an ancestor of the
+new commit. No provider, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+## 2026-07-27 - ThreadKeeper persisted run-index entry validation
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`8669f16`, preserving `fork/agent/threadkeeper-safety-floor` ancestry. The
+read-only run-index auditor now validates each decoded entry before hashing,
+normalizing hash fields, resolving transcript paths, or reading transcripts.
+Entries must be exact JSON objects; identity, status, path, and hash fields
+must be exact strings; timestamps must be finite numbers or null. Invalid JSON
+retains its distinct diagnostic, while wrong persisted field types fail closed
+as `invalid_index_entry:ValueError`.
+
+Fourteen focused checks and the provider-free subagent/budget hardening gate
+(`1064 passed`, LLM calls/minute guard disabled) passed, along with Python
+compilation, `git diff --check`, and completed safety-floor ancestry. No
+provider, live queue/runtime, Telegram, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+
+## 2026-07-27 - ThreadKeeper strict persona configuration JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`6f4f10d`, preserving `fork/agent/threadkeeper-safety-floor` ancestry. Persona
+configuration files now use the shared strict JSON decoder, so duplicate
+object keys and Python-accepted `NaN`/`Infinity` tokens fail closed as
+malformed JSON before provider/model selection, default-tool or task-contract
+processing, escalation, or worker/provider calls.
+
+Three new malformed-file cases and nine focused checks passed. The
+provider-free subagent/budget hardening gate passed all 1077 tests with the
+LLM calls/minute guard disabled, along with Python compilation,
+`git diff --check`, and completed safety-floor ancestry. An initial focused
+command used unavailable `python`; rerunning with the installed `python3`
+passed. The first full-suite run exposed four test doubles still patching the
+permissive decoder; updating them to patch the strict boundary made the full
+gate pass. No provider, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+## 2026-07-27 - ThreadKeeper strict persisted LLM quota state
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`d6b1b96`, preserving `fork/agent/threadkeeper-safety-floor` ancestry.
+Persisted rate-limit and concurrency-control state now uses the shared strict
+JSON decoder. Duplicate object keys and Python-accepted `NaN`/`Infinity`
+tokens fail closed before quota reservation or any provider call, and the
+malformed state remains untouched for diagnosis.
+
+Eight focused checks and the provider-free subagent/budget hardening gate
+(`1083 passed`, LLM rate and concurrency guards disabled outside their focused
+tests) passed, along with Python compilation, `git diff --check`, and completed
+safety-floor ancestry. The first full-suite invocation left the default
+concurrency guard enabled and encountered pre-existing persistent in-flight
+test state; rerunning with both external guards disabled, while their focused
+tests explicitly enabled them, passed. No provider, live queue/runtime,
+Telegram, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+## 2026-07-27 - ThreadKeeper strict async-worker lock metadata JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`1bd8008`, preserving the completed safety-floor ancestry. Persisted
+async-worker lock metadata now uses the shared strict JSON decoder, so
+duplicate object keys and Python's non-standard `NaN`/`Infinity` tokens fail
+closed as absent stale-lock metadata rather than influencing operator-facing
+diagnostics.
+
+Three new malformed-record cases and six focused checks passed. The
+provider-free hardening suite passed with both LLM rate and concurrency guards
+disabled (`1084 passed`), along with Python compilation and `git diff --check`.
+The first focused invocation used a nonexistent repository-local virtualenv
+and failed before collection. The first full-suite invocation inherited a
+stale concurrency ledger and produced 10 `concurrency_limited` failures; the
+corrected documented guard settings passed. No provider/network/Telegram
+call, queue claim, runtime wiring, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+## 2026-07-27 - ThreadKeeper strict budget usage-ledger JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`749cc91`, preserving the completed safety-floor ancestry. Persisted budget
+usage-ledger JSONL records now use a strict decoder, so duplicate object keys
+and Python's non-standard `NaN`/`Infinity` tokens are ignored as malformed
+records instead of influencing thread token totals or cost estimates. Valid
+neighboring records remain available.
+
+Fourteen focused checks passed. The provider-free hardening suite passed with
+both LLM rate and concurrency guards disabled (`1085 passed`), along with
+Python compilation and `git diff --check`. An initial focused command named a
+nonexistent repository-local virtualenv and failed before collection. An
+initial full-suite command used the wrong rate-limit environment key and hit
+the existing persistent 60-call ledger; the corrected documented setting
+passed. No provider/network/Telegram call, queue claim, runtime wiring, paid
+compute, secret/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+## 2026-07-27 - Closed local-channel accounting JSON boundary
+
+Continued `projects/omegaclaw/repos/ThreadKeeper` on
+`agent/threadkeeper-hardening-next`, preserving the completed draft-PR-#1
+safety-floor ancestry. Commit `d726db4` makes local-channel pricing overrides
+and usage-ledger JSONL records reject duplicate object keys and Python's
+non-standard `NaN`/`Infinity` tokens. Malformed records cannot influence
+operator-visible token or cost totals, while valid neighboring ledger records
+remain usable.
+
+Three focused checks, Python compilation, `git diff --check`, and the
+provider-free hardening suite passed (`1088 passed`) with both local LLM rate
+and concurrency guards disabled. The first combined suite run encountered
+pre-existing persistent concurrency reservations and failed 10 provider
+boundary cases as `concurrency_limited`; rerunning with the documented local
+concurrency guard disable passed. No provider, live queue/runtime, Telegram,
+paid compute, secret/access/security change, push, merge, force-push, or
+remote-ref deletion occurred.
+## 2026-07-27 - Strict native-provider response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`edee61f`, preserving the completed safety-floor ancestry. Native
+Ollama-compatible provider responses now use the existing strict JSON decoder.
+Duplicate object keys and Python's non-standard `NaN`/`Infinity` tokens fail
+closed as private `provider_response_invalid` control results before response
+content, metadata, or token counters can influence worker behavior.
+
+Four focused checks, Python compilation, `git diff --check`, and the
+provider-free hardening suite passed (`1091 passed`) with both local LLM rate
+and concurrency guards disabled. The first full-suite run exposed ten test
+mocks that patched the former decoder entry point; those mocks were updated to
+exercise the strict decoder seam and the corrected suite passed. No provider,
+network, Telegram, live queue/runtime, paid compute, secret/access/security
+change, push, merge, force-push, or remote-ref deletion occurred.
+## 2026-07-28 - Strict Telegram API response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`297f362`, preserving the completed safety-floor ancestry. Telegram Bot API
+responses now use strict JSON and strict UTF-8 decoding. Duplicate object
+keys, Python's non-standard `NaN`/`Infinity` tokens, non-object roots, and
+non-boolean `ok` markers fail closed before update, authentication, or message
+processing.
+
+Six focused checks, Python compilation, `git diff --check`, and the
+provider-free hardening suite passed (`1097 passed`) with local LLM rate and
+concurrency guards disabled. No provider, network, Telegram, live
+queue/runtime, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+## 2026-07-28 - Strict Mattermost response JSON
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`2dcab8e`, preserving the completed safety-floor ancestry. Mattermost REST
+identity/profile responses and websocket event/post envelopes now use strict
+JSON and strict UTF-8 decoding. Duplicate object keys, Python's non-standard
+`NaN`/`Infinity` tokens, and non-object roots fail closed before identity,
+profile, event, or post processing.
+
+Ten focused provider-free checks passed, along with Python compilation and
+`git diff --check`. A broad `Autotests/mock` invocation used an incomplete
+test environment, produced unrelated failures, and was interrupted; no
+full-suite result is claimed. No provider, network, Mattermost, Telegram,
+live queue/runtime, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
