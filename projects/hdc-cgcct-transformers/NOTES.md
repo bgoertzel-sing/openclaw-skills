@@ -2,6 +2,36 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-07-28 - P1B calibration target layer
+
+The frozen §6.7 target-code realization is now executable: grid validation,
+canonical atoms, both hierarchy arms, full lexical/frame binding, and
+per-arm ridge replay are covered by 24 tests. A reduced replay is
+byte-identical at SHA-256 `b2a6ee25...719e8`. It is deliberately marked
+gate-ineligible. Remote launch stays fail-closed until the full trainer,
+controls, raw arrays/manifest, metrics, and criteria-freezing path pass.
+
+## 2026-07-28 - P1B calibration runner core
+
+Nested commit `6a807b1` adds the frozen training/early-stop loop, deterministic
+residual/readout execution, core feature and closure metrics, hashed raw-array
+artifact verification, and seed/criteria fail-closed guards. The reduced
+replay passes 26 tests and refuses a confirmation seed. This is not yet a
+remote-ready smoke: per-H metrics, representation and shuffled-label controls,
+coherence, and peak GPU memory remain required.
+
+## 2026-07-28 - P1A completion and P1B CPU gate
+
+The P1A calibration payload completed and is recorded at
+`experiments/20260728T002900Z-p1a-full-grid/`. Calibration monotonicity is
+weaker than the frozen threshold on 31/60 assumption-matched curves; do not
+alter criteria or call this a confirmation failure.
+
+P1B local smoke passed at nested commit `b4593f4`. The exact full manifest has
+36,864 samples and replays byte-identically. Remote launch remains conditional
+on an exact live RunPod offer at no more than USD 1/hour and a fully concrete
+`REMOTE_JOB.md`; the five confirmation seeds remain sealed.
+
 ## 2026-07-27 - P1A metrics pipeline
 
 Implemented the frozen full-grid runner and metric layer: one-sided Wilson
@@ -72,3 +102,26 @@ CPU replay; it changed only the grid to `D={32,64,128,256,512,1024}`,
 byte-identical (`96f3a7142111828cffa458a59ac35699c6ce0077748a14361063ecc4b4dd14f7`),
 and every curve Spearman was 1.0. P0-G1 now passes. Preserve v1 as the
 documented saturation result; begin P1A preflight only.
+# 2026-07-28 — P1B remote-launch source audit
+
+**Observed:** The P1B source at nested commit `b4593f4` supplies a deterministic
+manifest, six-layer decoder, residual extraction, ridge primitive, and a
+one-update CPU smoke, but no three-seed calibration runner or raw-artifact
+writer. The live RunPod Community RTX 3090 offer at USD 0.22/hour satisfied
+the approved cost/resource limit, yet no P1B pod was created because the
+artifact-schema precondition was not met.
+
+**Observed:** Specification §6.4 requires a fresh readout for each `D` and
+names independent-atom and planted-path-composite code arms, but §6 does not
+name the P1B dimension set nor give the exact role/binding target-code recipe.
+P1A's grid applies to its cleanup fixtures (§5.1) and cannot be silently
+borrowed for P1B.
+
+**Decision:** Fail closed until Ben supplies this narrow P1B amendment. The
+implementation may not choose those scientific parameters on its own.
+
+**Resolution (2026-07-28):** Ben authorized either a direct choice or a
+ProtoMega consultation. ProtoMega's concrete proposal was reviewed against
+the existing Eq. 4 and F3 rules and accepted as §6.7 / decision
+`D-20260728-p1b-code-realization`. The implementation blocker is resolved;
+the separate missing-runner/artifact implementation work remains.

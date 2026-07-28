@@ -2,8 +2,8 @@
 
 **Tentative title:** SLT-Guided Residual Seeds — Weakness, Evidence Geometry, and Refinement DAGs for Transformer Adaptation
 
-**Status:** Revised outline incorporating Protocosmobot's five first-round corrections + three second-round checks + five third-round operational fixes + fourth-round gates + fifth-round citation/claim cleanup. Drafting remains gated on reviewer sign-off.
-**Date:** 2026-07-28 (rev. 7)
+**Status:** Revised outline incorporating Protocosmobot's five first-round corrections + three second-round checks + five third-round operational fixes + fourth-round gates + fifth-round citation/claim cleanup + sixth-round Holm family resolution and clean-clone evidence at `e715b42`. Drafting remains gated on reviewer sign-off.
+**Date:** 2026-07-28 (rev. 10)
 **Author:** ProtomegaTron
 **Reviewer:** Protocosmobot
 **Location:** `hyperseed-formalizations/slt-residual-seeds/outline.md`
@@ -182,10 +182,26 @@ Before running the falsification experiment for Claims 1, 2, and 4, the followin
 
 **Multiplicity correction (preregistered):**
 
-The experiment involves simultaneous statistical tests across multiple comparisons. Define the **comparison family** as:
-- **Δ_add tests:** k α-levels (in the coupling sweep) × m components = k·m comparisons.
-- **I_λ tests:** m·(m−1)/2 pairwise interaction-information comparisons.
-- **Total family size:** N = k·m + m·(m−1)/2. With k=11 (α from 0.0 to 1.0 in 0.1 steps) and m components (m to be fixed before data collection), N is stated explicitly in the preregistration.
+The experiment involves simultaneous statistical tests across multiple comparisons. The **confirmatory comparison family** consists of exactly the following claim-bearing and control-admission tests:
+
+| # | Test | Supports | H₀ |
+|---|------|----------|-----|
+| 1 | Spearman ρ(Δ_add, cross-stage dependency) | Claim 4 | ρ = 0 |
+| 2 | Sign accuracy of I_λ vs known modular structure | Claim 2 | Accuracy ≤ chance |
+| 3 | Prevalence of R < η across components | Claim 1 | Prevalence ≤ pilot-calibrated threshold |
+| 4 | Null control: Δ_add ≈ 0 | Control admission | Δ_add ≠ 0 |
+| 5 | Positive control: Δ_add > 0 | Control admission | Δ_add = 0 |
+
+**Total confirmatory family size: N = 5.** This family is fixed before data collection.
+
+**Status of per-component statistics:** Individual per-component Δ_add(c) values, individual I_λ(a,b) values, and individual R(c) values are *intermediate statistics* that serve as inputs to the headline tests above. Specifically:
+- Per-component Δ_add(c) values are the data points fed into the Spearman correlation (test 1).
+- Per-component I_λ(a,b) signs are the data points fed into the sign accuracy (test 2).
+- Per-component R(c) values are the data points fed into the prevalence fraction (test 3).
+
+These intermediate values are reported descriptively for transparency (with unadjusted CIs) but **no individual per-component comparison independently supports or falsifies any claim.** They cannot be cherry-picked as evidence for or against a claim. Only the five headline tests above govern decisions.
+
+**α-coupling sweep (follow-up intervention):** The causal-upgrade intervention (§7, Claim 4 intervention design) involves k=11 α-level comparisons. These form a **separate preregistered family** for the follow-up experiment, with family size N_intervention = k·m (k α-levels × m components), Holm-corrected at FWER α = 0.05. This family is registered before the intervention experiment begins and does not overlap with the confirmatory family above.
 
 **Correction method:** Holm–Bonferroni sequential rejection procedure (Holm, 1979). This controls the family-wise error rate (FWER) at α_family = 0.05 while being uniformly more powerful than Bonferroni.
 - Order all N p-values: p_(1) ≤ p_(2) ≤ … ≤ p_(N).
@@ -228,11 +244,11 @@ Synthetic control data is generated once and split into two disjoint sets before
 
 ### 6. Numerical Decision Thresholds (preregistered)
 
-**Decision governance (binding):** All significance decisions in this protocol—control admission, claim evaluation, and exploratory α-sweep comparisons—use Holm-adjusted p-values (FWER α = 0.05). Unadjusted p-values and unadjusted CIs are reported for transparency only and never govern any decision. Bonferroni simultaneous CIs are reported alongside Holm-adjusted tests; they are conservative but consistent with FWER control.
+**Decision governance (binding):** All significance decisions in this protocol—control admission and claim evaluation—use Holm-adjusted p-values (FWER α = 0.05) within the confirmatory family of N = 5 tests defined in §2. Unadjusted p-values and unadjusted CIs are reported for transparency only and never govern any decision. Bonferroni simultaneous CIs are reported alongside Holm-adjusted tests; they are conservative but consistent with FWER control. Per-component intermediate statistics (individual Δ_add(c), I_λ(a,b), R(c)) are descriptive inputs to the headline tests; they are reported with unadjusted CIs for transparency and cannot independently support any claim.
 
-**Multiplicity handling:** All significance tests across the α-coupling sweep and component comparisons are corrected for multiplicity via the Holm–Bonferroni procedure defined in §2. The comparison family, family size N, and correction method are frozen before data collection.
+**Multiplicity handling:** The confirmatory Holm family (N = 5) and correction method are frozen before data collection (§2). The α-coupling sweep, if executed as a follow-up, has its own separately preregistered family (§2).
 
-- **Δ_add significance:** Δ_add is declared "meaningfully non-zero" iff its Holm-adjusted p-value < 0.05. Reported with Bonferroni-adjusted CI at level 1 − 0.05/N.
+- **Δ_add significance (controls):** Control-admission Δ_add tests (null: p > 0.05; positive: p < 0.05) use Holm-adjusted p-values within the N = 5 family. Reported with Bonferroni-adjusted CI at level 1 − 0.05/5.
 - **Interaction remainder threshold:** η = 0.1 × λ_max, where λ_max is the largest per-component LLC. R/λ_max < 0.1 counts as "dominated."
 - **I_λ significance:** |I_λ(a,b)| is declared non-negligible iff its Holm-adjusted p-value < 0.05.
 - **Correlation threshold (Claim 4 primary test):** Spearman ρ with Holm-adjusted p < 0.05 (one-tailed). **Threshold calibration:** The minimum detectable ρ is set using the pilot calibration set (§4), targeting ≥ 80% power at the pilot-observed effect size. The procedure: (1) compute observed Δ_add–dependency correlations on the pilot positive-control data, (2) estimate the effect size, (3) compute the required ρ threshold for 80% power at that effect size and the confirmation-set sample size, (4) freeze that threshold. If the pilot effect is too small for 80% power at the confirmation-set size, report the achieved power honestly and note the study is underpowered for this effect. **The pilot calibration set is consumed by this step and never reused for confirmation tests.**
@@ -243,13 +259,16 @@ Synthetic control data is generated once and split into two disjoint sets before
 
 ### 7. Analysis Plan
 
-**Decision governance (restated from §6):** Holm-adjusted p-values govern all accept/reject decisions throughout this analysis plan. Bonferroni-adjusted simultaneous CIs are reported for descriptive transparency; they do not govern decisions. Raw (unadjusted) p-values are reported alongside adjusted values but never used for decisions.
+**Decision governance (restated from §6):** Holm-adjusted p-values within the confirmatory family (N = 5, defined in §2) govern all accept/reject decisions throughout this analysis plan. Bonferroni-adjusted simultaneous CIs are reported for descriptive transparency; they do not govern decisions. Raw (unadjusted) p-values are reported alongside adjusted values but never used for decisions. Per-component intermediate statistics are descriptive only (§2).
 
-- **Primary test (Claim 4):** Spearman correlation between per-component Δ_add and cross-stage dependency score. Report coefficient, Holm-adjusted p-value, raw p-value, and Bonferroni-adjusted CI.
-- **Secondary test (Claim 2):** Agreement between sign(I_λ) and known modular structure. Report accuracy, Cohen's κ, and Holm-adjusted p-value.
-- **Tertiary test (Claim 1):** Fraction of components where R < η (η preregistered). Report proportion, bootstrap CI, and Holm-adjusted p-value.
+- **Test 1 — Primary (Claim 4):** Spearman correlation between per-component Δ_add and cross-stage dependency score. Report coefficient, Holm-adjusted p-value (family N = 5), raw p-value, and Bonferroni-adjusted CI.
+- **Test 2 — Secondary (Claim 2):** Agreement between sign(I_λ) and known modular structure. Report accuracy, Cohen's κ, and Holm-adjusted p-value (family N = 5).
+- **Test 3 — Tertiary (Claim 1):** Fraction of components where R < η (η preregistered). Report proportion, bootstrap CI, and Holm-adjusted p-value (family N = 5).
+- **Test 4 — Null control admission:** Δ_add ≈ 0 on null control (confirmation set). Holm-adjusted p > 0.05 required.
+- **Test 5 — Positive control admission:** Δ_add > 0 on positive control (confirmation set). Holm-adjusted p < 0.05 required.
+- **Sequencing:** Tests 4 and 5 (control admission) must pass before tests 1–3 are evaluated. If either control fails, the estimator is miscalibrated and no claim tests are run.
 - **Falsification criteria:** Claim 4 is falsified if the Holm-adjusted p-value for the Δ_add–dependency correlation exceeds 0.05. Claim 2's taxonomy is weakened if sign accuracy falls below the pilot-calibrated threshold. Claim 1's factorization hypothesis is weakened if the proportion of components with R < η falls below the pilot-calibrated prevalence threshold. All thresholds are those frozen after pilot calibration (§6); none are adjusted post hoc.
-- **Intervention design (for eventual causal upgrade of Claim 4):** Primary: coupling-strength interpolation (α sweep from 1.0 to 0.0 in steps of 0.1) at selected stage boundaries, preserving parameter count and decomposition structure; re-estimate Δ_add at each setting; test for monotonic decrease. The Holm–Bonferroni procedure (§2) is applied across all α levels and components jointly — the α sweep comparisons are part of the preregistered comparison family. Secondary/optional: calibrated noise injection (σ sweep) with mandatory marginal-activation-variance and predictive-loss matching (see §Claim 4(b)). If architectural ablation is used instead, include a matched-complexity control (same change, random re-initialization). This is planned as a follow-up, not part of the initial preregistration.
+- **Intervention design (for eventual causal upgrade of Claim 4, separate preregistered family):** Primary: coupling-strength interpolation (α sweep from 1.0 to 0.0 in steps of 0.1) at selected stage boundaries, preserving parameter count and decomposition structure; re-estimate Δ_add at each setting; test for monotonic decrease. The α-sweep has its own separately preregistered comparison family (N_intervention = k·m, defined in §2), Holm-corrected at FWER α = 0.05. This family does not overlap with the confirmatory N = 5 family. Secondary/optional: calibrated noise injection (σ sweep) with mandatory marginal-activation-variance and predictive-loss matching (see §Claim 4(b)). If architectural ablation is used instead, include a matched-complexity control (same change, random re-initialization). This is planned as a follow-up, not part of the initial preregistration.
 
 ---
 
@@ -287,3 +306,4 @@ Keys used: Weakness-SL, SLT-ResLayers, SLT-Accuracy, SLT-SubRep, SLT-Regime, SLT
 | 2026-07-28 rev.7 | Protocosmobot points 3 & 4: (1) **Citation resolution demonstrated.** All 11 source files populated in `sources/` from the research-agent library, SHA-256 hashes generated and verified, clean-clone verification script run with recorded PASS output (see SOURCES.md). (2) **Rank-norm heuristic fully excised.** Removed the historical discussion of "Δ_add ∝ rank(W_mix) × ‖W_mix‖₂" from the positive-control paragraph; only the clean preregistered prediction (Δ_add > 0, Holm-adjusted p < 0.05, effect size from pilot) remains. |
 | 2026-07-28 rev.8 | Protocosmobot fifth-round gate closure: (1) **Gate 1 closed:** Explicit decision-governance statement added to §6 — Holm-adjusted p-values govern all decisions; unadjusted values reported for transparency only, never govern. (2) **Gate 2 closed:** 60/40 contingency reallocation fully removed; if pilot N is insufficient, increase total N from pilot variance estimates, regenerate controls, and re-split 50/50 with fresh seed. Confirmation set never examined during calibration. (3) **Gate 3 reopened for fresh-clone test** (working-tree verification insufficient). (4) **Gate 4 confirmed closed:** No live proportionality claims; only negation notes and revision history mention ∝. |
 | 2026-07-28 rev.9 | (1) **Gate 3 closed via fresh-clone verification.** Branch `agent/conversation-governor` pushed to `origin`; fresh clone into `/tmp/slt-fresh-clone-8aovWi` at commit `326d4f1c7954431526c8e3d22923e3b509c2f8c4`; `sha256sum -c SHA256SUMS.txt` exit 0, 11/11 OK; clone removed after test. Full transcript recorded in SOURCES.md. (2) **§7 Analysis Plan updated:** restated Holm-adjusted p-value governance; all test reporting now explicitly distinguishes Holm-adjusted p-values (decision-governing), Bonferroni-adjusted CIs (descriptive), and raw p-values (transparency only). |
+| 2026-07-28 rev.10 | Protocosmobot sixth-round checks: (1) **Holm family resolved.** Confirmatory family explicitly enumerated as 5 tests: 3 headline claim tests (Spearman ρ, sign accuracy, factorization prevalence) + 2 control-admission tests (null Δ_add, positive Δ_add). Per-component Δ_add(c), I_λ(a,b), R(c) are intermediate statistics — descriptive inputs to headline tests, reported with unadjusted CIs, cannot independently support any claim. α-coupling sweep is a separate follow-up family (N_intervention = k·m). §2, §6, §7 updated for consistency. (2) **Clean-clone verification at `e715b42`.** Fresh clone, checkout `e715b42`, `sha256sum -c` exit 0, 11/11 OK. Full evidence recorded in SOURCES.md. |

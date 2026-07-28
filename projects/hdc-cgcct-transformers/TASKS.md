@@ -4,12 +4,14 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
-- [ ] **P1A full-grid calibration execution:** the complete metrics/calibration
+- [x] **P1A full-grid calibration execution:** the complete metrics/calibration
   pipeline is implemented at nested commit `e4e1d65`. Its reduced two-replay
   smoke passed 18 tests and produced byte-identical payloads (SHA-256
   `dba950b8...c5bb`), while correctly remaining gate-ineligible. Next: run the
-  frozen three-seed, 2,048-trial full grid without changing criteria. Evidence:
-  `experiments/20260727T235800Z-p1a-metrics-smoke/RUN.md`.
+  frozen three-seed, 2,048-trial full grid completed with payload SHA-256
+  `b7fabae3...195b`; 60/60 F0/F1 curves were interior, but 31 missed the
+  frozen Spearman threshold. Evidence:
+  `experiments/20260728T002900Z-p1a-full-grid/RUN.md`.
 
 - [x] **P1A fixture preflight (2026-07-27):** implemented deterministic F0
   independent, F1 coherent, F2 correlated-noise, and F3 planted-distance
@@ -25,6 +27,43 @@ Use small, testable tasks. Keep the top of each section in priority order.
   smoke hash and remote-job preconditions pass; artifacts return and verify;
   provider resource is terminated. Plan:
   `experiments/20260727T225600Z-p1b-gpu-calibration-planned/REMOTE_JOB.md`.
+  Launch audit on 2026-07-28: RunPod CLI health checks passed and compatible
+  24-GiB GPUs are available, but its availability response exposes no current
+  price, so no exact P1B offer has been recorded and no P1B pod was created.
+  Separately, the prior MusicGen pod `2jh6oxjzogdexe` was observed RUNNING at
+  USD 0.50/hour (EU-CZ-1; 40-GB container disk, 30-GB volume). It is a
+  different experiment and must not be repurposed for P1B. Next command:
+  obtain explicit operator direction to terminate that pod, then capture a
+  priced P1B offer before provisioning.
+  **Fail-closed launch audit (2026-07-28):** a live Community RTX 3090 offer
+  at USD 0.22/hour met the cost/resource bounds and Ben approved launch, but
+  the pinned source provides only the one-update CPU smoke. The frozen
+  three-seed calibration runner and artifact schema are absent, so remote
+  provisioning was correctly not attempted. Acceptance now additionally
+  requires a tested runner implementing the frozen training, readout,
+  calibration-only metrics, and raw-artifact contract; then repeat the live
+  offer check before launch.
+  P1B amendment accepted 2026-07-28: §6.7 freezes
+  `D={64,128,256,512,1024,2048,4096}` and Eq.-4/F3-compatible independent and
+  planted role-bound target-code recipes. Next action: implement and test the
+  calibration runner and raw artifact contract without opening confirmation
+  seeds. The exact target-code layer and a reduced per-arm ridge/artifact
+  replay smoke now pass 24 tests and reproduce byte-identically; evidence:
+  `experiments/20260728T155800Z-p1b-calibration-target-smoke/RUN.md`. The full
+  frozen trainer, residual/readout loop, core feature/closure metrics, hashed
+  raw artifact verifier, calibration-seed guard, and fail-closed criteria
+  freezer are implemented at nested commit `6a807b1`; 26 tests pass, including
+  a byte-identical reduced replay and confirmation-seed rejection. Evidence:
+  `experiments/20260728T195900Z-p1b-calibration-runner-smoke/RUN.md`. Remote
+  launch remains blocked on per-H partitioning, representation/shuffle
+  controls, coherence and peak-memory fields, and their smoke tests.
+
+- [x] **P1B exact fixture/model CPU smoke (2026-07-28):** implemented the
+  exact manifest, planted-PCFG surface, six-layer causal decoder,
+  final-hierarchy residual extraction, and ridge readout. 22 tests passed;
+  full manifests replay byte-identically and frozen-architecture one-update
+  smoke artifacts replay byte-identically. Evidence:
+  `experiments/20260728T115900Z-p1b-cpu-smoke/RUN.md`; nested commit `b4593f4`.
 
 - [x] **Authorized P0-v2 fixture/grid amendment (2026-07-27):** retained the
   P0-G1 gate and deterministic conventions, changed only the grid to
@@ -57,7 +96,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 - [ ] Implement P1A independent/coherent/pathology/hierarchy-distance fixtures
   and run local preflight only.
-- [ ] Implement the P1B planted-PCFG next-token fixture and six-layer
+- [x] Implement the P1B planted-PCFG next-token fixture and six-layer
   transformer without reusing the causal-fibres classifier as scientific
   evidence.
 - [ ] Freeze P1 criteria after three calibration seeds; do not open the five

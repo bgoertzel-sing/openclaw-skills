@@ -87,6 +87,40 @@ Weakness-Singular-Learning.pdf: OK
 
 **Result: PASS.** 11/11 source files present and hash-verified from a fresh clone at commit `326d4f1`.
 
+## Fresh-clone verification result at commit `e715b42` (2026-07-28 13:00 PDT)
+
+**Method:** `git clone` into a temp directory; `git checkout e715b42`; verify sources at the checked-out commit; delete clone.
+
+| Field | Value |
+|---|---|
+| Clone command | `git clone --quiet https://github.com/bgoertzel-sing/openclaw-skills.git /tmp/slt-fresh-clone-7bJY58` |
+| Clone exit | 0 |
+| Checkout command | `git checkout --quiet e715b42` |
+| Checkout exit | 0 |
+| Commit (HEAD) | `e715b42dc4e46f837c195f5b6e2d258eef5b7ba3` |
+| Sources directory | `/tmp/slt-fresh-clone-7bJY58/projects/omegaclaw/workspace/hyperseed-formalizations/slt-residual-seeds/sources` |
+| File count | 12 (11 sources + SHA256SUMS.txt) |
+| Verification command | `cd .../sources && sha256sum -c SHA256SUMS.txt` |
+| Verification exit | 0 |
+| Clone removed | yes |
+
+```
+sha256sum -c SHA256SUMS.txt output:
+causal-fibres-README.md: OK
+INITIAL_SYNTHESIS.md: OK
+note-0014.md: OK
+SLT-accuracy-weakness_v1.pdf: OK
+SLT-and-Residual-Layers.pdf: OK
+SLT-Evolution.pdf: OK
+SLT-for-regime-change-detection.pdf: OK
+SLT-Goal-Stability_v4.pdf: OK
+SLT-Semantics-v2.pdf: OK
+SLT-SubRep-v5.pdf: OK
+Weakness-Singular-Learning.pdf: OK
+```
+
+**Result: PASS.** 11/11 source files present and hash-verified from a fresh clone at commit `e715b42`.
+
 ## Provenance notes
 
 Source PDFs/MDs originate from:
