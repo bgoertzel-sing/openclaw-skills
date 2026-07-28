@@ -1,6 +1,6 @@
 # Tasks
 
-- [ ] **Monday playability milestone — due 2026-08-03:** deliver one compact,
+- [x] **Monday playability milestone — due 2026-08-03:** deliver one compact,
   reproducible Plain2Metta “lab bench” that Ben can install and explore after
   the conference. The primary episode must take a small, readable Plain
   specification through source-preserving compilation into bounded JSON,
@@ -76,6 +76,18 @@
   Evidence target:
   `experiments/20260803T*-monday-playground/RUN.md`,
   `repos/specatom-hs/PLAYGROUND.md`, and a task-specific local commit.
+  Completed 2026-07-27 23:30 PDT: the clean-room one-command run at immutable
+  repository revision `990ced38ccd2f041bf0599bae6837a33fa6ccaff`
+  completed with exit 0 in 3.12 s and 76,184 KiB max RSS. The base/edited
+  diagnostics changed archive coverage from Unknown=1 to 0, while pinned
+  Hyperon MeTTa 0.2.10 returned exactly one joined acceptance-test/requirement
+  pair. All JSON, MeTTa, and diagnostics artifacts remained within the
+  documented interactive bounds. Focused playground tests passed 2/2, the
+  full provider-free suite passed 471/471, and `git diff --check` passed.
+  Clean-room environment, command, hashes, timings, sizes, exit status, and
+  observed semantics are recorded in
+  `experiments/20260728T063000Z-monday-playground/RUN.md`. The milestone is
+  checkpointed by local annotated tag `monday-playground-20260803`.
 
 - [x] 2026-07-27 15:30 PDT: Added derived `DataFlowEdge` occurrence ground
   truth after all eight non-CR/LF separators recognized by Python
