@@ -34,8 +34,45 @@
   bounds of 1,000 checks, 1 MB JSON, 500 KB MeTTa, and 50 KB diagnostics.
   Focused CLI/validation suite: 89 tests passed; `git diff --check` passed.
   Local implementation commit `d285472`; unpushed.
-  Next command: specify the compact bundled Plain -> JSON/reified
-  MeTTa/diagnostics episode and its visible edited-input semantic delta.
+  Progress 2026-07-27 17:30 PDT: specified and implemented the compact
+  task-list episode in `examples/playground/`. The base file deliberately
+  leaves `TASK-ARCHIVE` without a covering acceptance test; the edited variant
+  adds one line that changes diagnostics `coverage_unknown` from 1 to 0 and
+  adds the corresponding reified `CoverageClaim`/`Covers` atoms. Both default
+  compilations exit zero. Base/edited artifact sizes are 453,691/551,747-byte
+  JSON, 165,333/201,019-byte MeTTa, and 11,006/13,197-byte diagnostics, with
+  342/417 Pass and 0/0 Fail checks. A regression pins the semantic delta and
+  interactive bounds; the 13-test playground/coverage/CLI suite and
+  `git diff --check` pass. Local implementation commit `daa1aa0`; unpushed.
+  Next command: inspect and pin an available canonical MeTTa/PeTTa backend and
+  execute a meaningful query over the edited episode, or preserve exact
+  blocker evidence and implement the deterministic semantic reference runner.
+  Progress 2026-07-27 19:30 PDT: pinned the locally available canonical
+  Hyperon MeTTa CLI at `0.2.10` and added `scripts/playground-query.sh`.
+  The runner rejects any other backend version and joins `CoverageClaim`,
+  `Covers`, and `RequirementLabel` atoms to require exactly one
+  `TASK-ARCHIVE` coverage pair. The edited episode executed successfully:
+  compile exit 0 in 0.23 s/22,880 KiB max RSS; backend exit 0 in
+  0.08 s/28,632 KiB max RSS; observed result was the single expected
+  test/requirement pair. Installed CLI SHA-256:
+  `53455bfb107c7c71eb9686c57a3e4d4c65544102af3b860999e213ab8d9b37af`.
+  Focused playground suite: 2 tests passed; `git diff --check` passed. Local
+  implementation commit `b4bbfc1`; unpushed.
+  Next command: write the one-command clean setup and expected-results guide
+  in `repos/specatom-hs/PLAYGROUND.md`, incorporating this pinned query runner.
+  Progress 2026-07-27 21:30 PDT: added `PLAYGROUND.md` and
+  `scripts/run-playground.sh`. From the repository root, one command creates an
+  isolated venv, installs the checkout, compiles the base and edited episodes,
+  executes the pinned Hyperon query, and prints the visible diagnostics delta.
+  The verified run produced the single pair
+  `[(test-783dbd97f4 req-1d0821f07b)]`; base/edited coverage was
+  Pass=2/4 and Unknown=1/0. The guide records prerequisites, expected results,
+  generated artifacts, editable knobs, bounded-size ceilings, semantic limits,
+  backend version, and revision behavior. Focused playground tests: 2 passed;
+  `git diff --check` passed.
+  Next command: execute the clean-room experiment under
+  `experiments/20260803T*-monday-playground/`, recording environment,
+  commands, hashes, timings, sizes, status, and observed semantics.
   Evidence target:
   `experiments/20260803T*-monday-playground/RUN.md`,
   `repos/specatom-hs/PLAYGROUND.md`, and a task-specific local commit.
