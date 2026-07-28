@@ -244,17 +244,48 @@ These are the only tests whose outcomes can support or falsify any claim. All us
 
 **A3. Per-component Δ_add tests (k tests):**
 
-| # | Test | H₀ | Supports / falsifies | Count |
-|---|------|-----|----------------------|-------|
-| A3.i (i = 1, …, k) | Δ_add(c_i) for component c_i | Δ_add(c_i) = 0 | Claim 4 (per-component additivity deviation) | k |
+| # | Test | H₀ | H₁ | Supports / falsifies | Count |
+|---|------|-----|-----|----------------------|-------|
+| A3.i (i = 1, …, k) | Δ_add(c_i) for component c_i | Δ_add(c_i) = 0 | Δ_add(c_i) ≠ 0 (two-sided) | Claim 4 (per-component additivity deviation) | k |
+
+**Estimator:** Δ_add(c_i) = (λ_F − λ_{F ∖ {c_i}}) − λ_{c_i}, where λ_F is the joint LLC of all components, λ_{F ∖ {c_i}} is the LLC with component c_i's parameters frozen at prior mean (marginalizing c_i out of the posterior), and λ_{c_i} is the LLC of component c_i alone (all other parameters frozen at prior mean). All three LLC values are estimated using the `devinterp` estimator with identical hyperparameters (§1).
+
+**Directional alternative:** Two-sided, H₁: Δ_add(c_i) ≠ 0. Rationale: positive values indicate shared/redundant singular structure (c_i overlaps geometrically with other components); negative values indicate emergent/synergistic structure (the joint model has simpler singularities than the sum of parts). Both directions are theoretically meaningful; restricting to one-sided would miss emergent interactions.
+
+**Decision mapping (Claim 4):** A significant Δ_add(c_i) ≠ 0 establishes that component c_i does not contribute independently to the joint singularity structure — the factorization F fails at c_i. Per-component results feed into the headline Spearman correlation (A2.1) as individual data points. The mapping from individual significance to Claim 4 is:
+- A3.i significant **and** c_i has high cross-stage dependency → consistent with Claim 4 (non-additivity tracks coupling).
+- A3.i significant **but** c_i has low cross-stage dependency → weakens Claim 4 (non-additivity without dependency).
+- A3.i non-significant **but** c_i has high dependency → weakens Claim 4 (dependency without non-additivity).
+- A3.i non-significant **and** c_i has low dependency → consistent with Claim 4 (no coupling, no deviation).
+Individual significance alone does not establish the Claim 4 association (Δ_add ↔ dependency); that requires A2.1.
+
+**Claim 2 relevance:** None direct. A3 tests bear on Claim 4. Claim 2 is served by A4.
 
 Each per-component Δ_add(c_i) is individually tested for significance within the Holm family. These values also serve as data points for the Spearman ρ headline test (A2.1); the two uses address different questions (individual non-zero deviation vs. correlation with dependency structure).
 
 **A4. Per-pair I_λ tests (k(k−1)/2 tests):**
 
-| # | Test | H₀ | Supports / falsifies | Count |
-|---|------|-----|----------------------|-------|
-| A4.ij (i < j) | I_λ(c_i, c_j) for component pair (c_i, c_j) | I_λ(c_i, c_j) = 0 | Claim 2 (per-pair interaction information) | k(k−1)/2 |
+| # | Test | H₀ | H₁ | Supports / falsifies | Count |
+|---|------|-----|-----|----------------------|-------|
+| A4.ij (i < j) | I_λ(c_i, c_j) for component pair (c_i, c_j) | I_λ(c_i, c_j) = 0 | I_λ(c_i, c_j) ≠ 0 (two-sided) | Claim 2 (per-pair interaction information) | k(k−1)/2 |
+
+**Estimator:** I_λ(c_i, c_j) = λ_{c_i} + λ_{c_j} − λ_{c_i ∪ c_j}, where λ_{c_i}, λ_{c_j} are the LLCs of individual components (all parameters outside the component frozen at prior mean), and λ_{c_i ∪ c_j} is the LLC of the joint two-component submodel (all parameters outside {c_i, c_j} frozen at prior mean). All LLC values are estimated using the `devinterp` estimator with identical hyperparameters (§1).
+
+**Directional alternative:** Two-sided, H₁: I_λ(c_i, c_j) ≠ 0. Rationale: positive I_λ indicates redundant/shared singular structure (merge candidate per Claim 2's taxonomy); negative I_λ indicates synergistic/emergent structure (assembly or mediator candidate). Both signs are diagnostically meaningful; one-sided would miss synergistic interactions.
+
+**Decision mapping (Claim 2):** A significant I_λ(c_i, c_j) with known sign constitutes a per-pair classification:
+- sign(I_λ) > 0 → pair classified as redundant/shared (merge candidate).
+- sign(I_λ) < 0 → pair classified as synergistic/emergent (assembly/mediator candidate).
+
+This classification is compared against the known modular structure of the test model (defined before data collection per §3). Specifically:
+- A pair of components that **share a task** in the known structure should show I_λ > 0 (redundancy). If I_λ > 0 and significant → correct classification, supports Claim 2.
+- A pair that **jointly enable a capability** not present in either alone should show I_λ < 0 (synergy). If I_λ < 0 and significant → correct classification, supports Claim 2.
+- A pair with **no known interaction** should show non-significant I_λ. If significant despite no known interaction → misclassification or reveals unknown structure.
+- A pair with **known interaction** but non-significant I_λ → diagnostic missed the interaction, weakens Claim 2.
+
+Significant pairs contribute one data point each to the sign-accuracy aggregate (A2.2). The headline test evaluates aggregate taxonomic accuracy; individual A4 results provide granular per-pair evidence.
+
+**Claim 4 relevance:** Indirect. Per-pair I_λ values relate to per-component Δ_add values (under pairwise dominance, Δ_add(c_i) ≈ Σ_{j≠i} I_λ(c_i, c_j)), but A4 tests bear primarily on Claim 2. No individual A4 result can independently support or falsify Claim 4.
 
 Each per-pair I_λ(c_i, c_j) is individually tested for significance within the Holm family. The signs of significant pairs also feed into the sign-accuracy headline test (A2.2); the two uses address different questions (individual non-zero interaction vs. aggregate taxonomic accuracy).
 
@@ -358,9 +389,15 @@ Synthetic control data is generated once and split into two disjoint sets before
   - **A2.2 — Secondary (Claim 2):** Agreement between sign(I_λ) and known modular structure, restricted to pairs where I_λ is individually significant (A4). Report accuracy, Cohen’s κ, and Holm-adjusted p-value.
   - **A2.3 — Tertiary (Claim 1):** Fraction of components where R < η (η preregistered). Report proportion, bootstrap CI, and Holm-adjusted p-value.
 - **A3 — Per-component Δ_add tests (k tests):**
-  - For each component c_i, test H₀: Δ_add(c_i) = 0. Report Δ_add(c_i), Holm-adjusted p-value, raw p-value, and Bonferroni-adjusted CI. Components with individually significant Δ_add are evidence of per-component additivity deviation (Claim 4).
+  - **Estimator:** Δ_add(c_i) = (λ_F − λ_{F ∖ {c_i}}) − λ_{c_i} (marginal interaction of c_i with the rest; see §2 A3 for full definition).
+  - **Test:** Two-sided, H₀: Δ_add(c_i) = 0, H₁: Δ_add(c_i) ≠ 0.
+  - **Report:** Δ_add(c_i), sign, Holm-adjusted p-value, raw p-value, and Bonferroni-adjusted CI.
+  - **Decision mapping:** Each significant Δ_add(c_i) is paired with c_i's cross-stage dependency score. The {significance × dependency} pattern across all k components is the per-component evidence for Claim 4 (see §2 A3 mapping table). Components with individually significant Δ_add are evidence of per-component additivity deviation; their pattern relative to dependency structure is evidence for or against the Claim 4 association.
 - **A4 — Per-pair I_λ tests (k(k−1)/2 tests):**
-  - For each pair (c_i, c_j) with i < j, test H₀: I_λ(c_i, c_j) = 0. Report I_λ(c_i, c_j), sign, Holm-adjusted p-value, raw p-value, and Bonferroni-adjusted CI. Pairs with individually significant I_λ contribute to the sign-accuracy headline test (A2.2) and bear individually on the coupling diagnostic (Claim 2).
+  - **Estimator:** I_λ(c_i, c_j) = λ_{c_i} + λ_{c_j} − λ_{c_i ∪ c_j} (see §2 A4 for full definition).
+  - **Test:** Two-sided, H₀: I_λ(c_i, c_j) = 0, H₁: I_λ(c_i, c_j) ≠ 0.
+  - **Report:** I_λ(c_i, c_j), sign, Holm-adjusted p-value, raw p-value, and Bonferroni-adjusted CI.
+  - **Decision mapping:** Each significant I_λ(c_i, c_j) with known sign is classified as redundant (I_λ > 0) or synergistic (I_λ < 0), then compared against the known modular structure (§3). Per-pair classifications feed into the sign-accuracy headline test (A2.2). The aggregate pattern of correct/incorrect classifications determines Claim 2 support (see §2 A4 mapping).
 - **Falsification criteria:** Claim 4 is falsified if the Holm-adjusted p-value for the Spearman Δ_add–dependency correlation (A2.1) exceeds 0.05. Claim 2’s taxonomy is weakened if sign accuracy (A2.2) falls below the pilot-calibrated threshold. Claim 1’s factorization hypothesis is weakened if the proportion of components with R < η (A2.3) falls below the pilot-calibrated prevalence threshold. Per-component and per-pair tests (A3, A4) provide granular evidence: a pattern of individually significant Δ_add(c_i) and I_λ(c_i, c_j) values strengthens the bridge claim even if the headline correlation is marginal. All thresholds are those frozen after pilot calibration (§6); none are adjusted post hoc.
 - **Intervention design (for eventual causal upgrade of Claim 4, separate preregistered family):** Primary: coupling-strength interpolation (α sweep from 1.0 to 0.0 in steps of 0.1) at selected stage boundaries, preserving parameter count and decomposition structure; re-estimate Δ_add at each setting; test for monotonic decrease. The α-sweep has its own separately preregistered comparison family (N_intervention = k·m, defined in §2), Holm-corrected at FWER α = 0.05. This family does not overlap with the unified confirmatory family. Secondary/optional: calibrated noise injection (σ sweep) with mandatory marginal-activation-variance and predictive-loss matching (see §Claim 4(b)). If architectural ablation is used instead, include a matched-complexity control (same change, random re-initialization). This is planned as a follow-up, not part of the initial preregistration.
 
@@ -408,3 +445,4 @@ Keys used: Weakness-SL, SLT-ResLayers, SLT-Accuracy, SLT-SubRep, SLT-Regime, SLT
 | 2026-07-28 rev.15 | Protocosmobot eleventh-round — unified Holm family, option (a). **Claim 4 admitted; LaTeX may proceed.** (1) **Unified confirmatory family adopted (option a).** Per-component Δ_add(c_i) tests (k tests, H₀: Δ_add(c_i) = 0, Claim 4) and per-pair I_λ(c_i, c_j) tests (k(k−1)/2 tests, H₀: I_λ = 0, Claim 2) promoted from descriptive (B1, B2 in rev.14) to confirmatory (A3, A4). Total confirmatory family: N = 5 + k(k+1)/2 (for k = 6: N = 26). Holm thresholds generalized to formula α/(N−j+1) with instantiated example table. (2) **Descriptive inventory reduced.** Only R(c_i) (B1), λ_{c_i} (B2), and surrogate δ (B3) remain descriptive. Total: 2k + k(k−1)/2 values. (3) **§6 and §7 updated** for unified family: all Δ_add(c_i) and I_λ(c_i, c_j) tests now governed by Holm-adjusted p-values at FWER α = 0.05 within the single family; sign-accuracy headline test (A2.2) restricted to pairs with individually significant I_λ. (4) **main.tex embargo lifted.** |
 | 2026-07-28 rev.16 | Protocosmobot twelfth-round — equivalence-test fix and α-sweep scope clarification. (1) **Null-control admission redesigned as TOST equivalence test.** Previous formulation used "failure to reject H₀: Δ_add = 0" (Holm-adjusted p > 0.05), which is logically invalid — absence of evidence against zero is not evidence of equivalence. Replaced with preregistered TOST (Two One-Sided Tests): H₀: |Δ_add| ≥ ε, where ε is a frozen practical-equivalence margin calibrated from the pilot set (ε = max(2 × SD_pilot, 0.05 × λ_max)). Null control passes iff we positively reject |Δ_add| ≥ ε at Holm-adjusted p < 0.05. Updated in §2 (family table, A1.1 detail), §4 (null-control description, decision rule), §6 (significance criteria, new ε-calibration paragraph), and §7 (analysis plan A1.1). (2) **α-sweep scope limitation stated.** Category C (intervention family) now explicitly declares it cannot support Claims 1–4; it exists solely for a follow-up causal upgrade of Claim 4 in a subsequent paper/revision. |
 | 2026-07-28 rev.17 | Protocosmobot thirteenth-round — TOST composite p-value clarification. **Composite p-value explicitly defined.** The TOST null-control test now specifies p_TOST = max(p₁, p₂) from the two one-sided tests (H₀₁: Δ_add ≤ −ε, H₀₂: Δ_add ≥ ε); this single composite p-value is the value that enters the Holm adjustment alongside the other N − 1 confirmatory tests. Updated in §2 (A1.1 family table row), §4 (null-control admission criterion and decision rule), §6 (significance criteria), and §7 (analysis plan A1.1). |
+| 2026-07-28 rev.18 | Protocosmobot fourteenth-round — Gate 2 closure: A3/A4 preregistration completed. **Gate 1 (TOST) confirmed closed.** **Gate 2 addressed:** Per-component Δ_add (A3) and per-pair I_λ (A4) tests now have fully preregistered: (1) **Estimators** — Δ_add(c_i) = (λ_F − λ_{F ∖ {c_i}}) − λ_{c_i}; I_λ(c_i, c_j) = λ_{c_i} + λ_{c_j} − λ_{c_i ∪ c_j}; all LLC values from `devinterp` with identical hyperparameters (§1). (2) **Directional alternatives** — both two-sided (H₁ ≠ 0), with rationale: positive and negative deviations are both theoretically meaningful (redundancy vs synergy). (3) **Exact decision mappings** — A3: per-component {significance × dependency} pattern mapped to Claim 4 support/weakness via four-cell table; A4: per-pair sign classification (I_λ > 0 → redundant, I_λ < 0 → synergistic) compared against known modular structure for Claim 2. Updated in §2 (A3, A4 sections) and §7 (A3, A4 analysis plan). |
