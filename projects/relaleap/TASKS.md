@@ -1,6 +1,6 @@
 # Tasks
 
-- [ ] Freeze and CPU-validate the clean-room multi-step GPT-2 ePC experiment
+- [x] Freeze and CPU-validate the clean-room multi-step GPT-2 ePC experiment
   runner requested by Ben on 2026-07-28. Deliverable: exact seeded batch-plan,
   paired ordinary-KD/ePC arms, periodic snapshot/replay checks, structured
   metrics/checkpoints, fixed stop/failure conditions, and a costed RunPod
@@ -9,7 +9,13 @@
   focused tests and `git diff --check` pass. Next command: inspect the frozen
   pilot runner/data contract and implement a clean-room runner that invokes
   `PCStepAdapter` at every ePC update. Evidence path:
-  `experiments/20260728T*-clean-room-transformer-epc-multistep-preflight/`.
+  `experiments/20260728T201400Z-clean-room-transformer-epc-multistep-preflight/`.
+  Completed at `6f8cc21`: a deterministic KD-only `t1_kd` versus
+  `settled_epc` grid freezes three seeds, 100 updates/seed, a 64-token public
+  WikiText batch plan, 16 held-out batches, and mandatory exact replay. The
+  focused suite passed 12/12 and the full suite passed 156/156 under the
+  repository `PYTHONPATH=src:.` invocation. GPU execution remains separately
+  cost/approval-gated.
 
 - [x] Execute the approved bounded GPU engineering smoke for
   `clean_room_transformer_epc_v1`. Acceptance: a six-layer GPT-2 student and

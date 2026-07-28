@@ -91,6 +91,16 @@ No local implementation environment is required for this preregistration. No GPU
 
 ## Key results
 
+- 2026-07-28: Frozen and CPU-validated the next actual clean-room GPU
+  comparison at commit `6f8cc21`: three fixed seeds compare a T=1 KD endpoint
+  with four-step activity settlement from identical model/AdamW/RNG/batch
+  snapshots, with a second ePC replay required to be byte-identical and
+  held-out public WikiText KD reported. The focused suite passed 12/12 and the
+  full suite 156/156. This is ready for a separately approved GPU run, but is
+  still a clean-room KD-only comparison rather than Mesto reproduction or a
+  C4-prime deployment. Evidence:
+  `experiments/20260728T201400Z-clean-room-transformer-epc-multistep-preflight/`.
+
 - 2026-07-28: The separately approved RTX 4090 engineering smoke for
   `clean_room_transformer_epc_v1` succeeded and the pod was terminated after
   verified artifact retrieval. A six-layer GPT-2-width student (81.3M
