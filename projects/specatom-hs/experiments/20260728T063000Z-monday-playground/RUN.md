@@ -67,8 +67,8 @@ Both compilations had zero failing checks. The base input emitted 342 Pass,
 | `work/task_list_edited.json` | 551,933 | `c3196ff448b5a4ed78c5834070613d52c0c35fb88320eda854dbb0447f5d643c` |
 | `work/task_list_edited.metta` | 201,112 | `e1628480dd2378d098d8097011d90945a7b654ca6ddb47cecc3b7bc88fb53b96` |
 | `work/task_list_edited.diag` | 13,197 | `184816cc383e54c497eebd890ee46e4909448fe8c3574af49220cecc009cdb7a` |
-| `stdout.log` | 1,787 | `8df56b971993730cdaa5037fcd8fb2f51476b57630428e8692dc0f5b4c68fda4` |
-| `stderr.log` | 1,009 | `d304ffd320d23ebea2c27963c07cec04c79910853c7b4f849e07d26c8d3774ab` |
+| `stdout.log` | 1,617 | `8df56b971993730cdaa5037fcd8fb2f51476b57630428e8692dc0f5b4c68fda4` |
+| `stderr.log` | 909 | `d304ffd320d23ebea2c27963c07cec04c79910853c7b4f849e07d26c8d3774ab` |
 
 All generated JSON, MeTTa, and diagnostics files remain below the documented
 interactive ceilings of 1 MB, 500 KB, and 50 KB respectively.

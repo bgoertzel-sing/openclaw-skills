@@ -88,6 +88,13 @@
   observed semantics are recorded in
   `experiments/20260728T063000Z-monday-playground/RUN.md`. The milestone is
   checkpointed by local annotated tag `monday-playground-20260803`.
+  Audit 2026-07-28 03:30 PDT: rechecked every preserved artifact against the
+  acceptance record. All eight SHA-256 values match; corrected the displayed
+  `stdout.log`/`stderr.log` byte counts to the preserved 1,617/909-byte files.
+  The immutable tag still resolves to
+  `990ced38ccd2f041bf0599bae6837a33fa6ccaff`. The focused playground tests
+  passed 2/2, the full provider-free suite passed 471/471, and
+  `git diff --check` passed.
 
 - [x] 2026-07-27 15:30 PDT: Added derived `DataFlowEdge` occurrence ground
   truth after all eight non-CR/LF separators recognized by Python
