@@ -51,23 +51,27 @@ done
 
 **The clean-clone test passes only when step 1 reports no MISSING files and step 2 reports all OK.**
 
-## Clean-clone verification result (2026-07-28 12:39 PDT)
+## Clean-clone verification result — WORKING TREE ONLY (2026-07-28 12:39 PDT, superseded)
+
+*This earlier check ran against the populated working tree, not a fresh clone. It is retained for the record but does not satisfy gate 3. See the fresh-clone verification below.*
+
+## Fresh-clone verification result (2026-07-28 12:53 PDT)
+
+**Method:** `git clone` into a temp directory; verify sources at the cloned commit; delete clone.
+
+| Field | Value |
+|---|---|
+| Clone command | `git clone --quiet --branch agent/conversation-governor https://github.com/bgoertzel-sing/openclaw-skills.git /tmp/slt-fresh-clone-8aovWi` |
+| Clone exit | 0 |
+| Commit (HEAD) | `326d4f1c7954431526c8e3d22923e3b509c2f8c4` |
+| Sources directory | `/tmp/slt-fresh-clone-8aovWi/projects/omegaclaw/workspace/hyperseed-formalizations/slt-residual-seeds/sources` |
+| File count | 12 (11 sources + SHA256SUMS.txt) |
+| Verification command | `cd .../sources && sha256sum -c SHA256SUMS.txt` |
+| Verification exit | 0 |
+| Clone removed | yes |
 
 ```
-=== STEP 1: Check all source files exist ===
-OK: sources/Weakness-Singular-Learning.pdf
-OK: sources/SLT-and-Residual-Layers.pdf
-OK: sources/SLT-accuracy-weakness_v1.pdf
-OK: sources/SLT-SubRep-v5.pdf
-OK: sources/SLT-for-regime-change-detection.pdf
-OK: sources/SLT-Goal-Stability_v4.pdf
-OK: sources/SLT-Semantics-v2.pdf
-OK: sources/SLT-Evolution.pdf
-OK: sources/causal-fibres-README.md
-OK: sources/note-0014.md
-OK: sources/INITIAL_SYNTHESIS.md
-
-=== STEP 2: Verify hashes ===
+sha256sum -c SHA256SUMS.txt output:
 causal-fibres-README.md: OK
 INITIAL_SYNTHESIS.md: OK
 note-0014.md: OK
@@ -79,21 +83,9 @@ SLT-Goal-Stability_v4.pdf: OK
 SLT-Semantics-v2.pdf: OK
 SLT-SubRep-v5.pdf: OK
 Weakness-Singular-Learning.pdf: OK
-
-=== STEP 3: Check outline.md resolves all citation keys ===
-RESOLVED: CausalFibres
-RESOLVED: InitSynth
-RESOLVED: SLT-Accuracy
-RESOLVED: SLT-Evolution
-RESOLVED: SLT-GoalStab
-RESOLVED: SLT-Regime
-RESOLVED: SLT-ResLayers
-RESOLVED: SLT-Semantics
-RESOLVED: SLT-SubRep
-RESOLVED: Weakness-SL
 ```
 
-**Result: PASS.** All 11 files present, all hashes verified, all citation keys resolved.
+**Result: PASS.** 11/11 source files present and hash-verified from a fresh clone at commit `326d4f1`.
 
 ## Provenance notes
 
