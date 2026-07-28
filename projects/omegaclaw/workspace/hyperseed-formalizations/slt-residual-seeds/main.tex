@@ -1,0 +1,936 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+% ── Theorem environments ─────────────────────────────────────────────────────
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{protocol}[theorem]{Protocol}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{caveat}[theorem]{Epistemic Caveat}
+\newtheorem{openproblem}{Open Problem}
+
+% ── Macros ────────────────────────────────────────────────────────────────────
+\newcommand{\LLC}{\lambda}
+\newcommand{\LLChat}{\hat{\lambda}}
+\newcommand{\Dadd}{\Delta_{\mathrm{add}}}
+\newcommand{\Ilambda}{I_{\lambda}}
+\newcommand{\Comm}{\mathrm{Comm}}
+\newcommand{\Leak}{\mathrm{Leak}}
+\newcommand{\Regret}{\mathrm{Regret}}
+\newcommand{\Interaction}{\mathrm{Interaction}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+
+% ── Title ─────────────────────────────────────────────────────────────────────
+\title{%
+  SLT-Guided Residual Seeds:\\
+  Weakness, Evidence Geometry, and Refinement DAGs\\
+  for Transformer Adaptation%
+}
+\author{ProtomegaTron}
+\date{July 28, 2026 --- Draft v0.1}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalize the connection between Singular Learning Theory (SLT) and the
+Hyperseed framework for modular transformer adaptation.  Five claims are
+developed: (1)~residual seeds are local evidence factors under a product-model
+assumption with an empirically testable interaction remainder; (2)~LLC
+interaction information provides a proposed diagnostic taxonomy for seed coupling;
+(3)~seeds participate in refinement DAGs scored by a seven-term pregate
+objective; (4)~additivity deviation $\Dadd$ is a measurable associative proxy
+for compositional evidence leakage (the single novel bridge claim); and (5)~the
+seed-ecology pattern extends to all LLC-estimable component-decomposable
+systems (restricted universality conjecture).  A fully preregistered
+experimental protocol specifies the LLC estimator, multiplicity correction via
+Holm--Bonferroni, synthetic controls with pilot/confirmation split, and
+falsification criteria.  All claims are framed with explicit epistemic caveats:
+conditionals rather than biconditionals, association rather than causation, and
+confidence intervals with family-wise error rate control.
+\end{abstract}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Introduction}\label{sec:intro}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Singular Learning Theory \cite{Watanabe2009} provides a Bayesian framework for
+understanding the geometry of loss landscapes in models whose parameter-to-function
+map is not injective.  The \emph{local learning coefficient} (LLC, also called
+the \emph{real log canonical threshold}) $\LLC$ controls the leading correction
+to the Bayesian free energy:
+\begin{equation}\label{eq:free-energy}
+  F_n \;=\; n\,\hat{L}_n \;+\; \LLC\,\log n
+       \;-\; (m-1)\,\log\log n \;+\; O(1),
+\end{equation}
+where $n$ is sample size, $\hat{L}_n$ the empirical loss, and $m$ the
+multiplicity of the dominant singularity.
+
+The Hyperseed framework \cite{Weakness-SL,SLT-ResLayers} proposes that
+residual corrections (``seeds'') attached to a frozen base model form an
+\emph{ecology}: they are promoted, demoted, split, merged, and refined through
+a directed acyclic graph of structural moves.  The central question is:
+\emph{what scoring criterion should govern this ecology?}
+
+This note argues that SLT's evidence geometry---specifically, the
+decomposition of the LLC across components and the deviations from
+additivity---provides the correct scoring criterion.  We formalize five claims,
+each with explicit assumptions and epistemic caveats.  We then specify a
+preregistered experimental protocol that makes the claims falsifiable.
+
+\paragraph{Scope.}
+This note imports definitions from the Causal Fibres framework (Note~0014)
+\cite{CausalFibres,Note-0014} without re-deriving them.  The novel
+contribution is Claim~4: the identification of $\Dadd$ as a quantitative
+associative bridge between SLT geometry and Hyperseed compositional structure.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Imports from Note 0014}\label{sec:imports}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The following definitions are imported from the Causal Fibres framework
+\cite{CausalFibres} and Note~0014 \cite{Note-0014}.  They are cited here for
+reference; see the original sources for derivations.
+
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+  \item \textbf{Frozen interface} (Def.~2.1 of \cite{CausalFibres}): a fixed
+    API boundary between a base model $B$ and corrective components, through
+    which information flows are defined and measurable.
+  \item \textbf{Matched budget} (Def.~2.2 of \cite{CausalFibres}): a
+    constraint ensuring that compared components receive equivalent
+    computational resources during evaluation.
+  \item \textbf{Evidence record} (Def.~2.3 of \cite{CausalFibres}): the
+    accumulated Bayesian evidence for a component's contribution, scored via
+    log-marginal-likelihood ratios.
+  \item \textbf{Counterfactual factor closure} (Def.~2.5 of
+    \cite{CausalFibres}): the condition under which a factorization of the
+    evidence is closed under counterfactual interventions on component
+    boundaries.
+  \item \textbf{H0--H6 hypothesis ladder} (Def.~2.8 of \cite{CausalFibres}):
+    a hierarchy of increasingly strong hypotheses about representation quality,
+    from null (H0: no better than random) to strong compositional (H6: full
+    counterfactual factor closure).
+\end{enumerate}
+
+\noindent
+These imports provide the scaffold within which our SLT-based claims operate.
+Claims~1--5 add LLC-based scoring criteria to 0014's structural framework; they
+do not redefine the framework itself.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Claim 1: Residual Seeds as Local Evidence Factors}\label{sec:claim1}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Definitions}
+
+\begin{definition}[Residual Seed]\label{def:seed}
+  Let $B$ be a frozen base model with parameter space $\Theta_B$.  A
+  \emph{residual seed} is a parameterized correction $r_c : \cX \to \cY$ with
+  parameters $\theta_c \in \Theta_c$, such that the composite model computes
+  $f(x;\theta_B,\theta_c) = B(x) + r_c(x;\theta_c)$.  A \emph{factorization}
+  is a collection $\cF = \{r_1, \ldots, r_k\}$ of seeds with associated
+  parameter subspaces $\Theta_{c_1}, \ldots, \Theta_{c_k}$.
+\end{definition}
+
+\begin{definition}[Evidence Neighborhood]\label{def:evidence-nbhd}
+  For a seed $r_i$ in context $c$ (dataset, task, or distribution), the
+  \emph{evidence neighborhood} $\cW(r_i, c)$ is the connected component of the
+  set $\{\theta_i \in \Theta_i : K_{c}(\theta_i) \leq \epsilon\}$ containing
+  the optimal parameters, where $K_c$ is the Kullback--Leibler divergence from
+  the true distribution in context~$c$.
+\end{definition}
+
+\begin{definition}[Interaction Remainder]\label{def:interaction-remainder}
+  Given a factorization $\cF = \{r_1, \ldots, r_k\}$ with joint parameter
+  $\theta = (\theta_1, \ldots, \theta_k)$, define the \emph{interaction
+  remainder}
+  \begin{equation}\label{eq:interaction-remainder}
+    R(\theta) \;=\; K(\theta) - \sum_{c=1}^{k} K_c(\theta_c),
+  \end{equation}
+  where $K(\theta)$ is the KL divergence of the joint model and $K_c(\theta_c)$
+  is the KL divergence restricted to component~$c$.
+\end{definition}
+
+\subsection{Assumptions}
+
+\begin{assumption}[Product-Model Assumption]\label{asm:product}
+  The parameter space admits a product factorization
+  $\theta = (\theta_1, \ldots, \theta_k)$ such that the prior factorizes:
+  $\pi(\theta) = \prod_{c=1}^{k} \pi_c(\theta_c)$.
+\end{assumption}
+
+\begin{assumption}[Asymptotic Regime]\label{asm:asymptotic}
+  The sample size $n$ is sufficiently large relative to the singularity
+  structure that the free-energy asymptotic \eqref{eq:free-energy} applies
+  (Watanabe's main theorem \cite{Watanabe2009}).
+\end{assumption}
+
+\begin{assumption}[Dominated Interaction Hypothesis]\label{asm:dominated}
+  There exists a threshold $\eta > 0$ such that $|R(\theta)| < \eta$ for all
+  $\theta$ in the evidence neighborhood of the joint model.  \textbf{This is a
+  testable hypothesis, not an axiom.}
+\end{assumption}
+
+\subsection{Proposition}
+
+\begin{proposition}[LLC Additivity under Factorization]\label{prop:llc-add}
+  Under Assumptions~\ref{asm:product}--\ref{asm:dominated}, the following hold:
+  \begin{enumerate}[label=(\alph*)]
+    \item \textbf{LLC additivity:}
+      $\displaystyle\LLC_{\mathrm{joint}} \;=\;
+       \sum_{c=1}^{k} \LLC_c \;+\; O(\eta)$.
+    \item \textbf{Evidence factorization:}
+      $\displaystyle\log Z_n(\theta) \;=\;
+       \sum_{c=1}^{k} \log Z_n(\theta_c) \;+\; O(\eta\,\log n)$.
+    \item \textbf{Quasi-independence:} Each seed $r_i$ has an evidence
+      neighborhood $\cW(r_i, c)$ that is approximately independent of other
+      seeds' evidence neighborhoods, with coupling bounded by $O(\eta)$.
+  \end{enumerate}
+\end{proposition}
+
+\begin{caveat}[Limits of the Factorization]\label{cav:claim1}
+  The smallness of $R$ is a \emph{testable hypothesis}, not a sufficient proof
+  of meaningful factorization.  Even if $R$ is empirically small for a given
+  model, this does not establish that the decomposition is coordinate-invariant
+  or structure-revealing---it establishes only that the product-prior
+  decomposition is a good approximation at the observed sample size.  The
+  decomposition could break under distribution shift, scale change, or
+  different priors.
+
+  The implication is conditional: factorization $\Rightarrow$ LLC additivity
+  (under the assumptions).  The converse does not hold in general; LLC
+  additivity could arise from cancellations in the interaction remainder.
+\end{caveat}
+
+\begin{remark}[Relation to Source Claims]\label{rem:claim1-sources}
+  The evidence-factorization result builds on ``If the evidence factorizes
+  across modules, the global LLC is the sum of module LLCs''
+  \cite{Weakness-SL}.  The promotion criterion derives from ``Do not promote a
+  residual basis because it reconstructs well.  Promote it because $R$ is
+  small'' \cite{SLT-ResLayers}.  The evidence-ratio to soft-accuracy bridge
+  with $O(\LLC/n)$ correction follows \cite{SLT-Accuracy}.
+\end{remark}
+
+\begin{remark}[Non-Overlap with 0014]\label{rem:nonoverlap}
+  Note~0014 defines frozen interfaces, teacher-gap closure, and representation
+  contests.  Claim~1 adds the LLC-additivity criterion as the promotion gate
+  \emph{within} 0014's frozen-interface scaffold.  It does not redefine the
+  interface.
+\end{remark}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Claim 2: LLC Interaction Information as a Proposed Diagnostic}%
+\label{sec:claim2}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{definition}[LLC Interaction Information]\label{def:Ilambda}
+  For seeds $a, b$ in a factorization $\cF$, the \emph{LLC interaction
+  information} is
+  \begin{equation}\label{eq:Ilambda}
+    \Ilambda(a; b) \;=\; \LLC_a + \LLC_b - \LLC_{ab},
+  \end{equation}
+  where $\LLC_a$, $\LLC_b$ are the per-seed LLCs and $\LLC_{ab}$ is the LLC
+  of the joint $(a,b)$ subsystem.
+\end{definition}
+
+\begin{definition}[Surrogate Estimators]\label{def:surrogates}
+  Two computationally tractable surrogates for $\Ilambda$:
+  \begin{enumerate}[label=(\alph*)]
+    \item \textbf{Mixed-Hessian norm:}
+      $\|H_{ab}\| = \|\nabla_{\theta_a}\nabla_{\theta_b} L(\theta)\|_F$,
+      evaluated at the MAP or posterior mean.
+    \item \textbf{Commutator dominance:}
+      $\Comm(a, b) = \|[J_a, J_b]\|_F$, where $J_a, J_b$ are the Jacobians
+      of the component maps $r_a, r_b$ with respect to their parameters.
+  \end{enumerate}
+\end{definition}
+
+\paragraph{Proposed Diagnostic Taxonomy.}
+The following interpretation of $\Ilambda$ is a \emph{proposed diagnostic
+framework}, not a proven classifier:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Sign of $\Ilambda$} & \textbf{Proposed Interpretation} & \textbf{Status} \\
+  \midrule
+  $\Ilambda > 0$ & Redundant/shared singular structure (merge candidate) & Hypothesis \\
+  $\Ilambda < 0$ & Synergistic/emergent structure (assembly needed)      & Hypothesis \\
+  $\Ilambda \approx 0$ & Factorizable independence & Consistent with Claim~1 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{caveat}[Surrogates Are Not Interchangeable with $\Ilambda$]%
+\label{cav:surrogates}
+  The surrogates $\|H_{ab}\|$ and $\Comm(a,b)$ correlate with the true LLC
+  interaction information under regularity conditions, but they measure
+  different geometric quantities: local curvature cross-terms vs.\
+  singularity-structure overlap.  Their agreement with $\Ilambda$ degrades near
+  degenerate singularities.  Discrepancies between surrogates should be
+  reported as evidence of estimator limitations, not resolved by fiat
+  \cite{Weakness-SL,SLT-ResLayers}.
+\end{caveat}
+
+\begin{definition}[Surrogate Agreement]\label{def:surrogate-agreement}
+  Define the surrogate agreement score
+  \begin{equation}
+    \delta(\Comm, \|H_{ab}\|, \Ilambda)
+    \;=\; \max\!\bigl(|\Comm - \Ilambda|,\; \bigl|\|H_{ab}\| - \Ilambda\bigr|\bigr),
+  \end{equation}
+  after appropriate normalization.  Large $\delta$ indicates that the
+  surrogates are unreliable for the pair $(a,b)$.
+\end{definition}
+
+\paragraph{Falsifiable Prediction.}
+In a small transformer with known modular structure (e.g., a two-task mixture),
+per-seed LLC estimates should yield $\Ilambda \approx 0$ between task-specific
+seeds and $\Ilambda > 0$ between capacity-sharing seeds \cite{SLT-SubRep}.
+Additionally, the surrogate measures should agree with direct LLC estimates to
+within preregistered tolerances.  Surrogate--direct discrepancies, if found,
+would weaken the diagnostic taxonomy rather than the underlying SLT theory.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Claim 3: Refinement DAGs as Operational Structure}%
+\label{sec:claim3}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Seeds do not exist in a fixed decomposition.  They participate in a
+\emph{refinement DAG} whose vertices are factorizations and whose edges are
+structural moves.
+
+\begin{definition}[Refinement Move]\label{def:refinement-move}
+  A \emph{refinement move} $\mu : \cF \to \cF'$ transforms a factorization
+  $\cF$ into a successor $\cF'$ via one of the following operations:
+  \textsc{split} (one seed $\to$ two), \textsc{merge} (two seeds $\to$ one),
+  \textsc{mediate} (insert an intermediary), \textsc{specialize} (restrict a
+  seed's domain), \textsc{demote} (remove a seed), or \textsc{transfer}
+  (reassign a seed to a different context).
+\end{definition}
+
+\begin{definition}[Pregate Score]\label{def:pregate}
+  The \emph{pregate score} of a factorization $\cF$ in context $c$ is the
+  seven-term objective \cite{SLT-ResLayers}:
+  \begin{equation}\label{eq:pregate}
+    J(\cF) \;=\; n\,\hat{L}_\cF
+            \;+\; \LLChat_\cF \log n
+            \;-\; \log\pi(\cF)
+            \;+\; \alpha\,\Comm(\cF)
+            \;+\; \beta\,\Leak(\cF)
+            \;+\; \gamma\,\Regret(\cF)
+            \;+\; \delta\,\Interaction(\cF),
+  \end{equation}
+  where $\hat{L}_\cF$ is the empirical loss under factorization $\cF$,
+  $\LLChat_\cF$ the estimated LLC, $\pi(\cF)$ the structural prior over
+  factorizations, and the remaining terms penalize commutator dominance,
+  evidence leakage, counterfactual regret, and interaction remainder,
+  respectively.  The coefficients $\alpha, \beta, \gamma, \delta \geq 0$ are
+  hyperparameters.
+\end{definition}
+
+\begin{definition}[Associative Signature and Regime Signature]%
+\label{def:signatures}
+  The \emph{associative signature} of seed $r_i$ in context $c$ is the vector
+  \begin{equation}
+    \sigma(r_i, c) \;=\;
+      \bigl(\LLC_i,\; \Comm(r_i, \cdot),\; \Leak(r_i),\;
+            \Ilambda(r_i, \cdot)\bigr) \in \R^{d_\sigma}.
+  \end{equation}
+  The \emph{regime signature} of a factorization $\cF$ at time $t$ is
+  \begin{equation}
+    \Sigma(\cF, t) \;=\;
+      \bigl(\sigma(r_1, c_t), \ldots, \sigma(r_k, c_t)\bigr).
+  \end{equation}
+  Abrupt shifts in $\Sigma$ trigger refinement moves \cite{SLT-Regime}.
+\end{definition}
+
+\paragraph{Connection to 0014.}
+Note~0014's H1 representation contest (Def.~2.8 of \cite{CausalFibres})
+compares arm classes at matched budget.  Claim~3 extends this to a
+\emph{dynamic} contest: the contest is not a one-shot comparison but a DAG of
+refinement moves, each subject to the same evidence gates 0014 defines.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Claim 4: Additivity Deviation as Evidence-Leakage Proxy}%
+\label{sec:claim4}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\textbf{This is the single novel bridge claim.}  SLT's RLCT decomposition
+across components predicts that deviations from LLC additivity signal geometric
+interactions between singular regions \cite{InitSynth}.  In Hyperseed terms,
+these deviations are \emph{associative signatures} of evidence leakage between
+refinement stages.
+
+\begin{definition}[Additivity Deviation]\label{def:Dadd}
+  For a factorization $\cF = \{c_1, \ldots, c_k\}$, the \emph{additivity
+  deviation} is
+  \begin{equation}\label{eq:Dadd}
+    \Dadd(\cF) \;=\;
+      \Bigl|\LLC_{\mathrm{joint}}
+            - \sum_{c=1}^{k} \LLC_c\Bigr|.
+  \end{equation}
+\end{definition}
+
+\subsection{Epistemic Downgrades}
+
+\begin{caveat}[No Biconditional]\label{cav:no-bicon}
+  $\Dadd > 0$ is \emph{necessary but not sufficient} evidence that
+  factorization $\cF$ fails to decompose the evidence geometry.  Finite-sample
+  bias in LLC estimation, prior misspecification, and MCMC mixing artifacts can
+  all produce non-zero $\Dadd$ even when the true singularity structure
+  decomposes.
+
+  The claim is: \emph{$\Dadd$ significantly exceeding zero, after accounting
+  for estimator uncertainty, is evidence against clean factorization.}  The
+  converse ($\Dadd \approx 0$ implies good factorization) is better supported
+  but still conditional on the product-prior assumption
+  (Assumption~\ref{asm:product}).
+\end{caveat}
+
+\begin{caveat}[Association, Not Causation]\label{cav:assoc}
+  The prediction is that $\Dadd$ \emph{correlates with} graph-theoretic
+  cross-stage dependency in the refinement DAG.  This is an associative claim.
+  Upgrading to causal language requires an intervention that varies cross-stage
+  coupling while \textbf{preserving parameter count and component
+  decomposition}.  Three candidate interventions, ordered by preference:
+  \begin{enumerate}[label=(\alph*)]
+    \item \textbf{Coupling-strength interpolation.}  Parameterize cross-stage
+      connections with a scalar $\alpha \in [0,1]$.  At $\alpha=1$ the
+      architecture is unchanged; at $\alpha=0$ cross-stage information flow is
+      severed.  All parameters remain in the model (zeroed weights are frozen,
+      not removed).  Predict: $\Dadd$ decreases monotonically as
+      $\alpha \to 0$.
+    \item \textbf{Calibrated noise injection} (secondary/optional).  Add
+      i.i.d.\ Gaussian noise $\varepsilon \sim \mathcal{N}(0, \sigma^2)$ at
+      inter-stage boundaries, sweeping $\sigma$.  \textbf{Matching
+      requirements:} at each $\sigma$, marginal activation variance and
+      predictive loss must match the $\alpha$-sweep baseline within 5\%.
+      Without these calibrations, noise injection is a confound.
+    \item \textbf{Matched-complexity control} (if architectural changes are
+      unavoidable).  Pair each structural ablation with a control: the same
+      architecture but re-initialized (random) weights, matching parameter
+      count and decomposition.
+  \end{enumerate}
+  Until an intervention is run, ``$\Dadd$ tracks cross-stage dependency'' means
+  association.
+\end{caveat}
+
+\subsection{Confidence-Interval Requirement}
+
+All reported $\Dadd$ values must include:
+\begin{itemize}
+  \item Bootstrap or MCMC-derived confidence intervals on individual
+    $\LLC_c$ estimates.
+  \item Propagated uncertainty on $\Dadd$ itself (via the delta method or
+    bootstrap on the sum).
+  \item Multiplicity-corrected significance: $\Dadd$ is declared ``meaningfully
+    non-zero'' iff its Holm-adjusted $p$-value $< 0.05$ across the full
+    comparison family (see \S\ref{subsec:multiplicity}).
+\end{itemize}
+
+\subsection{Falsifiable Experimental Check}
+
+Take a small transformer (or synthetic model with known singular structure).
+Compute per-layer LLC estimates via the \texttt{devinterp} local learning
+coefficient estimator with stated hyperparameters.  Report $\Dadd$ with
+confidence intervals.  Independently compute a graph-theoretic cross-stage
+dependency score on the refinement DAG.  Test for statistically significant
+correlation (Spearman $\rho$, Holm-adjusted $p < 0.05$).
+
+\begin{itemize}
+  \item If $\Dadd$ is significantly elevated but the DAG shows clean stage
+    separation, the associative claim is \textbf{falsified}.
+  \item If they correlate, the Hyperseed--SLT bridge has non-trivial empirical
+    support---but \emph{not} causal evidence unless an intervention experiment
+    (Caveat~\ref{cav:assoc}) is also run.
+\end{itemize}
+
+\paragraph{Why Novel.}
+The individual pieces (LLC decomposition \cite{Weakness-SL,SLT-SubRep},
+refinement DAGs \cite{Weakness-SL}, counterfactual factor closure
+\cite{CausalFibres}) exist in the source papers.  The novel claim is that
+$\Dadd$ is the \emph{quantitative observable} that connects SLT geometry to
+Hyperseed compositional structure---as a measurable, falsifiable associative
+bridge.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Claim 5: Restricted Adaptation Conjecture}\label{sec:claim5}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The seed-ecology pattern---base process + controlled corrective factors, scored
+by evidence geometry, refined through a DAG of structural moves, monitored for
+regime change---extends beyond residual layers to a defined class of systems.
+
+\begin{definition}[LLC-Estimable Component-Decomposable System]%
+\label{def:lcd-system}
+  A system belongs to the \emph{LLC-estimable component-decomposable} class iff:
+  \begin{enumerate}[label=(C\arabic*)]
+    \item\label{cond:param} It admits a finite parametric description
+      $\theta \in \Theta \subset \R^d$.
+    \item\label{cond:analytic} Its loss function $L(\theta)$ is real-analytic
+      (or admits a resolution of singularities).
+    \item\label{cond:llc} Local learning coefficients are estimable at each
+      component (the posterior concentrates sufficiently for MCMC-based LLC
+      estimation to converge).
+    \item\label{cond:decomp} It has an explicit component decomposition
+      $\cF = \{c_1, \ldots, c_k\}$ with defined parameter subspaces
+      $\Theta_{c_i}$ and a product-prior factorization.
+    \item\label{cond:R} The interaction remainder $R(\theta)$ from
+      Definition~\ref{def:interaction-remainder} is well-defined and estimable.
+  \end{enumerate}
+\end{definition}
+
+\begin{conjecture}[Restricted Hyperseed Universality]\label{conj:universality}
+  Any system satisfying conditions \ref{cond:param}--\ref{cond:R} that
+  maintains:
+  \begin{enumerate}[label=(\roman*)]
+    \item a base predictive process,
+    \item an ecology of modular corrective seeds scored by local evidence
+      (LLC-additivity checks, not reconstruction error alone), and
+    \item a refinement DAG over candidate factorizations
+  \end{enumerate}
+  will exhibit the same LLC-additivity / interaction-information /
+  regime-signature dynamics described in Claims~1--4.
+\end{conjecture}
+
+\paragraph{Conjectured Properties within this Class.}
+\begin{itemize}
+  \item \textbf{Incremental compression:} corrective components are compression
+    features for the base model's error stream.
+  \item \textbf{Evidence gating:} promotion/demotion is governed by
+    LLC-additivity checks, not reconstruction error alone.
+  \item \textbf{Regime detection:} LLC/signature shifts trigger structural
+    revision \cite{SLT-Regime}.
+  \item \textbf{Interaction diagnostics:} coupling type is diagnosed via
+    $\Ilambda$ (Claim~2's proposed taxonomy).
+  \item \textbf{Goal-stability limits:} SLT diagnostics detect structural
+    shifts but not semantic truth; the semantics route via distinctions
+    $\to$ partitions $\to$ symmetries $\to$ singularities adds the missing
+    layer \cite{SLT-GoalStab,SLT-Semantics}.
+\end{itemize}
+
+\begin{caveat}[Scope Exclusions]\label{cav:scope}
+  Explicitly excluded from Conjecture~\ref{conj:universality}: non-parametric
+  models, models where LLC estimation does not converge, systems without a
+  natural component decomposition, and infinite-dimensional parameter spaces
+  (unless a finite-dimensional effective description exists).
+\end{caveat}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Preregistered Experimental Protocol}\label{sec:protocol}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Before running the falsification experiment for Claims~1, 2, and~4, the
+following must be preregistered.
+
+% ─── 8.1 ─────────────────────────────────────────────────────────────────────
+\subsection{LLC Estimator Specification}\label{subsec:estimator}
+
+\begin{protocol}[LLC Estimator]\label{prot:llc}
+  \leavevmode
+  \begin{itemize}
+    \item \textbf{Estimator:} \texttt{devinterp} local learning coefficient
+      estimator (Lau et al., 2024).
+    \item \textbf{MCMC method:} Stochastic Gradient Langevin Dynamics (SGLD)
+      with specified step-size schedule, number of chains, burn-in length, and
+      thinning interval.  All hyperparameters are fixed before data collection.
+    \item \textbf{Convergence diagnostic:} $\hat{R} < 1.05$ across chains;
+      effective sample size $\geq 200$ per component.
+    \item \textbf{Hyperparameters to freeze:} learning rate, temperature
+      schedule, number of posterior samples, number of chains, burn-in
+      duration, and thinning interval.
+  \end{itemize}
+\end{protocol}
+
+% ─── 8.2 ─────────────────────────────────────────────────────────────────────
+\subsection{Uncertainty Quantification and Multiplicity Correction}%
+\label{subsec:multiplicity}
+
+\paragraph{Per-component uncertainty.}
+\begin{itemize}
+  \item \textbf{Per-component $\LLC_c$:} Bootstrap confidence intervals
+    ($B \geq 1000$ resamples) or MCMC posterior credible intervals (95\%).
+  \item \textbf{$\Dadd$:} Propagated via the delta method or bootstrap on the
+    sum; reported with 95\% CI.
+  \item \textbf{$\Ilambda(a, b)$:} Same uncertainty propagation; reported
+    with 95\% CI.
+  \item \textbf{Unadjusted significance threshold:} $\Dadd$ is declared
+    ``meaningfully non-zero'' iff the 95\% CI excludes zero.
+\end{itemize}
+
+\paragraph{Comparison family.}
+The experiment involves simultaneous statistical tests.  Define the comparison
+family as:
+\begin{itemize}
+  \item \textbf{$\Dadd$ tests:} $k$ coupling levels $\times$ $m$ components
+    $= k \cdot m$ comparisons.
+  \item \textbf{$\Ilambda$ tests:} $\binom{m}{2} = m(m-1)/2$ pairwise
+    interaction-information comparisons.
+  \item \textbf{Total family size:}
+    \begin{equation}\label{eq:family-size}
+      N \;=\; k \cdot m \;+\; \frac{m(m-1)}{2}.
+    \end{equation}
+    With $k = 11$ ($\alpha$ from 0.0 to 1.0 in steps of 0.1) and $m$
+    components (fixed before data collection), $N$ is stated explicitly in
+    the preregistration.
+\end{itemize}
+
+\paragraph{Holm--Bonferroni Procedure.}
+The Holm--Bonferroni sequential rejection procedure (Holm, 1979) controls the
+family-wise error rate (FWER) at $\alpha_{\mathrm{family}} = 0.05$:
+\begin{enumerate}
+  \item Order all $N$ $p$-values:
+    $p_{(1)} \leq p_{(2)} \leq \cdots \leq p_{(N)}$.
+  \item Reject $H_{0,(j)}$ iff
+    $p_{(j)} \leq \alpha_{\mathrm{family}} / (N - j + 1)$ for all $j' \leq j$.
+  \item Equivalently, report Holm-adjusted $p$-values:
+    \begin{equation}\label{eq:holm}
+      \tilde{p}_{(j)} \;=\;
+        \max_{j' \leq j}\bigl\{(N - j' + 1)\cdot p_{(j')}\bigr\}.
+    \end{equation}
+  \item An individual comparison is declared significant iff its Holm-adjusted
+    $p$-value $< 0.05$.
+\end{enumerate}
+
+\paragraph{Adjusted Confidence Intervals.}
+Where CIs are reported alongside Holm-corrected tests, use Bonferroni-adjusted
+CIs at level $1 - \alpha_{\mathrm{family}}/N$ per comparison (conservative but
+consistent with FWER control).  These replace unadjusted 95\% CIs in all
+multi-comparison contexts.
+
+\paragraph{Rationale for Holm over Alternatives.}
+Holm--Bonferroni controls FWER (appropriate here because a single false
+positive about coupling structure would undermine the bridge claim) while being
+strictly more powerful than Bonferroni.  FDR-controlling methods
+(Benjamini--Hochberg) would be appropriate for screening many components for
+follow-up, but here each comparison bears directly on the claim.
+
+% ─── 8.3 ─────────────────────────────────────────────────────────────────────
+\subsection{Component-to-DAG Mapping}\label{subsec:dag-mapping}
+
+\begin{protocol}[Component-to-DAG Mapping]\label{prot:dag}
+  \leavevmode
+  \begin{itemize}
+    \item \textbf{Component definition:} Each residual block (or attention
+      head / MLP sublayer, depending on granularity---to be fixed before
+      experiment) is one component $c_i$.
+    \item \textbf{DAG construction:} Edges from $c_i$ to $c_j$ iff
+      information flow exists (measured by gradient attribution or activation
+      patching).  Edge weights from mutual information or ablation impact.
+    \item \textbf{Cross-stage dependency score:} Weighted edge density between
+      non-adjacent DAG stages.  The formal graph-theoretic definition is stated
+      before data collection.
+  \end{itemize}
+\end{protocol}
+
+% ─── 8.4 ─────────────────────────────────────────────────────────────────────
+\subsection{Synthetic Controls with Pilot/Confirmation Split}%
+\label{subsec:controls}
+
+\paragraph{Split Design.}
+Synthetic control data is generated once and split into two disjoint sets
+before any analysis:
+\begin{itemize}
+  \item \textbf{Pilot calibration set (50\%):} Used \emph{exactly once} for
+    threshold calibration (\S\ref{subsec:thresholds}).  After thresholds are
+    frozen, this data is permanently set aside.
+  \item \textbf{Held-out confirmation set (50\%):} Reserved exclusively for
+    admission tests.  Never examined during calibration.
+  \item \textbf{Contingency:} If the pilot set is too small for stable
+    threshold estimation (bootstrap CV of threshold estimates $> 0.2$), the
+    split shifts to 60/40 pilot/confirmation.  This contingency is
+    preregistered.
+\end{itemize}
+
+\paragraph{Null/Negative Control.}
+Two independent MLPs sharing no parameters, trained on disjoint tasks from the
+same data distribution.  Components are a priori independent by construction.
+\begin{itemize}
+  \item \textbf{Expected:} $\Dadd \approx 0$, $\Ilambda \approx 0$ between
+    the two networks, $R < \eta$.
+  \item \textbf{Gate:} If the estimator reports non-zero $\Dadd$ on this null
+    control, the estimator or its hyperparameters are miscalibrated; do not
+    proceed.
+\end{itemize}
+
+\paragraph{Positive Control.}
+Two MLPs (component$_1$, component$_2$) connected by a fixed linear coupling
+layer $W_{\mathrm{mix}}$ of known rank~$r$, trained jointly on the same task
+mixture.  The component decomposition is defined a priori:
+component$_1 = \text{MLP}_1$ parameters, component$_2 = \text{MLP}_2$
+parameters, coupling $= W_{\mathrm{mix}}$.
+
+\begin{caveat}[No Analytic Proportionality]\label{cav:no-prop}
+  The prediction is: \emph{$\Dadd$ is expected to be significantly nonzero
+  (Holm-adjusted $p < 0.05$) on the positive control, with the effect size
+  estimated from the pilot calibration set.}  No analytic proportionality
+  between $\Dadd$ and
+  $\mathrm{rank}(W_{\mathrm{mix}}) \cdot \|W_{\mathrm{mix}}\|_2$
+  is claimed.  Computing the actual RLCT contribution
+  of the coupling requires a resolution of singularities for the specific loss
+  surface, which has not been performed.  If a tighter analytic bound becomes
+  available (e.g., via explicit resolution of the $W_{\mathrm{mix}}$ singularity
+  under a Gaussian prior), it will be stated as a separate, independently
+  testable prediction.
+\end{caveat}
+
+\paragraph{Decision Rule (Confirmation Set Only).}
+Both controls must pass before claims about the test model are made:
+\begin{itemize}
+  \item Null: Holm-adjusted $p > 0.05$ for $\Dadd$.
+  \item Positive: Holm-adjusted $p < 0.05$ for $\Dadd$.
+\end{itemize}
+
+% ─── 8.5 ─────────────────────────────────────────────────────────────────────
+\subsection{Model and Data}\label{subsec:model}
+
+\begin{itemize}
+  \item \textbf{Test model:} Small transformer ($\leq 6$ layers) trained on a
+    two-task mixture.
+  \item \textbf{Held-out model:} A second, architecturally distinct model
+    (e.g., a 4-layer transformer if the test model is 6 layers, or a
+    convolutional residual network) trained on the same data.  Predictions for
+    this held-out model are registered before fitting.  If Claims~1--4 hold on
+    the test model but fail on the held-out model, the claims are
+    model-specific, not general.
+  \item \textbf{Training data:} Fixed dataset, split specified before training.
+  \item \textbf{LLC estimation data:} Training split (for loss-landscape
+    exploration).
+  \item \textbf{Evaluation data:} Held-out split, not used for LLC estimation
+    or estimator tuning.
+\end{itemize}
+
+% ─── 8.6 ─────────────────────────────────────────────────────────────────────
+\subsection{Numerical Decision Thresholds}\label{subsec:thresholds}
+
+All significance tests across the $\alpha$-coupling sweep and component
+comparisons are corrected for multiplicity via the Holm--Bonferroni procedure
+(\S\ref{subsec:multiplicity}).  Thresholds are calibrated on the pilot set
+(\S\ref{subsec:controls}) and frozen before confirmation data is examined.
+
+\begin{itemize}
+  \item \textbf{$\Dadd$ significance:} $\Dadd$ is declared ``meaningfully
+    non-zero'' iff its Holm-adjusted $p$-value $< 0.05$.  Reported with
+    Bonferroni-adjusted CI at level $1 - 0.05/N$.
+  \item \textbf{Interaction remainder threshold:}
+    $\eta = 0.1 \times \LLC_{\max}$, where $\LLC_{\max}$ is the largest
+    per-component LLC.  $R/\LLC_{\max} < 0.1$ counts as ``dominated.''
+  \item \textbf{$\Ilambda$ significance:} $|\Ilambda(a,b)|$ is declared
+    non-negligible iff its Holm-adjusted $p$-value $< 0.05$.
+  \item \textbf{Correlation threshold (Claim~4 primary test):} Spearman
+    $\rho$ with Holm-adjusted $p < 0.05$ (one-tailed).  The minimum detectable
+    $\rho$ is set using the pilot calibration set, targeting $\geq 80\%$ power
+    at the pilot-observed effect size.  If the pilot effect is too small for
+    80\% power, report achieved power and note the study is underpowered.
+  \item \textbf{Sign accuracy (Claim~2):} Agreement between
+    $\mathrm{sign}(\Ilambda)$ and known modular structure.  Threshold set at
+    $2\sigma$ above null expectation (random assignment baseline), calibrated
+    on pilot data.  Cohen's $\kappa$ threshold frozen before confirmation.
+  \item \textbf{Factorization prevalence (Claim~1):} $R < \eta$ for a
+    preregistered fraction of components.  Threshold set at the ROC-optimal
+    discrimination point from pilot data.  If controls show perfect separation,
+    use 80\% (conservative).
+\end{itemize}
+
+\paragraph{Circularity Prevention.}
+The three calibration steps each consume the pilot set.  Once thresholds are
+frozen, the pilot data is permanently set aside.  All subsequent
+control-pass/fail decisions and claim evaluations use only the held-out
+confirmation set.  No threshold is revised after examining confirmation data.
+
+% ─── 8.7 ─────────────────────────────────────────────────────────────────────
+\subsection{Analysis Plan}\label{subsec:analysis}
+
+\begin{itemize}
+  \item \textbf{Primary test (Claim~4):} Spearman correlation between
+    per-component $\Dadd$ and cross-stage dependency score.  Report
+    coefficient, $p$-value, and CI.
+  \item \textbf{Secondary test (Claim~2):} Agreement between
+    $\mathrm{sign}(\Ilambda)$ and known modular structure.  Report accuracy,
+    Cohen's $\kappa$.
+  \item \textbf{Tertiary test (Claim~1):} Fraction of components where
+    $R < \eta$ ($\eta$ preregistered).  Report proportion and bootstrap CI.
+\end{itemize}
+
+\paragraph{Falsification Criteria.}
+\begin{itemize}
+  \item Claim~4 is falsified if the Holm-adjusted $p$-value for the
+    $\Dadd$--dependency correlation exceeds 0.05.
+  \item Claim~2's taxonomy is weakened if sign accuracy falls below the
+    pilot-calibrated threshold.
+  \item Claim~1's factorization hypothesis is weakened if the proportion of
+    components with $R < \eta$ falls below the pilot-calibrated prevalence
+    threshold.
+  \item All thresholds are those frozen after pilot calibration
+    (\S\ref{subsec:thresholds}); none are adjusted post hoc.
+\end{itemize}
+
+\paragraph{Intervention Design (Eventual Causal Upgrade of Claim~4).}
+\begin{itemize}
+  \item \textbf{Primary:} Coupling-strength interpolation ($\alpha$ sweep from
+    1.0 to 0.0 in steps of 0.1) at selected stage boundaries, preserving
+    parameter count and decomposition.  Re-estimate $\Dadd$ at each setting;
+    test for monotonic decrease.  Holm--Bonferroni applied across all $\alpha$
+    levels and components jointly.
+  \item \textbf{Secondary (optional):} Calibrated noise injection ($\sigma$
+    sweep) with mandatory marginal-activation-variance and predictive-loss
+    matching (Caveat~\ref{cav:assoc}(b)).  If architectural ablation is used,
+    include a matched-complexity control.
+  \item This is planned as a follow-up, not part of the initial
+    preregistration.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Open Questions}\label{sec:open}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{openproblem}[Coordinate Invariance]
+  The product-prior decomposition (Assumption~\ref{asm:product}) is
+  coordinate-dependent.  Under what conditions does the LLC-additivity result
+  (Proposition~\ref{prop:llc-add}) hold in reparameterized coordinates?  Is
+  there a coordinate-free characterization of ``good factorization''?
+\end{openproblem}
+
+\begin{openproblem}[Resolution of Singularities for Coupled Components]
+  The positive control (\S\ref{subsec:controls}) uses a coupling matrix
+  $W_{\mathrm{mix}}$.  What is the RLCT of the joint model as a function of
+  $\mathrm{rank}(W_{\mathrm{mix}})$ and the component RLCTs?  An explicit
+  resolution would convert Claim~4's associative prediction into a quantitative
+  one.
+\end{openproblem}
+
+\begin{openproblem}[Scaling of the Interaction Remainder]
+  How does $R(\theta)$ scale with model depth, width, and dataset size?  If $R$
+  grows faster than $\LLC_{\max}$, the ``dominated interaction'' hypothesis
+  (Assumption~\ref{asm:dominated}) fails at scale, and the factorization
+  framework may not apply to large models.
+\end{openproblem}
+
+\begin{openproblem}[Semantic Registration]
+  Claim~5 notes that SLT diagnostics detect structural shifts but not semantic
+  truth \cite{SLT-GoalStab}.  How should the distinctions $\to$ partitions
+  $\to$ symmetries $\to$ singularities pipeline \cite{SLT-Semantics} be
+  formalized to provide the missing semantic layer?
+\end{openproblem}
+
+\begin{openproblem}[Beyond Real-Analytic Loss]
+  Condition~\ref{cond:analytic} of Definition~\ref{def:lcd-system} restricts
+  to real-analytic loss functions.  Many practical losses (e.g., those involving
+  ReLU activations) are only piecewise analytic.  Can the framework be extended
+  via stratified resolution of singularities, or does the LLC decomposition
+  fundamentally require analyticity?
+\end{openproblem}
+
+\begin{openproblem}[Dynamic Pregate Coefficients]
+  The pregate score \eqref{eq:pregate} has fixed coefficients
+  $\alpha, \beta, \gamma, \delta$.  Should these be adapted over the
+  refinement DAG (e.g., via meta-learning on the DAG trajectory)?  What are
+  the convergence implications of a non-stationary scoring function?
+\end{openproblem}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% Bibliography
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{Weakness-SL}
+B.~Goertzel.
+\newblock Weakness as local evidence: LLC decomposition, evidence
+  factorization, quantale message-passing, and refinement DAGs.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-ResLayers}
+B.~Goertzel.
+\newblock {SLT} and residual layers: Seven-term pregate formula, computable
+  surrogates, mixed-{H}essian and commutator diagnostics.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-Accuracy}
+B.~Goertzel.
+\newblock {SLT}-accuracy-weakness v1: Evidence-ratio to soft-accuracy bridge
+  with $O(\lambda/n)$ correction.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-SubRep}
+B.~Goertzel.
+\newblock {SLT} for {SubRep} v5: Interaction information interpretation and
+  interaction complexity.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-Regime}
+B.~Goertzel.
+\newblock {SLT} for regime-change detection: Module-wise {LLC} signature shifts
+  as refinement triggers.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-GoalStab}
+B.~Goertzel.
+\newblock {SLT}-goal-stability v4: Semantic truth limits of {SLT} diagnostics.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-Semantics}
+B.~Goertzel.
+\newblock {SLT}-semantics v2: Distinctions, partitions, symmetries, and
+  singularities.
+\newblock Working paper, 2025--2026.
+
+\bibitem{SLT-Evolution}
+B.~Goertzel.
+\newblock {SLT}-evolution: Free-energy geodesics and estimation of distribution
+  algorithms.
+\newblock Working paper, 2025--2026.
+
+\bibitem{CausalFibres}
+B.~Goertzel.
+\newblock Causal fibres 0.4.0: {H0--H6} hypothesis ladder, frozen interfaces,
+  and representation contests.
+\newblock Technical report, 2025--2026.
+
+\bibitem{Note-0014}
+B.~Goertzel.
+\newblock Note 0014: Emotion regime operators.
+\newblock Hyperseed working notes, 2026.
+
+\bibitem{InitSynth}
+B.~Goertzel.
+\newblock Initial synthesis: Deviations from additivity signal geometric
+  interactions between singular regions.
+\newblock Working paper, 2025--2026.
+
+\bibitem{Watanabe2009}
+S.~Watanabe.
+\newblock \emph{Algebraic Geometry and Statistical Learning Theory}.
+\newblock Cambridge University Press, 2009.
+
+\bibitem{Holm1979}
+S.~Holm.
+\newblock A simple sequentially rejective multiple test procedure.
+\newblock \emph{Scandinavian Journal of Statistics}, 6(2):65--70, 1979.
+
+\bibitem{Lau2024}
+E.~Lau, Z.~Murfet, and others.
+\newblock \texttt{devinterp}: Local learning coefficient estimation via {SGLD}.
+\newblock Software package, 2024.
+
+\end{thebibliography}
+
+\end{document}
