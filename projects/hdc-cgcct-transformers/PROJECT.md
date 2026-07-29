@@ -106,6 +106,14 @@ byte-identical. The reduced run is gate-ineligible: the full trainer,
 controls, raw artifact contract, metrics, and criteria freezer remain required
 before recording a fresh priced offer or provisioning.
 
+The conditionally approved P1B calibration subsequently completed exactly
+seeds `12011`, `13121`, and `14251` on one 24-GiB RTX 3090 at USD 0.22/hour.
+All three raw artifacts passed local hash and finite-array verification, and
+their payload hashes were frozen in `artifacts/criteria.json` before any
+confirmation seed was opened. RunPod pod `qy0rbiqrd3xvbf` was deleted after
+artifact return. Evidence:
+`experiments/20260727T225600Z-p1b-gpu-calibration-planned/RUN.md`.
+
 ## Repositories
 
 | Role | Remote | Local path | Branch/default | Pinned/reference commit |

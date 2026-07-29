@@ -20,7 +20,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
   `experiments/20260727T214823Z-p1a-fixture-preflight-r2/RUN.md`; commit
   `8ff1e35`. Next: full-grid metrics and calibration-only execution.
 
-- [ ] **Conditionally approved P1B GPU calibration (2026-07-27):** after a
+- [x] **Conditionally approved P1B GPU calibration (2026-07-27):** after a
   passing local CPU smoke, run exactly the three calibration seeds on one
   compatible 24 GiB GPU under a 4-hour / USD 10 hard cap, then freeze the
   criteria artifact before confirmation. No pod is provisioned yet. Acceptance:
@@ -55,8 +55,16 @@ Use small, testable tasks. Keep the top of each section in priority order.
   freezer are implemented at nested commit `6a807b1`; 26 tests pass, including
   a byte-identical reduced replay and confirmation-seed rejection. Evidence:
   `experiments/20260728T195900Z-p1b-calibration-runner-smoke/RUN.md`. Remote
-  launch remains blocked on per-H partitioning, representation/shuffle
-  controls, coherence and peak-memory fields, and their smoke tests.
+  per-H partitioning, oracle/representation/shuffle controls, coherence, and
+  peak-memory fields now pass the final 26-test deterministic smoke at nested
+  commit `8dad854`; evidence:
+  `experiments/20260728T235900Z-p1b-remote-ready-smoke/RUN.md`. The exact
+  priced resource/image/storage/transfer record is frozen in `REMOTE_JOB.md`;
+  the three calibration seeds completed on one RTX 3090 at USD 0.22/hour.
+  All returned raw artifacts verified locally, the criteria payload is frozen,
+  no confirmation seed was opened, and RunPod pod `qy0rbiqrd3xvbf` was
+  deleted. Evidence:
+  `experiments/20260727T225600Z-p1b-gpu-calibration-planned/RUN.md`.
 
 - [x] **P1B exact fixture/model CPU smoke (2026-07-28):** implemented the
   exact manifest, planted-PCFG surface, six-layer causal decoder,
@@ -99,7 +107,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Implement the P1B planted-PCFG next-token fixture and six-layer
   transformer without reusing the causal-fibres classifier as scientific
   evidence.
-- [ ] Freeze P1 criteria after three calibration seeds; do not open the five
+- [x] Freeze P1 criteria after three calibration seeds; do not open the five
   confirmation seeds before the criteria artifact exists.
 
 ## Waiting or blocked

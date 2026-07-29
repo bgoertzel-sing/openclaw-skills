@@ -1,6 +1,6 @@
 # Planned remote job: P1B GPU calibration
 
-- Status: `approved conditionally; fail-closed before provisioning`
+- Status: `completed; artifacts verified; resource terminated`
 - Approval: Benjamin Goertzel, Telegram, 2026-07-27. Scope: three P1B
   calibration seeds after a passing local CPU smoke, hard total cap USD 10.
 - Project/run: `hdc-cgcct-transformers` / `p1b-gpu-calibration`
@@ -14,6 +14,43 @@
    calibration artifact schema.
 
 No pod may be created before all three conditions are recorded as passed.
+
+## Ready-to-provision record (2026-07-28T23:59Z)
+
+All three local preconditions pass at nested commit `8dad854`. Evidence:
+`experiments/20260728T235900Z-p1b-remote-ready-smoke/RUN.md`. The final smoke
+passed 26 tests and byte-identical artifact replay, including per-H metrics,
+oracle/logistic/shuffled controls, coherence, peak-memory, raw artifacts, and
+sealed-confirmation rejection.
+
+- Live availability: `runpodctl gpu list` reports Community RTX 3090 stock
+  available/Low, 24 GiB.
+- Price: USD 0.22/hour from RunPod's official RTX 3090 model page checked at
+  2026-07-28T23:59Z; below the USD 1/hour ceiling.
+- Exact resource: one Community `NVIDIA GeForce RTX 3090`, one GPU.
+- Exact image: `runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04`.
+- Storage/network: 40-GB container disk, 30-GB ephemeral `/workspace`, SSH
+  only; no network volume or public HTTP endpoint.
+- Hard provider deadline: `2026-07-29T03:59:00Z` (four hours).
+- Exact create command:
+  `runpodctl pod create --name hdc-cgcct-p1b-calibration --cloud-type COMMUNITY --gpu-id "NVIDIA GeForce RTX 3090" --gpu-count 1 --image runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 --container-disk-in-gb 40 --volume-in-gb 30 --volume-mount-path /workspace --ports 22/tcp --terminate-after 2026-07-29T03:59:00Z`.
+- Exact transfer command after resolving host/port:
+  `rsync -az --delete --exclude .git --exclude artifacts --exclude .pytest_cache -e "ssh -i /home/openclaw/.runpod/ssh/runpodctl-ssh-key -p PORT -o StrictHostKeyChecking=accept-new" repos/hdc-cgcct-probes/ root@HOST:/workspace/hdc-cgcct-probes/`.
+- Exact remote command:
+  `cd /workspace/hdc-cgcct-probes && python3 -m pip install -e . && for seed in 12011 13121 14251; do python3 scripts/run_p1b_calibration.py --seed "$seed" --output "/workspace/results/seed-$seed" || exit 1; done`.
+- Exact retrieval command:
+  `rsync -az -e "ssh -i /home/openclaw/.runpod/ssh/runpodctl-ssh-key -p PORT" root@HOST:/workspace/results/ experiments/20260727T225600Z-p1b-gpu-calibration-planned/artifacts/`.
+
+Provisioning remains fail-closed if the create response reports a price above
+USD 1/hour, a different GPU/image, or if SSH/resource verification differs.
+
+## Completion
+
+RunPod pod `qy0rbiqrd3xvbf` matched the frozen RTX 3090, image, storage, and
+USD 0.22/hour offer. The three calibration seeds completed, returned artifacts
+verified locally, and `artifacts/criteria.json` froze their payload hashes.
+The pod was deleted and absence from `runpodctl pod list` was verified at
+2026-07-29T00:22Z. No confirmation seed was opened. See `RUN.md`.
 
 ## 2026-07-28 launch audit
 
