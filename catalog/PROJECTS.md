@@ -44,9 +44,10 @@ Keep only a compact rolling list. Detailed results belong in the relevant projec
 | `morkql` | Morkql: MeTTa-Shaped Query Language for MORK Path Spaces | `active` | local `projects/morkql/repos/morkql`; upstream MORK/PathMap pinned locally | Implement/test Base-profile frontend and reproduce MORK build | 2026-07-12 |
 | openclaw-omegaclaw-replication-kit | OpenClaw + OmegaClaw Replication Kit | idea |  | define scope and first test | 2026-07-13 |
 | protomegabot2 | ProtoMegaBot2 ClarityOmega Runtime | active | ClarityOmega, OmegaClaw | reconcile target commit, then agency telemetry | 2026-07-15 |
-| carom | CAROM Execution Semantics | idea |  | define scope and first test | 2026-07-19 |
+| carom | CAROM Execution Semantics | active |  | 12k collapse localized; piecewise rerun invalid operationally; provider-free schedule repair active; structural gain control deferred pending clean schedule evidence | 2026-07-30 |
 | `causal-fibres-ladder` | Causal Fibres Evidence-Gated Hypothesis Ladder | `active` | local experiment project; causal-fibres 0.4.0 release | Toy H0 passed; replicate with GPT-2-small before target-scope H1 | 2026-07-23 |
 | `omegahive-conversation-governor` | OmegaHive Conversation Governor | `active` | implementation location pending runtime discovery | Shadow-first shared admission, response ownership, and egress governance | 2026-07-24 |
 | omegahive-conversation-governor | OmegaHive Conversation Governor | idea |  | define scope and first test | 2026-07-24 |
 | `hdc-musicgen` | HDC × MusicGen Experiments | `active` | local `projects/hdc-musicgen/repos/` | GPU preparation frozen at `59eade2`; awaiting explicit paid-run approval | 2026-07-25 |
 | `hdc-cgcct-transformers` | HDC–CGCCT Transformer Programme | `active` | local project notebook + isolated P0 repository | P0 CPU core at `fa11721`; tests 13/13, P0-G1 replay interrupted before second deterministic artifact/validation | 2026-07-26 |
+| remote-job-bootstrap | SSH-Free RunPod Bootstrap Bundles | active |  | confirm public GitHub owner/name, then publish hash-pinned bundles | 2026-07-29 |
