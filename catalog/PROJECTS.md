@@ -39,15 +39,16 @@ Keep only a compact rolling list. Detailed results belong in the relevant projec
 - 2026-06-26: Ingested PeTTa abstract algorithmic chemistry PDF and created `projects/petta-chem`; see `library/petta-abstract-algorithmic-chemistry/SOURCE.md` and `projects/petta-chem/PROJECT.md`.
 - 2026-06-25: Installed and verified the research-agent workspace bootstrap; see `catalog/SETUP_REPORT.md`.
 
+- 2026-07-31: Reconciled catalog: `causal-fibres-ladder` focus updated (GPT-2-small replication is downstream of CMCP Phase 3–4 validation, not the immediate next step); `hdc-cgcct-transformers` focus updated (typed CMCP geometry f848c97 is current bounded result, Phase 3–4 estimator work is active lane). Both changes reflect the sequential dependency: CMCP typed geometry (P0/P1) gates frozen-model probing (P2).
 - 2026-07-03: Ben paused OmegaSim and promoted Chaos Language Algorithm to the active prerequisite lane; preserved the Hyperon-ready Python architecture PDF in `library/chaos-language-algorithm/` and updated both project records.
 | `openclaw-intent-model-router` | OpenClaw Intent Model Router | `active` | `https://github.com/bgoertzel-sing/openclaw-intent-model-router` | Public reusable cost-aware OpenClaw model router | 2026-07-04 |
 | `morkql` | Morkql: MeTTa-Shaped Query Language for MORK Path Spaces | `active` | local `projects/morkql/repos/morkql`; upstream MORK/PathMap pinned locally | Implement/test Base-profile frontend and reproduce MORK build | 2026-07-12 |
 | openclaw-omegaclaw-replication-kit | OpenClaw + OmegaClaw Replication Kit | idea |  | define scope and first test | 2026-07-13 |
 | protomegabot2 | ProtoMegaBot2 ClarityOmega Runtime | active | ClarityOmega, OmegaClaw | reconcile target commit, then agency telemetry | 2026-07-15 |
 | carom | CAROM Execution Semantics | active |  | 12k collapse localized; piecewise rerun invalid operationally; provider-free schedule repair active; structural gain control deferred pending clean schedule evidence | 2026-07-30 |
-| `causal-fibres-ladder` | Causal Fibres Evidence-Gated Hypothesis Ladder | `active` | local experiment project; causal-fibres 0.4.0 release | Toy H0 passed; replicate with GPT-2-small before target-scope H1 | 2026-07-23 |
+| `causal-fibres-ladder` | Causal Fibres Evidence-Gated Hypothesis Ladder | `active` | local experiment project; causal-fibres 0.4.0 release | Toy H0 passed; GPT-2-small replication queued downstream of CMCP Phase 3–4 estimator validation | 2026-07-31 |
 | `omegahive-conversation-governor` | OmegaHive Conversation Governor | `active` | implementation location pending runtime discovery | Shadow-first shared admission, response ownership, and egress governance | 2026-07-24 |
 | omegahive-conversation-governor | OmegaHive Conversation Governor | idea |  | define scope and first test | 2026-07-24 |
 | `hdc-musicgen` | HDC × MusicGen Experiments | `active` | local `projects/hdc-musicgen/repos/` | GPU preparation frozen at `59eade2`; awaiting explicit paid-run approval | 2026-07-25 |
-| `hdc-cgcct-transformers` | HDC–CGCCT Transformer Programme | `active` | local project notebook + isolated P0 repository | P0 CPU core at `fa11721`; tests 13/13, P0-G1 replay interrupted before second deterministic artifact/validation | 2026-07-26 |
+| `hdc-cgcct-transformers` | HDC–CGCCT Transformer Programme | `active` | local project notebook + isolated P0 repository | Typed CMCP geometry at `f848c97` (305 tests); Phase 3 estimator comparison and Phase 4 assimilation-vs-maintenance are the active provider-free lane | 2026-07-31 |
 | remote-job-bootstrap | SSH-Free RunPod Bootstrap Bundles | active |  | confirm public GitHub owner/name, then publish hash-pinned bundles | 2026-07-29 |
