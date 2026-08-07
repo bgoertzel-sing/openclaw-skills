@@ -81,15 +81,14 @@ class Api:
         return str(result["message_id"])
 
     def send_document(self, *, chat_id: int, path: Path, filename: str, mime_type: str,
-                      caption: str, reply_to_message_id: int) -> str:
+                      caption: str, reply_to_message_id: int | None = None) -> str:
         if (not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_OUTBOUND_DOCUMENT_BYTES
                 or len(caption) > 1024):
             raise RuntimeError("telegram_outbound_document_invalid")
         boundary = f"----ProtoCosmo2{uuid.uuid4().hex}"
-        fields = {
-            "chat_id": str(chat_id), "caption": caption,
-            "reply_parameters": json.dumps({"message_id": reply_to_message_id}),
-        }
+        fields = {"chat_id": str(chat_id), "caption": caption}
+        if reply_to_message_id is not None:
+            fields["reply_parameters"] = json.dumps({"message_id": reply_to_message_id})
         body = bytearray()
         for name, value in fields.items():
             body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode())
@@ -154,10 +153,15 @@ def responder(prompt: str, args: argparse.Namespace) -> str:
     clean_env = {key: value for key, value in os.environ.items() if key != "TG_BOT_TOKEN"}
     clean_env["OMEGACLAW_WORKER_STATE_DIR"] = str(args.worker_state_dir)
     attachment_instruction = (
-        "\n\n<trusted_transport_capability>To send an already-created PDF or LaTeX source as a Telegram "
-        "attachment, put MEDIA:/absolute/path/to/file.pdf (or .tex/.latex) on the first line of your reply, "
-        "followed by an optional caption. Only regular files beneath /home/openclaw/research-agent are allowed. "
-        "Do not use MEDIA: for ordinary prose.</trusted_transport_capability>"
+        "\n\n<trusted_transport_capability>This is a live Telegram request. The inner file channel is an "
+        "implementation containment boundary only: your completed reply is sent by the outer Bot-API "
+        "transport to the originating Telegram message. Never describe this inner boundary as shadow mode, "
+        "mock transport, or an inability to reach Telegram. To send an already-created PDF or LaTeX source "
+        "as a Telegram attachment, put MEDIA:/absolute/path/to/file.pdf (or .tex/.latex) on the first line "
+        "of your reply, followed by an optional caption. The outer transport validates and sends it; only "
+        "regular files beneath /home/openclaw/research-agent are allowed. Do not use MEDIA: for ordinary "
+        "prose. Only claim a completed delivery when the outer transport returns its correlated receipt." 
+        "</trusted_transport_capability>"
     )
     command = [sys.executable, str(args.driver), "--petta", str(args.petta), "--core", str(args.core),
                "--prompt", prompt + attachment_instruction, "--session", f"protocosmo2-canary-{int(time.time())}",
