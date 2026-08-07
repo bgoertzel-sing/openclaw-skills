@@ -17,8 +17,10 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import uuid
 
 MAX_DOCUMENT_BYTES = 10_000_000
+MAX_OUTBOUND_DOCUMENT_BYTES = 50_000_000
 # Extraction remains bounded independently of prompt/history limits.  The
 # previous 60k ceiling silently cut ordinary long papers; 2M characters admits
 # the supplied 104-page OmegaSelf paper in full while still failing closed on
@@ -78,6 +80,37 @@ class Api:
             raise RuntimeError("telegram_missing_receipt")
         return str(result["message_id"])
 
+    def send_document(self, *, chat_id: int, path: Path, filename: str, mime_type: str,
+                      caption: str, reply_to_message_id: int) -> str:
+        if (not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_OUTBOUND_DOCUMENT_BYTES
+                or len(caption) > 1024):
+            raise RuntimeError("telegram_outbound_document_invalid")
+        boundary = f"----ProtoCosmo2{uuid.uuid4().hex}"
+        fields = {
+            "chat_id": str(chat_id), "caption": caption,
+            "reply_parameters": json.dumps({"message_id": reply_to_message_id}),
+        }
+        body = bytearray()
+        for name, value in fields.items():
+            body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode())
+        body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"document\"; filename=\"{filename}\"\r\n"
+                     f"Content-Type: {mime_type}\r\n\r\n").encode())
+        body.extend(path.read_bytes())
+        body.extend(f"\r\n--{boundary}--\r\n".encode())
+        request = urllib.request.Request(
+            f"{self.base}/sendDocument", data=bytes(body),
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                payload = json.load(response)
+        except Exception as exc:
+            raise RuntimeError(f"telegram_{type(exc).__name__}") from None
+        result = payload.get("result") if isinstance(payload, dict) and payload.get("ok") is True else None
+        if not isinstance(result, dict) or type(result.get("message_id")) is not int:
+            raise RuntimeError("telegram_missing_receipt")
+        return str(result["message_id"])
+
     def extract_document(self, document: dict[str, object]) -> str:
         file_id = document.get("file_id")
         size = document.get("file_size")
@@ -120,8 +153,14 @@ class Api:
 def responder(prompt: str, args: argparse.Namespace) -> str:
     clean_env = {key: value for key, value in os.environ.items() if key != "TG_BOT_TOKEN"}
     clean_env["OMEGACLAW_WORKER_STATE_DIR"] = str(args.worker_state_dir)
+    attachment_instruction = (
+        "\n\n<trusted_transport_capability>To send an already-created PDF or LaTeX source as a Telegram "
+        "attachment, put MEDIA:/absolute/path/to/file.pdf (or .tex/.latex) on the first line of your reply, "
+        "followed by an optional caption. Only regular files beneath /home/openclaw/research-agent are allowed. "
+        "Do not use MEDIA: for ordinary prose.</trusted_transport_capability>"
+    )
     command = [sys.executable, str(args.driver), "--petta", str(args.petta), "--core", str(args.core),
-               "--prompt", prompt, "--session", f"protocosmo2-canary-{int(time.time())}",
+               "--prompt", prompt + attachment_instruction, "--session", f"protocosmo2-canary-{int(time.time())}",
                "--model", args.model, "--provider", "OpenClawFileBridge", "--timeout", str(args.provider_timeout),
                "--file-channel"]
     completed = subprocess.run(command, env=clean_env, text=True, stdout=subprocess.PIPE,
