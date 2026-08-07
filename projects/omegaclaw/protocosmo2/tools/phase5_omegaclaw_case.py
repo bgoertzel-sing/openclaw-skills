@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+"""Run one frozen prompt through the real isolated OmegaClaw MeTTa loop."""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+
+def find_project_root(core: Path) -> Path:
+    """Resolve the OmegaClaw project root without assuming worktree depth."""
+    for candidate in (core, *core.parents):
+        if candidate.name == "omegaclaw" and (candidate / "local").is_dir():
+            return candidate
+    raise RuntimeError("cannot locate the OmegaClaw project root from --core")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--petta", type=Path, required=True)
+    parser.add_argument("--core", type=Path, required=True)
+    parser.add_argument("--prompt", required=True)
+    parser.add_argument("--session", required=True)
+    parser.add_argument("--model", default="openai/gpt-5.6-terra")
+    parser.add_argument("--provider", default="OpenClawCLI",
+                        choices=("OpenClawCLI", "OpenClawBridge", "OpenClawFileBridge", "Test", "SubprocessProbe"))
+    parser.add_argument("--test-answer",
+                        help="deterministic Test-provider response; requires --provider Test")
+    parser.add_argument("--timeout", type=int, default=240)
+    parser.add_argument("--file-channel", action="store_true")
+    parser.add_argument("--live-transport", action="store_true",
+                        help="use the live Telegram instruction for an outer Bot-API delivery path")
+    parser.add_argument("--source", type=Path, action="append", default=[],
+                        help="frozen project source to expose read-only to the host bridge")
+    args = parser.parse_args()
+    args.petta = args.petta.resolve()
+    args.core = args.core.resolve()
+    args.source = [source.resolve() for source in args.source]
+
+    mock_dir = args.core / "Autotests" / "mock"
+    sys.path.insert(0, str(mock_dir))
+    from comm import CommMockServer, COMM_MOCK_PORT  # type: ignore
+    from llm import LlmMockController, LLM_MOCK_PORT  # type: ignore
+    from rpc import LOCALHOST  # type: ignore
+
+    env = os.environ.copy()
+    # ``core`` lives under the isolated Phase-2 baseline while the recorded
+    # SWI build is project-local.  Phase 2 did not create a venv inside the
+    # detached PeTTa checkout; use it if present, otherwise use the existing
+    # project-scoped PeTTa venv recorded by provisioning.  This is an explicit
+    # dependency seam, not an ambient/global Python fallback.
+    project_root = find_project_root(args.core)
+    swipl_bin = project_root / "local" / "swipl-9.3.36" / "bin"
+    venv_roots = [args.petta / ".venv", project_root / "repos" / "PeTTa" / ".venv"]
+    site_packages = next(
+        (candidate for venv_root in venv_roots
+         for candidate in (venv_root / "lib").glob("python*/site-packages")
+         if (candidate / "py_landlock").is_dir()),
+        None,
+    )
+    if site_packages is None:
+        raise RuntimeError("no project-scoped PeTTa site-packages with py_landlock found")
+    env.update({
+        "TEST_SERVER_IP": LOCALHOST,
+        "OMEGACLAW_SHADOW_SESSION": args.session,
+        "OMEGACLAW_SHADOW_MODEL": args.model,
+        "OMEGACLAW_SHADOW_TIMEOUT": str(max(30, args.timeout - 20)),
+        "OMEGACLAW_SHADOW_HASH_EMBEDDING": "1",
+        "OMEGACLAW_SUBPROCESS_PROBE": "1" if args.provider == "SubprocessProbe" else "0",
+        "IMPORT_KB_ON_START": "0",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PATH": str(swipl_bin) + os.pathsep + env.get("PATH", ""),
+        "PYTHONPATH": os.pathsep.join([
+            str(args.core), str(args.core / "src"), str(args.core / "profile"),
+            str(args.core / "channels"), str(args.petta / "repos" / "petta_lib_chromadb"),
+            str(site_packages) if site_packages else "",
+            env.get("PYTHONPATH", ""),
+        ]),
+    })
+    channel_directory = None
+    if args.file_channel:
+        channel_directory = tempfile.TemporaryDirectory(prefix="omegaclaw-file-channel-")
+        env["OMEGACLAW_SHADOW_CHANNEL_DIR"] = channel_directory.name
+    bridge_process = None
+    bridge_log = None
+    bridge_directory = None
+    if args.provider == "OpenClawBridge":
+        bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
+        bridge_port = 19765
+        env["OMEGACLAW_SHADOW_BRIDGE"] = f"127.0.0.1:{bridge_port}"
+        bridge_process = subprocess.Popen(
+            [sys.executable, str(Path(__file__).with_name("phase5_openclaw_bridge.py")),
+             "--port", str(bridge_port), "--session", args.session, "--model", args.model,
+             "--timeout", str(max(30, args.timeout - 20))],
+            text=True, stdout=bridge_log, stderr=subprocess.STDOUT, start_new_session=True)
+        time.sleep(0.3)
+    elif args.provider == "OpenClawFileBridge":
+        bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
+        bridge_directory = tempfile.TemporaryDirectory(prefix="omegaclaw-file-bridge-")
+        env["OMEGACLAW_SHADOW_FILE_BRIDGE"] = bridge_directory.name
+        bridge_process = subprocess.Popen(
+            [sys.executable, str(Path(__file__).with_name("phase5_openclaw_bridge.py")),
+             "--port", "0", "--directory", bridge_directory.name,
+             "--session", args.session, "--model", args.model,
+             "--timeout", str(max(30, args.timeout - 20)),
+             *( ["--live-transport"] if args.live_transport else [] ),
+             *[item for source in args.source for item in ("--source", str(source))]],
+            text=True, stdout=bridge_log, stderr=subprocess.STDOUT, start_new_session=True)
+        time.sleep(0.3)
+    command = ["sh", str(args.petta / "run.sh"), str(args.core / "run.metta"),
+               "commchannel=file-shadow" if args.file_channel else "commchannel=mock",
+               f"provider={args.provider}", "maxNewInputLoops=4", "maxWakeLoops=0",
+               "onlyOnNewInput=True", "sleepInterval=0", "maxOutputToken=1400", "embeddingprovider=Local",
+               "securityPolicyPath="]
+    server = None if args.file_channel else CommMockServer((LOCALHOST, COMM_MOCK_PORT))
+    llm_controller = (LlmMockController((LOCALHOST, LLM_MOCK_PORT))
+                      if args.provider == "Test" else None)
+    history_path = args.core / "memory" / "history.metta"
+    history_offset = history_path.stat().st_size if history_path.exists() else 0
+    # The PeTTa loop is chatty.  Leaving its stdout unread until teardown can
+    # fill a pipe and make a successful mock send look like a transport hang.
+    # Use a temporary file and a separate process group so both capture and
+    # shutdown remain bounded even if the shell wrapper forks SWI-Prolog.
+    transcript_file = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
+    process = subprocess.Popen(command, cwd=args.petta, env=env, text=True,
+                               stdout=transcript_file, stderr=subprocess.STDOUT,
+                               start_new_session=True)
+    started = time.monotonic()
+    transcript = ""
+    try:
+        if server is not None:
+            deadline = started + min(45, args.timeout / 3)
+            while time.monotonic() < deadline:
+                try:
+                    if server.ping(1):
+                        break
+                except Exception:
+                    time.sleep(0.25)
+            else:
+                raise RuntimeError("OmegaClaw mock channel did not initialize")
+        if llm_controller is not None:
+            if not args.test_answer:
+                raise RuntimeError("--provider Test requires --test-answer")
+            llm_deadline = time.monotonic() + 15
+            while time.monotonic() < llm_deadline:
+                try:
+                    if llm_controller.ping(1):
+                        break
+                except Exception:
+                    time.sleep(0.25)
+            else:
+                raise RuntimeError("OmegaClaw Test provider did not initialize")
+            if not llm_controller.set_answer(args.prompt, args.test_answer, timeout=5):
+                raise RuntimeError("failed to register deterministic Test-provider response")
+        if channel_directory is not None:
+            # Publish input only after every responder dependency is ready.
+            # Otherwise the fast file-channel loop can consume the prompt
+            # before a deterministic provider fixture or bridge is prepared.
+            (Path(channel_directory.name) / "input.txt").write_text(args.prompt, encoding="utf-8")
+        if server is not None and not server.send_message(args.prompt, timeout=5):
+            raise RuntimeError("failed to inject frozen prompt")
+        deadline = started + args.timeout
+        answer = ""
+        while time.monotonic() < deadline:
+            # A history entry is evidence that the MeTTa loop emitted a send
+            # command, not evidence of delivery.  Count a response only after
+            # the isolated mock server acknowledges and captures it.
+            if server is not None:
+                answer = server.getLastMessage()
+            else:
+                output_path = Path(channel_directory.name) / "output.txt"
+                answer = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
+            if answer:
+                break
+            if process.poll() is not None:
+                raise RuntimeError(f"OmegaClaw exited early with {process.returncode}")
+            time.sleep(0.25)
+        if not answer:
+            raise TimeoutError("OmegaClaw produced no send result before timeout")
+        print(json.dumps({"status": "ok", "answer": answer,
+                          "latency_ms": round((time.monotonic() - started) * 1000, 1),
+                          "command": command}, sort_keys=True))
+        return 0
+    finally:
+        if process.poll() is None:
+            os.killpg(process.pid, 15)
+            try:
+                process.wait(10)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, 9)
+                process.wait(5)
+        if server is not None:
+            server.stop(5)
+        if llm_controller is not None:
+            llm_controller.stop(5)
+        if bridge_process is not None and bridge_process.poll() is None:
+            os.killpg(bridge_process.pid, 15)
+            bridge_process.wait(5)
+        if bridge_log is not None:
+            bridge_log.seek(0)
+            print("OMEGACLAW_BRIDGE_LOG", file=sys.stderr)
+            print(bridge_log.read()[-4000:], file=sys.stderr)
+            bridge_log.close()
+        if bridge_directory is not None:
+            bridge_directory.cleanup()
+        if channel_directory is not None:
+            channel_directory.cleanup()
+        transcript_file.seek(0)
+        transcript = transcript_file.read()
+        transcript_file.close()
+        print("OMEGACLAW_TRANSCRIPT_BEGIN", file=sys.stderr)
+        print(transcript[-20000:], file=sys.stderr)
+        print("OMEGACLAW_TRANSCRIPT_END", file=sys.stderr)
+        # A captured mock answer is not a passing gate if SWI/PeTTa emitted a
+        # fatal native crash while the harness was shutting it down.  Raise
+        # after preserving the transcript so callers cannot mistake exit 0
+        # for runtime stability.
+        if "fatal signal" in transcript.lower() or "(segv)" in transcript.lower():
+            raise RuntimeError("OmegaClaw transcript contains a fatal native crash")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

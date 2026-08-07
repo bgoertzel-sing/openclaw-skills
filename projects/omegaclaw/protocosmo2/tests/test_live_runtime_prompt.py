@@ -14,6 +14,8 @@ RUNTIME_PROMPT = (
 )
 RUNTIME_HISTORY = RUNTIME_PROMPT.with_name("history.metta")
 RUNNER = Path(__file__).resolve().parents[1] / "tools" / "phase6_private_canary_runner.py"
+BRIDGE = Path(__file__).resolve().parents[1] / "tools" / "phase5_openclaw_bridge.py"
+CASE = Path(__file__).resolve().parents[1] / "tools" / "phase5_omegaclaw_case.py"
 
 
 def test_production_prompt_declares_live_bounded_telegram_capabilities():
@@ -38,3 +40,11 @@ def test_inner_file_channel_is_explicitly_declared_an_implementation_boundary():
     assert "implementation containment boundary only" in text
     assert "Never describe this inner boundary as shadow mode" in text
     assert "outer Bot-API" in text
+
+
+def test_live_runner_selects_live_bridge_contract_not_phase5_shadow_contract():
+    assert '"--live-transport"' in RUNNER.read_text(encoding="utf-8")
+    assert 'parser.add_argument("--live-transport"' in CASE.read_text(encoding="utf-8")
+    bridge = BRIDGE.read_text(encoding="utf-8")
+    assert "LIVE TELEGRAM TRANSPORT NOTE" in bridge
+    assert "transport_instruction(live_transport)" in bridge

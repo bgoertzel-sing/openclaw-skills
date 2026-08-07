@@ -166,7 +166,7 @@ def responder(prompt: str, args: argparse.Namespace) -> str:
     command = [sys.executable, str(args.driver), "--petta", str(args.petta), "--core", str(args.core),
                "--prompt", prompt + attachment_instruction, "--session", f"protocosmo2-canary-{int(time.time())}",
                "--model", args.model, "--provider", "OpenClawFileBridge", "--timeout", str(args.provider_timeout),
-               "--file-channel"]
+               "--file-channel", "--live-transport"]
     completed = subprocess.run(command, env=clean_env, text=True, stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL, timeout=args.provider_timeout + 30, check=False)
     if completed.returncode != 0:
