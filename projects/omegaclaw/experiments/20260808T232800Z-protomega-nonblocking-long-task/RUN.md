@@ -99,3 +99,29 @@
 The external staging acceptance gate now passes. A fresh independent frontier
 review of the prompt-file change and complete evidence remains required before
 production deployment; production has not been restarted or modified.
+
+### Independent review R2 and hardening
+
+- GPT-5.6 Sol independently reran 55 tests and returned `BLOCK`. Concrete
+  blockers were pathname-validation TOCTOU, incomplete cleanup if prompt
+  write/flush/fsync failed, missing adversarial tests, no single combined live
+  successful-long/interleaved-short trace, and no pinned deploy/rollback
+  boundary.
+- Prompt reading now uses one `os.open(O_NOFOLLOW|O_CLOEXEC)` descriptor,
+  validates that same descriptor with `fstat`, and reads it through `fdopen`.
+  Path substitution after open fails closed when link count changes.
+- Prompt creation now cleans the partial file on every write/flush/fsync/close
+  exception before propagating failure. Adversarial substitution and injected
+  flush-failure cleanup regressions were added.
+- Revised gate: 57 tests passed in 0.74 seconds; compilation and targeted diff
+  check passed.
+- Pinned local commits (not pushed): transport worktree
+  `eb29a3388530dc7fdc27171b372037a9f77dc9ce`; outer runner/tests/evidence
+  `b07936bad28fd06bf556b5dcb95374897469f7de`.
+- Exact rollback target is transport parent `0a344d105651a464afaa81965eb51ee516f282e1`
+  plus outer parent `7231c67`; rollback is performed only through the owning
+  staging/production supervisor after restoring those pinned trees.
+
+Remaining pre-production gate: load the hardened commits in staging, obtain
+one combined external trace where a successful long document overlaps an
+interleaved short request, then obtain a fresh independent PASS.
