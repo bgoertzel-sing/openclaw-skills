@@ -8,16 +8,21 @@ scrubbed environment.  No unsolicited send is performed.
 from __future__ import annotations
 
 import argparse
+import ctypes
+import hashlib
 import json
 import os
 from pathlib import Path
 import signal
+import stat
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.parse
 import urllib.request
 import uuid
+import re
 
 MAX_DOCUMENT_BYTES = 10_000_000
 MAX_OUTBOUND_DOCUMENT_BYTES = 50_000_000
@@ -26,6 +31,26 @@ MAX_OUTBOUND_DOCUMENT_BYTES = 50_000_000
 # the supplied 104-page OmegaSelf paper in full while still failing closed on
 # pathological expansion.
 MAX_EXTRACTED_DOCUMENT_CHARS = 2_000_000
+MAX_INCIDENT_BYTES = 4096
+SEND_WRAPPER = re.compile(r'^\(send\s+("(?:\\.|[^"\\])*")\s*\)$', re.DOTALL)
+
+
+def arm_parent_death_signal() -> None:
+    """Terminate this receiver if its explicitly bound supervisor disappears."""
+    expected_text = os.environ.get("OMEGACLAW_EXPECTED_PARENT_PID")
+    if expected_text is None:
+        return
+    if not expected_text.isdigit() or int(expected_text) < 1:
+        raise RuntimeError("invalid expected parent pid")
+    expected = int(expected_text)
+    if os.getppid() != expected:
+        raise RuntimeError("receiver parent identity mismatch")
+    libc = ctypes.CDLL(None, use_errno=True)
+    if libc.prctl(1, signal.SIGTERM, 0, 0, 0) != 0:  # PR_SET_PDEATHSIG
+        raise OSError(ctypes.get_errno(), "PR_SET_PDEATHSIG failed")
+    # Close the race where the parent exits between the first check and prctl.
+    if os.getppid() != expected:
+        raise RuntimeError("receiver parent exited during startup")
 
 
 def validate_extracted_document_text(text: str) -> str:
@@ -34,18 +59,55 @@ def validate_extracted_document_text(text: str) -> str:
     return text
 
 
+def append_responder_incident(path: Path, *, returncode: int, stderr: str) -> None:
+    """Append non-secret failure metadata to a private regular file."""
+    record = {
+        "code": "omegaclaw_runtime_failure",
+        "observed_at": int(time.time()),
+        "returncode": returncode,
+        "stderr_bytes": len(stderr.encode("utf-8", errors="replace")),
+        "stderr_sha256": hashlib.sha256(stderr.encode("utf-8", errors="replace")).hexdigest(),
+    }
+    encoded = (json.dumps(record, ensure_ascii=True) + "\n").encode("ascii")
+    if len(encoded) > MAX_INCIDENT_BYTES:
+        raise RuntimeError("responder_incident_too_large")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+    fd = os.open(path, flags, 0o600)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o600:
+            raise RuntimeError("unsafe_responder_incident_file")
+        view = memoryview(encoded)
+        while view:
+            written = os.write(fd, view)
+            if written <= 0:
+                raise RuntimeError("responder_incident_write_failed")
+            view = view[written:]
+    finally:
+        os.close(fd)
+
+
 def read_env(path: Path) -> dict[str, str]:
     if path.stat().st_mode & 0o777 != 0o600:
         raise RuntimeError("credential file must have mode 0600")
     values: dict[str, str] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
         if line and not line.startswith("#"):
+            if line.startswith("export "):
+                line = line[len("export "):].lstrip()
             key, marker, value = line.partition("=")
             if not marker:
                 raise RuntimeError("credential file is malformed")
-            values[key] = value
-    if not values.get("TG_BOT_TOKEN"):
-        raise RuntimeError("TG_BOT_TOKEN is absent")
+            values[key.strip()] = value
+    token = (
+        values.get("TG_BOT_TOKEN")
+        or values.get("OMEGACLAW_TG_BOT_TOKEN")
+        or values.get("PROTOMEGABOT2_TG_BOT_TOKEN")
+    )
+    if not token:
+        raise RuntimeError("Telegram bot token is absent")
+    values["TG_BOT_TOKEN"] = token
     return values
 
 
@@ -149,9 +211,59 @@ class Api:
         return validate_extracted_document_text(text)
 
 
-def responder(prompt: str, args: argparse.Namespace) -> str:
+def clean_rendered_answer(answer: str) -> str:
+    """Unwrap one exact send action and reject malformed action-shaped output."""
+    stripped = answer.strip()
+    match = SEND_WRAPPER.fullmatch(stripped)
+    if match is None:
+        if stripped.startswith("(send"):
+            raise RuntimeError("unsafe_send_wrapper")
+        return answer
+    try:
+        unwrapped = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        raise RuntimeError("unsafe_send_wrapper") from None
+    if not isinstance(unwrapped, str) or not unwrapped:
+        raise RuntimeError("unsafe_send_wrapper")
+    return unwrapped
+
+
+def write_private_prompt(text: str) -> Path:
+    """Create and durably publish a private prompt, cleaning every failed write."""
+    handle = None
+    path = None
+    try:
+        handle = tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", prefix="omegaclaw-outer-prompt-", delete=False
+        )
+        path = Path(handle.name)
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+        handle.close()
+        handle = None
+        return path
+    except BaseException:
+        if handle is not None:
+            try:
+                handle.close()
+            except BaseException:
+                pass
+        if path is not None:
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+        raise
+
+
+def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None = None) -> str:
     clean_env = {key: value for key, value in os.environ.items() if key != "TG_BOT_TOKEN"}
-    clean_env["OMEGACLAW_WORKER_STATE_DIR"] = str(args.worker_state_dir)
+    worker_state_dir = args.worker_state_dir
+    if isolation_key is not None:
+        worker_state_dir = args.worker_state_dir / "deferred" / isolation_key
+        worker_state_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    clean_env["OMEGACLAW_WORKER_STATE_DIR"] = str(worker_state_dir)
     attachment_instruction = (
         "\n\n<trusted_transport_capability>This is a live Telegram request. The inner file channel is an "
         "implementation containment boundary only: your completed reply is sent by the outer Bot-API "
@@ -163,35 +275,76 @@ def responder(prompt: str, args: argparse.Namespace) -> str:
         "prose. Only claim a completed delivery when the outer transport returns its correlated receipt." 
         "</trusted_transport_capability>"
     )
+    prompt_path = write_private_prompt(prompt + attachment_instruction)
     command = [sys.executable, str(args.driver), "--petta", str(args.petta), "--core", str(args.core),
-               "--prompt", prompt + attachment_instruction, "--session", f"protocosmo2-canary-{int(time.time())}",
+               "--prompt-file", str(prompt_path), "--session", f"{args.session_prefix}-{int(time.time())}",
                "--model", args.model, "--provider", "OpenClawFileBridge", "--timeout", str(args.provider_timeout),
+               "--agent", args.agent_id,
                "--file-channel", "--live-transport"]
-    completed = subprocess.run(command, env=clean_env, text=True, stdout=subprocess.PIPE,
-                               stderr=subprocess.DEVNULL, timeout=args.provider_timeout + 30, check=False)
-    if completed.returncode != 0:
+    # Own the driver as a process group. If an outer timeout kills only the
+    # Python driver, its nested PeTTa/SWI group otherwise survives and can
+    # compete with the next live request.
+    process = None
+    try:
+        process = subprocess.Popen(command, env=clean_env, text=True, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, start_new_session=True)
+        stdout, stderr = process.communicate(timeout=args.provider_timeout + 30)
+    except subprocess.TimeoutExpired as exc:
+        os.killpg(process.pid, 15)
+        try:
+            process.wait(10)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, 9)
+            process.wait(5)
+        raise RuntimeError("omegaclaw_runtime_timeout") from exc
+    except BaseException:
+        if process is not None and process.poll() is None:
+            os.killpg(process.pid, 15)
+            try:
+                process.wait(10)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, 9)
+                process.wait(5)
+        raise
+    finally:
+        try:
+            prompt_path.unlink()
+        except FileNotFoundError:
+            pass
+    assert process is not None
+    if process.returncode != 0:
+        diagnostic = args.worker_state_dir / "responder-incidents.jsonl"
+        append_responder_incident(diagnostic, returncode=process.returncode, stderr=stderr)
         raise RuntimeError("omegaclaw_runtime_failure")
-    for line in reversed(completed.stdout.splitlines()):
+    for line in reversed(stdout.splitlines()):
         try:
             payload = json.loads(line)
         except json.JSONDecodeError:
             continue
         answer = payload.get("answer") if isinstance(payload, dict) else None
         if payload.get("status") == "ok" and isinstance(answer, str) and answer:
-            return answer
+            return clean_rendered_answer(answer)
     raise RuntimeError("omegaclaw_result_missing")
 
 
 def main() -> int:
+    arm_parent_death_signal()
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=Path, default=Path("/home/openclaw/.openclaw/protocosmo2.env"))
     parser.add_argument("--config", type=Path, default=Path("/home/openclaw/.openclaw/protocosmo2-canary.json"))
     parser.add_argument("--state-dir", type=Path, default=Path("/home/openclaw/.openclaw/protocosmo2-canary-state"))
     parser.add_argument("--worker-state-dir", type=Path, default=Path("/home/openclaw/.openclaw/protocosmo2-worker-state"))
     parser.add_argument("--core", type=Path, required=True)
+    parser.add_argument("--transport-core", type=Path,
+                        help="core tree providing the durable outer transport modules")
     parser.add_argument("--petta", type=Path, required=True)
     parser.add_argument("--driver", type=Path, required=True)
     parser.add_argument("--model", default="openai/gpt-5.6-sol")
+    parser.add_argument("--agent-id", default="main")
+    parser.add_argument("--identity", default="ProtoCosmo2")
+    parser.add_argument("--bot-id", type=int, default=8716054285)
+    parser.add_argument("--bot-username", default="@protocosmo2bot")
+    parser.add_argument("--session-prefix", default="protocosmo2-canary")
     parser.add_argument("--provider-timeout", type=int, default=240)
     parser.add_argument("--poll-timeout", type=int, default=15)
     args = parser.parse_args()
@@ -200,14 +353,21 @@ def main() -> int:
         raise RuntimeError("worker state root must be a real directory")
     if worker_info.st_mode & 0o777 != 0o700:
         raise RuntimeError("worker state root must have mode 0700")
-    sys.path.insert(0, str(args.core))
+    transport_core = args.transport_core or args.core
+    sys.path.insert(0, str(transport_core))
     from channels.private_canary import CanaryContract, load_config
     from channels.private_canary_telegram import PrivateCanaryTelegramTransport
 
     secret = read_env(args.env)
     api = Api(secret.pop("TG_BOT_TOKEN"))
-    contract = CanaryContract(load_config(args.config), args.state_dir)
-    transport = PrivateCanaryTelegramTransport(contract, api, lambda text: responder(text, args))
+    contract = CanaryContract(
+        load_config(args.config, expected_identity=args.identity), args.state_dir
+    )
+    transport = PrivateCanaryTelegramTransport(
+        contract, api, lambda text: responder(text, args), bot_id=args.bot_id,
+        bot_username=args.bot_username, attachment_label=args.identity,
+        deferred_responder=lambda text, task_id: responder(text, args, task_id),
+    )
     running = True
     def stop(_signum, _frame):
         nonlocal running

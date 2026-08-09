@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import socket
 import subprocess
 import tempfile
@@ -12,6 +13,47 @@ import time
 from pathlib import Path
 
 MAX_SOURCE_BYTES = 512_000
+EXACT_SEND = re.compile(r'^\(send\s+"(?:\\.|[^"\\])*"\)$', re.DOTALL)
+GATEWAY_FAILURE_MARKERS = (
+    "agent couldn't generate a response",
+    "agent couldn’t generate a response",
+    "some tool actions may have already been executed",
+)
+
+
+def require_substantive_answer(text: str) -> str:
+    folded = text.casefold()
+    if not text.strip() or any(marker in folded for marker in GATEWAY_FAILURE_MARKERS):
+        raise RuntimeError("openclaw_nonanswer")
+    return text
+
+
+def require_requested_route(result: object, requested_model: str) -> None:
+    if "/" not in requested_model:
+        raise RuntimeError("openclaw_requested_model_unqualified")
+    expected_provider, expected_model = requested_model.split("/", 1)
+    if not isinstance(result, dict):
+        raise RuntimeError("openclaw_route_missing")
+    meta = result.get("meta")
+    agent_meta = meta.get("agentMeta") if isinstance(meta, dict) else None
+    if not isinstance(agent_meta, dict):
+        raise RuntimeError("openclaw_route_missing")
+    if agent_meta.get("provider") != expected_provider or agent_meta.get("model") != expected_model:
+        raise RuntimeError("openclaw_route_mismatch")
+
+
+def normalize_model_answer(text: str) -> str:
+    """Return exactly one MeTTa send command, treating all other output as text."""
+    stripped = text.strip()
+    if EXACT_SEND.fullmatch(stripped):
+        return stripped
+    # OmegaClaw's command parser reliably accepts a single quoted line. Do not
+    # pass model-controlled newlines, backslashes, or nested double quotes into
+    # its command grammar; preserve their human meaning with spaces/slashes and
+    # apostrophes instead.
+    safe = " ".join(stripped.split())[:4000]
+    safe = safe.replace("\\", "/").replace('"', "'")
+    return f'(send "{safe}")'
 
 
 def source_context(sources: list[Path]) -> str:
@@ -50,22 +92,26 @@ def transport_instruction(live_transport: bool) -> str:
 
 
 def answer(content: str, session: str, model: str, timeout: int, sources: list[Path],
-           live_transport: bool = False) -> str:
+           live_transport: bool = False, agent: str | None = None) -> str:
     prompt = content.replace(":-:-:-:", " ") + source_context(sources) + transport_instruction(live_transport)
     path = None
     try:
         with tempfile.NamedTemporaryFile("w", encoding="utf-8", prefix="omegaclaw-shadow-", delete=False) as f:
             f.write(prompt)
             path = f.name
-        run = subprocess.run(["openclaw", "agent", "--session-id", session, "--model", model,
+        run = subprocess.run(["openclaw", "agent", *( ["--agent", agent] if agent else [] ),
+                              "--session-id", session, "--model", model,
                               "--message-file", path, "--json", "--timeout", str(timeout)],
                              text=True, capture_output=True, timeout=timeout + 20, check=False)
         if run.returncode:
             raise RuntimeError(f"openclaw agent exited {run.returncode}: {run.stderr[-500:]}")
-        payloads = json.loads(run.stdout).get("result", {}).get("payloads", [])
+        envelope = json.loads(run.stdout)
+        result = envelope.get("result", {}) if isinstance(envelope, dict) else {}
+        require_requested_route(result, model)
+        payloads = result.get("payloads", [])
         if not payloads or not isinstance(payloads[0].get("text"), str):
             raise RuntimeError("unrecognized OpenClaw response")
-        return payloads[0]["text"]
+        return require_substantive_answer(payloads[0]["text"])
     finally:
         if path:
             try: os.unlink(path)
@@ -78,10 +124,12 @@ def main() -> int:
     p.add_argument("--directory", type=Path)
     p.add_argument("--session", required=True)
     p.add_argument("--model", required=True)
+    p.add_argument("--agent")
     p.add_argument("--timeout", type=int, default=100)
     p.add_argument("--source", type=Path, action="append", default=[])
     p.add_argument("--live-transport", action="store_true",
                    help="use the live Telegram contract rather than the Phase-5 shadow contract")
+    p.add_argument("--live-request-file", type=Path)
     args = p.parse_args()
     if args.directory is not None:
         args.directory.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -92,8 +140,11 @@ def main() -> int:
             time.sleep(0.05)
         try:
             request = json.loads(request_path.read_text(encoding="utf-8"))
-            result = {"answer": answer(request["content"], args.session, args.model,
-                                       args.timeout, args.source, args.live_transport)}
+            request_content = (args.live_request_file.read_text(encoding="utf-8")
+                               if args.live_request_file is not None else request["content"])
+            raw_answer = answer(request_content, args.session, args.model,
+                                args.timeout, args.source, args.live_transport, args.agent)
+            result = {"answer": normalize_model_answer(raw_answer), "raw_answer": raw_answer}
         except Exception as exc:
             result = {"error": str(exc)}
         temporary_path = response_path.with_suffix(".tmp")
@@ -108,8 +159,12 @@ def main() -> int:
             conn, _ = srv.accept()
             with conn:
                 request = json.loads(conn.makefile("r", encoding="utf-8").readline())
-                try: result = {"answer": answer(request["content"], args.session, args.model,
-                                                args.timeout, args.source, args.live_transport)}
+                try:
+                    request_content = (args.live_request_file.read_text(encoding="utf-8")
+                                       if args.live_request_file is not None else request["content"])
+                    raw_answer = answer(request_content, args.session, args.model,
+                                        args.timeout, args.source, args.live_transport, args.agent)
+                    result = {"answer": normalize_model_answer(raw_answer), "raw_answer": raw_answer}
                 except Exception as exc: result = {"error": str(exc)}
                 conn.sendall((json.dumps(result, ensure_ascii=False) + "\n").encode("utf-8"))
 

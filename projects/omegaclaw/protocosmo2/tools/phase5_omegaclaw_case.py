@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -21,13 +22,39 @@ def find_project_root(core: Path) -> Path:
     raise RuntimeError("cannot locate the OmegaClaw project root from --core")
 
 
+def read_prompt(prompt: str | None, prompt_file: Path | None) -> str:
+    """Read one prompt without requiring large documents to cross argv."""
+    if (prompt is None) == (prompt_file is None):
+        raise RuntimeError("exactly one prompt source is required")
+    if prompt is not None:
+        return prompt
+    assert prompt_file is not None
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+    fd = os.open(prompt_file, flags)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise RuntimeError("prompt file must be a private regular file")
+        if info.st_mode & 0o077:
+            raise RuntimeError("prompt file must not be accessible by group or other")
+        with os.fdopen(fd, "r", encoding="utf-8") as handle:
+            fd = -1
+            return handle.read()
+    finally:
+        if fd >= 0:
+            os.close(fd)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--petta", type=Path, required=True)
     parser.add_argument("--core", type=Path, required=True)
-    parser.add_argument("--prompt", required=True)
+    prompt_group = parser.add_mutually_exclusive_group(required=True)
+    prompt_group.add_argument("--prompt")
+    prompt_group.add_argument("--prompt-file", type=Path)
     parser.add_argument("--session", required=True)
     parser.add_argument("--model", default="openai/gpt-5.6-terra")
+    parser.add_argument("--agent")
     parser.add_argument("--provider", default="OpenClawCLI",
                         choices=("OpenClawCLI", "OpenClawBridge", "OpenClawFileBridge", "Test", "SubprocessProbe"))
     parser.add_argument("--test-answer",
@@ -39,6 +66,7 @@ def main() -> int:
     parser.add_argument("--source", type=Path, action="append", default=[],
                         help="frozen project source to expose read-only to the host bridge")
     args = parser.parse_args()
+    args.prompt = read_prompt(args.prompt, args.prompt_file)
     args.petta = args.petta.resolve()
     args.core = args.core.resolve()
     args.source = [source.resolve() for source in args.source]
@@ -90,6 +118,7 @@ def main() -> int:
     bridge_process = None
     bridge_log = None
     bridge_directory = None
+    live_request_path = None
     if args.provider == "OpenClawBridge":
         bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
         bridge_port = 19765
@@ -104,12 +133,21 @@ def main() -> int:
         bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
         bridge_directory = tempfile.TemporaryDirectory(prefix="omegaclaw-file-bridge-")
         env["OMEGACLAW_SHADOW_FILE_BRIDGE"] = bridge_directory.name
+        if args.live_transport:
+            request_handle = tempfile.NamedTemporaryFile(
+                "w", encoding="utf-8", prefix="omegaclaw-live-request-", delete=False
+            )
+            request_handle.write(args.prompt)
+            request_handle.close()
+            live_request_path = request_handle.name
         bridge_process = subprocess.Popen(
             [sys.executable, str(Path(__file__).with_name("phase5_openclaw_bridge.py")),
              "--port", "0", "--directory", bridge_directory.name,
              "--session", args.session, "--model", args.model,
+             *( ["--agent", args.agent] if args.agent else [] ),
              "--timeout", str(max(30, args.timeout - 20)),
              *( ["--live-transport"] if args.live_transport else [] ),
+             *( ["--live-request-file", live_request_path] if live_request_path else [] ),
              *[item for source in args.source for item in ("--source", str(source))]],
             text=True, stdout=bridge_log, stderr=subprocess.STDOUT, start_new_session=True)
         time.sleep(0.3)
@@ -176,6 +214,13 @@ def main() -> int:
             else:
                 output_path = Path(channel_directory.name) / "output.txt"
                 answer = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
+                if args.live_transport and bridge_directory is not None:
+                    bridge_response = Path(bridge_directory.name) / "response.json"
+                    if bridge_response.exists():
+                        bridge_payload = json.loads(bridge_response.read_text(encoding="utf-8"))
+                        raw_answer = bridge_payload.get("raw_answer")
+                        if isinstance(raw_answer, str) and raw_answer.strip():
+                            answer = raw_answer
             if answer:
                 break
             if process.poll() is not None:
@@ -209,6 +254,9 @@ def main() -> int:
             bridge_log.close()
         if bridge_directory is not None:
             bridge_directory.cleanup()
+        if live_request_path is not None:
+            try: os.unlink(live_request_path)
+            except FileNotFoundError: pass
         if channel_directory is not None:
             channel_directory.cleanup()
         transcript_file.seek(0)
