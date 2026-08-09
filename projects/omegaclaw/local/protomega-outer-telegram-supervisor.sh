@@ -3,10 +3,10 @@ set -euo pipefail
 
 ROOT=/home/openclaw/research-agent/projects/omegaclaw
 RUNNER="${OMEGACLAW_OUTER_RUNNER:-$ROOT/protocosmo2/tools/phase6_private_canary_runner.py}"
-CORE="$ROOT/repos/PeTTa/repos/OmegaClaw-Core"
-TRANSPORT_CORE="$ROOT/worktrees/protocosmo2-phase6-live"
-PETTA="$ROOT/repos/PeTTa"
-DRIVER="$ROOT/protocosmo2/tools/phase5_omegaclaw_case.py"
+CORE="${OMEGACLAW_OUTER_CORE:-$ROOT/repos/PeTTa/repos/OmegaClaw-Core}"
+TRANSPORT_CORE="${OMEGACLAW_OUTER_TRANSPORT_CORE:-$ROOT/worktrees/protocosmo2-phase6-live}"
+PETTA="${OMEGACLAW_OUTER_PETTA:-$ROOT/repos/PeTTa}"
+DRIVER="${OMEGACLAW_OUTER_DRIVER:-$ROOT/protocosmo2/tools/phase5_omegaclaw_case.py}"
 ENV_FILE="${OMEGACLAW_OUTER_ENV_FILE:-/home/openclaw/.openclaw/omegaclaw-telegram.env}"
 CONFIG="${OMEGACLAW_OUTER_CONFIG:-/home/openclaw/.openclaw/protomega-outer.json}"
 STATE_DIR="${OMEGACLAW_OUTER_STATE_DIR:-/home/openclaw/.openclaw/protomega-outer-state}"
@@ -16,6 +16,14 @@ PID_IDENTITY_FILE="${PID_FILE}.identity"
 START_LOCK="${OMEGACLAW_OUTER_START_LOCK:-${PID_FILE}.start.lock}"
 CUTOVER_LOCK="${OMEGACLAW_CUTOVER_LOCK:-$ROOT/local/run-state/protomega-cutover.lock}"
 DEFERRED_DISABLE_MARKER="${OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER:-$ROOT/local/run-state/protomega-deferred-disabled}"
+IDENTITY="${OMEGACLAW_OUTER_IDENTITY:-ProtomegaTron}"
+BOT_ID="${OMEGACLAW_OUTER_BOT_ID:-8562797306}"
+BOT_USERNAME="${OMEGACLAW_OUTER_BOT_USERNAME:-@Protomegabot}"
+SESSION_PREFIX="${OMEGACLAW_OUTER_SESSION_PREFIX:-protomegatron-live}"
+AGENT_ID="${OMEGACLAW_OUTER_AGENT_ID:-protomegabot-opus}"
+MODEL="${OMEGACLAW_OUTER_MODEL:-anthropic/claude-opus-4-6}"
+PROVIDER_TIMEOUT="${OMEGACLAW_OUTER_PROVIDER_TIMEOUT:-300}"
+POLL_TIMEOUT="${OMEGACLAW_OUTER_POLL_TIMEOUT:-15}"
 
 validate_deferred_disable_marker() {
   MARKER_PATH="$DEFERRED_DISABLE_MARKER" python3 - <<'PY'
@@ -130,9 +138,10 @@ case "${1:-status}" in
         --env "$ENV_FILE" --config "$CONFIG" --state-dir "$STATE_DIR" \
         --worker-state-dir "$WORKER_STATE_DIR" --core "$CORE" \
         --transport-core "$TRANSPORT_CORE" --petta "$PETTA" --driver "$DRIVER" \
-        --identity ProtomegaTron --bot-id 8562797306 --bot-username @Protomegabot \
-        --session-prefix protomegatron-live --agent-id protomegabot-opus --model anthropic/claude-opus-4-6 \
-        --provider-timeout 300 --poll-timeout 15 "${deferred_args[@]}" </dev/null >>"$LOG" 2>&1 &
+        --identity "$IDENTITY" --bot-id "$BOT_ID" --bot-username "$BOT_USERNAME" \
+        --session-prefix "$SESSION_PREFIX" --agent-id "$AGENT_ID" --model "$MODEL" \
+        --provider-timeout "$PROVIDER_TIMEOUT" --poll-timeout "$POLL_TIMEOUT" \
+        "${deferred_args[@]}" </dev/null >>"$LOG" 2>&1 &
       child_pid=$!
       wait "$child_pid" || true
       child_pid=""
