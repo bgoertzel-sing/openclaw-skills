@@ -4,6 +4,20 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-08-09: Independently verify the Capacity 1.1 candidate freeze and
+  public replay. The verifier content-binds the candidate, digest record,
+  public harness, complete v0.6 sandbox chain, and sealed commitment; all 22
+  public cases, two tests including source-drift failure, and compilation
+  pass. A09--A12 remain sealed. Next: obtain explicit held-out reveal/execution
+  authorization from Ben; harness adoption remains closed. Evidence:
+  `artifacts/ggb-capacity-gates/20260809-request-to-contract-candidate-freeze-independent-verification/`.
+
+- [x] 2026-08-09: Strictly validate ThreadKeeper durable patch-proposal
+  summaries at commit `e0d7568`. Queued results now cap proposals at 20 and
+  require exact write/append actions plus safe relative workspace paths. All
+  27 boundary tests and 54 subtests, compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry passed.
+
 - [x] 2026-08-09: Keep ThreadKeeper bounded structured-return fallbacks
   queue-parseable at commit `c9bcef4`. Minimal adjudication returns now use
   `incomplete` when exact pending metadata cannot fit, and the final fallback
@@ -22,10 +36,13 @@ Use small, testable tasks. Keep the top of each section in priority order.
   then fresh short and PDF-plus-interleaved-short production traces with one
   receiver and immutable routing. Rollback: stop only the owning supervisor,
   activate its secure synchronous marker, restart the same schema-3 runtime,
-  and require preserved durable state plus one receiver. Next command: capture
-  the current PID/topology/state/config/source baseline and freeze the smallest
-  supervisor/test diff. Evidence:
-  `experiments/20260809T130200Z-protocosmo2-nonblocking-parity/`.
+  and require preserved durable state plus one receiver. First guarded cutover
+  safely entered synchronous rollback after the drained legacy owner removed
+  its PID file and tripped the final drain gate. The inode/content/TOCTOU repair
+  now has 11/11 focused and 90/90 full tests plus independent PASS. Next
+  command: request a fresh cutover decision before enabling deferred jobs,
+  then run the short and PDF-plus-interleaved-short canaries. Evidence:
+`experiments/20260809T130200Z-protocosmo2-nonblocking-parity/`.
 
 - [x] 2026-08-09: Implement and freeze the Capacity 1.1 zero-effect candidate
   without revealing A09--A12. All 22 public cases pass through the v0.6

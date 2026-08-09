@@ -153,3 +153,48 @@ obtain independent frontier PASS, then request one guarded production restart.
   defaults. No remaining production-safety blocker was found in scope.
 - Technical readiness only: production remains the original pre-sidecar owner.
   One explicitly authorized guarded restart and fresh external canaries remain.
+
+### First guarded production cutover — fail-safe rollback active
+
+- Ben explicitly authorized the guarded restart on 2026-08-09. The exact
+  pre-sidecar owner (PID 1918102, start tick 41230822, cmdline SHA-256
+  `839ceb5e458138bf3f84e87396b0e5edbd889a240523939dcfdc9be1fcde0706`)
+  and its sole receiver child 1918105 passed content-bound validation.
+- The immutable pre-restart state snapshot is
+  `production-pre-restart-state.json`, SHA-256
+  `81e647e77a5af4db505339c64779aed604d450adddc8e65ff8c1289808d5b164`.
+- The owner and child drained, but `stop-pre-sidecar` returned failure at its
+  final postcondition because the terminating legacy owner removed its own PID
+  file. No second receiver was started during this failed gate.
+- Per the approved failure rule, synchronous rollback was activated. The
+  identity-bound schema-3 supervisor started as PID 2560477 with exactly one
+  receiver child and `--disable-deferred-jobs`. Watchdog check returned
+  `OUTER_OWNER_RUNNING`; the topology lock was independently acquired as free.
+- The protected cursor/processed/outbox/pending/context projection matches the
+  snapshot exactly at SHA-256
+  `64c5df7d34b5af5a70f0d03a2974bf28c451d1d88eef1ad57c620b144a497b62`.
+  State is schema 3 with 191 processed IDs, 42 outbox records, no pending
+  inbound item, and zero deferred jobs.
+- Status: operational in tested synchronous rollback mode; the non-blocking
+  upgrade and external canaries remain unaccepted. Before retry, repair and
+  regression-test the legacy PID-file drain postcondition and obtain a fresh
+  production cutover decision.
+
+### PID-file shutdown-race repair — independently passed
+
+- The first minimal absence-or-value patch passed 86 tests but independent
+  review blocked it because a same-value replacement file could pass.
+- The repaired guard captures device, inode, owner, mode, link count,
+  nanosecond change/modify times, and size before drain. After owner/child
+  disappearance it accepts clean absence, or opens the exact remaining file
+  with no-follow semantics, validates identity and value, revalidates the
+  directory entry, unlinks through the directory descriptor, and proves via
+  the still-open descriptor that the captured inode reached link count zero.
+- Executable regressions cover legacy self-unlink, exact original consumption,
+  same-value replacement, changed value, symlink, hardlink, and a deterministic
+  pathname swap between pre-unlink validation and unlink.
+- Final local gates: 11/11 focused tests and 90/90 full provider-free tests,
+  Python compilation, four shell syntax checks, and scoped diff check passed.
+- Independent final review replayed the same gates and returned PASS with no
+  remaining production-safety blocker in scope. Production was not changed and
+  remains online in synchronous rollback mode pending fresh cutover approval.

@@ -6,6 +6,7 @@ RUNNER="$ROOT/protocosmo2/tools/phase6_private_canary_runner.py"
 CORE="$ROOT/worktrees/protocosmo2-phase6-live"
 PETTA="$ROOT/protocosmo2/phase2-checked-baseline/repos/PeTTa"
 DRIVER="$ROOT/protocosmo2/tools/phase5_omegaclaw_case.py"
+PID_GUARD="$ROOT/protocosmo2/tools/legacy_pid_guard.py"
 PID_FILE=/home/openclaw/.openclaw/protocosmo2-supervisor.pid
 CUTOVER_LOCK="$ROOT/local/run-state/protocosmo2-cutover.lock"
 
@@ -17,6 +18,9 @@ if [[ "${1:-}" == "stop-pre-sidecar" || "${1:-}" == "validate-pre-sidecar" ]]; t
   [[ ! -L "$CUTOVER_LOCK" ]] || { echo UNSAFE_CUTOVER_LOCK >&2; exit 2; }
   exec 9>"$CUTOVER_LOCK"
   flock -n 9 || { echo "cutover in progress" >&2; exit 1; }
+  read -r pid_dev pid_ino pid_uid pid_mode pid_nlink pid_ctime pid_mtime pid_size < <(
+    python3 "$PID_GUARD" capture "$PID_FILE" "$2"
+  )
   LEGACY_PID_FILE="$PID_FILE" EXPECTED_PID="$2" EXPECTED_START="$3" EXPECTED_HASH="$4" \
     EXPECTED_SCRIPT="$(realpath "$0")" EXPECTED_RUNNER="$RUNNER" EXPECTED_CORE="$CORE" \
     EXPECTED_PETTA="$PETTA" EXPECTED_DRIVER="$DRIVER" python3 - <<'PY'
@@ -81,8 +85,11 @@ PY
     sleep 0.1
   done
   [[ ! -e "/proc/$2" && ! -e "/proc/$child_pid" ]] || { echo "legacy drain timeout" >&2; exit 1; }
-  [[ "$(cat "$PID_FILE" 2>/dev/null || true)" == "$2" ]] || { echo "legacy pid file changed during drain" >&2; exit 1; }
-  rm -f "$PID_FILE"
+  # The legacy TERM trap may remove the file. Otherwise consume only the exact
+  # pre-drain inode and metadata through a directory-anchored revalidation.
+  python3 "$PID_GUARD" consume "$PID_FILE" "$2" \
+    "$pid_dev" "$pid_ino" "$pid_uid" "$pid_mode" "$pid_nlink" \
+    "$pid_ctime" "$pid_mtime" "$pid_size"
   echo "legacy owner drained pid=$2 child=$child_pid"
   exit 0
 fi

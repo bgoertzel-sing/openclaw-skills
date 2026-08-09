@@ -1,4 +1,5 @@
 import os
+import importlib.util
 import subprocess
 from pathlib import Path
 
@@ -7,6 +8,7 @@ ROOT = Path(__file__).parents[1]
 SUPERVISOR = ROOT / "projects/omegaclaw/protocosmo2/tools/protocosmo2_telegram_supervisor.sh"
 GENERIC = ROOT / "projects/omegaclaw/local/protomega-outer-telegram-supervisor.sh"
 WATCHDOG = ROOT / "bin/protocosmo2-watchdog.sh"
+PID_GUARD = ROOT / "projects/omegaclaw/protocosmo2/tools/legacy_pid_guard.py"
 
 
 def fixture_env(tmp_path):
@@ -33,6 +35,85 @@ def test_wrapper_freezes_protocosmo2_identity_and_isolated_paths():
     assert "validate-pre-sidecar" in text
     assert "EXPECTED_CMDLINE_SHA256" in text
     assert "legacy owner is not its process-group leader" in text
+
+
+def guard(path, action, expected="123", identity=()):
+    return subprocess.run(
+        ["python3", str(PID_GUARD), action, str(path), expected, *map(str, identity)],
+        text=True, capture_output=True,
+    )
+
+
+def captured_identity(path):
+    result = guard(path, "capture")
+    assert result.returncode == 0, result.stderr
+    return tuple(map(int, result.stdout.split()))
+
+
+def test_pid_guard_accepts_legacy_self_cleanup(tmp_path):
+    path = tmp_path / "owner.pid"
+    path.write_text("123\n")
+    identity = captured_identity(path)
+    path.unlink()
+    assert guard(path, "consume", identity=identity).returncode == 0
+
+
+def test_pid_guard_consumes_only_original_file(tmp_path):
+    path = tmp_path / "owner.pid"
+    path.write_text("123\n")
+    identity = captured_identity(path)
+    assert guard(path, "consume", identity=identity).returncode == 0
+    assert not path.exists()
+
+
+def test_pid_guard_rejects_same_value_replacement(tmp_path):
+    path = tmp_path / "owner.pid"
+    path.write_text("123\n")
+    identity = captured_identity(path)
+    path.unlink()
+    path.write_text("123\n")
+    assert guard(path, "consume", identity=identity).returncode != 0
+    assert path.exists()
+
+
+def test_pid_guard_rejects_changed_symlink_and_hardlink(tmp_path):
+    path = tmp_path / "owner.pid"
+    path.write_text("123\n")
+    identity = captured_identity(path)
+    path.write_text("456\n")
+    assert guard(path, "consume", identity=identity).returncode != 0
+    path.unlink()
+    target = tmp_path / "target"
+    target.write_text("123\n")
+    path.symlink_to(target)
+    assert guard(path, "consume", identity=identity).returncode != 0
+    path.unlink()
+    os.link(target, path)
+    assert guard(path, "consume", identity=identity).returncode != 0
+
+
+def test_pid_guard_detects_path_swap_at_unlink(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location("legacy_pid_guard", PID_GUARD)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    path = tmp_path / "owner.pid"
+    path.write_text("123\n")
+    identity = captured_identity(path)
+    real_unlink = module.os.unlink
+
+    def swap_then_unlink(name, *, dir_fd=None):
+        os.rename(path, tmp_path / "moved-original.pid")
+        path.write_text("123\n")
+        real_unlink(name, dir_fd=dir_fd)
+
+    monkeypatch.setattr(module.os, "unlink", swap_then_unlink)
+    try:
+        module.consume(path, "123", identity)
+    except SystemExit as exc:
+        assert "unlink identity changed" in str(exc)
+    else:
+        raise AssertionError("path swap was not detected")
+    assert (tmp_path / "moved-original.pid").exists()
 
 
 def test_shared_supervisor_keeps_protomega_defaults_and_parameterizes_runtime():
