@@ -236,3 +236,13 @@ tests pass; compilation, shell syntax, and scoped diff checks pass.
   no shell redirection or check/create sequence is used.
 - Revised focused gate: 61/61 tests pass; compilation, supervisor syntax, and
   scoped diff checks pass.
+
+### Independent review R6 — PASS
+
+- Run: `9a01184d-d390-4e3f-9103-513389c97e7b`.
+- Actual provider/model: OpenAI `gpt-5.6-sol`; fallback false; terminal stop.
+- The reviewer independently verified all pinned commits and R4 artifact
+  hashes; reran 61/61 tests, compilation, supervisor syntax, and scoped diff
+  checks; and found no remaining production-safety blocker in scope.
+- Verdict: `PASS`. This is technical readiness only and does not itself grant
+  production restart authority.
