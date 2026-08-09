@@ -1,6 +1,6 @@
 # Protomega non-blocking long-task repair
 
-- Status: in progress
+- Status: staging complete; production deployment pending final PASS
 - Date: 2026-08-08
 - Project: `omegaclaw`
 - Question: can long/document requests be acknowledged and executed outside
@@ -125,3 +125,72 @@ production deployment; production has not been restarted or modified.
 Remaining pre-production gate: load the hardened commits in staging, obtain
 one combined external trace where a successful long document overlaps an
 interleaved short request, then obtain a fresh independent PASS.
+
+### External staging trace R4 — PASS (2026-08-08 22:17 PDT)
+
+- Telegram source message 121 replied to the existing PDF.
+- Immediate durable acknowledgement delivered as receipt 122.
+- Interleaved short request message 123 delivered the exact clean reply
+  `SHORT-R4-OK` as receipt 124 while the deferred task remained active.
+- Deferred task
+  `8fe4a22de5dc90429426406c300e426404267d7ed556bf215c1892ae04242515`
+  completed in 39 seconds and delivered its final summary as receipt 125,
+  immutably replying to source message 121.
+- Receipt 124 preceded the long result by 31 seconds, directly demonstrating
+  that the Telegram polling loop remained responsive during document work.
+- Durable final state records the task as `completed`, with no pending inbound
+  item, no undelivered outbox item, and no internal `(send ...)` wrapper in
+  either reply.
+- Production remained on its pre-repair process; no production restart or
+  deployment occurred during R4.
+
+The combined hardened staging gate passes. Remaining gate: one fresh
+independent frontier PASS over the pinned implementation, 57-test replay, R4
+evidence, and exact production restart/rollback boundary.
+
+### Independent review R3 — BLOCK on evidence closure
+
+- Run: `6fee84cb-37b3-4bcb-a5dd-c05468749d9b`.
+- Actual provider/model: OpenAI `gpt-5.6-sol`; fallback false; terminal stop.
+- The reviewer independently passed 57/57 tests and accepted the code coverage,
+  but blocked because R4 lacked committed content-bound raw artifacts, this
+  run still said `in progress`, and deploy/rollback commands were not exact.
+- Raw bounded evidence is now retained under `artifacts/`: a redacted R4
+  durable-state projection containing source IDs, task identity/timestamps,
+  outbox IDs, immutable reply routes, receipts 122/124/125, and final status;
+  a topology snapshot; and verified SHA-256 manifests. No credential or full
+  source document is included.
+
+### Exact production deployment and rollback boundary
+
+Deployment changes no source: production already resolves the pinned repaired
+files but its current long-lived Python process predates them. The guarded
+deployment is exactly:
+
+1. Verify `protomega-outer-telegram-supervisor.sh status`, one child, zero
+   legacy receiver, free topology lock, and no pending/undelivered durable item.
+2. Copy the production `state.json` to the experiment artifact directory and
+   hash it before restart.
+3. Run `projects/omegaclaw/local/protomega-outer-telegram-supervisor.sh stop`.
+4. Prove zero production Bot-API receivers.
+5. Run `projects/omegaclaw/local/protomega-outer-telegram-supervisor.sh start`.
+6. Require one owner/one child, zero legacy receiver, watchdog recognition,
+   free topology lock, unchanged cursor/processed/outbox state, and no pending
+   or undelivered item.
+
+Immediate rollback on any failed postcondition is exactly:
+
+1. Stop the production outer supervisor and prove zero receivers.
+2. Restore runtime files only from outer parent `7231c67`:
+   `phase5_omegaclaw_case.py`, `phase5_openclaw_bridge.py`, and
+   `phase6_private_canary_runner.py`.
+3. Restore transport runtime files only from transport parent
+   `0a344d105651a464afaa81965eb51ee516f282e1`:
+   `channels/private_canary.py` and
+   `channels/private_canary_telegram.py`.
+4. Start the same owning production outer supervisor and require one owner/one
+   child, zero legacy receiver, preserved durable state, watchdog recognition,
+   and a free topology lock.
+
+These restores use `git restore --source=<pinned-parent> -- <exact-files>`;
+they do not rewrite history or touch unrelated working-tree changes.
