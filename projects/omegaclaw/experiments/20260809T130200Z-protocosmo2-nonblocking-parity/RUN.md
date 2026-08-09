@@ -79,6 +79,18 @@ receiver and healthy watchdog recognition.
   live runner/prompt-file/rendering/rollback tests, and durable transport
   concurrency/recovery tests.
 - Python compilation and four shell syntax checks pass.
+- Final focused replay command is exactly:
+
+  ```bash
+  PYTHONPATH=projects/omegaclaw/worktrees/protocosmo2-phase6-live:. \
+    python3 -m pytest -q \
+    tests/test_protocosmo2_supervisor.py \
+    tests/test_protomega_outer_supervisor.py \
+    tests/test_omegaclaw_watchdog.py \
+    projects/omegaclaw/protocosmo2/tests/test_live_runtime_prompt.py \
+    projects/omegaclaw/worktrees/protocosmo2-phase6-live/provider_free_tests/test_private_canary.py \
+    projects/omegaclaw/worktrees/protocosmo2-phase6-live/provider_free_tests/test_private_canary_telegram.py
+  ```
 - An isolated copy of the real schema-2 production state migrated to schema 3,
   added an empty deferred-job ledger, reloaded exactly, and preserved the
   cursor/processed/outbox/rate/incident/context projection at SHA-256
@@ -116,3 +128,15 @@ obtain independent frontier PASS, then request one guarded production restart.
   its genuinely locked descriptor through the supervisor handoff; the owner
   launcher closes it before detaching. A regression proves the ambient flag
   without the locked descriptor fails before PID mutation.
+
+### Independent review R3/R3b — infrastructure failure then BLOCK
+
+- R3 terminated during Gateway transcript compaction without a verdict.
+- R3b run `6ad02325-c2e4-45d4-96ce-5dafa7b56908` used OpenAI GPT-5.6 Sol with
+  no fallback. It accepted the watchdog handoff, frozen paths, and legacy
+  drain, but observed that fd 9's path alone did not prove/acquire its flock;
+  it also could not reconstruct the exact 85-test command from the RUN.
+- Remediation adds `flock -n 9` after exact path validation, which either
+  confirms the inherited open-file description already owns the lock or safely
+  acquires it before bypassing the ordinary lock-open path. The exact focused
+  replay command is now embedded above.

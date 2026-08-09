@@ -83,6 +83,9 @@ validate_inherited_cutover_lock() {
   [[ "$inherited" == "$CUTOVER_LOCK" ]] || {
     echo "inherited cutover lock descriptor mismatch" >&2; return 1;
   }
+  flock -n 9 || {
+    echo "inherited cutover descriptor does not own the lock" >&2; return 1;
+  }
 }
 LOG="${OMEGACLAW_OUTER_LOG:-$ROOT/artifacts/telegram-private-supervisor/protomega-outer-telegram.log}"
 

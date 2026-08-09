@@ -44,6 +44,7 @@ def test_shared_supervisor_keeps_protomega_defaults_and_parameterizes_runtime():
     assert '--model "$MODEL"' in text
     assert 'readlink "/proc/$$/fd/9"' in text
     assert 'inherited cutover lock descriptor mismatch' in text
+    assert 'inherited cutover descriptor does not own the lock' in text
 
 
 def test_ambient_cutover_held_flag_without_locked_fd_is_rejected(tmp_path):
