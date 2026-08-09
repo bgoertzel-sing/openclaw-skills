@@ -124,6 +124,18 @@ def test_protomega_bridge_routes_through_explicit_agent_identity():
     assert '["--agent", agent]' in bridge
 
 
+def test_production_supervisor_has_schema_compatible_deferred_rollback_mode():
+    runner = RUNNER.read_text(encoding="utf-8")
+    supervisor = (Path(__file__).resolve().parents[2] / "local" /
+                  "protomega-outer-telegram-supervisor.sh").read_text(encoding="utf-8")
+    assert 'parser.add_argument("--disable-deferred-jobs", action="store_true"' in runner
+    assert "if not args.disable_deferred_jobs:" in runner
+    assert "deferred_responder=deferred_callback" in runner
+    assert "OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER" in supervisor
+    assert "deferred_args+=(--disable-deferred-jobs)" in supervisor
+    assert '[[ -f "$DEFERRED_DISABLE_MARKER" && ! -L "$DEFERRED_DISABLE_MARKER" ]]' in supervisor
+
+
 def test_case_reads_large_private_prompt_file_and_rejects_unsafe_file(tmp_path):
     prompt_path = tmp_path / "prompt.txt"
     prompt = "document text\n" * 50_000

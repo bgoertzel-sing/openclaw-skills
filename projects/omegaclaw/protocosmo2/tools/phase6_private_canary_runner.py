@@ -347,6 +347,8 @@ def main() -> int:
     parser.add_argument("--session-prefix", default="protocosmo2-canary")
     parser.add_argument("--provider-timeout", type=int, default=240)
     parser.add_argument("--poll-timeout", type=int, default=15)
+    parser.add_argument("--disable-deferred-jobs", action="store_true",
+                        help="schema-compatible rollback mode: process long requests synchronously")
     args = parser.parse_args()
     worker_info = args.worker_state_dir.lstat()
     if args.worker_state_dir.is_symlink() or not args.worker_state_dir.is_dir():
@@ -363,10 +365,13 @@ def main() -> int:
     contract = CanaryContract(
         load_config(args.config, expected_identity=args.identity), args.state_dir
     )
+    deferred_callback = None
+    if not args.disable_deferred_jobs:
+        deferred_callback = lambda text, task_id: responder(text, args, task_id)
     transport = PrivateCanaryTelegramTransport(
         contract, api, lambda text: responder(text, args), bot_id=args.bot_id,
         bot_username=args.bot_username, attachment_label=args.identity,
-        deferred_responder=lambda text, task_id: responder(text, args, task_id),
+        deferred_responder=deferred_callback,
     )
     running = True
     def stop(_signum, _frame):

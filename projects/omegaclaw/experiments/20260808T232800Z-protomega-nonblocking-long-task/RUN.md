@@ -178,19 +178,41 @@ deployment is exactly:
    free topology lock, unchanged cursor/processed/outbox state, and no pending
    or undelivered item.
 
-Immediate rollback on any failed postcondition is exactly:
+### Independent review R4 — BLOCK on rollback compatibility
+
+- Run: `4e33e73d-5156-410f-84ba-7fc01717db64`.
+- Actual provider/model: OpenAI `gpt-5.6-sol`; fallback false; terminal stop.
+- The reviewer verified pinned files/artifacts, hashes, 57/57 tests,
+  compilation, syntax, and targeted diffs, then found that the proposed source
+  rollback combined schema-v2 transport with schema-v3 state and an old runner
+  lacking the production supervisor's CLI boundary.
+
+That source rollback is withdrawn. The replacement is a schema-compatible
+feature rollback in the deployed code:
+
+- runner option `--disable-deferred-jobs` supplies no deferred callback, so
+  long/document messages use the previously proven synchronous path;
+- production supervisor consumes a private, non-symlink durable marker
+  `local/run-state/protomega-deferred-disabled` and adds that option on every
+  child start, including watchdog recovery;
+- the current schema-v3 transport remains loaded, so cursor, processed IDs,
+  outbox receipts, recent context, and terminal deferred records remain valid;
+- provider-free rollback coverage proves a long request returns synchronously,
+  creates no deferred job, persists schema v3, and reloads after restart;
+  static boundary coverage proves the supervisor marker/flag wiring and
+  rejects a symlink marker.
+
+Immediate rollback on any failed production postcondition is now exactly:
 
 1. Stop the production outer supervisor and prove zero receivers.
-2. Restore runtime files only from outer parent `7231c67`:
-   `phase5_omegaclaw_case.py`, `phase5_openclaw_bridge.py`, and
-   `phase6_private_canary_runner.py`.
-3. Restore transport runtime files only from transport parent
-   `0a344d105651a464afaa81965eb51ee516f282e1`:
-   `channels/private_canary.py` and
-   `channels/private_canary_telegram.py`.
-4. Start the same owning production outer supervisor and require one owner/one
-   child, zero legacy receiver, preserved durable state, watchdog recognition,
-   and a free topology lock.
+2. Create `local/run-state/protomega-deferred-disabled` under umask 077 as a
+   regular mode-0600 file after rejecting any pre-existing symlink.
+3. Start the same owning production outer supervisor.
+4. Require one owner/one child, zero legacy receiver, preserved schema-v3
+   durable state, watchdog recognition, and a free topology lock.
 
-These restores use `git restore --source=<pinned-parent> -- <exact-files>`;
-they do not rewrite history or touch unrelated working-tree changes.
+This rollback disables only the new asynchronous admission/worker seam while
+retaining the schema-compatible current transport and the pre-repair
+synchronous behavior. Re-enablement removes the marker only while stopped,
+then restarts through the same owning supervisor. Revised focused gate: 59/59
+tests pass; compilation, shell syntax, and scoped diff checks pass.
