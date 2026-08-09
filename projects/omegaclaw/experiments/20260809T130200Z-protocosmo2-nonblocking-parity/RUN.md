@@ -89,3 +89,18 @@ receiver and healthy watchdog recognition.
 
 Remaining gates: rerun after final scoped diff review, pin focused commits,
 obtain independent frontier PASS, then request one guarded production restart.
+
+### Independent review R1 — BLOCK
+
+- Run `a650a863-5150-4e2f-9875-1873bb82e5b9` used OpenAI GPT-5.6 Sol with no
+  fallback. It independently passed 84 tests, compilation, shell syntax, and
+  scoped diff checks.
+- It blocked the first cutover because the live pre-sidecar owner is rejected
+  by the new `alive()` check, so ordinary `stop`/`start` could overlap it. It
+  also rejected ambient environment overrides of ProtoCosmo2 production paths.
+- Remediation freezes every production identity/path in the wrapper and adds a
+  one-purpose `stop-pre-sidecar EXPECTED_PID EXPECTED_START
+  EXPECTED_CMDLINE_SHA256` action. Under the cutover lock it content-binds the
+  legacy owner, exact resolved wrapper `run` command, process group, and exactly
+  one expected receiver child before signaling the group; any mismatch fails
+  closed. It removes the PID file only after owner and child both disappear.

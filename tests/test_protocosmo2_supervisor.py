@@ -28,6 +28,11 @@ def test_wrapper_freezes_protocosmo2_identity_and_isolated_paths():
     assert "protocosmo2-worker-state" in text
     assert "protocosmo2-cutover.lock" in text
     assert "exec \"$ROOT/local/protomega-outer-telegram-supervisor.sh\"" in text
+    assert '${OMEGACLAW_OUTER_STATE_DIR:-' not in text
+    assert "stop-pre-sidecar" in text
+    assert "validate-pre-sidecar" in text
+    assert "EXPECTED_CMDLINE_SHA256" in text
+    assert "legacy owner is not its process-group leader" in text
 
 
 def test_shared_supervisor_keeps_protomega_defaults_and_parameterizes_runtime():
@@ -41,14 +46,14 @@ def test_shared_supervisor_keeps_protomega_defaults_and_parameterizes_runtime():
 
 def test_wrapper_creates_and_validates_secure_sync_rollback_marker(tmp_path):
     env = fixture_env(tmp_path)
-    made = subprocess.run([str(SUPERVISOR), "enable-sync-rollback"], env=env,
+    made = subprocess.run([str(GENERIC), "enable-sync-rollback"], env=env,
                           text=True, capture_output=True)
     assert made.returncode == 0, made.stderr
     marker = tmp_path / "rollback.marker"
     info = marker.stat()
     assert info.st_mode & 0o777 == 0o600
     assert info.st_nlink == 1
-    checked = subprocess.run([str(SUPERVISOR), "validate-sync-rollback"], env=env,
+    checked = subprocess.run([str(GENERIC), "validate-sync-rollback"], env=env,
                              text=True, capture_output=True)
     assert checked.returncode == 0, checked.stderr
 
@@ -60,11 +65,11 @@ def test_wrapper_rejects_symlink_and_hardlinked_markers(tmp_path):
     target.chmod(0o600)
     marker = tmp_path / "rollback.marker"
     marker.symlink_to(target)
-    result = subprocess.run([str(SUPERVISOR), "enable-sync-rollback"], env=env)
+    result = subprocess.run([str(GENERIC), "enable-sync-rollback"], env=env)
     assert result.returncode != 0
     marker.unlink()
     os.link(target, marker)
-    result = subprocess.run([str(SUPERVISOR), "validate-sync-rollback"], env=env)
+    result = subprocess.run([str(GENERIC), "validate-sync-rollback"], env=env)
     assert result.returncode != 0
 
 
