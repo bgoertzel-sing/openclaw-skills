@@ -73,6 +73,17 @@ process_running() {
   state=$(awk '{print $3}' "/proc/$pid/stat" 2>/dev/null) || return 1
   [[ "$state" != Z ]]
 }
+
+validate_inherited_cutover_lock() {
+  local inherited
+  [[ "${OMEGACLAW_CUTOVER_LOCK_HELD:-0}" == 1 ]] || return 0
+  inherited=$(readlink "/proc/$$/fd/9" 2>/dev/null) || {
+    echo "missing inherited cutover lock descriptor" >&2; return 1;
+  }
+  [[ "$inherited" == "$CUTOVER_LOCK" ]] || {
+    echo "inherited cutover lock descriptor mismatch" >&2; return 1;
+  }
+}
 LOG="${OMEGACLAW_OUTER_LOG:-$ROOT/artifacts/telegram-private-supervisor/protomega-outer-telegram.log}"
 
 alive() {
@@ -149,6 +160,7 @@ case "${1:-status}" in
     done
     ;;
   start)
+    validate_inherited_cutover_lock || exit 2
     if [[ "${OMEGACLAW_CUTOVER_LOCK_HELD:-0}" != 1 ]]; then
       [[ ! -L "$CUTOVER_LOCK" ]] || { echo "UNSAFE_CUTOVER_LOCK" >&2; exit 2; }
       mkdir -p "$(dirname "$CUTOVER_LOCK")"
@@ -170,6 +182,7 @@ case "${1:-status}" in
     echo "started pid $(cat "$PID_FILE")"
     ;;
   stop)
+    validate_inherited_cutover_lock || exit 2
     if [[ "${OMEGACLAW_CUTOVER_LOCK_HELD:-0}" != 1 ]]; then
       [[ ! -L "$CUTOVER_LOCK" ]] || { echo "UNSAFE_CUTOVER_LOCK" >&2; exit 2; }
       mkdir -p "$(dirname "$CUTOVER_LOCK")"

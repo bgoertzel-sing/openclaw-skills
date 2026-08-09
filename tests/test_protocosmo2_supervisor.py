@@ -42,6 +42,18 @@ def test_shared_supervisor_keeps_protomega_defaults_and_parameterizes_runtime():
     assert '--identity "$IDENTITY"' in text
     assert '--bot-id "$BOT_ID"' in text
     assert '--model "$MODEL"' in text
+    assert 'readlink "/proc/$$/fd/9"' in text
+    assert 'inherited cutover lock descriptor mismatch' in text
+
+
+def test_ambient_cutover_held_flag_without_locked_fd_is_rejected(tmp_path):
+    env = fixture_env(tmp_path)
+    env["OMEGACLAW_CUTOVER_LOCK_HELD"] = "1"
+    result = subprocess.run([str(GENERIC), "start"], env=env,
+                            text=True, capture_output=True)
+    assert result.returncode == 2
+    assert "inherited cutover lock" in result.stderr
+    assert not (tmp_path / "owner.pid").exists()
 
 
 def test_wrapper_creates_and_validates_secure_sync_rollback_marker(tmp_path):

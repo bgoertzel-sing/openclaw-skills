@@ -147,7 +147,7 @@ rm -f "$OUTER_PID_FILE" "${OUTER_PID_FILE}.identity"
 # Restart the accepted outer production target via its owning supervisor.
 export HOME=/home/openclaw
 export PATH=/home/openclaw/.npm-global/bin:$PATH
-OMEGACLAW_CUTOVER_LOCK_HELD=1 "$OUTER_SUPERVISOR" start 9>&- 2>&1 || { echo "OUTER_RESTART_FAILED"; exit 1; }
+OMEGACLAW_CUTOVER_LOCK_HELD=1 "$OUTER_SUPERVISOR" start 2>&1 || { echo "OUTER_RESTART_FAILED"; exit 1; }
 
 # Verify it came up
 sleep 3

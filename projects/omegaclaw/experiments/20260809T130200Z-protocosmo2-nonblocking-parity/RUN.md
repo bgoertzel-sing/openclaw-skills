@@ -104,3 +104,15 @@ obtain independent frontier PASS, then request one guarded production restart.
   legacy owner, exact resolved wrapper `run` command, process group, and exactly
   one expected receiver child before signaling the group; any mismatch fails
   closed. It removes the PID file only after owner and child both disappear.
+
+### Independent review R2 — BLOCK
+
+- Run `9c2cca88-3978-4b8b-9085-7d0d8b11db13` used OpenAI GPT-5.6 Sol with no
+  fallback and independently passed all 84 tests and static gates.
+- It accepted the frozen paths and exact legacy drain, but found that ambient
+  `OMEGACLAW_CUTOVER_LOCK_HELD=1` could bypass serialization.
+- Remediation requires the flag to be accompanied by inherited descriptor 9
+  resolving exactly to the configured cutover lock. The watchdog now preserves
+  its genuinely locked descriptor through the supervisor handoff; the owner
+  launcher closes it before detaching. A regression proves the ambient flag
+  without the locked descriptor fails before PID mutation.
