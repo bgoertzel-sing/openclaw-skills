@@ -228,6 +228,19 @@ def clean_rendered_answer(answer: str) -> str:
     return unwrapped
 
 
+def captured_bridge_answer(stdout: str) -> str | None:
+    """Return the last complete bridge answer payload from captured stdout."""
+    for line in reversed(stdout.splitlines()):
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        answer = payload.get("answer") if isinstance(payload, dict) else None
+        if payload.get("status") == "ok" and isinstance(answer, str) and answer:
+            return answer
+    return None
+
+
 def write_private_prompt(text: str) -> Path:
     """Create and durably publish a private prompt, cleaning every failed write."""
     handle = None
@@ -312,18 +325,20 @@ def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None =
         except FileNotFoundError:
             pass
     assert process is not None
+    # The bridge result is a completed immutable handoff from the inner
+    # runtime.  PeTTa can still fail while finalizing after that handoff (the
+    # message-848 production incident).  Preserve the incident, but do not
+    # discard an already captured and outer-validated answer.  A non-zero exit
+    # without such an answer remains a bounded failure.
+    raw_answer = captured_bridge_answer(stdout)
     if process.returncode != 0:
         diagnostic = args.worker_state_dir / "responder-incidents.jsonl"
         append_responder_incident(diagnostic, returncode=process.returncode, stderr=stderr)
+        if raw_answer is not None:
+            return clean_rendered_answer(raw_answer)
         raise RuntimeError("omegaclaw_runtime_failure")
-    for line in reversed(stdout.splitlines()):
-        try:
-            payload = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        answer = payload.get("answer") if isinstance(payload, dict) else None
-        if payload.get("status") == "ok" and isinstance(answer, str) and answer:
-            return clean_rendered_answer(answer)
+    if raw_answer is not None:
+        return clean_rendered_answer(raw_answer)
     raise RuntimeError("omegaclaw_result_missing")
 
 

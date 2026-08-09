@@ -282,3 +282,71 @@ def test_responder_transfers_large_prompt_by_private_file_not_argv(tmp_path, mon
     assert observed["prompt_mode"] == 0o600
     assert observed["prompt_size"] > 500_000
     assert not observed["prompt_path"].exists()
+
+
+def responder_args(tmp_path):
+    worker_state = tmp_path / "worker"
+    worker_state.mkdir(mode=0o700)
+    return SimpleNamespace(
+        worker_state_dir=worker_state,
+        driver=tmp_path / "driver.py",
+        petta=tmp_path / "petta",
+        core=tmp_path / "core",
+        session_prefix="post-answer-regression",
+        model="openai/gpt-5.6-sol",
+        provider_timeout=10,
+        agent_id="main",
+    )
+
+
+def fake_completed_process(*, returncode, stdout, stderr):
+    class FakeProcess:
+        pid = 999999
+
+        def __init__(self, _command, **_kwargs):
+            self.returncode = returncode
+
+        def communicate(self, timeout):
+            assert timeout == 40
+            return stdout, stderr
+
+        def poll(self):
+            return self.returncode
+
+    return FakeProcess
+
+
+def test_responder_preserves_valid_answer_after_post_answer_runtime_failure(tmp_path, monkeypatch):
+    stdout = json.dumps({"status": "ok", "answer": "HANDOFF-READY"}) + "\n"
+    monkeypatch.setattr(
+        RUNNER_MODULE.subprocess, "Popen",
+        fake_completed_process(returncode=1, stdout=stdout, stderr="fatal after bridge handoff"),
+    )
+    args = responder_args(tmp_path)
+    assert RUNNER_MODULE.responder("message 848", args) == "HANDOFF-READY"
+    incident = json.loads((args.worker_state_dir / "responder-incidents.jsonl").read_text())
+    assert incident["returncode"] == 1
+    assert incident["stderr_bytes"] > 0
+
+
+def test_responder_rejects_malformed_answer_after_runtime_failure(tmp_path, monkeypatch):
+    stdout = json.dumps({"status": "ok", "answer": '(send "one") (send "two")'}) + "\n"
+    monkeypatch.setattr(
+        RUNNER_MODULE.subprocess, "Popen",
+        fake_completed_process(returncode=1, stdout=stdout, stderr="failed after malformed output"),
+    )
+    args = responder_args(tmp_path)
+    with pytest.raises(RuntimeError, match="unsafe_send_wrapper"):
+        RUNNER_MODULE.responder("message 848 malformed", args)
+    assert (args.worker_state_dir / "responder-incidents.jsonl").is_file()
+
+
+def test_responder_still_fails_closed_when_nonzero_exit_has_no_answer(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        RUNNER_MODULE.subprocess, "Popen",
+        fake_completed_process(returncode=1, stdout="diagnostic only\n", stderr="runtime failed"),
+    )
+    args = responder_args(tmp_path)
+    with pytest.raises(RuntimeError, match="omegaclaw_runtime_failure"):
+        RUNNER_MODULE.responder("message 848 no result", args)
+    assert (args.worker_state_dir / "responder-incidents.jsonl").is_file()
