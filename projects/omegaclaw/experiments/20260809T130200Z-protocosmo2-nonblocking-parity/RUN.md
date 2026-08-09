@@ -140,3 +140,16 @@ obtain independent frontier PASS, then request one guarded production restart.
   confirms the inherited open-file description already owns the lock or safely
   acquires it before bypassing the ordinary lock-open path. The exact focused
   replay command is now embedded above.
+
+### Independent review R4 — PASS
+
+- Run `cd372a54-1646-4374-b6d7-79ff1636e2b6` used OpenAI GPT-5.6 Sol with no
+  fallback and returned `PASS`.
+- The reviewer independently reran the literal gate: 85/85 tests, compilation,
+  four shell syntax checks, diff check, and ancestry all passed.
+- It verified exact fd-9 path plus successful nonblocking flock acquisition,
+  real watchdog lock handoff, detached-owner descriptor closure, frozen
+  ProtoCosmo2 isolation, schema-compatible rollback, and unchanged Protomega
+  defaults. No remaining production-safety blocker was found in scope.
+- Technical readiness only: production remains the original pre-sidecar owner.
+  One explicitly authorized guarded restart and fresh external canaries remain.
