@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -133,7 +134,53 @@ def test_production_supervisor_has_schema_compatible_deferred_rollback_mode():
     assert "deferred_responder=deferred_callback" in runner
     assert "OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER" in supervisor
     assert "deferred_args+=(--disable-deferred-jobs)" in supervisor
-    assert '[[ -f "$DEFERRED_DISABLE_MARKER" && ! -L "$DEFERRED_DISABLE_MARKER" ]]' in supervisor
+    assert "os.O_EXCL" in supervisor
+    assert 'getattr(os, "O_NOFOLLOW", 0)' in supervisor
+    assert "stat.S_IMODE(info.st_mode) != 0o600" in supervisor
+    assert "info.st_nlink != 1" in supervisor
+
+
+def test_production_supervisor_creates_and_validates_private_rollback_marker(tmp_path):
+    supervisor = Path(__file__).resolve().parents[2] / "local" / "protomega-outer-telegram-supervisor.sh"
+    marker = tmp_path / "rollback.marker"
+    env = os.environ.copy()
+    env["OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER"] = str(marker)
+    created = subprocess.run(
+        [str(supervisor), "enable-sync-rollback"], env=env,
+        text=True, capture_output=True, check=False,
+    )
+    assert created.returncode == 0, created.stderr
+    info = marker.stat()
+    assert info.st_mode & 0o777 == 0o600
+    assert info.st_nlink == 1
+    validated = subprocess.run(
+        [str(supervisor), "validate-sync-rollback"], env=env,
+        text=True, capture_output=True, check=False,
+    )
+    assert validated.returncode == 0, validated.stderr
+
+
+def test_production_supervisor_rejects_symlink_and_hardlinked_rollback_markers(tmp_path):
+    supervisor = Path(__file__).resolve().parents[2] / "local" / "protomega-outer-telegram-supervisor.sh"
+    target = tmp_path / "target"
+    target.write_text("", encoding="ascii")
+    target.chmod(0o600)
+    marker = tmp_path / "marker"
+    marker.symlink_to(target)
+    env = os.environ.copy()
+    env["OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER"] = str(marker)
+    symlinked = subprocess.run(
+        [str(supervisor), "enable-sync-rollback"], env=env,
+        text=True, capture_output=True, check=False,
+    )
+    assert symlinked.returncode != 0
+    marker.unlink()
+    os.link(target, marker)
+    hardlinked = subprocess.run(
+        [str(supervisor), "validate-sync-rollback"], env=env,
+        text=True, capture_output=True, check=False,
+    )
+    assert hardlinked.returncode != 0
 
 
 def test_case_reads_large_private_prompt_file_and_rejects_unsafe_file(tmp_path):

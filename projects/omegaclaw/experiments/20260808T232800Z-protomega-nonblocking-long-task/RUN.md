@@ -216,3 +216,23 @@ retaining the schema-compatible current transport and the pre-repair
 synchronous behavior. Re-enablement removes the marker only while stopped,
 then restarts through the same owning supervisor. Revised focused gate: 59/59
 tests pass; compilation, shell syntax, and scoped diff checks pass.
+
+### Independent review R5 — BLOCK on marker hardening
+
+- Run: `b652a6db-c261-4320-9814-1dd10822572c`.
+- Actual provider/model: OpenAI `gpt-5.6-sol`; fallback false; terminal stop.
+- The reviewer accepted the schema-compatible rollback and 59-test gate, then
+  blocked because marker validation did not enforce mode, owner, and link
+  count; symlink rejection was static rather than executed; and marker
+  creation was not create-exclusive/atomic.
+- Remediation: supervisor actions `enable-sync-rollback` and
+  `validate-sync-rollback` now create/open the marker with
+  `O_EXCL|O_NOFOLLOW|O_CLOEXEC`, validate the opened descriptor as a regular
+  mode-0600 file owned by the current uid with link count 1, and fsync before
+  success. Executed subprocess regressions pass valid create/validate and
+  reject both symlink and hardlinked markers.
+- Exact rollback marker command is now
+  `projects/omegaclaw/local/protomega-outer-telegram-supervisor.sh enable-sync-rollback`;
+  no shell redirection or check/create sequence is used.
+- Revised focused gate: 61/61 tests pass; compilation, supervisor syntax, and
+  scoped diff checks pass.

@@ -17,6 +17,48 @@ START_LOCK="${OMEGACLAW_OUTER_START_LOCK:-${PID_FILE}.start.lock}"
 CUTOVER_LOCK="${OMEGACLAW_CUTOVER_LOCK:-$ROOT/local/run-state/protomega-cutover.lock}"
 DEFERRED_DISABLE_MARKER="${OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER:-$ROOT/local/run-state/protomega-deferred-disabled}"
 
+validate_deferred_disable_marker() {
+  MARKER_PATH="$DEFERRED_DISABLE_MARKER" python3 - <<'PY'
+import os, stat
+path = os.environ["MARKER_PATH"]
+flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+fd = os.open(path, flags)
+try:
+    info = os.fstat(fd)
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+        raise SystemExit("unsafe deferred-disable marker identity")
+    if stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1:
+        raise SystemExit("unsafe deferred-disable marker metadata")
+finally:
+    os.close(fd)
+PY
+}
+
+create_deferred_disable_marker() {
+  mkdir -p "$(dirname "$DEFERRED_DISABLE_MARKER")"
+  MARKER_PATH="$DEFERRED_DISABLE_MARKER" python3 - <<'PY'
+import errno, os, stat
+path = os.environ["MARKER_PATH"]
+flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+try:
+    fd = os.open(path, flags, 0o600)
+except OSError as exc:
+    if exc.errno != errno.EEXIST:
+        raise
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags)
+try:
+    info = os.fstat(fd)
+    if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+        raise SystemExit("unsafe deferred-disable marker identity")
+    if stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1:
+        raise SystemExit("unsafe deferred-disable marker metadata")
+    os.fsync(fd)
+finally:
+    os.close(fd)
+PY
+}
+
 process_running() {
   local pid="$1" state
   kill -0 "$pid" 2>/dev/null || return 1
@@ -81,10 +123,7 @@ case "${1:-status}" in
     while true; do
       deferred_args=()
       if [[ -e "$DEFERRED_DISABLE_MARKER" || -L "$DEFERRED_DISABLE_MARKER" ]]; then
-        [[ -f "$DEFERRED_DISABLE_MARKER" && ! -L "$DEFERRED_DISABLE_MARKER" ]] || {
-          echo "unsafe deferred-disable marker" >&2
-          exit 2
-        }
+        validate_deferred_disable_marker
         deferred_args+=(--disable-deferred-jobs)
       fi
       OMEGACLAW_EXPECTED_PARENT_PID="$$" python3 "$RUNNER" \
@@ -159,5 +198,14 @@ case "${1:-status}" in
   owner-alive)
     if alive; then echo "owner-active pid $(cat "$PID_FILE")"; else echo inactive; exit 1; fi
     ;;
-  *) echo "usage: $0 {start|stop|status|run}" >&2; exit 2 ;;
+  enable-sync-rollback)
+    create_deferred_disable_marker
+    validate_deferred_disable_marker
+    echo "sync rollback enabled"
+    ;;
+  validate-sync-rollback)
+    validate_deferred_disable_marker
+    echo "sync rollback marker valid"
+    ;;
+  *) echo "usage: $0 {start|stop|status|run|enable-sync-rollback|validate-sync-rollback}" >&2; exit 2 ;;
 esac
