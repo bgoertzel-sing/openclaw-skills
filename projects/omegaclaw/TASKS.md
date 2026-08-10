@@ -4,6 +4,137 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-08-10: Bind ThreadKeeper durable transcript claims to internal run
+  identity at commit `0d508d7`. Referenced JSON must carry a safe `run_id`, an
+  internal transcript path exactly matching the canonical claimed path, and a
+  filename prefixed by that run identity. One focused regression, all 32
+  boundary tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-10: Require exact canonical ThreadKeeper durable queued
+  transcript paths at commit `763bcea`. Whitespace-bearing, overlong,
+  relative/aliased, symlink-resolving, and non-`.json` transcript claims now
+  fail closed before terminal audit publication. One focused regression, all
+  32 boundary tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-10: Content-bind ThreadKeeper durable queued transcript evidence
+  at commit `b24839f`. Missing, symlinked, oversized, unreadable, or
+  digest-mismatched referenced transcripts now fail closed before terminal
+  audit publication. One focused regression, all 32 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-09: Canonicalize ThreadKeeper durable queued transcript paths at
+  commit `9278e98`. Transcript path evidence now rejects control-bearing,
+  multiline, and non-NFC path text before terminal audit publication. One
+  focused regression, all 32 boundary tests, compilation, `git diff --check`,
+  and draft PR #1 safety-floor ancestry passed.
+
+- [x] **2026-08-09: Load the validated post-answer handoff repair in
+  Protomega production.** Deliverable: Protomega must preserve and deliver a
+  completed, validated bridge answer when the inner PeTTa runtime exits
+  nonzero during later finalization, while still failing closed for malformed
+  or absent answers. Acceptance: correlate direct-message sources 9798 and
+  9801 to their captured answers and runtime incidents; replay focused and full
+  provider-free tests at `b8ab378`; perform a separately authorized guarded
+  restart with byte-preserved durable state and exactly one receiver; then pass
+  a fresh ordinary substantive Telegram canary. Next command: run the focused
+  post-answer regression and full provider-free suite. Evidence:
+  `experiments/20260809T234000Z-protocosmo2-post-answer-repair/` plus a new
+  Protomega production correlation record.
+  Ben authorized the restart in Telegram source 17906. The guarded restart
+  loaded the repaired runner under new owner 2715228 with sole receiver 2715241;
+  protected state matched at SHA-256 `0a1aa40c...f6cdcd2`, watchdog and lock
+  checks passed, deferred mode remained enabled, and rollback was not activated.
+  Production acceptance passed: source 9806 was durably admitted as task
+  `ba29eda3...80b80f`, acknowledged by receipt 9807, and completed exactly once
+  with the substantive Hyperseed answer plus exact
+  `PROTOMEGA-POSTANSWER-OK` marker in receipt 9808, replying to source 9806.
+  No new runtime incident occurred. Final state was clean with one receiver,
+  healthy watchdog, free lock, deferred mode enabled, and no rollback. Evidence:
+  `experiments/20260810T040300Z-protomega-post-answer-production/`.
+
+- [x] 2026-08-09: Validate ThreadKeeper durable adjudication candidate
+  summaries at commit `e34afa5`. Candidate summaries are now nonempty, capped
+  at 300 characters, single-line/control-free, and NFC-normalized before
+  terminal audit publication. One focused regression, all 32 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-09: Validate ThreadKeeper durable worker summaries at commit
+  `8c90f99`. Structured summaries are now capped at 1,000 characters and must
+  be single-line/control-free NFC text before terminal audit publication. One
+  focused regression, all 32 boundary tests, compilation, `git diff --check`,
+  and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-09: Validate ThreadKeeper durable operator-guidance fields at
+  commit `3fc64c2`. `uncertainty` is now restricted to the three emitted
+  levels, and `next_action` must be a nonempty bounded single-line NFC string
+  before terminal audit publication. One focused regression, all 31 boundary
+  tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-09: Validate ThreadKeeper durable queued-worker transcript
+  evidence at commit `14a714b`. Transcript path and SHA-256 must now appear as
+  a pair; paths resolve beneath the configured run directory and digests use
+  canonical lowercase SHA-256 hex. One focused regression, all 30 boundary
+  tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-09: Validate bounded ThreadKeeper durable audit-claim lists at
+  commit `61706d8`. `files_changed` is now capped at 20 safe relative workspace
+  paths, and `tests_run` at 10 bounded single-line entries, before terminal
+  audit publication. One focused regression, all 29 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] **2026-08-09: Prevent short Protomega project commands from orphaning
+  long work.** Deliverable: every eligible request starts under a durable,
+  immutable task identity; explicit persistent-work intent is acknowledged and
+  deferred immediately, while an ordinary request that exceeds a bounded fast
+  grace period is promoted without rerunning its responder. Acceptance:
+  provider-free regression for source message 9764, exactly one acknowledgement,
+  interleaved short-message service, immutable final reply routing, and
+  crash/restart bounded-failure semantics; full transport suite, compilation,
+  diff checks, independent frontier review, then a separately authorized
+  guarded production cutover and fresh Telegram canaries. Exact message-9764
+  intent, no-rerun promotion, immutable route, interleaved-short, and recovery
+  regressions now pass; all 85 provider-free tests, compilation, and diff check
+  pass. Reviews R1--R4 exposed and drove closure of the active-worker
+  synchronous fallback, completion-correlation race, late capacity admission,
+  failed-reservation leakage, and missing source-bound evidence. Independent R5
+  returned PASS on pinned commit `2c96a1b`, including the exact 1,043-character
+  message-9764 fixture and SHA-256. Next command: after fresh explicit
+  authorization, guarded Protomega restart with state snapshot, exact one-owner
+  topology gates, and immediate rollback on any mismatch. Ben authorized the
+  restart in Telegram message 17861; the 2026-08-09 12:34 PDT restart loaded
+  `2c96a1b`, preserved every protected state projection byte-for-byte, and
+  returned with schema 3, one receiver, healthy watchdog ownership, free
+  topology lock, deferred jobs enabled, and no rollback. Next acceptance gate:
+  fresh short canary, then long-action-intent plus interleaved-short trace.
+  Production acceptance passed: source 9780 promoted once and delivered exact
+  `PROMO-OK` as receipt 9783; action-intent source 9784 was acknowledged as
+  9785, interleaved short source 9786 was acknowledged as 9787 and completed
+  first as 9788, then the action result returned to 9784 as receipt 9789 with
+  `ACTION-DONE`. The short model payload said `Acknowledged` instead of the
+  requested literal marker, but its durable admission, concurrency, completion,
+  and immutable routing all passed. Final state: no pending inbound work, one
+  receiver, healthy watchdog, free lock, deferred mode enabled, no rollback.
+  Evidence:
+  `experiments/20260809T174500Z-protomega-durable-task-promotion/` and
+  `experiments/20260809T175343Z-protocosmo2-promotion-independent-review/`,
+  `experiments/20260809T180008Z-protocosmo2-promotion-r2-suite/`, and
+  `experiments/20260809T180125Z-protocosmo2-promotion-r2-race-repro/`, and
+  `experiments/20260809T182452Z-protocosmo2-promotion-r5-independent-review/`.
+
+- [x] 2026-08-09: Reject ThreadKeeper queue-only metadata in durable worker
+  returns at commit `dab1609`. A claimed synchronous worker can no longer
+  inject `queue_path` or queue checksum fields into its terminal result audit
+  payload. One regression, all 28 boundary tests, compilation, and `git diff
+  --check` passed; the first class-qualified unittest selector named a
+  nonexistent class, then the complete module passed.
+
 - [x] 2026-08-09: Independently verify the Capacity 1.1 candidate freeze and
   public replay. The verifier content-binds the candidate, digest record,
   public harness, complete v0.6 sandbox chain, and sealed commitment; all 22
@@ -25,7 +156,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
   and 49 subtests, compilation, `git diff --check`, and draft PR #1
   safety-floor ancestry passed.
 
-- [ ] **2026-08-09: Bring live ProtoCosmo2 to Protomega's reviewed
+- [x] **2026-08-09: Bring live ProtoCosmo2 to Protomega's reviewed
   non-blocking transport/supervisor safety level.** Deliverable: ProtoCosmo2
   loads the schema-3 deferred long/document path, private prompt-file and strict
   rendering fixes under an identity-bound single-owner supervisor with
@@ -40,8 +171,26 @@ Use small, testable tasks. Keep the top of each section in priority order.
   safely entered synchronous rollback after the drained legacy owner removed
   its PID file and tripped the final drain gate. The inode/content/TOCTOU repair
   now has 11/11 focused and 90/90 full tests plus independent PASS. Next
-  command: request a fresh cutover decision before enabling deferred jobs,
-  then run the short and PDF-plus-interleaved-short canaries. Evidence:
+  command: correlate the now-requested fresh short canary, then run and
+  correlate the PDF-plus-interleaved-short canary. The fresh deferred-mode
+  cutover passed all process/preservation/watchdog gates. Fresh short source
+  827 delivered exact `PC2-OK` as receipt 828. Ben requested full-utilization
+  readiness in Telegram message 17873. Remaining acceptance test: one fresh
+  PDF request must receive a durable acknowledgement and source-bound final
+  result while an immediately interleaved short request completes without
+  blocking or route crossover; final state must have one identity-bound
+  receiver, healthy ProtoCosmo2 watchdog ownership, a free cutover lock, no
+  pending inbound item, and deferred mode enabled. Next command: correlate the
+  fresh PDF-plus-interleaved-short production trace. Production acceptance
+  passed: PDF-related sources 840 and 841 received durable acknowledgements
+  842 and 843; interleaved short source 844 delivered exact
+  `PC2-FULL-SHORT-OK` as 845 before either PDF result; results 846 and 847 were
+  source-bound, with 847 providing the requested Omega Linux summary. Both
+  deferred tasks completed once, no pending inbound remains, rendering was
+  clean, and one identity-bound receiver, healthy watchdog, free lock, and
+  deferred mode all hold. ProtoCosmo2 is ready for normal/full authorized use;
+  unavailable capabilities and existing approval/cost boundaries remain
+  unchanged. Evidence:
 `experiments/20260809T130200Z-protocosmo2-nonblocking-parity/`.
 
 - [x] 2026-08-09: Implement and freeze the Capacity 1.1 zero-effect candidate
@@ -4353,3 +4502,23 @@ Related defects found during 2026-08-06 diagnosis (fix in same or sibling branch
   - Next command: switch the live deployment to the already-implemented owned MTProto bridge, restart through the supervisor, and verify one owner/worker/bridge topology before Ben retries.
   - Evidence path: `projects/omegaclaw/experiments/20260807T071447Z-protomega-telegram-ingress-repair/`.
 - [ ] 2026-08-08: Deliver a sanitized ZIP snapshot of ZeroBot's current skill files for Ben's review and OmegaClaw portability analysis. Acceptance: archive contains an origin-preserving manifest and every active workspace/OpenClaw/Codex skill source, excludes caches and credentials, passes ZIP integrity plus secret-pattern scans, and is delivered through Telegram. Next command: inventory all configured skill roots. Evidence: `artifacts/skill-snapshots/20260808-zerobot-current-skills/`.
+
+## ProtoCosmo2 post-answer runtime failure (2026-08-09)
+
+- [x] Repair source message 848 / failure receipt 849 without weakening malformed-result handling.
+  - Deliverable: preserve and return a fully captured, validated bridge answer when the inner
+    OmegaClaw/PeTTa process fails only after publishing that answer; retain a private hashed
+    runtime-incident record and fail closed when no valid answer was captured.
+  - Acceptance: exact regressions cover valid-answer-plus-nonzero-exit, malformed-answer-plus-
+    nonzero-exit, and nonzero-exit-without-answer; focused tests, the complete provider-free
+    transport suite, compilation, and `git diff --check` pass; the change is committed and a
+    fresh ordinary long-message production canary delivers one reply to its source.
+  - Next command: add responder-result parsing tests around the message-848 failure shape in
+    `protocosmo2/tests/test_live_runtime_prompt.py`, then patch the responder ordering.
+  - Evidence: `projects/omegaclaw/experiments/20260809T234000Z-protocosmo2-post-answer-repair/`.
+  - Production acceptance: fresh source 858 was durably admitted as task
+    `1e41b4df...115a3`, acknowledged by receipt 859, then produced PeTTa exit 1
+    after a valid captured answer. The repaired responder recorded incident
+    `edfa7109...d600` and still delivered the validated, source-bound result as
+    receipt 860 with exact marker `PC2-HANDOFF-READY`. Exactly one receiver
+    remained live and the supervisor start lock was free.

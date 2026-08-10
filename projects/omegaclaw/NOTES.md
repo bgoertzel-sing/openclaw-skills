@@ -1,3 +1,65 @@
+# 2026-08-10 - Bind durable transcript claims to run identity
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`0d508d7`, preserving completed safety-floor ancestry. A queued structured
+return could previously cite any digest-matching JSON file under the run
+directory as authority-bearing transcript evidence. Referenced transcripts
+must now contain a safe bounded `run_id`, name their exact canonical path
+internally, and use a filename prefixed by that identity. Candidate review uses
+the same identity check.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and the safety-floor ancestry check. No
+provider, network, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+# 2026-08-10 - Require canonical durable queued transcript paths
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`763bcea`, preserving completed safety-floor ancestry. A content-valid queued
+worker return could retain a relative, aliased, whitespace-bearing, overlong,
+or non-`.json` transcript reference in terminal audit metadata. Transcript
+claims must now be the exact canonical absolute `.json` run-record path; the
+existing bounded regular-file and SHA-256 content verification remains in
+force.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and the safety-floor ancestry check. No
+provider, network, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+# 2026-08-09 - Validate durable queued transcript evidence
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`14a714b`, preserving completed safety-floor ancestry. Parsed queued-worker
+returns previously accepted arbitrary string transcript paths and digests as
+authority-bearing terminal audit metadata. Transcript evidence must now be a
+complete pair: a path resolving strictly beneath the configured subagent run
+directory and a canonical lowercase SHA-256 digest.
+
+One focused regression and all 30 boundary tests passed, along with Python
+compilation, `git diff --check`, and the safety-floor ancestry check. No
+provider, network, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+# 2026-08-09 - Validate durable audit-claim lists
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`61706d8`, preserving completed safety-floor ancestry. Parsed queued-worker
+returns previously type-checked `files_changed` and `tests_run` but allowed
+control-bearing claims, unsafe changed paths, and arbitrary list cardinality
+inside the overall digest cap. Changed-file claims now require at most 20 safe
+relative workspace paths; test claims require at most 10 nonempty, NFC,
+single-line strings of at most 300 characters.
+
+One focused regression and all 29 boundary tests passed, along with Python
+compilation and `git diff --check`. No provider, network, live queue/runtime,
+Telegram, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+
 # 2026-08-09 - Capacity 1.1 candidate freeze independently verified
 
 Independently content-bound the frozen candidate, its digest record, the
@@ -70,6 +132,23 @@ and 90/90 full tests plus static checks; independent final review replayed them
 and returned PASS. Production remains in synchronous rollback mode awaiting a
 fresh cutover decision. Evidence:
 `experiments/20260809T130200Z-protocosmo2-nonblocking-parity/RUN.md`.
+
+## 2026-08-09 — ProtoCosmo2 full-utilization production acceptance passed
+
+After the repaired deferred-mode cutover, fresh short source 827 delivered
+exact `PC2-OK` as receipt 828. The final PDF/concurrency trace then admitted
+PDF-related sources 840 and 841 as durable tasks and delivered acknowledgements
+842 and 843. Interleaved short source 844 returned exact
+`PC2-FULL-SHORT-OK` as receipt 845 before either PDF result. Result 846 remained
+bound to source 840; result 847 remained bound to source 841 and summarized the
+Omega Linux document. Both tasks completed exactly once, with no `(send ...)`
+or `MEDIA:` rendering leak. Final state: schema 3, no pending inbound item, one
+identity-bound receiver, healthy ProtoCosmo2 watchdog ownership, free cutover
+lock, deferred mode enabled, and no rollback. ProtoCosmo2 is accepted for
+normal/full use within its already-authorized capabilities; unavailable tools,
+external side effects, paid compute, and other approval boundaries are not
+broadened by this acceptance.
+
 
 # 2026-08-09 - Reject undeclared queued-worker result fields
 
@@ -7755,3 +7834,132 @@ unavailable `python` alias; two assertion-message mismatches were corrected,
 then the complete gate passed. No provider, network, live queue/runtime,
 Telegram, paid compute, secret/access/security change, push, merge,
 force-push, or remote-ref deletion occurred.
+# 2026-08-09 - Reject queue-only metadata in queued-worker returns
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`dab1609`, preserving completed safety-floor ancestry. Queue path and checksum
+fields belong to the enqueue response, not the synchronous worker result parsed
+after a durable claim. The worker-result parser now rejects those fields as
+undeclared, preventing a claimed worker from inserting forged queue-integrity
+metadata into its terminal audit record.
+
+One focused regression and all 28 boundary tests passed, along with Python
+compilation and `git diff --check`. The first class-qualified unittest command
+used a nonexistent test class; the immediate complete-module fallback passed.
+No provider, network, paid compute, secret/access/security change, push, merge,
+force-push, or remote-ref deletion occurred.
+# 2026-08-09 - Protomega durable-promotion production restart
+
+Ben authorized the guarded restart in Telegram message 17861. The exact live
+transport worktree was clean at `2c96a1b6727dca440e1f27ee55da5ca1dcdeade9`.
+Under the authenticated topology lock and watchdog maintenance window, the old
+owner PID 2513255 and its sole receiver drained; repaired owner PID 2623554
+started with exactly one receiver. Schema 3 and the protected
+cursor/processed/outbox/context/deferred projections retained their exact
+pre-restart hashes; pending inbound remained empty. Watchdog ownership is
+healthy, the topology lock is free, deferred rollback is inactive, and no
+rollback was needed. The coordinator's first in-shell lock-free probe correctly
+reported busy because it still held fd 9; the post-exit probe passed. Production
+acceptance remains open for a fresh short canary followed by a persistent-action
+intent plus interleaved-short trace.
+
+Production acceptance subsequently passed. Slow canary source 9780 was promoted
+once, acknowledged by 9782, and returned exact `PROMO-OK` as 9783. Persistent
+action source 9784 entered the durable lane and received acknowledgement 9785;
+interleaved source 9786 arrived eight seconds later, received acknowledgement
+9787, and completed as 9788 before the long action completed as 9789 with
+`ACTION-DONE`. Both durable jobs completed exactly once and retained their
+source reply bindings. The short provider payload was `Acknowledged` rather than
+the requested literal marker, a semantic instruction miss rather than a
+transport/concurrency failure. Pending inbound is empty; one receiver,
+watchdog ownership, free topology lock, deferred mode, and no rollback hold.
+# 2026-08-09 - Validate queued operator guidance fields
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`3fc64c2`, preserving completed safety-floor ancestry. Parsed durable worker
+returns previously accepted arbitrary string values for `uncertainty` and
+operator-facing `next_action`. Uncertainty is now limited to the three values
+emitted by synchronous dispatch, and next actions must be nonempty, at most
+300 characters, single-line/control-free, and NFC normalized before terminal
+audit publication.
+
+One focused regression and all 31 boundary tests passed, along with Python
+compilation, `git diff --check`, and draft PR #1 ancestry. The initial check
+used the absent repo-local `.venv` and a local-only branch name; rerunning with
+`python3` and `refs/remotes/fork/agent/threadkeeper-safety-floor` passed. No
+provider, network, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+
+# 2026-08-09 - Validate durable queued-worker summaries
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`8c90f99`, preserving completed safety-floor ancestry. Parsed durable worker
+returns previously accepted summaries with arbitrary length, embedded controls,
+or noncanonical Unicode. Summaries are now capped at 1,000 characters and must
+be single-line/control-free NFC text before terminal audit publication.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and draft PR #1 ancestry. An initial ancestry
+check used an obsolete commit name and failed before the remote safety-floor
+branch check passed. No provider, network, live queue/runtime, Telegram, paid
+compute, secret/access/security change, push, merge, force-push, or remote-ref
+deletion occurred.
+# 2026-08-09 - Validate queued adjudication candidate summaries
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`e34afa5`, preserving completed safety-floor ancestry. Pending adjudication
+candidate summaries were length-bounded but could still contain control-bearing
+multiline text or noncanonical Unicode. They must now be nonempty, at most 300
+characters, single-line/control-free, and NFC-normalized before terminal audit
+publication.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and draft PR #1 ancestry. The initial check
+used an absent repo-local `.venv`; the immediate `python3` rerun passed. No
+provider, network, live queue/runtime, Telegram, paid compute,
+secret/access/security change, push, merge, force-push, or remote-ref deletion
+occurred.
+# 2026-08-09 — Protomega loaded post-answer repair
+
+Ben authorized a guarded production restart in Telegram source 17906. Sources
+9798 and 9801 had each produced a valid answer before PeTTa exit 1, but the old
+live runner discarded them and delivered bounded failures 9803/9804. After
+19/19 focused and 99/99 full provider-free tests, the restart loaded workspace
+pin `b8ab378` under owner 2715228 with one receiver. The protected state
+projection matched at `0a1aa40c...f6cdcd2`; watchdog ownership and the free
+cutover lock passed; deferred mode stayed enabled; rollback was not activated.
+End-to-end acceptance awaits one fresh ordinary substantive Telegram canary.
+
+Acceptance subsequently passed: source 9806 entered durable task
+`ba29eda3...80b80f`, acknowledgement 9807 arrived, and substantive result 9808
+replied to 9806 with exact `PROTOMEGA-POSTANSWER-OK`. The task completed once;
+no new runtime incident occurred; final topology and durable state were clean.
+# 2026-08-09 - Canonicalize durable queued transcript paths
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`9278e98`, preserving completed safety-floor ancestry. Transcript evidence was
+already confined to the run directory and paired with a canonical SHA-256, but
+the recorded path text could still contain line controls or decomposed Unicode.
+Queued structured returns now require single-line NFC transcript paths before
+terminal audit publication.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and draft PR #1 ancestry. No provider, network,
+live queue/runtime, Telegram, paid compute, secret/access/security change,
+push, merge, force-push, or remote-ref deletion occurred.
+# 2026-08-10 - Content-bind durable queued transcript evidence
+
+Continued the draft-PR-#1-derived ThreadKeeper hardening branch with commit
+`b24839f`, preserving completed safety-floor ancestry. Durable queued returns
+previously validated transcript path confinement and SHA-256 syntax without
+reading the referenced transcript. The queue boundary now uses the existing
+bounded, no-symlink file hasher and rejects missing, non-regular, oversized,
+unreadable, or digest-mismatched transcript evidence before terminal audit
+publication.
+
+One focused regression and all 32 boundary tests passed, along with Python
+compilation, `git diff --check`, and ancestry from
+`refs/remotes/fork/agent/threadkeeper-safety-floor`. No provider, network, live
+queue/runtime, Telegram, paid compute, secret/access/security change, push,
+merge, force-push, or remote-ref deletion occurred.

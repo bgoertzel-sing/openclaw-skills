@@ -3,7 +3,7 @@
 - Slug: `omegaclaw`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-27`
+- Last reviewed: `2026-08-07`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -46,6 +46,1355 @@ Second-phase success, not yet attempted:
 - Paid compute.
 
 ## Current state
+
+On 2026-08-10, ThreadKeeper commit `0d508d7` on
+`agent/threadkeeper-hardening-next` bound durable transcript evidence to its
+internal run identity. A digest-valid arbitrary JSON file, mismatched internal
+path, or filename whose prefix disagrees with its `run_id` now fails closed
+before queued terminal audit publication or candidate review. One focused
+regression, all 32 boundary tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `763bcea` on
+`agent/threadkeeper-hardening-next` made durable queued transcript references
+canonical and exact. Terminal audit publication now rejects whitespace-bearing,
+overlong, relative/aliased, symlink-resolving, or non-`.json` transcript path
+claims even when they resolve to content with the claimed digest. One focused
+regression, all 32 boundary tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `b24839f` on
+`agent/threadkeeper-hardening-next` content-bound durable queued transcript
+evidence. Referenced transcripts must now be readable regular non-symlink files
+within the configured run directory, stay within the audit byte cap, and match
+the claimed SHA-256 before terminal audit publication. One focused regression,
+all 32 boundary tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `9278e98` on
+`agent/threadkeeper-hardening-next` made durable queued transcript paths
+canonical. Control-bearing/multiline and non-NFC path text now fails closed
+before terminal audit publication. One focused regression, all 32 boundary
+tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-09, ThreadKeeper commit `e34afa5` on
+`agent/threadkeeper-hardening-next` made durable adjudication candidate
+summaries control-safe and canonical. Pending candidate summaries must now be
+nonempty, at most 300 characters, single-line/control-free, and NFC-normalized
+before terminal audit publication. One focused regression, all 32 boundary
+tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-09, ThreadKeeper commit `8c90f99` on
+`agent/threadkeeper-hardening-next` made durable worker summaries bounded and
+canonical. Queued structured returns now reject summaries above 1,000
+characters, control-bearing/multiline text, and non-NFC Unicode before terminal
+audit publication. One focused regression, all 32 boundary tests, compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `3fc64c2` on
+`agent/threadkeeper-hardening-next` made durable operator guidance exact and
+bounded. Queued structured returns now restrict `uncertainty` to
+`low`/`medium`/`high`, while `next_action` must be a nonempty, single-line,
+NFC-normalized string of at most 300 characters. One focused regression, all
+31 boundary tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `14a714b` on
+`agent/threadkeeper-hardening-next` made durable worker transcript evidence
+exact and confined. Queued structured returns must provide transcript path and
+SHA-256 together; the path must resolve beneath the configured run directory
+and the digest must be canonical lowercase hex. One focused regression, all 30
+boundary tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `61706d8` on
+`agent/threadkeeper-hardening-next` made durable worker audit-claim lists
+bounded and safe. `files_changed` must now contain at most 20 safe relative
+workspace paths, while `tests_run` permits at most 10 bounded single-line
+entries. One focused regression, all 29 boundary tests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `dab1609` on
+`agent/threadkeeper-hardening-next` removed queue-only path and checksum fields
+from the accepted synchronous queued-worker return schema. Claimed workers can
+no longer inject those authority-bearing fields into terminal audit payloads.
+One regression, all 28 boundary tests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, Capacity 1.1's frozen candidate passed independent freeze and
+public-replay verification. The verifier content-binds the candidate, digest,
+22-case public harness, complete v0.6 sandbox chain, and sealed commitment;
+all public cases, two tests including source-drift failure, and compilation
+passed. A09--A12 remain sealed and require Ben's explicit authorization before
+reveal or execution; harness adoption and runtime effects remain closed.
+
+On 2026-08-09, ThreadKeeper commit `e0d7568` on
+`agent/threadkeeper-hardening-next` strictly validated durable patch-proposal
+summaries. Queued results now reject more than 20 proposals, unknown actions,
+absolute/traversing paths, and control-bearing paths before terminal audit
+publication. All 27 boundary tests and 54 subtests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `c9bcef4` on
+`agent/threadkeeper-hardening-next` kept size-fallback structured returns inside
+the durable queue schema. Minimal adjudication results now downgrade to
+`incomplete` when their required metadata cannot fit, and the last-resort
+fallback no longer emits the unrecognized `bounded` status. Two focused tests,
+all 26 boundary tests and 49 subtests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `71d9188` on
+`agent/threadkeeper-hardening-next` made durable adjudication returns exact and
+status-consistent. Missing, malformed, oversized, undeclared, or non-pending
+adjudication metadata now fails closed before terminal audit publication. Three
+focused tests, all 25 boundary tests and 49 subtests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `f6144b1` on
+`agent/threadkeeper-hardening-next` made durable structured worker-return
+shapes exact. Malformed scalar/list/proposal fields, invalid truncation flags,
+and inconsistent token-usage accounting now fail closed before terminal audit
+publication. Four focused tests, all 24 boundary tests and 45 subtests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-09, ThreadKeeper commit `b48f968` on
+`agent/threadkeeper-hardening-next` restricted durable parsed worker returns to
+the synchronous dispatch schema. Invented authority-bearing fields now fail
+closed rather than entering terminal audit records. Two focused tests, all 23
+boundary tests and 40 subtests, compilation, `git diff --check`, and draft PR
+#1 safety-floor ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `24a35a6` on
+`agent/threadkeeper-hardening-next` enforced each durable queued task's declared
+structured-return size contract at the worker boundary. A dispatch result above
+`max_chars`, or a non-string result, now fails closed into durable failure
+retention instead of becoming an oversized terminal success record. One focused
+regression, all 1,243 provider-free hardening tests and 40 subtests, compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `51f2cf5` on
+`agent/threadkeeper-hardening-next` retained each claimed queued task's enqueue
+checksum until a terminal `.done` or `.failed` commit publishes replacement
+integrity evidence. Abrupt interruption between claim and terminal publication
+can no longer orphan the claimed task from its authenticating sidecar. One
+focused regression, all 1,242 provider-free hardening tests and 40 subtests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `58eba7e` on
+`agent/threadkeeper-hardening-next` restricted durable queued-worker structured
+result statuses to the five states emitted by synchronous dispatch. Missing or
+invented statuses such as `approved` now fail closed rather than becoming
+authority-bearing audit metadata. Two focused tests, all 21 hardening tests
+and 40 subtests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `f50e738` on
+`agent/threadkeeper-hardening-next` validated durable queued-worker result
+statuses before persistence. Parsed structured results with non-string,
+control-bearing, or overlong statuses now fail closed through durable failure
+retention. One focused regression plus all 20 hardening tests and 32 subtests
+passed, with compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-08, Protomega's guarded transport cutover completed and passed a
+fresh human-authored end-to-end Telegram canary. Message 9714 / update
+940522237 reached the sole outer receiver, OpenClaw run
+`337869bb-c063-48a2-8dc6-61fd59f123fc` completed on verified Anthropic
+`claude-opus-4-6`, durable outbox delivery received Telegram receipt 9715,
+and Ben's screenshot confirmed the exact nonce reply. Final topology is
+`legacy=0 outer=1` at owner PID 2312624 with one child; watchdog healthy,
+maintenance inactive, and cutover lock free. Evidence:
+`experiments/20260808T203000Z-protomega-responder-failure-repro/`.
+
+On 2026-08-08, ThreadKeeper commit `412f556` on
+`agent/threadkeeper-hardening-next` bounded and path-sanitized durable queued
+worker failure summaries, including secondary retention failures. A local
+exception can no longer inflate a result record without bound or expose an
+absolute host path. Two focused tests and all 1,220 provider-free hardening
+tests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-08, ThreadKeeper commit `8d593df` on
+`agent/threadkeeper-hardening-next` bound each durable queued task's declared
+`run_id` to the queue path derived from that identity. Checksum-valid relabeled
+tasks now fail closed before any worker LLM call. One focused regression and
+all 1,238 provider-free hardening tests plus 28 subtests passed, with
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-08, ThreadKeeper commit `fbdd0f3` on
+`agent/threadkeeper-hardening-next` made durable queued tool subsets obey the
+same strict contract as direct dispatch. Checksum-valid tasks containing
+duplicate, unknown, excluded, or aggregate-oversized tool subsets now fail
+closed during record validation instead of only after worker claim. Five
+focused tests plus 19 subtests and all 1,264 provider-free hardening tests plus
+28 subtests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-08, ThreadKeeper commit `cad5953` on
+`agent/threadkeeper-hardening-next` made durable queued tasks complete and
+internally consistent. Checksum-valid records must now contain every
+runtime-authored field, and the task-contract objective must exactly match the
+queued goal instead of inheriting defaults or presenting conflicting task
+meaning. Eighteen focused tests plus 25 subtests and all 1,218 provider-free
+hardening tests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-08, ThreadKeeper commit `c6d334f` on
+`agent/threadkeeper-hardening-next` made durable queued-worker limits exact.
+Checksum-valid tasks with zero, negative, or above-cap `max_turns`/`max_chars`
+now fail closed instead of being silently clamped at claim time. Sixteen
+focused tests plus 15 subtests, all 1,218 provider-free hardening tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `01e44b8` on
+`agent/threadkeeper-hardening-next` bounded durable queued-task persona and
+tool identifiers to 64 characters and aligned persona lookup with the same
+fail-closed grammar. Three focused regressions, all 1,218 provider-free
+hardening tests, 15 boundary tests plus 11 subtests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-08, ThreadKeeper commit `05de483` on
+`agent/threadkeeper-hardening-next` made candidate run statuses safe bounded
+identifiers before they reach operator-facing review output. Integrity-valid
+transcripts with controls or status strings above 64 characters now fail
+closed. Twenty focused and all 1,231 provider-free hardening tests plus 9
+subtests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-08, ThreadKeeper commit `79613f7` on
+`agent/threadkeeper-hardening-next` made patch-proposal capture exact. In
+`patch_proposal_only` mode, content above the configured proposal cap now fails
+the complete batch closed before any proposal is recorded instead of silently
+persisting a truncated, semantically different patch. Seventeen focused and
+all 1,216 provider-free hardening tests passed, with compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `d3f3cbc` on
+`agent/threadkeeper-hardening-next` made parsed tool names safe bounded
+identifiers before registry access or diagnostic interpolation. Control/invisible
+Unicode and names over 64 characters now fail the complete batch closed. Two
+focused tests and all 1,229 provider-free hardening tests plus 9 subtests
+passed, with compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-07, ThreadKeeper commit `b97515e` on
+`agent/threadkeeper-hardening-next` made the structured worker-return bound
+total. If fixed audit metadata alone exceeds a caller's digest cap, the return
+now falls back to minimal valid JSON within that cap instead of leaking an
+oversized result. One focused test and all 12 boundary-hardening tests plus 6
+subtests passed, with compilation and `git diff --check`.
+
+On 2026-08-07, ThreadKeeper commit `ebf8eb1` on
+`agent/threadkeeper-hardening-next` bounded the complete parsed worker tool
+batch before preflight. Non-effectful `emit` calls can no longer bypass the
+per-turn cardinality bound and force unbounded validation work. One focused
+and all 1,227 provider-free hardening tests plus 6 subtests passed, with
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `ba70005` on
+`agent/threadkeeper-hardening-next` made candidate patch proposal records
+complete as well as exact. Review now rejects checksum-valid proposals that
+omit the runtime-authored `content` field. Eight focused and all 1,216
+provider-free hardening tests passed, with compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `5b3c62d` on
+`agent/threadkeeper-hardening-next` bound operator-facing candidate content to
+the same limits enforced during runtime persistence. Review now rejects
+checksum-valid patch proposal content above the configured proposal cap and
+empty or oversized adjudication summaries. Fifty-seven focused and all 1,215
+provider-free hardening tests passed, with compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, Capacity 1.1's child-result contract v0.2 failed independent
+bound-consistency review. A 49,152-byte output creates a 65,570-byte canonical
+report, exceeding the 65,536-byte report cap; 49,125 bytes is the largest
+representable output. One direct check and three tests pass. Verdict:
+`revision_required_before_implementation`; sandbox and runtime remain closed.
+
+On 2026-08-07, ThreadKeeper commit `a2c4a0c` on
+`agent/threadkeeper-hardening-next` made unresolved adjudication records
+complete as well as exact. Candidate review now rejects checksum-valid pending
+metadata missing the runtime-authored `required`, `status`, `candidate_summary`,
+or `candidate_turn` field. Fifty-four focused and all 1,212 provider-free
+hardening tests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `43c0610` on
+`agent/threadkeeper-hardening-next` bound operator-facing patch proposals to
+the full path/action scope of their authorizing task contract. Candidate
+review now rejects checksum-valid proposals outside `allowed_paths` or covered
+by `forbidden_actions`, matching runtime enforcement. Fifty focused and all
+1,208 provider-free hardening tests passed, with compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, ProtoCosmo2 file egress was proven live in the Protobots
+Staging group. Its production adapter posted an 88,055-byte PDF (Telegram
+receipt `633`) and a 22,724-byte LaTeX source file (receipt `634`). The first
+attempt correctly exposed that an OpenClaw-observed message ID was unavailable
+as a ProtoCosmo2 Bot-API reply target; the adapter now permits operator-driven
+unthreaded document posts while preserving reply threading when a valid ID is
+available. Thirty-five focused provider-free tests and compilation pass, and
+the supervisor is active with one runner. Evidence:
+`experiments/20260807T153918Z-protocosmo2-staging-file-egress-r2/`.
+
+On 2026-08-07, ThreadKeeper commit `370282d` on
+`agent/threadkeeper-hardening-next` made candidate review validate the entire
+task contract behind any operator-facing patch/adjudication gate. A
+checksum-valid transcript can no longer authorize review with an empty
+objective, escaping path scope, oversized tool quota, or another malformed
+contract merely because its mode flag is true. Forty-eight focused and all
+1,206 provider-free hardening tests passed, with compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `35b21d9` on
+`agent/threadkeeper-hardening-next` bound operator-visible patch proposals to
+the task contract that authorizes proposal-only execution. Candidate review
+now rejects checksum-valid proposal records unless `patch_proposal_only` is
+exactly true, while a failed run carrying only that flag creates no false
+review gate. Forty-five focused and all 1,213 provider-free hardening tests
+plus 6 subtests passed, with compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-07, Capacity 1.1's bounded child-result contract failed an
+independent implementability review. Its safe two-tag intent is preserved, but
+exact JSON bytes, canonical base64 plus decoded size, and non-bytes return
+handling are under-specified. One direct check and five tests pass. Verdict:
+`revision_required_before_implementation`; sandbox and runtime changes remain
+closed.
+
+On 2026-08-07, ThreadKeeper commit `be12522` on
+`agent/threadkeeper-hardening-next` made unresolved adjudication records
+internally consistent. Candidate review now requires pending adjudication
+metadata, the `adjudication_required` run status, and the task-contract review
+flag to agree; a failed run carrying only the contract flag no longer creates
+a false operator gate. Forty-two focused and all 1,209 provider-free hardening
+tests plus 6 subtests passed, with compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry.
+
+On 2026-08-07, ThreadKeeper commit `fcae412` on
+`agent/threadkeeper-hardening-next` closed an escalation-status integrity gap.
+Candidate review now accepts persisted adjudication metadata only when it
+describes the exact unresolved runtime state (`required: true`, `status:
+pending`); checksum-valid records can no longer forge operator-facing states
+such as `approved` or pair `pending` with a false/missing review requirement.
+Thirty-seven focused and all 1,195 provider-free hardening tests passed, plus
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-07, Protomega's PDF egress was proven independently (Telegram
+receipt 9559), while genuine addressed requests exposed an ingress loss. A
+provisional synchronous Bot-API repair was then found to leave the receiver
+dormant while the MeTTa loop was idle: its only polling call was
+`getLastMessage()`, which no idle loop reached. The runtime has been restored
+to its preceding threaded Bot-API receiver (`TG_SYNC_POLL=false`); native PDF
+egress remains intact. Twenty-six focused provider-free address, transport,
+and document tests pass; the restarted supervisor has one worker, no MTProto
+bridge, and logs `Polling started`. Final live human-authored end-to-end
+acceptance remains pending. Evidence:
+`experiments/20260807T125032Z-protomega-threaded-polling-rollback-r1/`.
+
+On 2026-08-07, ThreadKeeper commit `a775f6b` on
+`agent/threadkeeper-hardening-next` repaired an escalation-integrity regression
+introduced by the exact-schema hardening. Runtime-generated adjudication
+records include `candidate_turn`; review now accepts that declared field only
+as an exact integer from 1 through the dispatch hard cap, while continuing to
+reject unknown metadata. Thirty-five focused and all 1,192 provider-free
+hardening tests passed, plus compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-06, ThreadKeeper commit `d6f6ac3` on
+`agent/threadkeeper-hardening-next` made candidate escalation metadata exact.
+Integrity-verified review records now reject undeclared fields in both
+`task_contract` and `adjudication`, preventing forged markers such as
+`approved: true` from reaching the parent/operator. Thirty-one focused and all
+1,189 provider-free hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, Protomega gained a native bounded `send-document` OmegaClaw
+action. The root cause of its repeated attachment failures was architectural:
+raw model output is parsed as OmegaClaw actions and delivered directly through
+the Telegram adapter, so OpenClaw's in-band `MEDIA:` reply convention never
+reached the gateway. Commit `d914aaf` adds workspace-confined PDF/LaTeX
+multipart delivery, prompt/tool wiring, and regressions. Six focused tests and
+compilation pass; the supervisor restarted with one worker; a live delivery of
+the revised Plain2MeTTa PDF returned Telegram receipt `9471`.
+
+On 2026-08-06, Capacity 1.1 content-bound the public harness invocation seam to
+the accepted v0.4 sandbox. Real Bubblewrap execution returns clean exact bytes,
+but candidate `ValueError` is exposed as generic `RuntimeError`, contradicting
+the frozen A07/N01--N10 interface. Three tests pass. Verdict:
+`revision_required_before_harness_adoption`; candidate freeze, held-out reveal,
+and runtime authority remain closed.
+
+On 2026-08-06, ThreadKeeper commit `ba571bc` on
+`agent/threadkeeper-hardening-next` made candidate patch proposal records an
+exact schema. Integrity-verified review records carrying undeclared fields
+such as a forged `approved` flag now fail closed instead of reaching the
+parent/operator alongside valid action/path metadata. Six focused cases and
+all 1,197 provider-free hardening tests plus 6 subtests passed, along with
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, ProtoCosmo2's Telegram transport began retaining a bounded
+same-chat window of all received human- and bot-authored group text plus
+extractable PDF/text document contents. Ambient updates never invoke the model
+or produce replies; recent history is injected only on a mention/reply and is
+explicitly marked untrusted. State-schema migration preserved the live cursor
+and outbox. Commit `4da168b`; 31 focused tests pass; the restarted supervisor
+is active with one runner and no pending inbound. Evidence:
+`experiments/20260807T011248Z-protocosmo2-telegram-context-ingestion/`.
+
+On 2026-08-06, ProtoCosmo2 gained bounded outbound Telegram document delivery
+for PDF and LaTeX source. An agent must place a `MEDIA:/absolute/path`
+directive on the first non-empty reply line. Only regular `.pdf`, `.tex`, and
+`.latex` files below `/home/openclaw/research-agent` are accepted; the limit is
+50 MB and captions are capped at Telegram's 1,024 characters. The document
+path and metadata are recorded in the durable outbox before the Bot API
+`sendDocument` call. Commit `6fd5e7e` plus runner commit `9bd6608`; 35 focused
+provider-free tests and Python compilation pass; the supervised runner was
+restarted successfully. Existing OpenClaw gateway delivery already supports
+Telegram documents, so Protomega needs no gateway patch.
+
+On 2026-08-06, ThreadKeeper commit `9778222` on
+`agent/threadkeeper-hardening-next` made candidate-review patch proposal
+metadata strict and bounded. Review now rejects unknown patch actions,
+missing or unsafe workspace-relative paths, non-string content, and proposal
+batches above the dispatch tool-call bound before returning metadata to a
+parent/operator. Twenty-eight focused and all 1,186 provider-free subagent
+hardening tests passed, plus compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-06, Capacity 1.1 recorded the missing pre-implementation R2
+commitment for four exact A09--A12 held-out cases. The bounded/paraphrase and
+live/mixed authority cases are committed as 9,132 exact bytes behind an
+encrypted sealed copy; reveal remains unauthorized until a candidate SHA-256
+is frozen. One direct check and four negative tests pass. R1, held-out
+execution, harness adoption, generator authority, and runtime authority remain
+open.
+
+On 2026-08-06, ThreadKeeper commit `ef9bf3b` on
+`agent/threadkeeper-hardening-next` made explicit run-index audit path
+arguments exact and bounded before filesystem resolution. Empty strings,
+leading/trailing whitespace, non-NFC spellings, control characters, and paths
+above the hard argument cap now fail closed. Eight focused and all 1,181
+provider-free subagent hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, Ben authorized `@Protocosmo2bot` for continuous text operation
+in every Telegram group where it is a member. Config schema v2 permits any
+negative group/supergroup chat ID and any human group sender, while DMs remain
+Ben-only. Group activation requires a mention or reply; bot-authored and
+unaddressed group updates are skipped with the durable cursor advanced.
+Addressed PDF and selected text documents now receive bounded read-only
+extraction into explicitly untrusted prompt context. The
+restart-on-failure supervisor is active; 25 provider-free tests, compilation,
+shell syntax, config validation, identity/capability probe, and live clean-state
+checks pass; the document revision adds 27 passing focused tests. Attachment
+egress, unsupported media, and state-changing extras remain disabled.
+
+
+On 2026-08-06, ThreadKeeper commit `e91f221` on
+`agent/threadkeeper-hardening-next` made queued-worker task path arguments
+exact before any claim. Leading/trailing whitespace and non-NFC spellings now
+fail closed without renaming the queued record. Fourteen focused and all 1,175
+provider-free subagent hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, ThreadKeeper commit `8f299b6` on
+`agent/threadkeeper-hardening-next` made candidate-review transcript path
+arguments exact and bounded before filesystem resolution. Leading/trailing
+whitespace, non-NFC spellings, control characters, and paths above the hard
+argument cap now fail closed. Twenty-three focused and all 1,173 provider-free
+subagent hardening tests passed, plus compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, ThreadKeeper commit `d0ee80b` on
+`agent/threadkeeper-hardening-next` made candidate transcript review require
+its checksum sidecar. Removing a sidecar can no longer downgrade a review to
+unchecked acceptance; missing, malformed, or mismatched integrity evidence
+fails closed. Eighteen focused and all 1,168 provider-free subagent hardening
+tests passed, plus compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-06, Capacity 1.1's content-bound v0.4 generic-failure sandbox
+passed an independent replay of all twelve frozen adversarial cases. E1--E6
+are covered, and the prior private stderr sentinel is now exposed only as the
+exact generic failure `sandbox candidate failed`. Five independent tests and
+compilation pass. Verdict: `r4_empirical_replay_pass`; R1/R2 and harness
+adoption remain open, with no generator or runtime authority granted.
+
+On 2026-08-06, ThreadKeeper commit `a28eacf` on
+`agent/threadkeeper-hardening-next` added checksum sidecars for queued-worker
+terminal result records. Both the compact result JSON and its checksum are now
+durable before the final `*.done`/`*.failed` task rename publishes terminal
+state. Six focused and all 1,167 provider-free subagent hardening tests passed,
+plus compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, ThreadKeeper commit `2d290cf` on
+`agent/threadkeeper-hardening-next` made persistent transcript publication
+atomic with its checksum. Finished run bytes remain under a non-discoverable
+staging name until the checksum sidecar is durable, and only the final
+transcript rename publishes the record. Six focused and all 1,167
+provider-free subagent hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, Capacity 1.1 content-bound a v0.4 generic-failure facade over
+the frozen v0.3 Bubblewrap sandbox. Every sandbox `RuntimeError` now crosses
+the parent API as the exact message `sandbox candidate failed`, so the private
+stderr sentinel found by independent replay is not exposed. Four focused
+revision tests, fourteen frozen twelve-case producer checks, and ten underlying
+sandbox regressions pass, plus binding validation and compilation. Verdict is
+`revision_ready_for_independent_replay`; R1/R2/R4 and harness adoption remain
+open.
+
+On 2026-08-06, ThreadKeeper commit `a0fd814` on
+`agent/threadkeeper-hardening-next` made enqueue publication atomic with its
+checksum. Queued task bytes remain under a non-discoverable staging name until
+the checksum sidecar is durable, and only the final `queue/*.json` rename makes
+the task visible to workers. Three focused and all 1,165 provider-free
+subagent hardening tests passed, plus compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, ThreadKeeper commit `f300f5e` on
+`agent/threadkeeper-hardening-next` preserved failure audit evidence when the
+post-rename directory fsync reports an error. Once `*.claimed` has visibly
+become `*.failed`, cleanup no longer deletes its staged checksum and compact
+result record; rollback is only attempted before publication. Two focused and
+all 1,164 provider-free subagent hardening tests passed, plus compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-06, an independently implemented Capacity 1.1 consumer bound and
+replayed all twelve v0.3 sandbox cases without importing the producer tests.
+Eleven pass, but E6 fails: a candidate stderr sentinel is returned verbatim in
+the sandbox's `RuntimeError` on a contained network failure. Network isolation
+holds, but output confinement does not. Five independent checks pass; verdict
+is `revision_required_before_harness_adoption`. R1/R2/R4 remain open.
+
+On 2026-08-06, ThreadKeeper commit `fe4fc73` on
+`agent/threadkeeper-hardening-next` made queued-task failure publication atomic
+with its audit evidence. The worker now stages the task checksum and compact
+failure result before the `*.claimed` to `*.failed` rename; an injected
+failure-result write error leaves the task claimed and removes provisional
+artifacts rather than publishing an unauditable failure marker. Four focused
+and all 1,163 provider-free subagent hardening tests passed, plus compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, ThreadKeeper commit `e1f3c47` on
+`agent/threadkeeper-hardening-next` made queued-task completion fail closed.
+The worker now stages the durable result record and task checksum before the
+atomic `*.claimed` to `*.done` rename, making that rename the completion commit
+point. An injected result-write failure leaves no false `*.done` marker and
+retains the task as `*.failed`. Thirty-four focused and all 1,162 provider-free
+subagent hardening tests passed, plus compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, Capacity 1.1 content-bound the frozen v0.3 effect contract to
+the existing Bubblewrap sandbox sources and completed a producer-side replay
+of all twelve required adversarial classes. Fourteen provider-free tests plus
+the direct binding check pass, including new stdin, address-space, and
+process-count probes. This is coverage evidence only; R1/R2/R4 remain open and
+R4 still requires an independently implemented replay that does not import the
+producer tests. Evidence:
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v03-binding/`.
+
+On 2026-08-05, ThreadKeeper commit `e05191f` on
+`agent/threadkeeper-hardening-next` closed an oversized quota-state bypass.
+Rate/concurrency JSON above the bounded read cap now fails closed and remains
+untouched instead of being treated as empty, so active reservations cannot be
+discarded before a provider call. Twenty-one focused and all 1,161
+provider-free subagent hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, ThreadKeeper commit `51912df` on
+`agent/threadkeeper-hardening-next` closed a queued-task expiry bypass. When
+age expiry is configured, a persisted `queued_at` farther in the future than
+the bounded clock-skew allowance now fails before any worker dispatch, so a
+forged or rollback-relative future timestamp cannot postpone expiry
+indefinitely. Five focused and all 1,161 provider-free subagent hardening tests
+passed, plus compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry.
+
+ProtoCosmo2 Phase 6 is complete as a stopped, bounded private-canary result.
+The dedicated identity accepted two fresh Ben-only plain-text DMs and routed
+one reply to each; 17 provider-free contract/transport tests and a controlled
+live restart-recovery check passed. The final state has no pending inbound,
+zero incidents, and unchanged cursor/delivery records; the canary is stopped.
+No group enrollment, attachment handling, autonomous scheduling,
+state-changing extras, or ongoing Telegram service is authorized. Evidence:
+`experiments/20260805T235502Z-protocosmo2-phase6-acceptance-provider-free/`
+and `experiments/20260805T235543Z-protocosmo2-phase6-live-restart-recovery/`.
+
+On 2026-08-05, ThreadKeeper commit `f5d4364` on
+`agent/threadkeeper-hardening-next` made the supervised queued-worker runtime
+bound and per-task duration accounting monotonic. Civil-clock rollback can no
+longer extend `max_runtime_s`, and idle polling is capped to the remaining
+deadline rather than sleeping past it. Three focused and all 1,160
+provider-free subagent hardening tests passed, plus compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, ThreadKeeper commit `e7d9d6e` on
+`agent/threadkeeper-hardening-next` moved dispatch elapsed-time, provider
+timeout, and retry/backoff deadline enforcement from the adjustable civil clock
+to `time.monotonic()`. Backward NTP/operator clock steps can no longer extend a
+worker's configured safety bound, and forward steps cannot prematurely exhaust
+it. Five focused and all 1,158 provider-free subagent hardening tests passed,
+plus compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, an independent Capacity 1.1 R4 review stopped the Bubblewrap
+sandbox before acceptance-harness adoption. A content-bound `ctypes` candidate
+calls libc `fork`/`execl`, completes `/usr/bin/true`, and receives `pass`, so
+the Python audit layer does not meet the frozen requirement that subprocess/
+exec effects and monitor bypass fail. Bubblewrap still contains the process;
+this is not a demonstrated host escape. Eight provider-free checks pass. Next:
+freeze syscall-level no-effect enforcement or a narrower externally observable
+effect contract, then independently replay it. R1/R2/R4 remain open.
+
+On 2026-08-05, ThreadKeeper commit `e7459ff` on
+`agent/threadkeeper-hardening-next` made persistent LLM rate/concurrency state
+crash-safe. Stable sidecar locks now serialize atomic JSON replacements,
+avoiding both quota loss from truncate/write interruption and stale-inode races
+from locking the replaced data file. An injected replacement failure preserves
+the active quota and fails closed. Twenty-seven focused and all 1,156
+provider-free tests passed, plus compilation, `git diff --check`, and draft PR
+#1 safety-floor ancestry.
+
+On 2026-08-05, ThreadKeeper commit `9316269` on
+`agent/threadkeeper-hardening-next` extended complete-batch validation to the
+optional shell tool. Shell enablement, argv parsing/count, executable
+allowlisting, and workspace availability now fail closed before any earlier
+tool effect in the same worker response, preventing a valid file mutation from
+being partially applied before a later invalid shell call is rejected. Twenty
+focused and all 1,155 provider-free subagent hardening tests passed, plus
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, ProtoCosmo2 gained a bounded OmegaClaw-native v1 adapter for
+`persistent-subagent-orchestration` at Core commit `5c64918`, fast-forwarded
+into `agent/protocosmo2-phase6-live`. It provides exact JSON MeTTa skills for
+durable task creation/status/checkpoint/pause/resume/cancel and read-only
+standing-approval adjudication. Immutable digest-bound manifests,
+hash-chained bounded events, atomic writes, explicit state transitions, and
+revocation/supersession/expiry/bound checks fail closed. Forty-four
+provider-free tests passed, the modified Core loaded through pinned PeTTa, and
+the dedicated mode-0700 state root passed a configured refusal smoke. V1 does
+not spawn/schedule/execute, mutate or consume approval, call a provider, use
+Telegram/shell, or perform remote compute. Evidence:
+`experiments/20260805T160618Z-protocosmo2-persistent-worker-adapter-r6/` and
+`experiments/20260805T160646Z-protocosmo2-persistent-worker-adapter-core-load/`.
+
+On 2026-08-05, Capacity 1.1 replaced the bypassable cwd-only effect prototype
+with an operational Bubblewrap containment prototype. It uses disposable
+mount/network/PID namespaces, a read-only minimal runtime/work tree, scrubbed
+environment, descendant teardown, and hard CPU/address-space/file/process/
+output/wall-time limits. Ten provider-free adversarial tests pass, including
+the exact symlink bypass and a native host-path write attempt. This is R4
+revision evidence pending independent bypass review, not harness adoption,
+generator authorization, or runtime authority.
+
+On 2026-08-05, ThreadKeeper commit `bd592e1` on
+`agent/threadkeeper-hardening-next` canonicalized inherited optional-shell
+`PATH` directories before passing them to the child. The earlier containment
+check resolved symlinks but retained their unresolved spelling, leaving a
+retarget-after-validation command-lookup race. Missing absolute entries are
+also dropped. Four focused and all 1,152 provider-free subagent hardening tests
+passed, plus compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-05, ThreadKeeper commit `6751252` on
+`agent/threadkeeper-hardening-next` closed a relative-`PATH` optional-shell
+hijack. The sanitized child environment now drops every non-absolute inherited
+`PATH` entry, preventing values such as `bin` from resolving an allowlisted
+command to a workspace-controlled executable after the subprocess cwd is
+pinned to the worker workspace. Three focused and all 1,150 provider-free
+subagent hardening tests passed, plus compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, an independent Capacity 1.1 R4 bypass review stopped the
+import-inclusive effect sandbox before harness adoption. An `os.symlink`
+adversary mutates a parent-owned path outside the child cwd while the prototype
+reports `pass`; its Python audit hook also does not enforce native-call,
+descendant, or resource containment. Eight provider-free checks pass. Next:
+an OS-enforced disposable filesystem/network/process boundary with hard
+resource/output caps; R1, R2, and R4 remain open.
+
+On 2026-08-05, ThreadKeeper commit `001c216` on
+`agent/threadkeeper-hardening-next` made optional-shell allowlist configuration
+strict and bounded. Values above 16,384 characters or 256 entries, and entries
+outside the 1--255 character ASCII command-name grammar, now fail closed before
+subprocess execution. Thirteen focused and all 1,149 provider-free subagent
+hardening tests passed, plus Python compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry.
+
+On 2026-08-05, ThreadKeeper commit `ffbbf8a` on
+`agent/threadkeeper-hardening-next` hard-capped RAG knowledge-prior reads.
+`OMEGACLAW_MAX_KNOWLEDGE_FILE_BYTES` can no longer raise a single local
+knowledge-file read above 64 MiB; the default remains 2 MiB. All 15 focused
+provider-free RAG hardening tests passed, plus Python compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-05, Capacity 1.1 gained an operational import-inclusive no-effect
+sandbox prototype. Candidate import and the bytes call share an isolated child
+with a preinstalled audit boundary, scrubbed environment, timeout, and content
+manifest; six provider-free adversarial tests pass. This is R4 prototype
+evidence pending independent bypass review, not closure or generator/runtime
+authorization. R1 executable cases and R2 held-out commitment remain open.
+
+On 2026-08-05, ThreadKeeper commit `96b7f60` on
+`agent/threadkeeper-hardening-next` hard-capped the remaining worker data and
+dispatch configuration seam. Environment values can no longer raise persisted
+patch proposals, final emits, or parsed worker responses above 1,000,000
+characters; native response bodies above 16 MiB; queue age above one year;
+one dispatch above 86,400 seconds or 10,000,000 tokens; workspace files above
+64 Mi characters; or retained run-index entries above 1,000,000. All 1,144
+provider-free subagent hardening tests passed, plus Python compilation and
+`git diff --check`.
+
+On 2026-08-04, ThreadKeeper commit `543525b` on
+`agent/threadkeeper-hardening-next` hard-capped persistent worker setup/state
+reads. Environment values can no longer raise queue/transcript JSON or audit
+reads above 64 MiB, checksum sidecars above 64 KiB, escalation policies or
+persona prompts above 16 MiB, persona configs or LLM guard state above 1 MiB,
+or persona control scalars above 65,536 characters. All 1,143 provider-free
+subagent hardening tests passed on the final full run, plus Python compilation
+and `git diff --check`.
+
+On 2026-08-04, ThreadKeeper commit `d0a136b` on
+`agent/threadkeeper-hardening-next` hard-capped worker tool-return
+configuration. Environment values can no longer raise shell/search/read output
+above 1,000,000 characters or one shell subprocess above 600 seconds. All
+1,142 provider-free subagent hardening tests passed on the final full run, plus
+Python compilation and `git diff --check`.
+
+On 2026-08-04, an independent Capacity 1.1 acceptance-v0.2 review stopped the
+request-to-contract generator again. The exact bytes API closes R3 only at the
+contract level; the 26 named cases have no executable bodies, no independent
+held-out byte commitment exists, and candidate import occurs before an effect
+monitor that is not implemented. Eight provider-free checks passed. Next:
+freeze those three artifacts and repeat closure review; generator code and
+runtime effects remain unauthorized.
+
+On 2026-08-04, ThreadKeeper commit `33cbdda` on
+`agent/threadkeeper-hardening-next` hard-capped budget/accounting read
+configuration. Environment values can no longer raise usage-log reads above
+64 MiB or budget-config reads above 1 MiB, preserving bounded quota and
+escalation decisions. All 27 focused provider-free budget hardening tests
+passed, plus Python compilation and `git diff --check`.
+
+On 2026-08-04, ThreadKeeper commit `7130ffd` on
+`agent/threadkeeper-hardening-next` hard-capped supervised queue/worker
+configuration. Environment values can no longer raise pending/tasks above
+4,096, idle polls above 3,600, poll sleeps above 300 seconds, one invocation
+above 86,400 seconds, retained results or consecutive errors above 256, or
+lock metadata above 65,536 bytes. Two focused checks and all 1,141
+provider-free subagent hardening tests passed.
+
+On 2026-08-04, ThreadKeeper commit `cd97ce8` on
+`agent/threadkeeper-hardening-next` hard-capped task-contract configuration.
+Environment values can no longer raise list fields above 256 entries, list
+items above 8,192 characters, or objectives above 65,536 characters. The
+focused 143-case contract slice and all 1,150 provider-free subagent hardening
+tests plus six subtests passed.
+
+On 2026-08-04, an independent Capacity 1.1 acceptance-harness review stopped
+the request-to-contract generator before implementation. The preregistration
+declares 20 cases, but its required command runs only 10 metadata tests and
+never invokes a generator; five public fixtures also cannot exclude a
+hard-coded lookup, and the input/effect-observation contracts remain
+underspecified. Nine provider-free review tests passed. Next: revise and
+independently close R1--R4; generator code and runtime effects remain
+unauthorized.
+
+On 2026-08-04, ThreadKeeper commit `75fc765` on
+`agent/threadkeeper-hardening-next` hard-capped durable transcript retention.
+Environment configuration can no longer raise retained transcript turns above
+64, per-turn fields above 1,000,000 characters, or persisted summaries above
+65,536 characters. Two focused and all 1,149 provider-free subagent hardening
+checks passed.
+
+On 2026-08-04, Ben explicitly accepted the Phase-5 go/no-go and authorized
+Phase 6 in Protobots message 16261. The bounded private Telegram canary is now
+the active gate. Offline transport hardening may proceed; live sending requires
+a distinct ProtoCosmo2 bot identity and Ben-only configuration. The dedicated
+`/home/openclaw/.openclaw/protocosmo2.env` was absent at preflight, and existing
+bot credentials will not be reused.
+
+On 2026-08-05, the Phase-6 provider-free transport contract passed 13 focused
+tests at OmegaClaw-Core commit `2f714e9`. It fail-closes configuration, binds
+both chat and user allowlists, rate/depth caps outbound messages, blocks
+attachments, persists message deduplication and inbox/outbox cursor recovery,
+and surfaces allowlisted failures through a fixed durable notice. The unchanged
+Phase-5 structural preflight also passed (10 cases/7 critical controls), its dry
+runner remained inert, and repair commit `bebe357` remains in ancestry. No
+Telegram or provider traffic occurred. Live acceptance remains blocked on the
+missing dedicated credential/config and still requires the controlled canary,
+transcript/incident/latency-cost evidence, and separate go/no-go. Evidence:
+`experiments/20260805T011343Z-protocosmo2-phase6-private-canary-preflight/`.
+
+On 2026-08-04, ProtoCosmo2 Phase 5's post-response SIGSEGV was isolated to
+embedded Python RPC socket lifecycle races under Janus/SWI (`POLLRDHUP`). Exact
+real-response replay passed, and replacing both provider and shadow-channel
+sockets with bounded private file bridges produced stable real-runtime runs.
+Bounded read-only source injection then repaired the two project-record
+retrieval/provenance failures without changing the frozen suite digest. A fresh
+full run completed 10/10 with exit zero, and all seven critical answers met
+their frozen intent on inspection. At that checkpoint the automated Phase-5
+gates were complete but G5 qualitative review and an explicit go/no-go still
+remained; Protobots message 16261 subsequently satisfied that gate. Evidence:
+`experiments/20260804T211817Z-protocosmo2-phase5-retrieval-repair/`.
+
+On 2026-08-04, ThreadKeeper commit `57ac088` on
+`agent/threadkeeper-hardening-next` hard-capped bounded-history and return
+configuration. Environment values can no longer raise worker turns or retained
+history above 64, parent digests above 20,000 characters, or worker output
+above 65,536 tokens. Two focused and all 1,138 provider-free subagent
+hardening checks passed.
+
+On 2026-08-04, Capacity 1.1 froze five exact request-to-contract generator
+fixtures and a 20-case future implementation acceptance matrix. The corpus
+covers semantic paraphrase equivalence, GoalChainer offline/live and mixed
+authority boundaries, exact ordered provenance, and 12 fail-closed mutations.
+Ten provider-free preregistration checks passed. Next is independent
+fixture/harness review; generator code and runtime effects remain unauthorized.
+
+On 2026-08-04, ThreadKeeper commit `bfb3de2` on
+`agent/threadkeeper-hardening-next` hard-capped worker tool configuration.
+Environment configuration can no longer raise per-dispatch or per-turn tool
+quotas, path/tool/query/shell argument limits, or shell argv count without
+bound. Eighteen focused and all 1,137 provider-free subagent hardening checks
+passed.
+
+On 2026-08-04, ThreadKeeper commit `df2d3be` on
+`agent/threadkeeper-hardening-next` hard-capped worker LLM quota configuration.
+Environment configuration can no longer raise the calls-per-minute guard above
+600 or the cross-process concurrency guard above 64. Seven focused and all
+1,136 provider-free subagent hardening checks passed.
+
+On 2026-08-04, an independent Capacity 1.1 closure review confirmed that
+interface v0.2 closes R1--R4: exact output types and bounds, contained
+allowed-path grammar, and exact ordered provenance. Ten provider-free checks
+passed. Next is fixture/acceptance-test preregistration; generator code and all
+runtime effects remain unauthorized.
+
+On 2026-08-04, ThreadKeeper commit `358ede3` on
+`agent/threadkeeper-hardening-next` hard-capped the worker LLM reliability
+controls. Environment configuration can no longer raise a single-call timeout
+above 600 seconds, retries above five, or exponential-backoff base above 60
+seconds. Nine focused and all 1,135 provider-free subagent hardening checks
+passed.
+
+On 2026-08-04, ThreadKeeper commit `b1c3d2f` on
+`agent/threadkeeper-hardening-next` made persistent LLM quota/concurrency state
+schema-exact. Parseable but wrong-shaped state now fails closed before provider
+calls or reservations instead of coercing timestamps, resetting quotas, or
+drops of malformed in-flight entries. All 1,132 provider-free subagent
+hardening checks passed.
+
+On 2026-08-04, Capacity 1.1 interface v0.2 addressed the independent review's
+four blockers: exact output types, assigned output bounds, complete
+OmegaClaw-contained allowed-path grammar, and exact ordered provenance
+equality. Exact replay and nine provider-free negative tests passed. This is a
+revision claim only; independent R1--R4 closure review is next, and generator
+implementation plus all runtime effects remain unauthorized.
+
+On 2026-08-04, ThreadKeeper commit `8b2ce80` on
+`agent/threadkeeper-hardening-next` closed the primary LLM gateway seam. Main
+provider construction now reuses the strict channel/auth `GATEWAY_URL`
+validator, so ambiguous, credential-bearing, or malformed endpoints fail
+before OpenAI client construction or provider effects. Forty-two focused
+provider-free LLM/RAG/auth checks passed.
+
+On 2026-08-04, ThreadKeeper commit `24462aa` on
+`agent/threadkeeper-hardening-next` closed the RAG embedding gateway seam.
+Embedding requests now reuse the channel/auth gateway URL validator, so
+ambiguous, credential-bearing, or malformed `GATEWAY_URL` values fail before
+OpenAI client construction or provider effects. Thirty-four focused
+provider-free RAG/auth checks passed.
+
+On 2026-08-04, an independent Capacity 1.1 interface review stopped the
+request-to-contract generator before implementation. Interface v0.1 does not
+assign exact types and declared bounds to output values, fully define
+allowed-path grammar, or specify provenance ordering/canonicalization. Four
+blocking findings and eight provider-free negative tests passed. Next: revise
+the interface to v0.2 and independently close R1--R4; generator implementation
+and all runtime effects remain unauthorized.
+
+On 2026-08-03, ThreadKeeper commit `97e7c27` on
+`agent/threadkeeper-hardening-next` made the shared gateway endpoint boundary
+strict. Nonempty `GATEWAY_URL` values must now be bounded absolute HTTP(S) URLs
+without whitespace/control ambiguity, userinfo credentials, query/fragment
+data, backslashes, invalid ports, or non-NFC spelling before any auth or channel
+request. Seventy-one focused provider-free channel/auth checks passed.
+
+On 2026-08-03, ThreadKeeper commit `ef134ef` on
+`agent/threadkeeper-hardening-next` made delegated tool-subset parsing strict
+and bounded. Subsets must now be exact strings no longer than 1,024 characters
+with unique, nonempty, control-free, NFC-normalized skill names before provider
+or tool effects. All 1,119 provider-free subagent hardening checks passed.
+
+On 2026-08-03, Capacity 1.1 froze a strict provider-free
+request-to-contract generator interface before implementation. It binds exact
+request/evidence provenance, bounded schemas, the existing six task-contract
+fields, OmegaClaw-only paths, and effect `none`. Nine live, mixed-authority,
+and ambiguous-scope triggers require `decision_required`; nine negative tests
+passed. This authorizes only independent interface review, not a generator,
+integration, dispatch, memory write, or runtime behavior change.
+
+On 2026-08-03, ThreadKeeper commit `e2b3df2` on
+`agent/threadkeeper-hardening-next` validated persona provider endpoint URLs.
+Configured endpoints must now be absolute HTTP(S) URLs without whitespace,
+userinfo credentials, query/fragment data, backslashes, invalid ports, or
+non-NFC spelling before provider construction. Fifty-six focused provider-free
+persona/config checks passed.
+
+On 2026-08-03, ThreadKeeper commit `91f40f7` on
+`agent/threadkeeper-hardening-next` hardened gateway authentication candidates.
+When gateway authentication is configured, candidates must now be exact,
+nonempty strings within 4 KiB and free of header/control ambiguity before any
+request is constructed. Seven focused provider-free checks passed.
+
+On 2026-08-03, ProtoCosmo2 Phase 5 froze a redacted ten-case behavioral
+shadow-evaluation suite and passed a provider-free structural preflight. The
+suite represents all seven critical safety/authority controls and has content
+digest `9203c4a65edf128c3290c347099dcff32f28a02282e478b486a7f16ee175f6bf`.
+This is not a behavioral-fidelity result: paired execution against ZeroBot and
+ProtoCosmo2 needs a separately approved isolated model-provider/runtime setup.
+No provider, Telegram channel, credential, listener, or shared writable state
+was started. Evidence:
+`experiments/20260803T203107Z-protocosmo2-phase5-shadow-preflight/`.
+
+On 2026-08-03, the Phase 5 gateway-level paired-shadow harness was completed
+and accepted offline. It composes the reviewed Phase 3 identity/policy drafts,
+requires explicit execution, restricts endpoints to loopback, uses separate
+ZeroBot/ProtoCosmo2 session identities, and requires outbound channels to be
+disabled. This is not a behavioral result or a full OmegaClaw-loop test;
+execution still requires an approved model and verified gateway session-header
+contract. Evidence: `experiments/20260803T214622Z-protocosmo2-phase5-harness/`.
+
+On 2026-08-04, a model-approved Phase 5 execution attempt selected
+`openai/gpt-5.6-terra` (the gateway probe resolved to its `gpt-5.6-sol`
+fallback), using no-delivery isolated CLI sessions. The full nested runner hung
+before producing its first paired artifact and was stopped after more than
+three minutes. This is a runtime-integration failure, not a behavioral score;
+Phase 6 remains blocked. Evidence:
+`experiments/20260804T032814Z-protocosmo2-phase5-shadow-execution/`.
+
+On 2026-08-04, a real pinned-runtime repair disproved a gateway deadlock and
+found four deeper integration defects: PeTTa `git-import!` was running an
+unpinned upstream clone, host Python/policy wiring was incomplete, the local
+embedding model was unavailable offline, and mock send acknowledgement/capture
+failed. The first three were repaired and the 8,095 Phase 4 chunks were wired
+into OmegaClaw's actual `memories` collection. The MeTTa loop reached the model
+and recorded `(send ...)`, but mock delivery returned `False`; a clean retry
+then timed out without a new turn. The frozen suite remains unexecuted and
+Phase 6 blocked. Evidence:
+`experiments/20260804T060000Z-protocosmo2-phase5-real-runtime-repair/`.
+
+On 2026-08-04, a bounded follow-up repaired the Phase-5 case driver's stdout
+capture/cleanup and its explicit project-scoped Python dependency selection.
+One frozen Telegram-approval case traversed the pinned MeTTa loop and was
+captured by the isolated mock server in 17.3 seconds. The process then emitted
+`fatal signal 11 (segv)`, so this is evidence that mock capture can work, not a
+stable runtime or behavioral-fidelity pass. The frozen ten-case suite remains
+unexecuted and Phase 6 blocked pending a minimal Test-provider SIGSEGV
+reproduction. Evidence:
+`experiments/20260804T061920Z-protocosmo2-phase5-mock-rpc-gate-dependency-repair/`.
+
+On 2026-08-03, an independently implemented Capacity 1.1 review bound and
+replayed the v0.2 request-to-contract fixtures without importing producer code.
+It confirms the GoalChainer authority pair, mixed-request fail-closed behavior,
+semantic paraphrase equivalence, and retained `no_dispatch` controls. Eight
+provider-free negative tests passed. The result authorizes only drafting a
+strict generator interface contract; no generator implementation, integration,
+dispatch, memory write, or runtime behavior change is authorized.
+
+On 2026-08-03, ThreadKeeper commit `e09b284` on
+`agent/threadkeeper-hardening-next` hardened local-dashboard pricing override
+opens. The bounded reader now uses a no-follow descriptor and requires the
+opened object to be a regular file, preventing symlink or non-regular
+substitution from influencing accounting. Forty-three focused provider-free
+local-channel checks passed.
+
+On 2026-08-03, ThreadKeeper commit `ee6f671` on
+`agent/threadkeeper-hardening-next` hardened local-dashboard reasoning-history
+opens. The bounded incremental reader now uses a no-follow descriptor, requires
+the opened object to be a regular file, and derives its read window from that
+same descriptor. Fifty-four focused provider-free local-channel checks passed.
+
+On 2026-08-03, Capacity 1.1 request-to-contract coverage v0.2 sealed the four
+elements required by the prior discrimination review: a GoalChainer
+offline/live minimal pair, a mixed analysis/activation negative, a semantic
+paraphrase pair, and invariant-equivalence scoring. Exact replay and seven
+provider-free negative tests passed. This authorizes no generator, integration,
+dispatch, memory write, or runtime behavior change.
+
+On 2026-08-03, ThreadKeeper commit `aff7eb8` on
+`agent/threadkeeper-hardening-next` hardened the local-dashboard avatar file
+boundary. Avatar reads now use a no-follow descriptor and require the opened
+object to be a regular file, preventing symlink substitution or non-regular
+inputs from being served. Fifty focused provider-free local-channel checks
+passed.
+
+On 2026-08-03, ThreadKeeper commit `9bbcf0f` on
+`agent/threadkeeper-hardening-next` made durable transcript retention limits
+mandatory. Turn, per-field, and summary caps now have finite defaults and
+clamp configured or runtime zero to one instead of restoring unbounded run
+records. All 1,112 focused provider-free subagent checks passed.
+
+On 2026-08-03, ThreadKeeper commit `159d0f4` on
+`agent/threadkeeper-hardening-next` bound run-index tail sizing to the same
+no-follow regular-file descriptor used for the read. Atomic path replacement
+can no longer make a stale preliminary size select the wrong audit tail and
+fork the append-only hash chain. Thirty-two focused provider-free checks
+passed.
+
+On 2026-08-03, ThreadKeeper commit `8ac4294` on
+`agent/threadkeeper-hardening-next` closed a knowledge-prior file-open race.
+The bounded reader now opens with no-follow semantics and verifies the opened
+descriptor is a regular file before reading, so a path swapped to a symlink or
+non-regular input cannot reach embedding or collection mutation. Eight focused
+provider-free checks passed.
+
+On 2026-08-03, ThreadKeeper commit `49097a5` on
+`agent/threadkeeper-hardening-next` made newly created workspace write/append
+parent directories crash-durable. Each nested directory entry is now
+parent-fsynced before the atomic file replacement below it. Five focused
+provider-free checks passed.
+
+On 2026-08-02, ThreadKeeper commit `ae8eeac` on
+`agent/threadkeeper-hardening-next` closed the direct Agentverse remote-skill
+argument boundary. Tavily queries and technical-analysis tickers must now be
+nonempty exact strings within dedicated bounds, market symbols use a closed
+grammar, and direct-call timeouts must be exact integers from 1 through 120
+seconds. Invalid inputs fail before request-model construction or remote
+dispatch. Nine focused provider-free checks passed.
+
+On 2026-08-02, ProtoCosmo2 Phase 0 was frozen and Phase 1 produced a sanitized
+read-only source snapshot: 639 SHA-256-bound files, all copied 0400, with 13
+explicit exclusions. An initial intentionally fail-closed run exposed an
+over-broad filename rule and a symlink candidate; the corrected policy records
+both as reviewable evidence and the successful rerun independently reverified
+every hash and permission. Candidate target commits are documented in
+`docs/protocosmo2-phase0-freeze-2026-08-02.md`; no service, credential,
+provider, Telegram, or other live capability was activated.
+
+On 2026-08-03, ProtoCosmo2 Phase 2 provisioned a separate clean detached
+candidate baseline at `protocosmo2/phase2-checked-baseline/`: OmegaClaw-Core
+`b13b17e` (whose parent is `16d380d`), PeTTa `4ce1d0e`, and
+petta_lib_chromadb `4563854`. Exact tree IDs and Git-object integrity were
+verified, the pinned SWI-Prolog 9.3.36 ran the PeTTa `nars_tuffy` smoke, and
+the Core's host-side mock transport passed 5/5 direct tests. The repository's
+Docker-only test cleanup is unavailable on this host and is a recorded
+integration limitation, not treated as a passing runtime test. No OmegaClaw
+agent loop, provider, Telegram account, credential, external network listener,
+or supervisor has been started. Evidence:
+`experiments/20260803T050313Z-protocosmo2-phase2-detached-baseline/`,
+`20260803T050328Z-protocosmo2-phase2-petta-smoke/`, and
+`20260803T050430Z-protocosmo2-phase2-mock-channel-rerun/`.
+
+On 2026-08-02, ThreadKeeper commit `0bcea38` on
+`agent/threadkeeper-hardening-next` bounded local-dashboard usage-accounting
+recall to 64 MiB total and 64 KiB per JSONL record. The reader now uses a
+no-follow regular-file descriptor and stops before parsing oversized files or
+records. Forty-one focused provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `49dfb6c` on
+`agent/threadkeeper-hardening-next` bounded episode history recall to 64 MiB
+plus one growth-detection byte and rejected symlink/non-regular inputs before
+timestamp scanning. Nineteen focused provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `ee84d23` on
+`agent/threadkeeper-hardening-next` made both audit parent-directory sync
+helpers verify the opened descriptor is actually a directory before fsync.
+Four focused provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `8f54d7c` on
+`agent/threadkeeper-hardening-next` made the shared audit parent-directory
+fsync refuse a symlink substituted after validation. Four focused
+provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `4d7ea1c` on
+`agent/threadkeeper-hardening-next` made newly created budget/accounting audit
+directory entries crash-durable. The budget ledger's symlink-safe directory
+creator now fsyncs each new ancestor before appending records below it.
+Twenty-five focused provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `32842a6` on
+`agent/threadkeeper-hardening-next` made newly created audit, queue, and
+transcript directory entries crash-durable. The shared symlink-safe directory
+creator now fsyncs each new directory's parent before files are created below
+it. Nine focused provider-free checks passed.
+
+On 2026-08-01, ThreadKeeper commit `aa87439` on
+`agent/threadkeeper-hardening-next` made checksum sidecars bind the exact target
+basename and reject trailing records. Queue and transcript integrity checks no
+longer accept a valid digest relabeled for another file. Forty-eight focused
+provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `38c48aa` on
+`agent/threadkeeper-hardening-next` added a parent-directory fsync after each
+durable run-index append. This preserves first creation of `index.jsonl`
+across a crash/power loss boundary. Two focused provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `26a8e20` on
+`agent/threadkeeper-hardening-next` added parent-directory fsyncs after queued
+task claim, completion, and failure-retention renames. This preserves atomic
+queue state transitions across a crash/power loss boundary. Three focused
+provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `ce9c2b1` on
+`agent/threadkeeper-hardening-next` bounded each RAG knowledge-prior read to
+2 MiB plus one detection byte. Oversized, invalid-UTF-8, non-regular, and
+symlink inputs now fail before embedding or collection mutation. Six focused
+provider-free checks passed.
+
+On 2026-07-31, an independent provider-free runner reproduced all four sealed
+structural chemistry transfer holdouts and their exact score maps. Six checks
+bind the frozen contract/policy and reject duplicate JSON, malformed or derived
+features, and authority widening. Results remain candidate-only and authorize
+no chemistry, scheduling, runtime, or ThreadKeeper effect.
+
+On 2026-07-31, ThreadKeeper commit `c791766` on
+`agent/threadkeeper-hardening-next` bounded local-dashboard avatar reads to
+2 MiB plus one detection byte. Oversized and behavior-bearing byte bodies now
+fail before HTTP response headers are committed. Forty-four focused
+provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `77c014c` on
+`agent/threadkeeper-hardening-next` bounded local `/send` request bodies to
+64 KiB and made ambiguous, negative, typed, and oversized `Content-Length`
+values fail before reading the body. Forty focused provider-free checks
+passed.
+
+On 2026-07-31, ThreadKeeper commit `a6fd94e` on
+`agent/threadkeeper-hardening-next` bounded local-dashboard pricing override
+reads to 64 KiB plus one detection byte. Oversized and invalid UTF-8 override
+files now fail closed to built-in pricing. Twenty-five focused provider-free
+checks passed.
+
+On 2026-07-31, ThreadKeeper commit `5d820c8` on
+`agent/threadkeeper-hardening-next` bounded bootstrap Telegram/Slack API reads
+to 2 MiB and made their JSON/object/success-marker parsing fail closed. Twelve
+focused provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `7cafd70` on
+`agent/threadkeeper-hardening-next` bounded incremental local-dashboard
+reasoning-history reads to 64 KiB per request. Offsets now remain byte-precise
+even across invalid UTF-8. Twenty-five focused provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `aa2f188` on
+`agent/threadkeeper-hardening-next` made escalation-policy and persona-prompt
+read caps mandatory. Configured or runtime zero now clamps to one byte, so
+setup-time integrity reads cannot be restored to unbounded reads. Five focused
+provider-free checks passed.
+
+On 2026-07-31, the independent chemistry candidate-scoring runner reproduced
+all four sealed holdouts from the preregistered exact-integer policy. Six
+provider-free checks cover sealed identity, strict JSON, malformed/derived
+features, admission, exact scores, and effect-free authority. This remains an
+adjudicated candidate gate and does not authorize a chemistry run or
+ThreadKeeper effect.
+
+On 2026-07-31, ThreadKeeper commit `cf9b97c` on
+`agent/threadkeeper-hardening-next` made run-index and transcript audit read
+caps mandatory. Configured or runtime zero now clamps to one byte, so the
+read-only verifier cannot restore unbounded index scanning or transcript hash
+reads. Seventeen focused provider-free verifier checks passed.
+
+On 2026-07-31, ThreadKeeper commit `4bfe047` on
+`agent/threadkeeper-hardening-next` made the workspace write/append size cap
+mandatory. A configured or runtime zero now clamps to one character, so
+`append-file` cannot restore an unbounded existing-file read and neither file
+tool can restore unbounded output. Five focused provider-free checks passed.
+
+On 2026-07-31, ThreadKeeper commit `1a1cde3` on
+`agent/threadkeeper-hardening-next` made the native Ollama HTTP response cap
+mandatory. Setting `OMEGACLAW_SUBAGENT_MAX_LLM_HTTP_RESPONSE_BYTES=0` now
+clamps to one byte instead of restoring an unbounded response read. Three
+focused provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `7d61846` on
+`agent/threadkeeper-hardening-next` bounded Slack Web API response reads to
+2 MiB plus one detection byte. Oversized and behavior-bearing response bodies
+now fail closed before UTF-8 decoding or strict JSON parsing. Ten focused
+provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `9308010` on
+`agent/threadkeeper-hardening-next` bounded Mattermost REST JSON parsing to
+2 MiB and exact built-in byte/string bodies. Oversized and behavior-bearing
+bodies now fail closed before decoding. Thirteen focused provider-free checks
+passed.
+
+On 2026-07-30, ThreadKeeper commit `349b990` on
+`agent/threadkeeper-hardening-next` bounded Agentverse/Tavily response
+formatting to 1,000,000 exact-string characters before JSON decoding.
+Oversized and behavior-bearing responses now fail closed. Five focused
+provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `2908572` on
+`agent/threadkeeper-hardening-next` bounded gateway authentication response
+bodies to 64 KiB before UTF-8 decoding or strict JSON parsing. Thirty-three
+focused provider-free channel checks passed.
+
+On 2026-07-30, ThreadKeeper commit `80583c1` on
+`agent/threadkeeper-hardening-next` bounded Telegram API response bodies to
+2 MiB before UTF-8 decoding or strict JSON parsing. Twenty-eight focused
+provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `a90d3e7` on
+`agent/threadkeeper-hardening-next` made optional Telegram username, personal
+name, and chat-title fields require exact strings at the `getUpdates` producer
+boundary, before polling-offset mutation. Twenty-seven focused provider-free
+checks passed.
+
+On 2026-07-30, ThreadKeeper commit `703b60a` on
+`agent/threadkeeper-hardening-next` made nested Telegram message, text, actor,
+and actor-ID fields fail closed at the `getUpdates` producer boundary, before
+polling-offset mutation. Twenty-one focused provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `1f823b1` on
+`agent/threadkeeper-hardening-next` made Telegram `getUpdates` envelopes
+require an exact list of exact objects with exact non-negative integer update
+IDs before polling-offset mutation. Thirteen focused provider-free checks
+passed.
+
+On 2026-07-30, ThreadKeeper commit `b3127ad` on
+`agent/threadkeeper-hardening-next` made final `emit` payload validation require
+an exact built-in string before invoking string behavior. Three focused
+provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `ef2f593` on
+`agent/threadkeeper-hardening-next` made the bounded queue-drain parent return
+reject non-finite JSON numbers at its producer boundary. Eleven focused
+provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `4aa87bc` on
+`agent/threadkeeper-hardening-next` made the tool-command normalizer require an
+exact built-in string before invoking replacement, splitting, or other string
+behavior. Seventeen focused provider-free checks passed.
+
+On 2026-07-30, ThreadKeeper commit `b4522b7` on
+`agent/threadkeeper-hardening-next` made operator-facing worker-loop and
+run-index returns reject non-finite JSON numbers at their producer boundary.
+Thirty-four focused provider-free worker-loop checks passed.
+
+On 2026-07-29, ThreadKeeper commit `347dce1` on
+`agent/threadkeeper-hardening-next` made the shared structured parent-return
+helper reject non-finite JSON metadata in every size-reduction path. Three
+focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `706bccc` on
+`agent/threadkeeper-hardening-next` made budget/escalation YAML fail safely on
+wrong-shaped, behavior-bearing, negative, out-of-range, and non-finite numeric
+values. Invalid fields now fall back individually to conservative defaults
+before accounting or escalation decisions. Twenty-four focused provider-free
+checks passed.
+
+On 2026-07-29, ThreadKeeper commit `27bb41a` on
+`agent/threadkeeper-hardening-next` made the supervised worker-loop entrypoint
+strictly validate structured results before emitting them. Duplicate keys,
+non-standard numbers, and non-object roots now fail closed. Six focused
+provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `b099bab` on
+`agent/threadkeeper-hardening-next` made local HTTP JSON responses reject
+non-finite numbers before committing response headers. Twenty-three focused
+provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `d929440` on
+`agent/threadkeeper-hardening-next` made the low-level tool-argument validator
+require exact built-in string and list types. Behavior-bearing subclasses now
+fail before length, conversion, path, query, or command handling. Twenty-one
+focused provider-free checks passed.
+
+On 2026-07-29, an independent provider-free review of the motivational
+score-policy v0.2 generator implementation passed six checks. It binds the
+implementation and preregistration, matches two OpenSSL digest vectors, and
+checks transform, retry, exhaustion, and invalid-input behavior. No dataset
+was materialized; materialization requires a separate decision.
+
+On 2026-07-29, ThreadKeeper commit `9226fb6` on
+`agent/threadkeeper-hardening-next` made queued-worker completion preflight its
+strict JSON result record before renaming the claimed task to `.done`.
+Non-finite or unserializable result metadata now follows the durable `.failed`
+retention path instead of leaving a completed task without a result sidecar.
+Thirty-one focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `b75ec16` on
+`agent/threadkeeper-hardening-next` made persistent transcript and run-index
+writers reject non-finite JSON numbers. Invalid records fail before atomic
+replacement or index append, preserving the last valid audit state.
+Thirty-two focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `6bcfc12` on
+`agent/threadkeeper-hardening-next` made supervised-worker lock metadata
+serialization strict and non-destructive on serialization failure. Invalid or
+non-finite metadata can no longer truncate the last valid operator-visible
+worker state. Three focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `093cb00` on
+`agent/threadkeeper-hardening-next` made LLM quota/concurrency state
+serialization strict and non-destructive on serialization failure. Invalid or
+non-finite state can no longer truncate the last valid guard record before
+failing. Eleven focused provider-free checks passed.
+
+On 2026-07-29, the revised motivational score-policy v0.2 synthetic-generator
+preregistration passed an independent R1--R4 review. Seven provider-free checks
+content-address the revision and policy, prove every candidate-witness region
+selects its declared action across the full modular range, and verify both
+799/800 boundary pairs. This authorizes only a separate non-materializing
+implementation gate; no dataset, fitting, memory, provider, or runtime change.
+
+On 2026-07-29, ThreadKeeper commit `43521bb` on
+`agent/threadkeeper-hardening-next` made budget usage/escalation and worker
+usage audit writers reject non-finite JSON numbers. Writers can no longer
+persist `NaN`/`Infinity` records that strict readers subsequently discard.
+Three focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `476a39c` on
+`agent/threadkeeper-hardening-next` serialized worker usage JSONL appends with
+cross-process exclusive locks. Concurrent worker processes can no longer
+interleave accounting records; no-symlink, flush, fsync, and best-effort
+logging behavior remain intact. Five focused provider-free checks passed.
+
+On 2026-07-29, ThreadKeeper commit `ee0f512` on
+`agent/threadkeeper-hardening-next` serialized usage and escalation JSONL
+audit-log appends with cross-process exclusive locks. Concurrent writers can
+no longer interleave partial records; existing no-symlink, flush, fsync, and
+fail-safe response-path behavior is preserved. Fifteen focused provider-free
+checks passed.
+
+On 2026-07-28, ThreadKeeper commit `f99a625` on
+`agent/threadkeeper-hardening-next` bounded the episode-recall timestamp bridge
+argument to 23 characters before normalization, parsing, or history reads.
+Plain, quoted, and MeTTa-escaped valid timestamps retain their behavior.
+Fourteen focused provider-free checks passed.
+
+On 2026-07-28, ThreadKeeper commit `53ebe6c` on
+`agent/threadkeeper-hardening-next` made episode recall scan history with
+bounded working memory instead of retaining the full file. The nearest
+timestamp and requested surrounding-line semantics are preserved, with memory
+bounded by the already validated 0--1000 radius. Eleven focused provider-free
+checks passed.
+
+On 2026-07-28, ThreadKeeper commit `df20549` on
+`agent/threadkeeper-hardening-next` made the MeTTa/Python episode-recall bridge
+require an exact timestamp string and an exact integer radius bounded to
+0--1000. Behavior-bearing subclasses, booleans, coercible scalars, negative
+values, and oversized recalls now fail before string or numeric behavior and
+before history-file reads. Nine focused provider-free checks passed.
+
+On 2026-07-28, ThreadKeeper commit `447c6e7` on
+`agent/threadkeeper-hardening-next` made persisted usage-accounting records
+require exact object, model-string, non-negative integer token-counter, and
+finite non-negative timestamp types. Malformed records are skipped before
+dashboard accounting. Twenty focused provider-free checks passed.
+
+On 2026-07-28, ThreadKeeper commit `c0b3c7d` on
+`agent/threadkeeper-hardening-next` made queued-worker result envelopes use
+strict JSON and exact object roots before completion/error accounting or
+result persistence. Duplicate keys, non-standard `NaN`/`Infinity`, and
+non-object roots now fail closed. Thirty-eight focused checks and the
+1077-test provider-free hardening suite passed.
 
 On 2026-07-28, ThreadKeeper commit `57c9ebf` on
 `agent/threadkeeper-hardening-next` made the local HTTP `/send` request body
@@ -1401,6 +2750,10 @@ See `projects/omegaclaw/RUNBOOK.md` for exact commands and environment variables
 
 - For near-term local operation, OpenClaw proxy works as an LLM backend; before longer runs decide whether it should remain a full OpenClaw agent target or be replaced by a raw-model route.
 - Preferred near-term topology is a separate OmegaClaw Telegram bot token/account for private/direct smoke. A token is currently stored only in the local secret env file, but because it was pasted into chat it should be rotated in BotFather before any longer run.
+- On 2026-07-29, Ben explicitly withdrew the token-rotation/attestation gate
+  and approved ProtoMegaBot2 staging. Staging must continue to avoid reading,
+  displaying, copying, logging, or altering the existing credential; the next
+  gate is the bounded staging launcher preflight and health/rollback evidence.
 - How should OmegaClaw communicate with ZeroBot/OpenClaw: Telegram group, direct OpenClaw session bridge, local IPC, webhook, or no direct link initially?
 - What filesystem/network policy should be used for real runs beyond the current local mock policy?
 
@@ -1416,3 +2769,28 @@ See `projects/omegaclaw/RUNBOOK.md` for exact commands and environment variables
 - **Filesystem policy mismatch:** upstream Docker policy used `/PeTTa/...`; local path policy must be maintained if running outside Docker.
 - **Infinite-loop behavior:** OmegaClaw is a continuous agent loop; run under explicit process/session management and stop smoke supervisors after tests.
 - **Provider cost/unintended calls:** mock mode avoids real LLM calls; real provider use needs explicit credentials and monitoring. Current Telegram private mode still needs idle/no-input tuning before long-lived operation.
+# ProtoCosmo2 full-PDF ingestion repair (2026-08-06)
+
+The addressed-document adapter no longer silently truncates extracted text at
+60,000 characters. The supplied 104-page OmegaSelf PDF (656,809 bytes) extracts
+to 160,374 characters and now passes through unchanged. Input remains bounded
+to 10 MB and extracted expansion to 2,000,000 characters; exceeding the latter
+fails explicitly as `telegram_document_text_too_large`. Thirty-three focused
+provider-free tests passed, including exact supplied-PDF preservation and the
+oversize failure case, plus compilation, live config validation, and diff
+checks. The test is committed at `b2069d6`; the supervised worker restarted as
+PID `1553729`. Relevant Research Rules: 1 (validate extraction), 2 (explicit
+failure semantics), 5 (reproducible evidence), and 7 (separate transport and
+extraction bounds). Evidence:
+`experiments/20260807T012000Z-protocosmo2-full-pdf-ingestion/`.
+## 2026-08-09 — Non-blocking Protomega long/document path deployed
+
+The production repair is complete. After isolated Protomega2 staging,
+provider-free hardening, six independent frontier review rounds ending in
+PASS, and an explicitly authorized guarded restart, production passed a fresh
+short-message canary and a full long-document/interleaved-short trace. Source
+9753 was acknowledged as 9754; short source 9755 received `PROD-SHORT-OK` as
+9756 while the deferred task ran; the clean final document result arrived as
+9757 replying to 9753. Production retained one owning receiver and healthy
+watchdog/lock state. See
+`experiments/20260808T232800Z-protomega-nonblocking-long-task/RUN.md`.
