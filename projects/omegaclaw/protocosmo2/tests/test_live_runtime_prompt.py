@@ -216,6 +216,24 @@ def test_case_fails_closed_when_path_is_substituted_after_open(tmp_path, monkeyp
         CASE_MODULE.read_prompt(None, prompt_path)
 
 
+def test_case_reads_only_complete_substantive_bridge_handoff(tmp_path):
+    response = tmp_path / "response.json"
+    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    response.write_text("{", encoding="utf-8")
+    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    response.write_text(json.dumps({"error": "inner runtime exited"}), encoding="utf-8")
+    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    long_answer = 'Yes—I can migrate it.\n\n1. Inventory "all four" agents.\n2. Stage VM8.'
+    response.write_text(json.dumps({"raw_answer": long_answer}), encoding="utf-8")
+    assert CASE_MODULE.read_bridge_raw_answer(response) == long_answer
+
+
+def test_case_gives_atomic_live_bridge_handoff_bounded_early_exit_grace():
+    text = CASE.read_text(encoding="utf-8")
+    assert "grace_deadline = time.monotonic() + 2" in text
+    assert "read_bridge_raw_answer(bridge_response)" in text
+
+
 def test_private_prompt_write_failure_removes_partial_file(tmp_path, monkeypatch):
     created = tmp_path / "partial.txt"
 

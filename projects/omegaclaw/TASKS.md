@@ -4,6 +4,14 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [ ] 2026-08-11: Repair ProtoCosmo2's long multiline reply delivery failure.
+  Deliverable: preserve and deliver the already-generated substantive answer
+  across the inner bridge/outer transport boundary. Acceptance: provider-free
+  screenshot regression, focused/full tests, independent review, one supervised
+  receiver, and a fresh correlated Telegram delivery. Next command: reproduce
+  the exact bridge-capture boundary in isolated staging. Evidence:
+  `experiments/20260811T184500Z-protocosmo2-long-reply-failure/`.
+
 - [x] 2026-08-11: Bind deterministic ThreadKeeper queued error recovery actions
   to the durable transcript outcome at commit `0d51f8b`. Transcript-backed
   timeout, token/response limit, skill/final-emit protocol, and quota failures

@@ -45,6 +45,18 @@ def read_prompt(prompt: str | None, prompt_file: Path | None) -> str:
             os.close(fd)
 
 
+def read_bridge_raw_answer(response_path: Path) -> str | None:
+    """Read only a complete, substantive live-bridge handoff."""
+    try:
+        payload = json.loads(response_path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    raw_answer = payload.get("raw_answer") if isinstance(payload, dict) else None
+    if isinstance(raw_answer, str) and raw_answer.strip():
+        return raw_answer
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--petta", type=Path, required=True)
@@ -216,14 +228,23 @@ def main() -> int:
                 answer = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
                 if args.live_transport and bridge_directory is not None:
                     bridge_response = Path(bridge_directory.name) / "response.json"
-                    if bridge_response.exists():
-                        bridge_payload = json.loads(bridge_response.read_text(encoding="utf-8"))
-                        raw_answer = bridge_payload.get("raw_answer")
-                        if isinstance(raw_answer, str) and raw_answer.strip():
-                            answer = raw_answer
+                    answer = read_bridge_raw_answer(bridge_response) or answer
             if answer:
                 break
             if process.poll() is not None:
+                # The PeTTa process can exit during finalization just as the
+                # separately owned bridge atomically publishes a valid answer.
+                # Give that immutable handoff a short bounded grace.
+                if args.live_transport and bridge_directory is not None:
+                    bridge_response = Path(bridge_directory.name) / "response.json"
+                    grace_deadline = time.monotonic() + 2
+                    while time.monotonic() < grace_deadline:
+                        answer = read_bridge_raw_answer(bridge_response)
+                        if answer:
+                            break
+                        time.sleep(0.05)
+                    if answer:
+                        break
                 raise RuntimeError(f"OmegaClaw exited early with {process.returncode}")
             time.sleep(0.25)
         if not answer:
