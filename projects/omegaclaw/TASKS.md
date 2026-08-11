@@ -110,8 +110,11 @@ Use small, testable tasks. Keep the top of each section in priority order.
   `a73a312` with one healthy receiver each and current cursors preserved. The
   staging repair now accepts Telegram's generic MIME only for the bounded text
   extension allowlist; generic `.bin` remains blocked. Focused tests pass 78/78
-  and the full provider-free suite passes 132/132. Next command: clean commits
-  and independent review before requesting new deployment authorization.
+  and the full provider-free suite passes 132/132. Independent review PASSED
+  exact transport/test `b424c0d` plus workspace runner `7293ca9`, including
+  negative MIME/extension and existing-boundary checks. Next command: obtain
+  explicit authorization for new guarded restarts and fresh generic-MIME
+  Markdown acceptance; roll back immediately on any failure.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 

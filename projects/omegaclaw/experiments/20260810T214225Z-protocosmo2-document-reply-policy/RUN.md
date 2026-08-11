@@ -221,3 +221,13 @@ Focused transport tests pass 78/78 and the full provider-free suite passes
 132/132; compilation and `git diff --check` pass. Production remains on the
 rollback baseline pending clean commits, independent review, and fresh
 deployment authorization.
+
+Independent review PASSED exact transport/test commit
+`b424c0d9957e33362895e6a5730cdb11744a532c` and workspace runner commit
+`7293ca9aac3397cae111e6b1ec3e72ff63f374f1`. It replayed 78/78 focused and
+132/132 full tests, compilation, and diff checks; independently confirmed the
+four bounded text suffixes accept generic MIME case-insensitively while `.bin`,
+generic `.pdf`, PDF-MIME `.md`, and text-MIME `.exe` fail closed. Existing
+size, extraction, path, routing, and bounded-failure controls remain intact.
+Production remains on `a73a312`; a new guarded deployment requires Ben's
+explicit authorization.
