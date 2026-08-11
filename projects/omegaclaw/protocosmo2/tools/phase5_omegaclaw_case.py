@@ -108,6 +108,17 @@ def emit_case_answer(answer: str, *, started: float, command: list[str],
         raise RuntimeError("OmegaClaw exited after authenticated bridge handoff")
 
 
+def select_polled_answer(*, live_transport: bool, output_answer: str,
+                         authenticated_answer: str | None,
+                         child_returncode: int | None) -> tuple[str, bool]:
+    """Select one answer and whether it coincided with an exited child."""
+    # Live transport has exactly one authority-bearing answer seam: the
+    # authenticated bridge receipt. ``output.txt`` is an inner diagnostic and
+    # can never substitute for that receipt.
+    answer = (authenticated_answer or "") if live_transport else output_answer
+    return answer, bool(answer and child_returncode is not None)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--petta", type=Path, required=True)
@@ -293,17 +304,30 @@ def main() -> int:
                 answer = server.getLastMessage()
             else:
                 output_path = Path(channel_directory.name) / "output.txt"
-                answer = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
+                output_answer = (
+                    output_path.read_text(encoding="utf-8")
+                    if output_path.exists() else ""
+                )
+                authenticated_answer = None
                 if args.live_transport and bridge_directory is not None:
                     bridge_response = Path(bridge_directory.name) / "response.json"
-                    answer = read_bridge_raw_answer(
+                    authenticated_answer = read_bridge_raw_answer(
                         bridge_response, request_id=bridge_request_id,
                         prompt_sha256=bridge_prompt_sha256, session=args.session,
                         secret=bridge_secret,
-                    ) or answer
+                    )
+                child_returncode = process.poll()
+                answer, exited_with_answer = select_polled_answer(
+                    live_transport=args.live_transport,
+                    output_answer=output_answer,
+                    authenticated_answer=authenticated_answer,
+                    child_returncode=child_returncode,
+                )
+                rescued_after_early_exit |= exited_with_answer
             if answer:
                 break
-            if process.poll() is not None:
+            child_returncode = process.poll()
+            if child_returncode is not None:
                 # The PeTTa process can exit during finalization just as the
                 # separately owned bridge atomically publishes a valid answer.
                 # Give that immutable handoff a short bounded grace.

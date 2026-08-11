@@ -303,6 +303,28 @@ def test_rescued_answer_is_emitted_but_early_exit_remains_an_incident(capsys):
     assert emitted["answer"] == "rescued exact answer"
 
 
+def test_live_poll_rejects_unsigned_output_when_authenticated_receipt_is_invalid():
+    answer, rescued = CASE_MODULE.select_polled_answer(
+        live_transport=True,
+        output_answer="unsigned substituted output",
+        authenticated_answer=None,
+        child_returncode=None,
+    )
+    assert answer == ""
+    assert rescued is False
+
+
+def test_live_poll_marks_same_iteration_answer_and_nonzero_exit_as_incident():
+    answer, rescued = CASE_MODULE.select_polled_answer(
+        live_transport=True,
+        output_answer="unsigned competing output",
+        authenticated_answer="authenticated exact answer",
+        child_returncode=1,
+    )
+    assert answer == "authenticated exact answer"
+    assert rescued is True
+
+
 def test_private_prompt_write_failure_removes_partial_file(tmp_path, monkeypatch):
     created = tmp_path / "partial.txt"
 

@@ -62,3 +62,16 @@ that rescue emits the answer while retaining the nonzero incident signal.
 - Focused runtime/bridge tests: `22 passed in 0.36s`.
 - Full provider-free transport suite: `148 passed in 1.55s`.
 - Compilation and scoped `git diff --check`: passed.
+
+Independent review BLOCKED commit `6ace94f` on two remaining live-loop races:
+an unsigned `output.txt` value could win when bridge authentication failed, and
+an authenticated answer plus already-nonzero child in the same polling cycle
+could be mislabeled as healthy. The follow-up removes `output.txt` as a live
+answer authority entirely and classifies the child return code before accepting
+the authenticated answer. Executable regressions prove unsigned competing
+output is ignored and same-cycle answer/nonzero-exit is marked for incident
+preservation.
+
+- Follow-up focused runtime/bridge tests: `24 passed in 0.46s`.
+- Follow-up full provider-free transport suite: `148 passed in 1.63s`.
+- Follow-up compilation and scoped `git diff --check`: passed.
