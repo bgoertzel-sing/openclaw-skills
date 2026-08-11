@@ -118,6 +118,15 @@ Use small, testable tasks. Keep the top of each section in priority order.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 
+- [ ] 2026-08-11: Replace permanent deferred acknowledgements for ProtoCosmo2,
+  Protomega, and Protomega2 with a temporary status reply such as
+  `Formulating my response...`, deleted after the correlated final
+  result/failure is delivered. Acceptance: preserve immutable reply routing,
+  durable crash recovery, one-execution promotion, and truthful bounded
+  failures; prove status deletion is idempotent and cannot delete unrelated
+  messages. Start only after the current attachment-ingestion incident is
+  accepted in production. Evidence path: a new bounded experiment record.
+
 - [x] 2026-08-10: Require durable transcript evidence for every claimed
   ThreadKeeper queued structured return at commit `31b1f94`. Terminal results
   can no longer omit both transcript path and SHA-256 before audit publication.

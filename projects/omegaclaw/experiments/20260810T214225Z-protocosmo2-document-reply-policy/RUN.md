@@ -231,3 +231,21 @@ generic `.pdf`, PDF-MIME `.md`, and text-MIME `.exe` fail closed. Existing
 size, extraction, path, routing, and bounded-failure controls remain intact.
 Production remains on `a73a312`; a new guarded deployment requires Ben's
 explicit authorization.
+
+### ZIP acceptance defect and staging repair
+
+Ben's follow-up screenshot showed `ASI CLOUD.zip` receiving visible failures,
+followed by ProtoCosmo2 incorrectly claiming that ZIP support existed and that
+the upload had stalled. The extractor in fact allowed only PDF and bounded
+plain-text types, so this was another `attachment_unavailable` policy rejection
+and a misleading model explanation.
+
+The candidate now inspects ZIP archives entirely in memory without writing or
+executing members. It bounds archive count, per-entry and aggregate expanded
+bytes, compression ratio, path shape, duplicates, encryption, and symlinks;
+extracts only an explicit source/text suffix allowlist as strict UTF-8; rejects
+NUL-bearing disguised binaries; and exposes a bounded inventory for other file
+types. Traversal and binary-disguise regressions fail closed. Focused tests pass
+81/81 and the full provider-free suite passes 135/135; compilation and diff
+checks pass. Production remains on the rollback baseline pending a new exact
+commit review and authorization.

@@ -10,9 +10,11 @@ from __future__ import annotations
 import argparse
 import ctypes
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
+from pathlib import PurePosixPath
 import signal
 import stat
 import subprocess
@@ -23,6 +25,7 @@ import urllib.parse
 import urllib.request
 import uuid
 import re
+import zipfile
 
 MAX_DOCUMENT_BYTES = 10_000_000
 MAX_OUTBOUND_DOCUMENT_BYTES = 50_000_000
@@ -31,6 +34,14 @@ MAX_OUTBOUND_DOCUMENT_BYTES = 50_000_000
 # the supplied 104-page OmegaSelf paper in full while still failing closed on
 # pathological expansion.
 MAX_EXTRACTED_DOCUMENT_CHARS = 2_000_000
+MAX_ZIP_ENTRIES = 64
+MAX_ZIP_UNCOMPRESSED_BYTES = 5_000_000
+MAX_ZIP_ENTRY_BYTES = 1_000_000
+MAX_ZIP_COMPRESSION_RATIO = 100
+ZIP_TEXT_SUFFIXES = {
+    ".txt", ".md", ".csv", ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg",
+    ".py", ".sh", ".metta", ".pl", ".rs", ".js", ".ts", ".html", ".css",
+}
 MAX_INCIDENT_BYTES = 4096
 SEND_WRAPPER = re.compile(r'^\(send\s+("(?:\\.|[^"\\])*")\s*\)$', re.DOTALL)
 
@@ -57,6 +68,66 @@ def validate_extracted_document_text(text: str) -> str:
     if len(text) > MAX_EXTRACTED_DOCUMENT_CHARS:
         raise RuntimeError("telegram_document_text_too_large")
     return text
+
+
+def extract_bounded_zip_text(raw: bytes) -> str:
+    """Inspect a ZIP in memory without writing or executing archive members."""
+    try:
+        archive = zipfile.ZipFile(io.BytesIO(raw))
+    except (zipfile.BadZipFile, OSError):
+        raise RuntimeError("zip_invalid") from None
+    with archive:
+        members = archive.infolist()
+        if not members or len(members) > MAX_ZIP_ENTRIES:
+            raise RuntimeError("zip_entry_count_invalid")
+        seen: set[str] = set()
+        total_uncompressed = 0
+        inventory: list[str] = []
+        extracted: list[str] = []
+        for member in members:
+            path = PurePosixPath(member.filename.replace("\\", "/"))
+            if (
+                not member.filename or path.is_absolute() or ".." in path.parts
+                or member.flag_bits & 0x1 or member.filename in seen
+            ):
+                raise RuntimeError("zip_member_unsafe")
+            seen.add(member.filename)
+            mode = (member.external_attr >> 16) & 0o170000
+            if mode == 0o120000:
+                raise RuntimeError("zip_member_unsafe")
+            if member.is_dir():
+                continue
+            total_uncompressed += member.file_size
+            if (
+                member.file_size < 0 or member.file_size > MAX_ZIP_ENTRY_BYTES
+                or total_uncompressed > MAX_ZIP_UNCOMPRESSED_BYTES
+            ):
+                raise RuntimeError("zip_uncompressed_size_invalid")
+            if member.file_size and (
+                member.compress_size <= 0
+                or member.file_size > member.compress_size * MAX_ZIP_COMPRESSION_RATIO
+            ):
+                raise RuntimeError("zip_compression_ratio_invalid")
+            inventory.append(member.filename)
+            if path.suffix.casefold() not in ZIP_TEXT_SUFFIXES:
+                continue
+            try:
+                content = archive.read(member)
+                text = content.decode("utf-8")
+            except (KeyError, RuntimeError, UnicodeDecodeError, zipfile.BadZipFile):
+                raise RuntimeError("zip_text_member_invalid") from None
+            if "\x00" in text:
+                raise RuntimeError("zip_text_member_invalid")
+            extracted.append(
+                f"<external_untrusted_zip_member name={json.dumps(member.filename, ensure_ascii=True)}>\n"
+                f"{text}\n</external_untrusted_zip_member>"
+            )
+        if not inventory:
+            raise RuntimeError("zip_has_no_files")
+        result = "ZIP inventory:\n" + "\n".join(f"- {name}" for name in inventory)
+        if extracted:
+            result += "\n\n" + "\n\n".join(extracted)
+        return validate_extracted_document_text(result)
 
 
 def append_responder_incident(path: Path, *, returncode: int, stderr: str) -> None:
@@ -183,7 +254,8 @@ class Api:
             raise RuntimeError("telegram_document_size_invalid")
         if not isinstance(name, str) or len(name) > 512 or not isinstance(mime, str):
             raise RuntimeError("telegram_document_metadata_invalid")
-        is_pdf = mime == "application/pdf" and name.casefold().endswith(".pdf")
+        lower_name = name.casefold()
+        is_pdf = mime == "application/pdf" and lower_name.endswith(".pdf")
         text_suffix = name.casefold().endswith((".txt", ".md", ".csv", ".json"))
         # Telegram clients commonly upload Markdown with the generic binary
         # MIME type. Keep the existing bounded extension allowlist authoritative
@@ -192,7 +264,10 @@ class Api:
         is_text = text_suffix and (
             mime.startswith("text/") or mime == "application/octet-stream"
         )
-        if not (is_pdf or is_text):
+        is_zip = lower_name.endswith(".zip") and mime in {
+            "application/zip", "application/x-zip-compressed", "application/octet-stream"
+        }
+        if not (is_pdf or is_text or is_zip):
             raise RuntimeError("telegram_document_type_blocked")
         metadata = self._call("getFile", {"file_id": file_id}, 20)
         file_path = metadata.get("file_path") if isinstance(metadata, dict) else None
@@ -213,6 +288,8 @@ class Api:
             if completed.returncode != 0:
                 raise RuntimeError("pdf_extraction_failed")
             text = completed.stdout.decode("utf-8", errors="replace")
+        elif is_zip:
+            text = extract_bounded_zip_text(raw)
         else:
             text = raw.decode("utf-8", errors="replace")
         return validate_extracted_document_text(text)
