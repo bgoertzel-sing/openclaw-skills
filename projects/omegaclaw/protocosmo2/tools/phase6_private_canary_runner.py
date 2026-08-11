@@ -184,7 +184,14 @@ class Api:
         if not isinstance(name, str) or len(name) > 512 or not isinstance(mime, str):
             raise RuntimeError("telegram_document_metadata_invalid")
         is_pdf = mime == "application/pdf" and name.casefold().endswith(".pdf")
-        is_text = mime.startswith("text/") and name.casefold().endswith((".txt", ".md", ".csv", ".json"))
+        text_suffix = name.casefold().endswith((".txt", ".md", ".csv", ".json"))
+        # Telegram clients commonly upload Markdown with the generic binary
+        # MIME type. Keep the existing bounded extension allowlist authoritative
+        # for that one generic case; all other MIME/extension mismatches still
+        # fail closed before download.
+        is_text = text_suffix and (
+            mime.startswith("text/") or mime == "application/octet-stream"
+        )
         if not (is_pdf or is_text):
             raise RuntimeError("telegram_document_type_blocked")
         metadata = self._call("getFile", {"file_id": file_id}, 20)

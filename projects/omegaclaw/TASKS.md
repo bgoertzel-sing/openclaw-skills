@@ -4,6 +4,178 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] 2026-08-11: Bind deterministic ThreadKeeper queued error recovery actions
+  to the durable transcript outcome at commit `0d51f8b`. Transcript-backed
+  timeout, token/response limit, skill/final-emit protocol, and quota failures
+  now require the dispatcher's exact status-specific `next_action`, preventing
+  substituted operator instructions before audit publication. One focused
+  regression, all 33 boundary tests, compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-11: Bind ThreadKeeper queued failure and incomplete guidance to
+  the durable transcript outcome at commit `fcad2ab`. Authenticated error
+  returns now require the dispatcher's status-specific uncertainty, while
+  `max_turns` returns require exact medium uncertainty and bounded follow-up
+  review guidance. One focused regression, all 33 boundary tests, compilation,
+  `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-11: Restore authentic ThreadKeeper queued failure and incomplete
+  returns at commit `0abbd44`. Durable validation now accepts only the explicit
+  terminal failure statuses the dispatcher actually persists, plus `max_turns`
+  for incomplete work, instead of requiring synthetic `error`/`incomplete`
+  transcript statuses that are never written. Cross-outcome substitutions
+  still fail closed. One focused regression, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-11: Bind ThreadKeeper queued pending-adjudication guidance to the
+  durable transcript outcome at commit `5fb7bf0`. Transcript-backed candidates
+  now require exact medium uncertainty and explicit routing to an adjudicator,
+  preventing queued audit metadata from directing the parent to accept a
+  candidate without review. One focused regression, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-11: Bind ThreadKeeper queued cancellation guidance to the durable
+  transcript outcome at commit `181f6b3`. Transcript-backed cancellations now
+  require exact low uncertainty and return-to-parent guidance, preventing a
+  caller from directing the parent to restart cancelled work. One focused
+  regression, all 33 boundary tests, compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-11: Bind successful ThreadKeeper queued operator guidance to the
+  durable transcript outcome at commit `c873fa6`. Transcript-backed successes
+  now require exact low uncertainty and return-to-parent guidance, preventing
+  a caller from grafting uncertainty or arbitrary repeat-work instructions
+  onto an authenticated success. One focused regression, all 33 boundary
+  tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-10: Reject unauthenticated ThreadKeeper queued truncation claims
+  at commit `bbe231c`. Transcript-backed terminal results can no longer add a
+  `truncated` marker that has no durable evidence. One focused regression, all
+  33 boundary tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper queued human-facing summaries to the
+  durable transcript at commit `e11d8c0`. A digest-valid transcript can no
+  longer authorize a substituted summary before terminal audit publication.
+  One focused regression, all 33 boundary tests, compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper queued audit claims to the durable
+  transcript at commit `86c87ea`. A same-run, digest-valid transcript can no
+  longer authorize substituted `files_changed`, `tests_run`, patch proposals,
+  adjudication metadata, or worker token usage. One focused regression, all 33
+  boundary tests and 91 subtests, compilation, `git diff --check`, and draft PR
+  #1 safety-floor ancestry passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper durable queued transcript evidence to the
+  exact validated task contract at commit `01802a9`. A same-run, digest-valid
+  transcript carrying a different authority contract now fails closed before
+  terminal audit publication. One focused regression, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [ ] 2026-08-10: Stop ProtoCosmo2 from pre-queuing ordinary document-analysis
+  questions. Deliverable: documents and long context must enter the same
+  single-execution fast-grace lane as ordinary requests; only explicit
+  persistent/background-work intent may receive an immediate queued
+  acknowledgement. Acceptance: preserve Ben's screenshot case (ordinary
+  `petta-memory` question with attached Markdown documents) as a provider-free
+  regression; prove a fast answer is delivered directly, a genuinely slow
+  document request promotes without rerunning, and explicit background work
+  still queues immediately; pass the full transport suite and independent
+  review before requesting a guarded production restart. Staging commit
+  `1d68390` now selects immediate deferral only from the human's current narrow
+  persistent-work instruction; quoted group context and document content have
+  evidence but no lane-selection authority. Independent review blocked that
+  commit after reproducing delimiter injection and missed natural background
+  requests. Follow-up `c701ab5` structurally fixed authority separation but a
+  fresh review blocked negation, quotation, and broader affirmative-intent
+  semantics. Review of `c1fd506` then exposed whole-message negation and
+  descriptive/reported-speech false positives. Review of `9b1d4dc` exposed
+  additional explicit verbs, comma-linked clauses, and trailing reported
+  speech. Review of `7c75810` exposed two remaining keep/let variants, two
+  reported-speech suffixes, and a meta-question. Commit `cc84b72` covers those
+  cases. Review of `cc84b72` exposed persistent-job/workflow variants, generic
+  reported-source suffixes, and a meta-question. Commit `a44abca` covers those
+  distinctions; focused tests pass 76/76 and the full provider-free suite
+  passes 130/130, with compilation and diff checks clean. Independent review
+  PASSED exact clean commit `a44abca6c907c2f1c91e0c2e2af04c44da1c1acc`.
+  Ben authorized the deployment in Telegram source 18061. Both guarded
+  restarts completed on exact clean `a44abca`, but fresh acceptance failed:
+  Protomega `9920 -> 9921` and ProtoCosmo2 `974 -> 975`, `979 -> 980` were all
+  ledgered `attachment_unavailable`. Both bots were immediately rolled back to
+  `a73a312` with one healthy receiver each and current cursors preserved. The
+  staging repair now accepts Telegram's generic MIME only for the bounded text
+  extension allowlist; generic `.bin` remains blocked. Focused tests pass 78/78
+  and the full provider-free suite passes 132/132. Next command: clean commits
+  and independent review before requesting new deployment authorization.
+  Evidence:
+  `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
+
+- [x] 2026-08-10: Require durable transcript evidence for every claimed
+  ThreadKeeper queued structured return at commit `31b1f94`. Terminal results
+  can no longer omit both transcript path and SHA-256 before audit publication.
+  One focused regression, all 33 boundary tests, compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper queued failure and incomplete statuses to
+  durable transcript status at commit `259272e`. An `error` return can no
+  longer cite an `ok` transcript, and an `incomplete` return can no longer cite
+  another terminal state. One focused regression, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper durable queued-result status to transcript
+  status at commit `db9296f`. Digest-valid nonterminal transcripts and
+  transcripts contradicting `ok`, `cancelled`, or `needs_adjudication` returns
+  now fail closed before terminal audit publication. One focused regression,
+  all 33 boundary tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-10: Support bounded multi-attachment Telegram inputs across
+  ProtoCosmo, Protomega, and ProtoCosmo2. Deliverable: each bot must ingest a
+  human-authored message/album containing at least two allowed documents while
+  retaining immutable source routing, per-file provenance, type/size/count
+  limits, and visible bounded failure behavior. Acceptance: preserve the
+  smallest two-document failing fixture; pass focused and full provider-free
+  tests in isolated staging; record independent production topology and
+  rollback baselines; then correlate one fresh two-document Telegram canary per
+  bot from update/message IDs through attachment staging, agent answer, and
+  delivery receipt, with exactly one receiver per identity. Next command:
+  locate the three production transport/attachment adapters and correlate Ben's
+  failed ProtoCosmo2 group message 17953 with its recorded failure. Ben
+  explicitly authorized guarded production restarts for Protomega and
+  ProtoCosmo2 in Telegram source 17975. Staging commit `a73a312` passes 89/89
+  provider-free transport tests. Both guarded restarts passed with byte-identical
+  schema-3 state, healthy independent watchdog/lock checks, and exactly one
+  receiver per identity: Protomega owner `2851329`, ProtoCosmo2 owner `2851672`.
+  External acceptance passed: ProtoCosmo sources 17993/17994 returned correct
+  two-file receipt 17995; Protomega source 9863 delivered receipts 9864/9865;
+  ProtoCosmo2 source 914 delivered receipts 915/916. Ben confirmed all three
+  bots received and read the paired attachments in source 17996. Final topology
+  has one healthy receiver per OmegaClaw identity, empty pending state, and no
+  rollback. Evidence:
+  `experiments/20260810T153314Z-multi-attachment-ingress-repro/` and
+  `experiments/20260810T160901Z-multi-attachment-production/`.
+
+- [x] 2026-08-10: Preserve ThreadKeeper queued run identity through worker
+  dispatch at commit `1b05092`. The prior transcript/task identity validator
+  exposed that synchronous worker execution generated a fresh run ID, causing
+  legitimate queued results to fail closed. Claimed tasks now propagate their
+  immutable run ID through context-local record construction without leaking
+  it to unrelated dispatches. One end-to-end regression, all 33 boundary
+  tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-10: Bind ThreadKeeper durable queued transcript evidence to the
+  claimed task at commit `91a88cf`. A valid transcript whose internal `run_id`
+  belongs to another run now fails closed before terminal audit publication.
+  One focused regression, all 32 boundary tests, compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry passed.
+
 - [x] 2026-08-10: Bind ThreadKeeper durable transcript claims to internal run
   identity at commit `0d508d7`. Referenced JSON must carry a safe `run_id`, an
   internal transcript path exactly matching the canonical claimed path, and a
