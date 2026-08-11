@@ -280,3 +280,24 @@ failure receipt `269`, and its private incident ledger records exact code
 applies to this identity as well, but its live process predates the candidate.
 Acceptance scope therefore includes an independently guarded Protomega2
 restart and fresh Markdown/ZIP canaries, subject to explicit authorization.
+
+### Three-identity guarded deployment
+
+Ben explicitly authorized fixing all three identities in Telegram source 18096.
+Preflight found schema-3 state, no pending inbound item, no active durable job,
+one receiver per identity, exact clean reviewed transport commit `df06c29`, and
+a runner file byte-identical to reviewed workspace commit `ba6c4e0`.
+
+- Protomega2 restarted as owner `3132933`; complete state SHA-256 remained
+  `283161b6656fc6f39844a3514a319188afa1b9b83aeffad36db12c3ea0609584`.
+- Protomega restarted under its watchdog lease as owner `3133220`; complete
+  state SHA-256 remained
+  `b3d1fe70750fdbbaf8204aa3528f9bba510d4ed7cc1e7cf1ab6871ea86c96970`.
+- ProtoCosmo2 restarted under its watchdog lease as owner `3133422`; complete
+  state SHA-256 remained
+  `f5e4c772d895074c5af4fbdadb57bc89437661b1984d12297ec91697f49ecdcd`.
+
+Each identity has exactly one receiver; watchdog maintenance is cleared and
+ownership checks pass. Rollback was not activated. End-to-end acceptance
+remains open for fresh human-authored `INSTALL_LINUX.md` and `ASI CLOUD.zip`
+messages to each identity, with per-identity immediate rollback on failure.

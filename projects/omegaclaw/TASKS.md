@@ -121,6 +121,10 @@ Use small, testable tasks. Keep the top of each section in priority order.
   ZIP acceptance across ProtoCosmo2, Protomega, and Protomega2; roll back the
   affected identity immediately on any failure. Protomega2 source `268 -> 269`
   independently reproduced `attachment_unavailable` under the old runner.
+  Ben authorized the three-identity deployment in source 18096. Guarded
+  restarts succeeded with byte-identical state and one receiver each: owners
+  ProtoCosmo2 `3133422`, Protomega `3133220`, Protomega2 `3132933`. Next:
+  correlate fresh Markdown and ZIP canaries for all three identities.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 
