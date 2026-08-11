@@ -23,6 +23,7 @@ import tempfile
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 import uuid
 import re
 import unicodedata
@@ -230,6 +231,35 @@ class Api:
         if not isinstance(result, dict) or type(result.get("message_id")) is not int:
             raise RuntimeError("telegram_missing_receipt")
         return str(result["message_id"])
+
+    def delete_message(self, *, chat_id: int, message_id: str) -> None:
+        if type(chat_id) is not int or chat_id == 0 or not message_id.isdigit():
+            raise RuntimeError("telegram_delete_target_invalid")
+        data = urllib.parse.urlencode(
+            {"chat_id": chat_id, "message_id": int(message_id)}
+        ).encode("utf-8")
+        request = urllib.request.Request(f"{self.base}/deleteMessage", data=data)
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                payload = json.load(response)
+        except urllib.error.HTTPError as exc:
+            # Bot API deletion is semantically idempotent. A crash may occur
+            # after Telegram deletes the message but before the durable marker
+            # is written; the retry then reports an already-absent target.
+            try:
+                raw = exc.read(4097)
+                error_payload = json.loads(raw) if len(raw) <= 4096 else None
+            except Exception:
+                error_payload = None
+            if (exc.code == 400 and isinstance(error_payload, dict)
+                    and error_payload.get("description") == "Bad Request: message to delete not found"):
+                return
+            raise RuntimeError("telegram_HTTPError") from None
+        except Exception as exc:
+            raise RuntimeError(f"telegram_{type(exc).__name__}") from None
+        if (not isinstance(payload, dict) or payload.get("ok") is not True
+                or payload.get("result") is not True):
+            raise RuntimeError("telegram_delete_unconfirmed")
 
     def send_document(self, *, chat_id: int, path: Path, filename: str, mime_type: str,
                       caption: str, reply_to_message_id: int | None = None) -> str:

@@ -134,8 +134,13 @@ Use small, testable tasks. Keep the top of each section in priority order.
   result/failure is delivered. Acceptance: preserve immutable reply routing,
   durable crash recovery, one-execution promotion, and truthful bounded
   failures; prove status deletion is idempotent and cannot delete unrelated
-  messages. Start only after the current attachment-ingestion incident is
-  accepted in production. Evidence path: a new bounded experiment record.
+  messages. Ben authorized implementation in Telegram source 18109 after ZIP
+  ingestion passed for ProtoCosmo2 and Protomega2. Staging implementation on
+  shared transport baseline `df06c29` now passes 114/114 focused and 148/148
+  full provider-free tests, compilation, and diff checks. Production is
+  unchanged. Next command: obtain separate frontier-model review of the exact
+  clean staging commits before requesting guarded deployment. Evidence:
+  `experiments/20260811T183000Z-temporary-deferred-status/`.
 
 - [x] 2026-08-10: Require durable transcript evidence for every claimed
   ThreadKeeper queued structured return at commit `31b1f94`. Terminal results
