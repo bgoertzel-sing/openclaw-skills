@@ -118,7 +118,9 @@ Use small, testable tasks. Keep the top of each section in priority order.
   repaired exact commits `df06c29` + `ba6c4e0` now pass independent review,
   92/92 focused tests, and 146/146 full tests. Next command: obtain explicit
   authorization for new guarded restarts and fresh generic-MIME Markdown plus
-  ZIP acceptance; roll back immediately on any failure.
+  ZIP acceptance across ProtoCosmo2, Protomega, and Protomega2; roll back the
+  affected identity immediately on any failure. Protomega2 source `268 -> 269`
+  independently reproduced `attachment_unavailable` under the old runner.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 

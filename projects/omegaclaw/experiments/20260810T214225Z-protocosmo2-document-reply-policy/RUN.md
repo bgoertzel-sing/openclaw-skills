@@ -272,3 +272,11 @@ Fresh independent review PASSED exact transport/test commit
 independent 5.4 MB aggregate bomb. No blocking issue was found. Production is
 still on `a73a312`; guarded deployment and fresh human-authored Markdown plus
 ZIP canaries remain explicitly authorization-gated.
+
+Ben's next screenshot confirmed the same generic-MIME Markdown failure in the
+experimental ProtoMegaBot2/Protomega2 identity: source `268` produced visible
+failure receipt `269`, and its private incident ledger records exact code
+`attachment_unavailable` at update `491553065`. The shared reviewed runner fix
+applies to this identity as well, but its live process predates the candidate.
+Acceptance scope therefore includes an independently guarded Protomega2
+restart and fresh Markdown/ZIP canaries, subject to explicit authorization.
