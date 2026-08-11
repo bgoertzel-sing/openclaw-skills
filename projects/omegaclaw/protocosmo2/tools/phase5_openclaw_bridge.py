@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -54,6 +56,42 @@ def normalize_model_answer(text: str) -> str:
     safe = " ".join(stripped.split())[:4000]
     safe = safe.replace("\\", "/").replace('"', "'")
     return f'(send "{safe}")'
+
+
+def signed_response(*, raw_answer: str, request_id: str, prompt_sha256: str,
+                    session: str, secret: bytes) -> dict[str, str]:
+    payload = {
+        "status": "ok",
+        "request_id": request_id,
+        "prompt_sha256": prompt_sha256,
+        "session": session,
+        "raw_answer": raw_answer,
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+    payload["hmac_sha256"] = hmac.new(secret, canonical, hashlib.sha256).hexdigest()
+    return payload
+
+
+def read_correlation_fd(fd: int) -> tuple[str, str, bytes]:
+    with os.fdopen(fd, "r", encoding="ascii") as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise RuntimeError("invalid bridge correlation")
+    request_id = payload.get("request_id")
+    prompt_sha256 = payload.get("prompt_sha256")
+    secret_hex = payload.get("secret_hex")
+    if (not isinstance(request_id, str) or len(request_id) != 64
+            or not isinstance(prompt_sha256, str) or len(prompt_sha256) != 64
+            or not isinstance(secret_hex, str) or len(secret_hex) != 64):
+        raise RuntimeError("invalid bridge correlation")
+    try:
+        int(request_id, 16)
+        int(prompt_sha256, 16)
+        secret = bytes.fromhex(secret_hex)
+    except ValueError:
+        raise RuntimeError("invalid bridge correlation") from None
+    return request_id, prompt_sha256, secret
 
 
 def source_context(sources: list[Path]) -> str:
@@ -130,8 +168,14 @@ def main() -> int:
     p.add_argument("--live-transport", action="store_true",
                    help="use the live Telegram contract rather than the Phase-5 shadow contract")
     p.add_argument("--live-request-file", type=Path)
+    p.add_argument("--correlation-fd", type=int)
     args = p.parse_args()
     if args.directory is not None:
+        if args.correlation_fd is None:
+            raise RuntimeError("missing bridge correlation")
+        request_id, expected_prompt_sha256, correlation_secret = read_correlation_fd(
+            args.correlation_fd
+        )
         args.directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         request_path = args.directory / "request.json"
         response_path = args.directory / "response.json"
@@ -142,9 +186,21 @@ def main() -> int:
             request = json.loads(request_path.read_text(encoding="utf-8"))
             request_content = (args.live_request_file.read_text(encoding="utf-8")
                                if args.live_request_file is not None else request["content"])
+            observed_prompt_sha256 = hashlib.sha256(
+                request_content.encode("utf-8")
+            ).hexdigest()
+            if observed_prompt_sha256 != expected_prompt_sha256:
+                raise RuntimeError("bridge prompt correlation mismatch")
             raw_answer = answer(request_content, args.session, args.model,
                                 args.timeout, args.source, args.live_transport, args.agent)
-            result = {"answer": normalize_model_answer(raw_answer), "raw_answer": raw_answer}
+            result = signed_response(
+                raw_answer=raw_answer,
+                request_id=request_id,
+                prompt_sha256=observed_prompt_sha256,
+                session=args.session,
+                secret=correlation_secret,
+            )
+            result["answer"] = normalize_model_answer(raw_answer)
         except Exception as exc:
             result = {"error": str(exc)}
         temporary_path = response_path.with_suffix(".tmp")

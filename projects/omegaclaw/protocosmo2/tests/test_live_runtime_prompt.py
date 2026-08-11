@@ -2,6 +2,8 @@ import importlib.util
 import json
 import os
 import subprocess
+import threading
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -31,6 +33,10 @@ CASE_SPEC = importlib.util.spec_from_file_location("phase5_case_test", CASE)
 CASE_MODULE = importlib.util.module_from_spec(CASE_SPEC)
 assert CASE_SPEC.loader is not None
 CASE_SPEC.loader.exec_module(CASE_MODULE)
+BRIDGE_SPEC = importlib.util.spec_from_file_location("phase5_bridge_test", BRIDGE)
+BRIDGE_MODULE = importlib.util.module_from_spec(BRIDGE_SPEC)
+assert BRIDGE_SPEC.loader is not None
+BRIDGE_SPEC.loader.exec_module(BRIDGE_MODULE)
 
 
 def test_production_prompt_declares_live_bounded_telegram_capabilities():
@@ -218,20 +224,83 @@ def test_case_fails_closed_when_path_is_substituted_after_open(tmp_path, monkeyp
 
 def test_case_reads_only_complete_substantive_bridge_handoff(tmp_path):
     response = tmp_path / "response.json"
-    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    request_id = "a" * 64
+    prompt_sha256 = "b" * 64
+    session = "session-exact"
+    secret = b"c" * 32
+    read = lambda: CASE_MODULE.read_bridge_raw_answer(
+        response, request_id=request_id, prompt_sha256=prompt_sha256,
+        session=session, secret=secret,
+    )
+    assert read() is None
     response.write_text("{", encoding="utf-8")
-    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    assert read() is None
     response.write_text(json.dumps({"error": "inner runtime exited"}), encoding="utf-8")
-    assert CASE_MODULE.read_bridge_raw_answer(response) is None
+    assert read() is None
     long_answer = 'Yes—I can migrate it.\n\n1. Inventory "all four" agents.\n2. Stage VM8.'
-    response.write_text(json.dumps({"raw_answer": long_answer}), encoding="utf-8")
-    assert CASE_MODULE.read_bridge_raw_answer(response) == long_answer
+    signed = BRIDGE_MODULE.signed_response(
+        raw_answer=long_answer, request_id=request_id,
+        prompt_sha256=prompt_sha256, session=session, secret=secret,
+    )
+    response.write_text(json.dumps(signed), encoding="utf-8")
+    assert read() == long_answer
+    for field, substituted in (
+        ("request_id", "d" * 64),
+        ("prompt_sha256", "e" * 64),
+        ("session", "other-session"),
+        ("raw_answer", "substituted answer"),
+        ("hmac_sha256", "0" * 64),
+    ):
+        tampered = dict(signed)
+        tampered[field] = substituted
+        response.write_text(json.dumps(tampered), encoding="utf-8")
+        assert read() is None
 
 
-def test_case_gives_atomic_live_bridge_handoff_bounded_early_exit_grace():
-    text = CASE.read_text(encoding="utf-8")
-    assert "grace_deadline = time.monotonic() + 2" in text
-    assert "read_bridge_raw_answer(bridge_response)" in text
+def test_case_executes_bounded_authenticated_early_exit_grace(tmp_path):
+    response = tmp_path / "response.json"
+    request_id, prompt_sha256, session = "a" * 64, "b" * 64, "session-exact"
+    secret, answer = b"c" * 32, "authenticated late answer"
+
+    def publish():
+        time.sleep(0.05)
+        signed = BRIDGE_MODULE.signed_response(
+            raw_answer=answer, request_id=request_id,
+            prompt_sha256=prompt_sha256, session=session, secret=secret,
+        )
+        temporary = response.with_suffix(".tmp")
+        temporary.write_text(json.dumps(signed), encoding="utf-8")
+        os.replace(temporary, response)
+
+    thread = threading.Thread(target=publish)
+    thread.start()
+    observed = CASE_MODULE.await_bridge_answer_after_exit(
+        response, request_id=request_id, prompt_sha256=prompt_sha256,
+        session=session, secret=secret, timeout=0.5,
+    )
+    thread.join()
+    assert observed == answer
+
+    substituted = BRIDGE_MODULE.signed_response(
+        raw_answer=answer, request_id="d" * 64,
+        prompt_sha256=prompt_sha256, session=session, secret=secret,
+    )
+    response.write_text(json.dumps(substituted), encoding="utf-8")
+    assert CASE_MODULE.await_bridge_answer_after_exit(
+        response, request_id=request_id, prompt_sha256=prompt_sha256,
+        session=session, secret=secret, timeout=0.01,
+    ) is None
+
+
+def test_rescued_answer_is_emitted_but_early_exit_remains_an_incident(capsys):
+    with pytest.raises(RuntimeError, match="authenticated bridge handoff"):
+        CASE_MODULE.emit_case_answer(
+            "rescued exact answer", started=time.monotonic(),
+            command=["inner-runtime"], rescued_after_early_exit=True,
+        )
+    emitted = json.loads(capsys.readouterr().out)
+    assert emitted["status"] == "ok"
+    assert emitted["answer"] == "rescued exact answer"
 
 
 def test_private_prompt_write_failure_removes_partial_file(tmp_path, monkeypatch):

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import stat
 import subprocess
 import sys
@@ -45,16 +48,64 @@ def read_prompt(prompt: str | None, prompt_file: Path | None) -> str:
             os.close(fd)
 
 
-def read_bridge_raw_answer(response_path: Path) -> str | None:
-    """Read only a complete, substantive live-bridge handoff."""
+def read_bridge_raw_answer(response_path: Path, *, request_id: str,
+                           prompt_sha256: str, session: str,
+                           secret: bytes) -> str | None:
+    """Read only an authenticated handoff for this exact live request."""
     try:
         payload = json.loads(response_path.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError):
         return None
-    raw_answer = payload.get("raw_answer") if isinstance(payload, dict) else None
-    if isinstance(raw_answer, str) and raw_answer.strip():
-        return raw_answer
+    if not isinstance(payload, dict):
+        return None
+    raw_answer = payload.get("raw_answer")
+    received_mac = payload.get("hmac_sha256")
+    signed = {
+        "status": payload.get("status"),
+        "request_id": payload.get("request_id"),
+        "prompt_sha256": payload.get("prompt_sha256"),
+        "session": payload.get("session"),
+        "raw_answer": raw_answer,
+    }
+    if (signed["status"] != "ok" or signed["request_id"] != request_id
+            or signed["prompt_sha256"] != prompt_sha256
+            or signed["session"] != session
+            or not isinstance(raw_answer, str) or not raw_answer.strip()
+            or not isinstance(received_mac, str) or len(received_mac) != 64):
+        return None
+    canonical = json.dumps(signed, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+    expected_mac = hmac.new(secret, canonical, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(received_mac, expected_mac):
+        return None
+    return raw_answer
+
+
+def await_bridge_answer_after_exit(response_path: Path, *, request_id: str,
+                                   prompt_sha256: str, session: str,
+                                   secret: bytes, timeout: float = 2.0) -> str | None:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        answer = read_bridge_raw_answer(
+            response_path, request_id=request_id, prompt_sha256=prompt_sha256,
+            session=session, secret=secret,
+        )
+        if answer:
+            return answer
+        time.sleep(0.05)
     return None
+
+
+def emit_case_answer(answer: str, *, started: float, command: list[str],
+                     rescued_after_early_exit: bool) -> None:
+    print(json.dumps({"status": "ok", "answer": answer,
+                      "latency_ms": round((time.monotonic() - started) * 1000, 1),
+                      "command": command}, sort_keys=True), flush=True)
+    if rescued_after_early_exit:
+        # Preserve the authenticated answer on stdout for the outer responder,
+        # but keep the nonzero incident signal so recovery is never silently
+        # relabeled as a healthy inner run.
+        raise RuntimeError("OmegaClaw exited after authenticated bridge handoff")
 
 
 def main() -> int:
@@ -131,6 +182,9 @@ def main() -> int:
     bridge_log = None
     bridge_directory = None
     live_request_path = None
+    bridge_request_id = secrets.token_hex(32)
+    bridge_prompt_sha256 = hashlib.sha256(args.prompt.encode("utf-8")).hexdigest()
+    bridge_secret = secrets.token_bytes(32)
     if args.provider == "OpenClawBridge":
         bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
         bridge_port = 19765
@@ -152,16 +206,29 @@ def main() -> int:
             request_handle.write(args.prompt)
             request_handle.close()
             live_request_path = request_handle.name
+        correlation_read_fd, correlation_write_fd = os.pipe()
         bridge_process = subprocess.Popen(
             [sys.executable, str(Path(__file__).with_name("phase5_openclaw_bridge.py")),
              "--port", "0", "--directory", bridge_directory.name,
              "--session", args.session, "--model", args.model,
+             "--correlation-fd", str(correlation_read_fd),
              *( ["--agent", args.agent] if args.agent else [] ),
              "--timeout", str(max(30, args.timeout - 20)),
              *( ["--live-transport"] if args.live_transport else [] ),
              *( ["--live-request-file", live_request_path] if live_request_path else [] ),
              *[item for source in args.source for item in ("--source", str(source))]],
-            text=True, stdout=bridge_log, stderr=subprocess.STDOUT, start_new_session=True)
+            text=True, stdout=bridge_log, stderr=subprocess.STDOUT,
+            start_new_session=True, pass_fds=(correlation_read_fd,))
+        os.close(correlation_read_fd)
+        try:
+            correlation_payload = json.dumps({
+                "request_id": bridge_request_id,
+                "prompt_sha256": bridge_prompt_sha256,
+                "secret_hex": bridge_secret.hex(),
+            }, separators=(",", ":")).encode("ascii")
+            os.write(correlation_write_fd, correlation_payload)
+        finally:
+            os.close(correlation_write_fd)
         time.sleep(0.3)
     command = ["sh", str(args.petta / "run.sh"), str(args.core / "run.metta"),
                "commchannel=file-shadow" if args.file_channel else "commchannel=mock",
@@ -183,6 +250,7 @@ def main() -> int:
                                start_new_session=True)
     started = time.monotonic()
     transcript = ""
+    rescued_after_early_exit = False
     try:
         if server is not None:
             deadline = started + min(45, args.timeout / 3)
@@ -228,7 +296,11 @@ def main() -> int:
                 answer = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
                 if args.live_transport and bridge_directory is not None:
                     bridge_response = Path(bridge_directory.name) / "response.json"
-                    answer = read_bridge_raw_answer(bridge_response) or answer
+                    answer = read_bridge_raw_answer(
+                        bridge_response, request_id=bridge_request_id,
+                        prompt_sha256=bridge_prompt_sha256, session=args.session,
+                        secret=bridge_secret,
+                    ) or answer
             if answer:
                 break
             if process.poll() is not None:
@@ -237,21 +309,22 @@ def main() -> int:
                 # Give that immutable handoff a short bounded grace.
                 if args.live_transport and bridge_directory is not None:
                     bridge_response = Path(bridge_directory.name) / "response.json"
-                    grace_deadline = time.monotonic() + 2
-                    while time.monotonic() < grace_deadline:
-                        answer = read_bridge_raw_answer(bridge_response)
-                        if answer:
-                            break
-                        time.sleep(0.05)
+                    answer = await_bridge_answer_after_exit(
+                        bridge_response, request_id=bridge_request_id,
+                        prompt_sha256=bridge_prompt_sha256, session=args.session,
+                        secret=bridge_secret,
+                    )
                     if answer:
+                        rescued_after_early_exit = True
                         break
                 raise RuntimeError(f"OmegaClaw exited early with {process.returncode}")
             time.sleep(0.25)
         if not answer:
             raise TimeoutError("OmegaClaw produced no send result before timeout")
-        print(json.dumps({"status": "ok", "answer": answer,
-                          "latency_ms": round((time.monotonic() - started) * 1000, 1),
-                          "command": command}, sort_keys=True))
+        emit_case_answer(
+            answer, started=started, command=command,
+            rescued_after_early_exit=rescued_after_early_exit,
+        )
         return 0
     finally:
         if process.poll() is None:

@@ -1,7 +1,7 @@
 # ProtoCosmo2 long-reply delivery failure
 
 - Started: 2026-08-11T18:45:00Z
-- Status: diagnosis in progress; production unaccepted
+- Status: corrected request-bound candidate locally validated; independent review open; production unaccepted
 - Scope: ProtoCosmo2 long migration-planning request at Telegram 11:28--11:29 PDT
 
 ## Deliverable
@@ -33,5 +33,32 @@ answer internally but the outer transport delivered only the bounded failure.
 
 ## Next command
 
-Reproduce the inner-answer/outer-capture boundary in isolated staging, then
-add the smallest provider-free regression and repair.
+Obtain independent review of the exact clean corrected commit, then guarded
+deploy only to ProtoCosmo2 if it passes.
+
+## Repair iterations
+
+The first recovery candidate accepted a nonblank atomic `response.json` during
+a two-second post-exit grace. It passed 21 focused and 148 full provider-free
+tests, but independent review BLOCKED it: the response lacked exact
+request/session/prompt binding, could be substituted by another same-UID
+producer, silently converted an early inner failure into driver success, and
+the race test only inspected source text.
+
+The corrected candidate uses a fresh 256-bit request ID and 256-bit secret per
+driver invocation. The secret crosses to the separately owned bridge only via
+an inherited anonymous pipe, never argv/environment/disk. The bridge verifies
+the exact prompt SHA-256, then atomically publishes an HMAC-SHA256-bound tuple
+of status, request ID, prompt digest, session, and raw answer. The driver
+accepts only that exact tuple with constant-time MAC comparison. A rescued
+answer is emitted for the outer responder but the driver still exits nonzero,
+so the runtime failure remains ledgered.
+
+Executable regressions now delay and atomically publish the authenticated
+answer during the bounded early-exit grace; reject request, prompt, session,
+answer, and MAC substitutions; reject cross-request signed output; and prove
+that rescue emits the answer while retaining the nonzero incident signal.
+
+- Focused runtime/bridge tests: `22 passed in 0.36s`.
+- Full provider-free transport suite: `148 passed in 1.55s`.
+- Compilation and scoped `git diff --check`: passed.
