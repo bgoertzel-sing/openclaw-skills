@@ -264,3 +264,11 @@ the reviewer's cases plus encrypted/symlink members and count, size, and ratio
 bombs. Focused tests pass 92/92 and the full provider-free suite passes 146/146;
 compilation and diff checks pass. Production remains on `a73a312` pending a
 fresh exact-commit review.
+
+Fresh independent review PASSED exact transport/test commit
+`df06c290a0579e065e1e56b9563fd96da8cc9442` and workspace runner commit
+`ba6c4e04673ba74e057f007c4bf6e461f78ca3d2`. It replayed 92/92 focused and
+146/146 full tests, compilation, diff checks, all prior counterexamples, and an
+independent 5.4 MB aggregate bomb. No blocking issue was found. Production is
+still on `a73a312`; guarded deployment and fresh human-authored Markdown plus
+ZIP canaries remain explicitly authorization-gated.

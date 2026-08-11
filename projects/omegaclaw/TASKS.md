@@ -112,9 +112,13 @@ Use small, testable tasks. Keep the top of each section in priority order.
   extension allowlist; generic `.bin` remains blocked. Focused tests pass 78/78
   and the full provider-free suite passes 132/132. Independent review PASSED
   exact transport/test `b424c0d` plus workspace runner `7293ca9`, including
-  negative MIME/extension and existing-boundary checks. Next command: obtain
-  explicit authorization for new guarded restarts and fresh generic-MIME
-  Markdown acceptance; roll back immediately on any failure.
+  negative MIME/extension and existing-boundary checks. The subsequent ZIP
+  screenshot exposed an unsupported-type/misleading-reply defect. The first
+  bounded ZIP candidate was review-blocked on path/delimiter/alias attacks;
+  repaired exact commits `df06c29` + `ba6c4e0` now pass independent review,
+  92/92 focused tests, and 146/146 full tests. Next command: obtain explicit
+  authorization for new guarded restarts and fresh generic-MIME Markdown plus
+  ZIP acceptance; roll back immediately on any failure.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 
