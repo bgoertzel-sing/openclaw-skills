@@ -249,3 +249,18 @@ types. Traversal and binary-disguise regressions fail closed. Focused tests pass
 81/81 and the full provider-free suite passes 135/135; compilation and diff
 checks pass. Production remains on the rollback baseline pending a new exact
 commit review and authorization.
+
+Independent review BLOCKED the first ZIP candidate despite 81/81 focused and
+135/135 full tests. It reproduced Windows absolute paths, control/delimiter
+filenames, NFC- and case-equivalent aliases, and member content capable of
+closing model-visible untrusted delimiters. Production remained untouched.
+
+The follow-up canonicalizes member names to NFC, rejects control characters,
+empty/dot components, Windows drive/UNC paths, and canonical case-folded
+duplicates. Inventory names and extracted text now use JSON-string framing
+with angle/ampersand escaping and explicit character lengths, so archive data
+cannot close the surrounding untrusted-document envelope. Regressions cover
+the reviewer's cases plus encrypted/symlink members and count, size, and ratio
+bombs. Focused tests pass 92/92 and the full provider-free suite passes 146/146;
+compilation and diff checks pass. Production remains on `a73a312` pending a
+fresh exact-commit review.

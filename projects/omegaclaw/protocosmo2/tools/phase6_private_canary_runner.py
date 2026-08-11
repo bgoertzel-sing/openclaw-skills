@@ -25,6 +25,7 @@ import urllib.parse
 import urllib.request
 import uuid
 import re
+import unicodedata
 import zipfile
 
 MAX_DOCUMENT_BYTES = 10_000_000
@@ -85,13 +86,22 @@ def extract_bounded_zip_text(raw: bytes) -> str:
         inventory: list[str] = []
         extracted: list[str] = []
         for member in members:
-            path = PurePosixPath(member.filename.replace("\\", "/"))
+            normalized_name = unicodedata.normalize("NFC", member.filename.replace("\\", "/"))
+            raw_parts = normalized_name.rstrip("/").split("/")
+            path = PurePosixPath(normalized_name)
             if (
-                not member.filename or path.is_absolute() or ".." in path.parts
-                or member.flag_bits & 0x1 or member.filename in seen
+                not normalized_name or len(normalized_name) > 512
+                or path.is_absolute() or normalized_name.startswith("//")
+                or any(not part or part in {".", ".."} for part in raw_parts)
+                or (raw_parts and re.fullmatch(r"[A-Za-z]:.*", raw_parts[0]) is not None)
+                or any(ord(char) < 32 or ord(char) == 127 for char in normalized_name)
+                or member.flag_bits & 0x1
             ):
                 raise RuntimeError("zip_member_unsafe")
-            seen.add(member.filename)
+            canonical_name = normalized_name.casefold()
+            if canonical_name in seen:
+                raise RuntimeError("zip_member_unsafe")
+            seen.add(canonical_name)
             mode = (member.external_attr >> 16) & 0o170000
             if mode == 0o120000:
                 raise RuntimeError("zip_member_unsafe")
@@ -108,7 +118,7 @@ def extract_bounded_zip_text(raw: bytes) -> str:
                 or member.file_size > member.compress_size * MAX_ZIP_COMPRESSION_RATIO
             ):
                 raise RuntimeError("zip_compression_ratio_invalid")
-            inventory.append(member.filename)
+            inventory.append(normalized_name)
             if path.suffix.casefold() not in ZIP_TEXT_SUFFIXES:
                 continue
             try:
@@ -118,13 +128,21 @@ def extract_bounded_zip_text(raw: bytes) -> str:
                 raise RuntimeError("zip_text_member_invalid") from None
             if "\x00" in text:
                 raise RuntimeError("zip_text_member_invalid")
+            # JSON-string framing plus escaped angle/ampersand characters makes
+            # both names and content incapable of closing the surrounding
+            # untrusted-document envelope or forging an XML-like boundary.
+            safe_name = json.dumps(normalized_name, ensure_ascii=True).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+            safe_text = json.dumps(text, ensure_ascii=True).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
             extracted.append(
-                f"<external_untrusted_zip_member name={json.dumps(member.filename, ensure_ascii=True)}>\n"
-                f"{text}\n</external_untrusted_zip_member>"
+                f"ZIP_MEMBER name={safe_name} utf8_chars={len(text)} text={safe_text}"
             )
         if not inventory:
             raise RuntimeError("zip_has_no_files")
-        result = "ZIP inventory:\n" + "\n".join(f"- {name}" for name in inventory)
+        safe_inventory = [
+            json.dumps(name, ensure_ascii=True).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+            for name in inventory
+        ]
+        result = "ZIP inventory (JSON-string names):\n" + "\n".join(f"- {name}" for name in safe_inventory)
         if extracted:
             result += "\n\n" + "\n\n".join(extracted)
         return validate_extracted_document_text(result)
