@@ -29,6 +29,7 @@ def test_wrapper_freezes_protocosmo2_identity_and_isolated_paths():
     assert "protocosmo2-canary-state" in text
     assert "protocosmo2-worker-state" in text
     assert "protocosmo2-cutover.lock" in text
+    assert "OMEGACLAW_OUTER_PROVIDER_TIMEOUT=300" in text
     assert "exec \"$ROOT/local/protomega-outer-telegram-supervisor.sh\"" in text
     assert '${OMEGACLAW_OUTER_STATE_DIR:-' not in text
     assert "stop-pre-sidecar" in text

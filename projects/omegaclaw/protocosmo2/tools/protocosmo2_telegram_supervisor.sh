@@ -114,7 +114,7 @@ export OMEGACLAW_OUTER_BOT_USERNAME=@protocosmo2bot
 export OMEGACLAW_OUTER_SESSION_PREFIX=protocosmo2-canary
 export OMEGACLAW_OUTER_AGENT_ID=main
 export OMEGACLAW_OUTER_MODEL=openai/gpt-5.6-sol
-export OMEGACLAW_OUTER_PROVIDER_TIMEOUT=240
+export OMEGACLAW_OUTER_PROVIDER_TIMEOUT=300
 export OMEGACLAW_OUTER_POLL_TIMEOUT=15
 
 exec "$ROOT/local/protomega-outer-telegram-supervisor.sh" "$@"
