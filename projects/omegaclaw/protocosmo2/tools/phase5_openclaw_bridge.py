@@ -44,6 +44,33 @@ def require_requested_route(result: object, requested_model: str) -> None:
         raise RuntimeError("openclaw_route_mismatch")
 
 
+def completed_answer_from_cli(*, stdout: str, returncode: int,
+                              stderr: str, requested_model: str) -> str:
+    """Recover only a complete route-bound answer from the CLI envelope.
+
+    The CLI can exit nonzero during post-answer finalization.  Its exit status
+    remains an incident signal, but must not erase a fully formed response
+    whose provider/model route and substantive payload are independently
+    validated.  A missing or malformed envelope still fails closed.
+    """
+    try:
+        envelope = json.loads(stdout)
+    except json.JSONDecodeError:
+        if returncode:
+            raise RuntimeError(
+                f"openclaw agent exited {returncode}: {stderr[-500:]}"
+            ) from None
+        raise RuntimeError("unrecognized OpenClaw response") from None
+    result = envelope.get("result", {}) if isinstance(envelope, dict) else {}
+    require_requested_route(result, requested_model)
+    payloads = result.get("payloads", [])
+    if (not isinstance(payloads, list) or not payloads
+            or not isinstance(payloads[0], dict)
+            or not isinstance(payloads[0].get("text"), str)):
+        raise RuntimeError("unrecognized OpenClaw response")
+    return require_substantive_answer(payloads[0]["text"])
+
+
 def normalize_model_answer(text: str) -> str:
     """Return exactly one MeTTa send command, treating all other output as text."""
     stripped = text.strip()
@@ -141,15 +168,10 @@ def answer(content: str, session: str, model: str, timeout: int, sources: list[P
                               "--session-id", session, "--model", model,
                               "--message-file", path, "--json", "--timeout", str(timeout)],
                              text=True, capture_output=True, timeout=timeout + 20, check=False)
-        if run.returncode:
-            raise RuntimeError(f"openclaw agent exited {run.returncode}: {run.stderr[-500:]}")
-        envelope = json.loads(run.stdout)
-        result = envelope.get("result", {}) if isinstance(envelope, dict) else {}
-        require_requested_route(result, model)
-        payloads = result.get("payloads", [])
-        if not payloads or not isinstance(payloads[0].get("text"), str):
-            raise RuntimeError("unrecognized OpenClaw response")
-        return require_substantive_answer(payloads[0]["text"])
+        return completed_answer_from_cli(
+            stdout=run.stdout, returncode=run.returncode,
+            stderr=run.stderr, requested_model=model,
+        )
     finally:
         if path:
             try: os.unlink(path)

@@ -74,8 +74,170 @@ def test_live_runner_selects_live_bridge_contract_not_phase5_shadow_contract():
 def test_live_runner_owns_and_cleans_up_inner_process_group():
     text = RUNNER.read_text(encoding="utf-8")
     assert "start_new_session=True" in text
-    assert "os.killpg(process.pid, 15)" in text
+    assert "def terminate_process_group(" in text
+    assert "os.killpg(pgid, sig)" in text
+    assert "terminate_process_group(process)" in text
     assert "omegaclaw_runtime_timeout" in text
+
+
+def test_process_group_cleanup_kills_descendant_after_leader_exits(tmp_path):
+    child_pid_path = tmp_path / "child.pid"
+    leader = subprocess.Popen(
+        ["sh", "-c", f"sleep 300 & echo $! > {child_pid_path!s}"],
+        start_new_session=True,
+    )
+    leader.wait(timeout=5)
+    deadline = time.monotonic() + 5
+    while not child_pid_path.exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    child_pid = int(child_pid_path.read_text(encoding="ascii"))
+    os.kill(child_pid, 0)
+
+    RUNNER_MODULE.terminate_process_group(
+        leader, term_timeout=0.5, kill_timeout=0.5,
+    )
+
+    status_path = Path(f"/proc/{child_pid}/status")
+    deadline = time.monotonic() + 2
+    while status_path.exists() and time.monotonic() < deadline:
+        status = status_path.read_text(encoding="ascii", errors="replace")
+        if "\nState:\tZ" in status:
+            break
+        time.sleep(0.05)
+    if status_path.exists():
+        assert "\nState:\tZ" in status_path.read_text(encoding="ascii", errors="replace")
+
+
+def _assert_process_gone_or_zombie(pid: int, timeout: float = 2.0):
+    status_path = Path(f"/proc/{pid}/status")
+    deadline = time.monotonic() + timeout
+    while status_path.exists() and time.monotonic() < deadline:
+        status = status_path.read_text(encoding="ascii", errors="replace")
+        if "\nState:\tZ" in status:
+            return
+        time.sleep(0.05)
+    if status_path.exists():
+        assert "\nState:\tZ" in status_path.read_text(
+            encoding="ascii", errors="replace",
+        )
+
+
+def _responder_fixture_args(tmp_path, driver, *, provider_timeout=-29):
+    worker_state = tmp_path / "worker"
+    worker_state.mkdir(mode=0o700)
+    return SimpleNamespace(
+        worker_state_dir=worker_state,
+        driver=driver,
+        petta=tmp_path / "petta",
+        core=tmp_path / "core",
+        session_prefix="lifecycle-regression",
+        model="provider-free/model",
+        provider_timeout=provider_timeout,
+        agent_id="provider-free-agent",
+    )
+
+
+@pytest.mark.parametrize(
+    ("terminal", "driver_tail", "expected", "error"),
+    [
+        ("success", 'print(\'{"status":"ok","answer":"DONE"}\', flush=True)', "DONE", None),
+        ("failure", "raise SystemExit(7)", None, "omegaclaw_runtime_failure"),
+        ("timeout", "time.sleep(300)", None, "omegaclaw_runtime_timeout"),
+    ],
+)
+def test_responder_terminal_paths_leave_no_forked_descendant(
+        tmp_path, terminal, driver_tail, expected, error):
+    child_pid_path = tmp_path / f"{terminal}-child.pid"
+    driver = tmp_path / f"{terminal}_driver.py"
+    driver.write_text(
+        "import subprocess, time\n"
+        f"p = subprocess.Popen(['sleep', '300'], stdout=subprocess.DEVNULL, "
+        "stderr=subprocess.DEVNULL)\n"
+        f"open({str(child_pid_path)!r}, 'w').write(str(p.pid))\n"
+        f"{driver_tail}\n",
+        encoding="utf-8",
+    )
+    args = _responder_fixture_args(tmp_path, driver)
+    if error is None:
+        assert RUNNER_MODULE.responder("fixture", args, terminal) == expected
+    else:
+        with pytest.raises(RuntimeError, match=error):
+            RUNNER_MODULE.responder("fixture", args, terminal)
+    child_pid = int(child_pid_path.read_text(encoding="ascii"))
+    _assert_process_gone_or_zombie(child_pid)
+
+
+def test_responder_cancellation_leaves_no_forked_descendant(tmp_path, monkeypatch):
+    child_pid_path = tmp_path / "cancel-child.pid"
+    driver = tmp_path / "cancel_driver.py"
+    driver.write_text(
+        "import subprocess, time\n"
+        "p = subprocess.Popen(['sleep', '300'], stdout=subprocess.DEVNULL, "
+        "stderr=subprocess.DEVNULL)\n"
+        f"open({str(child_pid_path)!r}, 'w').write(str(p.pid))\n"
+        "time.sleep(300)\n",
+        encoding="utf-8",
+    )
+    real_popen = subprocess.Popen
+
+    class CancelledProcess:
+        def __init__(self, command, **kwargs):
+            self._process = real_popen(command, **kwargs)
+            self.pid = self._process.pid
+
+        def communicate(self, timeout):
+            deadline = time.monotonic() + 2
+            while not child_pid_path.exists() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            raise KeyboardInterrupt("injected cancellation")
+
+        def poll(self):
+            return self._process.poll()
+
+        def wait(self, timeout):
+            return self._process.wait(timeout=timeout)
+
+    monkeypatch.setattr(RUNNER_MODULE.subprocess, "Popen", CancelledProcess)
+    args = _responder_fixture_args(tmp_path, driver, provider_timeout=10)
+    with pytest.raises(KeyboardInterrupt, match="injected cancellation"):
+        RUNNER_MODULE.responder("fixture", args, "cancel")
+    child_pid = int(child_pid_path.read_text(encoding="ascii"))
+    _assert_process_gone_or_zombie(child_pid)
+
+
+def test_phase5_case_always_drains_runtime_and_bridge_groups():
+    text = CASE.read_text(encoding="utf-8")
+    assert "def terminate_process_group(" in text
+    assert "terminate_process_group(process)" in text
+    assert "terminate_process_group(bridge_process)" in text
+
+
+def test_phase5_process_group_cleanup_kills_descendant_after_leader_exits(tmp_path):
+    child_pid_path = tmp_path / "phase5-child.pid"
+    leader = subprocess.Popen(
+        ["sh", "-c", f"sleep 300 & echo $! > {child_pid_path!s}"],
+        start_new_session=True,
+    )
+    leader.wait(timeout=5)
+    deadline = time.monotonic() + 5
+    while not child_pid_path.exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    child_pid = int(child_pid_path.read_text(encoding="ascii"))
+    os.kill(child_pid, 0)
+
+    CASE_MODULE.terminate_process_group(
+        leader, term_timeout=0.5, kill_timeout=0.5,
+    )
+
+    status_path = Path(f"/proc/{child_pid}/status")
+    deadline = time.monotonic() + 2
+    while status_path.exists() and time.monotonic() < deadline:
+        status = status_path.read_text(encoding="ascii", errors="replace")
+        if "\nState:\tZ" in status:
+            break
+        time.sleep(0.05)
+    if status_path.exists():
+        assert "\nState:\tZ" in status_path.read_text(encoding="ascii", errors="replace")
 
 
 def test_live_runner_preserves_bounded_private_responder_diagnostic():

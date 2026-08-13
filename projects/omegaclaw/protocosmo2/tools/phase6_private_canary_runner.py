@@ -402,6 +402,43 @@ def write_private_prompt(text: str) -> Path:
         raise
 
 
+def terminate_process_group(process: subprocess.Popen, *, term_timeout: float = 10.0,
+                            kill_timeout: float = 5.0) -> None:
+    """Boundedly terminate the dedicated group even if its leader exited."""
+    pgid = process.pid
+
+    def signal_group(sig: int) -> bool:
+        try:
+            os.killpg(pgid, sig)
+            return True
+        except ProcessLookupError:
+            return False
+
+    signal_group(15)
+    deadline = time.monotonic() + term_timeout
+    while time.monotonic() < deadline:
+        try:
+            os.killpg(pgid, 0)
+        except ProcessLookupError:
+            break
+        time.sleep(0.05)
+    else:
+        signal_group(9)
+        deadline = time.monotonic() + kill_timeout
+        while time.monotonic() < deadline:
+            try:
+                os.killpg(pgid, 0)
+            except ProcessLookupError:
+                break
+            time.sleep(0.05)
+    if process.poll() is None:
+        try:
+            process.wait(timeout=max(0.1, kill_timeout))
+        except subprocess.TimeoutExpired:
+            signal_group(9)
+            process.wait(timeout=max(0.1, kill_timeout))
+
+
 def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None = None) -> str:
     clean_env = {key: value for key, value in os.environ.items() if key != "TG_BOT_TOKEN"}
     worker_state_dir = args.worker_state_dir
@@ -435,23 +472,17 @@ def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None =
                                    stderr=subprocess.PIPE, start_new_session=True)
         stdout, stderr = process.communicate(timeout=args.provider_timeout + 30)
     except subprocess.TimeoutExpired as exc:
-        os.killpg(process.pid, 15)
-        try:
-            process.wait(10)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, 9)
-            process.wait(5)
+        terminate_process_group(process)
         raise RuntimeError("omegaclaw_runtime_timeout") from exc
     except BaseException:
-        if process is not None and process.poll() is None:
-            os.killpg(process.pid, 15)
-            try:
-                process.wait(10)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, 9)
-                process.wait(5)
+        if process is not None:
+            terminate_process_group(process)
         raise
     finally:
+        if process is not None:
+            # The leader may have exited after forking PeTTa/SWI descendants.
+            # Always drain its dedicated group on every terminal turn outcome.
+            terminate_process_group(process)
         try:
             prompt_path.unlink()
         except FileNotFoundError:

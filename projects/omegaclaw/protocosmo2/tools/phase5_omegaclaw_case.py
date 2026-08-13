@@ -96,6 +96,43 @@ def await_bridge_answer_after_exit(response_path: Path, *, request_id: str,
     return None
 
 
+def terminate_process_group(process: subprocess.Popen, *, term_timeout: float = 10.0,
+                            kill_timeout: float = 5.0) -> None:
+    """Boundedly terminate a dedicated group even after its leader exits."""
+    pgid = process.pid
+
+    def signal_group(sig: int) -> bool:
+        try:
+            os.killpg(pgid, sig)
+            return True
+        except ProcessLookupError:
+            return False
+
+    signal_group(15)
+    deadline = time.monotonic() + term_timeout
+    while time.monotonic() < deadline:
+        try:
+            os.killpg(pgid, 0)
+        except ProcessLookupError:
+            break
+        time.sleep(0.05)
+    else:
+        signal_group(9)
+        deadline = time.monotonic() + kill_timeout
+        while time.monotonic() < deadline:
+            try:
+                os.killpg(pgid, 0)
+            except ProcessLookupError:
+                break
+            time.sleep(0.05)
+    if process.poll() is None:
+        try:
+            process.wait(timeout=max(0.1, kill_timeout))
+        except subprocess.TimeoutExpired:
+            signal_group(9)
+            process.wait(timeout=max(0.1, kill_timeout))
+
+
 def emit_case_answer(answer: str, *, started: float, command: list[str],
                      rescued_after_early_exit: bool) -> None:
     print(json.dumps({"status": "ok", "answer": answer,
@@ -351,20 +388,15 @@ def main() -> int:
         )
         return 0
     finally:
-        if process.poll() is None:
-            os.killpg(process.pid, 15)
-            try:
-                process.wait(10)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, 9)
-                process.wait(5)
+        # Both commands own dedicated sessions and may fork descendants whose
+        # group leaders exit first. Always drain the groups at turn teardown.
+        terminate_process_group(process)
         if server is not None:
             server.stop(5)
         if llm_controller is not None:
             llm_controller.stop(5)
-        if bridge_process is not None and bridge_process.poll() is None:
-            os.killpg(bridge_process.pid, 15)
-            bridge_process.wait(5)
+        if bridge_process is not None:
+            terminate_process_group(bridge_process)
         if bridge_log is not None:
             bridge_log.seek(0)
             print("OMEGACLAW_BRIDGE_LOG", file=sys.stderr)
