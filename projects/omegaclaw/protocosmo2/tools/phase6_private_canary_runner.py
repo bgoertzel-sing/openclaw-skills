@@ -149,12 +149,28 @@ def extract_bounded_zip_text(raw: bytes) -> str:
         return validate_extracted_document_text(result)
 
 
+def classify_runtime_stderr(stderr: str) -> str:
+    """Return a bounded, non-secret cause code for known runtime failures."""
+    markers = (
+        ("OmegaClaw produced no send result before timeout", "case_no_send_timeout"),
+        ("OmegaClaw exited early with", "case_runtime_exited_early"),
+        ("failed to start authenticated live bridge", "authenticated_bridge_start_failed"),
+        ("authenticated bridge exited before readiness", "authenticated_bridge_readiness_failed"),
+        ("authenticated bridge did not become ready", "authenticated_bridge_readiness_timeout"),
+    )
+    for marker, cause_code in markers:
+        if marker in stderr:
+            return cause_code
+    return "runtime_nonzero_unclassified"
+
+
 def append_responder_incident(path: Path, *, returncode: int, stderr: str) -> None:
     """Append non-secret failure metadata to a private regular file."""
     record = {
         "code": "omegaclaw_runtime_failure",
         "observed_at": int(time.time()),
         "returncode": returncode,
+        "cause_code": classify_runtime_stderr(stderr),
         "stderr_bytes": len(stderr.encode("utf-8", errors="replace")),
         "stderr_sha256": hashlib.sha256(stderr.encode("utf-8", errors="replace")).hexdigest(),
     }

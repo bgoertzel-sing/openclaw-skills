@@ -263,7 +263,32 @@ def test_responder_incident_is_private_regular_and_does_not_persist_stderr(tmp_p
     assert record["returncode"] == 7
     assert record["stderr_bytes"] > 0
     assert len(record["stderr_sha256"]) == 64
+    assert record["cause_code"] == "runtime_nonzero_unclassified"
     assert secret not in path.read_text(encoding="ascii")
+
+
+@pytest.mark.parametrize(
+    ("stderr", "cause_code"),
+    [
+        ("TimeoutError: OmegaClaw produced no send result before timeout", "case_no_send_timeout"),
+        ("RuntimeError: OmegaClaw exited early with 1", "case_runtime_exited_early"),
+        ("RuntimeError: failed to start authenticated live bridge", "authenticated_bridge_start_failed"),
+        ("authenticated bridge exited before readiness", "authenticated_bridge_readiness_failed"),
+        ("authenticated bridge did not become ready", "authenticated_bridge_readiness_timeout"),
+    ],
+)
+def test_responder_incident_classifies_known_cause_without_persisting_stderr(
+    tmp_path, stderr, cause_code,
+):
+    path = tmp_path / "incident.jsonl"
+    secret = "secret-sentinel"
+    RUNNER_MODULE.append_responder_incident(
+        path, returncode=1, stderr=f"{stderr}: {secret}",
+    )
+    encoded = path.read_text(encoding="ascii")
+    record = json.loads(encoded)
+    assert record["cause_code"] == cause_code
+    assert secret not in encoded
 
 
 def test_responder_incident_rejects_fifo_and_permissive_existing_file(tmp_path):
