@@ -81,6 +81,40 @@ def read_bridge_raw_answer(response_path: Path, *, request_id: str,
     return raw_answer
 
 
+def read_bridge_failure_code(response_path: Path, *, request_id: str,
+                             prompt_sha256: str, session: str,
+                             secret: bytes) -> str | None:
+    """Read only an authenticated fixed-vocabulary bridge failure."""
+    allowed = {
+        "provider_timeout", "provider_route_invalid", "provider_answer_invalid",
+        "provider_process_failed", "provider_bridge_failure",
+    }
+    try:
+        payload = json.loads(response_path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    cause_code = payload.get("cause_code")
+    received_mac = payload.get("hmac_sha256")
+    signed = {
+        "status": payload.get("status"), "request_id": payload.get("request_id"),
+        "prompt_sha256": payload.get("prompt_sha256"),
+        "session": payload.get("session"), "raw_answer": payload.get("raw_answer"),
+        "cause_code": cause_code,
+    }
+    if (signed["status"] != "error" or signed["request_id"] != request_id
+            or signed["prompt_sha256"] != prompt_sha256
+            or signed["session"] != session or signed["raw_answer"] is not None
+            or cause_code not in allowed or not isinstance(received_mac, str)
+            or len(received_mac) != 64):
+        return None
+    canonical = json.dumps(signed, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+    expected_mac = hmac.new(secret, canonical, hashlib.sha256).hexdigest()
+    return cause_code if hmac.compare_digest(received_mac, expected_mac) else None
+
+
 def await_bridge_answer_after_exit(response_path: Path, *, request_id: str,
                                    prompt_sha256: str, session: str,
                                    secret: bytes, timeout: float = 2.0) -> str | None:
@@ -410,6 +444,15 @@ def main() -> int:
                     if answer:
                         rescued_after_early_exit = True
                         break
+                    failure_code = read_bridge_failure_code(
+                        bridge_response, request_id=bridge_request_id,
+                        prompt_sha256=bridge_prompt_sha256, session=args.session,
+                        secret=bridge_secret,
+                    )
+                    if failure_code:
+                        raise RuntimeError(
+                            f"OmegaClaw authenticated bridge failure: {failure_code}"
+                        )
                 bridge_state = "not_configured"
                 response_state = "not_configured"
                 if args.live_transport and bridge_directory is not None:

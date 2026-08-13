@@ -270,6 +270,16 @@ def test_responder_incident_is_private_regular_and_does_not_persist_stderr(tmp_p
 @pytest.mark.parametrize(
     ("stderr", "cause_code"),
     [
+        ("RuntimeError: OmegaClaw authenticated bridge failure: provider_timeout",
+         "provider_timeout"),
+        ("RuntimeError: OmegaClaw authenticated bridge failure: provider_route_invalid",
+         "provider_route_invalid"),
+        ("RuntimeError: OmegaClaw authenticated bridge failure: provider_answer_invalid",
+         "provider_answer_invalid"),
+        ("RuntimeError: OmegaClaw authenticated bridge failure: provider_process_failed",
+         "provider_process_failed"),
+        ("RuntimeError: OmegaClaw authenticated bridge failure: provider_bridge_failure",
+         "provider_bridge_failure"),
         ("TimeoutError: OmegaClaw produced no send result before timeout", "case_no_send_timeout"),
         ("RuntimeError: OmegaClaw exited early with 1", "case_runtime_exited_early"),
         ("RuntimeError: OmegaClaw exited early: bridge_running response_absent",
@@ -483,6 +493,41 @@ def test_case_executes_bounded_authenticated_early_exit_grace(tmp_path):
         response, request_id=request_id, prompt_sha256=prompt_sha256,
         session=session, secret=secret, timeout=0.01,
     ) is None
+
+
+def test_authenticated_bridge_failure_is_bounded_and_tamper_evident(tmp_path):
+    response = tmp_path / "response.json"
+    request_id, prompt_sha256, session = "a" * 64, "b" * 64, "session-exact"
+    secret = b"c" * 32
+    signed = BRIDGE_MODULE.signed_failure(
+        cause_code="provider_timeout", request_id=request_id,
+        prompt_sha256=prompt_sha256, session=session, secret=secret,
+    )
+    response.write_text(json.dumps(signed), encoding="utf-8")
+    read = lambda: CASE_MODULE.read_bridge_failure_code(
+        response, request_id=request_id, prompt_sha256=prompt_sha256,
+        session=session, secret=secret,
+    )
+    assert read() == "provider_timeout"
+    for field, value in (("cause_code", "secret text"), ("hmac_sha256", "0" * 64)):
+        tampered = dict(signed)
+        tampered[field] = value
+        response.write_text(json.dumps(tampered), encoding="utf-8")
+        assert read() is None
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("agent timed out after 240 seconds", "provider_timeout"),
+        ("openclaw route mismatch", "provider_route_invalid"),
+        ("answer was empty", "provider_answer_invalid"),
+        ("agent exited 1", "provider_process_failed"),
+        ("opaque detail token=secret", "provider_bridge_failure"),
+    ],
+)
+def test_bridge_failure_classifier_never_persists_raw_detail(message, expected):
+    assert BRIDGE_MODULE.bounded_failure_code(RuntimeError(message)) == expected
 
 
 def test_rescued_answer_is_emitted_but_early_exit_remains_an_incident(capsys):

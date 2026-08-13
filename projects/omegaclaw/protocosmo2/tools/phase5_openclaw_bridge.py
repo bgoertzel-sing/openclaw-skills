@@ -100,6 +100,39 @@ def signed_response(*, raw_answer: str, request_id: str, prompt_sha256: str,
     return payload
 
 
+def signed_failure(*, cause_code: str, request_id: str, prompt_sha256: str,
+                   session: str, secret: bytes) -> dict[str, str | None]:
+    """Authenticate one fixed-vocabulary failure without retaining its text."""
+    payload = {
+        "status": "error",
+        "request_id": request_id,
+        "prompt_sha256": prompt_sha256,
+        "session": session,
+        "raw_answer": None,
+        "cause_code": cause_code,
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+    payload["hmac_sha256"] = hmac.new(
+        secret, canonical, hashlib.sha256
+    ).hexdigest()
+    return payload
+
+
+def bounded_failure_code(exc: Exception) -> str:
+    """Map provider failures to a secret-free, bounded diagnostic vocabulary."""
+    text = str(exc).lower()
+    if "timed out" in text or "timeout" in text:
+        return "provider_timeout"
+    if "route" in text:
+        return "provider_route_invalid"
+    if "substantive" in text or "empty" in text:
+        return "provider_answer_invalid"
+    if "exited" in text or "returncode" in text:
+        return "provider_process_failed"
+    return "provider_bridge_failure"
+
+
 def read_correlation_fd(fd: int) -> tuple[str, str, bytes]:
     with os.fdopen(fd, "r", encoding="ascii") as handle:
         payload = json.load(handle)
@@ -224,7 +257,11 @@ def main() -> int:
             )
             result["answer"] = normalize_model_answer(raw_answer)
         except Exception as exc:
-            result = {"error": str(exc)}
+            result = signed_failure(
+                cause_code=bounded_failure_code(exc), request_id=request_id,
+                prompt_sha256=expected_prompt_sha256, session=args.session,
+                secret=correlation_secret,
+            )
         temporary_path = response_path.with_suffix(".tmp")
         temporary_path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
         os.replace(temporary_path, response_path)
