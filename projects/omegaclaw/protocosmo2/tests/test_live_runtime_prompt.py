@@ -272,6 +272,12 @@ def test_responder_incident_is_private_regular_and_does_not_persist_stderr(tmp_p
     [
         ("TimeoutError: OmegaClaw produced no send result before timeout", "case_no_send_timeout"),
         ("RuntimeError: OmegaClaw exited early with 1", "case_runtime_exited_early"),
+        ("RuntimeError: OmegaClaw exited early: bridge_running response_absent",
+         "case_runtime_exited_before_bridge_response"),
+        ("RuntimeError: OmegaClaw exited early: bridge_exited response_absent",
+         "bridge_exited_without_response"),
+        ("RuntimeError: OmegaClaw exited early: bridge_running response_present",
+         "bridge_response_failed_authentication"),
         ("RuntimeError: failed to start authenticated live bridge", "authenticated_bridge_start_failed"),
         ("authenticated bridge exited before readiness", "authenticated_bridge_readiness_failed"),
         ("authenticated bridge did not become ready", "authenticated_bridge_readiness_timeout"),
@@ -510,6 +516,38 @@ def test_live_poll_marks_same_iteration_answer_and_nonzero_exit_as_incident():
     )
     assert answer == "authenticated exact answer"
     assert rescued is True
+
+
+@pytest.mark.parametrize(
+    ("live_transport", "has_directory", "bridge_returncode", "expected"),
+    [
+        (True, True, None, True),
+        (True, True, 0, False),
+        (True, True, 1, False),
+        (False, True, None, False),
+        (True, False, None, False),
+    ],
+)
+def test_phase5_inner_early_exit_waits_only_for_running_authoritative_bridge(
+        live_transport, has_directory, bridge_returncode, expected):
+    class BridgeProcess:
+        def poll(self):
+            return bridge_returncode
+
+    directory = object() if has_directory else None
+    assert CASE_MODULE.live_bridge_still_running(
+        live_transport=live_transport,
+        bridge_directory=directory,
+        bridge_process=BridgeProcess(),
+    ) is expected
+
+
+def test_phase5_early_exit_branch_waits_before_bounded_final_handoff_grace():
+    source = CASE.read_text(encoding="utf-8")
+    wait_branch = source.index("if live_bridge_still_running(")
+    final_grace = source.index("answer = await_bridge_answer_after_exit(", wait_branch)
+    terminal_error = source.index('raise RuntimeError(\n                    "OmegaClaw exited early:', final_grace)
+    assert wait_branch < final_grace < terminal_error
 
 
 def test_private_prompt_write_failure_removes_partial_file(tmp_path, monkeypatch):

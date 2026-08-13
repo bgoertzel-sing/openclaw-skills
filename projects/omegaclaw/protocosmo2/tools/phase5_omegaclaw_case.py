@@ -156,6 +156,24 @@ def select_polled_answer(*, live_transport: bool, output_answer: str,
     return answer, bool(answer and child_returncode is not None)
 
 
+def live_bridge_still_running(*, live_transport: bool,
+                              bridge_directory: tempfile.TemporaryDirectory | None,
+                              bridge_process: subprocess.Popen | None) -> bool:
+    """Whether an exited inner runtime still has an authoritative producer.
+
+    The PeTTa loop and live provider bridge are separately owned processes.
+    PeTTa may finish after dispatch while the bridge is still awaiting the
+    provider.  Treating the PeTTa exit as terminal would race the only
+    authority-bearing response path.
+    """
+    return bool(
+        live_transport
+        and bridge_directory is not None
+        and bridge_process is not None
+        and bridge_process.poll() is None
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--petta", type=Path, required=True)
@@ -369,6 +387,16 @@ def main() -> int:
                 break
             child_returncode = process.poll()
             if child_returncode is not None:
+                # Dispatch completion and provider completion are independent
+                # in live file-bridge mode.  Keep waiting within the existing
+                # case deadline while the authoritative bridge owns work.
+                if live_bridge_still_running(
+                    live_transport=args.live_transport,
+                    bridge_directory=bridge_directory,
+                    bridge_process=bridge_process,
+                ):
+                    time.sleep(0.25)
+                    continue
                 # The PeTTa process can exit during finalization just as the
                 # separately owned bridge atomically publishes a valid answer.
                 # Give that immutable handoff a short bounded grace.
@@ -382,7 +410,23 @@ def main() -> int:
                     if answer:
                         rescued_after_early_exit = True
                         break
-                raise RuntimeError(f"OmegaClaw exited early with {process.returncode}")
+                bridge_state = "not_configured"
+                response_state = "not_configured"
+                if args.live_transport and bridge_directory is not None:
+                    bridge_state = (
+                        "running" if bridge_process is not None and bridge_process.poll() is None
+                        else "exited"
+                    )
+                    response_state = (
+                        "present" if (Path(bridge_directory.name) / "response.json").exists()
+                        else "absent"
+                    )
+                # Fixed-vocabulary state only: never include bridge output,
+                # paths, prompt text, provider text, or credentials here.
+                raise RuntimeError(
+                    "OmegaClaw exited early: "
+                    f"bridge_{bridge_state} response_{response_state}"
+                )
             time.sleep(0.25)
         if not answer:
             raise TimeoutError("OmegaClaw produced no send result before timeout")
