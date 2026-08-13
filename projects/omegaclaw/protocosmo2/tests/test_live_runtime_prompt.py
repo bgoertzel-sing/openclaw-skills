@@ -122,7 +122,7 @@ def _assert_process_gone_or_zombie(pid: int, timeout: float = 2.0):
         )
 
 
-def _responder_fixture_args(tmp_path, driver, *, provider_timeout=-29):
+def _responder_fixture_args(tmp_path, driver, *, provider_timeout=-69):
     worker_state = tmp_path / "worker"
     worker_state.mkdir(mode=0o700)
     return SimpleNamespace(
@@ -578,7 +578,7 @@ def fake_completed_process(*, returncode, stdout, stderr):
             self.returncode = returncode
 
         def communicate(self, timeout):
-            assert timeout == 40
+            assert timeout == 80
             return stdout, stderr
 
         def poll(self):
@@ -621,3 +621,34 @@ def test_responder_still_fails_closed_when_nonzero_exit_has_no_answer(tmp_path, 
     with pytest.raises(RuntimeError, match="omegaclaw_runtime_failure"):
         RUNNER_MODULE.responder("message 848 no result", args)
     assert (args.worker_state_dir / "responder-incidents.jsonl").is_file()
+
+
+def test_responder_separates_provider_case_and_outer_watchdog_budgets(tmp_path, monkeypatch):
+    observed = {}
+
+    class CompletedProcess:
+        pid = 999999
+        returncode = 0
+
+        def __init__(self, command, **_kwargs):
+            observed["command"] = command
+
+        def communicate(self, timeout):
+            observed["outer_timeout"] = timeout
+            return json.dumps({"status": "ok", "answer": "DONE"}), ""
+
+        def poll(self):
+            return self.returncode
+
+    monkeypatch.setattr(RUNNER_MODULE.subprocess, "Popen", CompletedProcess)
+    args = responder_args(tmp_path)
+    args.provider_timeout = 240
+    assert RUNNER_MODULE.responder("timeout boundary", args) == "DONE"
+    timeout_index = observed["command"].index("--timeout") + 1
+    assert observed["command"][timeout_index] == "280"
+    assert observed["outer_timeout"] == 310
+
+
+def test_phase5_reserves_bridge_handoff_budget():
+    text = CASE.read_text(encoding="utf-8")
+    assert '"--timeout", str(max(30, args.timeout - 40))' in text

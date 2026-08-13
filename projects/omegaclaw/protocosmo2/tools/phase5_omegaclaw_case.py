@@ -261,7 +261,11 @@ def main() -> int:
              "--session", args.session, "--model", args.model,
              "--correlation-fd", str(correlation_read_fd),
              *( ["--agent", args.agent] if args.agent else [] ),
-             "--timeout", str(max(30, args.timeout - 20)),
+             # Reserve forty seconds of the case budget for bridge process
+             # collection plus authenticated handoff/finalization.  The
+             # bridge itself adds a bounded twenty-second subprocess grace,
+             # leaving another twenty seconds before the case deadline.
+             "--timeout", str(max(30, args.timeout - 40)),
              *( ["--live-transport"] if args.live_transport else [] ),
              *( ["--live-request-file", live_request_path] if live_request_path else [] ),
              *[item for source in args.source for item in ("--source", str(source))]],

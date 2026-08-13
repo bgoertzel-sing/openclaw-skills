@@ -458,9 +458,13 @@ def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None =
         "</trusted_transport_capability>"
     )
     prompt_path = write_private_prompt(prompt + attachment_instruction)
+    # The Phase-5 case owns setup/finalization around the provider call.  Give
+    # it a distinct deadline beyond the configured provider budget so a
+    # provider that finishes at its own limit cannot race case teardown.
+    case_timeout = args.provider_timeout + 40
     command = [sys.executable, str(args.driver), "--petta", str(args.petta), "--core", str(args.core),
                "--prompt-file", str(prompt_path), "--session", f"{args.session_prefix}-{int(time.time())}",
-               "--model", args.model, "--provider", "OpenClawFileBridge", "--timeout", str(args.provider_timeout),
+               "--model", args.model, "--provider", "OpenClawFileBridge", "--timeout", str(case_timeout),
                "--agent", args.agent_id,
                "--file-channel", "--live-transport"]
     # Own the driver as a process group. If an outer timeout kills only the
@@ -470,7 +474,7 @@ def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None =
     try:
         process = subprocess.Popen(command, env=clean_env, text=True, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
-        stdout, stderr = process.communicate(timeout=args.provider_timeout + 30)
+        stdout, stderr = process.communicate(timeout=case_timeout + 30)
     except subprocess.TimeoutExpired as exc:
         terminate_process_group(process)
         raise RuntimeError("omegaclaw_runtime_timeout") from exc
