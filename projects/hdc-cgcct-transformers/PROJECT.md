@@ -317,6 +317,20 @@ change, provider query, remote resource, or paid work occurred. Evidence:
 
 ## Repositories
 
+The 2026-08-17 14:45Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260817T144500Z-p1-terminal-integrity-r28/RUN.md`.
+
+The 2026-08-17 06:41Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260817T064100Z-p1-terminal-integrity-r27/RUN.md`.
+
 | Role | Remote | Local path | Branch/default | Pinned/reference commit |
 |---|---|---|---|---|
 
