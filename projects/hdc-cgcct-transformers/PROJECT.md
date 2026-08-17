@@ -3,7 +3,7 @@
 - Slug: `hdc-cgcct-transformers`
 - Status: `active`
 - Created: `2026-07-26`
-- Last reviewed: `2026-07-27`
+- Last reviewed: `2026-08-16`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -113,6 +113,207 @@ their payload hashes were frozen in `artifacts/criteria.json` before any
 confirmation seed was opened. RunPod pod `qy0rbiqrd3xvbf` was deleted after
 artifact return. Evidence:
 `experiments/20260727T225600Z-p1b-gpu-calibration-planned/RUN.md`.
+
+A later, separately authorized sealed confirmation run completed all five
+confirmation seeds on one Secure 24-GiB RTX 4090 without changing the frozen
+criteria. All 160 returned manifest entries and all five artifact digests
+verified locally; pod `38dun5tixpgvnd` was deleted and provider absence was
+confirmed. The next scientific task is interpretation under the frozen
+criteria; no further remote compute is required. Evidence:
+`experiments/20260731T190413Z-p1b-confirmation-reliability-retry/RUN.md`.
+
+A subsequent frozen-contract audit found that P1-G2 is not evaluable from the
+returned artifacts: confirmation cells omit the required oracle-code arm, and
+the frozen criteria omit the P1A-derived `D_pred` mapping required to select
+the evaluated dimensions. Artifact integrity remains verified, but scientific
+interpretation now fails closed as `gate_not_evaluable_contract_incomplete`.
+No additional seed or remote resource was opened. Evidence:
+`experiments/20260731T235800Z-p1b-gate-contract-audit/RUN.md`; latest
+engineering-integrity verification:
+`experiments/20260803T040309Z-p1b-gate-integrity-worker/RUN.md`.
+
+Ben authorized a versioned post-hoc interpretation repair on 2026-08-02. The
+contract-v2 evaluator at nested commit `b34b6f1` pins the missing P1A-to-P1B
+dimension mapping, reconstructs oracle scores from the exact manifest and
+target-code generator, and rejects provenance/shape drift. Its 31-test suite
+passed and two full five-seed evaluations were byte-identical. Under the
+required post-hoc label, P1-G2 is now evaluable and classifies
+`instrument_failed`: oracle pooled `V_all=0.02926953125` (Wilson
+`U95=0.02982250554`) and linear-K pooled `V_all=0.02966796875` (Wilson
+`U95=0.03022454252`), with feature-BER failures in both arms. Frozen criteria
+v1 remains unchanged and no new seed or remote resource was opened. Evidence:
+`experiments/20260803T080400Z-p1g2-contract-v2/RUN.md`.
+
+The 2026-08-12 12:41Z scheduled-worker checkpoint passed all 31 tests at
+nested commit `b34b6f1` and reproduced the contract-v2 result byte-for-byte at
+SHA-256 `40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence:
+`experiments/20260812T124100Z-p1-terminal-integrity-r2/RUN.md`.
+
+The 2026-08-15 06:22Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260815T062200Z-p1-terminal-integrity-r15/RUN.md`.
+
+The 2026-08-15 10:22Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260815T102200Z-p1-terminal-integrity-r16/RUN.md`.
+
+The 2026-08-15 14:22Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260815T142200Z-p1-terminal-integrity-r17/RUN.md`.
+
+The 2026-08-17 02:41Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260817T024100Z-p1-terminal-integrity-r26/RUN.md`.
+
+The 2026-08-12 16:41Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, or remote work occurred. Evidence:
+`experiments/20260812T164100Z-p1-terminal-integrity-r3/RUN.md`.
+
+The 2026-08-12 20:41Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, or remote work occurred. Evidence:
+`experiments/20260812T204100Z-p1-terminal-integrity-r4/RUN.md`.
+
+The 2026-08-13 00:41Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, or remote work occurred. Evidence:
+`experiments/20260813T004100Z-p1-terminal-integrity-r5/RUN.md`.
+
+The 2026-08-13 04:42Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, remote resource, or paid work occurred. Evidence:
+`experiments/20260813T044200Z-p1-terminal-integrity-r6/RUN.md`.
+
+The 2026-08-13 08:48Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, remote resource, or paid work occurred. Evidence:
+`experiments/20260813T084800Z-p1-terminal-integrity-r7/RUN.md`.
+
+The 2026-08-13 12:58Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte. P1 remains terminal as
+`instrument_failed`; no P0 replay, seed opening, criteria change, provider
+query, remote resource, or paid work occurred. Evidence:
+`experiments/20260813T125800Z-p1-terminal-integrity-r8/RUN.md`.
+
+The 2026-08-13 17:24Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence: `experiments/20260813T172450Z-p1-terminal-integrity-r9/RUN.md`.
+
+The 2026-08-13 21:29Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260813T212900Z-p1-terminal-integrity-r10/RUN.md`.
+
+The 2026-08-14 01:47Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260814T014700Z-p1-terminal-integrity-r11/RUN.md`.
+
+The 2026-08-14 09:58Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260814T095800Z-p1-terminal-integrity-r12/RUN.md`.
+
+The 2026-08-14 14:10Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260814T141000Z-p1-terminal-integrity-r13/RUN.md`.
+
+The terminal local integrity replay passed all 31 tests again on 2026-08-08
+at nested commit `b34b6f1` and reproduced the identical contract-v2 result
+hash. P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+provider query, or remote work occurred. Evidence:
+`experiments/20260808T001700Z-p1-terminal-integrity-20260808/RUN.md`.
+
+A second 2026-08-08 scheduled-worker checkpoint again passed all 31 tests and
+reproduced the contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence:
+`experiments/20260808T121700Z-p1-terminal-integrity-20260808-r2/RUN.md`.
+
+A third 2026-08-08 scheduled-worker checkpoint passed all 31 tests and
+reproduced the same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence:
+`experiments/20260809T002100Z-p1-terminal-integrity-20260808-r3/RUN.md`.
+
+The terminal local integrity replay passed all 31 tests again on 2026-08-04
+and reproduced the contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no seed was opened and no remote
+resource was used. Evidence:
+`experiments/20260804T201328Z-p1-terminal-integrity-20260804/RUN.md`.
+
+The 2026-08-05 scheduled-worker integrity replay again passed all 31 tests and
+reproduced the identical contract-v2 result hash. The terminal
+`instrument_failed` gate is unchanged; no P0 replay, seed opening, criteria
+change, remote resource, or paid work occurred. Evidence:
+`experiments/20260805T120329Z-p1-terminal-integrity-20260805/RUN.md`.
+
+The 2026-08-06 scheduled-worker integrity replay passed all 31 tests and
+reproduced the same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+The stale P0/P1 payload did not reopen any completed lane: P1 remains terminal
+as `instrument_failed`, and no P0 replay, seed opening, criteria change,
+provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260806T081600Z-p1-terminal-integrity-20260806/RUN.md`.
+
+The 2026-08-07 scheduled-worker integrity replay again passed all 31 tests and
+reproduced the identical contract-v2 result hash. The terminal
+`instrument_failed` gate is unchanged; no P0 replay, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260807T081700Z-p1-terminal-integrity-20260807/RUN.md`.
+
+The second 2026-08-07 scheduled-worker checkpoint again passed all 31 tests
+and reproduced the contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 replay, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence:
+`experiments/20260807T201700Z-p1-terminal-integrity-20260807-r2/RUN.md`.
+
+The 2026-08-16 10:26Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260816T102600Z-p1-terminal-integrity-r22/RUN.md`.
 
 ## Repositories
 
