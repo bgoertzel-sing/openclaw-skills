@@ -584,3 +584,20 @@ reproduced byte-for-byte at SHA-256
 retaining `instrument_failed`. No P0 run, seed opening, criteria change,
 hyperparameter search, provider query, remote resource, or paid work occurred.
 Evidence: `experiments/20260818T104600Z-p1-terminal-integrity-r32/RUN.md`.
+# 2026-08-18 07:47 PDT - terminal state reverified
+
+At nested commit `b34b6f1`, all 31 tests passed and the contract-v2 evaluation
+reproduced byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`,
+retaining `instrument_failed`. No P0 run, seed opening, criteria change,
+hyperparameter search, provider query, remote resource, or paid work occurred.
+Evidence: `experiments/20260818T144700Z-p1-terminal-integrity-r33/RUN.md`.
+
+# 2026-08-18 11:49 PDT - terminal state reverified
+
+At nested commit `b34b6f1`, all 31 tests passed and the contract-v2 evaluation
+reproduced byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`,
+retaining `instrument_failed`. No P0 run, seed opening, criteria change,
+hyperparameter search, provider query, remote resource, or paid work occurred.
+Evidence: `experiments/20260818T184900Z-p1-terminal-integrity-r34/RUN.md`.

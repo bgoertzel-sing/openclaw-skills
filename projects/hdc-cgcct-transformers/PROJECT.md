@@ -194,6 +194,13 @@ P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
 change, provider query, remote resource, or paid work occurred. Evidence:
 `experiments/20260818T104600Z-p1-terminal-integrity-r32/RUN.md`.
 
+The 2026-08-18 18:49Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening, criteria
+change, provider query, remote resource, or paid work occurred. Evidence:
+`experiments/20260818T184900Z-p1-terminal-integrity-r34/RUN.md`.
+
 The 2026-08-12 16:41Z checkpoint again passed all 31 tests and reproduced the
 same contract-v2 result byte-for-byte. P1 remains terminal as
 `instrument_failed`; no P0 replay, seed opening, criteria change, provider
