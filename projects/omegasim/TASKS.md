@@ -2,6 +2,18 @@
 
 ## Now
 
+- [x] 2026-08-19: Cron closure audit re-confirmed no unexplored stratum
+  remaining. The 120/120 roles-specific grid was closed on 2026-07-18 and
+  audited on 2026-07-31. No new commits or experiment directories since
+  20260718T084500Z-a6-stratified-cla-resweep-10. No duplicate simulation
+  launched. Further measurement requires a new preregistered grid or
+  explicitly authorized denser follow-up.
+- [x] 2026-07-31: Cron closure audit confirmed that the requested stratified
+  A6 re-sweep has no unexplored stratum remaining. Batch 10 closed all 120/120
+  roles-specific cells on 2026-07-18, with every frozen-CLA grammar trivial.
+  No duplicate simulation was launched; further measurement requires a new
+  preregistered grid or explicitly authorized denser follow-up.
+
 - [x] 2026-07-18: Completed the four remaining tight-region roles4 cells with
   three seeds and exact controls, closing all 120 planned roles-specific A6
   grid cells. All 36 new grammars were trivial (two productions, zero

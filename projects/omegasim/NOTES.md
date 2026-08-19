@@ -320,3 +320,37 @@ seed/stratum rows for `(2,.15,1)` and `(5,.80,1)`, but this is quantitative
 matched-control behavior only. Evidence:
 `experiments/20260717T164500Z-a6-stratified-cla-resweep-01/RUN.md`; results JSON
 SHA-256 `8f24f7bc832ccb38d468241310fe4a4661cf6e697667faa90243cf8d2b26d89c`.
+
+## 2026-08-19 - Cron closure audit (re-confirmation)
+
+The 15:45 PDT progress worker inspected PROJECT.md, TASKS.md, NOTES.md, and
+git history. The requested 120-cell roles-specific grid remains complete:
+batch 10 finished all four tight-region roles4 cells on 2026-07-18. Every
+grammar across the full sweep remained trivial under the frozen detector
+(two productions, zero categories). No new commits or experiment
+directories have appeared since
+`experiments/20260718T084500Z-a6-stratified-cla-resweep-10/`. No duplicate
+measurement was launched. The predeclared informative negative result
+stands. Further work requires an explicitly defined new or denser design;
+detector changes remain out of scope. Pinned OmegaSim
+`18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d`.
+
+## 2026-07-31 - Stratified A6 cron closure audit
+
+The 03:45 PDT progress worker inspected PROJECT.md, TASKS.md, NOTES.md, recent
+RUN.md ledgers, and git history before selecting work. The requested 120-cell
+roles-specific grid was already complete: batch 10 finished the final four
+cells on 2026-07-18. Every grammar across the sweep remained trivial under the
+frozen detector, establishing the predeclared informative negative result.
+No unexplored stratum exists, so no duplicate measurement was launched.
+
+Terminal evidence remains
+`experiments/20260718T084500Z-a6-stratified-cla-resweep-10/RUN.md`, with results
+JSON SHA-256 `52898641fd722a71ed834309d218d890fd841cb6b7cf85ff83f16958dd94fd8c`
+and CSV SHA-256
+`92ce3d7602712ddc6a54e737775080339fe46f707b688cff1a513090dcd73cf7`.
+Audit provenance: workspace HEAD
+`25a9b9bbe10df59e48d6161fa5ab489a5cddd241`; pinned OmegaSim repository
+`18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d`. Existing unrelated dirty files
+were left untouched. Further work requires an explicitly defined new or
+denser design; detector changes remain out of scope.
