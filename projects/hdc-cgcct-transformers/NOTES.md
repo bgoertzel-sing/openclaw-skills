@@ -2,6 +2,18 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-08-19 12:48 PDT - terminal P1 integrity reverified
+
+The completed P1 record was reconciled against the stale scheduled payload.
+At nested commit `b34b6f1`, all 31 tests passed and the contract-v2 evaluation
+reproduced byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`,
+retaining `instrument_failed`. All three worker priorities (P1A full-grid,
+P1B CPU smoke, P1B three-seed calibration) are already complete; the project
+is terminal. No P0 run, seed opening, criteria change, hyperparameter
+search, provider query, provisioning, or paid work occurred. Evidence:
+`experiments/20260819T124800Z-p1-terminal-integrity-r37/RUN.md`.
+
 ## 2026-08-16 07:27 PDT - terminal P1 integrity reverified
 
 The completed P1 record was reconciled against the stale scheduled payload.
@@ -601,3 +613,12 @@ reproduced byte-for-byte at SHA-256
 retaining `instrument_failed`. No P0 run, seed opening, criteria change,
 hyperparameter search, provider query, remote resource, or paid work occurred.
 Evidence: `experiments/20260818T184900Z-p1-terminal-integrity-r34/RUN.md`.
+
+# 2026-08-18 15:49 PDT - terminal state reverified
+
+At nested commit `b34b6f1`, all 31 tests passed and the contract-v2 evaluation
+reproduced byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`,
+retaining `instrument_failed`. No P0 run, seed opening, criteria change,
+hyperparameter search, provider query, remote resource, or paid work occurred.
+Evidence: `experiments/20260818T224900Z-p1-terminal-integrity-r35/RUN.md`.
