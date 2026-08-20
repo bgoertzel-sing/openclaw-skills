@@ -1,57 +1,39 @@
-# Run 20260820T075200Z-p1-terminal-integrity-r40
+# Run 20260820T075200Z: P1 terminal integrity checkpoint r40
 
 - Project: `hdc-cgcct-transformers`
 - Started: `2026-08-20T07:52:00Z`
-- Status: `succeeded`
-- Local or remote: `local`
+- Finished: `2026-08-20T07:52:00Z`
+- Status: `succeeded; P1 remains terminal as instrument_failed`
+- Local or remote: local CPU, read-only use of existing scientific artifacts
+- Nested source commit: `b34b6f1f39a344c6c16ed6a7578da883134d6847`
 
 ## Question
 
-Does the completed P1 implementation at nested commit `b34b6f1` still pass
-its complete local suite and reproduce the frozen contract-v2 interpretation
-without reopening P0, criteria, seeds, or remote work?
+Does the terminal P1 record still reproduce identically?
 
-## Results
+## Integrity checks
 
-- Exit status: 0
-- Test result: `31 passed` (3.82s)
-- Recorded result SHA-256 (raw file bytes of stored result-v2.json):
-  `40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`
-- Regenerated replay JSON content: identical to stored result-v2.json
-- Classification: `instrument_failed`
+- The complete nested suite passed: `31 passed in 3.82s`.
+- `git status --short` and `git diff --check` were clean.
+- The contract-v2 evaluator reproduced the recorded result byte-for-byte.
+- Result SHA-256: `40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+- Classification: `instrument_failed`.
 
-## Interpretation
+## Summary
 
-The scheduled payload is stale. All three priorities listed in the current
-worker directive are already complete:
+All three worker priorities are already complete:
 
-1. **P1A full-grid metrics and calibration** — completed 2026-07-28 at nested
-   commit `e4e1d65`. Payload SHA-256
-   `b7fabae33494ed090fe1cd73b85fff0ad3f36fe7f3c6f986ed1a30ab0197195b`.
-   60/60 F0/F1 curves interior; 31/60 missed the frozen Spearman 0.90
-   monotonicity threshold. Calibration evidence, not a confirmation verdict.
+1. P1A full-grid metrics and calibration: complete since 2026-07-28. Payload
+   SHA-256 `b7fabae33494ed090fe1cd73b85fff0ad3f36fe7f3c6f986ed1a30ab0197195b`.
+2. P1B planted-PCFG six-layer causal decoder, manifest, residual/readout, and
+   CPU smoke: complete since 2026-07-28 at nested commit `b4593f4`. 22 tests
+   and two byte-identical smoke/manifest replays passed.
+3. P1B three calibration seeds on GPU: complete since 2026-07-27/28. Seeds
+   12011, 13121, 14251 ran on one 24-GiB RTX 3090 at USD 0.22/hour. All
+   artifacts verified. Pod deleted.
 
-2. **P1B planted-PCFG six-layer causal decoder, manifest, residual/readout,
-   and CPU smoke** — completed at nested commit `b4593f4`; 22 tests passed.
-   Extended to full calibration runner at `8dad854`; 26 tests passed including
-   byte-identical replay and confirmation-seed rejection.
+The five confirmation seeds are also complete (2026-07-31), the contract-v2
+repair is complete (2026-08-03), and P1 is terminal as `instrument_failed`.
 
-3. **P1B three calibration seeds on GPU** — completed on one Community RTX
-   3090 at USD 0.22/hour. All raw artifacts verified locally; criteria frozen
-   in `artifacts/criteria.json` before any confirmation seed was opened. Pod
-   `qy0rbiqrd3xvbf` deleted and provider absence confirmed.
-
-The five-seed confirmation subsequently completed on a Secure RTX 4090; the
-post-hoc contract-v2 evaluator at `b34b6f1` classifies P1-G2 as
-`instrument_failed`. This result has now been reproduced identically 40
-times.
-
-P0-v1 was not rerun. No P0 run, seed opening, criterion or hyperparameter
-change, provider query, provisioning, remote resource, or paid compute
-occurred.
-
-## Follow-up
-
-Do not reopen P1 or provision compute. Further scientific work requires a new,
-explicitly authorized programme beyond the terminal `instrument_failed`
-result.
+No P0 replay, seed opening, criteria change, hyperparameter search, provider
+query, remote resource, or paid work occurred in this checkpoint.

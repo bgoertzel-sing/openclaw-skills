@@ -2,6 +2,18 @@
 
 Use this file for provisional project notes. Add dates and source pointers. Promote durable decisions, results, or tasks to their dedicated files.
 
+## 2026-08-20 00:52 PDT - terminal P1 integrity reverified
+
+The completed P1 record was reconciled against the stale scheduled payload.
+At nested commit `b34b6f1`, all 31 tests passed and the contract-v2 evaluation
+reproduced byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`,
+retaining `instrument_failed`. All three worker priorities (P1A full-grid,
+P1B CPU smoke, P1B three-seed calibration) are already complete; the project
+is terminal. No P0 run, seed opening, criteria change, hyperparameter
+search, provider query, provisioning, or paid work occurred. Evidence:
+`experiments/20260820T075200Z-p1-terminal-integrity-r40/RUN.md`.
+
 ## 2026-08-19 20:49 PDT - terminal P1 integrity reverified
 
 The completed P1 record was reconciled against the stale scheduled payload.
