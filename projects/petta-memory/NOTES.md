@@ -1,3 +1,343 @@
+## 2026-08-20 13:30 PDT - TraceAttribution: persisted proof-trace attribution
+
+- Implemented `TraceAttribution` frozen dataclass binding a compiled result to
+  its originating rule and proof trace, with content-addressed identity
+  (`trace_digest` = SHA-256 over all non-digest fields).
+- Create-once checksummed JSON persistence (`petta-memory-trace-attribution-v1`)
+  and reload verify schema, document checksum, trace_digest, and result-binding
+  fields (result_digest, rule_sentence_digest, rule_proof_id) against the
+  supplied derived capture.
+- 20 focused tests cover construction, store/reload identity stability,
+  malformed-input failure, tampering, create-once, and distinctness from
+  `PeTTaChainerRuleAttribution`.
+- Full `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed (718
+  tests), along with `py_compile` and repository-local `git diff --check`.
+- Provenance: local commit `df0ea60`. No external runtime, promotion/write,
+  live integration, dependency change, paid compute, or remote action.
+
+## 2026-08-09 19:00 PDT - Kernel sentence provenance members fail through typed boundaries
+
+- Reordered `KernelSentenceMeta` stamp validation ahead of uniqueness sorting
+  and added explicit non-empty string validation for evidence-basis ids.
+- Adversarial mixed-type stamp tuples and malformed evidence-basis members now
+  raise stable `ValueError` messages rather than incidental sorting `TypeError`.
+- Focused regression and full `PYTHONPATH=src python3 -m unittest discover -s
+  tests -v` passed (697 tests), along with repository-local `git diff --check`.
+- Provenance: local commit `7655494`. No external runtime, promotion/write,
+  live integration, dependency change, paid compute, or remote action.
+
+## 2026-08-09 17:00 PDT - Evidence capsule merge metadata has a typed iterable boundary
+
+`merge_evidence_capsules()` previously let a non-iterable optional `bases`
+value reach Python iteration and leak `TypeError`. It now normalizes that
+malformed dependency through a stable `ValueError` while preserving list,
+tuple, and generator callers. A focused regression and all 696 tests passed
+with repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/test/git
+inspection, and stdlib fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action. Local commit: `60e1d07`.
+
+## 2026-08-09 13:00 PDT - Evidence packet schema validation is typed
+
+Directly reconstructed `EvidencePacket` records with a string or `None`
+`schema_version` previously reached `< 1` and leaked `TypeError`. The packet
+boundary now explicitly requires an integer, matching the adjacent token,
+snapshot, context, and chart contracts. A focused regression and the full
+695-test suite passed with repository-local `git diff --check`; local commit
+`1c6232d`. Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct
+local project/source/test/git inspection, and stdlib unit fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+
+## 2026-08-08 19:02 PDT - Evidence capsules are immutable and typed
+
+Frozen `EvidenceCapsule` records previously accepted caller-owned lists and
+accessed each member's `basis_id` before checking its type. Capsules now
+require tuple-backed collections containing only `EvidenceContribution`
+records. Regressions cover both mutable collection retention and malformed
+members; the focused test and full 686-test suite passed with repository-local
+`git diff --check`; local commit `c07ac52`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+
+## 2026-08-08 13:00 PDT - Evidence packet provenance is immutable
+
+Frozen `EvidencePacket` records previously accepted caller-owned lists for
+token and parent-packet provenance, allowing mutation after validation. Both
+collections now require tuples before existing uniqueness checks run. Two
+focused subcases and the full 683-test suite passed with repository-local `git
+diff --check`; local commit `fd6a78d`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-08-08 11:01 PDT - Episode manifest collections are immutable
+
+- `EpisodeManifest.__post_init__` now requires tuple-backed
+  `parent_episode_ids` and `projection_policy_ids` before uniqueness and
+  identity checks, closing post-validation mutation through reconstructed
+  caller-owned lists.
+- Two regressions reconstruct an otherwise valid manifest with each mutable
+  list and require a stable `ValueError`. The focused test and full 682-test
+  suite passed; repository-local `git diff --check` passed. Local commit
+  `bbea4b5`.
+- Provenance: local source, tests, and project records only. No runtime,
+  promotion/write, live integration, dependency, paid-compute, or remote
+  action.
+
+## 2026-08-08 09:01 PDT - Validated result provenance is immutable
+
+Frozen `ValidatedKernelResult` previously accepted caller-owned lists for its
+stamp and evidence-basis provenance, allowing mutation after admission. Both
+collections now require tuples before the existing closure checks run. Two
+focused regressions and the full 682-test suite passed with repository-local
+`git diff --check`; local commit `2e3bdcd`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+
+## 2026-08-08 07:03 PDT - Kernel sentence provenance sidecars are immutable
+
+Frozen `KernelSentenceMeta` previously accepted sorted caller-owned lists for
+stamp and evidence-basis sidecars, allowing their content to change after
+validation and after a containing compiled sentence was admitted. Both
+collections now require tuples. Two focused regressions and the full 682-test
+suite passed with repository-local `git diff --check`; local commit `f989970`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+
+## 2026-08-07 17:00 PDT - Checked-add statements bound terms before parsing
+
+Manually reconstructed `PeTTaChainerInputStatement` objects could previously
+send oversized or non-string `canonical_term` values into canonical
+S-expression parsing before their atom/term mismatch was rejected. The
+immutable statement now type-checks and bounds both duplicated text fields
+first. Two parser-sentinel regressions and the full 677-test suite passed with
+repository-local `git diff --check`; local commit `faad440`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-08-07 11:00 PDT - Episode contracts preserve compiler stamp continuity
+
+`CompiledEpisodeInputs` guarantees a complete zero-based stamp map, but a
+manually reconstructed `PeTTaChainerEpisodeContract` could previously omit an
+intermediate stamp while retaining otherwise bijective sidecars. The contract
+now rejects such gaps. A focused regression and the full 675-test suite passed
+with repository-local `git diff --check`; local commit `a9d4e65`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-08-07 03:00 PDT - Checked-add stamps require complete evidence mapping
+
+`PeTTaChainerInputStatement` validated stamps and evidence-basis ids
+independently but could represent two stamps with only one audit basis. It now
+requires equal cardinality, so every compiler-adapted checked-add statement
+closes each stamp to one evidence-basis id before it can enter an episode
+contract. A focused regression and the full 672-test suite passed with
+repository-local `git diff --check`; local commit `640e715`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the immutable
+PeTTaChainer statement and derived-capture boundaries, and local unit fixtures
+only. No external runtime invocation, promotion/write, live integration,
+dependency change, paid compute, or remote action.
+
+## 2026-08-06 23:00 PDT - PeTTaChainer construction dependencies stay typed
+
+Two local validation commits since the last ledger entry close the remaining
+direct dependency dereferences in the typed derived-capture and episode-manifest
+builders. `build_pettachainer_derived_result_capture()` now requires immutable
+fact/rule statements and typed validator/runtime stage captures;
+`build_pettachainer_episode_manifest()` requires an immutable `EpisodeBudget`.
+Malformed callers receive stable `ValueError` contracts rather than incidental
+`AttributeError`s. The full 669-test suite passed, as did repository-local
+`git diff --check`; local commits `020f1a4` and `0ec094f`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of both construction
+boundaries, and local unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-08-04 23:03 PDT - Manifest capture dependency fails before artifact I/O
+
+The checksummed episode-manifest loader already rejected a malformed optional
+kernel capture before dereferencing it, but only after loading and validating
+the artifact. Capture type validation now occurs with the compiler/result
+dependency preflight, so a caller error cannot be masked by an unrelated path,
+JSON, schema, or checksum failure. The existing manifest regression now covers
+all three optional immutable replay dependencies. Focused and full 664-test
+verification passed with repository-local `git diff --check`; local commit
+`4935583`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of
+`read_episode_manifest()`, and local unit fixtures only. No external runtime
+invocation, promotion/write, live integration, dependency change, paid
+compute, or remote action.
+
+## 2026-08-04 21:35 PDT - Manifest replay dependencies fail through typed boundaries
+
+The checksummed episode-manifest loader accepted optional compiler/result
+objects for provenance closure but dereferenced them without first checking
+their immutable types. It now rejects malformed non-`None` dependencies with
+the same stable `ValueError` contracts used by construction and kernel replay.
+A focused regression and the full 664-test suite passed with repository-local
+`git diff --check`; local commit `e6e871d`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the manifest
+construction/reload boundary, and local unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+
+## 2026-08-04 01:00 PDT - Requested-pipe cleanup failure is regression-closed
+
+The new post-construction pipe validation already collected kill, reap, and
+supplied-stream close failures, but its cleanup-failure branch lacked an
+adversarial regression. A mocked missing-stdin construction now forces stdout
+close to fail and verifies the typed pipe-validation cleanup `ValueError`, its
+original cause, the process-group kill/reap, and continued stderr close attempt.
+Focused and full 660-test verification plus repository-local `git diff --check`
+passed; local commit `d8728dc`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct
+inspection of `run_kernel_subprocess()`, and local mocked execution only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+Local implementation commit: `1974cc8`.
+
+## 2026-08-03 03:00 PDT - Captured stream cleanup stays typed and symmetric
+
+After a successful direct-process wait, an unexpected stdout close failure
+escaped raw and prevented the stderr close attempt. The runner now records
+ordinary close failures, attempts both captured-stream closures, then raises a
+typed cleanup `ValueError` retaining the first failure as its cause. A mocked
+regression verifies the public failure and symmetric close attempts; focused
+and full 649-test verification plus repository-local `git diff --check`
+passed; local commit `c748b58`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and direct
+inspection of the bounded shell-free runner. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-08-01 05:00 PDT - Explicit kernel environments reject duplicate keys
+
+The bounded runner accepted any `Mapping` and iterated its `items()` output,
+but a custom mapping could emit the same key twice. Assignment into the
+normalized dictionary silently retained only the last value, making the
+admitted iterator stream differ from the captured and delivered environment.
+The runner now rejects a repeated key before process launch. A marker-backed
+focused regression, the full 643-test suite, and repository-local `git diff
+--check` passed; local commit `aa39ee3`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`
+and the bounded shell-free runner. No external runtime invocation,
+promotion/write, dependency change, paid compute, remote action, or live
+integration.
+
+## 2026-07-31 15:00 PDT - Kernel OS launch failures use the typed boundary
+
+`run_kernel_subprocess()` validated its inputs through typed `ValueError`s but
+allowed `subprocess.Popen()` launch failures such as a missing executable to
+escape as raw `OSError` subclasses. The launch call now translates `OSError`
+to `ValueError` and retains the original exception as `__cause__`. A focused
+missing-executable regression, the full 643-test suite, and repository-local
+`git diff --check` passed; local commit `52e9737`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and the bounded shell-free runner. No
+external runtime invocation, promotion/write, dependency change, paid compute,
+remote action, or live integration.
+
+## 2026-08-03 05:00 PDT - Process-group cleanup failures fail closed
+
+The bounded subprocess runner treated an absent process group as successful
+cleanup, but another ordinary `killpg()` failure could escape a reader thread
+or go unclassified after normal process completion. Cleanup now records such
+failures and raises a typed `ValueError` with the original exception as its
+cause after stdout/stderr finalization. A focused regression, the full 650-test
+suite, and repository-local `git diff --check` passed. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and local source/test inspection only.
+No external runtime invocation, promotion/write, dependency change, paid
+compute, remote action, or live integration.
+
+## 2026-07-30 07:01 PDT - Frozen Phase-0 results are standalone output lines
+
+The Phase-0 reader required one occurrence of the declared canonical semantic
+result, but substring counting allowed a fully rehashed capture to embed that
+atom inside a larger output line. Admission now reconstructs stripped output
+lines and requires exactly `[<semantic-result>]` plus the exact standalone
+`[((Passed: #t))]` line. The embedded-result adversary fails closed. Focused
+reload and full verification passed 2 and 639 tests, plus repository-local
+`git diff --check`; local commit `453a83b`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen Phase-0 reference schema v1,
+and its recorded producer output shape. No runtime invocation,
+promotion/write, dependency change, paid compute, remote action, or live
+integration.
+
+## 2026-07-29 21:00 PDT - Frozen usability checksum sidecars remain identical
+
+The provider-free reader independently validated both checksum sidecars
+against the journal digest but did not reproduce the producer's intervening
+`cmp`. An integrity-aware bundle could therefore rehash an after-canary
+sidecar containing the correct digest but a different recorded path and still
+claim unchanged canary state. Admission now requires the two validated
+sidecars to be byte-identical. The fully rehashed adversary fails closed.
+Focused and full verification passed 32 and 638 tests, plus repository-local
+`git diff --check`; local commit `dac7e36`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, schema-v2 bundle admission, and
+`scripts/provider_free_usability_gate.sh` lines 49, 92-93. No runtime
+invocation, promotion/write, dependency change, paid compute, remote action,
+or live integration.
+
+## 2026-07-29 07:02 PDT - Frozen usability executable term is canonical
+
+The provider-free reader reconstructed the exact bounded PLN program but
+accepted its interpolated source term as any non-empty string. An
+integrity-aware producer could place line breaks and executable control forms
+inside that field, rebuild all dependent source/runtime/program fields, and
+recompute the inference and summary digests. Admission now parses the source
+term inside a single-expression envelope and requires exact canonical
+round-trip equality. A fully rehashed newline/control-form injection-shaped
+adversary fails closed. Focused and full verification passed 25 and 631 tests,
+plus repository-local `git diff --check`; local commit `4ec0449`. Provenance:
+cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen provider-free usability
+inference schema v1, and the repository's existing MeTTa S-expression parser.
+No runtime invocation, promotion/write, dependency change, remote action, or
+live integration.
+
+## 2026-07-29 05:00 PDT - Frozen usability promotion provenance cannot be erased
+
+The frozen provider-free reader previously closed the source item member set
+but accepted empty identity and promotion provenance strings. An
+integrity-aware producer could therefore erase the promotion rule (or another
+source identity) and recompute both inference and summary digests while
+retaining an otherwise admitted derivation. Admission now requires non-empty
+strings for belief, cluster, evidence, promotion-domain, promotion-event, and
+promotion-rule identities. A fully rehashed empty-rule adversary fails closed.
+Focused and full verification passed 24 and 630 tests, plus repository-local
+`git diff --check`; local commit `bae697c`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen provider-free usability
+inference schema v1, and the source handoff's reviewed-promotion boundary. No
+runtime invocation, promotion/write, dependency change, remote action, or live
+integration.
+
+## 2026-07-28 23:00 PDT - Frozen usability source atom is runtime-bound
+
+The frozen provider-free reader previously closed the provenance source item's
+member set, term, evidence id, and STV but did not prove that its own `atom`
+encoded those same values. An integrity-aware producer could therefore replace
+the source atom with an unrelated Sentence and recompute the inference and
+summary digests while retaining the admitted runtime sentence. Admission now
+requires the item kind `patham9-pln-sentence-input` and reconstructs its exact
+Sentence atom from the admitted term, STV, and evidence identity. Focused and
+full verification passed 21 and 627 tests, plus repository-local `git
+diff --check`; local commit `ea0db1f`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, producer
+`petta_memory.patham9_pln.patham9_pln_handoff_sentences()`, and frozen
+provider-free usability inference schema v1. No runtime invocation,
+promotion/write, dependency change, remote action, or live integration.
+
 ## 2026-07-28 13:02 PDT - Frozen usability admission binds executable PLN text
 
 The frozen provider-free bundle reader previously admitted the approved
@@ -856,7 +1196,7 @@ anchor. The regression changes `chart_fingerprint`, recomputes the typed
 manifest digest and outer document checksum, and confirms reload rejects the
 self-consistent artifact against the supplied compiler contract. Focused
 verification passed 1 test; full discovery passed 601 tests; repository-local
-`git diff --check` passed. Provenance: cron
+`git diff --check` passed; local commit `387c2fa`. Provenance: cron
 `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/tests/docs only. No
 runtime invocation, promotion/write, upstream/remote action, paid compute, or
 live integration.
@@ -937,7 +1277,7 @@ output path before `mkdir -p`. If any ancestor is a symlink, it exits 2 before
 ingestion or inference. The regression uses an empty operator-owned target
 behind an immediate parent alias and proves that no output is created there.
 Focused verification passed 3 tests; full discovery passed 604 tests;
-repository-local `git diff --check` passed. Provenance: cron
+repository-local `git diff --check` passed; local commit `80dc2fa`. Provenance: cron
 `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local script/test inspection starting
 at repository commit `63f9a2e`, implementation commit `c7811d2`; no external
 source adoption. No runtime
@@ -1117,3 +1457,1280 @@ paid compute, dependency change, or live integration.
   artifact, and local producer source; no external source adoption, runtime
   invocation, canonical write, promotion, live integration, dependency
   change, or remote action.
+- 2026-07-28 15:00 PDT / 22:00 UTC: Closed the remaining declared provenance
+  relabel seam in frozen provider-free usability admission. The reader now
+  requires `derived_term` to be the exact `PMDerivedFromHandoff` projection of
+  `source_term`, exact `(0)` source and `(1)` synthetic-bridge sidecar roles,
+  source item/evidence equality, and the reviewed index-zero bridge identity.
+  A fully rehashed unrelated `source_term` fails semantic admission. Focused
+  17 tests and full 623-test discovery passed with repository-local `git diff
+  --check`; local commit `de68ca3`. Provenance: local frozen producer format,
+  evidence artifact, and reader/tests only; no external adoption, runtime
+  invocation, canonical write, promotion, dependency change, remote action, or
+  live integration.
+- 2026-07-28 17:15 PDT / 2026-07-29 00:15 UTC: Closed a semantic gap in
+  `validate_provider_free_usability_bundle()`: integrity-bound program text and
+  provenance were individually checked, but a producer could rehash a different
+  runtime source Sentence. Admission now reconstructs both exact runtime
+  Sentences and the TotalMp expected STV from the source item's bounded STV and
+  term. Added a fully rehashed detached-source adversary. `PYTHONPATH=src
+  python3 -m unittest tests.test_usability_bundle -v` passed 18 tests; full
+  discovery passed 624; repository-local `git diff --check` passed. Provenance:
+  `src/petta_memory/usability_bundle.py`,
+  `tests/test_usability_bundle.py`; local commit `fb13cf7`. No runtime or live
+  path invoked.
+- 2026-07-28 19:00 PDT / 2026-07-29 02:00 UTC: Bound the frozen
+  provider-free usability result's semantic success cardinality to its exact
+  reconstructed one-`Test` program. Previously, mutually agreeing
+  classification and semantic-marker counts greater than one were admitted.
+  A fully rehashed two-marker adversary now fails closed. Focused 19 tests and
+  full 625-test discovery passed with repository-local `git diff --check`;
+  local implementation commit `ff67c3e`.
+  Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local frozen
+  producer contract and reader/tests only; no runtime invocation, canonical
+  write, promotion, live integration, dependency change, or remote action.
+- 2026-07-28 21:00 PDT / 2026-07-29 04:00 UTC: Closed an undeclared-authority
+  seam inside the frozen usability inference's provenance sidecar. Although
+  outer inference/program/source-sidecar objects already required exact
+  schemas, the nested producer source item could carry arbitrary rehashed
+  members. Admission now requires its exact twelve-member producer shape; a
+  fully rehashed nested `promotion_authorized: true` adversary fails closed.
+  Focused 20 tests and full 626-test discovery passed with repository-local
+  `git diff --check`; local implementation commit `c4dcb95`. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen local producer artifact and
+  source/tests only. No runtime invocation, canonical memory write, promotion,
+  live integration, dependency change, or remote action.
+- 2026-07-29 01:00 PDT / 08:00 UTC: Closed a source-classification seam in
+  frozen provider-free usability admission. Although the source item's exact
+  members, kind, atom, term, STV, and evidence identity were checked, a
+  producer could fully rehash the bundle after changing `source_status` to
+  `inferred-belief`. Admission now requires the producer's exact
+  `pln-ready-input-not-inferred-belief` boundary, and a rehashed adversarial
+  regression fails semantically. Focused 22 tests and full 628-test discovery
+  passed with repository-local `git diff --check`; local implementation commit
+  `703e071`. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen local producer source,
+  artifact, and reader/tests only; no runtime invocation, canonical memory
+  write, promotion, live integration, dependency change, or remote action.
+- 2026-07-29 03:00 PDT / 10:00 UTC: The frozen provider-free usability
+  consumer previously validated the source item member set but treated
+  `pi_pln_extension` as opaque. A digest-consistent artifact could therefore
+  claim context selection ran and generated contexts were admitted although
+  the producer gate explicitly does neither. Admission now requires the exact
+  producer extension: not-run/no generated contexts, no contextual
+  EvidencePackets, and deferred reviewed EC projection. The focused 23 tests
+  and full 629 tests passed; `git diff --check` passed. Provenance: local
+  `src/petta_memory/usability_bundle.py` and
+  `tests/test_usability_bundle.py` at local commit `a6edd1b`; frozen producer artifact
+  `experiments/20260726T185632Z-provider-free-usability-roundtrip-retry/inference.json`.
+## 2026-07-29 09:00 PDT / 16:00 UTC — provenance identities are single terms
+
+- Provenance: scheduled `petta-memory progress worker`; local frozen
+  provider-free usability producer artifact and admission source/tests only.
+- Tightened the consumer so belief, cluster, evidence, promotion-domain,
+  promotion-event, and promotion-rule identities must each round-trip as
+  exactly one canonical MeTTa term. This preserves compound `PMEvidence`
+  identities while excluding extra forms or comment/whitespace ambiguity.
+- Added a fully rehashed adversary whose evidence identity injects a `Test`
+  control form and whose source atom is updated consistently; semantic
+  admission still fails closed.
+- Verification: focused 26 tests, full 632 tests, and repository-local `git
+  diff --check` passed; local implementation commit `3bdc28d`. No runtime
+  invocation, canonical write, promotion,
+  dependency change, remote action, or live integration.
+- 2026-07-29 11:00 PDT / 18:00 UTC: The frozen provider-free usability
+  admission schema previously left `stdout_tail`, `stderr_tail`, and entries
+  of `semantic_markers.diagnostic_lines` untyped. Although integrity-bound,
+  those positions could therefore contain structured JSON rather than their
+  producer-defined diagnostic text. Admission now requires string tails and
+  string-only diagnostic lines. A fully rehashed structured diagnostic
+  adversary fails closed; focused 27 and full 633 tests plus repository-local
+  `git diff --check` passed; local commit `79ba928`. No runtime,
+  canonical-memory, promotion, live, dependency, or remote boundary changed.
+- 2026-07-29 13:00 PDT / 20:00 UTC: Frozen provider-free usability admission
+  previously type-checked runtime diagnostic tails but did not preserve the
+  producer's `[-4000:]` resource bound. Admission now caps stdout and stderr
+  tails at 4,000 characters, and a fully rehashed 4,001-character adversary
+  fails closed. Focused 28 and full 634 tests plus repository-local `git
+  diff --check` passed; local commit `a82d708`. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local frozen producer source,
+  artifact, and admission tests only. No runtime invocation, canonical write,
+  promotion, live integration, dependency change, or remote action.
+- 2026-07-29 15:00 PDT / 22:00 UTC: Reviewed the frozen provider-free
+  usability admission path after baseline 634/634 passed. Although diagnostic
+  fields were type-closed, a correctly rehashed bundle could still supply a
+  string diagnostic never emitted by the captured process. Admission now
+  requires every `semantic_markers.diagnostic_lines` entry to occur in the
+  bounded stdout or stderr tail. A fully rehashed invented
+  `live integration authorized` line fails closed. Focused 29/29 and full
+  635/635 tests passed; repository-local `git diff --check` passed. Local
+  commit: `e9c6fc3`.
+  Provenance: local producer source `patham9_pln.parse_metta_test_output`,
+  frozen admission schema/tests, cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`. No runtime invocation, canonical
+  write, promotion, live integration, dependency change, paid compute, or
+  remote action.
+## 2026-07-29 17:00 PDT - Frozen semantic counts are runtime-tail reproducible
+
+The provider-free reader required each diagnostic line to occur in a bounded
+captured runtime tail, but still trusted the claimed pass/fail/error counts
+independently. An integrity-aware producer could remove the actual successful
+marker, leave the counts at one/zero/zero, and recompute the inference and
+summary digests. Admission now independently applies the producer's exact
+successful, failed, and error marker patterns to the joined stdout/stderr tails
+and requires all three counts to agree. A fully rehashed missing-pass-marker
+adversary fails closed. Focused and full verification passed 30 and 636 tests,
+plus repository-local `git diff --check`; local commit `338c2aa`. The archived
+July 26 retry predates the finalized schema-v2 summary member set and remains
+rejected at that earlier boundary. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`,
+`src/petta_memory/patham9_pln.py` marker patterns, and frozen provider-free
+usability inference schema v1. No runtime invocation, promotion/write,
+dependency change, remote action, or live integration.
+
+## 2026-07-29 19:00 PDT / 2026-07-30 02:00 UTC — Diagnostic list replay
+
+Frozen usability admission independently recounted semantic markers but still
+allowed the producer-derived `diagnostic_lines` list to omit observed runtime
+diagnostics. The reader now applies the producer's exact line selection and
+stripping rules to the bounded stdout/stderr tails and requires list equality.
+A fully rehashed omitted-pass-line adversary fails closed. Focused 31/31 and
+full 637/637 tests passed, plus repository-local `git diff --check`; local
+commit `96e152e`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local
+`patham9_pln.parse_metta_test_output`, frozen admission source, and regression
+only. No runtime invocation, promotion/write, dependency change, paid compute,
+remote action, or live integration.
+2026-07-30 01:00 PDT / 08:00 UTC — Phase-1 clean-room reload work exposed a
+specific semantic admission gap in the frozen Phase-0 replay anchor: its known
+fields closed, but undeclared manifest and nested fields were ignored. Updated
+`validate_phase0_reference_artifact()` to require the exact v1 member sets at
+every level, including the sole patham9 repository record. The reload
+regression now presents a rehashed reference boundary containing
+`promotion_authorized=true` and confirms rejection before it can be treated as
+an archive anchor. Focused regression and full 639-test discovery passed;
+repository-local `git diff --check` passed; local commit `1462790`. No
+kernel/runtime invocation, memory write, inferred-belief promotion, live
+OmegaClaw/GoalChainer integration, dependency, paid-compute, or remote action.
+Provenance: cron petta-memory progress worker.
+2026-07-30 03:01 PDT / 10:01 UTC — The Phase-0 reference reader described
+one passing semantic marker but only tested substring presence, so an
+integrity-consistent deterministic capture with two pass markers was admitted.
+Admission now requires exactly one occurrence of both the declared semantic
+result and `(Passed: #t)`. The clean-room reload regression rehashes a
+duplicate-pass output and confirms fail-closed behavior. Focused regression
+and full 639-test discovery passed; repository-local `git diff --check`
+passed; local commit `08c67a6`. Provenance: cron petta-memory progress worker and local
+`pipln_models.py`/test only. No kernel/runtime invocation, canonical write,
+promotion, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-07-30 21:00 PDT / 2026-07-31 04:00 UTC — Replay cwd closure
+
+Fresh Phase-0 replay closed argv but the raw capture discarded the optional
+working-directory launch input, so a manually reconstructed exact-output
+capture could conceal an alternate runtime context. `KernelProcessCapture`
+now retains the normalized caller-supplied `cwd`, `run_kernel_subprocess()`
+populates it, and the frozen stdin-only replay anchor rejects any explicit
+`cwd`. The focused regression and full 639-test discovery passed, as did
+repository-local `git diff --check`; local commit `ed17c09`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and local
+`pipln_models.py`/test only. No external runtime invocation, canonical write,
+promotion, live integration, dependency change, paid compute, or remote
+action.
+2026-07-30 05:01 PDT / 12:01 UTC — The frozen Phase-0 replay-anchor reader
+treated `semantic_result` as any non-empty substring of the captured output.
+It now requires the producer-declared value to be one bounded canonical
+patham9 `((stv S C) (stamps...))` atom, with finite unit-interval STV values
+and non-empty canonical sorted unique stamps. The clean-room reload regression
+rehashes a manifest that relabels `(Passed: #t)` as the semantic result and
+confirms fail-closed admission. Focused reload and full 639-test discovery
+passed; repository-local `git diff --check` passed; local commit `22c1f95`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen local
+reference artifact, and local `pipln_models.py`/test only. No runtime
+invocation, canonical write, promotion, live integration, dependency change,
+paid compute, or remote action.
+2026-07-30 09:00 PDT / 16:00 UTC — The frozen Phase-0 reader required one
+standalone semantic-result line and one standalone pass line, but it did not
+exclude additional non-empty output. Admission now reconstructs the complete
+producer-shaped line tuple and requires exactly the result then pass marker.
+A fully rehashed capture with an extra `promotion-authorized`-shaped line
+fails closed. Focused Phase-1 reload and full 639-test discovery passed;
+repository-local `git diff --check` passed; local commit `23b9c5d`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and local
+`pipln_models.py`/regression only. No runtime invocation, canonical write,
+promotion, live integration, dependency change, paid compute, or remote
+action.
+2026-07-30 11:00 PDT / 18:00 UTC — Phase-0 replay validated deterministic
+stdout but did not preserve the runtime-executable digest verified immediately
+before launch. `KernelProcessCapture` now carries that optional digest,
+`run_kernel_subprocess()` sets it only on the existing digest-pinned path, and
+the frozen replay gate requires exact equality with the admitted reference.
+An otherwise byte-identical capture labeled with a different executable
+digest fails closed. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen Phase-0 manifest schema, and
+local `pipln_models.py`/tests only; local commit `dc5326e`. No live runtime, memory write, promotion,
+integration, dependency, paid-compute, or remote action.
+2026-07-30 13:02 PDT / 20:02 UTC — Phase-0 replay was bound to the frozen
+runtime executable and byte-exact output but could still admit those outputs
+from different delivered program bytes. `KernelProcessCapture` now records a
+direct SHA-256 of the UTF-8 program supplied to the bounded subprocess, and
+the replay gate requires it to equal the admitted reference source digest. An
+otherwise valid capture labeled with a different program digest fails closed.
+Focused two-test verification and full 639-test discovery passed;
+repository-local `git diff --check` passed. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, frozen Phase-0 manifest schema, and
+local `pipln_models.py`/tests only. No external runtime invocation, canonical
+write, promotion, live integration, dependency change, paid compute, or
+remote action.
+2026-07-30 15:00 PDT / 22:00 UTC — Fresh Phase-0 replay checked the direct
+program SHA-256 but ignored the bounded capture's pre-existing canonical
+complete-program CID, permitting contradictory program provenance on a
+manually reconstructed capture. `Phase0ReferenceArtifact` now derives that CID
+from the checksum-verified UTF-8 source, and replay admission requires exact
+capture equality. A regression keeps the direct digest correct while changing
+only the CID and confirms fail-closed behavior. Focused and full verification
+passed with repository-local `git diff --check`; local commit `bbf5118`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local frozen Phase-0 artifact, and
+local `pipln_models.py`/tests only. No external runtime invocation, canonical
+write, promotion, live integration, dependency change, paid compute, or remote
+action.
+2026-07-30 17:00 PDT / 2026-07-31 00:00 UTC — Fresh Phase-0 replay required
+the frozen executable digest but admitted a manually reconstructed capture
+whose launch identity used a relative executable path, a shape the existing
+digest-pinned runner never emits. Replay admission now requires the captured
+executable path to be absolute and normalized. The focused adversarial
+regression and full 639-test discovery passed; repository-local `git diff
+--check` passed; local commit `8082999`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local
+`pipln_models.py`/test only. No external runtime invocation, canonical write,
+promotion, live integration, dependency change, paid compute, or remote
+action.
+## 2026-07-30 19:00 PDT / 2026-07-31 02:00 UTC — Replay argv closure
+
+Fresh Phase-0 replay pinned the runtime executable and program bytes but still
+admitted arbitrary trailing argv entries on a manually reconstructed capture.
+The replay gate now requires the exact stdin-only launch shape emitted for this
+anchor: one normalized absolute executable and no flags or path arguments. An
+otherwise exact capture with `--unreviewed-mode` fails closed. Focused
+regression and full 639-test discovery passed; repository-local `git diff
+--check` passed; local commit `0da04d9`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, the local bounded subprocess contract,
+and `pipln_models.py`/test only. No external runtime invocation, canonical
+write, promotion, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-07-30 23:00 PDT / 2026-07-31 06:00 UTC — Replay environment closure
+
+Fresh Phase-0 replay closed the remaining caller-supplied process-context input
+exposed by the bounded runner. `KernelProcessCapture` now retains an explicit
+environment as canonical sorted unique key/value entries, while preserving
+`None` for inherited environment semantics. The frozen replay gate rejects an
+otherwise exact capture with `UNREVIEWED_MODE=1`. Focused two-test and full
+639-test discovery passed; repository-local `git diff --check` passed; local
+commit `561d773`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, the existing bounded
+subprocess environment contract, and local `pipln_models.py`/test only. No
+external runtime invocation, canonical write, promotion, live integration,
+dependency change, paid compute, or remote action.
+## 2026-07-31 03:00 PDT - Typed raw captures are valid UTF-8 text
+
+The bounded runner hashes its stdin as UTF-8 and strictly decodes both output
+streams, while Phase-0 replay re-encodes stdout for byte-count and digest
+checks. A manually reconstructed `KernelProcessCapture` could nevertheless
+carry lone-surrogate text and make those later boundaries raise an incidental
+`UnicodeEncodeError`. The typed capture now rejects unencodable argv,
+stdout/stderr, cwd, and environment strings at construction. Focused and full
+verification passed 2 and 641 tests, plus repository-local `git diff --check`.
+Local commit `af1ec4d`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and the local bounded
+subprocess/Phase-0 replay contracts. No runtime invocation, promotion/write,
+dependency change, paid compute, remote action, or live integration.
+## 2026-07-31 05:00 PDT - Kernel launch text is UTF-8-closed before spawn
+
+The typed raw-capture record rejected surrogate-bearing text, but the actual
+bounded runner still reached Python/OS encoding with such program, argv, cwd,
+or explicit-environment inputs and leaked raw encoding errors. The runner now
+converts each boundary to UTF-8 before `Popen` and raises a field-specific
+`ValueError`; marker-backed regressions verify that invalid launch context does
+not execute. Five focused tests and the full 641-test suite passed with
+repository-local `git diff --check`; local commit `5a30718`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, `run_kernel_subprocess()`, and the
+preceding typed-capture UTF-8 boundary at local commit `af1ec4d`; runner
+change committed locally as `ed4d68d`. No external
+runtime invocation, promotion/write, dependency change, paid compute, remote
+action, or live integration.
+## 2026-07-31 07:01 PDT - Environment UTF-8 coverage is symmetric
+
+The preceding capture/runner UTF-8 hardening covered surrogate-bearing
+environment values explicitly but did not exercise keys. Added key and value
+cases to both typed reconstruction and the marker-backed pre-launch runner
+test, proving an invalid key cannot spawn the child. Focused 2-test and full
+641-test discovery passed with repository-local `git diff --check`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local commits
+`af1ec4d`, `ed4d68d`, and `12acaea`, plus `tests/test_pipln_models.py`. No external runtime,
+promotion/write, dependency change, paid compute, remote action, or live
+integration.
+## 2026-07-31 09:00 PDT - Kernel program NUL boundary
+
+- Provenance: progress worker cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; implementation commit `07827c2`.
+- The shell-free bounded runner previously validated program UTF-8 and encoded
+  byte size but allowed an embedded NUL to reach evaluator stdin. It now fails
+  before launch, consistent with the closed launch-text boundary.
+- Marker-backed focused verification passed 1/1; full stdlib discovery passed
+  641/641; repository-local `git diff --check` passed.
+- No external runtime, canonical memory write, promotion, live integration,
+  dependency, paid-compute, or remote action occurred.
+
+## 2026-07-31 13:00 PDT - Cyclic cwd symlinks fail closed
+
+The canonical cwd change exposed one exception-shape gap:
+`Path.resolve(strict=True)` raises `RuntimeError`, rather than `OSError`, for a
+symlink cycle. The bounded runner now converts both into the same pre-launch
+`ValueError`. A temporary self-referential symlink and marker-backed child
+prove the invalid cwd cannot execute. Focused 1/1 and full 642/642 stdlib tests
+passed with repository-local `git diff --check`. Provenance: progress-worker
+cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, preceding cwd commit `ef5136c`,
+and implementation commit `90d539c`. No external runtime, promotion/write,
+live integration, dependency change, paid compute, or remote action.
+## 2026-07-31 17:00 PDT - Kernel argv container is typed before launch
+
+`run_kernel_subprocess()` previously converted any `argv` with `tuple(argv)`.
+A bare executable string therefore became one-character arguments, while a
+non-iterable leaked an incidental `TypeError`. The runner now explicitly
+rejects scalar text/bytes and translates non-iterability into its public
+`ValueError` boundary before launch. Focused regression and the full 643-test
+suite passed with repository-local `git diff --check`; local commit `a535e9a`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local runner and
+tests only. No external runtime invocation, promotion/write, dependency
+change, paid compute, remote action, or live integration.
+## 2026-07-31 19:00 PDT - Kernel argv iteration is byte-bounded
+
+The scalar-container fix still called `tuple(argv)` before applying the argv
+byte budget, allowing an unbounded or extremely large iterator to hang or
+consume memory ahead of validation. The runner now validates each item and
+counts its UTF-8 payload plus OS terminating NUL incrementally, stopping as
+soon as `max_argv_bytes` is exceeded. A deliberately unbounded iterator fails
+quickly without launching; the focused regression and full 643-test suite
+passed with repository-local `git diff --check`. Local commit `3818a3b`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, preceding argv
+container commit `a535e9a`, and local runner/tests only. No external runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+## 2026-07-31 21:00 PDT - Kernel argv iteration failures are typed
+
+Incremental argv admission bounded infinite sources but a custom iterator
+could still raise an arbitrary exception during enumeration. The runner now
+translates such failures into `ValueError("argv iteration failed")`, retaining
+the original exception as cause. A regression exercises a generator that
+yields the executable and then raises; focused 1/1 and full 643/643 stdlib
+tests passed with repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, preceding local commit `3818a3b`,
+implementation commit `9e1ee9c`, and local runner/tests only. No external runtime, promotion/write, live
+integration, dependency change, paid compute, or remote action.
+## 2026-07-31 23:00 PDT — bounded environment iterator failure normalization
+
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, adjacent review of
+  the bounded argv iterator work at `9e1ee9c`, and
+  `run_kernel_subprocess()`'s explicit-environment admission boundary.
+- A custom `Mapping.items()` iterator could previously raise an arbitrary
+  exception directly during validation. The runner now converts both
+  `items()` acquisition and traversal failures to `ValueError("env iteration
+  failed")`, preserving the original exception as `__cause__`.
+- A regression mapping yields one valid entry and then raises; a filesystem
+  marker proves validation fails before the child process starts.
+- Verification: focused 1 test; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` (643 tests); repository-local `git diff --check`.
+  Local commit `10ab2fd`. No external PeTTa/PeTTaChainer invocation,
+  canonical memory write, promotion, live OmegaClaw/GoalChainer integration,
+  dependency change, paid compute, or remote action.
+## 2026-08-01 01:02 PDT - Kernel environment entries have a typed shape boundary
+
+`run_kernel_subprocess()` normalized failures while obtaining and advancing a
+caller-supplied environment iterator, but unpacked each yielded item outside
+that normalization boundary. A hostile `Mapping.items()` implementation could
+therefore yield a non-pair and leak a raw unpacking exception. The runner now
+rejects malformed item shape with a chained `ValueError` before launch. A
+marker-backed focused regression, the full 643-test suite, and repository-local
+`git diff --check` passed; local commit `bfad0a9`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and the bounded shell-free runner. No
+external runtime invocation, promotion/write, dependency change, paid compute,
+remote action, or live integration.
+## 2026-08-01 03:00 PDT - Environment items require tuple structure
+
+Python sequence unpacking allowed a hostile `Mapping.items()` implementation
+to yield a two-character string and have it silently interpreted as an
+environment key/value pair. `run_kernel_subprocess()` now requires each item
+to be an exact two-element tuple before unpacking. A marker-backed focused
+regression, the full 643-test suite, and repository-local `git diff --check`
+passed; local commit `776efe9`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and direct inspection of the bounded
+shell-free runner. No external runtime invocation, promotion/write,
+dependency change, paid compute, remote action, or live integration.
+## 2026-08-01 07:01 PDT - Process-construction failures share one typed boundary
+
+`run_kernel_subprocess()` handled OS launch failures but could leak the other
+documented subprocess exception family during process construction. It now
+chains both `OSError` and `subprocess.SubprocessError` through the same public
+`ValueError` contract. A mocked construction-failure regression and the
+existing missing-executable regression passed, followed by the full 644-test
+suite and repository-local `git diff --check`; local commit `b7322fe`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, Python's `subprocess` exception
+contract, and direct inspection of the bounded shell-free runner. No external
+runtime invocation, promotion/write, dependency change, paid compute, remote
+action, or live integration.
+## 2026-08-01 09:00 PDT - Kernel stream read failures use the typed boundary
+
+The bounded reader threads previously did not capture OS-level stream read
+errors. Such an error could escape only inside the worker thread and later
+surface as an unrelated missing-capture lookup rather than the runner's typed
+failure. Each reader now records `OSError`/closed-stream `ValueError`, kills the
+isolated process group, and the caller raises `ValueError` with the original
+exception as `__cause__`. A mocked-stream regression, the full 645-test suite,
+and repository-local `git diff --check` passed; local commit `43152c2`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and the bounded shell-free runner. No
+external runtime invocation, promotion/write, dependency change, paid compute,
+remote action, or live integration.
+- 2026-08-02 20:11 PDT / 2026-08-03 03:11 UTC: Audited the recently added
+  bounded output-capture failure handling in `run_kernel_subprocess()`. It
+  caught only `OSError` and `ValueError`; another ordinary exception in a
+  reader thread left its capture key unset and could later leak `KeyError`.
+  Broadened the thread boundary to `Exception`, retaining the original cause
+  and killing the isolated process group. Added a `RuntimeError` regression.
+  Focused test and full 645-test discovery passed; `git diff --check` passed;
+  local commit `9546ad1`.
+  Provenance: local source/test inspection and local Python unittest execution
+  only; no external runtime or live integration was invoked.
+- 2026-08-02 21:21 PDT / 2026-08-03 04:21 UTC: Audited the stdin side of the
+  bounded subprocess thread boundary after closing the symmetric output-reader
+  gap. `write_program()` caught only expected pipe/OS failures, so another
+  ordinary stream exception could terminate the daemon writer without adding
+  `stdin_errors`, allowing the caller to construct a false successful capture.
+  The writer now records every ordinary write/flush/close exception and the
+  existing incomplete-delivery `ValueError` retains the cause. A mocked
+  `RuntimeError` regression and the existing real broken-pipe check passed;
+  full discovery passed 646/646 and `git diff --check` passed. Provenance:
+  cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, preceding local commit
+  `9546ad1`, implementation commit `cf31b9d`, and local source/test inspection
+  only. No external runtime or live
+  integration was invoked.
+- 2026-08-02 23:00 PDT / 2026-08-03 06:00 UTC: Audited the direct-process wait
+  seam after closing the bounded runner's worker-thread exception paths.
+  `process.wait()` still allowed an unexpected ordinary exception to escape
+  the public typed boundary. The runner now chains it through
+  `ValueError("kernel subprocess wait failed")`; a mocked regression also
+  verifies process-group termination and stream closure. Focused 1/1 and full
+  647/647 stdlib tests passed; repository-local `git diff --check` passed.
+  Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, preceding local
+  commit `cf31b9d`, implementation commit `e1af2e4`, and local source/test
+  inspection only. No external runtime,
+  memory write/promotion, live integration, dependency change, paid compute,
+  or remote action.
+## 2026-08-03 01:00 PDT - Timeout reaping stays inside the typed runner boundary
+
+After a bounded subprocess timeout, the runner killed the process group but
+called the mandatory reap without translating an unexpected `wait()` failure.
+That cleanup exception could escape the runner's typed failure contract. The
+reap now raises a specific `ValueError` and retains the original cleanup
+failure as `__cause__`; the existing finalizer still joins workers and closes
+both captured streams. A focused regression, the full 648-test suite, and
+repository-local `git diff --check` passed. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and the bounded shell-free runner. No
+external runtime invocation, promotion/write, dependency change, paid compute,
+remote action, or live integration.
+## 2026-08-03 07:01 PDT - Worker joins stay inside the typed runner boundary
+
+The bounded subprocess finalizer called worker `join()` methods directly, so
+an unexpected ordinary join failure could bypass the public typed contract and
+prevent later workers and captured streams from being finalized. The finalizer
+now records join failures, attempts all three joins and both stream closes, then
+raises a chained `ValueError`. A focused regression and the full 651-test suite
+passed with repository-local `git diff --check`; local commit `6ac5199`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and direct local
+source/test inspection. No external runtime invocation, promotion/write,
+dependency change, paid compute, remote action, or live integration.
+## 2026-08-03 09:00 PDT - Capture-worker startup failures fail closed
+
+The bounded subprocess runner launched its child before starting stdout,
+stderr, and stdin workers, so an unexpected `Thread.start()` failure escaped
+raw and bypassed the established cleanup path. The runner now records that
+failure, kills and reaps the child, joins only workers that successfully
+started, closes both captured streams, and raises a typed `ValueError` with
+the original cause. A mocked regression verifies those cleanup effects;
+focused and full 652-test verification plus repository-local `git diff
+--check` passed. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and direct inspection of
+`run_kernel_subprocess`; local commit `3626e60`. No external runtime invocation, promotion/write,
+live integration, dependency change, paid compute, or remote action.
+## 2026-08-03 11:01 PDT - Worker construction failure cannot orphan a child
+
+`run_kernel_subprocess()` previously constructed its reader/writer threads
+after `Popen` but outside its typed cleanup boundary. An unexpected constructor
+failure could leak the raw exception and leave the child and pipes unmanaged.
+Construction now fails closed after process-group kill, direct-process reap,
+and attempted closure of stdin/stdout/stderr; a cleanup failure has its own
+typed error and retained cause. Focused 2-test and full 654-test verification
+plus repository-local `git diff --check` passed; local commit `55435a7`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f` and local bounded-runner inspection.
+No external runtime, promotion/write, live integration, dependency, paid
+compute, or remote action.
+## 2026-08-03 13:00 PDT - Startup failure closes the unstarted writer pipe
+
+The capture-worker startup cleanup killed and reaped the child and closed its
+captured output streams, but if startup failed before the stdin writer ran,
+the parent-side stdin pipe remained open. Post-launch finalization now closes
+stdin, stdout, and stderr. The startup-failure regression explicitly checks
+stdin closure; focused and full 654-test verification plus repository-local
+`git diff --check` passed; local commit `0ae13bc`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/test inspection, and
+stdlib unittest execution only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-03 15:00 PDT - Construction cleanup retains kill failure
+
+The bounded subprocess runner recorded a process-group termination failure
+during worker-construction cleanup in its general cleanup list, but the early
+construction exception path discarded that list and surfaced only the thread
+constructor failure. It now carries the kill failure into the typed
+`worker construction cleanup failed` boundary, while still reaping the direct
+child and closing stdin/stdout/stderr. A focused regression and the full
+655-test suite passed with repository-local `git diff --check`; local commit
+`15f5335`. Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct
+local source/test inspection, and stdlib unittest execution only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+## 2026-08-03 17:01 PDT - Wait-path kill failures retain cleanup priority
+
+The ordinary direct-process wait exception path immediately raised its typed
+wait error after attempting process-group termination. If that termination
+also failed, the recorded cleanup error was never consulted, masking the
+higher-risk possibility of a surviving child or descendant. Wait errors are
+now retained until finalization; process-group cleanup errors are checked
+first, followed by the original typed wait failure. A focused regression
+exercises simultaneous wait and kill failures. Focused 2/2 and full 656/656
+stdlib tests passed with repository-local `git diff --check`. The first
+focused invocation used the wrong test-class capitalization, and the first
+corrected invocation exposed an over-strict mocked-stdin close-count
+assertion; both harness issues were corrected before successful verification.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local commit
+`98e1f23`, local source/test inspection, and stdlib unittest execution only. No external runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-03 19:00 PDT - Timeout kill failures retain cleanup priority
+
+The timeout handler recorded process-group termination failures but immediately
+raised the timeout (or timeout-reap) error, bypassing the shared error-priority
+checks after finalization. Timeout and timeout-cleanup exceptions are now
+retained until worker joins and all pipe closures finish; a recorded kill
+failure is reported first through the existing typed process-group cleanup
+contract. A focused regression covers simultaneous timeout and kill failure.
+Focused 3/3 and full 657/657 stdlib tests passed with repository-local `git
+diff --check`; local commit `afa955e`. Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`,
+direct local source/test inspection, and stdlib unittest execution only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-03 21:01 PDT - Unexpected launch failures use the typed boundary
+
+`run_kernel_subprocess()` previously normalized only `OSError` and
+`subprocess.SubprocessError` from `Popen`, allowing other ordinary
+process-construction failures to escape its typed contract. The launch guard
+now catches any ordinary `Exception`, reports the existing launch `ValueError`,
+and retains the original exception as its cause. A focused regression injects
+an unexpected `RuntimeError`. Focused 3/3 and full 658/658 stdlib tests passed
+with repository-local `git diff --check`; local commit `6c7ce16`. Provenance:
+cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local source/test
+inspection, and stdlib unittest execution only. No external runtime
+invocation, promotion/write, live integration, dependency change, paid
+compute, or remote action.
+- 2026-08-03 23:03 PDT / 2026-08-04 06:03 UTC: Audited the boundary between
+  successful `Popen` construction and capture-worker startup. The runner
+  assumed all three requested pipes were present; if one was absent, the
+  writer's assertion could terminate only its thread and a later assertion
+  could escape the public typed boundary. Added immediate pipe validation and
+  cleanup of the process group, direct child, and supplied streams. The
+  focused regression passed, full discovery passed 659/659, and repository-
+  local `git diff --check` passed; local commit `f2e809e`. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/test inspection, and
+  local Python unittest execution only. No external runtime, memory
+  promotion/write, live integration, dependency change, paid compute, or
+  remote action.
+## 2026-08-04 03:00 PDT - Requested-pipe kill failure preserves cleanup
+
+The post-construction requested-pipe gate now has an adversarial process-group
+termination regression. A mocked missing-stdin construction forces `killpg` to
+fail and verifies that the typed pipe-validation cleanup error retains the
+original failure while direct-process reap and both supplied-stream close
+attempts still run. Focused 86-test and full 661-test verification plus
+repository-local `git diff --check` passed; local commit `fc989fd`. Provenance:
+cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct runner inspection, and
+local mocks only. No external runtime, promotion/write, live integration,
+dependency, paid compute, or remote action.
+## 2026-08-04 05:01 PDT - Requested-pipe reap failure is regression-closed
+
+The post-construction requested-pipe validation path already collected
+direct-child reap failures, but that branch lacked an adversarial regression.
+A mocked missing-stdin construction now forces `wait()` to fail and verifies
+the typed pipe-validation cleanup `ValueError`, its original cause, the
+process-group kill, and continued stdout/stderr closure. Focused and full
+662-test verification plus repository-local `git diff --check` passed; local
+commit `d3f0851`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of
+`run_kernel_subprocess()`, and local mocked execution only. No external runtime
+invocation, promotion/write, live integration, dependency change, paid
+compute, or remote action.
+# 2026-08-04 07:01 PDT / 14:01 UTC — requested-pipe cleanup matrix validated
+
+- Jointly verified local commits `fc989fd` and `d3f0851`: malformed subprocess
+  construction with a missing requested pipe preserves either an unexpected
+  process-group kill failure or direct-process wait failure as the cause of
+  the typed pipe-validation cleanup error.
+- Both regressions also prove subsequent cleanup continues through reap and
+  every supplied stream close. Focused 2-test and full 662-test unittest runs
+  passed; repository-local `git diff --check` passed.
+- This completes the concrete follow-up matrix opened by the requested-pipe
+  validation change. Per the 2026-07-22 decision, do not continue speculative
+  subprocess hardening without a specific exposed flaw; resume the bounded
+  Phase-1 semantic capture/reload gate.
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local mocks and
+  repository inspection only. No external runtime, promotion/write, live
+  integration, dependency, paid compute, or remote action.
+- 2026-08-04 09:00 PDT / 16:00 UTC — Added a lifecycle regression for the
+  bounded kernel runner's malformed requested-pipe path. When group kill
+  reports `ProcessLookupError` because the child has already exited, cleanup
+  still calls `wait()` and closes every supplied stream, then returns the
+  primary `ValueError("kernel subprocess did not provide requested pipes")`
+  rather than relabelling the benign race as cleanup failure. Focused 1-test
+  and full 663-test suites passed with repository-local `git diff --check`.
+  Provenance: `tests/test_pipln_models.py`; local repo commit `2d3af71`. No
+  external runtime invocation, promotion/write, live integration, dependency
+  change, paid compute, or remote action.
+## 2026-08-04 11:00 PDT - Raw kernel captures survive typed clean-room reload
+
+The Phase-2 process boundary previously returned a typed
+`KernelProcessCapture`, but its raw process evidence had no create-once artifact;
+the clean-room regression reconstructed the capture manually before admitting
+the episode manifest. Added a checksummed v1 document that retains every capture
+field and reconstructs tuple/canonical-environment invariants through the frozen
+dataclass. Checksum drift and a fully rehashed noncanonical environment fail
+closed. Both clean-room cycles now write and reload this capture; local commit
+`b54a935`. Focused 2/2
+and full 664/664 stdlib tests plus repository-local `git diff --check` passed.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/test
+inspection, and stdlib unittest execution only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-04 13:03 PDT - Phase-2 exact replay is process-capture-bound
+
+`validate_exact_kernel_capture_replay()` closes the remaining gap between the
+existing semantic replay comparator and the bounded raw runtime record. It
+first requires the candidate atom to occur exactly once as a complete LF-
+delimited stdout record from a zero-exit capture with empty stderr, then
+requires exact compiler-bound semantic digest equivalence. The clean-room
+reload regression covers success plus nonzero-exit and detached-output
+adversaries. Focused and full 664-test suites passed with repository-local
+`git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, existing
+`petta-memory-kernel-process-capture-v1`, and the Atlas-indexed reversible
+piPLN Phase-2 roadmap. No external runtime invocation, promotion/write, live
+integration, dependency change, paid compute, or remote action.
+# 2026-08-04 15:00 PDT / 22:00 UTC — exact replay dependency types fail closed
+
+- Inspected project ledgers, repository documentation, clean repository state,
+  recent local history, and the current test suite. The repository was at
+  `453a83b` (`Bind exact replay to kernel capture`), ahead of its remote, with
+  the two newest capture/replay commits not yet summarized in the project
+  ledger.
+- Added explicit public-boundary type checks to exact semantic replay and exact
+  captured replay. Invalid `expected` or `compiled` orchestration objects now
+  raise stable `ValueError`s before any attribute access.
+- Added clean-room replay regressions for malformed expected-result and
+  compiled-input dependencies.
+- Local implementation commit: `7801117` (`Type-check exact replay
+  dependencies`).
+- Verification: focused clean-room replay test passed; full
+  `PYTHONPATH=src python3 -m unittest discover -s tests -q` passed (660 tests);
+  repository-local `git diff --check` passed.
+- Provenance/boundary: local source and tests only; no external runtime,
+  canonical memory write, promotion, live integration, dependency, paid
+  compute, or remote action.
+## 2026-08-04 17:00 PDT - Core result admission type-closes compiled inputs
+
+The exact replay wrappers rejected malformed compiled inputs, but the public
+`validate_kernel_result()` boundary itself could still dereference a malformed
+dependency and leak `AttributeError`. It now checks for immutable
+`CompiledEpisodeInputs` before parsing or provenance lookup. The regression
+exercises the direct public validator; focused 89/89 and full 664/664 stdlib
+tests passed with repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, local commit `473962b`, and stdlib unittest execution only. No external runtime
+invocation, promotion/write, live integration, dependency change, paid
+compute, or remote action.
+## 2026-08-04 19:10 PDT / 2026-08-05 02:10 UTC — manifest dependency boundary
+
+- Provenance: scheduled `petta-memory progress worker`; local repository commit
+  `a125a1b` on `agent/parser-validation`.
+- `build_episode_manifest()` previously dereferenced five caller-supplied audit
+  dependencies without first establishing their immutable types. It now rejects
+  malformed compiled inputs, validated results, pi charts, evidence snapshots,
+  and episode budgets through explicit `ValueError` contracts.
+- Added five adversarial regressions. Focused test passed; full suite passed 664
+  tests in 48.084 seconds; repository-local `git diff --check` passed.
+- Boundary unchanged: no external kernel/PeTTaChainer invocation, memory write,
+  promotion, live OmegaClaw/GoalChainer integration, dependency change, paid
+  compute, or remote action.
+# 2026-08-05 01:14 PDT / 08:14 UTC — complete-program replay input closes before I/O
+
+- `read_episode_manifest()` previously checked malformed optional
+  `complete_program` values only after loading the artifact. It now requires a
+  non-empty string at the public boundary before artifact I/O.
+- A missing-artifact regression covers both a non-string and an empty program,
+  proving stable caller-error precedence rather than an incidental filesystem
+  failure. Focused 1-test and full 664-test unittest runs passed; repository-local
+  `git diff --check` passed. Local implementation commit: `ba763bd`.
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/test/git
+  inspection, and stdlib unittest execution only. No external runtime,
+  promotion/write, live integration, dependency change, paid compute, or remote
+  action.
+## 2026-08-05 03:13 PDT - PeTTaChainer manifest dependencies fail before I/O
+
+The PeTTaChainer episode-manifest loader previously loaded and validated its
+artifact before establishing the types and consistency of three caller-supplied
+replay dependencies. It now validates the immutable episode contract, typed
+derived capture, and matching rule attribution at the public boundary. A
+missing-artifact regression covers each malformed dependency. The corrected
+focused test and full 664-test suite passed with repository-local `git diff
+--check`; local commit `bd086fb`. Two earlier focused commands named nonexistent
+test classes and failed before executing tests; no code defect was involved.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/test/git
+inspection, and stdlib unittest fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-05 05:24 PDT / 12:24 UTC — PeTTaChainer manifest serialization type boundary
+
+`pettachainer_episode_manifest_document()` previously dereferenced an untyped
+caller value while constructing the persistence payload, allowing an incidental
+`AttributeError` to escape. It now requires a typed immutable PeTTaChainer
+episode manifest and raises the stable public `ValueError` contract otherwise.
+The focused manifest test and full 664-test suite passed with repository-local
+`git diff --check`; local commit `fa5c695`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`,
+local project/source/test/git inspection, and stdlib unittest fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-05 07:01 PDT - Manifest writer validates before filesystem mutation
+
+The PeTTaChainer episode-manifest document builder had a typed serialization
+boundary, but its writer created missing parent directories before reaching
+that validation. The writer now serializes the checksummed typed document
+first, and a regression proves a malformed manifest raises the stable
+`ValueError` without creating its requested parent. Focused 142-test and full
+664-test verification passed with repository-local `git diff --check`; local
+commit `87e45c0`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the
+PeTTaChainer manifest persistence boundary, and local unit fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-05 09:03 PDT / 16:03 UTC — derived-capture writer closes before I/O
+
+- `pettachainer_derived_result_capture_document()` now requires a typed
+  `PeTTaChainerDerivedResultCapture`, preventing incidental attribute failures.
+- Its writer now serializes and validates before creating the destination
+  parent. A missing-parent regression proves malformed input has no filesystem
+  side effect. Focused and full 664-test runs passed; repository-local `git
+  diff --check` passed. Local implementation commit: `8771716`.
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project and
+  source inspection, and stdlib unittest fixtures only. No external runtime,
+  promotion/write, live integration, dependency change, paid compute, or remote
+  action.
+## 2026-08-05 11:00 PDT / 18:00 UTC — rule attribution closes before I/O
+
+`write_pettachainer_rule_attribution()` previously created a missing destination
+parent before its existing typed document validator ran. It now serializes the
+checksummed immutable attribution first. A regression proves malformed input
+raises the stable `ValueError` and leaves the requested parent absent. The
+focused test passed; full discovery passed 664 tests in 24.455 seconds; `git
+diff --check` passed. Local implementation commit: `c3de0a0`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/test/git
+inspection, and stdlib unittest fixtures only. One initially mistargeted
+focused unittest selector failed before running a test; the corrected selector
+passed. No external runtime, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-05 13:04 PDT / 20:04 UTC — stock manifest closes before I/O
+
+`episode_manifest_document()` previously dereferenced an untyped caller, and
+`write_episode_manifest()` created a missing destination parent before reaching
+that serialization path. The document builder now requires a typed immutable
+`EpisodeManifest`, and the writer serializes before parent creation. A focused
+regression proves malformed input raises the stable `ValueError` and leaves the
+parent absent. The corrected focused test and full 664-test suite passed with
+repository-local `git diff --check`; local commit `f7fba44`. One initially
+mistargeted focused unittest
+selector failed before executing a test; no code defect was involved.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/
+test/git inspection, and stdlib unittest fixtures only. No external runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-05 15:01 PDT - Validated result serialization precedes filesystem mutation
+
+The patham9 validated-result writer previously created a missing destination
+parent before discovering a malformed result during field access. Its document
+builder now requires a typed `ValidatedKernelResult`, and the writer completes
+document construction and JSON serialization before touching the filesystem.
+A regression proves a `None` result raises the stable typed `ValueError` and
+leaves the requested parent absent. Focused and full 664-test verification
+passed with repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the immutable
+validated-result persistence boundary, and local unit fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-05 17:10 PDT - Snapshot serialization fails before filesystem mutation
+
+Evidence-snapshot persistence previously created destination parent directories
+before its canonical document builder dereferenced the supplied object. The
+builder now requires an immutable `EvidenceSnapshot`, and the writer completes
+serialization before any directory creation. A regression proves malformed
+input raises the stable typed `ValueError` and leaves the destination parent
+absent. Focused and full 665-test verification passed with repository-local
+`git diff --check`; local commit `ecd38a8`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the piPLN
+snapshot persistence boundary, and local unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+## 2026-08-05 19:00 PDT / 2026-08-06 02:00 UTC — compiled inputs close before I/O
+
+Compiled episode-input persistence previously created destination parent
+directories before its canonical document builder dereferenced the supplied
+object. The builder now requires immutable `CompiledEpisodeInputs`, and the
+writer completes checksummed serialization before filesystem mutation. A
+malformed-input regression leaves the requested parent absent. The focused
+test and full 666-test suite passed with repository-local `git diff --check`;
+local commit `e012c48`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/test/git
+inspection, and stdlib unittest fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-05 21:00 PDT / 2026-08-06 04:00 UTC — kernel capture closes before I/O
+
+`write_kernel_process_capture()` previously created a missing destination
+parent before its existing typed document validator ran. It now finishes the
+checksummed document and JSON serialization first. A malformed-input regression
+proves the stable `ValueError` leaves the requested parent absent. Focused and
+full 667-test verification passed with repository-local `git diff --check`;
+local implementation commit `ece240a`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/test/git
+inspection, and stdlib unittest fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+- 2026-08-05 23:00 PDT / 2026-08-06 06:00 UTC — The validated kernel-result
+  loader previously opened/parsed its artifact before dereferencing the
+  required compiler provenance, allowing a missing or malformed artifact to
+  mask a malformed `compiled` dependency. It now rejects non-
+  `CompiledEpisodeInputs` immediately through the public `ValueError` contract.
+  A focused regression with `compiled=None` and an absent path plus the full
+  667-test suite and repository-local `git diff --check` passed. Provenance:
+  cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local source/tests/project
+  records; local commit `4eec465`. No external runtime, promotion/write, live integration, dependency,
+  paid-compute, or remote action.
+- 2026-08-06 03:00 PDT / 10:00 UTC — The PeTTaChainer derived-result loader
+  previously opened/parsed its artifact before validating the required
+  `PeTTaChainerEpisodeContract`, allowing an absent or malformed artifact to
+  mask malformed compiler provenance. Contract type admission now precedes
+  filesystem I/O. A focused absent-artifact regression and the full 667-test
+  suite passed; repository-local `git diff --check` passed. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/tests/git
+  inspection, and stdlib unittest fixtures; local commit `6cd83e5`. No external
+  runtime, promotion/write, live integration, dependency change, paid compute,
+  or remote action.
+## 2026-08-06 07:01 PDT - Evidence snapshot rejects undeclared envelope fields
+
+`read_evidence_snapshot()` previously checked the schema label, payload shape,
+and payload checksum but did not require the exact top-level member set. A
+caller could therefore attach an authority-shaped sibling such as
+`promotion_authorized` without invalidating the payload digest. Reload now
+requires the same three-field checksummed envelope emitted by the writer. A
+focused regression and the full 667-test suite passed with `git diff --check`.
+Local implementation commit: `d956bc6`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct comparison of
+the immutable artifact readers, and local unit fixtures only. No external
+runtime, promotion/write, live integration, dependency, paid compute, or
+remote action.
+## 2026-08-06 09:02 PDT - Pi-chart dependencies fail through typed boundaries
+
+`build_pi_chart()` previously dereferenced caller-supplied context, policy, and
+evidence-snapshot objects without first establishing their immutable types. It
+now rejects malformed dependencies through explicit `ValueError` contracts
+before provenance comparison or fingerprint construction. A focused regression
+and the full 668-test suite passed with repository-local `git diff --check`;
+local commit `fbf6ed5`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the pi-PLN chart
+construction boundary, and local unit fixtures only. No external runtime
+invocation, promotion/write, live integration, dependency change, paid
+compute, or remote action.
+## 2026-08-06 11:00 PDT - Episode compiler dependencies fail through typed boundaries
+
+The deterministic π-PLN episode-input compiler accepted immutable chart and
+evidence-snapshot objects but dereferenced them without checking their types.
+It now rejects malformed dependencies through explicit `ValueError` contracts
+before provenance comparison. A focused regression and the full 669-test suite
+passed with repository-local `git diff --check`; local commit `225aade`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of
+the adjacent chart/compiler boundary, and local unit fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-06 13:01 PDT - Episode compiler collection members are type-closed
+
+`compile_episode_inputs()` previously dereferenced packet and basis collection
+members without establishing their immutable model types. It now rejects
+malformed members through explicit `ValueError` contracts. Focused and full
+669-test verification passed with repository-local `git diff --check`; local
+commit `2f50b6b`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unittest fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+- 2026-08-06 15:00 PDT / 22:00 UTC: Closed the immutable compiled episode
+  collection-member boundary in `pipln_models.py`. Direct reconstruction with
+  a non-`StampMapEntry` stamp member or non-`CompiledSentence` sentence member
+  now raises a stable `ValueError` before attribute access. The focused
+  deterministic compiler/provenance regression and full suite passed (669
+  tests), as did repository-local `git diff --check`; local commit `940f8d9`.
+  This is validation-only;
+  no PeTTa runtime, promotion/write, live OmegaClaw/GoalChainer integration,
+  dependency, paid-compute, or remote action occurred.
+- 2026-08-06 17:00 PDT / 2026-08-07 00:00 UTC: Closed the immutable
+  PeTTaChainer episode-contract statement-member boundary. A reconstructed
+  contract containing a non-`PeTTaChainerInputStatement` now raises a stable
+  `ValueError` before proof-id access. The focused deterministic compiler and
+  adapter regression and full suite passed (669 tests), as did repository-local
+  `git diff --check`; local commit `817848d`. Provenance: cron
+  `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local project/source/test/git
+  inspection, and stdlib unittest fixtures only. No external runtime,
+  promotion/write, live integration, dependency change, paid compute, or
+  remote action.
+## 2026-08-06 19:00 PDT — derived-result builder dependency boundary
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; repository
+  branch `agent/parser-validation`, starting at local commit `817848d`.
+- `build_pettachainer_derived_result_capture()` previously dereferenced the
+  caller-supplied fact, rule, validator capture, and runtime capture before
+  verifying their immutable types, allowing incidental `AttributeError`s.
+- Added explicit typed `ValueError` admission for all four dependencies and a
+  four-case regression in `test_pettachainer_profile.py`.
+- Verification: focused regression passed; full `PYTHONPATH=src python3 -m
+  unittest discover -s tests -q` passed 669 tests in 36.637s; repository-local
+  `git diff --check` passed. Local commit: `020f1a4`.
+- Boundaries: no PeTTa/PeTTaChainer runtime invocation, inferred-belief
+  promotion, memory write, live OmegaClaw/GoalChainer integration, dependency
+  change, paid compute, or remote action.
+## 2026-08-06 21:03 PDT — PeTTaChainer manifest budget boundary
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- `build_pettachainer_episode_manifest()` previously accessed
+  `budget.__dataclass_fields__` while constructing its content digest before
+  establishing that the caller supplied an immutable `EpisodeBudget`.
+- Added explicit typed admission and a malformed-budget regression. The focused
+  test and full 669-test suite passed, as did repository-local `git diff
+  --check`; local commit `0ec094f`.
+- No external runtime invocation, inferred-belief promotion, memory write, live
+  OmegaClaw/GoalChainer integration, dependency change, paid compute, or remote
+  action occurred.
+## 2026-08-07 01:00 PDT — PeTTaChainer statement provenance types
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; repository
+  branch `agent/parser-validation` at local commit `0ec094f`; local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- `PeTTaChainerInputStatement` previously enforced non-empty sorted sidecars
+  but admitted boolean stamps (because `bool` subclasses `int`) and non-string
+  evidence-basis IDs. It now requires non-negative integer stamps with booleans
+  excluded and non-empty string basis IDs.
+- Two focused regressions passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 671 tests in 35.909s; repository-local `git diff
+  --check` passed. Local commit: `2450609`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred. Local commit: `8b83035`.
+## 2026-08-07 05:01 PDT — Cross-statement PeTTaChainer stamp map closed
+
+- Observed: `PeTTaChainerInputStatement` required equal stamp/basis counts,
+  but two individually valid statements could reconstruct contradictory audit
+  mappings inside one `PeTTaChainerEpisodeContract`.
+- Changed: contract construction now accumulates both stamp-to-basis and
+  basis-to-stamp maps and rejects either direction of inconsistency.
+- Evidence: focused compiler/adapter regression passed; full provider-free
+  suite passed 672/672; repository-local `git diff --check` passed; local
+  commit `03d58c1`.
+- Scope: typed inert contract validation only. No PeTTaChainer runtime,
+  promotion/write, OmegaClaw/GoalChainer integration, dependency, paid
+  compute, or remote action.
+## 2026-08-07 07:01 PDT - Episode statement collection is immutable
+
+The frozen `PeTTaChainerEpisodeContract` previously accepted a mutable list of
+otherwise immutable checked-add statements. It now requires a non-empty tuple,
+so caller mutation cannot change the contract after its provenance checks have
+run. A focused regression and the full 673-test suite passed with
+repository-local `git diff --check`; local commit `920fe33`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct inspection of the immutable
+PeTTaChainer contract boundary, and local unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+## 2026-08-07 09:00 PDT — PeTTaChainer statement sidecars are immutable
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct
+  local project/source/test/git inspection and stdlib unittest fixtures only.
+- `PeTTaChainerInputStatement` now explicitly requires tuple-valued stamp and
+  evidence-basis sidecars, so a frozen checked-add statement cannot retain a
+  caller-mutable provenance collection after validation.
+- The focused regression passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 674 tests; repository-local `git diff --check`
+  passed. Local commit: `d0adc8c`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+## 2026-08-07 13:01 PDT — Reconstructed PeTTaChainer contracts are size-bounded
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- The compiler adapter already capped aggregate checked-add/query atoms at one
+  million characters, but direct immutable contract reconstruction bypassed
+  that limit. `PeTTaChainerEpisodeContract` now enforces the same ceiling before
+  canonical query parsing.
+- The focused regression passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 675 tests in 23.277s; repository-local `git diff
+  --check` passed. Local commit: `dde58b4`.
+- No external runtime invocation, inferred-belief promotion, memory write, live
+  OmegaClaw/GoalChainer integration, dependency change, paid compute, or remote
+  action occurred.
+## 2026-08-07 15:00 PDT / 22:00 UTC — Reconstructed query terms are bounded before parsing
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- `PeTTaChainerEpisodeContract` already bounded emitted statement/query atoms,
+  but a direct caller could pair a small forged `query_atom` with an oversized
+  `query_term`, causing the duplicate typed term to be parsed before the atom
+  mismatch failed. The contract now type-checks and bounds that term before
+  canonical parsing.
+- The corrected focused regression passed; the first focused command named a
+  nonexistent unittest method and failed without exercising product code. Full
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 675 tests in
+  19.462s; repository-local `git diff --check` passed. Local commit: `99fe409`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+## 2026-08-07 19:00 PDT / 2026-08-08 02:00 UTC — Aggregate contract budget precedes semantic scans
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- `PeTTaChainerEpisodeContract` previously built its full proof-id tuple/set and
+  scanned stamp provenance before enforcing the aggregate checked-add character
+  ceiling. It now accumulates that budget first and fails as soon as it is
+  exceeded.
+- The initial focused run failed only because the test regex used `exceeds`
+  while the established error says `exceed`; after correcting the assertion,
+  the focused regression passed. Full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 678 tests in 19.723s; repository-local `git diff
+  --check` passed. Local commit: `a8dc813`.
+- No external runtime invocation, inferred-belief promotion, memory write, live
+  OmegaClaw/GoalChainer integration, dependency change, paid compute, or remote
+  action occurred.
+- 2026-08-07 21:00 PDT / 2026-08-08 04:00 UTC: Moved PeTTaChainer episode
+  query type and size admission ahead of proof-id uniqueness and stamp/evidence
+  scans. A duplicate-statement plus oversized-query regression now proves the
+  bounded error wins before provenance traversal. Focused 2-test and full
+  679-test suites passed with repository-local `git diff --check`; commit
+  `716292a`. Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local
+  repository only. No runtime, promotion/write, live integration, dependency,
+  paid-compute, or remote action.
+## 2026-08-07 23:00 PDT - Derived capture text bound before parsing
+
+Directly reconstructed `PeTTaChainerDerivedResultCapture` objects could route
+oversized or non-string query text into canonical S-expression parsing before
+the typed result invariant rejected it. The immutable boundary now type-checks
+and caps its query term, derived atom, and derived proof first. Two
+parser-sentinel regressions and the full 681-test suite passed with
+repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-08 01:00 PDT / 08:00 UTC — Stock validated-result query bound
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- Direct reconstruction of `ValidatedKernelResult` could route oversized or
+  non-string duplicate query text into canonical S-expression parsing.
+  Pre-parse type and size checks now close that immutable pi-PLN result
+  boundary; parser-sentinel regressions cover both malformed shapes.
+- Focused 2-test verification and the full 682-test suite passed; repository
+  diff check passed and the local commit is `4020052`. No external
+  runtime invocation, promotion/write, live integration, dependency change,
+  paid compute, or remote action occurred.
+## 2026-08-08 03:02 PDT / 10:02 UTC — Compiled sentence parser admission
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; branch
+  `agent/parser-validation` at `4020052`; direct local project/source/test/git
+  inspection and stdlib unittest fixtures only.
+- `CompiledSentence` previously dereferenced caller-supplied projection and
+  metadata objects and parsed metadata's canonical term without an immutable
+  type or resource check. It now requires typed dependencies and bounds both
+  emitted atom and canonical term before parser entry.
+- Focused verification passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 682 tests in 24.215s; repository-local `git
+  diff --check` passed. Local commit: `546de55`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+## 2026-08-08 05:00 PDT / 12:00 UTC — Compiled episode collection immutability
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- The frozen `CompiledEpisodeInputs` record previously accepted caller-owned
+  lists for its stamp map and compiled sentences. It now requires tuples at
+  construction, preventing post-validation mutation of the compiler/runtime
+  provenance boundary.
+- Focused verification passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 682 tests in 24.210s; repository-local `git
+  diff --check` passed. Local commit: `9e80395`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+## 2026-08-08 15:00 PDT / 22:00 UTC — Evidence-basis collection immutability
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- Frozen `EvidenceBasis` records previously accepted caller-owned lists for
+  member-token and causal-group provenance. They now require tuples at direct
+  construction, preventing mutation after provenance validation.
+- Focused verification passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 684 tests in 32.794s; repository-local `git
+  diff --check` passed. Local commit: `620ea50`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+## 2026-08-08 17:00 PDT / 2026-08-09 00:00 UTC — evidence-snapshot immutability
+
+- Reconstructed frozen `EvidenceSnapshot` objects previously accepted mutable
+  lists for packet identifiers, the outer content-digest collection, and its
+  nested pairs. They now fail before semantic fingerprint validation unless all
+  three collection layers are tuples.
+- The focused regression and full `PYTHONPATH=src python3 -m unittest discover
+  -s tests -v` suite passed (685 tests), as did repository-local `git diff
+  --check`. Local commit: `7ba8f1e`.
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; local project,
+  source, tests, and records only. No runtime invocation, promotion/write, live
+  integration, dependency change, paid compute, or remote action.
+## 2026-08-08 23:00 PDT / 2026-08-09 06:00 UTC — pi-chart input closure
+
+- Directly reconstructed `PiChart` records previously accepted mutable packet
+  selections and malformed policy objects. The immutable model now requires a
+  tuple-backed `selected_packet_ids` collection and typed `ChartPolicy`.
+- Focused verification and the full 688-test unittest suite passed, as did
+  repository-local `git diff --check`; local commit `a6c7fd1`.
+- Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; local project,
+  repository, and stdlib unit fixtures only. No external runtime, promotion or
+  write, live integration, dependency change, paid compute, or remote action.
+## 2026-08-09 01:00 PDT - Snapshot builder packet types fail closed
+
+`build_evidence_snapshot(...)` previously collected `packet.id` before
+checking that each iterable member was an `EvidencePacket`, allowing malformed
+direct callers to leak `AttributeError`. The builder now type-checks the frozen
+packet collection before any member dereference. A focused regression and the
+full 689-test suite passed with repository-local `git diff --check`; local
+commit `da3cf8b`.
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unit fixtures only. No external
+runtime invocation, promotion/write, live integration, dependency change,
+paid compute, or remote action.
+## 2026-08-09 03:02 PDT / 10:02 UTC — Evidence-packet identifier validation
+
+- Provenance: cron worker `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`; direct local
+  project/source/test/git inspection and stdlib unittest fixtures only.
+- `EvidencePacket` previously sorted token and parent provenance tuples before
+  validating their members, allowing mixed or null identifiers to leak a
+  comparison `TypeError`. Both collections now validate non-empty string IDs
+  first and fail through the public `ValueError` boundary.
+- Focused verification passed; full `PYTHONPATH=src python3 -m unittest
+  discover -s tests -v` passed 690 tests in 35.740s; repository-local `git
+  diff --check` passed. Local commit: `8b83035`.
+- No external runtime invocation, inferred-belief promotion, memory write,
+  live OmegaClaw/GoalChainer integration, dependency change, paid compute, or
+  remote action occurred.
+- 2026-08-09 05:00 PDT / 12:00 UTC: Closed `EvidenceToken` reconstructed-input
+  validation for optional provenance identifiers and non-integer schema
+  versions. A focused regression and all 691 tests passed; repository-local
+  `git diff --check` passed. Provenance: local repo commit `d3cc023`. No
+  external runtime, memory promotion/write, live integration, dependency,
+  paid-compute, or remote action occurred.
+## 2026-08-09 07:03 PDT - Evidence basis provenance ids are validated
+
+`EvidenceBasis` already required immutable tuple containers, but malformed
+empty or non-string members could reach ordering/set operations and either be
+accepted or leak an incidental exception. Member-token and causal-group ids
+now pass the shared non-empty-string validator first. Four regressions cover
+both invalid forms in both collections; the focused tests and full 692-test
+suite passed with repository-local `git diff --check`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, local commit `79e8264`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-09 09:00 PDT / 16:00 UTC — Typed stamp-map basis admission
+
+`deterministic_stamp_map` previously sorted caller-supplied objects by
+`basis_id` before proving that they were immutable `EvidenceBasis` records.
+It now freezes the iterable and rejects any untyped member through a stable
+`ValueError` before field access. A property-backed forged-object regression
+proves the unsafe access is not reached. Focused verification and the full
+693-test suite passed with repository-local `git diff --check`; local commit
+`9be0d85`.
+
+Provenance: cron `4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local
+project/source/test/git inspection, and stdlib unittest fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.
+## 2026-08-09 11:03 PDT - Evidence-basis builder inputs are typed
+
+`evidence_basis_from_packet()` previously accessed packet/token provenance
+fields before confirming that direct callers supplied the immutable typed
+records its contract declares. It now rejects an untyped packet and any
+untyped token before field access. Property-sentinel regressions, the focused
+test, the full 694-test suite, and repository-local `git diff --check` passed;
+local commit `8e926d3`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-09 15:00 PDT / 22:00 UTC — Typed evidence-capsule merge dependencies
+
+`merge_evidence_capsules()` previously dereferenced both operands and optional
+basis metadata before verifying their immutable domain types. It now rejects
+malformed reconstructed dependencies through stable `ValueError` contracts.
+A focused regression and the full 696-test suite passed with repository-local
+`git diff --check`; local commit `9f61044`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct local project/source/test/git
+inspection, and stdlib unit fixtures only. No external runtime invocation,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+## 2026-08-09 21:01 PDT / 2026-08-10 04:01 UTC — Snapshot packet ids validate before sorting
+
+Directly reconstructed `EvidenceSnapshot` records could supply mixed-type
+`packet_ids`, causing uniqueness sorting to leak `TypeError` before provenance
+validation. Packet ids now pass the non-empty-string boundary first. A focused
+mixed-type regression and all 698 tests passed with repository-local `git diff
+--check`; local commit `e93f4bb`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct
+local project/source/test/git inspection, and stdlib unittest fixtures only.
+No external runtime, promotion/write, live integration, dependency change,
+paid compute, or remote action occurred.
+## 2026-08-09 23:00 PDT - Evidence snapshot digest entries have exact tuple arity
+
+`EvidenceSnapshot` previously accepted any tuple as a packet-content digest
+entry and could leak a Python unpacking error for wrong-length reconstructed
+metadata. Admission now requires an exact immutable pair before destructuring.
+A focused regression and all 698 tests passed with repository-local `git diff
+--check`; local commit `5b842f4`. Provenance: cron
+`4f4e146a-bdf9-4a6e-97da-6484cfe3f81f`, direct
+local project/source/test/git inspection, and stdlib unit fixtures only. No
+external runtime invocation, promotion/write, live integration, dependency
+change, paid compute, or remote action.

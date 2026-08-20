@@ -1,4 +1,518 @@
 
+- [x] Add TraceAttribution: persisted proof-trace attribution with stable
+  reload identity. `TraceAttribution` is a frozen dataclass that binds a
+  compiled result to its originating rule and proof trace, following the same
+  immutable, content-addressed pattern as `PeTTaChainerRuleAttribution` but
+  carrying an opaque proof_trace string. Its identity (`trace_digest` = SHA-256
+  over all non-digest fields) is stable across serialize → deserialize.
+  Create-once checksummed JSON persistence and reload verify schema, document
+  checksum, trace_digest, and result-binding fields against the supplied
+  derived capture. Focused 20-test and full 718-test verification passed with
+  `py_compile` and repository-local `git diff --check`; local commit
+  `df0ea60` (2026-08-20 13:30 PDT / 20:30 UTC). No runtime invocation,
+  promotion/write, live integration, dependency change, paid compute, or
+  remote action.
+
+- [x] Close malformed kernel sentence provenance member admission. Stamp and
+  evidence-basis members are now typed before sorting, preventing reconstructed
+  mixed-type tuples from leaking `TypeError`. Focused and full 697-test
+  verification passed with repository-local `git diff --check`; local commit
+  `7655494` (2026-08-09 19:00 PDT / 2026-08-10 02:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close malformed evidence-capsule merge metadata admission. Optional
+  `bases` metadata now explicitly requires an iterable before traversal, so a
+  malformed scalar fails through the public `ValueError` contract instead of
+  leaking `TypeError`. Focused and full 696-test verification passed with
+  repository-local `git diff --check`; local commit `60e1d07` (2026-08-09 17:00 PDT / 2026-08-10
+  00:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close malformed evidence-packet schema version admission.
+  `EvidencePacket` now explicitly requires an integer schema version before
+  comparing it, so reconstructed packets with strings or `None` fail through
+  the typed `ValueError` contract instead of leaking `TypeError`. Focused and
+  full 695-test verification passed with repository-local `git diff --check`;
+  local commit `1c6232d` (2026-08-09 13:00 PDT / 20:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close mutable pi-PLN context ancestry. `PiContext` now requires an
+  immutable tuple for `parent_context_ids`, so reconstruction cannot retain a
+  caller-owned list. Focused and full 687-test verification passed with
+  repository-local `git diff --check`; local commit `7df8be5` (2026-08-08
+  21:00 PDT / 2026-08-09 04:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close mutable and malformed evidence-capsule contributions.
+  `EvidenceCapsule` now requires an immutable tuple containing only typed
+  `EvidenceContribution` records, so reconstruction cannot retain a
+  caller-owned list or leak `AttributeError` on an invalid member. Focused and
+  full 686-test verification passed with repository-local `git diff --check`;
+  local commit `c07ac52` (2026-08-08 19:02 PDT / 2026-08-09 02:02 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+
+- [x] Close mutable evidence-packet provenance collections. `EvidencePacket`
+  now requires immutable tuples for `token_ids` and `parent_packet_ids`, so a
+  reconstructed frozen packet cannot retain caller-owned lists. Focused and
+  full 683-test verification passed with repository-local `git diff --check`;
+  local commit `fd6a78d` (2026-08-08 13:00 PDT / 20:00 UTC). Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close mutable stock pi-PLN episode-manifest collections.
+  `EpisodeManifest` now requires immutable tuples for `parent_episode_ids` and
+  `projection_policy_ids`, so a reconstructed frozen manifest cannot retain
+  caller-owned lists. Focused and full 682-test verification passed with
+  repository-local `git diff --check`; local commit `bbea4b5` (2026-08-08
+  11:01 PDT / 18:01 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+
+- [x] Close mutable validated-result provenance collections.
+  `ValidatedKernelResult` now requires immutable tuples for `stamp_ints` and
+  `evidence_basis_ids`, so a reconstructed admitted result cannot retain
+  caller-owned lists. Focused and full 682-test verification passed with
+  repository-local `git diff --check`; local commit `2e3bdcd` (2026-08-08
+  09:01 PDT / 16:01 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close mutable kernel sentence provenance sidecars. `KernelSentenceMeta`
+  now requires immutable tuples for `stamp_ints` and `evidence_basis_ids`, so
+  reconstructed frozen metadata cannot retain caller-owned lists. Focused and
+  full 682-test verification passed with repository-local `git diff --check`;
+  local commit `f989970` (2026-08-08 07:03 PDT / 14:03 UTC). Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close mutable collections at the compiled-episode boundary.
+  `CompiledEpisodeInputs` now requires immutable tuples for both `stamp_map`
+  and `sentences`; reconstruction with caller-owned lists fails before member
+  validation. Focused and full 682-test verification passed with
+  repository-local `git diff --check`; local commit `9e80395` (2026-08-08
+  05:00 PDT / 12:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+
+- [x] Close reconstructed compiled-sentence parser admission. `CompiledSentence`
+  now validates immutable projection/metadata dependencies and caps its atom
+  and duplicate canonical term before parsing. A parser-sentinel regression,
+  the focused compiler test, all 682 tests, and repository-local `git
+  diff --check` passed; local commit `546de55` (2026-08-08 03:02 PDT / 10:02
+  UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Bound reconstructed PeTTaChainer statement terms before parsing. Direct
+  construction can no longer route oversized or non-string duplicate typed
+  term text into the canonical parser before the immutable checked-add
+  boundary rejects it. Focused and full 677-test verification passed with
+  repository-local `git diff --check`; local commit `faad440` (2026-08-07
+  17:00 PDT / 2026-08-08 00:00 UTC). Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Bound reconstructed PeTTaChainer query terms before parsing. Direct
+  reconstruction can no longer pair a small forged query atom with an
+  oversized duplicate typed term to bypass the immutable contract's pre-parse
+  resource ceiling. Focused and full 675-test verification passed with
+  repository-local `git diff --check`; local commit `99fe409` (2026-08-07
+  15:00 PDT / 22:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close reconstructed PeTTaChainer episode stamp gaps. The immutable
+  contract now requires its admitted stamp keys to equal `0..n-1`, preserving
+  the source compiler's complete stamp-map invariant. Focused and full
+  675-test verification passed with repository-local `git diff --check`;
+  local commit `a9d4e65` (2026-08-07 11:00 PDT / 18:00 UTC). Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close mutable PeTTaChainer statement provenance sidecars. Stamp and
+  evidence-basis collections now require non-empty immutable tuples rather
+  than relying on incidental tuple/list comparison. Focused and full 674-test
+  verification passed with repository-local `git diff --check`; local commit
+  `d0adc8c` (2026-08-07 09:00 PDT / 16:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close PeTTaChainer input-statement stamp provenance. Every immutable
+  checked-add statement now requires exactly one non-empty evidence-basis id
+  per stamp, matching the downstream derived-result boundary and preventing
+  partially mapped audit sidecars. Focused and full 672-test verification
+  passed with repository-local `git diff --check`; local commit `640e715`
+  (2026-08-07 03:00 PDT / 10:00 UTC). Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Close malformed immutable dependencies at the PeTTaChainer
+  derived-capture and episode-manifest construction boundaries. Fact/rule and
+  validator/runtime stage-capture inputs, plus the episode budget, are now
+  type-checked before dereference. Full 669-test verification passed with
+  repository-local `git diff --check`; local commits `020f1a4` and `0ec094f`
+  (2026-08-06 23:00 PDT / 2026-08-07 06:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close malformed checked-add statement members at the PeTTaChainer
+  episode-contract boundary. `PeTTaChainerEpisodeContract` now requires every
+  member to be an immutable `PeTTaChainerInputStatement` before extracting
+  proof ids. Focused and full 669-test verification passed with
+  repository-local `git diff --check`; local commit `817848d` (2026-08-06
+  17:00 PDT / 2026-08-07 00:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close malformed bounded kernel-capture persistence before filesystem
+  mutation. `write_kernel_process_capture()` now builds and serializes its
+  typed checksummed document before creating the destination parent; malformed
+  input leaves an absent parent absent. Focused and full 667-test verification
+  passed with repository-local `git diff --check` (2026-08-05 21:00 PDT /
+  2026-08-06 04:00 UTC); local commit `ece240a`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close malformed PeTTaChainer manifest serialization. The public document
+  builder now requires a typed `PeTTaChainerEpisodeManifest` before extracting
+  its payload, preventing incidental `AttributeError`s at the persistence
+  boundary. Focused and full 664-test verification passed with repository-local
+  `git diff --check` (2026-08-05 05:24 PDT / 12:24 UTC); local commit
+  `fa5c695`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close malformed optional capture handling before episode-manifest
+  artifact I/O. `read_episode_manifest()` now validates a supplied
+  `KernelProcessCapture` alongside its other optional replay dependencies,
+  preserving deterministic caller-error precedence even if the artifact path
+  is absent or malformed. Focused and full 664-test verification passed with
+  repository-local `git diff --check` (2026-08-04 23:03 PDT / 2026-08-05
+  06:03 UTC); local commit `4935583`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close malformed optional replay dependencies at episode-manifest reload.
+  `read_episode_manifest()` now requires typed `CompiledEpisodeInputs` and
+  `ValidatedKernelResult` values whenever those replay checks are requested,
+  preventing incidental `AttributeError`s before provenance comparison.
+  Focused and full 664-test verification passed with repository-local `git
+  diff --check` (2026-08-04 21:35 PDT / 2026-08-05 04:35 UTC); local commit
+  `e6e871d`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close malformed compiled-input handling at the core kernel-result
+  admission boundary. `validate_kernel_result()` now requires a typed
+  `CompiledEpisodeInputs` before parsing output or looking up stamps, so direct
+  admission and every capture/replay wrapper share the same stable typed
+  failure contract. Focused 89-test and full 664-test verification passed with
+  repository-local `git diff --check` (2026-08-04 17:00 PDT / 2026-08-05
+  00:00 UTC); local commit `473962b`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close malformed dependency handling at the exact kernel replay
+  boundaries. `validate_exact_kernel_replay()` and
+  `validate_exact_kernel_capture_replay()` now require a typed
+  `ValidatedKernelResult` and `CompiledEpisodeInputs` before field access; the
+  clean-room captured-replay regression proves `None` inputs fail as stable
+  `ValueError`s rather than incidental `AttributeError`s. Focused and full
+  660-test verification passed with repository-local `git diff --check`
+  (2026-08-04 15:00 PDT / 22:00 UTC); local commit `7801117`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Regression-close requested-pipe validation cleanup failures. A mocked
+  malformed process construction now proves that an unexpected supplied-stream
+  close failure is preserved as the cause of
+  `ValueError("kernel subprocess pipe validation cleanup failed")`, without
+  skipping the remaining supplied stream close. Focused 1-test and full
+  660-test verification passed with repository-local `git diff --check`
+  (2026-08-04 01:00 PDT / 08:00 UTC); local commit `d8728dc`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Close the bounded kernel requested-pipe boundary. Immediately after
+  process construction, `run_kernel_subprocess()` now requires stdin, stdout,
+  and stderr to exist; a missing requested pipe triggers process-group kill,
+  direct-process reap, closure of every supplied pipe, and a typed failure.
+  Focused 1-test and full 659-test verification passed with repository-local
+  `git diff --check` (2026-08-03 23:03 PDT / 2026-08-04 06:03 UTC); local
+  commit `f2e809e`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close the bounded kernel captured-stream cleanup exception boundary.
+  Unexpected stdout/stderr close failures now become
+  `ValueError("kernel subprocess stream cleanup failed")` with the original
+  cause, while both streams receive a close attempt. Focused and full
+  649-test verification passed with repository-local `git diff --check`
+  (2026-08-03 03:00 PDT / 10:00 UTC); local commit `c748b58`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Close the bounded kernel direct-process wait exception boundary. An
+  unexpected ordinary `process.wait()` failure now becomes
+  `ValueError("kernel subprocess wait failed")` with its original cause, and a
+  regression verifies process-group termination plus stdout/stderr closure.
+  Focused 1-test and full 647-test verification passed with repository-local
+  `git diff --check` (2026-08-02 23:00 PDT / 2026-08-03 06:00 UTC); local
+  commit `e1af2e4`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close the explicit subprocess environment against duplicate-key iterator
+  output. `run_kernel_subprocess()` now rejects repeated keys before launch,
+  preserving an unambiguous one-to-one relationship between admitted entries,
+  the environment delivered to the child, and the canonical capture. A
+  marker-backed focused test and the full 643-test suite passed with
+  repository-local `git diff --check` (2026-08-01 05:00 PDT / 12:00 UTC);
+  local commit `aa39ee3`.
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+
+- [x] Close the bounded kernel process-launch exception boundary. Missing or
+  otherwise OS-rejected executables now fail through the runner's typed
+  `ValueError` contract, with the original `OSError` retained as cause for
+  diagnosis. Focused 1-test and full 643-test verification passed with
+  repository-local `git diff --check` (2026-07-31 15:00 PDT / 22:00 UTC);
+  local commit `52e9737`. Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close the bounded kernel program boundary against embedded NUL bytes.
+  `run_kernel_subprocess()` now rejects NUL-bearing program text before
+  process launch; a marker-backed regression proves the child is not started.
+  Focused 1-test and full 641-test verification passed with repository-local
+  `git diff --check` (2026-07-31 09:00 PDT / 16:00 UTC); local commit
+  `07827c2`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close the typed raw-capture argv boundary against embedded NUL bytes.
+  `KernelProcessCapture` now rejects OS-impossible argv entries just as
+  `run_kernel_subprocess()` already did, so a manually reconstructed capture
+  cannot bypass the runner's launch-shape validation before Phase-0 replay.
+  Focused 2-test and full 640-test verification passed with repository-local
+  `git diff --check` (2026-07-31 01:00 PDT / 08:00 UTC); local commit
+  `5a7393f`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close fresh Phase-0 replay against an explicit alternate subprocess
+  environment. `KernelProcessCapture` now preserves canonical sorted unique
+  caller-supplied environment entries, the runner populates them, and the
+  frozen reference gate admits only its inherited-environment launch shape.
+  Focused and full 639-test verification passed with repository-local `git
+  diff --check` (2026-07-30 23:00 PDT / 2026-07-31 06:00 UTC); local commit
+  `561d773`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+
+- [x] Close fresh Phase-0 replay against an explicit alternate subprocess
+  working directory. `KernelProcessCapture` now preserves the normalized
+  caller-supplied `cwd`, the runner populates it, and the frozen reference gate
+  admits only its inherited-working-directory launch shape. Focused and full
+  639-test verification passed with repository-local `git diff --check`
+  (2026-07-30 21:00 PDT / 2026-07-31 04:00 UTC); local commit `ed17c09`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the unexpected bounded-kernel launch exception boundary. Any
+  ordinary exception raised while constructing the isolated process now uses
+  `ValueError("kernel subprocess could not be launched")` and retains its
+  original cause. Focused 3-test and full 658-test verification passed with
+  repository-local `git diff --check` (2026-08-03 21:01 PDT / 2026-08-04
+  04:01 UTC); local commit `6c7ce16`. Runtime invocation, result admission,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close fresh Phase-0 replay against unreviewed launch arguments. The
+  frozen stdin-fed replay gate now admits only the normalized pinned executable
+  as its sole argv entry; an otherwise exact capture carrying an extra mode
+  flag fails closed. Focused and full 639-test verification passed with
+  repository-local `git diff --check` (2026-07-30 19:00 PDT / 2026-07-31
+  02:00 UTC); local commit `0da04d9`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+
+- [x] Close fresh Phase-0 replay against the capture's canonical program CID
+  as well as its direct byte digest. The admitted reference derives the same
+  complete-program CID from its checksum-verified UTF-8 source, and a capture
+  presenting the correct program SHA-256 with a contradictory CID fails
+  closed. Focused and full verification passed with repository-local `git
+  diff --check` (2026-07-30 15:00 PDT / 22:00 UTC); local commit `bbf5118`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Bind fresh Phase-0 replay to the frozen program bytes. A bounded
+  `run_kernel_subprocess()` capture now records the direct UTF-8 program
+  SHA-256, and `validate_phase0_reference_replay()` rejects an otherwise
+  byte-identical capture whose program digest differs from the admitted
+  reference source. Focused and full 639-test verification passed with
+  repository-local `git diff --check` (2026-07-30 13:02 PDT / 20:02 UTC).
+  Promotion, writes, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Bind fresh Phase-0 replay to the frozen runtime executable. A
+  digest-pinned `run_kernel_subprocess()` capture now records the executable
+  SHA-256, and `validate_phase0_reference_replay()` rejects an otherwise
+  byte-identical capture from a different or unpinned executable. Focused and
+  full verification passed; local commit `dc5326e` (2026-07-30 11:00 PDT / 18:00 UTC). Promotion,
+  writes, live integration, dependencies, paid compute, and remote actions
+  remain closed.
+
+- [x] Close the frozen Phase-0 producer output inventory. Admission now
+  requires exactly the ordered semantic-result and successful-marker lines,
+  ignoring only blank lines; a fully rehashed extra authority-shaped line
+  fails closed. Focused reload and full 639-test verification passed with
+  repository-local `git diff --check` (2026-07-30 09:00 PDT / 16:00 UTC);
+  local commit `23b9c5d`.
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  paid compute, and remote actions remain closed.
+
+- [x] Require frozen Phase-0 semantic output to preserve exact standalone
+  producer line shape. Admission now rejects a fully rehashed output that
+  embeds the canonical declared result inside a larger result line. Focused
+  reload and full 639-test verification passed with repository-local `git
+  diff --check` (2026-07-30 07:01 PDT / 14:01 UTC). Runtime invocation,
+  promotion/write, live integration, dependency changes, paid compute, and
+  remote actions remain closed.
+
+- [x] Type-close the frozen Phase-0 semantic result itself. Admission now
+  requires one bounded canonical patham9 kernel-result atom, finite
+  unit-interval STV values, and non-empty canonical sorted unique stamps; a
+  rehashed pass-diagnostic relabel fails closed. Focused reload and full
+  639-test verification passed with repository-local `git diff --check`
+  (2026-07-30 05:01 PDT / 12:01 UTC); local commit `22c1f95`. Runtime
+  invocation, promotion/write, live integration, dependency changes, paid
+  compute, and remote actions remain closed; local commit `ef5136c`.
+- [x] Close cyclic-symlink failure behavior at the bounded kernel `cwd`
+  boundary. `run_kernel_subprocess()` now maps `Path.resolve()` cycle failures
+  to its documented pre-launch `ValueError`; a marker-backed regression proves
+  the child is not started. Focused 1-test and full 642-test verification
+  passed with repository-local `git diff --check` (2026-07-31 13:00 PDT /
+  20:00 UTC); local commit `90d539c`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+
+- [x] Close the frozen Phase-0 reference-manifest schema inside the Phase-1
+  clean-room reload gate. Admission now requires exact top-level,
+  determinism, example, runtime, repository, result, and boundary member sets;
+  a rehashed boundary carrying undeclared promotion authority fails closed.
+  Focused reload and full 639-test verification passed with repository-local
+  `git diff --check` (2026-07-30 01:00 PDT / 08:00 UTC); local commit
+  `1462790`. Runtime invocation, promotion/write, live integration, dependency
+  changes, paid compute, and remote actions remain closed.
+
+- [x] Bind frozen usability checksum sidecars to the producer's exact
+  bundle-local journal path. Admission now rejects two fully rehashed,
+  byte-identical sidecars naming `relocated/journal.metta`, while preserving
+  the distinct sidecar-equality failure first. Focused 33-test and full
+  639-test verification passed with repository-local `git diff --check`
+  (2026-07-29 23:00 PDT / 2026-07-30 06:00 UTC); local commit `7c00f0a`.
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  paid compute, and remote actions remain closed.
+
+- [x] Reproduce the frozen usability producer's exact checksum-sidecar
+  equality. Admission now requires the after-ingest and after-canary sidecars
+  to be byte-identical after independently validating both journal digests,
+  rejecting a fully rehashed same-digest/different-path adversary. Focused
+  32-test and full 638-test verification passed with repository-local `git
+  diff --check` (2026-07-29 21:00 PDT / 2026-07-30 04:00 UTC); local commit
+  `dac7e36`. Runtime invocation, promotion/write, live integration, dependency
+  changes, paid compute, and remote actions remain closed.
+
+- [x] Reconstruct frozen usability diagnostic lines from captured runtime
+  tails. Admission now requires exact producer-equivalent stripped diagnostic
+  lines, rejecting a fully rehashed result that omits its observed pass line.
+  Focused 31-test and full 637-test verification passed with repository-local
+  `git diff --check` (2026-07-29 19:00 PDT / 2026-07-30 02:00 UTC); local
+  commit `96e152e`. Runtime
+  invocation, promotion/write, live integration, dependency changes, paid
+  compute, and remote actions remain closed.
+
+- [x] Preserve the frozen producer's runtime-tail resource bound in admission.
+  Stdout and stderr tails must each be at most 4,000 characters; a fully
+  rehashed oversized tail fails closed. Focused 28-test and full 634-test
+  verification passed with repository-local `git diff --check`; local commit
+  `a82d708` (2026-07-29 13:00 PDT / 20:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Type-close frozen usability diagnostic fields. Admission now requires
+  string stdout/stderr tails and a list of string diagnostic lines, rejecting
+  a fully rehashed result that substitutes structured authority-shaped JSON.
+  Focused 27-test and full 633-test verification passed with repository-local
+  `git diff --check`; local commit `79ba928` (2026-07-29 11:00 PDT /
+  18:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependency changes, and remote actions remain closed.
+
+- [x] Require frozen usability provenance identities to be canonical MeTTa
+  terms. Admission now rejects a fully rehashed evidence identity containing
+  an injected control form even when the source atom and digest are updated.
+  Focused 26-test and full 632-test verification passed with repository-local
+  `git diff --check`; local commit `3bdc28d` (2026-07-29 09:00 PDT /
+  16:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Require the frozen usability source term to be one canonical executable
+  MeTTa term. Admission now parses the term in a single-expression envelope
+  and requires canonical round-trip equality; a fully rehashed
+  newline/control-form injection-shaped term fails closed. Focused 25-test and
+  full 631-test verification passed with repository-local `git diff --check`;
+  local commit `4ec0449` (2026-07-29 07:02 PDT / 14:02 UTC). Runtime
+  invocation, promotion/write, live integration, dependency changes, and
+  remote actions remain closed.
+
+- [x] Preserve the frozen usability source's non-empty provenance identities.
+  Admission now requires non-empty string belief, cluster, evidence,
+  promotion-domain, promotion-event, and promotion-rule fields; a fully
+  rehashed source with an erased promotion rule fails closed. Focused 24-test
+  and full 630-test verification passed with repository-local `git diff
+  --check`; local commit `bae697c` (2026-07-29 05:00 PDT / 12:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  and remote actions remain closed.
+
+- [x] Bind frozen provider-free usability source classification to the
+  non-inferred PLN input boundary. Admission now requires exact
+  `pln-ready-input-not-inferred-belief` status; a fully rehashed
+  `inferred-belief` relabel fails closed. Focused 22-test and full 628-test
+  verification passed with repository-local `git diff --check`; local commit
+  `703e071` (2026-07-29 01:00 PDT / 08:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Bind the frozen provider-free usability provenance atom to the runtime
+  source identity. Admission now reconstructs the exact patham9/PLN source
+  item atom from its term, STV, and evidence id; a fully rehashed unrelated
+  atom fails closed. Focused 21-test and full 627-test verification passed with
+  repository-local `git diff --check`; local commit `ea0db1f` (2026-07-28
+  23:00 PDT / 2026-07-29 06:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependency changes, and remote actions remain closed.
+
+- [x] Bind the frozen provider-free usability inference's semantic pass count
+  to its single reconstructed `Test`. Admission now requires exactly one
+  successful marker; a fully rehashed two-pass-marker result fails closed.
+  Focused 19-test and full 625-test verification passed with repository-local
+  `git diff --check`; local commit `ff67c3e` (2026-07-28 19:00 PDT /
+  2026-07-29 02:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependency changes, and remote actions remain closed.
+
+- [x] Bind frozen provider-free usability inference runtime inputs and expected
+  truth value to the provenance-bearing source item. Admission reconstructs the
+  exact source Sentence, synthetic bridge Sentence, and TotalMp expected result;
+  a fully rehashed source-Sentence substitution fails closed. Focused 18-test
+  and full 624-test verification passed with repository-local `git diff
+  --check` (2026-07-28 17:15 PDT / 2026-07-29 00:15 UTC); local commit
+  `fb13cf7`. Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+
+- [x] Bind frozen provider-free usability inference provenance to the exact
+  source/derived-term relationship and two-stamp sidecar roles. Require the
+  source sidecar's item term and evidence id to agree with the declared source,
+  and require the bridge to remain the index-zero synthetic non-live
+  implication. A fully rehashed source relabel fails closed. Focused 17-test
+  and full 623-test verification passed with repository-local `git diff
+  --check`; local commit `de68ca3` (2026-07-28 15:00 PDT / 22:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  and remote actions remain closed.
+
 - [x] Bind frozen provider-free usability inference admission to the exact
   bounded PLN program text reconstructed from its two declared runtime
   sentences, derived query term, and expected result. A fully rehashed
@@ -253,6 +767,12 @@
 
 # Tasks
 
+- [ ] **ProtoCosmo2 ownership after ASI:Cloud VM2 migration (Ben,
+  2026-08-16)** — after the Omega bots are successfully ported and accepted on
+  VM2, hand `petta-memory` to ProtoCosmo2 as its first major task. This is
+  sequenced after VM2 acceptance and the Protomega2-first Iter staging work;
+  do not start early.
+
 - [x] 2026-07-27: Integrate the frozen provider-free PeTTa-memory evidence
   bundle with ProtoMegaBot2 as a read-only shadow consumer. Deliverable: a
   narrow public-interface adapter that retrieves one known episode and its
@@ -272,6 +792,14 @@
 Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
+
+- [x] Close the reconstructed PeTTaChainer contract size bypass. The immutable
+  contract now applies the compiler adapter's aggregate one-million-character
+  ceiling to checked-add plus query atoms, so direct construction cannot evade
+  the bounded runtime-input gate. Focused and full 675-test verification passed
+  with repository-local `git diff --check`; local commit `dde58b4` (2026-08-07
+  13:01 PDT / 20:01 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
 
 - [x] Reject a fully rehashed PeTTaChainer episode manifest whose seed is
   negative. The typed deterministic-input invariant remains binding even when
@@ -696,7 +1224,15 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] Add typed `PiContext`, `ChartPolicy`/`PiChart`, immutable snapshots, fingerprints, JSON schemas, beta round-trip, and prior-cycling tests. Completed through local commits `9aed63a`, `66a4739`, `463310b`, `213d1f8`, `9f4ce4d`, and `e7073cc`; full suite passed 470 tests after completion.
 - [x] Close chart-to-snapshot provenance before Phase-2 compilation in local commit `820eed4`. `build_pi_chart()` now requires a validated `EvidenceSnapshot`, rejects context mismatch and selected packet IDs absent from that snapshot, records the snapshot fingerprint on `PiChart`, and includes it in chart identity so changed evidence content cannot reuse a compiled chart artifact under the same logical snapshot ID. Verification: focused 32 tests; full 473 tests; `git diff --check` passed. Provenance: progress worker, 2026-07-13 07:00 PDT / 14:00 UTC.
 - [x] Add compatibility adapters that explicitly label `ec_projected_stv()` as `adapter-weighted-v1` without changing serialized outputs. `EC_PROJECTED_STV_POLICY_ID` plus function introspection metadata make the legacy boundary explicit while regression coverage proves result dictionaries do not gain a new field. Local commit `8b4ac1d`; full suite passed 470 tests; `git diff --check` passed.
-- [ ] Phase 2: isolated episode compiler, legacy kernel backend, result validator, manifest, and exact replay.
+- [x] Phase 2: isolated episode compiler, legacy kernel backend, result validator,
+  manifest, and exact replay. The final boundary now validates semantic replay
+  directly from a bounded `KernelProcessCapture`, requiring successful exit,
+  empty stderr, and exactly one complete stdout result record before comparing
+  the compiler-bound result digest. Focused and full 664-test verification
+  passed with repository-local `git diff --check` (2026-08-04 13:03 PDT /
+  20:03 UTC); local commit `453a83b`. General rule/trace identity remains a separately bounded later
+  phase; runtime invocation, promotion/write, live integration, dependencies,
+  paid compute, and remote actions remain closed.
 - [x] Bind a selected result atom to its bounded Phase-2 process capture before manifest construction. `validate_kernel_capture_result()` now rejects nonzero exit, any stderr, and result atoms absent from stdout, then closes accepted values through the typed stamp/evidence validator. Local commit `b2be8c7`; focused 1 and full 500 tests passed, plus `py_compile` and `git diff --check`. This does not yet construct/persist the end-to-end manifest or identify rules/traces.
 - [x] Bound the Phase-2 kernel executable argument vector before launch. `run_kernel_subprocess()` now enforces a positive 16 KiB default over the complete UTF-8 argv and rejects NUL-bearing arguments before invoking the OS. Local commit `c04bfaa`; focused 2 and full 492 tests passed; `py_compile` and `git diff --check` passed. The runner remains shell-free and non-live; this does not establish runtime/rule/trace identity or authorize promotion.
 - [x] Added deterministic bounded legacy-kernel query-program assembly in local commits `e0e2c16` and `9dc338b`. `assemble_legacy_kernel_query_program()` inserts immutable compiler-emitted Sentences and one canonical declarative query into fixed stock patham9 `PLN` import/init/query controls; callers cannot inject rules or executable program fragments. Positive limits, a 10,000-step ceiling, a 100,000-entry ceiling for each queue, and total program-size cap fail closed. Focused 47 tests and full 488 tests passed; `py_compile` and `git diff --check` passed. Kernel subprocess/capture, trace/rule attribution, promotion/write, and live integration remain open.
@@ -915,3 +1451,604 @@ Use small, testable tasks. Keep the top of each section in priority order.
   verification passed with repository-local `git diff --check`; local commit
   `eb90064` (2026-07-28 07:00 PDT / 14:00 UTC). Runtime invocation, promotion/write, live
   integration, dependency changes, and remote actions remain closed.
+- [x] Close undeclared authority inside the frozen usability inference's
+  provenance-bearing source item. Admission now requires the exact producer
+  member set; a fully rehashed nested `promotion_authorized` field fails
+  closed. Focused 20-test and full 626-test verification passed with
+  repository-local `git diff --check`; local commit `c4dcb95` (2026-07-28
+  21:00 PDT / 2026-07-29 04:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependency changes, and remote actions remain closed.
+- [x] Bind the frozen provider-free usability source's nested pi-PLN
+  extension to its actual non-live producer behavior. Admission requires
+  context selection to remain not-run with no generated contexts, an empty
+  contextual EvidencePacket set, and deferred EC projection; a fully rehashed
+  claim that contexts were admitted fails closed. Focused 23-test and full
+  629-test verification passed with repository-local `git diff --check`;
+  local commit `a6edd1b` (2026-07-29 03:00 PDT / 10:00 UTC). Runtime invocation,
+  promotion/write,
+  live integration, dependency changes, and remote actions remain closed.
+- [x] Bind frozen usability diagnostics to captured runtime evidence.
+  Admission requires every semantic diagnostic line to occur in one of the
+  bounded stdout/stderr tails; a fully rehashed invented diagnostic fails
+  closed. Focused 29-test and full 635-test verification passed with
+  repository-local `git diff --check`; local commit `e9c6fc3` (2026-07-29
+  15:00 PDT / 22:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  paid compute, and remote actions remain closed.
+- [x] Reproduce frozen usability semantic marker counts from captured runtime
+  evidence. Admission now independently counts successful, failed, and error
+  markers in the bounded stdout/stderr tails instead of trusting the
+  integrity-bound semantic count fields alone. A fully rehashed claimed pass
+  with no observed pass marker fails closed. Focused 30-test and full 636-test
+  verification passed with repository-local `git diff --check`; local commit
+  `338c2aa` (2026-07-29 17:00 PDT / 2026-07-30 00:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependency changes, and remote actions
+  remain closed.
+- [x] Close successful-marker cardinality in the frozen Phase-0 replay anchor.
+  Admission now requires exactly one semantic-result occurrence and exactly
+  one `(Passed: #t)` occurrence; a fully rehashed duplicate-pass capture fails
+  closed. Focused reload and full 639-test verification passed with
+  repository-local `git diff --check` (2026-07-30 03:01 PDT / 10:01 UTC);
+  local commit `08c67a6`.
+  Runtime invocation, promotion/write, live integration, dependency changes,
+  paid compute, and remote actions remain closed.
+- [x] Close fresh Phase-0 replay to the digest-pinned runner's executable-path
+  shape. Replay admission now requires `argv[0]` to be absolute and normalized;
+  an otherwise valid manually reconstructed relative-path capture fails
+  closed. Focused and full 639-test verification passed with repository-local
+  `git diff --check` (2026-07-30 17:00 PDT / 2026-07-31 00:00 UTC); local
+  commit `8082999`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+- [x] Close typed raw captures against non-UTF-8 surrogate-bearing text.
+  `KernelProcessCapture` now rejects unencodable argv, stdout/stderr, cwd, and
+  environment strings before hashing or Phase-0 replay can encounter an
+  incidental `UnicodeEncodeError`. Focused 2-test and full 641-test
+  verification passed with repository-local `git diff --check`; local commit
+  `af1ec4d` (2026-07-31 03:00 PDT / 10:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close the actual bounded subprocess launch boundary against non-UTF-8
+  program, argv, cwd, and explicit-environment text. Invalid inputs now fail
+  with field-specific `ValueError`s before launch, consistent with typed raw
+  capture validation. Five focused tests, the full 641-test suite, and
+  repository-local `git diff --check` passed (2026-07-31 05:00 PDT / 12:00
+  UTC); local commit `ed4d68d`. Runtime promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+- [x] Complete symmetric UTF-8 regression coverage for process-environment
+  keys and values at both `KernelProcessCapture` reconstruction and
+  `run_kernel_subprocess()` pre-launch validation. Marker-backed runner
+  coverage proves a surrogate-bearing key fails before spawn. Focused 2-test
+  and full 641-test verification passed with repository-local `git diff
+  --check` (2026-07-31 07:01 PDT / 14:01 UTC); local commit `12acaea`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the bounded kernel working-directory provenance boundary. The
+  runner now resolves an optional `cwd` to the exact absolute directory used
+  for launch, rechecks its framed byte budget after resolution, and records
+  that canonical path; typed captures reject relative or non-normalized cwd
+  claims. Focused 2-test and full 642-test verification passed with
+  repository-local `git diff --check` (2026-07-31 11:00 PDT / 18:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed; local commit `ef5136c`.
+- [x] Close the bounded kernel argv container boundary. Bare text/bytes are no
+  longer silently expanded into character/integer arguments, and a
+  non-iterable now fails through the public typed `ValueError` contract.
+  Focused and full 643-test verification plus repository-local `git diff
+  --check` passed (2026-07-31 17:00 PDT / 2026-08-01 00:00 UTC); local commit
+  `a535e9a`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Bound argv iterable consumption before kernel launch. Argument entries
+  are now validated and UTF-8/terminator bytes counted incrementally, so even
+  an unbounded iterable reaches the configured byte ceiling without unlimited
+  tuple materialization. Focused and full 643-test verification plus
+  repository-local `git diff --check` passed (2026-07-31 19:00 PDT /
+  2026-08-01 02:00 UTC); local commit `3818a3b`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the bounded kernel argv enumeration exception boundary. A
+  caller-controlled iterator that fails after yielding an entry now raises a
+  typed `ValueError` with the iterator exception retained as cause, before
+  process launch. Focused and full 643-test verification passed with
+  repository-local `git diff --check` (2026-07-31 21:00 PDT / 2026-08-01
+  04:00 UTC); local commit `9e1ee9c`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close bounded kernel environment traversal failures. Exceptions from a
+  caller-supplied mapping's `items()` iterator now fail through the runner's
+  typed `ValueError` contract before child launch, retaining the original
+  exception as cause. A marker-backed focused regression, the full 643-test
+  suite, and repository-local `git diff --check` passed (2026-07-31 23:00 PDT
+  / 2026-08-01 06:00 UTC); local commit `10ab2fd`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed environment-item shape at the bounded kernel launch
+  boundary. An untrusted `Mapping.items()` iterator yielding a non-pair now
+  fails with a chained typed `ValueError` before launch instead of leaking its
+  unpacking exception. Focused 1-test and full 643-test verification passed
+  with repository-local `git diff --check` (2026-08-01 01:02 PDT / 08:02
+  UTC); local commit `bfad0a9`. Runtime invocation, promotion/write, live integration, dependencies,
+  paid compute, and remote actions remain closed.
+- [x] Close scalar environment-item admission at the bounded kernel launch
+  boundary. Environment items must now be exact two-element tuples, so a
+  hostile mapping cannot have a two-character scalar silently interpreted as
+  `KEY=VALUE`. Focused and full 643-test verification passed with
+  repository-local `git diff --check` (2026-08-01 03:00 PDT / 10:00 UTC);
+  local commit `776efe9`. Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close the remaining documented subprocess-construction exception class
+  at the bounded kernel launch boundary. `subprocess.SubprocessError` now
+  follows the same chained typed `ValueError` contract as `OSError`; focused
+  2-test and full 644-test verification plus repository-local `git diff
+  --check` passed (2026-08-01 07:01 PDT / 14:01 UTC); local commit `b7322fe`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the bounded kernel output-capture exception boundary. OS-level
+  stdout/stderr read failures now terminate the isolated process group and
+  fail through the runner's typed `ValueError` contract with the original
+  exception retained as cause. Focused 1-test and full 645-test verification
+  passed with repository-local `git diff --check` (2026-08-01 09:00 PDT /
+  16:00 UTC); local commit `43152c2`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close the bounded kernel output-reader exception boundary. Any ordinary
+  exception raised while reading or assembling stdout/stderr is now captured,
+  terminates the process group, and fails through the runner's typed
+  `ValueError` contract with its original cause. A `RuntimeError` regression,
+  the full 645-test suite, and repository-local `git diff --check` passed
+  (2026-08-02 20:11 PDT / 2026-08-03 03:11 UTC); local commit `9546ad1`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the bounded kernel stdin-writer exception boundary. Any ordinary
+  exception raised while writing, flushing, or closing program stdin is now
+  retained and returned as the existing typed incomplete-delivery failure,
+  preventing a worker-thread exception from producing a capture. Focused
+  2-test and full 646-test verification passed with repository-local `git
+  diff --check` (2026-08-02 21:21 PDT / 2026-08-03 04:21 UTC); local commit
+  `cf31b9d`. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+- [x] Close the bounded kernel timeout-reap exception boundary. If the direct
+  process times out and the mandatory post-SIGKILL `wait()` then fails, the
+  runner now raises `ValueError("kernel subprocess timeout cleanup failed")`
+  with the cleanup failure retained as its cause. Focused and full 648-test
+  verification passed with repository-local `git diff --check` (2026-08-03
+  01:00 PDT / 08:00 UTC); local commit `80dc2fa`. Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close the bounded kernel process-group cleanup exception boundary.
+  Ordinary `killpg()` failures are now retained and reported through
+  `ValueError("kernel subprocess process-group cleanup failed")` after stream
+  finalization, rather than escaping a worker thread or allowing a capture.
+  Focused and full 650-test verification passed with repository-local `git
+  diff --check` (2026-08-03 05:00 PDT / 12:00 UTC); local implementation
+  commit `aa4304b`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close the bounded kernel worker cleanup exception boundary. Unexpected
+  writer/reader `join()` failures now become
+  `ValueError("kernel subprocess worker cleanup failed")` with the original
+  cause, while every worker receives a join attempt and stdout/stderr still
+  receive close attempts. Focused 1-test and full 651-test verification passed
+  with repository-local `git diff --check` (2026-08-03 07:01 PDT / 14:01 UTC);
+  local commit `6ac5199`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close the bounded kernel capture-worker startup exception boundary.
+  A worker `start()` failure after child launch now becomes a typed
+  `ValueError`, after process-group termination/reaping, joining only workers
+  that actually started, and closing both captured streams. Focused 3-test and
+  full 652-test verification passed with repository-local `git diff --check`
+  (2026-08-03 09:00 PDT / 16:00 UTC); local commit `3626e60`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Close the bounded kernel capture-worker construction boundary. A thread
+  constructor failure after child launch now kills and reaps the child,
+  attempts stdin/stdout/stderr closure, and returns a typed construction or
+  construction-cleanup `ValueError` with the original cause. Focused 2-test
+  and full 654-test verification passed with repository-local `git diff
+  --check` (2026-08-03 11:01 PDT / 18:01 UTC); local commit `55435a7`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close the bounded kernel stdin pipe after capture-worker startup failure.
+  Post-launch finalization now closes all three subprocess pipes, including the
+  stdin pipe whose writer may never have started. A focused regression and the
+  full 654-test suite passed with repository-local `git diff --check`
+  (2026-08-03 13:00 PDT / 20:00 UTC); local commit `0ae13bc`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Preserve process-group termination failure during bounded kernel worker
+  construction cleanup. The runner now prioritizes the cleanup failure that
+  could leave a child alive, while still attempting direct-process reap and
+  closure of all three pipes. Focused 1-test and full 655-test verification
+  passed with repository-local `git diff --check` (2026-08-03 15:00 PDT /
+  22:00 UTC); local commit `15f5335`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Preserve process-group termination failure on the ordinary kernel wait
+  failure path. The runner now defers normalization of the wait error until
+  after finalization, allowing a recorded kill failure to retain cleanup
+  priority. Focused 2-test and full 656-test verification passed with
+  repository-local `git diff --check` (2026-08-03 17:01 PDT / 2026-08-04
+  00:01 UTC); local commit `98e1f23`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Preserve timeout-path process-group termination failures. Timeout and
+  timeout-cleanup exceptions are now retained until shared subprocess
+  finalization completes, allowing the existing process-group cleanup error to
+  report a potentially surviving child/descendant first. Focused 3-test and
+  full 657-test verification passed with repository-local `git diff --check`
+  (2026-08-03 19:00 PDT / 2026-08-04 02:00 UTC); local commit `afa955e`. Runtime result admission,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Regression-close requested-pipe process-group termination failures. A
+  mocked malformed construction now proves a failed `killpg` is retained as
+  the cause of `ValueError("kernel subprocess pipe validation cleanup failed")`
+  without skipping direct-process reap or supplied-stream closure. Focused 86
+  and full 661 tests passed with repository-local `git diff --check`
+  (2026-08-04 03:00 PDT / 10:00 UTC); local commit `fc989fd`. Runtime,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Regression-close requested-pipe validation reap failures. A mocked
+  malformed process construction now proves that an unexpected `wait()`
+  failure is preserved as the cause of
+  `ValueError("kernel subprocess pipe validation cleanup failed")`, without
+  skipping closure of the remaining supplied streams. Focused 1-test and full
+  662-test verification passed with repository-local `git diff --check`
+  (2026-08-04 05:01 PDT / 12:01 UTC); local commit `d3f0851`. Runtime
+  invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Complete and jointly validate malformed requested-pipe cleanup coverage
+  for process-group kill and direct-process reap failures. The regressions
+  prove first-failure preservation plus continued reap/stream-close attempts;
+  focused 2-test and full 662-test suites passed with repository-local `git
+  diff --check` (2026-08-04 07:01 PDT / 14:01 UTC), covering local commits
+  `fc989fd` and `d3f0851`. Return to the bounded Phase-1 semantic
+  capture/reload gate rather than extending this hardening branch. Runtime
+  invocation, promotion/write, live integration, dependencies, paid compute,
+  and remote actions remain closed.
+- [x] Regression-close the already-exited requested-pipe cleanup path. A
+  mocked malformed process construction now proves that `ProcessLookupError`
+  during process-group kill remains benign while the runner still reaps the
+  child, closes every supplied stream, and raises the primary typed
+  missing-pipe error. Focused 1-test and full 663-test verification passed with
+  repository-local `git diff --check` (2026-08-04 09:00 PDT / 16:00 UTC);
+  local commit `2d3af71`. Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Persist and reload the bounded Phase-2 raw kernel capture. Added the
+  create-once `petta-memory-kernel-process-capture-v1` document, complete typed
+  reconstruction, checksum/canonical-environment adversaries, and integration
+  into both clean-room reload cycles. Focused 2-test and full 664-test suites
+  passed with repository-local `git diff --check` (2026-08-04 11:00 PDT / 18:00
+  UTC); local commit `b54a935`. Runtime invocation, result promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed dependency handling at the episode-manifest construction
+  boundary. `build_episode_manifest()` now requires typed compiled inputs,
+  validated result, pi chart, evidence snapshot, and episode budget before any
+  field access; five adversarial cases prove stable `ValueError` failures.
+  Focused 1-test and full 664-test verification passed with repository-local
+  `git diff --check` (2026-08-04 19:10 PDT / 2026-08-05 02:10 UTC); local
+  commit `a125a1b`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed optional complete-program handling before
+  episode-manifest artifact I/O. `read_episode_manifest()` now rejects
+  non-string and empty replay programs before opening the artifact; a
+  missing-path adversary proves deterministic caller-error precedence.
+  Focused and full 664-test verification passed with repository-local `git
+  diff --check` (2026-08-05 01:14 PDT / 08:14 UTC); local commit `ba763bd`.
+  Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close PeTTaChainer manifest replay dependencies before artifact I/O.
+  `read_pettachainer_episode_manifest()` now establishes the immutable episode
+  contract, typed derived capture, and matching rule attribution before
+  loading JSON. A missing-path adversarial matrix proves malformed inputs have
+  deterministic typed precedence. Focused and full 664-test verification
+  passed with repository-local `git diff --check` (2026-08-05 03:13 PDT /
+  10:13 UTC); local commit `bd086fb`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Validate PeTTaChainer episode manifests before persistence-side effects.
+  `write_pettachainer_episode_manifest()` now constructs the typed checksummed
+  document before creating a missing parent, and a regression proves malformed
+  input leaves that parent absent. Focused 142-test and full 664-test
+  verification passed with repository-local `git diff --check` (2026-08-05
+  07:01 PDT / 14:01 UTC); local commit `87e45c0`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed PeTTaChainer derived-result persistence before filesystem
+  mutation. The checksummed document builder now requires a typed capture, and
+  the writer serializes it before creating a missing parent; an adversarial
+  regression proves malformed input leaves that parent absent. Focused and full
+  664-test verification passed with repository-local `git diff --check`
+  (2026-08-05 09:03 PDT / 16:03 UTC); local commit `8771716`. Runtime invocation,
+  promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed PeTTaChainer rule-attribution persistence before
+  filesystem mutation. The writer now builds the typed checksummed document
+  before creating the destination parent, and a regression proves malformed
+  input leaves the parent absent. Focused and full 664-test verification passed
+  with repository-local `git diff --check` (2026-08-05 11:00 PDT / 18:00 UTC);
+  local commit `c3de0a0`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed stock pi-PLN episode-manifest persistence before
+  filesystem mutation. The public document builder now requires a typed
+  `EpisodeManifest`, and the writer serializes it before creating a missing
+  parent. Focused and full 664-test verification passed with repository-local
+  `git diff --check` (2026-08-05 13:04 PDT / 20:04 UTC); local commit `f7fba44`.
+  Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed validated-kernel-result persistence before filesystem
+  mutation. `validated_kernel_result_document()` now requires a typed
+  `ValidatedKernelResult`, and `write_validated_kernel_result()` completes
+  validation/serialization before creating a destination parent. A regression
+  proves a malformed result leaves the requested parent absent. Focused and
+  full 664-test verification passed with repository-local `git diff --check`
+  (2026-08-05 15:01 PDT / 22:01 UTC); local commit `1974cc8`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Close malformed evidence-snapshot serialization before filesystem
+  mutation. The canonical document builder now requires an immutable
+  `EvidenceSnapshot`, and the writer serializes it before creating parent
+  directories. A regression proves malformed input leaves no directory behind.
+  Focused and full 665-test verification passed with repository-local `git
+  diff --check` (2026-08-05 17:10 PDT / 2026-08-06 00:10 UTC); local commit
+  `ecd38a8`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed compiled episode-input persistence before filesystem
+  mutation. The canonical document builder now requires immutable
+  `CompiledEpisodeInputs`, and the writer serializes before parent creation.
+  Focused and full 666-test verification passed with repository-local `git
+  diff --check` (2026-08-05 19:00 PDT / 2026-08-06 02:00 UTC); local commit
+  `e012c48`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed compiled-input handling before validated-result artifact
+  I/O. `read_validated_kernel_result()` now requires immutable
+  `CompiledEpisodeInputs` before opening the supplied path; an absent-artifact
+  regression proves deterministic caller-error precedence. Focused and full
+  667-test verification passed with repository-local `git diff --check`
+  (2026-08-05 23:00 PDT / 2026-08-06 06:00 UTC); local commit `4eec465`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed compiler-contract handling before PeTTaChainer
+  derived-result artifact I/O. `read_pettachainer_derived_result_capture()` now
+  requires a typed immutable episode contract before opening its path; an
+  absent-artifact regression fixes deterministic caller-error precedence.
+  Focused and full 667-test verification passed with repository-local `git
+  diff --check` (2026-08-06 03:00 PDT / 10:00 UTC); local commit `6cd83e5`.
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+
+- [x] Close the evidence-snapshot top-level persistence schema. Reload now
+  admits exactly `schema`, `payload`, and `document_digest`; an undeclared
+  `promotion_authorized` member fails closed without relying on the payload
+  checksum. Focused and full 667-test verification passed with repository-local
+  `git diff --check` (2026-08-06 07:01 PDT / 14:01 UTC); local commit
+  `d956bc6`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed immutable dependency handling in `build_pi_chart()`.
+  Context, chart policy, and evidence snapshot are now type-checked before
+  provenance closure and fingerprint construction, preserving a stable typed
+  failure boundary. Focused and full 668-test verification passed with
+  repository-local `git diff --check` (2026-08-06 09:02 PDT / 16:02 UTC);
+  local commit `fbf6ed5`. Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed immutable dependency handling at deterministic episode
+  compilation. `compile_episode_inputs()` now requires typed `PiChart` and
+  `EvidenceSnapshot` inputs before dereferencing provenance, preserving a
+  stable public validation contract. Focused and full 669-test verification
+  passed with repository-local `git diff --check` (2026-08-06 11:00 PDT /
+  18:00 UTC); local commit `225aade`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Close malformed episode compiler collection members. Every supplied
+  packet and evidence basis is now admitted as its immutable typed model
+  before identifier/provenance access; adversarial `None` members prove the
+  stable public `ValueError` boundary. Focused and full 669-test verification
+  passed with repository-local `git diff --check` (2026-08-06 13:01 PDT /
+  20:01 UTC); local commit `2f50b6b`. Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed immutable compiled-input collection members.
+  `CompiledEpisodeInputs` now requires typed `StampMapEntry` and
+  `CompiledSentence` members before field access, preserving the typed model
+  boundary consumed by patham9/PLN and PeTTaChainer adapters. Focused and full
+  669-test verification passed with repository-local `git diff --check`
+  (2026-08-06 15:00 PDT / 22:00 UTC); local commit `940f8d9`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Close malformed immutable dependencies at PeTTaChainer derived-result
+  construction. `build_pettachainer_derived_result_capture()` now requires
+  typed input statements and stage captures before dereferencing them. Focused
+  and full 669-test verification passed with repository-local `git diff
+  --check` (2026-08-06 19:00 PDT / 2026-08-07 02:00 UTC); local commit
+  `020f1a4`. Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed immutable budget handling at PeTTaChainer episode-manifest
+  construction. `build_pettachainer_episode_manifest()` now requires an
+  `EpisodeBudget` before constructing its digest payload, preserving a stable
+  public `ValueError` boundary. Focused and full 669-test verification passed
+  with repository-local `git diff --check`; local commit `0ec094f` (2026-08-06
+  21:03 PDT / 2026-08-07 04:03 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed PeTTaChainer input-statement provenance sidecars.
+  Boolean/non-integer/negative stamps and non-string/blank evidence-basis IDs
+  now fail through explicit typed validation. Focused and full 671-test
+  verification passed with repository-local `git diff --check`; local commit
+  `2450609` (2026-08-07 01:00 PDT / 08:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close cross-statement PeTTaChainer stamp provenance. The immutable
+  episode contract now requires a consistent one-to-one stamp/evidence-basis
+  mapping across every checked-add statement, rejecting both same-stamp /
+  different-basis and same-basis / different-stamp reconstructions. Focused
+  and full 672-test verification passed with repository-local `git diff
+  --check`; local commit `03d58c1` (2026-08-07 05:01 PDT / 12:01 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close mutable statement-container admission at the PeTTaChainer episode
+  contract boundary. `statements` must now be a non-empty tuple, preserving
+  the contract's immutable audit identity. Focused and full 673-test
+  verification passed with repository-local `git diff --check`; local commit
+  `5a30718` (2026-08-07 07:01 PDT / 14:01 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Enforce reconstructed PeTTaChainer aggregate statement size before
+  uniqueness and provenance scans. The immutable contract now accumulates its
+  checked-add character budget incrementally and fails oversized repeated
+  statement tuples at the resource boundary. Focused and full 678-test
+  verification passed with repository-local `git diff --check`; local commit
+  `a8dc813` (2026-08-07 19:00 PDT / 2026-08-08 02:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Bound PeTTaChainer query text before episode provenance scans. Query
+  type and aggregate atom/term ceilings now precede proof-id and stamp/basis
+  scans; an adversarial duplicate-statement regression proves deterministic
+  resource-error precedence. Focused and full 679-test verification passed
+  with repository-local `git diff --check`; local commit `716292a`
+  (2026-08-07 21:00 PDT / 2026-08-08 04:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Bound reconstructed PeTTaChainer derived-result text before parsing.
+  Query term, derived atom, and derived proof must be strings within the
+  immutable compiled-atom ceiling before the canonical parser is reached.
+  Two focused regressions and the full 681-test suite passed with
+  repository-local `git diff --check` (2026-08-07 23:00 PDT / 2026-08-08
+  06:00 UTC); local commit `920fe33`. Runtime invocation, promotion/write,
+  live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Bound reconstructed `ValidatedKernelResult.query_term` before parsing.
+  Non-string and oversized duplicate typed query text now fails at the
+  immutable stock pi-PLN result boundary without entering the canonical
+  parser. Focused and full 682-test verification passed with repository-local
+  `git diff --check`; local commit `4020052` (2026-08-08 01:00 PDT / 08:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close mutable evidence-basis provenance collections. `EvidenceBasis`
+  now requires immutable tuples for `member_token_ids` and
+  `causal_group_ids`, so a reconstructed frozen basis cannot retain
+  caller-owned lists. Focused and full 684-test verification passed with
+  repository-local `git diff --check`; local commit `620ea50` (2026-08-08
+  15:00 PDT / 22:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close mutable evidence-snapshot content collections. `EvidenceSnapshot`
+  now requires immutable tuples for `packet_ids`, `packet_content_digests`, and
+  each nested digest pair, preventing post-validation mutation through a
+  reconstructed frozen snapshot. Focused and full 685-test verification passed
+  with repository-local `git diff --check`; local commit `7ba8f1e` (2026-08-08
+  17:00 PDT / 2026-08-09 00:00 UTC). Runtime invocation, promotion/write, live
+  integration, dependencies, paid compute, and remote actions remain closed.
+- [x] Close mutable and malformed pi-chart inputs. `PiChart` now requires an
+  immutable tuple for `selected_packet_ids` and a typed `ChartPolicy`, so a
+  reconstructed frozen chart cannot retain a caller-owned list or leak an
+  attribute error through downstream policy access. Focused and full 688-test
+  verification passed with repository-local `git diff --check`; local commit
+  `a6c7fd1` (2026-08-08 23:00 PDT / 2026-08-09 06:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed evidence-snapshot builder inputs.
+  `build_evidence_snapshot(...)` now requires every supplied item to be an
+  immutable `EvidencePacket` before reading its identity, so malformed callers
+  receive a stable `ValueError` instead of leaking `AttributeError`. Focused
+  and full 689-test verification passed with repository-local `git diff
+  --check`; local commit `da3cf8b` (2026-08-09 01:00 PDT / 08:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+
+- [x] Close mutable and malformed pi-chart inputs. `PiChart` now requires a
+  typed immutable `ChartPolicy` and tuple-backed `selected_packet_ids` before
+  their existing semantic checks. Focused and full 688-test verification
+  passed with repository-local `git diff --check`; local commit `a6c7fd1`
+  (2026-08-08 23:02 PDT / 2026-08-09 06:02 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed evidence-packet provenance identifiers. Token and parent
+  packet identifiers now pass the shared non-empty string validator before
+  sorted/unique checks, yielding stable `ValueError` boundaries for malformed
+  reconstructed packets. Focused and full 690-test verification passed with
+  repository-local `git diff --check`; local commit `8b83035` (2026-08-09
+  03:02 PDT / 10:02 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+- [x] Close malformed evidence-token provenance fields. Optional source-event,
+  causal-group, and payload identifiers now pass the shared non-empty string
+  boundary when present, and schema versions must be positive integers.
+  Focused and full 691-test verification passed with repository-local `git
+  diff --check`; local commit `d3cc023` (2026-08-09 05:00 PDT / 12:00 UTC).
+  Runtime invocation, promotion/write, live integration, dependencies, paid
+  compute, and remote actions remain closed.
+- [x] Validate evidence-basis provenance members. `EvidenceBasis` now rejects
+  empty and non-string member-token and causal-group ids through stable
+  `ValueError` contracts before canonical ordering checks. Focused and full
+  692-test verification passed with repository-local `git diff --check`
+  (2026-08-09 07:03 PDT / 14:03 UTC); local commit `79e8264`. Runtime invocation, promotion/write,
+  live integration, dependencies, paid compute, and remote actions remain
+  closed.
+- [x] Close untyped deterministic stamp-map inputs. The stamp allocator now
+  freezes and validates its supplied basis collection before sorting by
+  `basis_id`; a forged member cannot trigger field access before admission.
+  Focused and full 693-test verification passed with repository-local `git
+  diff --check`; local commit `9be0d85` (2026-08-09 09:00 PDT / 16:00 UTC).
+  Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed evidence-basis builder dependencies.
+  `evidence_basis_from_packet()` now validates the immutable `EvidencePacket`
+  and every `EvidenceToken` before reading provenance fields. Sentinel-backed
+  focused verification and the full 694-test suite passed with repository-local
+  `git diff --check`; local commit `8e926d3` (2026-08-09 11:03 PDT / 18:03
+  UTC). Runtime invocation, promotion/write, live integration, dependencies,
+  paid compute, and remote actions remain closed.
+- [x] Close malformed exact evidence-capsule merge dependencies. The merge
+  boundary now requires typed immutable `EvidenceCapsule` operands and typed
+  `EvidenceBasis` metadata before dereferencing either. Focused and full
+  696-test verification passed with repository-local `git diff --check`; local
+  commit `9f61044` (2026-08-09 15:00 PDT / 22:00 UTC). Runtime invocation,
+  promotion/write, live integration, dependencies, paid compute, and remote
+  actions remain closed.
+- [x] Close malformed evidence-snapshot packet-id admission. Packet-id members
+  are now typed before sorting, preventing reconstructed mixed-type tuples from
+  leaking `TypeError`. Focused and full 698-test verification passed with
+  repository-local `git diff --check`; local commit `e93f4bb` (2026-08-09 21:01 PDT / 2026-08-10
+  04:01 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [x] Close malformed evidence-snapshot digest-entry arity admission.
+  `packet_content_digests` now requires immutable two-field tuples before
+  destructuring, preventing wrong-length reconstructed entries from leaking
+  incidental unpacking errors. Focused and full 698-test verification passed
+  with repository-local `git diff --check`; local commit `5b842f4` (2026-08-09
+  23:00 PDT / 2026-08-10 06:00 UTC). Runtime invocation, promotion/write, live integration,
+  dependencies, paid compute, and remote actions remain closed.
+- [ ] ProtoCosmo2 handoff canary on isolated branch `agent/protocosmo2-handoff`.
+  Starting point is frozen at clean commit
+  `5b842f4d8e203d86c0d14f42eb91a03535376c0a` in
+  `worktrees/protocosmo2-handoff`; the competing recurring progress worker is
+  disabled. Deliverable: inspect the authoritative project records and select
+  one bounded, nontrivial frontier task beyond repeated reconstructed-input
+  micro-hardening, then implement, test, document, and commit it locally.
+  Acceptance: focused tests, full provider-free suite (baseline 698 tests),
+  `git diff --check`, clean committed worktree, and PROJECT/TASKS/NOTES evidence.
+  Next command: have ProtoCosmo2 inspect PROJECT.md, TASKS.md, DECISIONS.md,
+  NOTES.md and the isolated worktree, then propose the smallest frontier slice.
+  Evidence path: `projects/petta-memory/worktrees/protocosmo2-handoff` and a new
+  run under `projects/petta-memory/experiments/`.
+- [x] Produce the 2026-08-10 petta-memory status and coding-agent handoff pack.
+  Deliverables: an ASCII-only LaTeX source plus compiled PDF separating proposed
+  ideas from implemented/evidenced work, and a practical Markdown takeover guide
+  covering local paths, code/directory roles, GitHub remote, tests, and a
+  secret-safe authentication procedure. Acceptance: PDF builds successfully,
+  source is ASCII-only, repository facts are checked against the frozen handoff
+  worktree, and both requested deliverables are attached to Ben's conversation.
+  Next command: inspect repository README, source tree, test inventory, project
+  history, and experiment records. Evidence path:
+  `projects/petta-memory/docs/handoff-2026-08-10/`. Completed with ASCII-only
+  LaTeX, compiled PDF, practical Markdown handoff, repository/remote audit, and
+  secret-safe GitHub authentication guidance. Tectonic build passed. A fresh
+  isolated-worktree verification run collected 698 tests but exposed one
+  failure, one error, and eight skips caused or plausibly caused by unresolved
+  dependency-relative paths; exact evidence is in
+  `experiments/20260810T145211Z-protocosmo2-handoff-full-suite/`.
+- [ ] Standing main-task assignment (Ben, 2026-08-10): advance petta-memory
+  step by step whenever no more urgent work intervenes. Current deliverable:
+  make the frozen `5b842f4` ProtoCosmo2 handoff reproduce its recorded
+  provider-free baseline from the isolated worktree. Acceptance: all 698 tests
+  pass (with only the expected documented skips), dependency commits and paths
+  are recorded, and a successful experiment `RUN.md` exists. Next command:
+  inspect the two failing tests and their dependency-path resolution without
+  modifying or repinning sibling repositories. Evidence:
+  `experiments/20260810T145211Z-protocosmo2-handoff-full-suite/RUN.md` and its
+  eventual successful successor.

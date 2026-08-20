@@ -1,4 +1,230 @@
 
+# 2026-08-20: TraceAttribution is a distinct persisted artifact class with proof trace
+
+**Decision:** Implement `TraceAttribution` as a frozen, content-addressed
+dataclass that binds a compiled result to its originating rule identity and
+an opaque proof trace string. Persist it as a create-once checksummed JSON
+artifact (`petta-memory-trace-attribution-v1`). Reload verifies schema,
+document checksum, trace_digest, and result-binding fields against the
+supplied derived capture.
+
+**Rationale:** The existing `PeTTaChainerRuleAttribution` is compiler-bound
+and explicitly does not claim a decoded runtime trace (`runtime_trace_decoded
+= False`). The trace/rule attribution vertical gate requires a distinct
+artifact class that carries proof trace content while preserving stable reload
+identity. The proof trace is opaque — the attribution does not interpret or
+validate its semantics — but it is content-addressed by the trace_digest and
+protected by the create-once write boundary. Reload cannot independently
+derive proof_trace from the result, so it verifies result-binding fields
+(result_digest, rule_sentence_digest, rule_proof_id) against the supplied
+capture rather than rebuilding an expected attribution.
+
+**Consequences:** TraceAttribution is a prototype proving attribution survives
+store/reload with identity intact. It does not invoke a runtime, authorize
+promotion/write, enable live integration, change dependencies, use paid
+compute, or perform a remote action. General trace decoding, reviewed
+promotion/write, upstream repair adoption, and live integration remain
+separate gates.
+
+# 2026-08-09: Type kernel sentence provenance members before sorting
+
+**Decision:** Validate every immutable kernel sentence stamp as a non-negative
+integer and every evidence-basis id as a non-empty string before applying
+uniqueness and ordering checks.
+
+**Rationale:** Sorting is a semantic validation step, not an acceptable source
+of public exceptions. Reconstructed mixed-type tuples must fail through the
+stable typed boundary instead of exposing Python comparison behavior.
+
+**Consequences:** Valid compiler output is unchanged. This closes local
+metadata admission only and authorizes no runtime invocation, promotion/write,
+live integration, dependency change, paid compute, or remote action.
+
+# 2026-08-09: Normalize malformed capsule merge metadata before traversal
+
+Decision: retain the public iterable API for optional evidence-basis metadata,
+but explicitly convert it to an iterator and normalize a non-iterable input to
+`ValueError` before reading members.
+
+Rationale: lists and generators are intentional callers, so requiring a tuple
+would be an unnecessary compatibility break. A malformed scalar should still
+fail through the same typed public boundary as malformed metadata members.
+
+Boundary: valid merge semantics and identities are unchanged. This does not
+invoke a runtime, authorize promotion or writes, enable live integration,
+change dependencies, use paid compute, or perform a remote action.
+
+# 2026-08-09: Evidence packet schema versions are explicitly typed
+
+Decision: require `EvidencePacket.schema_version` to be an integer (and not a
+boolean) before applying the positive-version constraint.
+
+Rationale: reconstructed packets are a public immutable evidence boundary.
+Malformed schema metadata must fail through its stable `ValueError` contract,
+not leak a Python comparison `TypeError` before downstream snapshot admission.
+
+Boundary: valid packets and serialized identity are unchanged. This is local
+contract hardening only and does not invoke a runtime, authorize promotion or
+writes, enable live integration, change dependencies, use paid compute, or
+perform a remote action.
+
+# 2026-08-08: Evidence capsules contain an immutable typed collection
+
+Decision: require `EvidenceCapsule.contributions` to be an actual tuple whose
+members are all `EvidenceContribution` records before reading their basis IDs.
+
+Rationale: a frozen capsule retaining a caller-owned list can change after
+validation, invalidating evidence counts and basis identity. Type validation
+also keeps malformed direct callers within the stable `ValueError` contract.
+
+Boundary: valid algebra/builders are unchanged. This is local contract
+hardening only and does not invoke a runtime, authorize promotion or writes,
+enable live integration, change dependencies, use paid compute, or perform a
+remote action.
+
+# 2026-08-08: Evidence packet provenance collections are tuple-backed
+
+Decision: require `EvidencePacket.token_ids` and `parent_packet_ids` to be
+actual tuples at reconstruction time.
+
+Rationale: these collections define the packet's evidence and derivation
+provenance. A frozen dataclass retaining a caller-owned list could change after
+validation, invalidating downstream snapshot and basis identities.
+
+Boundary: valid builder output is unchanged. This is local contract hardening
+only and does not invoke a runtime, authorize promotion or writes, enable live
+integration, change dependencies, use paid compute, or perform a remote action.
+
+# 2026-08-08: Stock episode manifest collections are tuple-backed
+
+Decision: require `EpisodeManifest.parent_episode_ids` and
+`projection_policy_ids` to be actual tuples at reconstruction time.
+
+Rationale: a frozen dataclass does not make caller-owned list members
+immutable. These collections contribute to the manifest's audit identity and
+must not change after validation. Rejecting lists preserves the declared typed
+boundary instead of silently retaining mutable aliases.
+
+Boundary: this is local contract hardening only. It does not invoke a runtime,
+authorize promotion or writes, enable live integration, change dependencies,
+use paid compute, or perform a remote action.
+
+# 2026-08-08: Kernel sentence provenance collections are tuple-backed
+
+**Decision:** Require immutable tuples for every stamp and evidence-basis
+collection in reconstructed `KernelSentenceMeta`.
+
+**Rationale:** A frozen dataclass is not immutable when it retains a
+caller-owned list. These sidecars close compiled kernel inputs to their
+evidence provenance and must remain stable after validation.
+
+**Consequences:** Compiler-produced metadata is unchanged; reconstructed
+metadata with mutable collections fails closed. This authorizes no runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+# 2026-08-07: Bound checked-add text before canonical parsing
+
+**Decision:** Type-check and independently cap reconstructed PeTTaChainer
+statement atom and canonical-term text before parsing the term.
+
+**Rationale:** Although compiler-built statements are already bounded, the
+public frozen dataclass is reconstructible. Its duplicated typed term must not
+be able to consume parser resources before the atom/content invariant rejects
+it.
+
+**Consequences:** Valid compiler output is unchanged. Oversized or non-string
+reconstructed statement text fails closed before parsing. This authorizes no
+runtime, promotion/write, live integration, dependency change, paid compute,
+or remote action.
+
+# 2026-08-07: Preserve the compiler's contiguous stamp space in PeTTaChainer contracts
+
+**Decision:** Require the global stamp keys in each immutable PeTTaChainer
+episode contract to be exactly the contiguous range from zero.
+
+**Rationale:** The compiler establishes that invariant before adaptation.
+Allowing reconstructed contracts to skip keys would make an incomplete audit
+sidecar look like a complete compiler-derived episode.
+
+**Consequences:** Compiler-produced contracts and shared evidence mappings are
+unchanged; gap-bearing reconstructed contracts fail closed. This authorizes no
+runtime, promotion/write, live integration, dependency change, paid compute,
+or remote action.
+
+# 2026-08-07: PeTTaChainer stamps and evidence bases are one-to-one
+
+**Decision:** Require every immutable PeTTaChainer checked-add statement to
+carry exactly one evidence-basis id for each retained stamp.
+
+**Rationale:** Stamps and evidence bases are audit-only sidecars because the
+public PeTTaChainer statement schema cannot carry them. Permitting unequal
+cardinality would make that provenance ambiguous before the episode contract,
+even though the downstream derived-result capture already requires closure.
+
+**Consequences:** Compiler-produced valid statements are unchanged; malformed
+partially mapped statements fail closed. This authorizes no runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+
+# 2026-08-06: Typed PeTTaChainer builders reject malformed dependencies first
+
+**Decision:** Require immutable typed fact/rule statements, stage captures, and
+episode budgets at their public PeTTaChainer construction boundaries before
+extracting any nested provenance fields.
+
+**Rationale:** These objects define the compiler/runtime resource boundary.
+Rejecting a malformed direct caller through one stable `ValueError` contract
+keeps failure precedence deterministic and prevents incidental attribute errors
+from becoming part of the API.
+
+**Consequences:** Valid typed construction is unchanged. This closes only local
+validation; it authorizes no PeTTaChainer runtime invocation, promotion/write,
+live integration, dependency change, paid compute, or remote action.
+
+# 2026-07-31: Treat OS process-launch rejection as a bounded runner failure
+
+**Decision:** Translate `OSError` raised while launching the bounded kernel
+subprocess into the runner's public `ValueError` contract while preserving the
+original exception as its cause.
+
+**Rationale:** Callers should be able to fail closed on one typed runner
+boundary whether rejection occurs during preflight validation or at the OS
+launch boundary. Exception chaining retains actionable diagnostics.
+
+**Consequences:** A missing or OS-rejected executable no longer leaks a raw
+platform exception. Runtime output/result admission, promotion/write, and live
+integration boundaries are unchanged.
+
+# 2026-07-30: Treat frozen Phase-0 output shape as semantic evidence
+
+**Decision:** Admit the declared result and successful marker only when each
+appears exactly once as its standalone producer-shaped output line.
+
+**Rationale:** A substring occurrence proves neither that the runtime emitted
+the declared result as a result nor that the marker has its recorded output
+role. Exact line shape closes this ambiguity without interpreting arbitrary
+runtime diagnostics.
+
+**Consequences:** Rehashed captures that embed a valid atom in a larger line
+fail closed. This remains read-only replay admission and authorizes no runtime,
+promotion/write, or live integration.
+
+# 2026-07-30: Phase-0 replay manifests have closed schemas
+
+**Decision:** Treat every top-level and nested member in the frozen Phase-0
+reference manifest as part of its exact v1 schema; reject undeclared fields.
+
+**Rationale:** The clean-room reload gate must distinguish a frozen,
+non-promoting archive anchor from a rehashed document carrying an unreviewed
+authority claim. Validating only required known fields leaves that distinction
+ambiguous to downstream consumers.
+
+**Consequences:** Existing frozen reference manifests remain compatible, while
+schema extensions require review and a version change. This is read-only
+admission hardening prompted by the Phase-1 reload matrix; it authorizes no
+runtime invocation, promotion/write, or live integration.
+
 # 2026-07-25: Treat isolated stage labels as typed provenance
 
 **Decision:** A PeTTaChainer derived-result capture admits only the exact
@@ -877,3 +1103,744 @@ open runtime, promotion, write, or live-integration authority.
   bytes and a named passing classifier do not establish which program contract
   was exercised. This remains read-only evidence admission and grants no
   runtime, promotion, write, or live-integration authority.
+- 2026-07-28: Treat the frozen usability derivation's source term, derived
+  projection, and numeric-stamp sidecar roles as one provenance contract.
+  Integrity-bound executable text does not make independently relabelable
+  audit metadata trustworthy. Admission requires source item/evidence
+  agreement and the exact non-live synthetic bridge identity; this grants no
+  runtime, promotion, write, or live-integration authority.
+- 2026-07-28: Frozen usability admission treats the source item's term and STV
+  as the authority for reconstructing the two runtime Sentences and expected
+  TotalMp result. Merely integrity-binding mutually consistent executable text,
+  declared sentences, and result is insufficient if they can detach from the
+  provenance-bearing source item.
+- 2026-07-28: Frozen provider-free usability admission treats the exact number
+  of semantic pass markers as part of the program/result contract. Because the
+  admitted bounded program reconstructs exactly one `Test`, it must produce
+  exactly one successful marker; internally consistent larger counts do not
+  prove that only the reviewed test ran.
+- 2026-07-29: Treat a frozen usability source item's exact non-inferred status
+  as admission-critical provenance. A patham9/PLN Sentence input may support a
+  bounded derivation smoke without thereby becoming an admitted inferred
+  belief; integrity-preserving relabeling cannot cross that promotion boundary.
+- 2026-07-29: Treat the frozen usability source's `pi_pln_extension` as an
+  admission-relevant non-live boundary, not opaque metadata. The consumer
+  requires the exact producer declaration that context selection was not run,
+  contextual EvidencePackets are empty, and EC projection remains deferred.
+  Any later context-selection result needs a distinct reviewed schema/gate; it
+  must not be smuggled through a rehashed frozen bundle.
+## 2026-07-29: Frozen usability source provenance identities are non-empty
+
+**Decision:** Admit a frozen provider-free usability inference only when its
+source item carries non-empty string identities for belief, cluster, evidence,
+promotion domain, promotion event, and promotion rule.
+
+**Rationale:** Exact member sets and integrity hashes do not give empty
+provenance fields meaning. Allowing a fully rehashed producer to erase the
+reviewed promotion rule would sever an important audit boundary while leaving
+the derivation structurally valid.
+
+**Consequences:** Frozen bundles with erased provenance now fail closed. This
+does not establish the external existence of those identities, authorize
+promotion, invoke a runtime, write canonical memory, or enable live
+OmegaClaw/GoalChainer integration.
+## 2026-07-29 — Provenance identities are canonical MeTTa terms
+
+Frozen provider-free usability admission treats every source provenance
+identity as exactly one canonical MeTTa term, including compound evidence
+identities. Non-empty strings and cross-field equality are insufficient when
+an identity is interpolated into a MeTTa provenance atom: a rehashed identity
+must not introduce an additional executable form. This is read-only admission
+hardening and grants no runtime, promotion, write, or live authority.
+- **2026-07-29 11:00 PDT / 18:00 UTC — Treat inference diagnostic surfaces as
+  typed data, not extensible JSON:** Frozen usability admission accepts
+  stdout/stderr only as strings and diagnostic lines only as a list of
+  strings. Integrity alone does not establish the semantics of a JSON value;
+  type-closing these producer-defined fields prevents authority-shaped
+  structures from hitchhiking in an admitted result without changing the
+  schema or granting diagnostic text authority.
+## 2026-07-29 — Frozen runtime tails retain their producer bound
+
+Provider-free usability admission treats the producer's 4,000-character
+stdout/stderr tail truncation as part of the frozen result contract. Artifact
+size and integrity bounds do not substitute for a field-level diagnostic
+resource bound; a rehashed result cannot expand either tail beyond what the
+reviewed producer emits. This remains read-only admission hardening and grants
+no runtime, promotion, write, or live authority.
+- 2026-07-29: Frozen provider-free usability admission treats semantic
+  diagnostic lines as derived process evidence, not free-standing commentary.
+  Every line must be observable in the producer-bounded stdout or stderr tail;
+  otherwise admission fails closed even when all artifact hashes are valid.
+  This keeps the existing schema and read-only/non-live authority boundary.
+- 2026-07-29: Frozen provider-free usability admission requires the diagnostic
+  line list to equal the producer-equivalent reconstruction from bounded
+  stdout/stderr, including order, multiplicity, and stripping. Subset
+  membership is insufficient because omission would make an audit surface
+  independently editable despite integrity and marker-count checks. This
+  remains read-only evidence admission with no runtime, write, promotion, or
+  live authority.
+- 2026-07-30: Treat the frozen Phase-0 reference output's successful semantic
+  marker cardinality as admission-critical. Integrity, duplicate-run equality,
+  and a `passed: true` claim do not prove that the reviewed single-test
+  reference produced only one success when marker presence is checked as a
+  substring. Admission requires exactly one declared semantic-result
+  occurrence and exactly one `(Passed: #t)` occurrence. This is replay-anchor
+  hardening only and grants no runtime, promotion, write, or live authority.
+- 2026-07-30: Treat the frozen Phase-0 reference's declared semantic result as
+  a typed kernel-result atom, not an arbitrary integrity-bound output
+  substring. Admission requires the canonical patham9 result shape, bounded
+  text, finite unit-interval truth values, and canonical non-empty stamps.
+  This closes replay-anchor classification only and grants no runtime,
+  promotion, write, or live-integration authority.
+- 2026-07-30: Treat the complete non-empty output-line inventory and ordering
+  of the frozen Phase-0 producer as admission-critical. Required-line
+  cardinality alone permits an integrity-consistent anchor to carry additional
+  contradictory or authority-shaped output. Admission therefore requires
+  exactly the declared kernel-result line followed by the pass-marker line,
+  while granting no runtime, promotion, write, or live authority.
+- 2026-07-30: Treat the exact program bytes delivered during a frozen Phase-0
+  replay as admission-critical. Matching runtime identity and deterministic
+  output does not prove that the reviewed source was executed. Bounded
+  captures therefore retain both the existing canonical program CID and a
+  direct byte digest; Phase-0 admission compares the latter with the frozen
+  source SHA-256. This grants no runtime, promotion, write, or live authority.
+- 2026-07-30: Treat the normalized absolute executable launch path as part of
+  fresh Phase-0 replay capture provenance. The digest-pinned subprocess helper
+  resolves the executable before hashing and launch, so replay should not
+  admit a weaker manually reconstructed relative-path capture merely because
+  its asserted digest matches. This hardens the non-live replay gate and
+  grants no runtime, promotion, write, or integration authority.
+- 2026-07-30: Treat the frozen Phase-0 replay argv shape as admission-critical.
+  Because the bounded replay delivers the checksum-verified complete program on
+  stdin, the admitted launch consists only of the pinned normalized executable.
+  Additional flags or filenames are unreviewed execution inputs even when all
+  recorded content digests and output bytes match. This grants no runtime,
+  promotion, write, or live-integration authority.
+## 2026-07-30: Preserve subprocess cwd in raw captures and close the frozen replay shape
+
+**Decision:** Record the normalized caller-supplied working-directory input in
+`KernelProcessCapture`. The frozen Phase-0 stdin-only reference admits only a
+capture with no explicit `cwd`.
+
+**Rationale:** Executable, program, and argv identities do not reveal whether
+the process was launched under an alternate caller-selected filesystem
+context. Discarding that input made the raw capture weaker than the bounded
+runner invocation it represented.
+
+**Consequences:** Fresh reference replay fails closed on an explicit alternate
+working directory. This records caller input, not the ambient inherited
+directory's absolute identity, and it does not bind environment variables,
+invoke the runtime, or authorize promotion, writes, or live integration.
+# 2026-07-31: Typed kernel captures contain only valid UTF-8 text
+
+**Decision:** Require all textual process-boundary fields in
+`KernelProcessCapture` to encode as strict UTF-8 at construction.
+
+**Rationale:** The bounded runner and replay gates define byte limits, hashes,
+and output decoding in UTF-8. Allowing manually reconstructed captures to
+contain lone surrogates violates that shared representation and shifts a typed
+validation failure into incidental encoding exceptions downstream.
+
+**Consequences:** Unencodable argv, streams, cwd, and environment entries fail
+closed before replay. This grants no runtime, promotion/write, or live
+integration authority.
+# 2026-07-31: Require UTF-8 at both kernel launch and capture boundaries
+
+**Decision:** Treat program and process-context text as UTF-8 data before
+launch, and reject unencodable values with the same typed fail-closed contract
+used for reconstructed captures.
+
+**Rationale:** A reconstructed capture must not admit text the actual runner
+cannot deliver, while callers of the runner should receive bounded validation
+errors before any subprocess side effect rather than platform encoding errors.
+
+**Consequences:** Surrogate-bearing program, argv, cwd, and explicit environment
+inputs cannot launch. This changes no valid UTF-8 execution and grants no
+promotion, write, or live-integration authority.
+
+# 2026-07-31: Normalize cwd resolution failures at the launch boundary
+
+**Decision:** Convert both OS resolution errors and symlink-cycle errors into a
+typed `ValueError` before launching the bounded kernel subprocess.
+
+**Rationale:** A caller-controlled invalid cwd is input-validation failure.
+Python exposes a symlink cycle as `RuntimeError`, but that implementation detail
+must not escape the runner's fail-closed validation contract.
+
+**Consequences:** Cyclic cwd inputs cannot launch and report the same bounded
+resolution failure class as missing or otherwise unresolvable paths. Valid cwd
+behavior and all promotion, write, and live-integration boundaries are unchanged.
+# 2026-07-31: Treat argv as a collection, not scalar text
+
+**Decision:** Reject text/bytes and non-iterable `argv` values before bounded
+kernel launch, using the runner's typed `ValueError` contract.
+
+**Rationale:** Python strings are iterable, so unconditional tuple conversion
+silently changes a bare executable pathname into one-character arguments.
+That is an ambiguous launch shape rather than a valid argument vector.
+
+**Consequences:** Callers must supply an actual iterable of argument strings.
+Result admission, promotion/write, dependencies, and live integration remain
+unchanged.
+# 2026-07-31: Apply the argv byte ceiling during iterable consumption
+
+**Decision:** Validate and byte-account kernel argv entries incrementally
+instead of materializing the caller's complete iterable before enforcing its
+budget.
+
+**Rationale:** An iterable is not necessarily finite or cheaply materialized.
+The launch boundary's byte ceiling must also bound Python-side admission work,
+not only the final OS argument vector.
+
+**Consequences:** Oversized and unbounded argv sources fail closed once their
+UTF-8 payload plus terminating-NUL framing crosses `max_argv_bytes`. Valid
+bounded vectors behave unchanged; no runtime result, promotion/write, or live
+integration authority is added.
+
+# 2026-07-31: Normalize argv enumeration failures before launch
+
+**Decision:** Convert exceptions raised by a caller-supplied argv iterator
+during enumeration into the bounded runner's typed `ValueError`, retaining the
+original exception as its cause.
+
+**Rationale:** Iterator execution is caller-controlled input admission. Its
+implementation exceptions must not escape the same typed boundary already
+used for non-iterability, malformed entries, and byte-budget violations.
+
+**Consequences:** Failing argv iterators cannot launch a process and remain
+diagnosable through exception chaining. Valid bounded vectors and all result,
+promotion/write, and live-integration boundaries are unchanged.
+# 2026-08-01: Treat environment item shape as part of runner admission
+
+**Decision:** Convert malformed entries yielded by a caller-supplied process
+environment iterator into the bounded runner's chained `ValueError` contract
+before subprocess launch.
+
+**Rationale:** Merely requiring `Mapping` does not guarantee a custom
+`items()` implementation yields key-value pairs. The complete caller-controlled
+iteration surface needs one fail-closed typed boundary.
+
+**Consequences:** Non-pair environment entries cannot leak raw unpacking
+exceptions or reach `Popen`. Runtime output/result admission, promotion/write,
+and live integration boundaries are unchanged.
+# 2026-08-01: Environment items have an exact structural boundary
+
+**Decision:** Require every item from an explicit environment mapping to be an
+exact two-element tuple before interpreting its key and value.
+
+**Rationale:** Generic sequence unpacking admits scalar strings of length two,
+allowing a hostile mapping implementation to alter the subprocess environment
+despite not yielding a key/value item.
+
+**Consequences:** Scalar and other non-tuple items fail through the typed
+pre-launch boundary. Ordinary mapping `items()` output is unchanged; runtime
+result admission, promotion/write, and live integration remain closed.
+# 2026-08-01: Normalize subprocess process-construction failures
+
+**Decision:** Treat both `OSError` and `subprocess.SubprocessError` raised by
+`Popen` as typed bounded-runner launch failures, retaining the original
+exception as cause.
+
+**Rationale:** Callers should receive one stable pre-execution failure contract
+for the exception classes exposed by process construction rather than having a
+subprocess-specific exception escape the boundary.
+
+**Consequences:** Process-construction failure cannot be mistaken for a
+capture or validated result. Successful execution, result admission,
+promotion/write, and live integration semantics are unchanged.
+# 2026-08-01: Treat child-stream read errors as bounded runner failures
+
+**Decision:** Translate OS-level stdout/stderr capture failures into the
+bounded runner's public `ValueError` contract, preserving the original
+exception as cause and terminating the isolated process group.
+
+**Rationale:** A failure in a reader thread must not become an untyped missing
+capture or leave the subprocess running. Preflight, launch, program delivery,
+and output capture should share one fail-closed caller contract.
+
+**Consequences:** Failed stream capture cannot produce a
+`KernelProcessCapture`. Result admission, promotion/write, and live integration
+boundaries remain unchanged.
+- 2026-08-02: Treat every ordinary exception raised inside a bounded kernel
+  stdout/stderr reader as a capture failure at the thread boundary. Preserve
+  the exception as the cause of the public typed `ValueError`; do not permit a
+  worker-thread traceback or missing capture entry to become the caller-visible
+  failure. `BaseException` remains outside this normalization boundary.
+- 2026-08-02: Treat every ordinary exception raised while delivering the
+  bounded kernel program over stdin as incomplete delivery. Preserve the first
+  failure as the cause of the public typed `ValueError`; never admit a capture
+  after its daemon writer failed. `BaseException` remains outside this
+  normalization boundary. Result admission, promotion/write, and live
+  integration semantics are unchanged.
+- 2026-08-02: Treat every ordinary direct-process wait exception as a bounded
+  runner failure. Preserve the original exception as the cause of a typed
+  `ValueError`, and retain cleanup of the isolated process group and captured
+  streams. `BaseException` remains outside normalization; result admission,
+  promotion/write, and live integration semantics are unchanged.
+# 2026-08-03: Treat timeout reaping as part of the typed runner boundary
+
+**Decision:** Translate an unexpected failure from the post-timeout reap into
+`ValueError("kernel subprocess timeout cleanup failed")`, preserving the
+cleanup exception as its cause.
+
+**Rationale:** Killing a timed-out process group is not the end of cleanup; the
+direct child must also be reaped. That mandatory operation belongs inside the
+same fail-closed typed contract as launch, capture, stdin delivery, and the
+ordinary wait.
+
+**Consequences:** Callers no longer receive an arbitrary exception from the
+timeout cleanup path. Stream finalization remains active, and result admission,
+promotion/write, external runtimes, and live integration are unchanged.
+
+# 2026-08-03: Treat process-group termination as typed runner cleanup
+
+**Decision:** Record ordinary `killpg()` failures and reject capture through a
+typed process-group cleanup `ValueError`, preserving the first failure as its
+cause. `ProcessLookupError` continues to mean the group is already absent.
+
+**Rationale:** Process-group termination is used from worker and caller paths.
+Its failures must not escape only inside a daemon thread or permit a successful
+capture after descendant cleanup was not established.
+
+**Consequences:** Stream finalization still runs before the cleanup failure is
+reported. Result admission, promotion/write, external runtimes, and live
+integration remain unchanged.
+# 2026-08-03: Treat worker joins as typed runner cleanup
+
+**Decision:** Record ordinary writer/reader `join()` failures and reject capture
+through `ValueError("kernel subprocess worker cleanup failed")`, preserving the
+first failure as its cause while attempting all joins and stream closes.
+
+**Rationale:** Worker synchronization is part of bounded capture finalization.
+One failed join must not leak an arbitrary exception or suppress remaining
+cleanup attempts.
+
+**Consequences:** Failed worker cleanup cannot produce a capture. Result
+admission, promotion/write, external runtimes, and live integration remain
+unchanged.
+# 2026-08-03: Treat capture-worker startup as part of the bounded launch boundary
+
+**Decision:** Normalize an unexpected capture-worker `start()` failure through
+the runner's typed failure contract and complete bounded child/worker/stream
+cleanup before returning it.
+
+**Rationale:** Successful `Popen` is not a completed runner launch: without all
+three I/O workers, the child cannot produce a trustworthy bounded capture and
+must not survive an internal thread-start failure.
+
+**Consequences:** Only successfully started workers are joined; the process is
+killed and reaped and both captured streams are closed. Result admission,
+promotion/write, and live integration boundaries are unchanged.
+# 2026-08-03: Treat post-launch worker construction as a typed cleanup boundary
+
+**Decision:** If a capture thread cannot be constructed after subprocess
+launch, kill/reap the child, attempt closure of every subprocess pipe, and
+surface construction or cleanup failure through a chained `ValueError`.
+
+**Rationale:** Worker construction is untrusted runtime setup just like worker
+startup. It must not leak an orphan process, descriptors, or a raw exception.
+
+**Consequences:** Kernel execution, inference admission, promotion/write, and
+live integration authority are unchanged.
+# 2026-08-03: Finalize every post-launch subprocess pipe
+
+**Decision:** Close stdin together with stdout and stderr in the bounded
+runner's post-launch finalizer, including when capture-worker startup fails
+before the stdin writer starts.
+
+**Rationale:** Killing and reaping the child does not release the parent's pipe
+descriptor. Every pipe acquired at successful process construction belongs to
+the same fail-closed cleanup boundary.
+
+**Consequences:** Startup failure cannot leak the unstarted writer's stdin
+pipe. Result admission, promotion/write, external runtimes, and live
+integration remain unchanged.
+# 2026-08-03: Preserve worker-construction termination failures
+
+**Decision:** When capture-worker construction fails after launch, treat a
+process-group termination failure as the primary typed construction-cleanup
+cause, while still attempting direct-child reap and closure of every pipe.
+
+**Rationale:** The triggering thread-constructor exception explains why setup
+stopped, but a failed kill identifies the higher-risk cleanup condition: the
+isolated child or descendants may remain alive. Discarding it makes the
+fail-closed boundary misleading.
+
+**Consequences:** Construction cleanup remains typed and diagnostic, and all
+remaining cleanup attempts still run. Runtime result admission,
+promotion/write, external runtimes, and live integration remain unchanged.
+# 2026-08-03: Process-group cleanup outranks an ordinary wait failure
+
+**Decision:** Defer the typed ordinary-wait failure until after subprocess
+finalization, and report a recorded process-group termination failure first.
+
+**Rationale:** A wait exception describes observation/reaping failure, while a
+failed kill means the isolated process group may remain alive. The latter is
+the higher-risk cleanup condition and must not be masked by control flow.
+
+**Consequences:** Successful-kill wait failures retain the existing typed
+`kernel subprocess wait failed` contract. Simultaneous kill failure instead
+uses the existing process-group cleanup contract. Result admission,
+promotion/write, external runtimes, and live integration remain unchanged.
+# 2026-08-03: Process-group cleanup outranks a subprocess timeout
+
+**Decision:** Defer timeout and timeout-cleanup classification until common
+post-launch finalization, and report any recorded process-group termination
+failure first.
+
+**Rationale:** The timeout explains why termination was requested, but a failed
+kill means the isolated child or descendants may still be alive. That
+higher-risk cleanup condition must remain visible rather than being masked by
+an immediate timeout raise.
+
+**Consequences:** Ordinary timeouts and timeout-reap failures keep their
+existing typed messages and original causes when termination succeeds. Worker
+joins and every pipe closure still run. Result admission, promotion/write,
+external runtimes, and live integration remain unchanged.
+# 2026-08-03: Normalize every ordinary process-construction failure
+
+**Decision:** Treat any ordinary `Exception` raised by `subprocess.Popen` as a
+typed kernel launch failure while preserving the original exception as cause.
+
+**Rationale:** The bounded runner is a fail-closed API boundary. Constructor
+failures from wrappers, instrumentation, or future runtime internals should
+not leak an unrelated exception type to episode callers.
+
+**Consequences:** `KeyboardInterrupt`, `SystemExit`, and other
+`BaseException` controls still propagate. No child exists yet on this path, so
+cleanup behavior, result admission, promotion/write, and live integration are
+unchanged.
+# 2026-08-04: Preserve requested-pipe termination failures without truncating cleanup
+
+**Decision:** Treat process-group termination failure during requested-pipe
+validation as the first typed cleanup cause, while still attempting direct
+process reap and closure of every supplied pipe.
+
+**Rationale:** A malformed `Popen` result is already outside the runner's
+admitted launch contract. Failure to terminate it is the most urgent cleanup
+diagnostic, but must not prevent the remaining bounded cleanup attempts.
+
+**Consequences:** Regression coverage now fixes the ordering and completeness
+of this cleanup path. Runtime result admission, promotion/write, dependencies,
+and live integration remain unchanged and closed.
+# 2026-08-04: Preserve requested-pipe reap failures without truncating cleanup
+
+**Decision:** Treat direct-child `wait()` failure during requested-pipe
+validation as a typed pipe-validation cleanup failure, while still attempting
+closure of every supplied subprocess stream.
+
+**Rationale:** A malformed construction result must not leak an arbitrary reap
+exception or cause later descriptor cleanup to be skipped.
+
+**Consequences:** Regression coverage now fixes the typed cause and cleanup
+completeness. Runtime result admission, promotion/write, dependencies, and live
+integration remain unchanged and closed.
+# 2026-08-04: Close requested-pipe cleanup follow-ups and return to Phase-1
+
+**Decision:** Treat the kill-, reap-, and supplied-stream-failure regressions
+for malformed requested-pipe cleanup as the completed bounded follow-up to the
+pipe-validation change. Do not add more speculative subprocess hardening unless
+a concrete Phase-1 gate failure exposes it; return to semantic capture/reload.
+
+**Rationale:** The focused matrix now preserves each cleanup failure class as a
+typed cause and proves later cleanup attempts still occur. Joint focused and
+full verification passed (2 and 662 tests), so further edge-case expansion
+would repeat the diminishing-return branch frozen on 2026-07-22.
+
+**Consequences:** The next meaningful implementation slice is again the bounded,
+non-live Phase-1 semantic capture/reload gate. Runtime invocation,
+promotion/write, upstream adoption, paid compute, remote actions, and live
+OmegaClaw/GoalChainer integration remain closed.
+# 2026-08-04: Persist raw kernel captures as a distinct typed artifact
+
+**Decision:** Store the complete bounded `KernelProcessCapture` in a create-once,
+checksummed v1 document and reconstruct its typed invariants before using it for
+clean-room manifest admission.
+
+**Rationale:** Compiled inputs, semantic results, and manifests were persistent,
+but the OS-level process evidence connecting them was manually reconstructed on
+reload. A distinct raw-capture artifact preserves argv, streams, runtime/program
+identities, cwd, and environment without conflating raw diagnostics with a
+validated PLN result or promotion authority.
+
+**Consequences:** Clean-room replay can now admit persisted process provenance
+end to end. The artifact does not execute a runtime, validate semantic output by
+itself, authorize promotion/write, or open live OmegaClaw/GoalChainer integration.
+- 2026-08-04 19:10 PDT / 2026-08-05 02:10 UTC: Treat every immutable dependency
+  supplied to episode-manifest construction as part of the public typed audit
+  boundary. Reject malformed dependencies before field access so orchestration
+  errors remain stable and fail closed; this grants no runtime or promotion
+  authority. Implemented in local commit `a125a1b`.
+- 2026-08-05 09:03 PDT / 16:03 UTC: PeTTaChainer derived-result artifacts must
+  establish their typed serialization contract before any destination-parent
+  creation. Malformed caller input is not allowed to mutate the filesystem.
+- 2026-08-05 11:00 PDT / 18:00 UTC: PeTTaChainer rule-attribution artifacts,
+  like derived-result and episode-manifest artifacts, must establish their
+  typed checksummed serialization boundary before destination-parent creation.
+  Malformed caller input must not mutate the filesystem. Implemented in local
+  commit `c3de0a0`; no runtime, promotion, write, or live authority is added.
+- 2026-08-05 13:04 PDT / 20:04 UTC: Stock pi-PLN episode-manifest artifacts,
+  like the PeTTaChainer audit artifacts, must establish their typed checksummed
+  serialization boundary before destination-parent creation. Malformed caller
+  input must not mutate the filesystem; this grants no runtime, promotion,
+  write, or live authority. Implemented in local commit `f7fba44`.
+- 2026-08-05 19:00 PDT / 2026-08-06 02:00 UTC: Immutable compiled episode
+  inputs must establish their typed checksummed serialization boundary before
+  destination-parent creation. Malformed caller input must not mutate the
+  filesystem. Implemented in local commit `e012c48`; this grants no runtime,
+  promotion, write, or live authority.
+- 2026-08-06 03:00 PDT / 10:00 UTC: Required immutable compiler provenance for
+  PeTTaChainer derived-result reload is a caller admission boundary and must be
+  validated before artifact I/O. This preserves deterministic typed failure
+  precedence without granting runtime, result-promotion, write, or live
+  integration authority. Implemented in local commit `6cd83e5`.
+
+# 2026-08-06: Require an exact evidence-snapshot persistence envelope
+
+**Decision:** Admit evidence-snapshot documents only when their top level is
+exactly `schema`, `payload`, and `document_digest`.
+
+**Rationale:** The payload digest cannot authenticate or reject undeclared
+top-level siblings. Exact schema closure prevents authority-shaped metadata
+from riding beside an otherwise valid immutable snapshot.
+
+**Consequences:** Older or adversarial snapshot documents with extra envelope
+members fail closed; the canonical writer output and payload schema are
+unchanged.
+# 2026-08-06: Type-check immutable episode compiler dependencies first
+
+**Decision:** Require `PiChart` and `EvidenceSnapshot` instances at the start
+of `compile_episode_inputs()` before reading provenance fields.
+
+**Rationale:** Malformed orchestration input should fail through the compiler's
+stable validation boundary, independently of later snapshot or packet checks.
+
+**Consequences:** Direct callers no longer receive incidental attribute errors;
+compilation semantics and all runtime, promotion, write, and live-integration
+gates are unchanged. Implementation commit: `225aade`.
+- 2026-08-06 13:01 PDT: Treat every packet and evidence-basis member accepted
+  by deterministic episode compilation as an explicit immutable dependency.
+  Reject malformed members at the public compiler boundary before provenance
+  or identifier access, preserving a stable typed failure contract.
+## 2026-08-07 — PeTTaChainer contract stamp sidecars are globally bijective
+
+Decision: within one immutable `PeTTaChainerEpisodeContract`, every repeated
+stamp must identify the same evidence basis and every repeated evidence basis
+must identify the same stamp. Statement-local cardinality is insufficient for
+an episode-level provenance claim.
+
+Reason: PeTTaChainer's public checked-add atom has no stamp field, so the typed
+sidecar is the audit boundary. Allowing contradictory reconstructed sidecars
+would make downstream capture and attribution provenance ambiguous even when
+each statement passed independently.
+# 2026-08-07: PeTTaChainer contract statement containers are immutable
+
+**Decision:** Require the checked-add statement collection in every immutable
+PeTTaChainer episode contract to be a non-empty tuple.
+
+**Rationale:** A frozen dataclass that retains a caller-owned list is still
+mutable after validation, which can invalidate its proof-id and stamp/basis
+audit checks without reconstructing the contract.
+
+**Consequences:** Valid compiler-produced contracts are unchanged; manually
+constructed list-backed contracts fail closed. This authorizes no runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+# 2026-08-07: Bound immutable PeTTaChainer contracts at reconstruction
+
+**Decision:** Apply the compiler adapter's aggregate one-million-character
+checked-add/query atom ceiling inside `PeTTaChainerEpisodeContract` itself.
+
+**Rationale:** Builder-only enforcement is not an immutable contract invariant;
+a direct or deserialized caller could otherwise construct oversized runtime
+input while retaining all other typed provenance checks.
+
+**Consequences:** Compiler-produced contracts are unchanged, while oversized
+reconstructed contracts fail before query canonicalization. This grants no
+runtime, promotion/write, live-integration, dependency, paid-compute, or remote
+authority. Implemented in local commit `dde58b4`.
+# 2026-08-07: Bound duplicated PeTTaChainer query terms before parsing
+
+**Decision:** Type-check and cap a reconstructed contract's typed `query_term`
+before canonical S-expression parsing, independently of its emitted
+`query_atom` ceiling.
+
+**Rationale:** Direct reconstruction can make those duplicate fields disagree.
+A small forged atom must not allow an oversized term to consume parser work
+before the later equality check rejects it.
+
+**Consequences:** Compiler-produced contracts are unchanged; malformed direct
+reconstructions fail at the immutable resource boundary. This grants no
+runtime, promotion/write, live-integration, dependency, paid-compute, or remote
+authority. Implemented in local commit `99fe409`.
+# 2026-08-07: Enforce aggregate PeTTaChainer size before semantic scans
+
+**Decision:** Accumulate and enforce a reconstructed episode contract's
+checked-add statement character ceiling before proof-id uniqueness allocation
+and provenance scanning.
+
+**Rationale:** The ceiling is a resource-admission boundary. An oversized tuple
+of repeated valid statements must fail there before later semantic checks do
+work proportional to the entire adversarial collection.
+
+**Consequences:** Valid compiler-produced contracts are unchanged; oversized
+reconstructions now fail earlier and deterministically. This grants no runtime,
+promotion/write, live-integration, dependency, paid-compute, or remote
+authority. Implemented in local commit `a8dc813`.
+# 2026-08-07: Bound reconstructed derived-result text before parsing
+
+**Decision:** Type-check and independently cap PeTTaChainer derived-result
+query, atom, and proof text before canonical query parsing.
+
+**Rationale:** The public frozen capture is reconstructible, so persistence
+and replay callers must not be able to spend unbounded parser work before the
+typed atom/result consistency checks run.
+
+**Consequences:** Valid captures are unchanged. Malformed reconstructed text
+fails closed before parsing. This authorizes no runtime, promotion/write, live
+integration, dependency change, paid compute, or remote action.
+# 2026-08-08: Bound reconstructed stock pi-PLN result queries before parsing
+
+**Decision:** Type-check and cap the duplicate query term retained by a
+directly reconstructed `ValidatedKernelResult` before canonical parsing.
+
+**Rationale:** Validator-created results already carry canonical bounded query
+text, but the public frozen dataclass is reconstructible. Its immutable
+boundary must enforce the same parser resource ceiling independently.
+
+**Consequences:** Valid admitted results are unchanged. Malformed duplicate
+query text fails closed before parsing. This authorizes no runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+# 2026-08-08: Bound reconstructed compiled sentences before parsing
+
+**Decision:** Require immutable projection and kernel-sentence metadata on
+every `CompiledSentence`, and cap its emitted atom and canonical term before
+canonical S-expression parsing.
+
+**Rationale:** Compiler-produced sentences are safe, but the public frozen
+dataclass is reconstructible. Malformed dependencies must not leak attribute
+errors, and oversized duplicate term text must not consume unbounded parser
+work.
+
+**Consequences:** Valid compiler output is unchanged. Malformed reconstructed
+sentences fail closed without granting runtime, promotion/write, live
+integration, dependency, paid-compute, or remote authority.
+# 2026-08-08: Require immutable evidence-basis provenance collections
+
+**Decision:** Require tuple-backed `member_token_ids` and `causal_group_ids`
+when directly constructing a frozen `EvidenceBasis`.
+
+**Rationale:** Evidence bases feed deterministic stamp allocation and exact
+evidence algebra. Accepting caller-owned lists allowed provenance to change
+after validation despite the frozen record boundary.
+
+**Consequences:** Valid builder output is unchanged. Malformed reconstructed
+bases fail closed without granting runtime, promotion/write, live integration,
+dependency, paid-compute, or remote authority.
+## 2026-08-08 17:00 PDT / 2026-08-09 00:00 UTC — require immutable snapshot collections
+
+- Decision: require tuple-backed `EvidenceSnapshot.packet_ids` and
+  `packet_content_digests`, and require every digest pair to be a tuple.
+- Rationale: `frozen=True` blocks field reassignment but does not freeze
+  caller-owned lists; the snapshot is a content-addressed provenance boundary,
+  so nested mutable aliases must be rejected at reconstruction.
+- Scope: validation and regressions only. Runtime, promotion/write, live
+  integration, dependency, paid-compute, and remote gates remain unchanged.
+# 2026-08-08: Require immutable typed pi-chart inputs
+
+**Decision:** Require direct `PiChart` construction to supply a typed
+`ChartPolicy` and tuple-backed `selected_packet_ids`.
+
+**Rationale:** Charts are fingerprinted compiler inputs. A frozen record must
+not retain caller-owned mutable selection state, and malformed reconstructed
+policies should fail at the chart boundary rather than during downstream field
+access.
+
+**Consequences:** Builder-produced charts are unchanged. Malformed direct
+reconstructions fail closed without authorizing runtime, promotion/write, live
+integration, dependency changes, paid compute, or remote actions. Implemented
+in local commit `a6c7fd1`.
+# 2026-08-09: Snapshot builders admit only typed evidence packets
+
+Decision: require every item supplied to `build_evidence_snapshot(...)` to be
+an immutable `EvidencePacket` before reading packet identity or state.
+
+Rationale: the snapshot is a content-addressed evidence boundary. Malformed
+direct callers should fail through its stable `ValueError` contract rather
+than leaking implementation-level attribute errors before validation.
+
+Boundary: valid snapshot construction is unchanged. This does not invoke a
+runtime, authorize promotion or writes, enable live integration, change
+dependencies, use paid compute, or perform a remote action.
+- 2026-08-09: Treat every present optional `EvidenceToken` provenance id as a
+  typed non-empty string and reject non-integer schema versions at immutable
+  construction. This keeps malformed reconstructed evidence outside later
+  snapshot/pi-PLN paths and preserves the public `ValueError` boundary.
+  Implemented and verified in local repo commit `d3cc023`; non-live gates are
+  unchanged.
+# 2026-08-09: Evidence basis provenance ids are non-empty strings
+
+Decision: validate every `EvidenceBasis.member_token_ids` and
+`causal_group_ids` member as a non-empty string before uniqueness and ordering
+checks.
+
+Rationale: these values identify the atomic provenance and causal grouping of
+an evidence unit. Directly reconstructed typed records must not admit empty ids
+or leak `TypeError` from mixed-type sorting; malformed callers should receive
+the public `ValueError` contract.
+
+Boundary: valid basis construction and evidence algebra are unchanged. This
+does not invoke a runtime, authorize promotion or writes, enable live
+integration, change dependencies, use paid compute, or perform a remote
+action.
+# 2026-08-09: Evidence-basis builders require immutable typed dependencies
+
+Decision: validate the packet and complete materialized token collection as
+`EvidencePacket`/`EvidenceToken` records before reading their provenance.
+
+Rationale: direct reconstruction with property-bearing foreign objects could
+otherwise leak arbitrary field-access failures across a PLN-ready public
+boundary. Early type admission preserves the stable `ValueError` contract.
+
+Boundary: valid builder output and evidence algebra are unchanged. This is
+local contract hardening only; no runtime, promotion/write, live integration,
+dependency, paid-compute, or remote action is authorized.
+# 2026-08-09: Exact evidence-capsule merges require typed dependencies
+
+Decision: validate both merge operands as immutable `EvidenceCapsule` records
+and every supplied basis item as an immutable `EvidenceBasis` before reading
+their fields.
+
+Rationale: exact evidence algebra is a PLN-ready provenance boundary.
+Malformed reconstructed callers must fail through its stable `ValueError`
+contract rather than leaking incidental attribute-access failures.
+
+Boundary: valid deduplication and reviewed-overlap behavior is unchanged. This
+does not invoke a runtime, authorize promotion or writes, enable live
+integration, change dependencies, use paid compute, or perform a remote
+action. Implemented in local commit `9f61044`.
+# 2026-08-09: Validate evidence-snapshot packet ids before ordering
+
+**Decision:** Validate every `EvidenceSnapshot.packet_ids` member as a
+non-empty string before uniqueness sorting.
+
+**Rationale:** Snapshots are content-addressed PLN-ready provenance boundaries.
+Malformed reconstructed mixed-type identifiers must fail through their stable
+`ValueError` contract instead of leaking an incidental sorting `TypeError`.
+
+**Consequences:** Valid builder output is unchanged. This authorizes no runtime,
+promotion/write, live integration, dependency change, paid compute, or remote
+action.
+# 2026-08-09: Evidence snapshot digest sidecars require exact immutable pairs
+
+Decision: validate each `packet_content_digests` entry as a tuple of exactly
+two fields before extracting its packet id and content digest.
+
+Rationale: tuple immutability alone does not establish record shape. Wrong
+arity at this immutable snapshot boundary must produce the model's stable
+`ValueError` contract rather than an incidental destructuring exception.
+
+Boundary: valid snapshot identities and serialization are unchanged. This
+authorizes no runtime invocation, promotion/write, live integration,
+dependency change, paid compute, or remote action.
