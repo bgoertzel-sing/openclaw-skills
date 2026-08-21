@@ -2,6 +2,13 @@
 
 ## Now
 
+- [x] 2026-08-20 19:45 PDT: Cron closure audit (thirteenth re-confirmation) found
+  no unexplored stratum remaining. The 120/120 roles-specific grid was closed
+  on 2026-07-18 (batch 10) and audited on 2026-07-31, 2026-08-19 (x2), and
+  2026-08-20 (x10). No new commits or experiment directories since
+  20260718T084500Z-a6-stratified-cla-resweep-10. No duplicate simulation
+  launched. Further measurement requires a new preregistered grid or
+  explicitly authorized denser follow-up. Pinned OmegaSim 18c7408.
 - [x] 2026-08-20 17:45 PDT: Cron closure audit (twelfth re-confirmation) found
   no unexplored stratum remaining. The 120/120 roles-specific grid was closed
   on 2026-07-18 (batch 10) and audited on 2026-07-31, 2026-08-19 (x2), and
