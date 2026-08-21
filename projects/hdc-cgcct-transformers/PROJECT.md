@@ -3,7 +3,7 @@
 - Slug: `hdc-cgcct-transformers`
 - Status: `active`
 - Created: `2026-07-26`
-- Last reviewed: `2026-08-20T23:54`
+- Last reviewed: `2026-08-21T03:56`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -259,6 +259,14 @@ P1 remains terminal as `instrument_failed`; no P0 run, seed opening,
 criteria change, provider query, remote resource, or paid work occurred.
 Evidence:
 `experiments/20260820T235400Z-p1-terminal-integrity-r43/RUN.md`.
+
+The 2026-08-21 03:56Z checkpoint again passed all 31 tests and reproduced the
+same contract-v2 result byte-for-byte at SHA-256
+`40a81f56e18ecedc1ebdde06d63c3c428d1d3ad857f893826274ccb42165c6eb`.
+P1 remains terminal as `instrument_failed`; no P0 run, seed opening,
+criteria change, provider query, remote resource, or paid work occurred.
+Evidence:
+`experiments/20260821T035600Z-p1-terminal-integrity-r44/RUN.md`.
 
 The 2026-08-12 16:41Z checkpoint again passed all 31 tests and reproduced the
 same contract-v2 result byte-for-byte. P1 remains terminal as
