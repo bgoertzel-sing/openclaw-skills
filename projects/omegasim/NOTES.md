@@ -321,6 +321,20 @@ matched-control behavior only. Evidence:
 `experiments/20260717T164500Z-a6-stratified-cla-resweep-01/RUN.md`; results JSON
 SHA-256 `8f24f7bc832ccb38d468241310fe4a4661cf6e697667faa90243cf8d2b26d89c`.
 
+## 2026-08-20 - Cron closure audit (twelfth re-confirmation)
+
+The 17:45 PDT progress worker inspected PROJECT.md, TASKS.md, NOTES.md,
+git history, and experiment directories. The requested 120-cell
+roles-specific grid remains complete: batch 10 finished all four
+tight-region roles4 cells on 2026-07-18. Every grammar across the full
+sweep remained trivial under the frozen detector (two productions,
+zero categories). No new commits or experiment directories have appeared
+since `experiments/20260718T084500Z-a6-stratified-cla-resweep-10/`. No
+duplicate measurement was launched. The predeclared informative
+negative result stands. Further work requires an explicitly defined
+new or denser design; detector changes remain out of scope. Pinned
+OmegaSim `18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d`.
+
 ## 2026-08-20 - Cron closure audit (eleventh re-confirmation)
 
 The 15:45 PDT progress worker inspected PROJECT.md, TASKS.md, NOTES.md,
