@@ -13,9 +13,11 @@ import hashlib
 import io
 import json
 import os
+import threading
 from pathlib import Path
 from pathlib import PurePosixPath
 import signal
+import sqlite3
 import stat
 import subprocess
 import sys
@@ -46,6 +48,28 @@ ZIP_TEXT_SUFFIXES = {
 }
 MAX_INCIDENT_BYTES = 4096
 SEND_WRAPPER = re.compile(r'^\(send\s+("(?:\\.|[^"\\])*")\s*\)$', re.DOTALL)
+HASH_EMBEDDING_DIMENSION = 384
+
+
+def validate_live_chroma_dimension(chroma_root: Path) -> None:
+    """Fail before polling when an existing memories collection is incompatible."""
+    database = chroma_root / "chroma.sqlite3"
+    if not database.exists():
+        return
+    info = database.lstat()
+    if database.is_symlink() or not stat.S_ISREG(info.st_mode):
+        raise RuntimeError("live Chroma database must be a regular file")
+    try:
+        with sqlite3.connect(f"{database.as_uri()}?mode=ro", uri=True) as connection:
+            rows = connection.execute(
+                "SELECT dimension FROM collections WHERE name = ?", ("memories",)
+            ).fetchall()
+    except sqlite3.Error:
+        raise RuntimeError("live Chroma database metadata is unreadable") from None
+    if len(rows) > 1:
+        raise RuntimeError("live Chroma memories collection is ambiguous")
+    if rows and rows[0][0] not in (None, HASH_EMBEDDING_DIMENSION):
+        raise RuntimeError("live Chroma embedding dimension mismatch")
 
 
 def arm_parent_death_signal() -> None:
@@ -161,6 +185,16 @@ def classify_runtime_stderr(stderr: str) -> str:
         ("OmegaClaw authenticated bridge failure: provider_process_failed",
          "provider_process_failed"),
         ("OmegaClaw authenticated bridge failure: provider_bridge_failure",
+         "provider_bridge_failure"),
+        ("authenticated file bridge failure: provider_timeout",
+         "provider_timeout"),
+        ("authenticated file bridge failure: provider_route_invalid",
+         "provider_route_invalid"),
+        ("authenticated file bridge failure: provider_answer_invalid",
+         "provider_answer_invalid"),
+        ("authenticated file bridge failure: provider_process_failed",
+         "provider_process_failed"),
+        ("authenticated file bridge failure: provider_bridge_failure",
          "provider_bridge_failure"),
         ("OmegaClaw produced no send result before timeout", "case_no_send_timeout"),
         ("OmegaClaw exited early: bridge_running response_absent",
@@ -395,8 +429,8 @@ def clean_rendered_answer(answer: str) -> str:
     return unwrapped
 
 
-def captured_bridge_answer(stdout: str) -> str | None:
-    """Return the last complete bridge answer payload from captured stdout."""
+def captured_petta_send(stdout: str) -> str | None:
+    """Return the last PeTTa-executed send payload from case stdout."""
     for line in reversed(stdout.splitlines()):
         try:
             payload = json.loads(line)
@@ -527,20 +561,19 @@ def responder(prompt: str, args: argparse.Namespace, isolation_key: str | None =
         except FileNotFoundError:
             pass
     assert process is not None
-    # The bridge result is a completed immutable handoff from the inner
-    # runtime.  PeTTa can still fail while finalizing after that handoff (the
-    # message-848 production incident).  Preserve the incident, but do not
-    # discard an already captured and outer-validated answer.  A non-zero exit
-    # without such an answer remains a bounded failure.
-    raw_answer = captured_bridge_answer(stdout)
+    # The case emits only a send action that PeTTa actually evaluated.
+    # Provider proposals never reach this stdout seam.  Preserve a final send
+    # that completed before a late teardown incident; a non-zero exit without
+    # such a send remains a bounded failure.
+    petta_send = captured_petta_send(stdout)
     if process.returncode != 0:
         diagnostic = args.worker_state_dir / "responder-incidents.jsonl"
         append_responder_incident(diagnostic, returncode=process.returncode, stderr=stderr)
-        if raw_answer is not None:
-            return clean_rendered_answer(raw_answer)
+        if petta_send is not None:
+            return clean_rendered_answer(petta_send)
         raise RuntimeError("omegaclaw_runtime_failure")
-    if raw_answer is not None:
-        return clean_rendered_answer(raw_answer)
+    if petta_send is not None:
+        return clean_rendered_answer(petta_send)
     raise RuntimeError("omegaclaw_result_missing")
 
 
@@ -566,7 +599,17 @@ def main() -> int:
     parser.add_argument("--poll-timeout", type=int, default=15)
     parser.add_argument("--disable-deferred-jobs", action="store_true",
                         help="schema-compatible rollback mode: process long requests synchronously")
+    parser.add_argument("--use-iter", action="store_true",
+                        help="route responses through the Iter outer channel instead of the direct provider")
+    parser.add_argument("--iter-channel-root", type=Path, default=None,
+                        help="Iter outer-channel state root (defaults to state-dir/iter-channel)")
+    parser.add_argument("--iter-timeout", type=float, default=240.0,
+                        help="seconds to wait for Iter's reply before failing closed")
     args = parser.parse_args()
+    chroma_db_path = os.environ.get("CHROMA_DB_PATH", "")
+    if not chroma_db_path or not os.path.isabs(chroma_db_path):
+        raise RuntimeError("live receiver requires an absolute CHROMA_DB_PATH")
+    validate_live_chroma_dimension(Path(chroma_db_path))
     worker_info = args.worker_state_dir.lstat()
     if args.worker_state_dir.is_symlink() or not args.worker_state_dir.is_dir():
         raise RuntimeError("worker state root must be a real directory")
@@ -577,16 +620,53 @@ def main() -> int:
     from channels.private_canary import CanaryContract, load_config
     from channels.private_canary_telegram import PrivateCanaryTelegramTransport
 
+    if args.use_iter:
+        iter_port = Path(__file__).resolve().parents[1] / "iter-port"
+        sys.path.insert(0, str(iter_port))
+        channel_root = args.iter_channel_root or (args.state_dir / "iter-channel")
+        os.environ["ITER_OUTER_CHANNEL_ROOT"] = str(channel_root)
+        from src import iter_responder  # noqa: E402
+        _inbound_ids = threading.local()
+
+        def iter_responder_factory(text: str) -> str:
+            respond = _get_iter_responder()
+            ids = getattr(_inbound_ids, "value", None)
+            if ids is not None:
+                respond.bind(message_id=ids["message_id"], update_id=ids["update_id"])
+            return respond(text)
+
+        _iter_responders: dict[int, object] = {}
+
+        def _get_iter_responder():
+            # One responder per chat keeps bind() state coherent; the canary
+            # allowlist is bounded so this cache stays tiny.
+            chat_id = getattr(_inbound_ids, "value", {}).get("chat_id", 0)
+            if chat_id not in _iter_responders:
+                _iter_responders[chat_id] = iter_responder.make_responder(
+                    chat_id=chat_id, timeout_seconds=args.iter_timeout)
+            return _iter_responders[chat_id]
+
+        main_responder = iter_responder_factory
+
+        def _bind_inbound(chat_id: int, message_id: int, update_id: int) -> None:
+            _inbound_ids.value = {
+                "chat_id": chat_id, "message_id": message_id, "update_id": update_id,
+            }
+
+        PrivateCanaryTelegramTransport.on_before_respond = _bind_inbound
+    else:
+        main_responder = lambda text: responder(text, args)
+
     secret = read_env(args.env)
     api = Api(secret.pop("TG_BOT_TOKEN"))
     contract = CanaryContract(
         load_config(args.config, expected_identity=args.identity), args.state_dir
     )
     deferred_callback = None
-    if not args.disable_deferred_jobs:
+    if not args.disable_deferred_jobs and not args.use_iter:
         deferred_callback = lambda text, task_id: responder(text, args, task_id)
     transport = PrivateCanaryTelegramTransport(
-        contract, api, lambda text: responder(text, args), bot_id=args.bot_id,
+        contract, api, main_responder, bot_id=args.bot_id,
         bot_username=args.bot_username, attachment_label=args.identity,
         deferred_responder=deferred_callback,
     )

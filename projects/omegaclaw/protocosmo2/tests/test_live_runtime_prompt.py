@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import sqlite3
 import subprocess
 import threading
 import time
@@ -67,8 +68,20 @@ def test_live_runner_selects_live_bridge_contract_not_phase5_shadow_contract():
     assert '"--live-transport"' in RUNNER.read_text(encoding="utf-8")
     assert 'parser.add_argument("--live-transport"' in CASE.read_text(encoding="utf-8")
     bridge = BRIDGE.read_text(encoding="utf-8")
-    assert "LIVE TELEGRAM TRANSPORT NOTE" in bridge
+    assert "OMEGACLAW PROVIDER ACTION CONTRACT" in bridge
     assert "transport_instruction(live_transport)" in bridge
+
+
+def test_live_case_rejects_incompatible_existing_chroma_dimension(tmp_path):
+    chroma = tmp_path / "chroma"
+    chroma.mkdir()
+    with sqlite3.connect(chroma / "chroma.sqlite3") as connection:
+        connection.execute("CREATE TABLE collections (name TEXT, dimension INTEGER)")
+        connection.execute(
+            "INSERT INTO collections(name, dimension) VALUES ('memories', 3)"
+        )
+    with pytest.raises(RuntimeError, match="live Chroma embedding dimension mismatch"):
+        CASE_MODULE.validate_live_chroma_dimension(chroma)
 
 
 def test_live_runner_owns_and_cleans_up_inner_process_group():
@@ -331,7 +344,9 @@ def test_protomega_bridge_routes_through_explicit_agent_identity():
     bridge = BRIDGE.read_text(encoding="utf-8")
     assert '"--agent", args.agent_id' in runner
     assert 'parser.add_argument("--agent")' in case
-    assert '["--agent", agent]' in bridge
+    assert '"agent": agent' in bridge
+    assert '["node", str(helper)]' in bridge
+    assert '["openclaw", "agent"' not in bridge
 
 
 def test_production_supervisor_has_schema_compatible_deferred_rollback_mode():
@@ -339,8 +354,11 @@ def test_production_supervisor_has_schema_compatible_deferred_rollback_mode():
     supervisor = (Path(__file__).resolve().parents[2] / "local" /
                   "protomega-outer-telegram-supervisor.sh").read_text(encoding="utf-8")
     assert 'parser.add_argument("--disable-deferred-jobs", action="store_true"' in runner
-    assert "if not args.disable_deferred_jobs:" in runner
+    assert "if not args.disable_deferred_jobs" in runner
     assert "deferred_responder=deferred_callback" in runner
+    # Iter mode must keep the schema-compatible rollback path: deferred jobs
+    # are disabled in both --disable-deferred-jobs and --use-iter modes.
+    assert 'parser.add_argument("--use-iter", action="store_true"' in runner
     assert "OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER" in supervisor
     assert "deferred_args+=(--disable-deferred-jobs)" in supervisor
     assert "os.O_EXCL" in supervisor
@@ -425,95 +443,23 @@ def test_case_fails_closed_when_path_is_substituted_after_open(tmp_path, monkeyp
         CASE_MODULE.read_prompt(None, prompt_path)
 
 
-def test_case_reads_only_complete_substantive_bridge_handoff(tmp_path):
-    response = tmp_path / "response.json"
-    request_id = "a" * 64
-    prompt_sha256 = "b" * 64
-    session = "session-exact"
-    secret = b"c" * 32
-    read = lambda: CASE_MODULE.read_bridge_raw_answer(
-        response, request_id=request_id, prompt_sha256=prompt_sha256,
-        session=session, secret=secret,
-    )
-    assert read() is None
-    response.write_text("{", encoding="utf-8")
-    assert read() is None
-    response.write_text(json.dumps({"error": "inner runtime exited"}), encoding="utf-8")
-    assert read() is None
-    long_answer = 'Yes—I can migrate it.\n\n1. Inventory "all four" agents.\n2. Stage VM8.'
-    signed = BRIDGE_MODULE.signed_response(
-        raw_answer=long_answer, request_id=request_id,
-        prompt_sha256=prompt_sha256, session=session, secret=secret,
-    )
-    response.write_text(json.dumps(signed), encoding="utf-8")
-    assert read() == long_answer
-    for field, substituted in (
-        ("request_id", "d" * 64),
-        ("prompt_sha256", "e" * 64),
-        ("session", "other-session"),
-        ("raw_answer", "substituted answer"),
-        ("hmac_sha256", "0" * 64),
-    ):
-        tampered = dict(signed)
-        tampered[field] = substituted
-        response.write_text(json.dumps(tampered), encoding="utf-8")
-        assert read() is None
+def test_case_has_no_raw_provider_answer_completion_seam():
+    source = CASE.read_text(encoding="utf-8")
+    assert "read_bridge_raw_answer" not in source
+    assert "await_bridge_answer_after_exit" not in source
+    assert "answer = output_answer" in source
 
 
-def test_case_executes_bounded_authenticated_early_exit_grace(tmp_path):
-    response = tmp_path / "response.json"
-    request_id, prompt_sha256, session = "a" * 64, "b" * 64, "session-exact"
-    secret, answer = b"c" * 32, "authenticated late answer"
-
-    def publish():
-        time.sleep(0.05)
-        signed = BRIDGE_MODULE.signed_response(
-            raw_answer=answer, request_id=request_id,
-            prompt_sha256=prompt_sha256, session=session, secret=secret,
-        )
-        temporary = response.with_suffix(".tmp")
-        temporary.write_text(json.dumps(signed), encoding="utf-8")
-        os.replace(temporary, response)
-
-    thread = threading.Thread(target=publish)
-    thread.start()
-    observed = CASE_MODULE.await_bridge_answer_after_exit(
-        response, request_id=request_id, prompt_sha256=prompt_sha256,
-        session=session, secret=secret, timeout=0.5,
-    )
-    thread.join()
-    assert observed == answer
-
-    substituted = BRIDGE_MODULE.signed_response(
-        raw_answer=answer, request_id="d" * 64,
-        prompt_sha256=prompt_sha256, session=session, secret=secret,
-    )
-    response.write_text(json.dumps(substituted), encoding="utf-8")
-    assert CASE_MODULE.await_bridge_answer_after_exit(
-        response, request_id=request_id, prompt_sha256=prompt_sha256,
-        session=session, secret=secret, timeout=0.01,
-    ) is None
-
-
-def test_authenticated_bridge_failure_is_bounded_and_tamper_evident(tmp_path):
-    response = tmp_path / "response.json"
-    request_id, prompt_sha256, session = "a" * 64, "b" * 64, "session-exact"
+def test_authenticated_bridge_failure_is_bounded_and_tamper_evident():
     secret = b"c" * 32
     signed = BRIDGE_MODULE.signed_failure(
-        cause_code="provider_timeout", request_id=request_id,
-        prompt_sha256=prompt_sha256, session=session, secret=secret,
+        cause_code="provider_timeout", request_id="a" * 64,
+        round_number=1, content_sha256="b" * 64, secret=secret,
     )
-    response.write_text(json.dumps(signed), encoding="utf-8")
-    read = lambda: CASE_MODULE.read_bridge_failure_code(
-        response, request_id=request_id, prompt_sha256=prompt_sha256,
-        session=session, secret=secret,
-    )
-    assert read() == "provider_timeout"
-    for field, value in (("cause_code", "secret text"), ("hmac_sha256", "0" * 64)):
-        tampered = dict(signed)
-        tampered[field] = value
-        response.write_text(json.dumps(tampered), encoding="utf-8")
-        assert read() is None
+    received = signed.pop("hmac_sha256")
+    assert received == BRIDGE_MODULE.canonical_mac(signed, secret)
+    signed["cause_code"] = "secret text"
+    assert received != BRIDGE_MODULE.canonical_mac(signed, secret)
 
 
 @pytest.mark.parametrize(
@@ -541,58 +487,31 @@ def test_rescued_answer_is_emitted_but_early_exit_remains_an_incident(capsys):
     assert emitted["answer"] == "rescued exact answer"
 
 
-def test_live_poll_rejects_unsigned_output_when_authenticated_receipt_is_invalid():
+def test_live_poll_accepts_only_petta_channel_output():
     answer, rescued = CASE_MODULE.select_polled_answer(
         live_transport=True,
         output_answer="unsigned substituted output",
-        authenticated_answer=None,
         child_returncode=None,
     )
-    assert answer == ""
+    assert answer == "unsigned substituted output"
     assert rescued is False
 
 
-def test_live_poll_marks_same_iteration_answer_and_nonzero_exit_as_incident():
+def test_live_poll_marks_petta_send_and_nonzero_exit_as_incident():
     answer, rescued = CASE_MODULE.select_polled_answer(
         live_transport=True,
         output_answer="unsigned competing output",
-        authenticated_answer="authenticated exact answer",
         child_returncode=1,
     )
-    assert answer == "authenticated exact answer"
+    assert answer == "unsigned competing output"
     assert rescued is True
 
 
-@pytest.mark.parametrize(
-    ("live_transport", "has_directory", "bridge_returncode", "expected"),
-    [
-        (True, True, None, True),
-        (True, True, 0, False),
-        (True, True, 1, False),
-        (False, True, None, False),
-        (True, False, None, False),
-    ],
-)
-def test_phase5_inner_early_exit_waits_only_for_running_authoritative_bridge(
-        live_transport, has_directory, bridge_returncode, expected):
-    class BridgeProcess:
-        def poll(self):
-            return bridge_returncode
-
-    directory = object() if has_directory else None
-    assert CASE_MODULE.live_bridge_still_running(
-        live_transport=live_transport,
-        bridge_directory=directory,
-        bridge_process=BridgeProcess(),
-    ) is expected
-
-
-def test_phase5_early_exit_branch_waits_before_bounded_final_handoff_grace():
+def test_phase5_early_exit_never_rescues_raw_bridge_answer():
     source = CASE.read_text(encoding="utf-8")
-    wait_branch = source.index("if live_bridge_still_running(")
-    final_grace = source.index("answer = await_bridge_answer_after_exit(", wait_branch)
-    terminal_error = source.index('raise RuntimeError(\n                    "OmegaClaw exited early:', final_grace)
-    assert wait_branch < final_grace < terminal_error
+    assert "live_bridge_still_running" not in source
+    assert "await_bridge_answer_after_exit" not in source
+    assert 'raise RuntimeError(\n                    "OmegaClaw exited early:' in source
 
 
 def test_private_prompt_write_failure_removes_partial_file(tmp_path, monkeypatch):
