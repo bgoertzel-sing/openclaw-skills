@@ -29,7 +29,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 1.3 Human-readable checkpoint via normal `send` path after file write.
 - [x] 1.4 Tests: py_compile; a provider-free simulation harness run showing checkpoint
       fires at step 50; flag-off path diff-identical.
-- [ ] 1.5 Log + commit. Announce restart needed.
+- [x] 1.5 Log + commit. Announce restart needed.
 
 ### M2 — Time-based promotion core (flag `ITER_CONCURRENCY_ENABLED`, default OFF)
 - [ ] 2.1 Threaded LLM call wrapper with deadline T (env `ITER_PROMOTE_SECONDS`, default 30):
@@ -119,3 +119,18 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   harness is a new file outside the repo). Git commit: `06a897f` (in research-agent root repo —
   both PLAN.md and harness file committed there since iter.py itself was not modified).
   **No restart needed** — this step only adds tests, no code change to iter.py.
+- 2026-09-04 16:24 PDT — **Step 1.5 completed.** M1 milestone fully checked off.
+  All four implementation steps (1.1–1.4) are done and committed. This step is the
+  administrative close-out: checking the 1.5 box, appending this log entry, and
+  committing the updated PLAN.md to the iter-port repo.
+  **Evidence:** `python3 -m py_compile iter.py` → OK (re-verified). Git log in
+  iter-port repo: `2f79cab` (1.2), `c26da12` (1.3); research-agent root repo:
+  `1ef96de` (1.1 log), `151ffc8` (1.4 harness). Pre-step backups preserved:
+  `iter.py.pre-m1-1.1-20260904-2124`, `iter.py.pre-m1-1.2-20260904-2154`,
+  `iter.py.pre-m1-1.3-20260904T2224`, `iter.py.pre-m1-1.4-20260904T2254`.
+  **Restart needed:** yes — same as announced in step 1.3. The live supervisor
+  must restart iter.py for the Tier-1 checkpoint send (step 1.3) to take effect.
+  Until restart, the live loop runs pre-1.3 code (file write but no human-readable
+  send). ZeroBot should coordinate the restart. No restart performed by this worker.
+  **M1 complete.** Next unchecked step: M2 step 2.1 (threaded LLM call wrapper
+  with deadline T, flag `ITER_CONCURRENCY_ENABLED`, default OFF).
