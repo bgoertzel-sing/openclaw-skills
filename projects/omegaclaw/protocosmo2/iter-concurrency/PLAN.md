@@ -32,7 +32,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 1.5 Log + commit. Announce restart needed.
 
 ### M2 — Time-based promotion core (flag `ITER_CONCURRENCY_ENABLED`, default OFF)
-- [ ] 2.1 Threaded LLM call wrapper with deadline T (env `ITER_PROMOTE_SECONDS`, default 30):
+- [x] 2.1 Threaded LLM call wrapper with deadline T (env `ITER_PROMOTE_SECONDS`, default 30):
       foreground first; on T expiry, deep copy messages, separate OpenAI client, branch id.
 - [ ] 2.2 Merge queue (queue.Queue) + double drain (top of loop AND before building messages);
       single-writer discipline; tagged entries `"branch": "bg-<id>"`.
@@ -134,3 +134,26 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   send). ZeroBot should coordinate the restart. No restart performed by this worker.
   **M1 complete.** Next unchecked step: M2 step 2.1 (threaded LLM call wrapper
   with deadline T, flag `ITER_CONCURRENCY_ENABLED`, default OFF).
+- 2026-09-04 16:54 PDT — **Step 2.1 completed.** Added `import copy`, `import threading`, `ITER_CONCURRENCY_ENABLED`
+  flag (env, default OFF), `ITER_PROMOTE_SECONDS` (env, default 30), `BranchState` class, `_bg_llm_thread_target`
+  function, and `threaded_llm_call()` function. `threaded_llm_call` starts the LLM call in a daemon thread,
+  joins with timeout T. If the call completes within T: returns `(response, None)` — identical to direct call.
+  If T expires: creates `bg-<uuid8>` branch id, `copy.deepcopy(messages)` (R11), separate `openai.OpenAI` client
+  with `x-branch-id` header (R12), stores branch in `_active_branch` under `_branch_lock`, returns `(None, BranchState)`.
+  Original thread continues running (R9: no token waste). Main loop change: `_promoted = False` before inner loop;
+  `if ITER_CONCURRENCY_ENABLED:` calls `threaded_llm_call`, on `None` response sets `_promoted=True` and breaks;
+  `else:` branch is the exact original `client.chat.completions.create(...)` call. After inner loop: `if _promoted:
+  continue` resumes receive() polling (no-op when flag off). Flag-off diff vs pre-step backup confirms all changes
+  are pure additions (2 imports, 2 constants, 1 class, 2 functions, `_promoted = False`, if/else branch, `if
+  _promoted: continue`); the `else:` branch is byte-identical to the original direct call; `_promoted` is always
+  False when flag is off.
+  Backup: `iter.py.pre-m2-2.1-20260904T2354`.
+  Evidence: `py_compile` OK; `python3 sim_harness_2.1.py` → 23 passed, 0 failed. Tests cover: (1) fast call returns
+  within T with correct response; (2) slow call promotes after T with `bg-` branch id and live thread; (3) deep
+  copy isolation — mutating original messages does not affect branch copy (R11); (4) separate client created (R12);
+  (5) thread is daemon (R17 partial); (6) `_active_branch` set after promotion; (7) `result_container` populated
+  after thread completes; (8) flag-off source inspection — if/else, direct call in else, `_promoted` guard present;
+  (9) failed call within T raises exception (caught by outer try/except).
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; the live loop takes the `else:` branch
+  which is the original direct call. No behavioral change when flag is off. Next step: 2.2 (merge queue + double
+  drain + single-writer discipline + tagged entries).
