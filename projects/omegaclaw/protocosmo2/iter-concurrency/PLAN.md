@@ -45,7 +45,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 3.2 try/except wrapper → error markers onto merge queue.
 - [x] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
 - [x] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
-- [ ] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
+- [x] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
 - [ ] 3.6 Tests for 3.1–3.5. Log + commit.
 
 ### M4 — Validation + calibration
@@ -332,3 +332,56 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   never called in the live loop; `_build_tool_call_map()` is never called. No behavioral change
   to the running bot.
   Next step: 3.5 (branch step budget (25) + branch checkpoint queuing to main thread (R20)).
+- 2026-09-04 20:54 PDT — **Step 3.5 completed.** Implemented R20 branch step budget + branch checkpoint queuing to main thread.
+  Added `BRANCH_STEP_BUDGET = int(os.getenv("ITER_BRANCH_STEP_BUDGET", "25"))` constant (env-configurable, default 25 per spec
+  open question 3). Added `_bg_branch_mini_loop()` function (~80 lines): after the initial LLM call completes in the background thread,
+  the mini-loop runs up to BRANCH_STEP_BUDGET follow-up steps — pushes tagged assistant + tool entries to `_merge_queue`, makes
+  follow-up LLM calls with `branch_client` (R12: separate client) on `branch_messages` (R11: deep copy), executes tool calls via
+  `invoke_dynamic` (stateless subprocesses). On step-budget exhaustion: calls `extract_tier1_checkpoint()` on branch_messages,
+  queues the checkpoint data to `_merge_queue` with `"_checkpoint_payload": True` marker — **never writes files directly** (R20:
+  single-writer discipline). On normal completion (no more tool_calls): frees slot. On follow-up LLM call failure: pushes R14
+  error marker + frees slot + returns. All slot frees use compare-and-swap guard (avoids racing with `check_background_deadline`).
+  Modified `_bg_llm_thread_target`: after successful LLM call, checks `result_container.get("branch_id")` — if set (promotion
+  happened), calls `_bg_branch_mini_loop()` with branch_id, branch_client, branch_messages, response, result_container. If the
+  mini-loop raises an exception, the existing except block catches it (R14: error marker + slot free).
+  Modified `threaded_llm_call`: stores `result_container["branch_client"]` and `result_container["branch_messages"]` during
+  promotion (after bg_client creation, after branch_id assignment) so the thread can access them for the mini-loop.
+  Modified `drain_merge_queue()`: separates checkpoint payloads (entries with `"_checkpoint_payload": True`) from regular entries.
+  For each checkpoint payload: strips internal markers (`branch`, `_checkpoint_payload`), calls `write_checkpoint_file()` and
+  `send_checkpoint_message()` from the main thread (R20: main thread writes file + sends), adds a system marker to experience
+  (`[BACKGROUND_BRANCH_CHECKPOINT]`), saves experience. Regular entries are processed as before (supersede annotation, append,
+  save). If only checkpoint payloads and no regular entries: saves and returns count. If neither: returns 0 (no-op).
+  Flag-off: `BRANCH_STEP_BUDGET` is computed but unused; `_bg_branch_mini_loop()` is never called (behind `ITER_CONCURRENCY_ENABLED`
+  via `threaded_llm_call`); `drain_merge_queue()` is never called (behind flag guards); `_checkpoint_payload` handling in
+  `drain_merge_queue` is never reached. No behavioral change to the running bot.
+  Diff vs pre-step backup: ~120 additions, ~8 deletions (modified `drain_merge_queue` early return + modified
+  `_bg_llm_thread_target` to add mini-loop call + modified `threaded_llm_call` to store branch_client/messages). All deletions are
+  expected modifications — no existing logic lines removed from the else branch or main loop.
+  Backup: `iter.py.pre-m3-3.5-20260905T0354`.
+  Evidence: `python3 -m py_compile iter.py` → OK; `python3 sim_harness_3.5.py` → 68 passed, 0 failed. Tests cover:
+  (A1–A5) BRANCH_STEP_BUDGET constant (default 25, env-configurable, placed after BACKGROUND_DEADLINE);
+  (B1–B15) mini-loop structure (step budget ref, checkpoint queuing, no direct file write/send, tagged entries, branch_client
+  usage, branch_messages usage, load_tools, step counter, R14 error handling, compare-and-swap slot free);
+  (C1–C3) normal completion (break on no tool_calls, BRANCH_COMPLETE log, checkpoint only on exhaustion);
+  (D1–D6) follow-up LLM failure (try/except, error marker with branch_id, error_type/message bounded to 500 chars, slot free,
+  return);
+  (E1–E7) drain_merge_queue checkpoint handling (detects _checkpoint_payload, separates from regular, calls
+  write_checkpoint_file + send_checkpoint_message from main thread, system marker, save, strips internal markers);
+  (F1–F4) mixed checkpoint + regular entries (regular still processed, supersede intact, returns checkpoint count, no save
+  when empty);
+  (G1–G4) threaded_llm_call stores branch_client + branch_messages (after bg_client creation, after branch_id);
+  (H1–H5) _bg_llm_thread_target calls mini-loop (checks branch_id, calls _bg_branch_mini_loop, checks client/messages, inside
+  try block, except catches mini-loop exceptions);
+  (I1–I7b) flag-off inspection (constant is module-level, mini-loop only called from _bg_llm_thread_target, drain calls
+  flag-guarded, else branch unchanged, _promoted guard intact, M1 checkpoint intact, diff mostly additions);
+  (J1–J10) regression — M2/M3 features intact (threaded_llm_call, _merge_queue, drain_merge_queue, check_background_deadline,
+  graceful_shutdown, _build_tool_call_map, BACKGROUND_DEADLINE, SHUTDOWN_GRACE, double drain, R14 error markers);
+  (K1) py_compile.
+  M2 regression: `sim_harness_2.3.py` → 46 passed, 0 failed (after injecting no-op `_bg_branch_mini_loop` stub for harness
+  namespace). M3.4 regression: `sim_harness_3.4.py` → 47 passed, 0 failed. M3.2/M3.3 harness diff tests show expected failures
+  (comparing against pre-3.2/3.3 backups, now seeing M3.5 changes); all functional tests pass.
+  Git commit to follow.
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; `_bg_branch_mini_loop()` is never called; the mini-loop,
+  checkpoint queuing, and drain_merge_queue checkpoint handling are all dormant behind the flag guard. No behavioral change
+  to the running bot.
+  Next step: 3.6 (tests for 3.1–3.5 — consolidate all M3 tests; log + commit).

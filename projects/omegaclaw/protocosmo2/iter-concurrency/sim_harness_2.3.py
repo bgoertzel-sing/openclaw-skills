@@ -105,6 +105,10 @@ for node in ast.iter_child_nodes(tree):
         if node.name in needed_names:
             exec(compile(ast.Module([node], []), 'iter.py', 'exec'), namespace)
 
+# M3.3.5: _bg_llm_thread_target now calls _bg_branch_mini_loop after promotion.
+# M2 tests don't test the mini-loop, so inject a no-op stub.
+namespace['_bg_branch_mini_loop'] = lambda *a, **kw: None
+
 threaded_llm_call = namespace['threaded_llm_call']
 drain_merge_queue = namespace['drain_merge_queue']
 save_experience = namespace['save_experience']
