@@ -51,8 +51,12 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 ### M4 — Validation + calibration
 - [x] 4.1 Extract USAGE/latency distribution from supervisor log; confirm bimodal split;
       recommend T.
-- [ ] 4.2 Enable flag on live bot; soak; end-to-end Telegram test (slow task + mid-task chat).
+- [ ] 4.2 Enable flag on live bot; soak; end-to-end Telegram test (slow task + mid-task chat). **BLOCKED — requires Ben's explicit approval to enable ITER_CONCURRENCY_ENABLED on the live bot + supervisor restart. See log entry 2026-09-04 22:24 PDT.**
 - [ ] 4.3 Final report.
+
+## Log (continued)
+
+- 2026-09-04 22:24 PDT — **Step 4.2 BLOCKED.** This step requires enabling `ITER_CONCURRENCY_ENABLED=1` on the live ProtoCosmo2 bot and restarting the supervisor to pick up the env var. Per the step 4.1 log and the PLAN.md rules: (1) enabling the flag on the live bot is a runtime behavior change that requires **explicit approval from Ben**; (2) the worker rules say "Do NOT restart the live supervisor unless the step explicitly says to" — and even if it did, a restart must be announced for ZeroBot to coordinate, not performed by this worker. No code change to iter.py; no flag enablement performed; no restart performed. Backup `iter.py.pre-m4-4.2-20260905T0524` created per plan rules (identical to current iter.py — no structural change in this step). `python3 -m py_compile iter.py` → OK (baseline re-verified). The iter-port repo is a git repo (confirmed: `git rev-parse --is-inside-work-tree` → true; HEAD = `23a5d6f`). No commit made — nothing to commit (no code change). **Blocker:** Ben must explicitly approve enabling `ITER_CONCURRENCY_ENABLED=1` on the live bot and coordinate the supervisor restart. Once approved, the soak test can proceed: enable the flag, restart the supervisor, send a slow task via Telegram (>30s LLM call), send a mid-task chat message, confirm foreground responsiveness + tagged branch merge. ZeroBot should coordinate the enable + restart + soak test. Next unchecked step remains 4.2.
 
 ## Log
 
