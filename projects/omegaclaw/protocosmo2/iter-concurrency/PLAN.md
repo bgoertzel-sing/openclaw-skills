@@ -38,7 +38,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
       single-writer discipline; tagged entries `"branch": "bg-<id>"`.
 - [x] 2.3 Tests: py_compile; offline harness — fake slow call detaches, fake chat answered,
       tagged merge; kill -9 mid-merge simulation leaves experience file valid JSON.
-- [ ] 2.4 Log + commit. Do not enable flag live yet.
+- [x] 2.4 Log + commit. Do not enable flag live yet.
 
 ### M3 — Hardening
 - [ ] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
@@ -207,3 +207,17 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   step 2.3 adds no code to iter.py; all M2 code is behind `ITER_CONCURRENCY_ENABLED` (default
   OFF). Git commit to follow.
   Next step: 2.4 (log + commit; do not enable flag live yet).
+- 2026-09-04 18:24 PDT — **Step 2.4 completed.** Administrative close-out for M2. Verified all M2
+  work: `python3 -m py_compile repos/iter.py` → OK; `python3 sim_harness_2.3.py` → 46 passed,
+  0 failed. Checked box 2.4. No structural change to iter.py in this step — no backup needed.
+  **ITER_CONCURRENCY_ENABLED remains OFF (default).** The flag is not enabled live; M2 code
+  (threaded_llm_call, merge queue, double drain) is dormant behind the flag guard. The live
+  loop takes the `else:` branch (direct `client.chat.completions.create`) for all LLM calls;
+  `drain_merge_queue()` is never called; `_merge_queue` is never populated. No behavioral
+  change to the running bot.
+  Git: PLAN.md committed to the research-agent root repo (where it is tracked); iter-port
+  repo has no relevant changes (`repos/iter.py` is gitignored; the modified test file is
+  unrelated to M2). Previous M2 commits in root repo: `c4167a0` (2.1), `a5cd554` (2.3).
+  **M2 complete.** Next unchecked step: M3 step 3.1 (BACKGROUND_DEADLINE: abandon + marker +
+  slot frees, flag-guarded, default max(2T, 300s)).
+  **No restart needed** — no code changed; flag remains OFF.
