@@ -43,7 +43,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 ### M3 — Hardening
 - [x] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
 - [x] 3.2 try/except wrapper → error markers onto merge queue.
-- [ ] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
+- [x] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
 - [ ] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
 - [ ] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
 - [ ] 3.6 Tests for 3.1–3.5. Log + commit.
@@ -273,3 +273,25 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; `_bg_llm_thread_target` is never called in the
   live loop; the error-marker path is dormant behind the flag guard. No behavioral change to the running bot.
   Next step: 3.3 (shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads).
+- 2026-09-04 19:54 PDT — **Step 3.3 completed.** Added `SHUTDOWN_GRACE` (env `ITER_SHUTDOWN_GRACE`, default 5), `_shutdown_event` (threading.Event),
+  `_iter_signal_handler()` (sets `_shutdown_event` on SIGTERM/SIGINT), `_install_signal_handlers()` (installs SIGTERM+SIGINT handlers,
+  best-effort, catches ValueError/OSError), and `graceful_shutdown()` (R17: waits up to SHUTDOWN_GRACE for active branch to complete,
+  drains merge queue, saves experience, calls `sys.exit(0)`). Signal handler installation call placed before `while True:`, flag-guarded
+  by `if ITER_CONCURRENCY_ENABLED:`. Shutdown check placed at top of `while True:`, also flag-guarded (`if ITER_CONCURRENCY_ENABLED and
+  _shutdown_event.is_set(): graceful_shutdown()`). `graceful_shutdown()` waits for `_active_branch` to populate `result_container["ok"]`
+  (polls every 0.1s up to SHUTDOWN_GRACE), then drains queue, saves experience, exits. Branch threads are already daemon (set in step 2.1,
+  R17). `sys.exit(0)` raises `SystemExit` (BaseException) which is not caught by the main loop's `except Exception` — clean exit.
+  Flag-off: `SHUTDOWN_GRACE` computed but unused; `_shutdown_event` created but never checked; `_install_signal_handlers()` never called;
+  `graceful_shutdown()` never called; default Python signal behavior (SIGINT → KeyboardInterrupt, SIGTERM → termination) unchanged.
+  Diff vs pre-step backup: 62 additions, 0 deletions — pure additions only.
+  Backup: `iter.py.pre-m3-3.3-20260904T1954`.
+  Evidence: `python3 -m py_compile iter.py` → OK; `python3 sim_harness_3.3.py` → 39 passed, 0 failed. Tests cover: (A1–A4) signal handler
+  sets event for SIGTERM, SIGINT, unknown signal; (B1–B4) install function runs, handlers installed, restored after test; (C1–C4)
+  graceful_shutdown with no active branch drains, saves, exits with code 0; (D1–D4) graceful_shutdown waits for completing branch (<3s),
+  exits, experience saved; (E1–E5) graceful_shutdown with slow branch exits within grace+margin, thread is daemon (still alive but
+  doesn't block), experience saved; (F1–F3) merge queue drained before save; (G1–G2) SHUTDOWN_GRACE env config; (H1–H6) source inspection —
+  flag guards, sys.exit, signal handler installation; (I1) py_compile; (J1–J3) diff is pure additions; (K1–K3) M2 drain_merge_queue
+  regression. M2 regression: `sim_harness_2.3.py` → 46 passed, 0 failed. M3.2 regression: `sim_harness_3.2.py` → 37 passed, 0 failed.
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; signal handlers are never installed; `_shutdown_event` is never
+  checked; `graceful_shutdown()` is never called. No behavioral change to the running bot.
+  Next step: 3.4 (duplicate-tool supersede annotation `"superseded_by"`).
