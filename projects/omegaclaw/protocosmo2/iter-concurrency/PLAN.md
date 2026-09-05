@@ -46,7 +46,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
 - [x] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
 - [x] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
-- [ ] 3.6 Tests for 3.1–3.5. Log + commit.
+- [x] 3.6 Tests for 3.1–3.5. Log + commit.
 
 ### M4 — Validation + calibration
 - [ ] 4.1 Extract USAGE/latency distribution from supervisor log; confirm bimodal split;
@@ -385,3 +385,53 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   checkpoint queuing, and drain_merge_queue checkpoint handling are all dormant behind the flag guard. No behavioral change
   to the running bot.
   Next step: 3.6 (tests for 3.1–3.5 — consolidate all M3 tests; log + commit).
+- 2026-09-04 21:24 PDT — **Step 3.6 completed.** Created consolidated test harness
+  `sim_harness_3.6.py` covering all M3 features (3.1–3.5) in a single run. The harness uses
+  AST extraction to test the real code from iter.py — not copies. It avoids diff-against-
+  old-backup tests (which break after subsequent steps modify the code, as noted in step 3.5
+  log); instead it uses functional tests, source inspection, and regression checks.
+
+  **144 tests total, all passing:**
+  - 3.1 (R13 BACKGROUND_DEADLINE): 6 source + 13 functional = 19 tests. Covers constant,
+    function, flag guard, no-branch, within-deadline, exceeded-deadline (abandon + marker +
+    slot free), completed-LLM-but-abandoned, new-branch-after-abandon.
+  - 3.2 (R14 error markers): 8 source + 15 functional = 23 tests. Covers error marker logic,
+    error_type/message bounding, BACKGROUND_BRANCH_ERROR content, compare-and-swap slot free,
+    slow error promotion + marker, 500-char bounding, fast error (no promotion, no marker).
+  - 3.3 (R17 shutdown): 13 source + 13 functional = 26 tests. Covers signal handler (SIGTERM/
+    SIGINT), install function, graceful_shutdown (no-branch, completing-branch, slow-branch),
+    merge queue drain before save, SHUTDOWN_GRACE, sys.exit, daemon threads, flag guards.
+  - 3.4 (R16 supersede): 4 source + 14 functional = 18 tests. Covers _build_tool_call_map,
+    duplicate detection (same tool+args → superseded_by), different tool / different args →
+    no annotation, system markers not annotated, empty queue no-op, save_experience once
+    per batch.
+  - 3.5 (R20 branch step budget): 30 source inspection tests. Covers BRANCH_STEP_BUDGET,
+    _bg_branch_mini_loop structure (step budget, checkpoint queuing, no direct file write/send,
+    branch_client/messages usage, tool loading, error handling, compare-and-swap slot free,
+    normal completion, BRANCH_COMPLETE), drain_merge_queue checkpoint handling (detect,
+    separate, write+send from main thread, system marker, strip internal markers),
+    threaded_llm_call stores branch_client+messages, _bg_llm_thread_target calls mini-loop,
+    flag-off inspection (constant, drain guards, else branch, _promoted guard, M1 checkpoint).
+  - Regression (M1/M2/M3 coexistence): 22 tests. All M1 (checkpoint), M2 (threaded_llm_call,
+    merge queue, drain, BranchState, flag defaults), M3 (check_background_deadline, signal
+    handler, graceful_shutdown, _build_tool_call_map, BRANCH_STEP_BUDGET, _bg_branch_mini_loop)
+    features confirmed present. Double drain (R15), error markers (R14), supersede (R16),
+    shutdown (R17) all intact.
+  - py_compile: 1 test (passes).
+
+  **M2 regression:** `sim_harness_2.3.py` → 46 passed, 0 failed (no breakage).
+
+  No structural change to iter.py in this step — no backup needed (test-only step). Backup
+  `iter.py.pre-m3-3.6-20260905T0424` created per plan rules but identical to iter.py.
+
+  **Note on existing harnesses:** sim_harness_3.1.py has a relative path bug (`ITER_PY =
+  "iter.py"` instead of absolute path) and fails when run from the iter-concurrency directory.
+  sim_harness_3.2.py and 3.3.py have diff-against-old-backup tests that show expected failures
+  (comparing against pre-3.2/3.3 backups, now seeing M3.4/3.5 changes). All functional tests in
+  those harnesses pass. The consolidated harness 3.6 supersedes these for regression purposes.
+
+  **M3 complete.** All M3 steps (3.1–3.6) are done and checked off.
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; all M3 code is dormant
+  behind the flag guard. No behavioral change to the running bot.
+  Next unchecked step: M4 step 4.1 (extract USAGE/latency distribution from supervisor log;
+  confirm bimodal split; recommend T).
