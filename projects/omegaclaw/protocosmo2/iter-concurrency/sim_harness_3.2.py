@@ -36,6 +36,7 @@ needed_names = [
     "_merge_queue", "_branch_lock", "_active_branch",
     "BranchState", "_bg_llm_thread_target",
     "threaded_llm_call", "drain_merge_queue", "check_background_deadline",
+    "_build_tool_call_map",
 ]
 
 for node in tree.body:

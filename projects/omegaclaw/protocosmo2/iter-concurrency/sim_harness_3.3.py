@@ -42,6 +42,7 @@ needed_names = {
     "ITER_CONCURRENCY_ENABLED", "ITER_PROMOTE_SECONDS",
     "API_KEY", "BASE_URL", "MODEL", "LLM_TIMEOUT", "SESSION_ID",
     "_merge_queue", "_branch_lock", "_active_branch",
+    "_build_tool_call_map",
 }
 
 # Module-level namespace for exec — include all imports iter.py functions reference

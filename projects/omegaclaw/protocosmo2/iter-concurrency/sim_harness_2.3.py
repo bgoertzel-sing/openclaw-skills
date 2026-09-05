@@ -94,6 +94,7 @@ needed_names = {
     'save_experience',       # function
     'get_current_time',      # function
     'extract_tier1_checkpoint',  # function (for checkpoint-in-branch test)
+    '_build_tool_call_map',  # function (M3.3.4: needed by drain_merge_queue)
 }
 
 for node in ast.iter_child_nodes(tree):

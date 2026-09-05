@@ -44,7 +44,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
 - [x] 3.2 try/except wrapper → error markers onto merge queue.
 - [x] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
-- [ ] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
+- [x] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
 - [ ] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
 - [ ] 3.6 Tests for 3.1–3.5. Log + commit.
 
@@ -295,3 +295,40 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; signal handlers are never installed; `_shutdown_event` is never
   checked; `graceful_shutdown()` is never called. No behavioral change to the running bot.
   Next step: 3.4 (duplicate-tool supersede annotation `"superseded_by"`).
+- 2026-09-04 20:24 PDT — **Step 3.4 completed.** Implemented R16 duplicate-tool supersede annotation in
+  `drain_merge_queue()`. Added `_build_tool_call_map(messages)` helper function that builds a
+  `tool_call_id → (tool_name, arguments)` map from assistant entries with tool_calls. Modified
+  `drain_merge_queue()` to: (1) collect all entries from the queue first (instead of appending one
+  by one), (2) build a tool-call lookup from merged assistant entries, (3) build a
+  `(tool_name, arguments) → first_tool_entry_index` map from existing experience, (4) for each merged
+  tool entry, check if its `(tool_name, arguments)` matches an existing entry in experience — if so,
+  annotate the merged entry with `"superseded_by": "<index>"` (R16: the LLM sees the conflict
+  explicitly rather than silently). Both entries stay in the log; only the later (background) one
+  is annotated. Non-tool entries (system markers, error markers, abandon markers) are never
+  annotated. Non-dict entries are skipped. Untagged entries still get `"branch": "unknown"`.
+  `save_experience()` is called once after the full batch is appended (single-writer: only main
+  thread). Flag-off: `_build_tool_call_map()` is defined but never called; `drain_merge_queue()` is
+  never called (behind `ITER_CONCURRENCY_ENABLED` guards); zero behavioral change. Diff vs pre-step
+  backup: 1 new function (14 lines), `drain_merge_queue` replacement (old 16-line body → new 47-line
+  body); no other functions modified; no main-loop changes.
+  Backup: `iter.py.pre-m3-3.4-20260905T0324`.
+  Evidence: `python3 -m py_compile iter.py` → OK; `python3 sim_harness_3.4.py` → 47 passed, 0 failed.
+  Tests cover: (A1–A6) `_build_tool_call_map` basic/edge cases; (B1) duplicate tool+args →
+  `superseded_by` with correct index, assistant entry NOT annotated; (B2) different tool name →
+  no annotation; (B3) same tool different args → no annotation; (B4) multiple duplicates → first
+  occurrence index; (B5) empty queue → 0, no save; (B6) non-dict entries skipped; (B7) untagged
+  → `unknown` branch; (C1) orphan tool entry (no preceding assistant in batch) → no annotation;
+  (C2) mixed batch with 1 dup + 1 non-dup → exactly 1 `superseded_by`; (C3) system/error markers
+  → never annotated; (C4) `save_experience` called once per batch; (C5) mixed batch with assistant,
+  2 tools (1 dup), system marker → correct annotation on dup only; (D1–D7) source inspection —
+  py_compile, function defined, `superseded_by`/`existing_tool_index`/`merged_call_lookup` present,
+  both drain calls flag-guarded, `_build_tool_call_map` is new (not in backup); (E1–E2) regression —
+  basic merge and empty-queue no-op.
+  M2 regression: `sim_harness_2.3.py` → 46 passed, 0 failed (after injecting
+  `_build_tool_call_map` into harness namespace). M3.2/M3.3 harness diff tests show expected
+  failures (comparing against pre-3.2/3.3 backups, now seeing M3.4 `drain_merge_queue` changes);
+  all functional tests in those harnesses pass.
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; `drain_merge_queue()` is
+  never called in the live loop; `_build_tool_call_map()` is never called. No behavioral change
+  to the running bot.
+  Next step: 3.5 (branch step budget (25) + branch checkpoint queuing to main thread (R20)).
