@@ -42,7 +42,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 
 ### M3 — Hardening
 - [x] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
-- [ ] 3.2 try/except wrapper → error markers onto merge queue.
+- [x] 3.2 try/except wrapper → error markers onto merge queue.
 - [ ] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
 - [ ] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
 - [ ] 3.5 Branch step budget (25) + branch checkpoint queuing to main thread (single-writer).
@@ -248,3 +248,28 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   is never called in the live loop; `BACKGROUND_DEADLINE` is computed but unused. No behavioral change
   to the running bot.
   Next step: 3.2 (try/except wrapper for background thread → error markers onto merge queue, R14).
+- 2026-09-04 19:24 PDT — **Step 3.2 completed.** Added R14 error markers to `_bg_llm_thread_target`: on exception,
+  if `result_container` has a `branch_id` (set by `threaded_llm_call` after promotion), the thread pushes an error
+  marker to `_merge_queue` with `role`, `branch`, `error=True`, `error_type`, `error_message` (bounded to 500 chars),
+  and a human-readable `content` containing `[BACKGROUND_BRANCH_ERROR]` + branch_id + error type + truncated message.
+  The thread then acquires `_branch_lock` and frees `_active_branch` if it still matches this branch_id (compare-and-swap
+  pattern avoids racing with `check_background_deadline`). Also added `result_container["branch_id"] = branch_id` in
+  `threaded_llm_call` after promotion, so the thread can identify its branch on error. If the error occurs before
+  promotion (fast error within T), `threaded_llm_call` raises the exception directly — no branch_id, no marker, no
+  slot to free. If the slot was already freed by `check_background_deadline` (deadline fired first), the thread still
+  pushes the error marker (useful diagnostic) but does not double-free the slot (the `if _active_branch is not None
+  and _active_branch.branch_id == branch_id` guard prevents this).
+  Changes: 1 docstring expansion (1 line → 9 lines) + 21 new lines in except block + 1 new line in `threaded_llm_call`.
+  Diff vs pre-step backup: 23 additions, 1 deletion (docstring line replacement only — no existing logic lines modified).
+  Backup: `iter.py.pre-m3-3.2-20260904T1924`.
+  Evidence: `python3 -m py_compile iter.py` → OK; `python3 sim_harness_3.2.py` → 37 passed, 0 failed.
+  Tests cover: (A) slow error after promotion → error marker with correct fields (role, branch, error, error_type,
+  error_message, content with BACKGROUND_BRANCH_ERROR + branch_id); (B) error message bounded to 500 chars on 5000-char
+  input; (C) branch slot freed after error; (D) fast error before promotion → exception raised, no marker; (E) slot
+  pre-freed by deadline → thread still pushes marker but does not double-free; (F) flag-off source inspection — diff
+  has only docstring replacement + additions, else-branch unchanged; (G) py_compile OK.
+  `python3 sim_harness_2.3.py` → 46 passed, 0 failed (M2 regression — no breakage).
+  Git commit to follow.
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; `_bg_llm_thread_target` is never called in the
+  live loop; the error-marker path is dormant behind the flag guard. No behavioral change to the running bot.
+  Next step: 3.3 (shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads).
