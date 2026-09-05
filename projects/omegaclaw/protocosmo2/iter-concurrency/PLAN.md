@@ -41,7 +41,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 2.4 Log + commit. Do not enable flag live yet.
 
 ### M3 — Hardening
-- [ ] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
+- [x] 3.1 BACKGROUND_DEADLINE (default max(2T,300s)): abandon + marker + slot frees.
 - [ ] 3.2 try/except wrapper → error markers onto merge queue.
 - [ ] 3.3 Shutdown protocol: SIGTERM/SIGINT stop event, 5s grace, drain, save, exit; daemon threads.
 - [ ] 3.4 Duplicate-tool supersede annotation `"superseded_by"`.
@@ -221,3 +221,30 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   **M2 complete.** Next unchecked step: M3 step 3.1 (BACKGROUND_DEADLINE: abandon + marker +
   slot frees, flag-guarded, default max(2T, 300s)).
   **No restart needed** — no code changed; flag remains OFF.
+- 2026-09-04 18:54 PDT — **Step 3.1 completed.** Added `BACKGROUND_DEADLINE = max(2 * ITER_PROMOTE_SECONDS, 300)`
+  constant (R13: bounded background lifetime) and `check_background_deadline()` function. The function
+  acquires `_branch_lock`, reads `_active_branch`; if `None` returns `False` (no-op). If the branch has
+  been alive longer than `BACKGROUND_DEADLINE` seconds: frees the slot (`_active_branch = None`), queues
+  an abandon marker to `_merge_queue` with `branch` id, `abandoned: True`, elapsed/deadline timing, and
+  whether the LLM call had completed (`llm_completed` field in the diagnostic message). The daemon
+  thread continues but its results are discarded (R9: no token waste — the call completes normally,
+  we just ignore it). After abandonment, the slot is free for a new promotion (R18: one branch at a
+  time). Called once per main-loop iteration, flag-guarded by `if ITER_CONCURRENCY_ENABLED:`, right
+  before the existing first drain (M2 step 2.2a). Flag-off: `check_background_deadline()` is never
+  called; `BACKGROUND_DEADLINE` is computed but unused; `_active_branch` is always `None` (never set,
+  since `threaded_llm_call` is also behind the flag); zero behavioral change. Diff vs pre-step backup
+  confirms 44 additions, 0 deletions — pure additions only.
+  Backup: `iter.py.pre-m3-3.1-20260904T1854`.
+  Evidence: `python3 -m py_compile iter.py` → OK; `python3 sim_harness_3.1.py` → 9 passed, 0 failed.
+  Tests cover: (1) no active branch → False, empty queue; (2) branch within deadline → False, still
+  active; (3) branch exceeded deadline → True, marker queued with correct fields, slot freed; (4)
+  branch with completed LLM but exceeded deadline → abandoned with `llm_completed=True`; (5) new branch
+  can be set after abandonment; (6) `_branch_lock` is a threading.Lock; (7) abandon marker has all
+  required fields (role, branch, abandoned, elapsed, deadline); (8) `BACKGROUND_DEADLINE = max(2*30,
+  300) = 300`; (9) py_compile OK. Source-level: function uses `_branch_lock`/`_active_branch`/
+  `_merge_queue`; call is flag-guarded; 44 additions, 0 deletions vs backup.
+  Git commit: iter-port repo (iter.py) + root repo (harness + PLAN.md).
+  **No restart needed** — `ITER_CONCURRENCY_ENABLED` defaults to OFF; `check_background_deadline()`
+  is never called in the live loop; `BACKGROUND_DEADLINE` is computed but unused. No behavioral change
+  to the running bot.
+  Next step: 3.2 (try/except wrapper for background thread → error markers onto merge queue, R14).
