@@ -49,7 +49,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 3.6 Tests for 3.1–3.5. Log + commit.
 
 ### M4 — Validation + calibration
-- [ ] 4.1 Extract USAGE/latency distribution from supervisor log; confirm bimodal split;
+- [x] 4.1 Extract USAGE/latency distribution from supervisor log; confirm bimodal split;
       recommend T.
 - [ ] 4.2 Enable flag on live bot; soak; end-to-end Telegram test (slow task + mid-task chat).
 - [ ] 4.3 Final report.
@@ -435,3 +435,36 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   behind the flag guard. No behavioral change to the running bot.
   Next unchecked step: M4 step 4.1 (extract USAGE/latency distribution from supervisor log;
   confirm bimodal split; recommend T).
+- 2026-09-04 21:54 PDT — **Step 4.1 completed.** Extracted USAGE/latency distribution from the
+  supervisor log at `/home/openclaw/.openclaw/protocosmo2-supervisor.log` (473,544 lines, ~104 MB,
+  spanning 2026-09-02 14:26 → 2026-09-04 21:55, ~55.5 hours). Method: paired `AFTER LLM` /
+  `USAGE CompletionUsage` log lines to extract `created=` Unix timestamps and USAGE metadata
+  (completion_tokens, prompt_tokens, reasoning_tokens, cost) for 5,640 LLM calls across 3 models
+  (z-ai/glm-5.2: 3,276 calls; moonshotai/kimi-k3: 2,149; z-ai/glm-4.7: 9). Computed inter-call
+  intervals as total cycle time (tool exec + LLM latency) per step.
+
+  **Bimodal split: partially confirmed.** z-ai/glm-5.2 (current model) shows a fast mode
+  (61.1% <30s, p50=22s, p90=24s, p95=27s) and a slow mode (38.9% ≥30s, p50=53s, p90=85s),
+  but the valley between modes (30–40s) contains 10.0% of calls — not a clean gap. Last-24h
+  data (2,399 calls) confirms the same pattern: fast 57.9% (p90=25s, p95=27s), slow 42.1%
+  (p50=52s, p90=86s), valley 11.8%. Completion-token stratification confirms generation length
+  as the primary driver: low-token (<200) calls have 16s median interval, high-token (≥200)
+  calls have 30s median. 95.6% of calls produce reasoning tokens (mean=398, p90=1060).
+
+  **T recommendation: T=30s remains best.** Fast p95=27s → T=30 captures >95% of fast calls
+  (~3% false promotion rate). Slow p50=52s → reliable promotion (22s margin). Valley cost:
+  ~10% of calls unnecessarily promoted, ~$3/day wasted compute — tolerable. Alternatives
+  (T=25, 28, 35, 40) all worse on one axis. BACKGROUND_DEADLINE=max(2×30,300)=300s is
+  well above slow p90=86s (3.5× headroom) — no adjustment needed.
+
+  Analysis report saved to `iter-concurrency/m4-latency-analysis.md` (8,022 bytes, full
+  histogram, per-model breakdown, cost context, limitations, alternatives table).
+
+  No structural change to iter.py — this is an analysis step. Backup `iter.py.pre-m4-4.1-20260905T0454`
+  created per plan rules (identical to current iter.py). `python3 -m py_compile iter.py` → OK
+  (baseline re-verified).
+
+  **No restart needed** — no code change; analysis only.
+  Next step: 4.2 (enable flag on live bot; soak; end-to-end Telegram test). **Requires explicit
+  approval from Ben** — enabling ITER_CONCURRENCY_ENABLED on the live bot changes runtime behavior.
+  ZeroBot should coordinate the enable + soak test.
