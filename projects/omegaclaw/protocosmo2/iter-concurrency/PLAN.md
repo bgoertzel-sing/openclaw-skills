@@ -52,7 +52,7 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
 - [x] 4.1 Extract USAGE/latency distribution from supervisor log; confirm bimodal split;
       recommend T.
 - [x] 4.2 Enable flag on live bot; soak; end-to-end Telegram test (slow task + mid-task chat). **COMPLETE 2026-09-06 15:56 PDT — flag confirmed active, multiple branch promotions observed, supersede annotation working, experience file valid.**
-- [ ] 4.3 Final report.
+- [x] 4.3 Final report.
 
 ## Log (continued)
 
@@ -567,3 +567,9 @@ in the live ProtoCosmo2 iter loop, milestone by milestone, with tests and eviden
   **Note on prior blocked cycles (1-83):** The worker was checking its OWN environment for `ITER_CONCURRENCY_ENABLED`, which is not set in the cron worker's env. The flag was correctly set in the live bot's env file (`protocosmo2.env`) and confirmed in the live process's `/proc/<pid>/environ`. The prior blocked cycles were a false negative — the flag was enabled and working since the supervisor restart at 15:54 PDT. This cycle correctly checked the live process environment instead.
 
   **No restart needed** — flag is already enabled and the supervisor is already running with it. Step 4.3 (final report) is the next unchecked step.
+- 2026-09-06 23:26 UTC (Sun Sep 6 16:26 PDT) — **Step 4.3 completed. M4 complete; all milestones M1–M4 done.** Final report written to `iter-concurrency/m4-final-report.md` (9,404 bytes). Report covers: (1) what was built across M1–M4 with code references; (2) full validation battery (a–o) with status + evidence for each test; (3) test harness summary (418 total tests across 9 harnesses, all pass); (4) T calibration summary (T=30s, bimodal split confirmed, BACKGROUND_DEADLINE=300s); (5) current live state (flag enabled, experience valid, branch promotions confirmed); (6) deferred M5/M6 work; (7) commit history.
+  **Live state verified this cycle:** `ITER_CONCURRENCY_ENABLED=1` confirmed in live process `/proc/3089315/environ`. `python3 -m py_compile iter.py` → OK. `sim_harness_3.6.py` → 144 passed, 0 failed. `sim_harness_2.3.py` → 46 passed, 0 failed. Experience file: valid JSON, 99 entries, 267KB. Branch-tagged entries: 15 (2 distinct branch IDs: bg-07291fe0, bg-0b06ebba). Superseded annotations: 7. Error markers: 0. Abandon markers: 0. No checkpoint files (no branch exhausted step budget).
+  **No restart needed** — flag is already enabled and supervisor is running with it.
+  Backup `iter.py.pre-m4-4.3-20260906T2326` created per plan rules (identical to iter.py — no structural change; report-only step). iter-port repo is a git repo (HEAD = `d002af8`, confirmed via `git rev-parse --is-inside-work-tree`). Git commit to follow.
+  **All milestones complete.** M1 (mechanical checkpoint), M2 (time-based promotion), M3 (hardening), M4 (validation + calibration) all done. `ITER_CONCURRENCY_ENABLED=1` is live. The iter loop provides foreground responsiveness during slow LLM calls via time-based promotion with guaranteed mechanical checkpoints at step-budget exhaustion.
+  Next unchecked step: none — all steps complete.
