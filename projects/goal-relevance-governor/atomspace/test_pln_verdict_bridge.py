@@ -134,3 +134,20 @@ class TestPLNVerdictBridge(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+    def test_staleness_confidence_decay(self):
+        """Stale goals should have decayed confidence and negative modifier."""
+        import json
+        from datetime import datetime, timezone
+        from atomspace.pln_verdict_bridge import PLNVerdictBridge
+        data = json.load(open('replay_corpus/episode_05_control_justified_long_running.json'))
+        # Non-stale
+        bridge_fresh = PLNVerdictBridge(data, now=datetime(2026, 8, 21, tzinfo=timezone.utc))
+        fresh = bridge_fresh.evaluate()
+        self.assertGreater(fresh[0].truth_value['confidence'], 0.5)
+        self.assertEqual(fresh[0].confidence_modifier, 0.0)
+        # Stale
+        bridge_stale = PLNVerdictBridge(data, now=datetime(2026, 9, 8, tzinfo=timezone.utc))
+        stale = bridge_stale.evaluate()
+        self.assertLess(stale[0].truth_value['confidence'], fresh[0].truth_value['confidence'])
+        self.assertLess(stale[0].confidence_modifier, 0.0)
