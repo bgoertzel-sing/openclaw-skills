@@ -158,3 +158,81 @@ findings invalidate any design correction in D-20260724-design-corrections.
 ### Supersedes or superseded by
 
 None.
+
+## D-20260806-shadow-deployment-approved — shadow-mode deployment approved
+
+- Date: 2026-08-06 (23:09 PDT, protobots-updates, Ben)
+- Status: accepted
+
+### Decision
+
+Deploy the Conversation Governor in shadow ingress mode. The governor observes
+real traffic and records counterfactual admission/egress recommendations for
+roughly one day; the recommendations are then reviewed for sense before any
+activation step is even proposed. No live suppression, mutation, or inference
+blocking is authorized by this decision. On the OpenClaw side this means
+completing frozen task B5: restart `openclaw-agent.service` so the installed,
+shadow-locked `plugins/conversation-governor` observer loads, then capture one
+synthetic ledger entry, then accumulate ~24h of shadow telemetry before review.
+The OmegaClaw-side Phase D shadow shim (ProtoCosmo2) proceeds in parallel under
+the same constraint: recommendations only.
+
+### Evidence and rationale
+
+Ben's explicit instruction in protobots-updates, 2026-08-06 23:09 PDT:
+"yes let's deploy the governor in shadow ingress mode, i.e. have it make
+recommendations for a day or so and make sure they make sense." Triggering
+incident: five near-identical channel-watchdog alert messages in one minute,
+caused by missing cross-run dedup in `bin/channel-watchdog.py` (fixed same
+evening; 12 tests pass) — the governor would not have seen these because they
+traverse the cron announce delivery path, not the conversational pipeline.
+
+### Consequences
+
+A ~24h shadow-observation review checkpoint is scheduled. Activation remains a
+separate future decision requiring the replay/canary gates plus explicit
+approval.
+
+## D-20260806-direct-post-subagent-scope — governor scope extended to direct-posting subagents
+
+- Date: 2026-08-06 (23:09 PDT, protobots-updates, Ben)
+- Status: accepted
+
+### Decision
+
+Governor coverage is extended in scope to subagents and scheduled jobs that are
+registered as able to post directly on Telegram channels (OpenClaw cron
+`announce` deliveries, isolated agentTurn outputs, and similar direct-post
+paths), not only interactive conversational replies.
+
+### Evidence and rationale
+
+Ben: "maybe the governor SHOULD be extended to handle subagents that are
+registered as able to post directly on TG channels." Same-evening evidence:
+the `Channel watchdog scan` cron job (isolated agentTurn, announce delivery to
+telegram:-1003983157420) emitted five near-identical alerts; this path bypasses
+both the OmegaClaw egress pipeline and the conversational ingress/egress seams
+the Phase B design instruments. First implementation step is a seam audit:
+determine whether the OpenClaw plugin hook surface observes cron/announce
+deliveries; if not, add a delivery-level observation seam in shadow mode.
+
+### Revisit trigger
+
+The seam audit shows cron/announce deliveries already pass an instrumentable
+hook; or the delivery path changes materially in an OpenClaw upgrade.
+## D-20260807-squelch-attachment-watchdog-noise
+
+### Decision
+
+Treat `attachment promise not fulfilled` watchdog diagnostics as deterministic
+egress noise: suppress them at the watchdog source immediately and classify
+raw and Telegram-rendered equivalents as `SUPPRESS` in the governor. Keep
+other watchdog alert classes unaffected. Governor enforcement remains
+shadow-only until its separately authorized active-mode gate.
+
+### Evidence and rationale
+
+Ben explicitly requested both layers after repeated ProtoCosmo2 canary alerts
+added no useful information to the shared updates channel. Provider-free tests
+cover the source filter, both governor text forms, and preservation of an
+unrelated watchdog alert.

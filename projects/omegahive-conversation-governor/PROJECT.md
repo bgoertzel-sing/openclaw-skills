@@ -3,7 +3,7 @@
 - Slug: `omegahive-conversation-governor`
 - Status: `active`
 - Created: `2026-07-24`
-- Last reviewed: `2026-07-27`
+- Last reviewed: `2026-08-08`
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -67,6 +67,41 @@ enabled in `openclaw.json`, still hard-locked to shadow mode. Gateway loading
 is pending an operator restart because `openclaw-agent.service` is a
 system-scope unit. No live suppression is authorized.
 
+On 2026-08-04 Ben explicitly reprioritized completing the governor after
+redundant operational chatter. On 2026-08-06 Ben approved shadow ingress
+deployment and performed the required controlled Gateway restarts. The
+installed observer is loaded with conversation-hook access, remains hard-locked
+to shadow mode, and its 8/8 focused suite passes. A bounded synthetic local
+admission/egress pair (`evt_720384979a490ab6e4321`) is recorded in the private
+ledger; it invoked no model and delivered no payload. The next gate is roughly
+24 hours of real shadow observations and review. No active suppression is
+authorized. The B6 review completed on 2026-08-08 over 200 records and found
+one false duplicate recommendation caused by missing transport message IDs,
+plus a 36-event identical spam burst missed because synthetic channel IDs
+changed on every event. Egress produced only `SEND/DEFAULT_SEND` decisions.
+These observations block active suppression pending identity repair, replay,
+and direct-post seam coverage; see
+`docs/shadow-observation-review-20260808.md`.
+
+On 2026-08-11 B7 identified a common direct-post seam in installed OpenClaw
+2026.7.1: cron announcements traverse `sendDurableMessageBatch` and the global
+`message_sending` hook. A workspace-only patch now observes outbound traffic
+there, observes immutable ingress identity at `message_received`, and refuses
+duplicate recommendations for sentinel/unknown transport IDs. Focused tests
+pass 12/12. The installed extension and running gateway are unchanged pending
+independent review and a guarded shadow-only cron canary; active suppression
+remains unauthorized. Evidence: `docs/direct-post-seam-audit.md` and
+`experiments/20260811T232122Z-b7-seam-identity-deployability/`.
+
+On 2026-07-30 a discussion of Cassio Pennachin's wake-based OmegaHive
+Deliberation Rooms proposal identified a distinct developmental regime:
+Resident Learners that continuously observe and update provisional
+experiential memory. A seven-part minimal-governor proposal is recorded in
+`docs/resident-learner-minimal-governor.pdf`. Its central invariant is that
+experience may change the learner, while only the reviewed write path changes
+authoritative OmegaHive state. This is a design proposal, not yet an accepted
+implementation decision or empirical result.
+
 ## Repositories
 
 | Role | Remote | Local path | Branch/default | Pinned/reference commit |
@@ -87,6 +122,8 @@ authorized or required for the initial phases.
 - Runtime/topology evidence: `docs/runtime-discovery.md`
 - Frozen schemas and fixtures: `docs/event-ledger-contract.md`
 - Module plan and named test matrix: `docs/implementation-plan.md`
+- Resident Learner minimal-governor design synthesis:
+  `docs/resident-learner-minimal-governor.pdf`
 
 ## Open questions
 
