@@ -214,5 +214,52 @@ class TestECANAttention(unittest.TestCase):
         av2.lti = original_lti
 
 
+    def test_dynamic_lti_floor_memory_pressure(self):
+        """When >20 non-VLTI nodes exist, LTI_FLOOR scales up with memory pressure."""
+        data = load_episode('episode_02_chem_blocking.json')
+        # Add extra nodes to exceed 20 non-VLTI threshold
+        for i in range(15):
+            data['tasks'].append({
+                'id': f'filler-task-{i}',
+                'kind': 'wmtm_test',
+                'goal_id': 'g-production-readiness',
+                'status': 'pending',
+                'confidence': 0.3,
+            })
+            data.setdefault('edges', []).append({
+                'from': 'g-production-readiness',
+                'to': f'filler-task-{i}',
+                'type': 'subgoal'
+            })
+        from atomspace.ecan_attention import LTI_FLOOR
+        alloc = ECANAttentionAllocator(data)
+        alloc.run(cycles=30)
+        # With >20 non-VLTI nodes, dynamic floor > base LTI_FLOOR
+        n_non_vlti = sum(1 for av in alloc.attention.values() if not av.vlti)
+        self.assertGreater(n_non_vlti, 20)
+        # Filler tasks with low confidence (0.3) have LTI=30, which should be above
+        # the dynamic floor (LTI_FLOOR * (1 + 0.1*(n-20)))
+        # With ~30 non-VLTI: floor = 5 * (1 + 0.1*10) = 10.0; LTI=30 > 10, not evicted
+        # But after 30 cycles of LTI decay (0.99^30 ≈ 0.74), LTI ≈ 22.2 > 10, still safe
+        # Verify dynamic floor is active by checking a filler node is NOT evicted
+        filler_av = alloc.attention.get('filler-task-0')
+        self.assertIsNotNone(filler_av)
+        # The key test: with 20+ nodes, the floor is higher than base 5.0
+        # Let's verify by checking a node with LTI between 5 and dynamic floor
+        # After 30 cycles: filler LTI ≈ 30 * 0.99^30 ≈ 22.2
+        # Dynamic floor with ~30 nodes: 5*(1+0.1*10) = 10.0
+        # 22.2 > 10.0 so NOT evicted — correct behavior
+        # With LTI=5.3, after decay=5.247, below dynamic 5.5 but above base 5.0
+        av_test = alloc.attention['t-petta-chem']
+        original_lti = av_test.lti
+        av_test.lti = 5.3  # Above base LTI_FLOOR=5, below dynamic floor=5.5
+        av_test.sti = 50.0  # Above STI_FLOOR
+        av_test.vlti = False
+        alloc._step()
+        self.assertTrue(av_test.eviction_candidate,
+            msg='LTI=5.3->5.247 after decay should be evicted under dynamic floor (5.5) but not static floor (5.0)')
+        av_test.lti = original_lti
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -229,8 +229,14 @@ class ECANAttentionAllocator:
             self.attention[nid].sti += amount
 
         # 4. Update eviction candidates
+        # Dynamic LTI floor: scales with number of non-VLTI nodes (memory pressure)
+        n_non_vlti = sum(1 for av in self.attention.values() if not av.vlti)
+        if n_non_vlti > 20:
+            dynamic_lti_floor = LTI_FLOOR * (1.0 + 0.1 * (n_non_vlti - 20))
+        else:
+            dynamic_lti_floor = LTI_FLOOR
         for nid, av in self.attention.items():
-            av.eviction_candidate = (av.sti < STI_FLOOR or av.lti < LTI_FLOOR) and not av.vlti
+            av.eviction_candidate = (av.sti < STI_FLOOR or av.lti < dynamic_lti_floor) and not av.vlti
 
         return total_rent, total_spread
 
