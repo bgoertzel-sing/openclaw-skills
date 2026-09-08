@@ -39,3 +39,38 @@ projects/*/experiments/*/venv/
 *~
 
 bin/tectonic
+
+# Ephemeral/generated outputs
+projects/*/experiments/
+projects/*/drill-reports/
+projects/channel-watchdog/state/
+projects/chaos-language-algorithm/memory/
+health-reports/
+chroma_db/
+artifacts/
+archive/
+BF/
+published/
+media/
+
+# Binary tools
+bin/*
+!bin/.gitkeep
+
+# Temp chroma dirs
+projects/omegaclaw/.chroma-*
+
+# Backup/pre files
+*.before-*
+*.pre-*
+
+# BF scratch
+BF/
+
+# Repos scratch
+repos/
+
+# Published outputs
+published/
+
+# Misc scratch
