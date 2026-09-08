@@ -221,6 +221,43 @@ class IntegratedGovernorPipeline:
 
             verdict_counts[r.unified_verdict] = verdict_counts.get(r.unified_verdict, 0) + 1
 
+        # ── Conflict-aware verdict override ────────────────────────────
+        # If a task is involved in a resource conflict with another task
+        # that shares the same goals, the weaker task (lower STI) should
+        # get a REPLAN verdict to consolidate on one approach.
+        if conflict_chains:
+            # Build a map of task_id -> recommendation for quick lookup
+            rec_map = {r.task_id: r for r in recommendations}
+            for cf in conflict_chains:
+                task_a, task_b = cf.get('task_a'), cf.get('task_b')
+                shared = cf.get('shared_goals', [])
+                # Only override when tasks share at least one goal AND
+                # have NO competing (different) goals. This means both tasks
+                # pursue the same objective via different approaches → consolidate.
+                # Tasks with competing goals (different objectives) should keep
+                # their original verdict (e.g. PAUSE_RECOVERABLY for resource blocking).
+                competing = cf.get('competing_goals', [])
+                if not shared or competing:
+                    continue
+                rec_a = rec_map.get(task_a)
+                rec_b = rec_map.get(task_b)
+                if not rec_a or not rec_b:
+                    continue
+                # Determine weaker task (lower STI)
+                weaker, stronger = (rec_a, rec_b) if rec_a.sti <= rec_b.sti else (rec_b, rec_a)
+                # Override weaker task to REPLAN if not already a stronger verdict
+                override_verdicts = {'CONTINUE', 'ESCALATE', 'PAUSE_RECOVERABLY', 'DEFER'}
+                if weaker.unified_verdict in override_verdicts:
+                    # Update verdict counts
+                    old_v = weaker.unified_verdict
+                    verdict_counts[old_v] = max(0, verdict_counts.get(old_v, 0) - 1)
+                    verdict_counts['REPLAN'] = verdict_counts.get('REPLAN', 0) + 1
+                    # Override the recommendation
+                    weaker.unified_verdict = 'REPLAN'
+                    weaker.recommended_action = ACTION_MAP.get('REPLAN', weaker.recommended_action)
+                    if 'resource_conflict_replan' not in weaker.signals:
+                        weaker.signals.append('resource_conflict_replan')
+
         # Sort recommendations by STI (highest first)
         recommendations.sort(key=lambda x: x.sti, reverse=True)
 

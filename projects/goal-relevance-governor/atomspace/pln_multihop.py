@@ -179,6 +179,19 @@ class ChainMiner:
                     shared_goals = set(goals_a) & set(goals_b)
                     competing_goals = set(goals_a) ^ set(goals_b)
 
+                    # Check if the resource is exclusive (only one holder allowed)
+                    resource_node = self.nodes.get(resource_id, {})
+                    is_exclusive = resource_node.get('exclusive', False)
+
+                    # A conflict is competing if either:
+                    #   1. The tasks have different (competing) goals, OR
+                    #   2. The tasks share goals but occupy an EXCLUSIVE resource
+                    #      (approach divergence on same goal = must replan)
+                    is_competing = len(competing_goals) > 0 or (
+                        len(shared_goals) > 0 and is_exclusive
+                    )
+                    is_approach_conflict = len(shared_goals) > 0 and is_exclusive and len(competing_goals) == 0
+
                     # Conflict strength: product of both tasks' truth values
                     conflict_strength = tv_a.strength * tv_b.strength
                     conflict_confidence = tv_a.confidence * tv_b.confidence
@@ -193,7 +206,9 @@ class ChainMiner:
                         'competing_goals': list(competing_goals),
                         'conflict_strength': round(conflict_strength, 4),
                         'conflict_confidence': round(conflict_confidence, 4),
-                        'is_competing': len(competing_goals) > 0,
+                        'is_competing': is_competing,
+                        'is_approach_conflict': is_approach_conflict,
+                        'is_exclusive_resource': is_exclusive,
                         'chain_a_count': len(chains_a),
                         'chain_b_count': len(chains_b),
                     }
