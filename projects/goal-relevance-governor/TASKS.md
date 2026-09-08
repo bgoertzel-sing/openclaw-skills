@@ -72,7 +72,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Someday or exploratory
 
-- [ ] Map the schema into Atomspace/MeTTa and PLN evidence propagation.
+- [x] Map the schema into Atomspace/MeTTa and PLN evidence propagation. (2026-09-08: graph_to_metta.py + 10 tests + 5 sample .metta files, all verdicts cross-validated)
 
 ## Done recently
 

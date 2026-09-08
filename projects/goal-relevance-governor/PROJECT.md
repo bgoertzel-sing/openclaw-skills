@@ -114,3 +114,28 @@ Document local virtual environments, containers, toolchain pins, datasets, and r
 - An LLM evaluator may invent causal links or overstate confidence.
 - A scalar priority score can erase lexicographic safety/urgency constraints.
 - Premature autonomous enforcement can pause valuable work incorrectly.
+
+## Atomspace/MeTTa mapping (2026-09-08)
+
+The exploratory Atomspace/PLN mapping is complete:
+
+- `atomspace/graph_to_metta.py` (280 lines): translates graph-schema-v0.1
+  JSON into MeTTa atomspace source with typed node declarations
+  (Goal, Project, Task, Resource, Result, Constraint), edge relation atoms
+  (contributes_to, part_of, occupies, blocks, supersedes,
+  provides_evidence_for), and 6 declarative verdict rules expressed in
+  MeTTa-style syntax (STOP_STALE, BLOCKED, PAUSE_RECOVERABLY, DEFER, REPLAN,
+  ESCALATE, CONTINUE).
+- `atomspace/test_graph_to_metta.py` (158 lines): 10/10 tests pass,
+  covering atom ID sanitization, node encoders, edge encoders, full graph
+  generation, edge round-trip, node counting, all 5 replay episodes, and
+  verdict rule structure.
+- `atomspace/samples/`: 5 generated .metta files, one per replay episode.
+- Cross-validation: all 5 episodes' Python evaluator verdicts match the
+  expected verdicts when run through the mapper.
+- Total test count: 20/20 pass (10 atomspace + 10 evaluator) in 0.05s.
+
+The MeTTa verdict rules are declarative reference text, not yet executed
+in a live MeTTa runtime. They document how PLN inference would evaluate
+task relevance once a hyperon-experimental interpreter is available. The
+Python mapper and tests serve as the validation baseline.
