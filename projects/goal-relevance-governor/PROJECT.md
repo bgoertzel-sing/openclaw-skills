@@ -139,3 +139,19 @@ The MeTTa verdict rules are declarative reference text, not yet executed
 in a live MeTTa runtime. They document how PLN inference would evaluate
 task relevance once a hyperon-experimental interpreter is available. The
 Python mapper and tests serve as the validation baseline.
+
+## PLN evidence propagation (2026-09-08)
+
+- `atomspace/pln_propagation.py`: TruthValue dataclass with strength/confidence,
+  upward evidence propagation (task→goal), downward relevance propagation
+  (goal→task, filtered by goal status), and a 6-rule evaluate() method matching
+  the Python evaluator's verdict priority.
+- `atomspace/test_cross_validation.py`: 4 tests / 20 subtests verifying PLN
+  verdicts match Python evaluator on all 5 replay episodes, relevance scores
+  are non-negative, and truth values are in [0,1].
+- Cross-validation result: 7/7 active task verdicts identical between PLN and
+  Python evaluator (STOP_STALE, PAUSE_RECOVERABLY, ESCALATE, DEFER, REPLAN×2,
+  CONTINUE).
+- Total test count: 34/34 pass (10 evaluator + 4 cross-validation + 10 atomspace
+  + 10 graph_to_metta) in 0.08s.
+- Removed orphaned `test_pln_evidence.py` (imported non-existent module).
