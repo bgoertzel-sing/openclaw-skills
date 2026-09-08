@@ -1,0 +1,60 @@
+{
+  "schema_version": "0.1",
+  "episode_id": "01-stale-codegen-worker",
+  "episode_title": "Plain2MeTTa worker pursuing an achieved milestone",
+  "frozen_at": "2026-09-01T12:00:00Z",
+  "expected_verdict": "STOP_STALE",
+  "narrative": "A scheduled code-generation worker (Plain2MeTTa) continued targeting an earlier demonstration milestone that had already been completed and immutably tagged. The worker emitted nominally successful runs but no current top-level goal was advanced. The actual next goal was a revised second-version intermediate representation for the translation pipeline.",
+  "goals": [
+    {
+      "id": "g-initial-demo",
+      "kind": "goal",
+      "title": "Initial demonstration of agent infrastructure",
+      "level": "intermediate",
+      "status": "achieved",
+      "priority": {"rank": 2, "urgency": "medium"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-10T00:00:00Z"
+    },
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    },
+    {
+      "id": "g-ir-translation-v2",
+      "kind": "goal",
+      "title": "Revised second-version intermediate representation for the translation pipeline",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {"rank": 2, "urgency": "medium"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-09-01T00:00:00Z"
+    }
+  ],
+  "projects": [],
+  "tasks": [
+    {
+      "id": "t-p2m-codegen",
+      "kind": "task",
+      "title": "Plain2MeTTa scheduled code-generation worker",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-09-01T12:00:00Z"
+    }
+  ],
+  "resources": [],
+  "results": [],
+  "constraints": [],
+  "edges": [
+    {"from": "t-p2m-codegen", "to": "g-initial-demo", "relation": "contributes_to", "confidence": "high"},
+    {"from": "g-initial-demo", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "high"}
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "schema_version": "0.1",
+  "as_of": "2026-09-08T01:40:00Z",
+  "goals": [
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {
+        "rank": 1,
+        "urgency": "high",
+        "notes": "Top priority"
+      },
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    },
+    {
+      "id": "g-initial-demo",
+      "kind": "goal",
+      "title": "Initial demonstration of agent infrastructure",
+      "level": "intermediate",
+      "status": "achieved",
+      "priority": {
+        "rank": 1,
+        "urgency": "medium"
+      },
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-10T00:00:00Z"
+    },
+    {
+      "id": "g-ir-translation",
+      "kind": "goal",
+      "title": "IR translation layer for WMTM",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {
+        "rank": 2,
+        "urgency": "medium"
+      },
+      "source": "Ben Goertzel",
+      "as_of": "2026-09-01T00:00:00Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": "p-conversation-governor",
+      "kind": "project",
+      "title": "OmegaHive Conversation Governor",
+      "result_contract": {
+        "project_kind": "confirmatory_research",
+        "maturity_stage": "E1_signal_validation",
+        "next_result": "E1a narrow deterministic egress active canary",
+        "trust_evidence": "Canary run with no violations over 200 stress cycles",
+        "mature_result": "Provider-free egress with production canary and rollback",
+        "known_shortcuts": [
+          {
+            "description": "shadow-mode only, no live blocking",
+            "debt_estimate": "low"
+          }
+        ],
+        "owner": "Ben Goertzel",
+        "confidence": "medium",
+        "next_review_trigger": "E1a canary run"
+      },
+      "source": "Ben Goertzel",
+      "as_of": "2026-09-08T00:00:00Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t-stale-codegen",
+      "kind": "task",
+      "title": "Plain2MeTTa code-generation worker",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-09-08T00:00:00Z"
+    },
+    {
+      "id": "t-wmtm-tests",
+      "kind": "task",
+      "title": "Run WMTM test suite",
+      "status": "active",
+      "owner": "test-runner",
+      "reversibility": "reversible",
+      "source": "test-runner",
+      "as_of": "2026-09-08T01:30:00Z"
+    },
+    {
+      "id": "t-hardening",
+      "kind": "task",
+      "title": "Production hardening of egress pipeline",
+      "status": "active",
+      "owner": "engineer",
+      "reversibility": "irreversible",
+      "source": "engineer",
+      "as_of": "2026-09-08T00:00:00Z"
+    },
+    {
+      "id": "t-blocked-task",
+      "kind": "task",
+      "title": "Deploy canary to production",
+      "status": "active",
+      "owner": "devops",
+      "reversibility": "checkpointable",
+      "source": "devops",
+      "as_of": "2026-09-08T00:00:00Z"
+    },
+    {
+      "id": "t-no-goal",
+      "kind": "task",
+      "title": "Orphaned refactoring task",
+      "status": "active",
+      "owner": "developer",
+      "reversibility": "reversible",
+      "source": "developer",
+      "as_of": "2026-09-08T00:00:00Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": "r-shared-runtime",
+      "kind": "resource",
+      "title": "Shared symbolic-language runtime (SWI-Prolog)",
+      "resource_type": "process",
+      "exclusive": true,
+      "source": "system",
+      "as_of": "2026-08-14T00:00:00Z"
+    }
+  ],
+  "results": [
+    {
+      "id": "res-wmtm-285",
+      "kind": "result",
+      "title": "WMTM 285/285 tests pass",
+      "outcome_type": "success",
+      "source": "test-runner",
+      "as_of": "2026-09-08T01:30:00Z"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "c-ben-attendance",
+      "kind": "constraint",
+      "title": "Operator attendance required for live canary",
+      "constraint_type": "authorization",
+      "enforced": true,
+      "source": "Ben Goertzel",
+      "as_of": "2026-09-08T00:00:00Z"
+    }
+  ],
+  "edges": [
+    {
+      "from": "t-stale-codegen",
+      "to": "g-initial-demo",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "t-wmtm-tests",
+      "to": "g-ir-translation",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "t-wmtm-tests",
+      "to": "g-build-omegaclaw",
+      "relation": "contributes_to",
+      "confidence": "medium"
+    },
+    {
+      "from": "t-hardening",
+      "to": "g-build-omegaclaw",
+      "relation": "contributes_to",
+      "confidence": "medium"
+    },
+    {
+      "from": "t-hardening",
+      "to": "p-conversation-governor",
+      "relation": "part_of",
+      "confidence": "high"
+    },
+    {
+      "from": "t-blocked-task",
+      "to": "g-ir-translation",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "c-ben-attendance",
+      "to": "t-blocked-task",
+      "relation": "blocks",
+      "confidence": "high"
+    },
+    {
+      "from": "t-wmtm-tests",
+      "to": "r-shared-runtime",
+      "relation": "occupies",
+      "confidence": "high"
+    },
+    {
+      "from": "t-hardening",
+      "to": "r-shared-runtime",
+      "relation": "occupies",
+      "confidence": "high"
+    },
+    {
+      "from": "res-wmtm-285",
+      "to": "g-ir-translation",
+      "relation": "provides_evidence_for",
+      "confidence": "high"
+    }
+  ]
+}

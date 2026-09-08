@@ -1,0 +1,84 @@
+{
+  "schema_version": "0.1",
+  "episode_id": "02-chem-blocking-restoration",
+  "episode_title": "petta-chem blocking urgent agent service restoration",
+  "frozen_at": "2026-08-20T14:00:00Z",
+  "expected_verdict": "PAUSE_RECOVERABLY",
+  "narrative": "A long-horizon computational-chemistry experiment (petta-chem) occupied a shared symbolic-language runtime and source tree. Clean restoration of three broken conversational agents was treated as blocked until that experiment finished, even though service restoration was urgent and the chemistry run was checkpointed and resumable. Once the conflict was made explicit, the experiment was paused after 242 of 276 durable work units, its results were preserved, and agent restoration proceeded.",
+  "goals": [
+    {
+      "id": "g-long-horizon-research",
+      "kind": "goal",
+      "title": "Long-horizon computational chemistry research",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {"rank": 3, "urgency": "low"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-01T00:00:00Z"
+    },
+    {
+      "id": "g-restore-agents",
+      "kind": "goal",
+      "title": "Restore three broken conversational agents from clean upstream",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "urgent"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-20T00:00:00Z"
+    },
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    }
+  ],
+  "projects": [],
+  "tasks": [
+    {
+      "id": "t-petta-chem",
+      "kind": "task",
+      "title": "petta-chem checkpointed chemistry calibration (242/276 durable work units)",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "checkpointable",
+      "source": "scheduler",
+      "as_of": "2026-08-20T14:00:00Z"
+    },
+    {
+      "id": "t-restore-agents",
+      "kind": "task",
+      "title": "Clean restoration of three conversational agents",
+      "status": "active",
+      "owner": "engineer",
+      "reversibility": "reversible",
+      "source": "engineer",
+      "as_of": "2026-08-20T14:00:00Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": "r-shared-runtime",
+      "kind": "resource",
+      "title": "Shared symbolic-language runtime (SWI-Prolog)",
+      "resource_type": "process",
+      "exclusive": true,
+      "source": "system",
+      "as_of": "2026-08-01T00:00:00Z"
+    }
+  ],
+  "results": [],
+  "constraints": [],
+  "edges": [
+    {"from": "t-petta-chem", "to": "g-long-horizon-research", "relation": "contributes_to", "confidence": "high"},
+    {"from": "g-long-horizon-research", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "medium"},
+    {"from": "t-petta-chem", "to": "r-shared-runtime", "relation": "occupies", "confidence": "high"},
+    {"from": "t-restore-agents", "to": "g-restore-agents", "relation": "contributes_to", "confidence": "high"},
+    {"from": "g-restore-agents", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "high"},
+    {"from": "t-restore-agents", "to": "r-shared-runtime", "relation": "occupies", "confidence": "high"}
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://omegaclaw.org/schemas/goal-relevance-graph-v0.1.json",
+  "title": "Goal Relevance Graph v0.1",
+  "description": "Minimal JSON graph schema for the Goal Relevance Governor (derived from design 2026-08-14)",
+  "type": "object",
+  "required": ["schema_version", "as_of", "goals", "projects", "tasks", "resources", "results", "constraints", "edges"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1" },
+    "as_of": { "type": "string", "format": "date-time" },
+    "goals": { "type": "array", "items": { "$ref": "#/$defs/goal" } },
+    "projects": { "type": "array", "items": { "$ref": "#/$defs/project" } },
+    "tasks": { "type": "array", "items": { "$ref": "#/$defs/task" } },
+    "resources": { "type": "array", "items": { "$ref": "#/$defs/resource" } },
+    "results": { "type": "array", "items": { "$ref": "#/$defs/result" } },
+    "constraints": { "type": "array", "items": { "$ref": "#/$defs/constraint" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } }
+  },
+  "$defs": {
+    "goal": {
+      "type": "object",
+      "required": ["id", "kind", "title", "level", "status", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "goal" },
+        "title": { "type": "string" },
+        "level": { "enum": ["top", "intermediate"] },
+        "status": { "enum": ["active", "achieved", "paused", "superseded", "cancelled"] },
+        "priority": {
+          "type": "object",
+          "properties": {
+            "rank": { "type": "integer" },
+            "urgency": { "enum": ["low", "medium", "high", "critical"] },
+            "notes": { "type": "string" }
+          }
+        },
+        "time_horizon": { "type": "string" },
+        "success_criteria": { "type": "string" },
+        "authority": { "type": "string" },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": ["id", "kind", "title", "result_contract", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "project" },
+        "title": { "type": "string" },
+        "result_contract": { "$ref": "#/$defs/result_contract" },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "result_contract": {
+      "type": "object",
+      "required": ["project_kind", "maturity_stage", "next_result", "trust_evidence", "mature_result", "owner"],
+      "properties": {
+        "project_kind": { "enum": ["exploratory_research", "confirmatory_research", "production_engineering", "service_recovery", "infrastructure"] },
+        "maturity_stage": { "enum": ["E0_exploration", "E1_signal_validation", "E2_replication_robustness", "E3_reusable_implementation", "E4_production_engineering"] },
+        "next_result": { "type": "string" },
+        "trust_evidence": { "type": "string" },
+        "mature_result": { "type": "string" },
+        "known_shortcuts": { "type": "array", "items": { "type": "object", "properties": { "description": { "type": "string" }, "debt_estimate": { "type": "string" } } } },
+        "hardening_trigger": { "type": "string" },
+        "non_goals": { "type": "array", "items": { "type": "string" } },
+        "owner": { "type": "string" },
+        "confidence": { "enum": ["low", "medium", "high"] },
+        "next_review_trigger": { "type": "string" }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": ["id", "kind", "title", "status", "owner", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "task" },
+        "title": { "type": "string" },
+        "status": { "enum": ["active", "blocked", "completed", "paused", "cancelled"] },
+        "owner": { "type": "string" },
+        "expected_duration": { "type": "string" },
+        "reversibility": { "enum": ["reversible", "checkpointable", "irreversible"] },
+        "acceptance_test": { "type": "string" },
+        "evidence_path": { "type": "string" },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["id", "kind", "title", "resource_type", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "resource" },
+        "title": { "type": "string" },
+        "resource_type": { "enum": ["cpu", "gpu", "process", "repository", "identity", "credential", "database", "network", "human_attention"] },
+        "exclusive": { "type": "boolean" },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": ["id", "kind", "title", "outcome_type", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "result" },
+        "title": { "type": "string" },
+        "outcome_type": { "enum": ["success", "failure", "measurement", "artifact", "decision"] },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "required": ["id", "kind", "title", "constraint_type", "source", "as_of"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "const": "constraint" },
+        "title": { "type": "string" },
+        "constraint_type": { "enum": ["safety", "budget", "authorization", "deadline", "ordering", "privacy", "semantic", "lifecycle"] },
+        "enforced": { "type": "boolean" },
+        "source": { "type": "string" },
+        "as_of": { "type": "string", "format": "date-time" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to", "relation"],
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "relation": { "enum": ["contributes_to", "necessary_for", "sufficient_for", "depends_on", "blocks", "conflicts_with", "competes_for", "achieves", "invalidates", "supersedes", "provides_evidence_for", "alternative_to", "refines", "part_of", "authorized_by", "proposed_by", "reviewed_by", "occupies"] },
+        "confidence": { "enum": ["low", "medium", "high"] },
+        "provenance": { "type": "string" },
+        "assumptions": { "type": "string" },
+        "last_review": { "type": "string", "format": "date-time" },
+        "revisit_criterion": { "type": "string" }
+      }
+    }
+  }
+}

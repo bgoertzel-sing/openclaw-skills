@@ -1,0 +1,1004 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[margin=0.82in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{ink}{HTML}{172033}
+\definecolor{blue}{HTML}{245C8A}
+\definecolor{pale}{HTML}{EEF4F8}
+\definecolor{warning}{HTML}{8A4B20}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue,
+  pdftitle={Goal Relevance Governance for Persistent AI Work},
+  pdfauthor={ZeroBot with Benjamin Goertzel}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Goal Relevance Governor}
+\rhead{Design note -- 2026-08-14}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlist{nosep,leftmargin=1.5em}
+\titleformat{\section}{\Large\bfseries\color{ink}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{blue}}{\thesubsection}{0.6em}{}
+
+\lstdefinestyle{plain}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{pale},
+  frame=single,
+  rulecolor=\color{blue!30},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\verdict}[1]{\texttt{#1}}
+
+\title{\vspace{-1.4cm}\textbf{Goal Relevance Governance for Persistent AI Work}\\
+\large From textual LLM task graphs to Atomspace and PLN reasoning}
+\author{ZeroBot, in discussion with Benjamin Goertzel}
+\date{August 14, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Persistent AI workers can be locally competent yet globally irrational. They
+may continue producing commits, tests, and reports even after their parent goal
+has been achieved, superseded, or demoted; they may impose a safe but very slow
+execution cadence without exposing the speed--risk tradeoff; or they may block
+urgent work because resource conflicts are invisible outside the local task.
+This note proposes a \emph{Goal Relevance Governor}: a typed, evidence-bearing
+graph connecting top-level goals, intermediate goals, tasks, resources,
+results, and constraints. Bounded reviewers evaluate these links before work,
+after material events, and periodically. Each review must yield an operational
+verdict such as continue, accelerate, pause, stop, replan, or escalate.
+
+The graph is augmented by a stage-sensitive \emph{result contract}. It states
+the project kind, current maturity stage, next decision-relevant result,
+evidence required to trust that result, intended mature result, current
+non-goals, and conditions under which hardening becomes necessary. This
+prevents exploratory research from silently turning into production
+engineering and prevents generalized infrastructure from displacing a simpler
+path to an urgent operational result.
+
+The initial implementation can use committed JSON or Markdown plus LLM
+critics. A later incarnation can represent the same abstract interface in an
+Atomspace (a typed knowledge graph) and use symbolic languages plus
+probabilistic reasoning. OmegaHive Deliberation Rooms, a proposed format for
+bounded multi-agent discussion, remain complementary: they provide the social surface for
+ambiguous strategic review, while the committed graph provides authoritative
+state and detects when deliberation is needed. The proposal is motivated by
+concrete failures in recent OpenClaw work and includes a shadow-first
+validation plan based on retrospective replay. Product and project names are
+defined when they first appear; understanding the proposal does not require
+prior knowledge of the systems that motivated it.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{The problem: competent locally, stupid globally}
+
+Current agent infrastructure is relatively good at checking local execution:
+did a command run, did tests pass, was an artifact written, is a worker alive,
+and did a promised deliverable land? These checks are necessary. They do not
+answer a more important question:
+
+\begin{quote}
+Is this task, in its present form, still a good means to a currently important
+goal, given what is now known and what else it delays or blocks?
+\end{quote}
+
+A task can generate abundant \term{activity evidence} while generating no
+\term{parent-goal progress}. This distinction is load-bearing. Commits, passing
+tests, completed subtasks, model calls, and status reports prove activity.
+Goal progress requires evidence that the desired world state has become closer,
+less uncertain, less risky, or less costly to reach.
+
+Persistent workers amplify the gap. A well-scoped prompt, once scheduled,
+tends to preserve its local objective. Without a means--ends review layer, the
+worker can faithfully execute an obsolete or strategically dominated plan for
+days. The scheduler sees health; the human experiences drift.
+
+\subsection{The missing feedback loop}
+
+The missing loop has four components:
+
+\begin{enumerate}
+  \item maintain explicit top-level goals and priorities;
+  \item connect tasks to those goals through reusable intermediate goals;
+  \item update the links when results, assumptions, costs, or priorities change;
+  \item repeatedly test whether active tasks remain relevant and well-shaped.
+\end{enumerate}
+
+This is not full general intelligence. It is a disciplined approximation to
+cross-task means--ends reasoning, opportunity-cost awareness, and reflective
+control. It can remove a consequential class of failures even when each local
+worker remains an ordinary LLM agent.
+
+\subsection{How to read the project-specific examples}
+
+The motivating incidents occurred in a research workspace containing
+persistent software agents, scheduled experiments, and several related
+symbolic-AI tools. The names are incidental to the argument:
+
+\begin{itemize}
+  \item \term{OpenClaw} is the host agent platform that schedules and runs
+        persistent workers.
+  \item \term{OmegaClaw} is an experimental family of conversational research
+        agents built from an upstream codebase plus preserved memories and
+        selected capabilities.
+  \item \term{PeTTa} and \term{SWI-Prolog} are parts of the symbolic-language
+        runtime used by some experiments and agents.
+  \item \term{Chroma} is a vector database used to store and retrieve agent
+        memories.
+\end{itemize}
+
+Readers can mentally substitute ``scheduled implementation worker,''
+``long-running research experiment,'' ``shared runtime,'' ``production
+service,'' and ``memory database.'' The proposed governor is not specific to
+any of these products.
+
+\section{Motivation from observed history}
+
+The examples below are not hypothetical reconstructions. They are concrete
+failures that motivated the proposal. They also show why task correctness is
+not enough: each task had a locally intelligible rationale.
+
+\subsection{Migration fragmented into ten-minute slices}
+
+A migration intended to finish quickly was decomposed into short, repeated
+execution slices. Short slices offered recoverability, frequent observation,
+and bounded damage. But they also imposed repeated startup, rehydration,
+inspection, reporting, and scheduling overhead. The worker optimized a local
+safety mechanism without periodically comparing it against the parent goal:
+complete the migration promptly.
+
+The failure was not simply choosing safety over speed. The deeper failure was
+not presenting the tradeoff. A relevance review should have compared at least
+three alternatives:
+
+\begin{itemize}
+  \item frequent short slices: highest observability, highest overhead;
+  \item one continuous run with checkpoints: lower overhead and recoverable;
+  \item one uninterrupted run: fastest, with the largest recovery cost.
+\end{itemize}
+
+Given a high priority on completion speed, the system should have proposed the
+continuous checkpointed path without waiting for the human to notice the
+cadence problem.
+
+\subsection{An implementation worker pursuing an achieved milestone}
+
+A scheduled code-generation worker, internally called Plain2MeTTa, continued
+targeting an earlier demonstration milestone that had already been completed
+and immutably tagged. The worker
+continued to emit nominally successful runs and encountered incidental shell
+and test-path failures, but no current top-level goal was advanced. The actual
+next goal was a revised second-version intermediate representation for the
+translation pipeline.
+
+This should be a nearly deterministic stop condition. If a task's sole parent
+goal is marked achieved, the task is unschedulable until it is closed or linked
+to a new unmet goal. A simple graph query would have exposed the stale edge:
+
+\begin{lstlisting}[style=plain]
+task: scheduled-code-generation-worker
+  contributes_to -> milestone:initial-demonstration [status=achieved]
+  contributes_to -> (none active)
+verdict: STOP_STALE; request retargeting
+\end{lstlisting}
+
+\subsection{A long-running research experiment blocking urgent service restoration}
+
+A long-horizon computational-chemistry experiment, internally called
+petta-chem, occupied a shared symbolic-language runtime and source tree. A
+clean restoration of three broken conversational agents was treated as blocked
+until that experiment finished, even though service restoration was urgent
+and the chemistry run was checkpointed and resumable. Once the conflict was
+made explicit, the experiment was paused after 242 of 276 durable work units,
+its completed results were preserved, and the agent-restoration work could
+proceed.
+
+The missing information was not buried in either task. It was the cross-task
+relation:
+
+\begin{lstlisting}[style=plain]
+task: checkpointed-chemistry-calibration
+  occupies -> resource:shared-symbolic-runtime
+  supports -> goal:long-horizon-research
+
+task: clean-agent-service-restoration
+  requires -> resource:shared-symbolic-runtime-quiescent
+  supports -> goal:restore-conversational-agents [priority=urgent]
+
+derived: chemistry-calibration blocks service-restoration
+recommended verdict: PAUSE_RECOVERABLY(chemistry-calibration)
+\end{lstlisting}
+
+The correct response did not require deep chemistry or runtime intelligence.
+It required representing resource contention, priority, and reversibility in
+one decision context.
+
+\subsection{An over-engineered agent-repair path}
+
+The agent-repair effort itself accumulated a privileged process inspector,
+several layers of launch wrappers, synthetic safety-boundary tests, and
+repeated local review gates. Many components addressed real safety concerns.
+Yet the chosen path became dominated by machinery whose completion was not
+necessary for the top-level goal: restore three usable conversational agents
+from a clean copy of the maintained upstream software while preserving
+valuable memories.
+
+A relevance review should repeatedly ask whether a simpler path now dominates:
+fresh upstream installation, three isolated agent identities, ordinary
+conversation tests, disposable copies of the memory database for compatibility
+testing, and selective migration of useful capabilities.
+This illustrates \term{plan-level staleness}: every subtask may remain useful
+in isolation while the overall decomposition becomes an inferior route.
+
+\subsection{Premature hardening of research infrastructure}
+
+Several research and agent-infrastructure lanes accumulated increasingly
+specific hardening tasks: path and encoding guards, lifecycle edge cases,
+bounded audit behavior, generalized supervisors, and ever larger regression
+suites. Many changes were individually sound. The alignment question was
+often left implicit: was the hardened component already known to support a
+scientifically or operationally valuable result?
+
+For exploratory research, the next useful result is usually epistemic. It may
+be a calibrated estimator, a planted-signal recovery, a meaningful baseline
+comparison, a falsifying counterexample, or a first credible scientific
+signal. Generalized production hardening has weak value if the underlying
+method may soon be discarded. The correct early standard is not carelessness;
+it is \term{minimum sufficient rigor}: enough correctness, provenance,
+controls, reproducibility, cost containment, security, and recoverability to
+make the next result trustworthy.
+
+This distinction challenges hardening tasks with a counterfactual:
+
+\begin{quote}
+If this hardening is omitted now, does the next scientific or operational
+result become invalid, uninterpretable, irreproducible, unsafe, unaffordable,
+or unrecoverable?
+\end{quote}
+
+If not, the task should normally be deferred until evidence justifies a
+reusable research tool or production system. A large safety suite can be
+essential for a production delegation substrate while being irrelevant to an
+earlier question such as whether a proposed algorithm produces any useful
+signal.
+
+\section{Other failure classes the governor should catch}
+
+The same structure applies beyond the observed incidents.
+
+\begin{longtable}{p{0.24\textwidth}p{0.68\textwidth}}
+\toprule
+Failure class & Example and expected detection \\
+\midrule
+\endhead
+Goal completion drift & Tests keep improving a feature after its acceptance
+criterion passed. Detect active tasks whose parent goals are achieved. \\
+Goal supersession & A new architecture replaces the old one, but old workers
+continue. Detect edges to superseded goals and plans. \\
+Priority inversion & A low-value benchmark monopolizes a GPU, database, or
+human review channel required by an urgent incident. Derive a blocks relation. \\
+Proxy gaming & A worker increases test counts or commits while the actual
+quality metric is unchanged. Separate activity from goal-delta evidence. \\
+Sunk-cost continuation & Repeated failures accumulate, but prior investment is
+treated as a reason to continue. Recompute prospective value, not historical cost. \\
+Risk drift & A once-safe task becomes dangerous after scope, permissions, or
+external state changes. Trigger review on assumption and resource changes. \\
+Cost drift & API usage, runtime, or human attention exceeds the initial
+estimate. Trigger review on material estimate variance. \\
+Dependency drift & An upstream release obviates custom work, or a dependency
+becomes unavailable. Re-evaluate necessary-for and alternative-path edges. \\
+Premature optimization & Performance work begins before correctness or
+estimator validation. Enforce prerequisite and necessary-for relations. \\
+Coordination overload & Excessive checkpoints, deliberations, or reports slow
+the goal they protect. Model governance itself as a cost-bearing task. \\
+Human bottleneck creation & The agent requests repeated copy/paste, approval,
+or archaeology that could be automated. Represent human attention as scarce. \\
+Silent tradeoff choice & The worker selects safety, speed, quality, or cost
+without reporting the alternatives. Require explicit tradeoff evidence. \\
+\bottomrule
+\end{longtable}
+
+\section{Stage-sensitive goals and result contracts}
+
+Top-level priorities are necessary but do not completely specify rational
+work. A goal such as ``reach a mature useful result quickly'' can be
+interpreted as permission to polish indefinitely. The governor therefore
+needs three general meta-goals plus an explicit definition of the result being
+pursued now.
+
+\subsection{Three sharpened meta-goals}
+
+\begin{description}[style=nextline]
+  \item[A: Decision-relevant speed]
+    Reach the next result that can rationally change belief, direction, or
+    action as quickly as possible.
+  \item[B: Least commitment]
+    Prefer the simplest, most reversible, and least-committing path that can
+    produce a trustworthy result.
+  \item[C: Mature-result efficiency]
+    Reach the intended mature result as quickly as feasible, avoiding shortcuts
+    whose probability-weighted downstream cost exceeds their present value.
+\end{description}
+
+B is an Occam heuristic, not an absolute command. ``Simplest'' means simplest
+subject to the evidential and operational validity required at the current
+stage. It does not justify a shortcut that makes an experiment uninterpretable
+or risks destruction of valuable data. C prevents A from becoming naive
+short-termism, but C must not be used to fund speculative maturity before the
+project has earned it.
+
+\subsection{Useful results depend on project kind}
+
+The phrase \emph{useful result} has different meanings in different projects.
+
+\begin{longtable}{p{0.22\textwidth}p{0.31\textwidth}p{0.39\textwidth}}
+\toprule
+Project kind & Typical next useful result & Typical mature useful result \\
+\midrule
+\endhead
+Exploratory research & A decision-changing signal, falsification, calibrated
+probe, or meaningful baseline result & A replicated and well-delimited
+scientific conclusion; hardened software may remain a separate project \\
+Confirmatory research & Independent replication, stronger controls, or a
+predeclared test & A robust result with uncertainty, ablations, limitations,
+and reproducible artifacts \\
+Prototype engineering & A thin end-to-end slice proving the central user or
+system capability & A reusable implementation adequate for repeated trials \\
+Production engineering & A bounded service path under representative load & A
+secure, observable, maintainable, fault-tolerant deployed system \\
+Service recovery & Restoration of the smallest standard known-good path & A
+stable restored service with preserved state and selectively reintroduced
+features \\
+Infrastructure research & Evidence that the substrate enables a valuable
+downstream task & A reusable substrate whose hardening is proportional to its
+demonstrated use \\
+\bottomrule
+\end{longtable}
+
+An exploratory project's mature result is often a successful or negative
+scientific conclusion, not hardened code. Once the scientific value is clear,
+building a reusable or production implementation can become a distinct project
+with its own goal, budget, acceptance criteria, and risks.
+
+\subsection{A maturity ladder}
+
+A useful default ladder is:
+
+\begin{description}[style=nextline]
+  \item[E0 -- Exploration]
+    Run the smallest trustworthy experiment that can falsify or support the
+    core idea.
+  \item[E1 -- Signal validation]
+    Calibrate the estimator, add decisive controls, and establish one credible
+    result.
+  \item[E2 -- Replication and robustness]
+    Test seeds, datasets, baselines, ablations, perturbations, and uncertainty.
+  \item[E3 -- Reusable research implementation]
+    Add the cleanup, documentation, interfaces, and tests required for repeated
+    scientific use.
+  \item[E4 -- Production engineering]
+    Add security, fault tolerance, deployment, monitoring, performance, and
+    broad edge-case hardening.
+\end{description}
+
+The labels are defaults, not a universal ontology. A service-recovery project
+may use a parallel ladder: unchanged known-good baseline, isolated instances,
+state compatibility, selective feature return, and production soak. What
+matters is that each active task names the stage it advances.
+
+\subsection{The result contract}
+
+Each active project or major goal should maintain:
+
+\begin{enumerate}
+  \item project kind;
+  \item current phase or maturity stage;
+  \item next decision-relevant result;
+  \item evidence sufficient for that result to be trustworthy;
+  \item intended mature result;
+  \item known shortcuts and their likely debt;
+  \item conditions under which additional hardening becomes necessary;
+  \item explicit non-goals for the current phase;
+  \item owner, provenance, confidence, and next review trigger.
+\end{enumerate}
+
+The contract is not frozen forever. A meaningful result, failure, cost change,
+or new alternative should trigger reconsideration. An LLM can propose the
+contract from project records, but consequential definitions and priority
+changes should initially be confirmed by the human owner.
+
+\subsection{Minimum-sufficient-hardening test}
+
+Hardening at E0 or E1 is presumed deferred unless omitting it materially
+threatens one of the following for the next result:
+
+\begin{itemize}
+  \item scientific validity or estimator correctness;
+  \item interpretability of the result;
+  \item reproducibility and provenance;
+  \item protection against silent data corruption;
+  \item cost containment or recoverability of expensive work;
+  \item security, privacy, or explicit authorization boundaries;
+  \item the ability to run the discriminating experiment at all.
+\end{itemize}
+
+If the test passes, implement the smallest guard that protects the result. If
+it fails, record a deferred-hardening edge and the event that should reactivate
+it. This preserves useful technical debt as an explicit option rather than
+either ignoring it or paying it prematurely.
+
+\subsection{Comparing the first result with the mature result}
+
+The governor should compare a small set of alternative plans using at least:
+
+\begin{itemize}
+  \item expected time to the next decision-relevant result;
+  \item probability that the result is valid and informative;
+  \item probability-weighted rework and technical debt;
+  \item risk of losing data, violating constraints, or creating lock-in;
+  \item opportunity cost imposed on other goals;
+  \item governance and coordination overhead;
+  \item option value retained by a reversible prototype.
+\end{itemize}
+
+The estimates may initially be qualitative. Their purpose is to expose the
+tradeoff, not manufacture false precision. A continuous checkpointed migration
+may dominate both tiny repeated slices and an unsafe uninterrupted run. A
+small amount of architecture can reduce total time to E3, but only when its
+expected value exceeds the chance that E0 shows the idea should be abandoned.
+
+\subsection{Applying the contract to conversational-agent recovery}
+
+For the failed service-repair effort, the result contract should have read:
+
+\begin{lstlisting}[style=plain]
+project_kind: service_recovery
+current_stage: unchanged_known_good_software_baseline
+next_result:
+  ordinary bounded multi-turn conversation on a pinned upstream version
+trust_evidence:
+  deterministic smoke, bounded lifecycle, no orphan processes
+mature_result:
+  three reliable isolated agents with preserved memories and selected skills
+current_non_goals:
+  generalized process inspector; custom deferred runner; broad supervisor
+\end{lstlisting}
+
+Here ``pinned upstream'' means an exact, recorded version of the maintained
+base software, before custom extensions are restored. Against that contract,
+a generalized privileged process inspector contributes mainly
+to a hypothetical later operational maturity stage. A clean pinned upstream
+installation tests the central uncertainty directly, is more reversible, uses
+fewer assumptions, and reaches the next result sooner. The correct verdict is
+\verdict{DEFER} for the inspector and \verdict{DO\_FIRST} for the clean
+baseline.
+
+\section{The proposed control structure}
+
+\subsection{A typed, evidence-bearing graph}
+
+The minimal persistent object is a directed property graph. Text can be the
+initial semantic payload, but node and edge types should be explicit.
+
+\paragraph{Core node types.}
+\begin{itemize}
+  \item \term{Goal}: a desired world state with priority, provenance, time
+        horizon, success criteria, status, and authority.
+  \item \term{Intermediate goal}: a reusable enabling state between strategic
+        goals and concrete work.
+  \item \term{Task}: an executable commitment with owner, expected duration,
+        cost, risk, reversibility, acceptance test, and evidence path.
+  \item \term{Result}: an observed outcome, artifact, measurement, failure, or
+        decision that updates beliefs about the graph.
+  \item \term{Resource}: CPU, GPU, process tree, repository, identity,
+        credential, database, network endpoint, or human attention.
+  \item \term{Constraint}: safety, budget, authorization, deadline, ordering,
+        privacy, semantic, or lifecycle invariant.
+  \item \term{Plan}: a candidate decomposition or path through intermediate
+        goals and tasks, allowing competing plans to be compared.
+  \item \term{Result contract}: project kind, active stage, next result, trust
+        evidence, mature result, current non-goals, and hardening trigger.
+\end{itemize}
+
+\paragraph{Core edge types.}
+\begin{itemize}
+  \item \texttt{contributes-to}, \texttt{necessary-for}, and
+        \texttt{sufficient-for};
+  \item \texttt{depends-on}, \texttt{blocks}, \texttt{conflicts-with}, and
+        \texttt{competes-for};
+  \item \texttt{achieves}, \texttt{invalidates}, \texttt{supersedes}, and
+        \texttt{provides-evidence-for};
+  \item \texttt{alternative-to}, \texttt{refines}, and \texttt{part-of};
+  \item \texttt{authorized-by}, \texttt{proposed-by}, and
+        \texttt{reviewed-by}.
+\end{itemize}
+
+Each uncertain edge should carry confidence, provenance, assumptions, last
+review time, and a criterion for revisiting it. A bare weight is inadequate:
+two equal weights can mean very different things if one rests on direct
+evidence and the other on an LLM guess.
+
+\subsection{Priorities are not merely scalar}
+
+A weighted score is useful for ranking, but some relationships should be
+lexicographic or constraint-based. For example:
+
+\begin{enumerate}
+  \item do not violate explicit safety and authorization constraints;
+  \item address urgent production restoration before discretionary research;
+  \item among allowed tasks, maximize expected progress per scarce resource;
+  \item prefer simpler, more reversible plans when expected value is similar.
+\end{enumerate}
+
+An illustrative task value is
+
+\[
+V(t) = P(g)\,U(t,g)\,S(t)\,T(t)
+       - C(t) - R(t) - O(t) - G(t),
+\]
+
+where $P(g)$ is inherited goal priority, $U(t,g)$ expected contribution,
+$S(t)$ probability of success, and $T(t)$ urgency. $C(t)$ is direct cost,
+$R(t)$ risk, $O(t)$ opportunity cost imposed on other paths, and $G(t)$
+governance/coordination overhead. This is a prompt for structured judgment,
+not initially a claim of cardinal precision.
+
+\subsection{Required review questions}
+
+Every active task should periodically answer:
+
+\begin{enumerate}
+  \item Which active goal does success advance, through which intermediate path?
+  \item What new parent-goal delta occurred since the previous review?
+  \item Is the parent goal achieved, superseded, paused, or reprioritized?
+  \item Is a simpler, faster, cheaper, or safer route now available?
+  \item What resources are held, and which higher-priority paths are delayed?
+  \item Which assumptions or estimates have changed?
+  \item What are the principal speed--safety--quality--cost tradeoffs?
+  \item Which result contract and maturity stage does this task advance?
+  \item Does proposed hardening pass the minimum-sufficient-hardening test?
+  \item Should the task continue, accelerate, defer, pause, stop, replan, or escalate?
+\end{enumerate}
+
+\subsection{Operational verdicts}
+
+A review that only writes analysis will not change behavior. It must emit one
+of a small number of verdicts with reasons, evidence, expiry, and authority:
+
+\begin{description}[style=nextline]
+  \item[\verdict{CONTINUE}] Current plan remains proportionate and relevant.
+  \item[\verdict{ACCELERATE}] Reduce cadence/governance overhead or allocate
+        more resources within authorization.
+  \item[\verdict{PAUSE\_RECOVERABLY}] Preserve state and release a resource.
+  \item[\verdict{STOP\_STALE}] Parent goal is achieved, superseded, or absent.
+  \item[\verdict{REPLAN}] A better path or invalidated assumption changes the decomposition.
+  \item[\verdict{DEFER}] The task may matter at a later maturity stage but is
+        not necessary for the next decision-relevant result.
+  \item[\verdict{ESCALATE}] Human or multi-seat judgment is required.
+  \item[\verdict{BLOCKED}] No safe authorized step is available; name the blocker.
+\end{description}
+
+\section{When relevance is reviewed}
+
+Periodic review is necessary but insufficient. The system should review on
+events that can change the means--ends relation:
+
+\begin{itemize}
+  \item before a worker starts or resumes;
+  \item after a meaningful success, failure, or acceptance result;
+  \item when a goal is created, achieved, paused, superseded, or reprioritized;
+  \item when the next result, project kind, or maturity stage changes;
+  \item when expected duration, cost, or risk changes materially;
+  \item when a new resource conflict or blocking relation appears;
+  \item after repeated activity with no recorded parent-goal delta;
+  \item at a bounded periodic cadence as a backstop.
+\end{itemize}
+
+The cadence should itself be adaptive. A stable low-risk task with valid
+assumptions needs fewer reviews than an incident response with rapidly changing
+state. Reviews should be triggered by semantic events where possible, not by
+arbitrary ten-minute fragmentation.
+
+\section{Relation to OmegaHive Deliberation Rooms}
+
+Deliberation Rooms and the Goal Relevance Governor solve different layers of
+the problem.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.24\textwidth}XX}
+\toprule
+Dimension & Goal Relevance Governor & Deliberation Rooms \\
+\midrule
+Primary question & What work remains a good means to current goals? & How do
+humans and seats reason together and land a conclusion? \\
+Durable state & Goal/task/resource graph and verdict evidence & Open/close
+events, committed conclusion references, archived transcript \\
+Execution shape & Cheap bounded evaluator, event-triggered or periodic &
+Bounded wake-based participation with chair and synthesizer \\
+Authority & Initially advisory; later policy-gated actions & Conversation has
+no authority until conclusions are committed \\
+Failure detected & Stale tasks, priority inversion, blocked resources,
+inferior plans & Unlanded deliberation, attribution and synthesis failures \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The integration is:
+
+\begin{lstlisting}[style=plain]
+committed goal/task/resource graph
+              |
+              v
+bounded relevance evaluator
+       |                    |
+ clear low-risk verdict     ambiguous / novel / high-impact
+       |                    |
+       v                    v
+commit recommendation     open Deliberation Room
+                              |
+                     seats + human deliberate
+                              |
+                     synthesizer commits result
+                              |
+                              v
+                    graph is re-evaluated
+\end{lstlisting}
+
+Most checks should not open rooms. Making every review conversational would
+recreate coordination overhead. A room is appropriate when uncertainty,
+conflict, novelty, impact, or authority exceeds a threshold. Examples include
+changing a top-level priority, abandoning a major research direction, choosing
+between materially different safety profiles, or resolving disagreement among
+project seats.
+
+The graph lives in the committed spine. A room discusses proposed changes;
+only the synthesizer's committed artifact changes authoritative goal state.
+This follows the Deliberation Rooms rule that speech is not real until it lands
+through the write path.
+
+\section{A simple LLM-centric OpenClaw incarnation}
+
+\subsection{Storage and projections}
+
+The first version should be intentionally small:
+
+\begin{itemize}
+  \item committed JSON or YAML records for goals, nodes, edges, and verdicts;
+  \item stable identifiers and append-only event history;
+  \item projections generated from existing \texttt{PROJECT.md},
+        \texttt{TASKS.md}, \texttt{DECISIONS.md}, cron jobs, sessions, and
+        resource observations;
+  \item textual descriptions on nodes, with typed metadata around them;
+  \item source pointers for every factual status and uncertain inference.
+\end{itemize}
+
+Project Markdown remains the human-readable source of project facts. The graph
+can initially be a normalized cross-project projection rather than a second
+competing truth store. Explicit goal and priority records are added only where
+the current project files lack them.
+
+\subsection{LLM roles}
+
+Separate LLM calls can perform bounded functions:
+
+\begin{enumerate}
+  \item \term{Link proposer}: suggests intermediate goals and typed edges.
+  \item \term{Result-contract proposer}: classifies project kind and stage,
+        proposes next and mature results, sufficient evidence, and non-goals.
+  \item \term{Evidence checker}: verifies whether claims have source support.
+  \item \term{Relevance critic}: answers the required review questions.
+  \item \term{Alternative planner}: proposes simpler or faster paths.
+  \item \term{Adversarial reviewer}: searches for priority inversion,
+        opportunity cost, hidden blockers, and silent tradeoffs.
+  \item \term{Synthesizer}: emits a structured recommendation or prepares a
+        Deliberation Room packet.
+\end{enumerate}
+
+These may initially be prompts to one strong model, but their contracts should
+remain distinct. The evaluator must not silently edit human priorities. It may
+propose changes with confidence and provenance.
+
+\subsection{Authority ladder}
+
+\begin{itemize}
+  \item \term{Read-only shadow}: record what would have been recommended.
+  \item \term{Advisory}: notify the operator of stale or conflicting work.
+  \item \term{Scheduling gate}: prevent a worker with no active goal path from
+        starting, while allowing explicit override.
+  \item \term{Low-risk autonomy}: pause checkpointable work or retarget an
+        obviously stale worker under predeclared rules.
+  \item \term{Strategic autonomy}: defer until extensive validation; major goal
+        and priority changes remain human-authoritative.
+\end{itemize}
+
+This progression prevents a relevance governor from becoming another source
+of global damage. It should earn authority through counterfactual evidence.
+
+\section{A symbolic reasoning incarnation}
+
+\subsection{Atomspace representation}
+
+An Atomspace is a typed knowledge graph whose nodes and links can themselves
+participate in reasoning. The same interface can be represented as atoms
+rather than JSON objects. A schematic MeTTa-like symbolic vocabulary might
+include:
+
+\begin{lstlisting}[style=plain]
+(Goal RestoreConversationalAgents)
+(Priority RestoreConversationalAgents urgent)
+(Status RestoreConversationalAgents active)
+
+(Task ChemistryCalibration)
+(Task CleanAgentInstallation)
+(ContributesTo ChemistryCalibration LongHorizonResearch)
+(ContributesTo CleanAgentInstallation RestoreConversationalAgents)
+(Occupies ChemistryCalibration SharedSymbolicRuntime)
+(Requires CleanAgentInstallation QuiescentSharedSymbolicRuntime)
+(Checkpointable ChemistryCalibration True)
+
+(ProjectKind AgentRecovery ServiceRecovery)
+(CurrentStage AgentRecovery KnownGoodBaseline)
+(NextResult AgentRecovery OrdinaryBoundedConversation)
+(MatureResult AgentRecovery ThreeIsolatedAgentsWithPreservedMemory)
+(CurrentNonGoal AgentRecovery GeneralizedProcessInspector)
+
+(Evidence E1 (CompletedUnits ChemistryCalibration 242 276))
+(Confidence (Blocks ChemistryCalibration CleanAgentInstallation) 0.99)
+\end{lstlisting}
+
+Intermediate goals become first-class atoms. Rules can derive transitive
+contribution, blocked paths, alternative paths, and goal achievement. Temporal
+atoms can represent deadlines, expiry, last review, and changing status.
+
+\subsection{PLN-style uncertain inference}
+
+Probabilistic Logic Networks (PLN), a framework for uncertain logical
+inference over such graphs, can add more than a symbolic transcription. It can combine uncertain
+means--ends links and evidence:
+
+\begin{itemize}
+  \item infer the strength with which a task contributes to a goal through
+        several uncertain intermediate links;
+  \item weaken a contribution when repeated results fail to change the parent
+        state;
+  \item compare competing plans using uncertain success and cost estimates;
+  \item reason separately about time-to-information and time-to-mature-result;
+  \item propagate new evidence that invalidates assumptions;
+  \item distinguish lack of evidence from evidence of irrelevance;
+  \item explain derived verdicts as inference trails.
+\end{itemize}
+
+A simple conceptual rule is:
+
+\begin{quote}
+If task $T$ contributes to intermediate goal $I$, and $I$ contributes to goal
+$G$, then $T$ contributes to $G$ with an uncertainty derived from both links;
+new evidence about either link updates the composite relevance.
+\end{quote}
+
+The numerical semantics require care. Contribution is not ordinary truth, and
+priority is not probability. It may be better to use several typed values:
+belief in the causal link, expected utility, urgency, cost, and confidence in
+the estimate. PLN should reason over these without collapsing them into one
+opaque scalar too early.
+
+\subsection{Existing components and their roles}
+
+The governor should reuse rather than replace existing components:
+
+\begin{itemize}
+  \item \term{ThreadKeeper}, a persistent-worker lifecycle service, supplies
+        durable task events and worker-status primitives.
+  \item \term{GoalChainer}, an experimental symbolic goal-appraisal module,
+        supplies norm/goal/task relations and uncertain belief grading seams.
+  \item \term{Petta-memory}, a symbolic memory layer, can preserve evidence and
+        attribution needed by uncertain relevance inference.
+  \item \term{Deliberation Rooms}, a bounded multi-agent discussion format,
+        supply strategic review when routine evaluation is insufficient.
+  \item \term{Conversation Governor}, a message-control layer, handles message admission and egress;
+        it is adjacent but does not decide which tasks are strategically useful.
+\end{itemize}
+
+The abstraction seam is the typed graph plus verdict contract. Storage,
+inference, and transport can change without rewriting scheduling policy.
+
+\section{Validation before authority}
+
+\subsection{Retrospective replay corpus}
+
+The initial detector should be evaluated against frozen historical episodes,
+including at least:
+
+\begin{enumerate}
+  \item migration slice overhead before the continuous-run proposal;
+  \item the stale code-generation worker pursuing an achieved milestone;
+  \item a checkpointed chemistry experiment blocking urgent service recovery;
+  \item the over-engineered conversational-agent repair path;
+  \item premature hardening tasks before evidence of research value;
+  \item matched controls where long-running or cautious work was justified.
+\end{enumerate}
+
+For each episode, freeze only information available at the review time. A
+successful system must flag the problem before the human intervention, name
+the correct parent-goal issue, and propose a proportionate verdict. It must not
+use later outcomes as hidden evidence.
+
+\subsection{Metrics}
+
+\begin{itemize}
+  \item detection recall for known alignment failures;
+  \item false-alarm rate on justified long-running tasks;
+  \item decision latency from decisive evidence to recommendation;
+  \item estimated time and resource savings under counterfactual replay;
+  \item human agreement with the stated tradeoff and verdict;
+  \item correct classification of project kind, stage, and useful result;
+  \item hardening precision: necessary guards retained, premature polish deferred;
+  \item explanation completeness and evidence traceability;
+  \item governor overhead relative to savings;
+  \item rate of reviews producing no new information.
+\end{itemize}
+
+The last two protect against a recursive failure: building a large governance
+system whose cost exceeds the drift it prevents.
+
+\subsection{Shadow-first deployment}
+
+Deployment should proceed from offline replay to read-only shadow observation,
+then advisory recommendations, and only later to narrow scheduling gates. No
+live autonomy is justified merely because the architecture is persuasive.
+Predeclared promotion thresholds and explicit rollback should govern each
+authority increase.
+
+\section{Design risks and safeguards}
+
+\subsection{Bureaucratic overgrowth}
+
+The graph can become a ceremonial ontology maintained more carefully than the
+work itself. Start with the few node/edge types needed to detect actual
+failures. Every field should support a query or decision. Measure governance
+overhead.
+
+The same warning applies to maturity models. The E0--E4 ladder is a diagnostic
+aid, not a reason to create five phases of ceremony for every small task.
+
+\subsection{LLM confabulation and unstable links}
+
+LLMs may invent causal relationships or rewrite priorities in rhetorically
+plausible ways. Separate proposals from accepted links; attach evidence,
+confidence, author, and expiry; use adversarial review for major edges; and
+keep human priorities authoritative at first.
+
+\subsection{Priority laundering}
+
+Derived scores can conceal value judgments. Preserve the original human goal
+and priority statement, show every inherited priority path, and expose the
+tradeoff dimensions before aggregation.
+
+\subsection{Over-centralization}
+
+A global governor can become a brittle bottleneck. Projects should retain
+local autonomy within explicit resource and priority bounds. The global layer
+intervenes mainly on cross-project conflicts, stale parent goals, and major
+plan changes.
+
+\subsection{Premature enforcement}
+
+Incorrect pauses may destroy momentum or invalidate experiments. Begin
+read-only; prefer recoverable pauses; require explicit authority for
+irreversible actions; and retain human override with a recorded rationale.
+
+\section{A staged implementation path}
+
+\subsection*{Phase 0: Design and frozen examples}
+Complete this specification; define a small retrospective corpus and expected
+verdicts; freeze result contracts for the motivating cases; identify existing
+data sources and invariants.
+
+\subsection*{Phase 1: Read-only graph projection}
+Project current goals, tasks, cron workers, sessions, and resource conflicts
+into a typed JSON graph. Include project kind, maturity stage, next result, and
+current non-goals. Do not alter scheduling.
+
+\subsection*{Phase 2: LLM relevance critic}
+Run event-triggered and periodic reviews. Emit structured shadow verdicts with
+evidence and alternatives. Evaluate replay metrics.
+
+\subsection*{Phase 3: Deliberation integration}
+Open rooms for ambiguous or high-impact cases. Require committed synthesis and
+measure landing rate and decision latency.
+
+\subsection*{Phase 4: Narrow scheduling gates}
+With explicit approval, block only deterministic stale cases, such as a task
+whose sole parent goal is achieved. Preserve overrides and rollback.
+
+\subsection*{Phase 5: Atomspace/PLN realization}
+Map the stable graph and verdict interface into atoms in a symbolic knowledge
+graph. Compare symbolic and LLM judgments on the same corpus. Use PLN for uncertain
+contribution and evidence propagation where it demonstrably improves results.
+
+\section{Open research questions}
+
+\begin{enumerate}
+  \item What is the smallest graph vocabulary that catches the motivating
+        failures without becoming a general project-management ontology?
+  \item Can an LLM reliably infer a project's kind, current stage, and next
+        decision-relevant result from incomplete project records?
+  \item How should contribution, belief, utility, priority, urgency, and risk
+        be represented without inappropriate scalar collapse?
+  \item How can intermediate goals be reused without erasing project-specific
+        semantics?
+  \item What event thresholds trigger review without reproducing excessive
+        checkpoint overhead?
+  \item How should a relevance evaluator estimate opportunity cost when
+        alternative plans are only partially known?
+  \item How should technical debt and option value be estimated without
+        systematically favoring either premature hardening or reckless prototypes?
+  \item Which verdicts can safely execute automatically, and which should
+        always open a Deliberation Room or request human approval?
+  \item Can embedding-based conceptual similarity propose useful reusable
+        intermediate goals while provenance and logic prevent false analogy?
+  \item Does PLN improve calibration and explanation over a strong LLM critic,
+        or mainly provide a more inspectable representation?
+\end{enumerate}
+
+\section{Conclusion}
+
+The motivating failures share a single structure: local tasks continued under
+fixed assumptions while the global meaning of the work changed. A Goal
+Relevance Governor addresses this by making means--ends links, priorities,
+resources, evidence, and alternatives explicit and repeatedly reviewable. Its
+essential output is not another report but an operational verdict tied to
+current goals.
+
+The result contract adds a necessary temporal and epistemic dimension. It
+distinguishes the result needed now from a hypothetical mature artifact, and
+it distinguishes validity-critical rigor from premature hardening. The
+governor can therefore optimize for fast trustworthy learning without losing
+sight of downstream maturity.
+
+The practical first version does not require a mature symbolic AGI. Committed
+textual records, a small typed graph, bounded LLM critics, and retrospective
+validation can already catch stale goals, priority inversions, blocked
+resources, and inferior decompositions. The same architecture can later move
+into Atomspace and PLN without changing its outer contract.
+
+Deliberation Rooms strengthen rather than replace the proposal. They provide
+a bounded venue where humans and seats exercise consequential judgment. The
+graph and review workers decide when that judgment is needed and preserve its
+committed consequences. Together they form a plausible incremental path from
+task-local LLM competence toward persistent reflective intelligence across
+projects.
+
+\enlargethispage{4\baselineskip}
+\section*{Source and provenance notes}
+
+This document synthesizes Ben Goertzel's 2026-08-14 proposal and the immediate
+discussion with ZeroBot. The Deliberation Rooms comparison is based on Cassio
+Pennachin, \emph{OmegaHive Deliberation Rooms: Vision, a Slack MVP, and the
+relation to the Conversation Governor}, July 29, 2026, preserved locally with
+SHA-256
+\texttt{8c6d6b3916d7353b5e7818fab2a20abe98d8c8a6d553df936316fec44419e762}.
+Historical examples are operational observations from the shared OpenClaw
+workspace; they are used here as design evidence, not as claims that the
+proposed mechanism has already been validated.
+
+\end{document}

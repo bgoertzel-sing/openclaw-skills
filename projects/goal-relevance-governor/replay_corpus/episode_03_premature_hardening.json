@@ -1,0 +1,54 @@
+{
+  "schema_version": "0.1",
+  "episode_id": "03-premature-hardening",
+  "episode_title": "Premature hardening of research infrastructure",
+  "frozen_at": "2026-08-25T10:00:00Z",
+  "expected_verdict": "DEFER",
+  "narrative": "Several research and agent-infrastructure lanes accumulated increasingly specific hardening tasks: path and encoding guards, lifecycle edge cases, bounded audit behavior, generalized supervisors, and ever larger regression suites. Many changes were individually sound. The alignment question was whether the hardened component was already known to support a scientifically or operationally valuable result.",
+  "goals": [
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": "p-research-infra",
+      "kind": "project",
+      "title": "Exploratory research infrastructure for PLN/MeTTa translation",
+      "status": "active",
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z",
+      "result_contract": {
+        "project_kind": "exploratory_research",
+        "maturity_stage": "E0_exploration",
+        "hardening_trigger": "first_credible_scientific_signal"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t-hardening-guards",
+      "kind": "task",
+      "title": "Add path and encoding guards, lifecycle edge-case tests, generalized supervisor",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "irreversible",
+      "source": "scheduler",
+      "as_of": "2026-08-25T10:00:00Z"
+    }
+  ],
+  "resources": [],
+  "results": [],
+  "constraints": [],
+  "edges": [
+    {"from": "t-hardening-guards", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "medium"},
+    {"from": "t-hardening-guards", "to": "p-research-infra", "relation": "part_of", "confidence": "high"}
+  ]
+}
