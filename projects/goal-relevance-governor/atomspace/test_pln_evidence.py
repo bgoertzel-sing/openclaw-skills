@@ -139,3 +139,44 @@ class TestCrossValidation(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestPropagationResult:
+    """Tests for PropagationResult dataclass."""
+
+    def test_creation_with_defaults(self):
+        from atomspace.pln_propagation import PropagationResult, TruthValue
+        tv = TruthValue(0.5, 0.4)
+        result = PropagationResult(
+            node_id="t1", node_kind="task",
+            initial_tv=tv, propagated_tv=tv
+        )
+        assert result.node_id == "t1"
+        assert result.node_kind == "task"
+        assert result.initial_tv == tv
+        assert result.propagated_tv == tv
+        assert result.incoming_evidence == []
+        assert result.outgoing_relevance == []
+
+    def test_creation_with_evidence(self):
+        from atomspace.pln_propagation import PropagationResult, TruthValue
+        result = PropagationResult(
+            node_id="g1", node_kind="goal",
+            initial_tv=TruthValue(0.3, 0.2),
+            propagated_tv=TruthValue(0.7, 0.6),
+            incoming_evidence=[("t1", TruthValue(0.8, 0.9))],
+            outgoing_relevance=[("p1", TruthValue(0.6, 0.5))]
+        )
+        assert len(result.incoming_evidence) == 1
+        assert result.incoming_evidence[0][0] == "t1"
+        assert len(result.outgoing_relevance) == 1
+
+    def test_propagation_changes_tv(self):
+        from atomspace.pln_propagation import PropagationResult, TruthValue
+        result = PropagationResult(
+            node_id="t1", node_kind="task",
+            initial_tv=TruthValue(0.3, 0.2),
+            propagated_tv=TruthValue(0.9, 0.8),
+        )
+        assert result.propagated_tv.strength > result.initial_tv.strength
+        assert result.propagated_tv.confidence > result.initial_tv.confidence

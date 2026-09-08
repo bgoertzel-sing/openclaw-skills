@@ -257,3 +257,40 @@ class TestTemporalSimulatorEp04To06(unittest.TestCase):
                 result = sim.run_timeline(mutations)
                 self.assertIsInstance(result, TimelineResult)
                 self.assertGreater(len(result.steps), 0)
+
+
+class TestTimelineStep:
+    """Tests for TimelineStep dataclass."""
+
+    def test_creation_with_defaults(self):
+        from atomspace.temporal_simulator import TimelineStep
+        step = TimelineStep(timestep=0, description="init", data={})
+        assert step.timestep == 0
+        assert step.description == "init"
+        assert step.data == {}
+        assert step.pipeline_result is None
+        assert step.verdicts is None
+        assert step.verdict_correct is True
+        assert step.errors == []
+
+    def test_creation_with_all_fields(self):
+        from atomspace.temporal_simulator import TimelineStep
+        step = TimelineStep(
+            timestep=5, description="conflict",
+            data={"tasks": ["t1", "t2"]},
+            pipeline_result={"score": 0.8},
+            verdicts={"t1": "REPLAN"},
+            verdict_correct=False,
+            errors=["timeout"]
+        )
+        assert step.timestep == 5
+        assert step.verdicts == {"t1": "REPLAN"}
+        assert step.verdict_correct is False
+        assert len(step.errors) == 1
+
+    def test_mutation_of_defaults(self):
+        from atomspace.temporal_simulator import TimelineStep
+        step1 = TimelineStep(timestep=0, description="a", data={})
+        step1.errors.append("err1")
+        step2 = TimelineStep(timestep=1, description="b", data={})
+        assert step2.errors == []  # default factory creates new list
