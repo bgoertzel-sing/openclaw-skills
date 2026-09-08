@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.1",
+  "episode_id": "06-conflict-replan",
+  "episode_title": "Conflict-driven replan: two tasks with contradictory approaches to the same shared resource and goal",
+  "frozen_at": "2026-09-08T06:30:00Z",
+  "expected_verdict": "REPLAN",
+  "narrative": "Two tasks target the same goal (unify API surface) via conflicting approaches — one wrapping agents behind a REST gateway, the other behind gRPC. Both occupy the shared API gateway resource, causing contention. The conflict detector should flag this as a resource conflict with shared goals. The weaker task (t-grpc-wrapper, lower STI) should get a REPLAN or PAUSE verdict.",
+  "goals": [
+    {
+      "id": "g-unified-api",
+      "kind": "goal",
+      "title": "Unify API surface across all agent services",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {"rank": 2, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-09-01T00:00:00Z"
+    },
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    }
+  ],
+  "projects": [],
+  "tasks": [
+    {
+      "id": "t-rest-wrapper",
+      "kind": "task",
+      "title": "Wrap all agents behind a REST gateway with HTTP adapters",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "t-grpc-wrapper",
+      "kind": "task",
+      "title": "Wrap all agents behind a gRPC gateway with protobuf definitions",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-09-05T00:00:00Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": "r-api-gateway",
+      "kind": "resource",
+      "title": "Shared API gateway service",
+      "resource_type": "process",
+      "exclusive": true,
+      "source": "system",
+      "as_of": "2026-09-02T00:00:00Z"
+    }
+  ],
+  "results": [],
+  "constraints": [],
+  "edges": [
+    {
+      "from": "t-rest-wrapper",
+      "to": "g-unified-api",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "t-grpc-wrapper",
+      "to": "g-unified-api",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "g-unified-api",
+      "to": "g-build-omegaclaw",
+      "relation": "contributes_to",
+      "confidence": "high"
+    },
+    {
+      "from": "t-rest-wrapper",
+      "to": "r-api-gateway",
+      "relation": "occupies",
+      "confidence": "high"
+    },
+    {
+      "from": "t-grpc-wrapper",
+      "to": "r-api-gateway",
+      "relation": "occupies",
+      "confidence": "high"
+    }
+  ]
+}
