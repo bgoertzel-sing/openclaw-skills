@@ -27,3 +27,4 @@ experiments/*/artifacts/
 # Large project artifacts are catalogued separately
 artifacts/*
 !artifacts/README.md
+projects/omegaclaw/.pytest-chroma-loop-1r6luz2c/
