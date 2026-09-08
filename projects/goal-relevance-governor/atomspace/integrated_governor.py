@@ -122,7 +122,16 @@ class IntegratedGovernorPipeline:
 
     def __init__(self, data: dict, now: Optional[datetime] = None):
         self.data = data
-        self.now = now or datetime.now(timezone.utc)
+        # Default 'now' to the episode's frozen_at timestamp for realistic
+        # staleness detection during replay. Falls back to current time.
+        if now is None:
+            frozen_at = data.get("frozen_at")
+            if frozen_at:
+                self.now = datetime.fromisoformat(frozen_at.replace("Z", "+00:00"))
+            else:
+                self.now = datetime.now(timezone.utc)
+        else:
+            self.now = now
 
         # Layer 1: PLN propagation
         self.propagator = PLNPropagator(data)
