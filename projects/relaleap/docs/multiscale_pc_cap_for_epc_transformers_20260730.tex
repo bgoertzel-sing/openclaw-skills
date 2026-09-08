@@ -1,0 +1,499 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array,tabularx,longtable,microtype,xcolor,hyperref,enumitem,fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\definecolor{navy}{HTML}{15304A}
+\definecolor{teal}{HTML}{167D86}
+\definecolor{pale}{HTML}{EEF5F6}
+\definecolor{warn}{HTML}{8A4B08}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=teal,citecolor=navy}
+\setlist{nosep,leftmargin=1.3em}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Multiscale PC Cap for ePC Transformers}
+\rhead{\small Design hypothesis --- 30 July 2026}
+\cfoot{\thepage}
+\newcommand{\obs}{\textbf{Published fact.}}
+\newcommand{\hyp}{\textbf{Hypothesis.}}
+\newcommand{\guess}{\textbf{Engineering guess.}}
+\newcommand{\gate}[1]{\texttt{#1}}
+\newcommand{\R}{\mathbb{R}}
+
+\title{\vspace{-1.5em}\textbf{\color{navy}A Multiscale, Laterally Connected Predictive-Coding Cap\\for Continual Learning on ePC Transformers}\\[0.45em]
+\large Architecture hypothesis, comparison with backpropagation, and coding-agent implementation guide}
+\author{ZeroBot / ProtoCosmoBot\\\small Synthesis of the Bot Philosophy discussion with Ben Goertzel and ProtoMegaBot}
+\date{30 July 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+This note proposes a small recurrent predictive-coding (PC) ``cortical island'' above an
+error-predictive-coding (ePC) transformer.  Three cap levels combine hierarchical prediction,
+bottom-up error, sparse lateral attractor dynamics, multiple learning timescales, and
+recurrence-gated consolidation.  Novel input is first quarantined in a fast episodic level;
+only repeated, coherent novelty is promoted into slower contextual and schema levels and
+allowed to modulate base-network plasticity.  The main claim is conditional and falsifiable:
+if an ePC and a backpropagation (BP) transformer have matched base-task quality, an ePC base
+should provide a cleaner substrate for this cap because prediction errors, precision,
+top-down replay, settling dynamics, and local plasticity modulation share one computational
+idiom.  The report gives interfaces, update equations, failure controls, ablations, and
+explicitly speculative starting configurations at GPT-2, GPT-3, GLM-5.2, and Kimi-K3 scale.
+\end{abstract}
+
+\colorbox{pale}{\parbox{0.96\linewidth}{
+\textbf{Epistemic status.} This is a design hypothesis, not an established continual-learning
+result.  Published model dimensions are labeled as facts; cap sizes and learning rates are
+engineering guesses to seed sweeps.  In particular, ``one unified energy'' requires compatible
+objectives and reciprocal parameterizations; merely joining two modules called PC does not
+guarantee a global Lyapunov function or convergence.
+}}
+
+\section{Operational objective}
+Let a base transformer produce a residual representation $z_t\in\R^d$ for a token, segment,
+or pooled event at time $t$.  We want a cap that learns online while reducing destructive
+interference, without requiring long globally synchronized retraining cycles.  It should:
+\begin{enumerate}
+  \item recognize familiar instances, novel combinations, and genuinely novel regimes;
+  \item form sparse, reusable context attractors from repeated experience;
+  \item preserve uncertain novelty in a fast buffer before altering consolidated knowledge;
+  \item send the base a context vector, uncertainty, and spatially selective plasticity gates;
+  \item support latent generative replay of old contexts;
+  \item learn with bounded local updates and short, optionally asynchronous settling.
+\end{enumerate}
+
+The cap is not expected to solve continual learning alone.  Its value must be tested against
+matched recurrent memory, replay, regularization, and parameter-isolation controls.
+
+\section{Architecture: a three-level recurrent PC cap}
+\subsection{State and connectivity}
+Use three cap states $y_t^1,y_t^2,y_t^3$:
+\[
+z_t \leftrightarrow y_t^1 \leftrightarrow y_t^2 \leftrightarrow y_t^3 ,
+\qquad
+y_t^\ell \leftrightarrow L_\ell y_t^\ell ,
+\qquad
+y_{t-1}^\ell \rightarrow y_t^\ell .
+\]
+The arrows between levels are reciprocal but need not be transposes.  Each level contains:
+\begin{itemize}
+  \item a top-down generator $g_\ell$ and bottom-up error encoder $q_\ell$;
+  \item fixed or slowly learned lateral inhibition for sparse competition;
+  \item learned block-sparse lateral excitation for associative attractors;
+  \item a recurrent trace for temporal persistence;
+  \item a precision head $\pi^\ell$ and consolidation statistic $c^\ell$.
+\end{itemize}
+
+\begin{center}
+\begin{tabularx}{0.97\linewidth}{>{\bfseries}p{0.13\linewidth} X X X}
+\toprule
+Level & Primary content & Plasticity & Characteristic role\\
+\midrule
+$y^1$ episodic & local motifs and recent residual patterns & fast & capture/quarantine novelty; sparse instance code\\
+$y^2$ contextual & recurring coalitions and situations & medium & context attractors; identify novel combinations\\
+$y^3$ schema & regimes, tasks, domains & slow & consolidated prior; replay seed; base-gating policy\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Local energy and settling}
+One implementable energy for a microbatch/window is
+\[
+\mathcal E =
+\sum_{\ell=0}^{2}\frac12
+\left\|\Pi_\ell^{1/2}
+\left(y^\ell-g_{\ell+1}(y^{\ell+1})\right)\right\|^2
++\sum_{\ell=1}^{3}\lambda_\ell\Phi_\ell(y^\ell;L_\ell)
++\sum_{\ell=1}^{3}\rho_\ell\|y^\ell-A_\ell y_{t-1}^\ell\|^2 ,
+\]
+where $y^0=z$, $\Pi_\ell=\mathrm{diag}(\pi^\ell)$ is bounded precision,
+$\Phi_\ell$ combines sparse competition and lateral consistency, and $A_\ell$ is a
+temporal trace.  During cap inference, freeze weights and perform $K_\ell$ damped local
+state steps:
+\[
+y^\ell \leftarrow y^\ell-\alpha_\ell
+\operatorname{clip}\!\left(\nabla_{y^\ell}\mathcal E,c_y\right).
+\]
+Do not assume monotonic energy descent: test it.  Backtrack or reduce $\alpha_\ell$ when
+$\mathcal E_{k+1}>\mathcal E_k+\epsilon_E$.  For streaming use, layers may update
+asynchronously using versioned state snapshots; stale reads must be bounded and measured.
+
+\subsection{Lateral connections: two distinct functions}
+The phrase ``lateral connection'' should not conceal two mechanisms:
+\begin{enumerate}
+  \item \textbf{competition/normalization:} fixed inhibitory or divisive dynamics produce
+  sparse codes and prevent every attractor from co-activating;
+  \item \textbf{association/precision:} learned block-sparse excitation represents
+  co-occurring coalitions and contributes to confidence/precision.
+\end{enumerate}
+Precision must be bounded, e.g.
+\[
+\pi^\ell=\pi_{\min}+(\pi_{\max}-\pi_{\min})
+\sigma(P_\ell y^\ell+b_\ell),
+\]
+because unconstrained learned precision can ``explain away'' errors by driving gain to zero
+or infinity.  Precision is not identical to attractor depth; the proposed relationship is a
+hypothesis requiring calibration against held-out prediction reliability.
+
+\section{Continual-learning rule}
+\subsection{Do not equate surprise with permission to overwrite}
+Raw high error may be coherent novelty, an outlier, corruption, or a base-representation
+shift.  Therefore use a two-stage gate:
+\begin{enumerate}
+  \item \textbf{capture:} large lower-level error creates or updates a fast $y^1$ trace while
+  base plasticity is conservative;
+  \item \textbf{promotion:} recurrence across independent windows, predictive improvement,
+  and agreement at $y^2/y^3$ increase consolidation confidence; only then may the cap
+  selectively open base plasticity.
+\end{enumerate}
+For event $u$, a simple promotion score is
+\[
+s_u=\sigma\!\left(a\log(1+n_u)+b\,\Delta\mathcal E_u
+-c\,\mathrm{Var}(e_u)-d\,o_u-\tau\right),
+\]
+where $n_u$ is recurrence count, $\Delta\mathcal E_u$ is predictive improvement, and $o_u$
+is an outlier score.  Require recurrence in separated windows, not repeated tokens within one
+sequence.
+
+\subsection{Multi-level error pattern and action}
+\begin{center}
+\begin{tabularx}{0.98\linewidth}{p{0.25\linewidth} p{0.28\linewidth} X}
+\toprule
+Observed cap error & Interpretation (tentative) & Plasticity response\\
+\midrule
+$e^1$ low & familiar instance & near-zero base update; optional slow rehearsal\\
+$e^1$ high; $e^{2,3}$ low & new instance of known context/schema & moderate update near readout or selected upper base blocks\\
+$e^1$ low; $e^{2,3}$ high & familiar features in unfamiliar composition & update attention/composition modules; protect feature modules\\
+all levels high, low outlier score, recurrent & coherent new regime & recruit cap capacity, then progressively open selected base modules\\
+all levels high, nonrecurrent or high outlier score & noise/corruption/one-off & quarantine; no broad base update\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The cap emits three outputs:
+\[
+c_t=D_c y_t^1,\qquad
+u_t=D_u(e_t^1,e_t^2,e_t^3,\pi_t),\qquad
+m_{b,t}\in[0,1]\quad(b=1,\ldots,B),
+\]
+where $c_t$ is a residual context, $u_t$ is calibrated uncertainty, and $m_{b,t}$ gates the
+learning rule of base block $b$.  Initialize $D_c$ at zero so adding the cap is functionally
+identity-preserving.
+
+\subsection{Local weight updates and consolidation}
+For reciprocal prediction matrix $W_\ell$, a PC-local candidate update is
+\[
+\Delta W_\ell = \eta_\ell\,s_t\,m_{\ell,t}\,
+\operatorname{clip}\!\left((\Pi_{\ell-1}e^{\ell-1})(y^\ell)^\top,c_W\right)
+-\eta_\ell\lambda_W W_\ell .
+\]
+Use eligibility traces if updates are delayed.  Keep three learning-rate bands with
+$\eta_1:\eta_2:\eta_3$ initially around $100:10:1$.  This ratio is a sweep seed, not a law.
+Consolidation may also maintain an exponential moving average (EMA) teacher for each cap
+level.  Replay begins at sampled $y^3$ schemas, settles laterally at each level, generates
+pseudo-$z$, and interleaves it with new windows.  Reject replay samples whose energy,
+precision, or diversity lies outside the training envelope.
+
+\section{Why an ePC transformer is the cleaner base}
+\hyp Conditional on comparable base-task quality and a correctly implemented ePC learner,
+the cap should integrate more naturally with ePC than with a conventional BP transformer.
+The reasons are structural, but none substitutes for a controlled comparison.
+
+\begin{enumerate}
+\item \textbf{Signal compatibility.}  Both modules expose layerwise predictions, errors,
+precision, and reciprocal influence.  The interface can be one more PC boundary rather than
+an auxiliary density model glued to a feed-forward representation.
+
+\item \textbf{Surgical plasticity modulation.}  An ePC local update can directly multiply
+its synapse/block error term by $m_{b,t}$.  BP can also be masked or modulated, so ``BP cannot
+do this'' would be false; the narrower claim is that BP's downstream credit assignment and
+optimizer state make the intervention more globally entangled and less PC-native.
+
+\item \textbf{Native top-down influence and latent replay.}  A reciprocal ePC base already
+contains a path through which cap hypotheses can constrain lower activities and reconstruct
+old latent regimes.  A standard causal transformer needs adapters, prefix/context injection,
+an auxiliary decoder, or input-space replay.
+
+\item \textbf{Settling trajectory as evidence.}  Residual error, convergence time, energy
+slope, and oscillation supply familiarity/uncertainty features beyond a single forward state.
+These signals are useful only if calibrated; slow settling can also simply indicate poor
+conditioning.
+
+\item \textbf{Potential common objective.}  If the cap and ePC base share explicitly
+compatible local energies and reciprocal mappings, joint inference may minimize a declared
+global energy.  This enables stability analysis.  It is not automatic: asymmetric feedback,
+stale asynchronous states, precision learning, and separate task losses can break the claim.
+
+\item \textbf{One hierarchy with a timescale gradient.}  The cap/base boundary can become
+an engineering seam within a deeper PC hierarchy: fast task-sensitive lower levels and slow
+context/schema upper levels.  Continual learning may then emerge from sparse recruitment,
+precision, replay, and timescale separation rather than a single anti-forgetting penalty.
+\end{enumerate}
+
+\subsection{Honest BP counterargument}
+BP transformers have mature kernels, pretrained weights, scaling evidence, and effective
+continual-learning tools: replay, adapters, routing, regularization, gradient projection, and
+parameter isolation.  BP permits per-block gradient masks, so the comparison must not use a
+straw man.  ePC additionally pays settling latency and may suffer equilibrium, stability, and
+credit-approximation errors.  The defensible claim is therefore:
+\[
+\textit{At matched base quality, parameter budget, replay budget, and wall-clock, does the
+PC cap exploit an ePC base more effectively?}
+\]
+
+\section{Implementation contract for coding agents}
+\subsection{Module boundaries}
+\begin{verbatim}
+BaseProbe:
+  observe(hidden_by_block, error_by_block, settle_trace) -> BaseObservation
+CapStateStore:
+  load(stream_id, version) / compare_and_swap(stream_id, state)
+PCCap:
+  settle(observation, prior_state, K, masks) -> CapInference
+PromotionGate:
+  score(cap_inference, recurrence_stats, outlier_stats) -> Promotion
+PlasticityRouter:
+  route(promotion, cap_errors, base_errors) -> block_gates
+LocalUpdater:
+  accumulate_eligibility(...) / apply(gates, learning_rates)
+ReplaySampler:
+  sample_schema() / decode_and_validate() -> pseudo_observation
+Telemetry:
+  record(errors, energy, precision, gates, promotions, interference)
+\end{verbatim}
+Keep these interfaces replaceable.  A first implementation may use ordinary autograd to
+verify equations, but it must label that path \gate{reference\_autograd}; it must not be
+reported as a local-learning implementation.
+
+\subsection{Numerical invariants}
+\begin{enumerate}
+  \item Adding a zero-initialized cap changes base logits by at most declared tolerance.
+  \item Base and cap weights remain frozen during state settling.
+  \item Error, energy, and precision accumulation use FP32 even when activations are BF16.
+  \item No dropout, mutable KV cache, or nondeterministic routing changes within a paired
+  settling/replay comparison.
+  \item Every state update is finite; precision stays in $[\pi_{\min},\pi_{\max}]$.
+  \item Accepted settle steps satisfy the energy policy or record a backtrack/failure.
+  \item Local updates have explicit stop-gradient boundaries and unit tests against analytic
+  linear cases.
+  \item Asynchronous state writes use version checks; rejected stale writes are counted.
+  \item MoE routing metadata is recorded; cap gates must not silently change expert selection
+  during a matched comparison unless routing modulation is the tested treatment.
+\end{enumerate}
+
+\subsection{Build sequence}
+\begin{enumerate}
+  \item Implement a linear three-level cap and verify analytic gradients, energy descent,
+  identity initialization, and local-update direction.
+  \item Add fixed lateral inhibition; test target sparsity and absence of dead units.
+  \item Add learned block-sparse excitation with spectral-radius constraint.
+  \item Add temporal traces and recurrence-based promotion; test outlier quarantine.
+  \item Connect read-only to a frozen small ePC transformer; calibrate errors and precision.
+  \item Enable cap-only learning, then gated adapters/LoRA, then selected base blocks.
+  \item Add top-down replay only after reconstruction and diversity gates pass.
+\end{enumerate}
+
+\section{Quantitative starting hypotheses}
+\subsection{What scale should track}
+Cap width should track the base residual-stream width $d$ and diversity of online contexts,
+not total model parameters.  This is crucial for sparse MoE systems: total expert parameters
+do not all appear in one token's residual stream.  Start with cap widths
+$c_1,c_2,c_3$, factorized reciprocal maps of ranks $r_1,r_2,r_3$, lateral blocks of 64 units,
+and a small prototype bank.  Parameter estimates below include factorized reciprocal maps
+plus one 64-wide lateral and one lighter temporal operator per level; they exclude optimizer
+state, replay buffers, and optional decoders.
+
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.13\linewidth}
+>{\raggedright\arraybackslash}p{0.18\linewidth}
+>{\raggedright\arraybackslash}p{0.19\linewidth}
+>{\raggedright\arraybackslash}p{0.17\linewidth}
+>{\raggedright\arraybackslash}p{0.19\linewidth}}
+\toprule
+Base case & Published base configuration used & Proposed cap widths $(c_1,c_2,c_3)$ &
+Map ranks $(r_1,r_2,r_3)$ & Core cap estimate and starting regime\\
+\midrule
+\endfirsthead
+\toprule
+Base case & Published base configuration used & Proposed cap widths &
+Map ranks & Core cap estimate and starting regime\\
+\midrule
+\endhead
+GPT-2 small &
+$d=768$, 12 layers, 12 heads, 124M class &
+$(512,256,128)$ &
+$(128,64,32)$ &
+$\sim0.6$M parameters. $K=(3,3,5)$; 64--256 context prototypes; cap LR
+$10^{-4},10^{-5},10^{-6}$; base initially frozen, then top 2--4 blocks via LoRA.\\
+\addlinespace
+GPT-3 175B &
+$d=12{,}288$, 96 layers, 96 heads &
+$(4096,2048,1024)$ &
+$(512,256,128)$ &
+$\sim22$M core. $K=(2,3,4)$; 1K--4K prototypes; cap LR
+$3{\times}10^{-5},3{\times}10^{-6},3{\times}10^{-7}$; gate 8--12 block groups rather
+than 96 independent scalars initially.\\
+\addlinespace
+GLM-5.2 &
+$d=6144$, 78 layers; 256 routed experts, top-8; first 3 MLP layers dense &
+$(3072,1536,768)$ &
+$(384,192,96)$ &
+$\sim10$M core. $K=(2,3,4)$; 1K--2K prototypes. Separate gates for attention,
+shared expert, routed experts, and router; freeze router first.\\
+\addlinespace
+Kimi-K3 &
+text $d=7168$, 93 layers; 896 experts, top-16 plus 2 shared; hybrid KDA/full-attention &
+$(3584,1792,896)$ &
+$(448,224,112)$ &
+$\sim14$M core. $K=(2,3,4)$; 2K--4K prototypes. Gate KDA, full-attention,
+shared experts, routed experts, and router separately; begin text-only and freeze router.\\
+\bottomrule
+\end{longtable}
+\end{small}
+
+\obs The GLM-5.2 values above come from the official public configuration:
+hidden size 6144, 78 layers, 256 routed experts, 8 selected per token, one shared expert, and
+three initial dense MLP layers.  \obs The Kimi-K3 values come from its official public
+configuration/model card: text hidden size 7168, 93 layers, 896 experts, 16 selected per
+token, two shared experts, and a hybrid of KDA and full-attention layers.  \guess All cap
+dimensions, ranks, prototype counts, settling steps, and learning rates are guesses.
+
+\subsection{Why not scale the cap linearly with total parameters?}
+At GPT-3 and MoE scale, dense $d\times c_1$ reciprocal maps are unnecessarily large.
+Factorize them and share cap computation across block groups.  The cap represents slow
+contexts over the residual stream; it need not mirror all base layers or experts.  For MoE,
+start with residual/context gating and router readout only.  Allow router plasticity only after
+showing that context gating improves retention without routing collapse or expert starvation.
+
+\subsection{Memory and cadence}
+\begin{itemize}
+  \item Run cap inference on pooled 8--64-token events rather than every token in the first
+  prototype.  Compare mean, attention, and learned event pooling.
+  \item Maintain fast traces for 32--256 events, prototypes for 64--4096 contexts depending
+  on scale, and an explicit eviction/merge policy.
+  \item Try one cap update per 8--32 base events; one $y^2$ consolidation per 8--32 $y^1$
+  promotions; one $y^3$ update per 8--32 $y^2$ promotions.
+  \item Limit replay initially to 10--25\% of online events and match wall-clock in controls.
+\end{itemize}
+
+\section{Tuning plan and diagnostics}
+\subsection{Tune in this order}
+\begin{enumerate}
+  \item \textbf{State dynamics:} $\alpha_\ell$, damping, normalization, spectral radius,
+  $K_\ell$, energy/backtracking rate.
+  \item \textbf{Code quality:} sparsity target (start 5--15\%), dead-unit fraction, attractor
+  recovery under corruption, context separation.
+  \item \textbf{Precision calibration:} reliability diagrams and expected calibration error
+  for predicted reconstruction/prediction quality.
+  \item \textbf{Promotion:} recurrence threshold, separated-window requirement, outlier gate,
+  false promotion/false quarantine.
+  \item \textbf{Plasticity routing:} start cap-only, then adapters, then base block groups.
+  \item \textbf{Replay:} only after pseudo-latent fidelity, diversity, and no-collapse tests.
+\end{enumerate}
+
+\subsection{Required telemetry}
+Log per level: normalized error, energy before/after each settle step, precision quantiles,
+state norm, sparsity, attractor assignment entropy, recurrence counts, promotions, merges,
+evictions, and update norms.  Log per base block: gate, local error, update norm, representation
+drift, router/expert statistics for MoE, and settling cost.  Report throughput, latency, memory,
+and energy/backtrack failures.  Averages alone are insufficient; retain tails and per-context
+breakdowns.
+
+\subsection{Failure signatures}
+\begin{center}
+\begin{tabularx}{0.98\linewidth}{>{\bfseries}p{0.24\linewidth} X X}
+\toprule
+Signature & Likely cause & First response\\
+\midrule
+all contexts merge & weak inhibition, high lateral radius, overly fast $y^2/y^3$ learning &
+increase competition; lower LR/radius; add orthogonality/diversity control\\
+every event becomes new & miscalibrated precision, base drift, threshold too low &
+normalize errors by context; slow adapter; raise separated recurrence threshold\\
+no promotion & cap too rigid or precision too low & lower threshold; increase $y^1$ capacity;
+inspect predictive-improvement term\\
+energy oscillates & step too large, asymmetric maps, stale asynchronous state &
+damp/backtrack; bound delay; test reciprocal parameterization\\
+old tasks retained, new task not learned & gates too conservative & open adapters/upper blocks;
+reduce consolidation delay\\
+new task learned, old tasks collapse & outlier/surprise directly opens base & enforce quarantine;
+increase replay or parameter isolation\\
+MoE expert starvation & cap/router feedback collapse & freeze router; entropy/load-balance gate;
+separate shared/routed-expert modulation\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Evaluation and falsification}
+Use sequential regimes with controlled overlap: permutations, new compositions of old
+features, coherent new domains, and injected outliers.  Report:
+\[
+\text{average accuracy/perplexity},\quad
+\text{backward transfer},\quad
+\text{forward transfer},\quad
+\text{worst-case forgetting},\quad
+\text{adaptation area-under-curve}.
+\]
+Also measure context identification, promotion precision/recall, error calibration, replay
+coverage, base representation drift, and wall-clock/energy cost.
+
+\textbf{Minimum matched arms:}
+\begin{enumerate}
+  \item ePC base alone;
+  \item ePC + one-layer novelty cap;
+  \item ePC + hierarchical cap without lateral excitation;
+  \item ePC + full cap without replay;
+  \item ePC + full cap with replay;
+  \item BP + same-cap interface via adapters and masked gradients;
+  \item BP + matched recurrent memory;
+  \item BP + strong replay/regularization or parameter-isolation baseline.
+\end{enumerate}
+Match trainable parameters, replay bytes, online examples, optimizer state, and wall-clock
+as separate comparisons.  A parameter-matched win that disappears under wall-clock matching
+is not sufficient.
+
+\textbf{Central falsifier.} Reject the strong architectural hypothesis if, across multiple
+regime sequences and seeds, the ePC+cap fails to reduce forgetting/adaptation tradeoff relative
+to the strongest matched BP baseline, or if any gain is explained by extra replay, parameters,
+settling compute, or privileged task-boundary information.
+
+\section{Recommended first experiment}
+Start at GPT-2-small or smaller, not at GPT-3/MoE scale:
+\begin{enumerate}
+  \item frozen pretrained base; train only the cap to predict pooled top-layer residuals;
+  \item three synthetic stream regimes plus outlier bursts;
+  \item compare one-layer, three-layer no-lateral, and full block-lateral cap;
+  \item pass gates for energy behavior, context recovery, precision calibration, and outlier
+  quarantine;
+  \item then permit zero-initialized context injection and LoRA on the top four blocks;
+  \item finally compare ePC and BP bases under matched parameter and wall-clock budgets.
+\end{enumerate}
+Only after the small model establishes a stable mechanism should the cap be ported to large
+dense or MoE bases.  At MoE scale, router modulation is a separate experiment, not a default.
+
+\section{Sources and provenance}
+\begin{itemize}
+  \item Bot Philosophy Telegram discussion, messages 15198--15227, 30 July 2026:
+  initial episodic cap, multilayer/lateral extension, and ePC-vs-BP rationale.
+  \item OpenAI, \emph{Language Models are Unsupervised Multitask Learners} (2019), GPT-2
+  model configurations: \url{https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf}
+  \item Brown et al., \emph{Language Models are Few-Shot Learners} (2020), GPT-3 175B
+  configuration: \url{https://arxiv.org/abs/2005.14165}
+  \item Z.ai official GLM-5.2 configuration (retrieved 30 July 2026):
+  \url{https://huggingface.co/zai-org/GLM-5.2/blob/main/config.json}
+  \item Moonshot AI official Kimi-K3 configuration/model card (retrieved 30 July 2026):
+  \url{https://huggingface.co/moonshotai/Kimi-K3/blob/main/config.json},
+  \url{https://github.com/MoonshotAI/Kimi-K3}
+\end{itemize}
+
+\vfill
+\colorbox{pale}{\parbox{0.96\linewidth}{
+\textbf{Bottom line.} Build the cap as a small, slow, recurrent PC hierarchy that first
+captures and tests novelty, then consolidates it.  The ePC advantage is not mystical:
+it is the possibility of sharing error, precision, top-down inference, and locally gated
+plasticity across one declared dynamical system.  Whether that coherence beats mature BP
+continual-learning methods is an empirical question, and the implementation should be
+organized to make a negative result as informative as a positive one.
+}}
+\end{document}

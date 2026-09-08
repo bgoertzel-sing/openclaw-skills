@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "outbound_channels": "disabled",
+  "targets": {
+    "zerobot": {
+      "transport": "openai-chat",
+      "endpoint": "http://127.0.0.1:18789/v1",
+      "agent_target": "openclaw/default",
+      "backend_model": "REPLACE_WITH_APPROVED_MODEL",
+      "session_header": "x-openclaw-session-key",
+      "session_id": "zerobot-phase5-shadow"
+    },
+    "protocosmo2": {
+      "transport": "openai-chat",
+      "endpoint": "http://127.0.0.1:18789/v1",
+      "agent_target": "openclaw/default",
+      "backend_model": "REPLACE_WITH_APPROVED_MODEL",
+      "session_header": "x-openclaw-session-key",
+      "session_id": "protocosmo2-phase5-shadow",
+      "system_prompt_file": "/home/openclaw/research-agent/projects/omegaclaw/protocosmo2/config/phase5-runtime-prompt.txt"
+    }
+  }
+}

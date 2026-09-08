@@ -1,0 +1,209 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1.75cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=black}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\obs}{\textbf{Observed.} }
+\newcommand{\inferr}{\textbf{Inference.} }
+\newcommand{\caveat}{\textbf{Caveat.} }
+\title{RelaLeap: What Was Actually Tested in the Predictive-Coding / ePC Track?}
+\author{Consolidated experiment report\\RelaLeap project record}
+\date{6 August 2026}
+\begin{document}
+\maketitle
+
+\section*{Executive summary}
+This report corrects an important naming issue in the earlier experiment history.
+The runs originally called ``ePC'' (especially R6--R9) used a \emph{state-based}
+predictive-coding implementation: hidden states were optimized and then detached
+before parameter differentiation.  A later source and method audit established
+that this is SO/sPC, not the error-variable EO/ePC method described in the
+reference paper.  Therefore their negative performance results are evidence
+against that \emph{legacy implementation}, not a clean test or refutation of
+genuine EO/ePC.
+
+The legacy programme did produce one robust positive engineering observation:
+its declared activity-energy decreased monotonically in 10/10 multi-seed
+records.  But it did not turn that property into practical advantages.  On a
+six-layer GPT-2 student trained on WikiText-103, ordinary backpropagation with
+knowledge distillation (KD), given the same elapsed time, made about 6.7 times
+as many updates and had substantially better validation loss.  Legacy PC also
+showed lower representation rank and weaker causal-factor selectivity.
+
+The subsequent four-regime CPU preflight likewise does \emph{not} establish an
+ePC efficacy result: its ordinary T=1 control could not learn the fixture.
+Moreover, the later audit found a metric defect that selected the worst rather
+than the best cap.  Its old arm comparisons are invalid for method comparison.
+
+The replacement EO/ePC implementation has passed local mechanism and
+instrument checks: it has direct error-variable dynamics, settles to the exact
+PC fixed point in small analytical fixtures, has a validated target/evaluation
+seam, and replays bit-exactly.  This is validity evidence, not yet a
+language-model efficacy result.  The planned five-seed GPT-2/WikiText reference
+reproduction (C1) has not successfully run; it remains blocked pending a fresh,
+single-writer GPU execution envelope.
+
+\section{How to read the evidence}
+\begin{itemize}
+\item \emph{Observed} means an artifact or recorded result directly supports the statement.
+\item \emph{Inference} distinguishes what the results suggest from what they prove.
+\item A completed software or analytic control is not treated as evidence that EO/ePC
+  improves language-model learning.
+\end{itemize}
+
+\section{Chronology and status}
+\begin{longtable}{p{0.13\linewidth}p{0.23\linewidth}p{0.27\linewidth}p{0.28\linewidth}}
+\toprule
+Date & Run & Question & Result / status \\
+\midrule
+\endfirsthead
+\toprule Date & Run & Question & Result / status \\
+\midrule
+\endhead
+19 Jul & R6 mechanism screen & Can five arms complete and expose dynamics? & Failed after the two BP arms; no PC result. \\
+20 Jul & R7 one-seed screen & Does the repaired five-arm legacy run complete? & Completed; small loss edge over update-matched KD, no benefit from deeper inference. Exploratory only. \\
+20--21 Jul & R8, five seeds & Does legacy PC beat BP/KD on GPT-2/WikiText? & No: BP-KD at matched time dominated; energy monotonicity held for legacy PC. \\
+21--22 Jul & R9 representation battery & Does legacy PC yield better internal representations? & No: lower rank and lower causal selectivity than BP-CE. \\
+4 Aug & Multiregime preflight & Is a larger planted-task fixture learnable before a frontier/MoE study? & No: the matched T=1 control failed every regime; no frontier study was admitted. Later audit also invalidated its old comparison metric. \\
+5 Aug onward & EO/ePC remediation & Is the method and measurement apparatus actually EO/ePC and trustworthy? & Local method, fixed-point, target-seam, and evaluator controls passed. No language efficacy result yet. \\
+\bottomrule
+\end{longtable}
+
+\section{Legacy experiments (R6--R9)}
+\subsection{R6: interrupted mechanism screen}
+R6 was a one-seed, 200-update GPU screen on a six-layer GPT-2 student and
+WikiText-103.  It compared BP cross-entropy (CE), update-matched BP-KD, two
+legacy PC depths (T=4 and T=12), and wall-clock-matched BP-KD.  The job failed
+after CE and KD completed, before any legacy-PC arm completed.  Its immediate
+exception was not retained.  Thus it supports no PC conclusion.  The two saved
+baselines finished at validation losses 8.439 (CE) and 7.628 (KD).
+
+\subsection{R7: repaired exploratory screen}
+R7 fixed the arm-loop crash and completed all five arms for one seed.  At 200
+updates the reported validation losses were: CE 8.4390, KD 7.6278, legacy PC
+T=4 7.5672, legacy PC T=12 7.5836, and wall-clock KD 7.6278.  This was an
+interesting single-seed hint, but it was not a confidence interval or a
+decisive comparison.  Increasing inference depth fourfold did not help.
+
+\subsection{R8: five-seed outcome comparison}
+R8 repeated the design across five frozen seeds (25 records).  It is the main
+legacy performance result.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Arm & mean validation loss & mean perplexity & updates & elapsed seconds & interpretation \\
+\midrule
+BP-CE & $6.261\pm0.060$ & 524 & 200 & 78 & best equal-update baseline \\
+BP-KD & $7.039\pm0.056$ & 1142 & 200 & 74 & KD noisy at 200 updates \\
+Legacy PC T=4 & $6.781\pm0.146$ & 889 & 200 & 445 & slower, worse than CE \\
+Legacy PC T=12 & $6.754\pm0.131$ & 863 & 200 & 1738 & no convincing depth gain \\
+BP-KD, matched time & $5.785\pm0.135$ & 328 & 1334 & 445 & dominant matched-time arm \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\obs All 10 legacy-PC seed/arm records satisfied the declared
+activity-energy-monotonicity check.  In the time taken by T=4 legacy PC to
+make 200 updates, ordinary KD made 1334: approximately 6.7 times more.
+
+\inferr The evidence says that the legacy state-PC implementation did not
+provide a useful speed/quality trade-off on this task.  It does not establish
+that EO/ePC would behave identically, because the algorithm was not the same.
+
+\subsection{R9: representation and causal-factor diagnostics}
+R9 analyzed 20 of the R8 trained models.  At the final layer, effective rank
+was $13.9\pm0.3$ for BP-CE, $5.0\pm0.1$ for BP-KD, $3.9\pm0.2$ for legacy PC
+T=4, and $3.8\pm0.1$ for legacy PC T=12.  Participation ratio was 6.1 for
+CE, 3.1 for KD, and about 2.6 for both legacy-PC arms.  These are strong signs
+of representational compression, not dead units (dead fraction was 0.001).
+
+Final-layer causal-selectivity probes also favored BP-CE.  For subject number,
+object number, tense, and negation respectively, BP-CE scored 0.607, 0.425,
+0.661, and 0.870; legacy T=4 scored 0.438, 0.232, 0.546, and 0.719; legacy
+T=12 scored 0.379, 0.275, 0.481, and 0.718.  The original interpretation was
+that smoother activity energy coincided with more compressed but less
+factor-selective representations.  That remains a reasonable description of
+these legacy runs, but not a general theorem about EO/ePC.
+
+\section{The multiregime frontier preflight}
+The four-regime CPU preflight was meant to admit a richer planted transformer
+task before testing a Pareto frontier of PC variants or an MoE-like conditional
+specialization scheme.  Twelve arm-by-seed executions replayed exactly; T=2 and
+T=4 were energy-monotone.  But the required T=1 control had NLLs far above its
+1.4 learnability floor in every regime (roughly 6.76--11.92).  The fixture was
+therefore correctly stopped before a frontier claim.
+
+\caveat A later source audit established both that legacy code was SO/sPC and
+that a negation in the old cap-selection path selected the worst, rather than
+best, cap.  Hence the values from this preflight cannot be used to compare
+methods.  What survives is the narrow operational fact: the fixture, as then
+specified, failed the ordinary-control learnability gate.
+
+\section{EO/ePC remediation: what has now been established}
+After the method audit, the track was rebuilt around the paper's error-variable
+computation.  The following are local, reproducible validation steps.
+
+\begin{tabularx}{\linewidth}{p{0.15\linewidth}Y Y}
+\toprule
+Gate & Observed result & Meaning and limit \\
+\midrule
+A0 method/instrument audit & Pinned paper and official-code sources matched; uniform NLL was $\ln(64)$; planted-oracle NLL was about $2.38\times10^{-9}$; trainer-teacher round trip was 0.0. & Established old routine was SO/sPC and validated basic measurement paths. \\
+MG-1 parameterization & At depths 2/6/12/24, every first error update equaled the output adjoint times -0.01 (relative error 0). Old state-based path had zero first-step update in earlier layers. & Establishes direct deep error signal in the new EO/ePC core; no efficacy claim. \\
+MG-2R fixed-point check & All 12 EO points settled (relative residual $5.53\times10^{-9}$ to $8.14\times10^{-9}$), matched exact controls, and replayed bit-exactly. & EO/ePC realizes the finite-lambda PC fixed point in the tested analytical fixtures. \\
+MG-3/MG-4 settling/stability & Explicit residual certificates and local map-stability estimates passed their frozen controls. & Shows numerical diagnostics behave as declared, only for the tested maps. \\
+MG-5/MG-6 trainer seam & All 512 planted target positions had a unique correct target; corruptions failed closed; evaluation/teacher round trips passed. & Target production and scoring are no longer the known source of a false conclusion. \\
+\bottomrule
+\end{tabularx}
+
+One earlier MG-2 formulation failed because it demanded finite-lambda equality
+to BP at tolerance $10^{-6}$, which a seed-free scalar counterexample showed
+to be mathematically impossible.  MG-2R replaced that invalid demand with the
+correct lambda-to-zero convergence-rate criterion and passed.  This is a repair
+of a test contract, not post-hoc tuning of an efficacy outcome.
+
+\section{What is known now, and what is not}
+\textbf{Known.} The old state-PC experiments were completed and their raw
+outcomes are preserved.  They show monotone declared activity energy but no
+competitive learning or representation benefit against their baselines.
+The new core is materially different: it has passed analytic EO/ePC mechanism
+and measurement controls.
+
+\textbf{Not known.} Whether genuine EO/ePC improves a transformer on
+language-model learning, distillation, robustness, adaptation, or causal
+representation quality is still untested.  The relevant next study is the
+frozen C1 five-seed reproduction with GPT-2 and WikiText.  Its local package
+and adjudication seams have been built, but no valid C1 science run has
+completed; prior remote attempts were terminated before model/data/seed work
+because of package and provider-control failures.
+
+\section*{Primary evidence and reproducibility}
+The project ledgers are authoritative.  This report is a synthesis, not a
+replacement for raw artifacts.
+\begin{itemize}
+\item \texttt{experiments/20260719T202100Z-epc-mechanism-screen-r6/RUN.md}
+\item \texttt{experiments/20260720T114200Z-epc-mechanism-screen-r7/RUN.md}
+\item \texttt{experiments/20260720T193211Z-epc-r8-broad-outcome/RUN.md}
+\item \texttt{experiments/20260721T222400Z-r9-stage-a/RUN.md}
+\item \texttt{experiments/20260804T173241Z-epc-multiregime-frontier-preflight-v1-r5/RUN.md}
+\item \texttt{experiments/20260805T002848Z-epc-remediation-a0-acceptance-r2/RUN.md}
+\item \texttt{experiments/20260805T004556Z-epc-remediation-mg1-artifact-acceptance/RUN.md}
+\item \texttt{experiments/20260805T015749Z-epc-remediation-mg2r-acceptance/RUN.md}
+\item \texttt{experiments/20260805T035047Z-epc-remediation-mg5-acceptance/RUN.md}
+\end{itemize}
+The earlier historical companion is
+\texttt{docs/prior\_epc\_experiment\_history\_20260804.pdf}; this report
+supersedes its method-identity interpretation where the later audit found the
+SO/sPC versus EO/ePC distinction.
+
+\end{document}

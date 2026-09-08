@@ -1,0 +1,6 @@
+core_commit=b13b17e13218ae08273b878b7e1f4cec55090ca2
+core_parent=16d380d9ff32675aa3f19bec7419229b99a7ae12
+petta_commit=4ce1d0ea58855abb772b911278312c8846e5cc08
+chroma_commit=456385457e4e99ee049c2c0966988a6cd7ff3705
+Python 3.10.12
+SWI-Prolog version 9.3.36 for x86_64-linux
