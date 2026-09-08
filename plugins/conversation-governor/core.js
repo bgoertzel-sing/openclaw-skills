@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 
 const EXACT_SILENCE = new Set(["NO_REPLY", "NO_RESPONSE"]);
+const WATCHDOG_ATTACHMENT_NOISE = /^(?:WATCHDOG_ALERT|🔍\s*Watchdog:)\s*attachment promise not fulfilled\b/i;
+const UNSTABLE_ID_VALUES = new Set(["", "unknown", "undefined", "null", "none", "n/a"]);
 
 function stable(value) {
   if (Array.isArray(value)) return value.map(stable);
@@ -34,11 +36,22 @@ export function normalizeEvent(event = {}, ctx = {}, config = {}) {
   };
 }
 
+export function hasStableTransportIdentity(envelope) {
+  const channelId = String(envelope?.source?.channel_id ?? "").trim().toLowerCase();
+  const messageId = String(envelope?.source?.message_id ?? "").trim().toLowerCase();
+  return !UNSTABLE_ID_VALUES.has(channelId) && !UNSTABLE_ID_VALUES.has(messageId);
+}
+
+export function admissionIdentityKey(envelope) {
+  if (!hasStableTransportIdentity(envelope)) return null;
+  return `${envelope.source.channel_id}:${envelope.source.message_id}:${envelope.event_type}`;
+}
+
 export function decideAdmission(envelope, snapshot = {}, config = {}) {
   let action = "ALLOW";
   let reason_code = "DEFAULT_ALLOW";
-  const key = `${envelope.source.channel_id}:${envelope.source.message_id}:${envelope.event_type}`;
-  if (snapshot.seenKeys?.has(key)) {
+  const key = admissionIdentityKey(envelope);
+  if (key !== null && snapshot.seenKeys?.has(key)) {
     action = "DROP";
     reason_code = "DUPLICATE_MESSAGE_ID";
   } else if (envelope.source.sender_kind === "bot" && envelope.source.sender_id === config.agentId) {
@@ -68,10 +81,16 @@ export function decideAdmission(envelope, snapshot = {}, config = {}) {
   };
 }
 
-export function decideEgress(payload) {
-  const text = String(payload?.text ?? payload?.message ?? payload ?? "").trim();
-  const action = EXACT_SILENCE.has(text) ? "SUPPRESS" : "SEND";
-  const reason_code = action === "SUPPRESS" ? "STRUCTURED_SILENCE" : "DEFAULT_SEND";
+export function decideEgress(payload, mode = "shadow") {
+  const text = String(payload?.text ?? payload?.message ?? payload?.content ?? payload ?? "").trim();
+  const structuredSilence = EXACT_SILENCE.has(text);
+  const watchdogNoise = WATCHDOG_ATTACHMENT_NOISE.test(text);
+  const action = structuredSilence || watchdogNoise ? "SUPPRESS" : "SEND";
+  const reason_code = structuredSilence
+    ? "STRUCTURED_SILENCE"
+    : watchdogNoise
+      ? "WATCHDOG_ATTACHMENT_NOISE"
+      : "DEFAULT_SEND";
   return {
     schema_version: "1.0.0",
     event_id: String(payload?.event_id ?? "egress-observation"),
@@ -79,7 +98,7 @@ export function decideEgress(payload) {
     text,
     send_intent: action === "SEND",
     timestamp: String(payload?.timestamp ?? new Date(0).toISOString()),
-    mode: "shadow",
+    mode,
     egress_decision: action,
     egress_reason: reason_code,
     repair_applied: null
@@ -91,7 +110,21 @@ export function applyAdmissionToHook(_decision, mode = "shadow") {
   return undefined;
 }
 
-export function applyEgressToHook(_decision, _payload, mode = "shadow") {
-  if (mode !== "shadow") throw new Error("Phase B supports shadow mode only");
-  return undefined;
+export function admissionEnforcementMode() {
+  return "shadow";
+}
+
+export function recordEgressEnforcement(decision, hookResult) {
+  return { ...decision, enforcement_applied: hookResult?.cancel === true };
+}
+
+export function applyEgressToHook(decision, _payload, mode = "shadow") {
+  if (mode === "shadow") return undefined;
+  if (mode !== "active") throw new Error(`unsupported governor mode: ${mode}`);
+  if (decision?.egress_decision !== "SUPPRESS") return undefined;
+  return {
+    cancel: true,
+    cancelReason: `conversation_governor:${decision.egress_reason}`,
+    metadata: { governor: "conversation-governor", reason: decision.egress_reason }
+  };
 }

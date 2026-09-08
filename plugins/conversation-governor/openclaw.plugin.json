@@ -1,7 +1,7 @@
 {
   "id": "conversation-governor",
   "name": "Conversation Governor",
-  "description": "Records deterministic counterfactual admission and egress decisions in shadow mode.",
+  "description": "Records deterministic admission and egress decisions; optionally suppresses an allowlisted deterministic egress slice.",
   "activation": {
     "onStartup": true
   },
@@ -10,7 +10,7 @@
     "additionalProperties": false,
     "properties": {
       "enabled": { "type": "boolean" },
-      "mode": { "type": "string", "const": "shadow" },
+      "mode": { "type": "string", "enum": ["shadow", "active"] },
       "ledgerPath": { "type": "string" },
       "agentId": { "type": "string" },
       "knownBotIds": { "type": "array", "items": { "type": "string" } }
