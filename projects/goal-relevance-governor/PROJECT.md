@@ -3,7 +3,7 @@
 - Slug: `goal-relevance-governor`
 - Status: `active`
 - Created: `2026-08-14`
-- Last reviewed: `2026-09-08`
+- Last reviewed: `2026-09-08` (v0.2.5)
 - Owner: Benjamin Goertzel
 
 ## Purpose
@@ -48,11 +48,11 @@ review surface but not the relevance-control state or evaluator. Immediate
 work produced a 17-page reviewable design document (Revision 3).
 
 The minimal JSON graph schema (v0.1) and a read-only relevance evaluator are
-complete. The evaluator implements six verdict rules (STOP_STALE,
+complete. The evaluator implements seven verdict rules (STOP_STALE, BLOCKED,
 PAUSE_RECOVERABLY, DEFER, REPLAN, ESCALATE, CONTINUE) over a typed
-goal/task/resource/constraint graph. A retrospective replay corpus of five
+goal/task/resource/constraint graph. A retrospective replay corpus of six
 episodes from real alignment failures has been built and validated:
-all five produce the expected verdicts.
+all six produce the expected verdicts.
 
 No live enforcement is authorized. Ben directed on 2026-08-16 that both
 ZeroBot and the OmegaClaws should be upgraded to the governor after the
@@ -71,7 +71,20 @@ not live enforcement during migration.
 - `replay_corpus/episode_03_premature_hardening.json` — DEFER (research infra)
 - `replay_corpus/episode_04_overengineered_repair.json` — REPLAN (agent repair)
 - `replay_corpus/episode_05_control_justified_long_running.json` — CONTINUE (WMTM)
-- `replay_corpus/validate_corpus.py` — validation harness (5/5 pass)
+- `replay_corpus/episode_06_conflict_replan.json` — REPLAN/ESCALATE (resource conflict)
+- `replay_corpus/validate_corpus.py` — validation harness (6/6 pass)
+
+### Phase 0.5 deliverables — PLN/Atomspace integration (completed 2026-09-08)
+
+- `atomspace/graph_to_metta.py` — JSON graph → MeTTa atomspace encoder
+- `atomspace/pln_propagation.py` — PLN evidence propagation over the graph
+- `atomspace/pln_inference_rules.py` — PLN inference rules (deduction, induction, abduction)
+- `atomspace/pln_chain_integration.py` — RuleAwareChainMiner for multi-hop reasoning
+- `atomspace/pln_verdict_bridge.py` — Enhanced PLN→verdict mapping (v0.2)
+- `atomspace/metta_python_bridge.py` — MeTTa↔Python evaluator bridge (v0.3)
+- `evaluator/blended_relevance.py` — 60% naive / 40% enhanced PLN relevance scoring
+- Cross-validation: 5/5 replay episodes match between PLN and pure-Python evaluator
+- Test coverage: 433 tests, 215 subtests, 0 untested public symbols
 
 ## Repositories
 

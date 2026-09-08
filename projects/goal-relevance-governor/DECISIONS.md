@@ -94,3 +94,53 @@ links, or project-stage inference proves too unstable to guide recommendations.
 ### Supersedes or superseded by
 
 None.
+
+## D-20260908-pln-integration: Layered PLN evaluation with blended scoring
+
+- Date: `2026-09-08`
+- Status: `accepted`
+- Decision owner: autonomous session
+- Related task/run/commit: `9821a23` (blended relevance), `4ff837b` (PLN inference rules)
+
+### Context
+
+The pure-Python evaluator handles the 6 replay episodes correctly but uses
+simple priority/status heuristics. PLN evidence propagation and inference
+rules can provide deeper relevance signals (multi-hop goal chains, truth-value
+combination) but add complexity and potential false signals.
+
+### Decision
+
+Implement PLN as a *layered enhancement* on top of the base evaluator, not a
+replacement. Blend 60% naive relevance with 40% enhanced PLN relevance for
+nuanced task differentiation. The base evaluator verdict remains authoritative;
+PLN signals inform the relevance score that feeds into the verdict rules.
+
+### Alternatives considered
+
+- Replace base evaluator with PLN-only: rejected as too brittle for simple cases.
+- Run PLN purely as shadow with no blending: rejected as providing no practical differentiation.
+- 50/50 blend: rejected as giving PLN too much weight before cross-validation maturity.
+
+### Rationale and evidence
+
+5/5 replay episodes cross-validate between PLN and pure-Python evaluator.
+The 60/40 blend provides differentiation on episode_06 (conflict) where naive
+scoring gives both tasks equal relevance but PLN correctly down-weights the
+weaker task.
+
+### Consequences
+
+The blended score feeds into relevance_evaluator.py's verdict rules.
+Future tuning of the blend ratio may be needed as more episodes are added.
+PLN inference rules (deduction, induction, abduction) are available but
+not yet wired into the live evaluator chain.
+
+### Revisit trigger
+
+New replay episodes show PLN signals degrading verdict accuracy, or
+cross-validation drops below 5/6 agreement.
+
+### Supersedes or superseded by
+
+None.
