@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class RemediationStep:
+    """A single step in a remediation plan."""
     step_id: str
     action: str
     target: str
@@ -15,6 +16,7 @@ class RemediationStep:
 
 @dataclass
 class RemediationPlan:
+    """A structured remediation plan with prioritized steps."""
     task_id: str
     verdict: str
     plan_summary: str
@@ -24,6 +26,7 @@ class RemediationPlan:
     risk_notes: str = ""
 
     def to_dict(self):
+        """Return a dictionary representation of this object."""
         return {
             'task_id': self.task_id, 'verdict': self.verdict,
             'plan_summary': self.plan_summary,
@@ -39,6 +42,7 @@ class RemediationPlan:
         }
 
 class RemediationEngine:
+    """Generates remediation plans from verdicts."""
     def __init__(self, episode_data):
         self.data = episode_data
         self._build_index()
@@ -55,6 +59,7 @@ class RemediationEngine:
                 self.task_resources.setdefault(e['from'], []).append(e['to'])
 
     def generate_plan(self, rec):
+        """Generate a remediation plan for a given verdict."""
         task_id = rec['task_id']
         verdict = rec['unified_verdict']
         signals = rec.get('signals', [])
@@ -74,6 +79,7 @@ class RemediationEngine:
         return RemediationPlan(task_id=task_id, verdict=verdict, plan_summary='Unknown', steps=[])
 
     def generate_all(self, recommendations):
+        """Generate remediation plans for all verdicts in a pipeline result."""
         return [self.generate_plan(r) for r in recommendations]
 
     def _plan_stop_stale(self, task_id, goals, resources, signals, rec):

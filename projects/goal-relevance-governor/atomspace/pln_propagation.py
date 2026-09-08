@@ -69,6 +69,7 @@ class TruthValue:
         )
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {"strength": round(self.strength, 4),
                 "confidence": round(self.confidence, 4)}
 
@@ -321,6 +322,7 @@ class PLNPropagator:
         return normalize_status(node.get("status", "active")) == "active"
 
     def propagate_downward(self) -> dict[str, float]:
+        """Propagate truth values downward from goals to tasks."""
         relevance: dict[str, float] = {}
         self._task_meta: dict[str, dict] = {}
 
@@ -445,6 +447,7 @@ class PLNPropagator:
         return any(self._incoming(gid, "provides_evidence_for"))
 
     def evaluate(self) -> dict:
+        """Evaluate the graph and return results."""
         self.propagate_upward()
         relevance = self.propagate_downward()
 

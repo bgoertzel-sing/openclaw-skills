@@ -33,6 +33,7 @@ class TaskExplanation:
     confidence_note: str
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             'task_id': self.task_id,
             'verdict': self.verdict,
@@ -45,6 +46,7 @@ class TaskExplanation:
         }
 
     def to_markdown(self) -> str:
+        """Return a markdown-formatted string representation."""
         lines = [
             f'### {self.task_id} - {self.verdict}',
             f'**{self.headline}**',

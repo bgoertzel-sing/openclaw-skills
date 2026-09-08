@@ -54,6 +54,7 @@ class TaskRecommendation:
     multihop_max_depth: int = 0
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return asdict(self)
 
 
@@ -88,6 +89,7 @@ class IntegratedGovernorResult:
     executive_summary: str
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             "timestamp": self.timestamp,
             "episode_id": self.episode_id,

@@ -8,6 +8,7 @@ from relevance_evaluator import Graph, RelevanceEvaluator
 CORPUS_DIR = os.path.join(os.path.dirname(__file__), "..", "replay_corpus")
 
 def run_replay(verbose=False):
+    """Run the replay corpus and return True if all episodes match expected verdicts."""
     episodes = sorted(f for f in os.listdir(CORPUS_DIR) if f.startswith("episode_") and f.endswith(".json"))
     results = []
     all_pass = True

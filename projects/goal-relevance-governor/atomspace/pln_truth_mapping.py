@@ -12,14 +12,17 @@ from pln_propagation import normalize_status
 
 @dataclass
 class TruthValue:
+    """PLN truth value: strength (how true) and confidence (how certain)."""
     strength: float = 1.0
     confidence: float = 1.0
 
     def to_dict(self):
+        """Return a dictionary representation of this object."""
         return {"strength": self.strength, "confidence": self.confidence}
 
     @classmethod
     def from_dict(cls, d):
+        """Create an instance from a dictionary."""
         return cls(d["strength"], d["confidence"])
 
     def __repr__(self):
@@ -60,27 +63,34 @@ VERDICT_TRUTH = {
 
 
 def status_to_truth(status):
+    """Map a node status to a TruthValue."""
     return STATUS_TRUTH.get(status, STATUS_TRUTH["unknown"])
 
 def edge_to_truth(relation):
+    """Map an edge relation to a TruthValue."""
     return EDGE_TRUTH.get(relation, TruthValue(0.5, 0.5))
 
 def verdict_to_truth(verdict):
+    """Map a verdict to a TruthValue."""
     return VERDICT_TRUTH.get(verdict, TruthValue(0.5, 0.5))
 
 def pln_and(tv1, tv2):
+    """PLN AND operator: min strength, confidence product."""
     return TruthValue(min(tv1.strength, tv2.strength),
                       tv1.confidence * tv2.confidence)
 
 def pln_or(tv1, tv2):
+    """PLN OR operator: max strength, confidence product."""
     return TruthValue(max(tv1.strength, tv2.strength),
                       max(tv1.confidence, tv2.confidence))
 
 def pln_not(tv):
+    """PLN NOT operator: 1-strength, same confidence."""
     return TruthValue(1.0 - tv.strength, tv.confidence)
 
 
 def graph_to_pln_atoms(graph):
+    """Convert a graph to PLN atoms with truth values."""
     atoms = []
     for goal in graph.get("goals", []):
         atoms.append({
@@ -115,6 +125,7 @@ def graph_to_pln_atoms(graph):
 
 
 def export_pln_json(graph, output_path=None):
+    """Export PLN atoms as a JSON-serializable structure."""
     atoms = graph_to_pln_atoms(graph)
     result = {
         "format": "PLN-AtomSpace-JSON-v0.1",
@@ -129,6 +140,7 @@ def export_pln_json(graph, output_path=None):
 
 
 def compute_task_relevance(graph, task_id):
+    """Compute PLN-based relevance score for a task."""
     edges = [e for e in graph.get("edges", [])
              if e["from"] == task_id and e.get("relation") == "contributes_to"]
     if not edges:

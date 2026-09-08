@@ -60,6 +60,7 @@ def _prefixed_atom_id(raw_id: str, node_type: str) -> str:
 # --- Node encoders ---
 
 def encode_goal(node: dict) -> str:
+    """Encode a goal node as MeTTa atoms."""
     gid = _atom_id(node["id"])
     title = node.get("title", "")
     level = node.get("level", "intermediate")
@@ -73,6 +74,7 @@ def encode_goal(node: dict) -> str:
 
 
 def encode_project(node: dict) -> str:
+    """Encode a project node as MeTTa atoms."""
     pid = _atom_id(node["id"])
     title = node.get("title", "")
     rc = node.get("result_contract", {})
@@ -85,6 +87,7 @@ def encode_project(node: dict) -> str:
 
 
 def encode_task(node: dict) -> str:
+    """Encode a task node as MeTTa atoms."""
     tid = _atom_id(node["id"])
     title = node.get("title", "")
     status = normalize_status(node.get("status", "active"))
@@ -96,6 +99,7 @@ def encode_task(node: dict) -> str:
 
 
 def encode_resource(node: dict) -> str:
+    """Encode a resource node as MeTTa atoms."""
     rid = _atom_id(node["id"])
     title = node.get("title", "")
     rtype = node.get("resource_type", "process")
@@ -107,12 +111,14 @@ def encode_resource(node: dict) -> str:
 
 
 def encode_result(node: dict) -> str:
+    """Encode a result node as MeTTa atoms."""
     rid = _atom_id(node["id"])
     title = node.get("title", node["id"])
     return f'(: res_{rid} Result)\n(res_{rid} "{title}")'
 
 
 def encode_constraint(node: dict) -> str:
+    """Encode a constraint node as MeTTa atoms."""
     cid = _atom_id(node["id"])
     title = node.get("title", node["id"])
     return f'(: c_{cid} Constraint)\n(c_{cid} "{title}")'

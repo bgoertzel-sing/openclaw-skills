@@ -66,6 +66,7 @@ class AttentionValue:
     eviction_candidate: bool = False
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return asdict(self)
 
 
@@ -81,6 +82,7 @@ class ECANResult:
     spread_amount: float
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             "cycle": self.cycle,
             "total_sti": round(self.total_sti, 2),

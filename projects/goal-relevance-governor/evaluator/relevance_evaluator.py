@@ -20,6 +20,7 @@ AUTHORITY = "read_only_shadow"
 
 @dataclass
 class Verdict:
+    """A relevance verdict for a task."""
     task_id: str
     verdict: str
     reasons: list = field(default_factory=list)
@@ -30,10 +31,12 @@ class Verdict:
     generated_at: str = ""
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return asdict(self)
 
 
 class Graph:
+    """Typed goal/task/resource graph with edge queries."""
     def __init__(self, data: dict):
         self.nodes = {}
         self.edges = []
@@ -44,15 +47,19 @@ class Graph:
         self.as_of = data.get("as_of", datetime.now(timezone.utc).isoformat())
 
     def outgoing(self, node_id, relation=None):
+        """Return outgoing edges from a node, optionally filtered by relation."""
         return [e for e in self.edges if e["from"] == node_id and (relation is None or e["relation"] == relation)]
 
     def incoming(self, node_id, relation=None):
+        """Return incoming edges to a node, optionally filtered by relation."""
         return [e for e in self.edges if e["to"] == node_id and (relation is None or e["relation"] == relation)]
 
     def get(self, node_id):
+        """Return the node with the given id, or None."""
         return self.nodes.get(node_id)
 
     def get_active_goals_for(self, task_id):
+        """Return active goals connected to a task via contributes_to edges."""
         goals = []
         for e in self.outgoing(task_id, "contributes_to"):
             target = self.get(e["to"])
@@ -66,6 +73,7 @@ class Graph:
         return goals
 
     def get_direct_goals(self, task_id):
+        """Return direct goal ids for a task."""
         goals = []
         for e in self.outgoing(task_id, "contributes_to"):
             target = self.get(e["to"])
@@ -74,6 +82,7 @@ class Graph:
         return goals
 
     def get_occupied_resources(self, task_id):
+        """Return resources occupied by a task."""
         results = []
         for e in self.outgoing(task_id, "occupies"):
             r = self.get(e["to"])
@@ -82,6 +91,7 @@ class Graph:
         return results
 
     def get_resource_holders(self, resource_id):
+        """Return tasks holding a given resource."""
         results = []
         for e in self.incoming(resource_id, "occupies"):
             t = self.get(e["from"])
@@ -90,6 +100,7 @@ class Graph:
         return results
 
     def get_project_for_task(self, task_id):
+        """Return the project node for a task, if any."""
         for e in self.outgoing(task_id, "part_of"):
             p = self.get(e["to"])
             if p and p.get("kind") == "project":
@@ -97,6 +108,7 @@ class Graph:
         return None
 
     def get_blocking_constraints(self, task_id):
+        """Return constraints blocking a task."""
         results = []
         for e in self.incoming(task_id, "blocks"):
             c = self.get(e["from"])
@@ -105,6 +117,7 @@ class Graph:
         return results
 
     def get_superseding_goals(self, goal_id):
+        """Return goals that supersede the given goal."""
         results = []
         for e in self.incoming(goal_id, "supersedes"):
             g = self.get(e["from"])
@@ -114,11 +127,13 @@ class Graph:
 
 
 class RelevanceEvaluator:
+    """Read-only relevance evaluator over a Graph."""
     def __init__(self, graph: Graph):
         self.graph = graph
         self.now = datetime.now(timezone.utc).isoformat()
 
     def evaluate_task(self, task: dict) -> Verdict:
+        """Evaluate a single task and return a Verdict."""
         tid = task["id"]
 
         # Rule 1: STOP_STALE if no direct parent goals or all direct parents inactive
@@ -222,6 +237,7 @@ class RelevanceEvaluator:
             [],
             generated_at=self.now)
     def evaluate_all(self) -> list:
+        """Evaluate all active tasks and return a list of Verdicts."""
         verdicts = []
         for node in self.graph.nodes.values():
             if node.get("kind") == "task" and normalize_status(node.get("status", "active")) == "active":

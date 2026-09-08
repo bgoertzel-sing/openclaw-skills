@@ -51,9 +51,11 @@ class MeTTaEvaluator:
         )
 
     def load(self, path):
+        """Load a MeTTa schema from a file path."""
         self.metta.run(Path(path).read_text())
 
     def load_string(self, code):
+        """Load a MeTTa schema from a string."""
         self.metta.run(code)
 
     def _flatten(self, results):
@@ -72,14 +74,17 @@ class MeTTaEvaluator:
     # --- Domain queries ---
 
     def get_direct_goals(self, task_id):
+        """Return direct goal ids for a task."""
         return self._match(f"(contributes_to {task_id} $goal) $goal")
 
     def get_goal_status(self, goal_id):
+        """Return the status of a goal."""
         results = self._match(
             f"({goal_id} $title $level $status $rank $urg) $status")
         return results[0] if results else None
 
     def get_goal_info(self, goal_id):
+        """Return full info dict for a goal."""
         title = self._match(f"({goal_id} $t $l $s $r $u) $t")
         if not title:
             return None
@@ -98,6 +103,7 @@ class MeTTaEvaluator:
         return None
 
     def get_task_info(self, task_id):
+        """Return full info dict for a task."""
         title = self._match(f"({task_id} $t $s $r) $t")
         if not title:
             return None
@@ -112,15 +118,19 @@ class MeTTaEvaluator:
         return None
 
     def get_blocking_constraints(self, task_id):
+        """Return constraints blocking a task."""
         return self._match(f"(blocks $constraint {task_id}) $constraint")
 
     def get_superseding_goals(self, goal_id):
+        """Return goals that supersede the given goal."""
         return self._match(f"(supersedes $new {goal_id}) $new")
 
     def get_held_resources(self, task_id):
+        """get_held_resources."""
         return self._match(f"(holds {task_id} $res) $res")
 
     def get_resource_info(self, res_id):
+        """Return full info dict for a resource."""
         kind = self._match(f"({res_id} $k $e $s) $k")
         if not kind:
             return None
@@ -135,13 +145,16 @@ class MeTTaEvaluator:
         return None
 
     def get_resource_holders(self, res_id):
+        """Return tasks holding a given resource."""
         return self._match(f"(holds $task {res_id}) $task")
 
     def get_project_for_task(self, task_id):
+        """Return the project node for a task, if any."""
         results = self._match(f"(part_of {task_id} $proj) $proj")
         return results[0] if results else None
 
     def get_project_info(self, proj_id):
+        """Return full info dict for a project."""
         kind = self._match(f"({proj_id} $k $s) $k")
         if not kind:
             return None
@@ -151,6 +164,7 @@ class MeTTaEvaluator:
         return None
 
     def has_results_for_goal(self, goal_id):
+        """Check if any results are linked to a goal."""
         results = self._match(
             f"(provides_evidence_for $result {goal_id}) $result")
         return bool(results)
@@ -158,6 +172,7 @@ class MeTTaEvaluator:
     # --- Verdict cascade ---
 
     def evaluate(self, task_id):
+        """Evaluate the graph and return results."""
         # Rule 1: STOP_STALE
         direct_goals = self.get_direct_goals(task_id)
         if not direct_goals:
@@ -233,6 +248,7 @@ class MeTTaEvaluator:
         return "CONTINUE"
 
     def evaluate_all(self):
+        """Evaluate all active tasks and return a list of Verdicts."""
         tasks = self._match("(: $t Task) $t")
         return {t: self.evaluate(t) for t in tasks}
 

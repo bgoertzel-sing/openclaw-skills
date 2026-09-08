@@ -85,6 +85,7 @@ class VerdictEnhanced:
     reasons: list = field(default_factory=list)
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return asdict(self)
 
     @property

@@ -45,6 +45,7 @@ class TimelineResult:
     verdict_drift: list  # list of (timestep, task_id, old_verdict, new_verdict)
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             'all_correct': self.all_correct,
             'step_count': len(self.steps),

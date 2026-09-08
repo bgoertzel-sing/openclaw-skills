@@ -36,6 +36,7 @@ class ReasoningChain:
     depth: int
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             'source': self.source,
             'target': self.target,
@@ -58,6 +59,7 @@ class MultiHopResult:
     max_depth_reached: int = 0
 
     def to_dict(self) -> dict:
+        """Return a dictionary representation of this object."""
         return {
             'task_id': self.task_id,
             'chain_count': len(self.chains),
