@@ -81,27 +81,34 @@ class MeTTaEvaluator:
         return results[0] if results else None
 
     def get_goal_info(self, goal_id):
-        results = self._match(
-            f"({goal_id} $title $level $status $rank $urg) "
-            f"($title $level $status $rank $urg)")
-        if results and len(results) >= 5:
+        title = self._match(f"({goal_id} $t $l $s $r $u) $t")
+        if not title:
+            return None
+        level = self._match(f"({goal_id} $t $l $s $r $u) $l")
+        status = self._match(f"({goal_id} $t $l $s $r $u) $s")
+        rank = self._match(f"({goal_id} $t $l $s $r $u) $r")
+        urg = self._match(f"({goal_id} $t $l $s $r $u) $u")
+        if title and status:
             return {
-                "title": results[0].strip('"'),
-                "level": results[1],
-                "status": results[2],
-                "rank": results[3],
-                "urgency": results[4],
+                "title": title[0].strip('"'),
+                "level": level[0] if level else None,
+                "status": status[0],
+                "rank": rank[0] if rank else None,
+                "urgency": urg[0] if urg else None,
             }
         return None
 
     def get_task_info(self, task_id):
-        results = self._match(
-            f"({task_id} $title $status $rev) ($title $status $rev)")
-        if results and len(results) >= 3:
+        title = self._match(f"({task_id} $t $s $r) $t")
+        if not title:
+            return None
+        status = self._match(f"({task_id} $t $s $r) $s")
+        rev = self._match(f"({task_id} $t $s $r) $r")
+        if title and status:
             return {
-                "title": results[0].strip('"'),
-                "status": results[1],
-                "reversibility": results[2],
+                "title": title[0].strip('"'),
+                "status": status[0],
+                "reversibility": rev[0] if rev else None,
             }
         return None
 
@@ -115,13 +122,16 @@ class MeTTaEvaluator:
         return self._match(f"(holds {task_id} $res) $res")
 
     def get_resource_info(self, res_id):
-        results = self._match(
-            f"({res_id} $kind $excl $status) ($kind $excl $status)")
-        if results and len(results) >= 3:
+        kind = self._match(f"({res_id} $k $e $s) $k")
+        if not kind:
+            return None
+        excl = self._match(f"({res_id} $k $e $s) $e")
+        status = self._match(f"({res_id} $k $e $s) $s")
+        if kind:
             return {
-                "kind": results[0],
-                "exclusivity": results[1],
-                "status": results[2],
+                "kind": kind[0],
+                "exclusivity": excl[0] if excl else None,
+                "status": status[0] if status else None,
             }
         return None
 
@@ -133,10 +143,12 @@ class MeTTaEvaluator:
         return results[0] if results else None
 
     def get_project_info(self, proj_id):
-        results = self._match(
-            f"({proj_id} $kind $stage) ($kind $stage)")
-        if results and len(results) >= 2:
-            return {"kind": results[0], "stage": results[1]}
+        kind = self._match(f"({proj_id} $k $s) $k")
+        if not kind:
+            return None
+        stage = self._match(f"({proj_id} $k $s) $s")
+        if kind:
+            return {"kind": kind[0], "stage": stage[0] if stage else None}
         return None
 
     def has_results_for_goal(self, goal_id):
