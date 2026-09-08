@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-09-05T10:00:00+00:00",
+  "episode_id": "05-control-justified-long-running",
+  "cycle": 10,
+  "pln_layer": {
+    "task_count": 1,
+    "total_relevance": 0.9247
+  },
+  "ecan_layer": {
+    "total_sti": 181.3,
+    "eviction_count": 0,
+    "priority_top3": [
+      {
+        "node_id": "g-wmtm-validation",
+        "sti": 64.05,
+        "lti": 85.82,
+        "kind": "goal"
+      },
+      {
+        "node_id": "t-run-benchmark",
+        "sti": 50.22,
+        "lti": 63.31,
+        "kind": "task"
+      },
+      {
+        "node_id": "p-wmtm",
+        "sti": 27.05,
+        "lti": 63.31,
+        "kind": "project"
+      }
+    ]
+  },
+  "verdict_layer": {
+    "verdict_counts": {
+      "CONTINUE": 1
+    }
+  },
+  "multihop_layer": {
+    "task_count": 1,
+    "total_chains": 2,
+    "max_depth": 2
+  },
+  "conflict_layer": {
+    "conflict_count": 0,
+    "conflicts": []
+  },
+  "recommendations": [
+    {
+      "task_id": "t-run-benchmark",
+      "unified_verdict": "CONTINUE",
+      "relevance_score": 0.9247,
+      "priority_band": "CRITICAL",
+      "sti": 50.22,
+      "lti": 63.31,
+      "eviction_candidate": false,
+      "staleness_flag": true,
+      "confidence_modifier": 0.0,
+      "signals": [
+        "healthy",
+        "temporal_staleness:goals=['g-wmtm-validation', 'g-build-omegaclaw']"
+      ],
+      "recommended_action": "Proceed with current task as planned.",
+      "multihop_chains": 2,
+      "multihop_goal_coverage": [
+        "g-build-omegaclaw",
+        "g-wmtm-validation"
+      ],
+      "multihop_max_depth": 2
+    }
+  ],
+  "executive_summary": "Pipeline evaluated 1 tasks. | Verdict distribution: CONTINUE=1 | Top priority: t-run-benchmark (STI=50.2, CONTINUE, rel=0.925) | Multi-hop: 2 chains found, max depth=2 | Stale tasks: t-run-benchmark"
+}

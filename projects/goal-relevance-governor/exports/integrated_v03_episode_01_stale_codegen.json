@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-09-01T12:00:00+00:00",
+  "episode_id": "01-stale-codegen-worker",
+  "cycle": 10,
+  "pln_layer": {
+    "task_count": 1,
+    "total_relevance": 0.0
+  },
+  "ecan_layer": {
+    "total_sti": 101.07,
+    "eviction_count": 0,
+    "priority_top3": [
+      {
+        "node_id": "g-initial-demo",
+        "sti": 38.36,
+        "lti": 88.77,
+        "kind": "goal"
+      },
+      {
+        "node_id": "g-ir-translation-v2",
+        "sti": 28.3,
+        "lti": 63.31,
+        "kind": "goal"
+      },
+      {
+        "node_id": "g-build-omegaclaw",
+        "sti": 21.46,
+        "lti": 87.27,
+        "kind": "goal"
+      }
+    ]
+  },
+  "verdict_layer": {
+    "verdict_counts": {
+      "STOP_STALE": 1
+    }
+  },
+  "multihop_layer": {
+    "task_count": 1,
+    "total_chains": 2,
+    "max_depth": 2
+  },
+  "conflict_layer": {
+    "conflict_count": 0,
+    "conflicts": []
+  },
+  "recommendations": [
+    {
+      "task_id": "t-p2m-codegen",
+      "unified_verdict": "STOP_STALE",
+      "relevance_score": 0.0,
+      "priority_band": "STALE",
+      "sti": 12.95,
+      "lti": 63.31,
+      "eviction_candidate": false,
+      "staleness_flag": true,
+      "confidence_modifier": 0.0,
+      "signals": [
+        "all_direct_goals_terminal",
+        "temporal_staleness:goals=['g-initial-demo', 'g-build-omegaclaw']"
+      ],
+      "recommended_action": "Stop: goal is stale and no longer relevant. Consider abandoning.",
+      "multihop_chains": 2,
+      "multihop_goal_coverage": [
+        "g-build-omegaclaw",
+        "g-initial-demo"
+      ],
+      "multihop_max_depth": 2
+    }
+  ],
+  "executive_summary": "Pipeline evaluated 1 tasks. | Verdict distribution: STOP_STALE=1 | Top priority: t-p2m-codegen (STI=12.9, STOP_STALE, rel=0.000) | Multi-hop: 2 chains found, max depth=2 | Stale tasks: t-p2m-codegen"
+}
