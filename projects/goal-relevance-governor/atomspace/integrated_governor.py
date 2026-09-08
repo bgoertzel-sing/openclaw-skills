@@ -57,6 +57,10 @@ class TaskRecommendation:
     multihop_chains: int = 0
     multihop_goal_coverage: list = field(default_factory=list)
     multihop_max_depth: int = 0
+    # PLN layer (v0.2.1)
+    pln_strength: float = 0.0
+    pln_confidence: float = 0.0
+    pln_relevance_score: float = 0.0
 
     def to_dict(self) -> dict:
         """Return a dictionary representation of this object."""
@@ -221,6 +225,12 @@ class IntegratedGovernorPipeline:
         recommendations = []
         verdict_counts = {}
 
+        # Build PLN lookup for truth values
+        pln_lookup = {
+            t.get("task_id"): t
+            for t in self.pln_result.get("tasks", [])
+        }
+
         for r in bridge_results:
             # Get ECAN attention for this task
             av = self.allocator.attention.get(r.task_id)
@@ -250,6 +260,13 @@ class IntegratedGovernorPipeline:
                 mh_goals = []
                 mh_depth = 0
 
+            # PLN truth values
+            pln_task = pln_lookup.get(r.task_id, {})
+            tv = pln_task.get("truth_value", {})
+            pln_strength = tv.get("strength", 0.0) if isinstance(tv, dict) else 0.0
+            pln_confidence = tv.get("confidence", 0.0) if isinstance(tv, dict) else 0.0
+            pln_rel = pln_task.get("relevance_score", 0.0)
+
             rec = TaskRecommendation(
                 task_id=r.task_id,
                 unified_verdict=r.unified_verdict,
@@ -265,6 +282,9 @@ class IntegratedGovernorPipeline:
                 multihop_chains=mh_chains,
                 multihop_goal_coverage=mh_goals,
                 multihop_max_depth=mh_depth,
+                pln_strength=round(pln_strength, 4),
+                pln_confidence=round(pln_confidence, 4),
+                pln_relevance_score=round(pln_rel, 4),
             )
             recommendations.append(rec)
 
@@ -395,10 +415,11 @@ class IntegratedGovernorPipeline:
         # Top priority task
         if recs:
             top = recs[0]
+            pln_str = f", PLN tv=({top.pln_strength:.2f},{top.pln_confidence:.2f})" if top.pln_strength > 0 else ""
             lines.append(
                 f"Top priority: {top.task_id} "
                 f"(STI={top.sti:.1f}, {top.unified_verdict}, "
-                f"rel={top.relevance_score:.3f})"
+                f"rel={top.relevance_score:.3f}{pln_str})"
             )
 
         # Multi-hop chains
