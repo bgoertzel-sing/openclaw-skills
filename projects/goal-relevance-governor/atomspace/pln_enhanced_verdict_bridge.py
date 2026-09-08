@@ -105,8 +105,17 @@ class EnhancedPLNVerdictBridge:
             # Enhanced relevance (from ChainAggregator)
             enhanced_relevance = enhanced.get("relevance_score", 0.0)
 
-            # Use enhanced relevance but fall back to naive if enhanced is 0
-            relevance = enhanced_relevance if enhanced_relevance > 0 else naive_relevance
+            # Blend enhanced and naive relevance:
+            # - Enhanced PLN captures chain structure quality (inference-aware)
+            # - Naive captures task-specific signals (priority, blocking, staleness)
+            # Blend weight: 60% naive (task-specific), 40% enhanced (chain quality)
+            BLEND_NAIVE = 0.6
+            BLEND_ENHANCED = 0.4
+            if enhanced_relevance > 0:
+                relevance = (BLEND_NAIVE * naive_relevance +
+                             BLEND_ENHANCED * enhanced_relevance)
+            else:
+                relevance = naive_relevance
 
             # PLN verdict from naive (rule-based PLN verdict)
             pln_verdict = naive_verdict
@@ -128,10 +137,12 @@ class EnhancedPLNVerdictBridge:
                 signals.append("low_confidence")
 
             # Check if enhanced and naive relevance differ significantly
-            if abs(enhanced_relevance - naive_relevance) > 0.05:
+            blended_relevance = relevance
+            if abs(blended_relevance - naive_relevance) > 0.05:
                 signals.append(
                     f"relevance_shift:naive={naive_relevance:.4f},"
-                    f"enhanced={enhanced_relevance:.4f}"
+                    f"enhanced={enhanced_relevance:.4f},"
+                    f"blended={blended_relevance:.4f}"
                 )
 
             if self.verdicts_disagree(py_v.verdict, pln_verdict):
