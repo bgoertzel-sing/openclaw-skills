@@ -1,8 +1,8 @@
 # Goal Relevance Governor v0.2 — Comprehensive Review
 
 **Date:** 2026-09-08  
-**Status:** All 198 tests, 162 subtests passing (1.33s)  
-**Commits this session:** 22+
+**Status:** All 198 tests, 170 subtests passing (1.38s)  
+**Commits this session:** 27+
 
 ---
 
@@ -39,6 +39,7 @@ Episode Data (JSON)
 ┌─────────────────────┐
 │ Multi-Hop Chains    │  ← Deep goal chains, path enrichment
 │ + Conflict Detect    │  18 tests
+│ + Conflict→Verdict   │  ← Post-process: weaker task → REPLAN
 └────────┬────────────┘
          │
          ▼
@@ -70,7 +71,7 @@ Episode Data (JSON)
 | DEFER | episode_03 | irreversible_on_early_stage_research |
 | REPLAN | episode_04 | goal_superseded, superseded_by |
 | CONTINUE | episode_05 | healthy, high_relevance |
-| REPLAN | episode_06 | conflict (shared exclusive resource) |
+| REPLAN | episode_06 | resource_conflict_replan (approach divergence) |
 | BLOCKED | example_graph | (edge case) |
 
 ## Remediation Plans
@@ -104,7 +105,7 @@ Each verdict produces a structured plan with:
 | Remediation | < 0.1ms |
 | Explainer | < 0.1ms |
 | Temporal sim | < 1ms |
-| **5-episode total** | **< 5ms** |
+| **6-episode total** | **< 5ms** |
 
 ## Test Breakdown
 
@@ -164,6 +165,7 @@ replay_corpus/
 ├── episode_03_premature_hardening.json
 ├── episode_04_overengineered_repair.json
 ├── episode_05_control_justified_long_running.json
+├── episode_06_conflict_replan.json
 ├── example_graph_v0.1.json
 └── remediation_plans_all.json   # Exported plans for all episodes
 
