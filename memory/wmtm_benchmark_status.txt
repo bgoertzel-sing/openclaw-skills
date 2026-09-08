@@ -1,19 +1,19 @@
-WMTM Benchmark & Code Quality Status (2026-09-08) — UPDATED
+WMTM Benchmark & Code Quality Status (2026-09-08) — LATEST
 
 BENCHMARK RESULTS (unchanged):
 - Throughput: ~107 cyc/s, Best ECAN config: baseline (score=0.805)
 - Stability: 0 violations over 200 stress cycles
 - Inference: 6/6 PASS (deduction, induction, abduction, analogy, evidence, contradiction)
-- All 285 WMTM tests pass (verified 2026-09-08)
+- All 285 WMTM tests pass
 
 TEST VERIFICATION (2026-09-08):
 - WMTM: 285/285 tests pass
 - Iter-port: 12/12 tests pass
 - Petta-memory: 14/14 tests pass
 - Conversation governor: 17/17 tests pass (E1a active egress)
-- Goal Relevance Governor: 180 tests, 132 subtests pass (1.26s)
+- Goal Relevance Governor: 193 tests, 162 subtests pass (1.32s)
 
-GOAL RELEVANCE GOVERNOR v0.2 (2026-09-08 — LATEST):
+GOAL RELEVANCE GOVERNOR v0.2 (2026-09-08):
 - Phase 0: Schema, evaluator, 5-episode replay corpus
 - MeTTa-Python Bridge v0.3: 16 tests
 - PLN Truth-Value Mapping v0.1: 13 tests
@@ -24,9 +24,11 @@ GOAL RELEVANCE GOVERNOR v0.2 (2026-09-08 — LATEST):
 - Integrated Pipeline v0.2: 7 tests
 - Reasoning Explanation Layer: 12 tests
 - Temporal Evolution Simulator: 11 tests (3 timeline templates)
-- Remediation Engine v0.1: 14 tests (6 verdict→action plans)
-- Total: 180 tests, 132 subtests — ALL PASSING
-- 18+ commits this session, all committed
+- Remediation Engine v0.1: 14 tests (6 verdict action plans)
+- MeTTa Remediation Cross-validation: 6 tests
+- Integration tests: 7 tests (full pipeline → remediation)
+- Total: 193 tests, 162 subtests — ALL PASSING
+- 20+ commits this session
 
 ARCHITECTURE (v0.2 pipeline):
   Episode Data → PLN Truth Values → ECAN Attention → Verdict Bridge
@@ -34,8 +36,10 @@ ARCHITECTURE (v0.2 pipeline):
   → Remediation engine → Temporal simulator
 
 VERDICTS (7): STOP_STALE, ESCALATE, PAUSE_RECOVERABLY, DEFER, REPLAN, CONTINUE, BLOCKED
-SIGNALS DETECTED: stale_goal, terminal_goal, resource_contention, higher_priority_task,
+SIGNALS: stale_goal, terminal_goal, resource_contention, higher_priority_task,
   premature_implementation, stage_constraint, low_relevance, high_relevance, long_running_justified
 
-SESSION STATE: All systems healthy. 180 tests green. Remediation engine closes the
-detect→explain→remediate loop. Send channel intermittent (ChannelContractError).
+KNOWN GAP: REPLAN verdict not exercised by current 5 episodes (no superseded_goal signal).
+  Remediation engine has handler but no episode triggers it. Fix: add episode_06.
+
+SESSION STATE: All systems healthy. 193 tests green. Send channel intermittent.
