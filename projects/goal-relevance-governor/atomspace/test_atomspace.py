@@ -89,8 +89,12 @@ def test_task_encoding():
 
 
 def test_edge_encoding():
+    # Build node_lookup from sample graph so edges get prefixed IDs
+    node_lookup = {}
+    for n in SAMPLE_GRAPH["goals"] + SAMPLE_GRAPH["projects"] + SAMPLE_GRAPH["tasks"] + SAMPLE_GRAPH["resources"] + SAMPLE_GRAPH.get("constraints", []):
+        node_lookup[n["id"]] = n
     edge = SAMPLE_GRAPH["edges"][0]
-    s = encode_edge(edge)
+    s = encode_edge(edge, node_lookup)
     assert "(contributes_to t_t_hardening_guards g_g_build_omegaclaw)" in s
 
 

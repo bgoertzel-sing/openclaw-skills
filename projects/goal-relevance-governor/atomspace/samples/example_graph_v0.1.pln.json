@@ -1,0 +1,216 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-initial-demo",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 1.0
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-ir-translation",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-stale-codegen",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-wmtm-tests",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-hardening",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-blocked-task",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-no-goal",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "r-shared-runtime",
+      "truth": {
+        "strength": 0.5,
+        "confidence": 0.5
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "c-ben-attendance",
+      "truth": {
+        "strength": 0.5,
+        "confidence": 0.5
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-stale-codegen_to_g-initial-demo",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-stale-codegen",
+        "g-initial-demo"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-wmtm-tests_to_g-ir-translation",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-wmtm-tests",
+        "g-ir-translation"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-wmtm-tests_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-wmtm-tests",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-hardening_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-hardening",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "part_of_t-hardening_to_p-conversation-governor",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-hardening",
+        "p-conversation-governor"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-blocked-task_to_g-ir-translation",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-blocked-task",
+        "g-ir-translation"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "blocks_c-ben-attendance_to_t-blocked-task",
+      "truth": {
+        "strength": 0.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "c-ben-attendance",
+        "t-blocked-task"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "occupies_t-wmtm-tests_to_r-shared-runtime",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-wmtm-tests",
+        "r-shared-runtime"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "occupies_t-hardening_to_r-shared-runtime",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-hardening",
+        "r-shared-runtime"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "provides_evidence_for_res-wmtm-285_to_g-ir-translation",
+      "truth": {
+        "strength": 0.5,
+        "confidence": 0.5
+      },
+      "outgoing": [
+        "res-wmtm-285",
+        "g-ir-translation"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}

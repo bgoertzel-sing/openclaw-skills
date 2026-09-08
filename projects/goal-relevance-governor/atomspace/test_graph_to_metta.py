@@ -76,7 +76,7 @@ def test_full_graph_to_metta_episode_01():
     assert "g_build_omegaclaw" in metta
     assert "t_p2m_codegen" in metta
     # Should contain edges
-    assert "(contributes_to t_p2m_codegen g_initial_demo)" in metta
+    assert "(contributes_to t_t_p2m_codegen g_g_initial_demo)" in metta
     # Should contain verdict rules
     assert "check_stop_stale" in metta
     assert "evaluate_task" in metta
