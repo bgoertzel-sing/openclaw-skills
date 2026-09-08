@@ -50,14 +50,39 @@ class TestECANAttention(unittest.TestCase):
             msg='STI should be relevance * STI_INITIAL_SCALE')
 
     def test_lti_initialized_from_pln_confidence(self):
-        """LTI should come from truth_value.confidence."""
+        """LTI should come from truth_value.confidence (no staleness decay)."""
+        from datetime import datetime, timezone
         data = load_episode('episode_02_chem_blocking.json')
-        alloc = ECANAttentionAllocator(data)
+        # Use now close to data timestamps so staleness decay doesn't apply
+        alloc = ECANAttentionAllocator(data, now=datetime(2026, 8, 2, tzinfo=timezone.utc))
         for nid, av in alloc.attention.items():
             tv = alloc.propagator.tvs[nid]
             expected_lti = tv.confidence * LTI_INITIAL_SCALE
             self.assertAlmostEqual(av.lti, expected_lti, places=4,
                 msg=f'{nid}: LTI mismatch')
+
+    def test_lti_staleness_decay(self):
+        """Stale nodes (as_of > STALENESS_THRESHOLD_DAYS ago) get decayed LTI."""
+        from datetime import datetime, timezone
+        from atomspace.ecan_attention import STALENESS_THRESHOLD_DAYS, STALENESS_LTI_DECAY
+        data = load_episode('episode_02_chem_blocking.json')
+        # g-long-horizon-research: as_of=2026-08-01
+        # t-petta-chem: as_of=2026-08-20
+        # Fresh: Aug 2 -> g-long is 1 day old (not stale)
+        alloc_fresh = ECANAttentionAllocator(data, now=datetime(2026, 8, 2, tzinfo=timezone.utc))
+        # Stale: Aug 22 -> g-long is 21 days old (stale), t-petta-chem is 2 days (not stale)
+        alloc_stale = ECANAttentionAllocator(data, now=datetime(2026, 8, 22, tzinfo=timezone.utc))
+        fresh_av = alloc_fresh.attention['g-long-horizon-research']
+        stale_av = alloc_stale.attention['g-long-horizon-research']
+        self.assertLess(stale_av.lti, fresh_av.lti,
+            msg='Stale node should have lower LTI than fresh')
+        self.assertAlmostEqual(stale_av.lti, fresh_av.lti * STALENESS_LTI_DECAY, places=4,
+            msg='Stale LTI should be fresh LTI * STALENESS_LTI_DECAY')
+        # Non-stale node (t-petta-chem, 2 days old on Aug 22) should be unchanged
+        tv = alloc_stale.propagator.tvs['t-petta-chem']
+        expected_lti = tv.confidence * LTI_INITIAL_SCALE
+        self.assertAlmostEqual(alloc_stale.attention['t-petta-chem'].lti, expected_lti,
+            places=4, msg='Non-stale node LTI should equal raw confidence * scale')
 
     def test_vlti_for_terminal_goals(self):
         """Achieved/terminal/abandoned nodes get VLTI=True."""

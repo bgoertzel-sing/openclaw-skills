@@ -36,6 +36,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'evaluator'))
 sys.path.insert(0, os.path.dirname(__file__))
 
 from pln_propagation import PLNPropagator, TruthValue
+from datetime import datetime, timezone
+
+# Staleness settings (mirrors pln_verdict_bridge.py)
+STALENESS_THRESHOLD_DAYS = 14
+STALENESS_LTI_DECAY = 0.5  # stale nodes get LTI * 0.5
 
 
 # --- Configuration ---
@@ -101,8 +106,18 @@ class ECANAttentionAllocator:
             print(entry)
     """
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, now: datetime | None = None):
+        """Initialize ECAN allocator.
+
+        Args:
+            data: Goal relevance graph data.
+            now: Optional reference timestamp for staleness detection.
+                 If provided, nodes older than STALENESS_THRESHOLD_DAYS get
+                 their LTI decayed by STALENESS_LTI_DECAY, making them more
+                 likely to become eviction candidates over time.
+        """
         self.data = data
+        self._now = now or datetime.now(timezone.utc)
         self.propagator = PLNPropagator(data)
         self._pln_result = self.propagator.evaluate()
         self._pln_tasks = {t["task_id"]: t for t in self._pln_result.get("tasks", [])}
@@ -133,7 +148,17 @@ class ECANAttentionAllocator:
                 # Non-task nodes: STI from strength
                 sti = tv.strength * STI_INITIAL_SCALE
 
+            # Apply staleness decay to LTI
             lti = tv.confidence * LTI_INITIAL_SCALE
+            as_of = node.get("as_of")
+            if as_of:
+                try:
+                    ts = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+                    age_days = (self._now - ts).days
+                    if age_days > STALENESS_THRESHOLD_DAYS:
+                        lti *= STALENESS_LTI_DECAY
+                except (ValueError, TypeError):
+                    pass  # Unparseable timestamp, skip staleness
 
             # VLTI for terminal/achieved goals (rent-free)
             vlti = node.get("status") in ("achieved", "terminal", "abandoned")
