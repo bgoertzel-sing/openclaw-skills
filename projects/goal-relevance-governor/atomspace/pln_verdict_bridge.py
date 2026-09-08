@@ -61,6 +61,7 @@ from pln_truth_mapping import verdict_to_truth
 # ─── Configuration ───────────────────────────────────────────────────
 
 STALENESS_THRESHOLD_DAYS = 14  # goals older than this are considered stale
+STALENESS_DECAY_FACTOR = 0.5    # stale goals decay confidence by this factor
 
 PRIORITY_BANDS = [
     (0.70, "CRITICAL"),
@@ -137,21 +138,33 @@ def compute_staleness(goal_node: dict, now: datetime | None = None,
     return False
 
 
-def _confidence_modifier(tv: TruthValue) -> float:
+def _confidence_modifier(tv: TruthValue, is_stale: bool = False) -> float:
     """Compute a confidence modifier from a truth value.
 
-    Returns a value in [-0.3, +0.1]:
+    Returns a value in [-0.4, +0.1]:
       - High confidence (>= 0.8): +0.1 boost
       - Medium confidence (0.3-0.8): 0.0 neutral
       - Low confidence (< 0.3): -0.3 penalty
+      - Stale goals: additional -0.1 penalty on top of decay
+
+    If is_stale is True, apply a multiplicative decay to the truth
+    value's confidence *before* computing the modifier, so that stale
+    goals with moderate confidence get pushed into the low-confidence
+    penalty band.  An additional flat -0.1 penalty ensures stale
+    tasks always have a negative modifier even if decayed confidence
+    stays in the neutral band.
     """
     c = tv.confidence
+    stale_penalty = 0.0
+    if is_stale:
+        c = c * STALENESS_DECAY_FACTOR
+        stale_penalty = -0.1
     if c >= 0.8:
-        return 0.1
+        return 0.1 + stale_penalty
     elif c >= 0.3:
-        return 0.0
+        return 0.0 + stale_penalty
     else:
-        return -0.3
+        return -0.3 + stale_penalty
 
 
 def _priority_band(score: float) -> str:
@@ -223,8 +236,8 @@ class PLNVerdictBridge:
             # Compute staleness
             is_stale, stale_goal_ids = self._get_goal_staleness(task_id)
 
-            # Compute confidence modifier
-            conf_mod = _confidence_modifier(tv)
+            # Compute confidence modifier (stale goals get decayed confidence)
+            conf_mod = _confidence_modifier(tv, is_stale=is_stale)
 
             # Determine priority band
             band = _priority_band(relevance)
@@ -243,7 +256,7 @@ class PLNVerdictBridge:
             results.append(VerdictEnhanced(
                 task_id=task_id,
                 verdict=py_v.verdict,
-                pln_verdict=pln_verdict,                truth_value=tv_dict,
+                pln_verdict=pln_verdict,                truth_value=({**tv_dict, "confidence": round(tv.confidence * (STALENESS_DECAY_FACTOR if is_stale else 1.0), 4)}),
                 relevance_score=round(relevance, 4),
                 priority_band=band,
                 confidence_modifier=round(conf_mod, 3),
