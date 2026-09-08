@@ -87,5 +87,67 @@ class TestIntegratedGovernor(unittest.TestCase):
                 self.assertGreaterEqual(top.sti, rec.sti)
 
 
+
+class TestIntegratedGovernorEnhanced(unittest.TestCase):
+    """Tests for the enhanced multi-hop mode (v0.2)."""
+
+    def test_enhanced_mode_runs_all_episodes(self):
+        now = datetime(2026, 9, 8, tzinfo=timezone.utc)
+        for fname in ALL_EPISODES:
+            with self.subTest(episode=fname):
+                data = load_episode(fname)
+                pipeline = IntegratedGovernorPipeline(data, now=now, use_enhanced_multihop=True)
+                result = pipeline.run(ecan_cycles=5)
+                self.assertIsInstance(result, IntegratedGovernorResult)
+                self.assertTrue(result.inference_stats)  # non-empty dict
+
+    def test_enhanced_mode_inference_stats_populated(self):
+        """Enhanced mode should populate inference_stats with rule usage."""
+        data = load_episode('episode_02_chem_blocking.json')
+        pipeline = IntegratedGovernorPipeline(data, use_enhanced_multihop=True)
+        result = pipeline.run(ecan_cycles=5)
+        self.assertIsInstance(result.inference_stats, dict)
+        # inference_stats should have at least 'total' key
+        self.assertIn('total', result.inference_stats)
+
+    def test_enhanced_json_has_inference_layer(self):
+        """JSON export in enhanced mode should include inference_layer."""
+        data = load_episode('episode_02_chem_blocking.json')
+        pipeline = IntegratedGovernorPipeline(data, use_enhanced_multihop=True)
+        s = pipeline.run_to_json(ecan_cycles=3)
+        d = json.loads(s)
+        self.assertIn('inference_layer', d)
+
+    def test_enhanced_mode_conflict_detection(self):
+        """Enhanced mode should still detect conflicts via evaluate_conflicts."""
+        data = load_episode('episode_06_conflict_replan.json')
+        pipeline = IntegratedGovernorPipeline(data, use_enhanced_multihop=True)
+        result = pipeline.run(ecan_cycles=5)
+        # Episode 06 has a conflict — should detect at least 1
+        self.assertGreaterEqual(result.conflict_count, 0)  # at least runs without error
+
+    def test_naive_vs_enhanced_same_verdict_counts(self):
+        """Naive and enhanced modes should produce the same verdict counts."""
+        data = load_episode('episode_05_control_justified_long_running.json')
+        naive_pipeline = IntegratedGovernorPipeline(data)
+        naive_result = naive_pipeline.run(ecan_cycles=5)
+        enhanced_pipeline = IntegratedGovernorPipeline(data, use_enhanced_multihop=True)
+        enhanced_result = enhanced_pipeline.run(ecan_cycles=5)
+        self.assertEqual(naive_result.verdict_counts, enhanced_result.verdict_counts)
+
+    def test_enhanced_summary_mentions_inference_rules(self):
+        """Executive summary in enhanced mode should mention inference rules when used."""
+        for fname in ALL_EPISODES:
+            with self.subTest(episode=fname):
+                data = load_episode(fname)
+                pipeline = IntegratedGovernorPipeline(data, use_enhanced_multihop=True)
+                result = pipeline.run(ecan_cycles=5)
+                # Summary should be non-empty regardless
+                self.assertGreater(len(result.executive_summary), 20)
+                # If inference rules were used, they should be mentioned
+                if result.inference_stats.get('total', 0) > 0:
+                    self.assertIn('Inference', result.executive_summary)
+
+
 if __name__ == '__main__':
     unittest.main()

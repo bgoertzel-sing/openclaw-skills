@@ -194,6 +194,17 @@ class InferenceEnhancedMultiHopEvaluator:
         """Return statistics about which inference rules were used."""
         return self.miner.get_stats()
 
+
+    def evaluate_conflicts(self) -> list[dict]:
+        """Find resource conflict chains across all tasks.
+        
+        Delegates to ChainMiner for conflict detection since conflicts
+        are based on resource occupation patterns, not inference rules.
+        """
+        from pln_multihop import ChainMiner
+        miner = ChainMiner(self.data)
+        return miner.find_conflict_chains(max_depth=self.max_depth)
+
     def evaluate_to_json(self) -> str:
         """Evaluate and return JSON string."""
         import json

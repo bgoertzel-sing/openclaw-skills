@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Integrated Governor Pipeline v0.1
+"""Integrated Governor Pipeline v0.2
 ====================================
 
 Ties together PLN propagation, ECAN attention allocation, and the
@@ -10,13 +10,18 @@ Flow:
     → PLNPropagator (continuous relevance + truth values)
     → ECANAttentionAllocator (STI/LTI attention dynamics)
     → PLNVerdictBridge (rule + PLN fusion → unified verdicts)
+    → [InferenceEnhanced]MultiHopEvaluator (chain reasoning)
     → IntegratedGovernorResult (unified output)
 
 The pipeline produces a single JSON document that combines:
   1. PLN relevance scores and truth values for all tasks
   2. ECAN attention map with priority queue and eviction candidates
   3. Unified verdicts with temporal staleness and confidence modifiers
-  4. Executive summary with top-priority tasks and recommended actions
+  4. Multi-hop chain reasoning with optional inference-rule enhancement
+5. Executive summary with top-priority tasks and recommended actions
+
+v0.2: Added use_enhanced_multihop flag for InferenceEnhancedMultiHopEvaluator
+      and inference_stats in IntegratedGovernorResult.
 """
 
 import json
@@ -88,6 +93,9 @@ class IntegratedGovernorResult:
     recommendations: list
     executive_summary: str
 
+    # Inference layer (v0.2)
+    inference_stats: dict = field(default_factory=dict)
+
     def to_dict(self) -> dict:
         """Return a dictionary representation of this object."""
         return {
@@ -115,6 +123,7 @@ class IntegratedGovernorResult:
                 "conflict_count": self.conflict_count,
                 "conflicts": self.conflict_details,
             },
+            "inference_layer": self.inference_stats,
             "recommendations": [r.to_dict() for r in self.recommendations],
             "executive_summary": self.executive_summary,
         }
@@ -141,8 +150,14 @@ class IntegratedGovernorPipeline:
         print(result.executive_summary)
     """
 
-    def __init__(self, data: dict, now: Optional[datetime] = None):
+    def __init__(
+        self,
+        data: dict,
+        now: Optional[datetime] = None,
+        use_enhanced_multihop: bool = False,
+    ):
         self.data = data
+        self.use_enhanced_multihop = use_enhanced_multihop
         # Default 'now' to the episode's frozen_at timestamp for realistic
         # staleness detection during replay. Falls back to current time.
         if now is None:
@@ -165,7 +180,13 @@ class IntegratedGovernorPipeline:
         self.bridge = PLNVerdictBridge(data, now=self.now)
 
         # Layer 3.5: Multi-hop chain reasoning
-        self.multihop = MultiHopEvaluator(data, max_depth=4)
+        if use_enhanced_multihop:
+            from pln_enhanced_multihop import InferenceEnhancedMultiHopEvaluator
+            self.multihop = InferenceEnhancedMultiHopEvaluator(data, max_depth=4)
+            self._enhanced = True
+        else:
+            self.multihop = MultiHopEvaluator(data, max_depth=4)
+            self._enhanced = False
 
     def run(self, ecan_cycles: int = 10) -> IntegratedGovernorResult:
         """Run the full pipeline and produce unified output."""
@@ -179,9 +200,18 @@ class IntegratedGovernorPipeline:
 
         # Run multi-hop chain reasoning
         multihop_results = self.multihop.evaluate()
+        if self._enhanced:
+            inference_stats = self.multihop.get_inference_stats()
+        else:
+            inference_stats = {}
 
         # Run conflict chain detection
-        conflict_chains = self.multihop.evaluate_conflicts()
+        if hasattr(self.multihop, 'evaluate_conflicts'):
+            conflict_chains = self.multihop.evaluate_conflicts()
+        else:
+            # Enhanced evaluator: fall back to naive for conflict detection
+            _naive = MultiHopEvaluator(self.data, max_depth=4)
+            conflict_chains = _naive.evaluate_conflicts()
 
         # Build recommendations by combining all layers
         recommendations = []
@@ -198,9 +228,23 @@ class IntegratedGovernorPipeline:
 
             # Get multi-hop chain data for this task
             mh = multihop_results.get(r.task_id)
-            mh_chains = len(mh.chains) if mh else 0
-            mh_goals = mh.goal_coverage if mh else []
-            mh_depth = mh.max_depth_reached if mh else 0
+            if mh is not None:
+                if hasattr(mh, 'chains'):
+                    mh_chains = len(mh.chains)
+                    mh_goals = mh.goal_coverage if hasattr(mh, 'goal_coverage') else []
+                    mh_depth = mh.max_depth_reached if hasattr(mh, 'max_depth_reached') else 0
+                elif isinstance(mh, dict):
+                    mh_chains = mh.get('chain_count', 0)
+                    mh_goals = mh.get('goal_coverage', [])
+                    mh_depth = mh.get('max_depth', 0)
+                else:
+                    mh_chains = 0
+                    mh_goals = []
+                    mh_depth = 0
+            else:
+                mh_chains = 0
+                mh_goals = []
+                mh_depth = 0
 
             rec = TaskRecommendation(
                 task_id=r.task_id,
@@ -271,8 +315,19 @@ class IntegratedGovernorPipeline:
         top3 = ecan_dict["priority_queue"][:3]
 
         # Aggregate multi-hop stats
-        mh_total_chains = sum(len(r.chains) for r in multihop_results.values())
-        mh_max_depth = max((r.max_depth_reached for r in multihop_results.values()), default=0)
+        if self._enhanced:
+            mh_total_chains = sum(
+                (len(r.chains) if hasattr(r, 'chains') else r.get('chain_count', 0) if isinstance(r, dict) else 0)
+                for r in multihop_results.values()
+            )
+            mh_max_depth = max(
+                (r.max_depth_reached if hasattr(r, 'max_depth_reached')
+                 else r.get('max_depth', 0) if isinstance(r, dict) else 0)
+                for r in multihop_results.values()
+            )
+        else:
+            mh_total_chains = sum(len(r.chains) for r in multihop_results.values())
+            mh_max_depth = max((r.max_depth_reached for r in multihop_results.values()), default=0)
 
         return IntegratedGovernorResult(
             timestamp=self.now.isoformat(),
@@ -292,6 +347,7 @@ class IntegratedGovernorPipeline:
             multihop_max_depth=mh_max_depth,
             conflict_count=len(conflict_chains),
             conflict_details=conflict_chains,
+            inference_stats=inference_stats,
             recommendations=recommendations,
             executive_summary=summary,
         )
@@ -341,6 +397,13 @@ class IntegratedGovernorPipeline:
         if escalations:
             esc_names = ", ".join(r.task_id for r in escalations)
             lines.append(f"⚠ ESCALATE: {esc_names}")
+
+        # Inference rule stats (enhanced mode only)
+        if self._enhanced:
+            stats = self.multihop.get_inference_stats()
+            if stats.get('total', 0) > 0:
+                rule_str = ", ".join(f"{k}={v}" for k, v in sorted(stats.items()) if k != 'total' and v > 0)
+                lines.append(f"Inference rules: {rule_str}")
 
         return " | ".join(lines)
 
