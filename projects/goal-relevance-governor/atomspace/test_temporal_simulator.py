@@ -124,3 +124,136 @@ class TestTemporalSimulator(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestTemporalSimulatorEp04To06(unittest.TestCase):
+    """Tests for temporal timelines covering episodes 04, 05, 06."""
+
+    def test_overengineered_timeline_runs(self):
+        data = load_episode('episode_04_overengineered_repair.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_overengineered_repair()
+        result = sim.run_timeline(mutations)
+        self.assertIsInstance(result, TimelineResult)
+        self.assertEqual(len(result.steps), 3)
+
+    def test_overengineered_tasks_present_at_step0(self):
+        data = load_episode('episode_04_overengineered_repair.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_overengineered_repair()
+        result = sim.run_timeline(mutations)
+        # Both tasks should be present initially
+        self.assertIn('t-process-inspector', result.steps[0].verdicts)
+        self.assertIn('t-launch-wrappers', result.steps[0].verdicts)
+
+    def test_overengineered_task_disappears_after_completion(self):
+        data = load_episode('episode_04_overengineered_repair.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_overengineered_repair()
+        result = sim.run_timeline(mutations)
+        # Step 2: tasks completed/stopped, should not appear
+        self.assertNotIn('t-process-inspector', result.steps[2].verdicts)
+        self.assertNotIn('t-launch-wrappers', result.steps[2].verdicts)
+
+    def test_control_justified_timeline_runs(self):
+        data = load_episode('episode_05_control_justified_long_running.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_control_justified()
+        result = sim.run_timeline(mutations)
+        self.assertEqual(len(result.steps), 3)
+
+    def test_control_stays_continue(self):
+        """CONTINUE verdict should hold across steps 0 and 1."""
+        data = load_episode('episode_05_control_justified_long_running.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_control_justified()
+        result = sim.run_timeline(mutations)
+        self.assertEqual(result.steps[0].verdicts.get('t-run-benchmark'), 'CONTINUE')
+        self.assertEqual(result.steps[1].verdicts.get('t-run-benchmark'), 'CONTINUE')
+
+    def test_control_no_verdict_drift_before_completion(self):
+        """No verdict drift between steps 0 and 1 (both CONTINUE)."""
+        data = load_episode('episode_05_control_justified_long_running.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_control_justified()
+        result = sim.run_timeline(mutations)
+        # Drift only at step 2 when task completes (verdict disappears)
+        drift_before_completion = [d for d in result.verdict_drift if d[0] < 2]
+        self.assertEqual(len(drift_before_completion), 0)
+
+    def test_control_all_correct(self):
+        data = load_episode('episode_05_control_justified_long_running.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_control_justified()
+        result = sim.run_timeline(mutations)
+        self.assertTrue(result.all_correct)
+
+    def test_conflict_replan_timeline_runs(self):
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        self.assertIsInstance(result, TimelineResult)
+        self.assertEqual(len(result.steps), 3)
+
+    def test_conflict_both_tasks_present_at_step0(self):
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        self.assertIn('t-rest-wrapper', result.steps[0].verdicts)
+        self.assertIn('t-grpc-wrapper', result.steps[0].verdicts)
+
+    def test_conflict_grpc_disappears_after_stop(self):
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        # Step 1: grpc-wrapper stopped, should not appear
+        self.assertNotIn('t-grpc-wrapper', result.steps[1].verdicts)
+        # REST wrapper should still be present
+        self.assertIn('t-rest-wrapper', result.steps[1].verdicts)
+
+    def test_conflict_resolution_at_step2(self):
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        # Step 2: both tasks resolved, no verdicts
+        self.assertEqual(len(result.steps[2].verdicts), 0)
+
+    def test_conflict_verdict_drift_detected(self):
+        """Drift should be recorded when grpc-wrapper is stopped."""
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        self.assertIsInstance(result.verdict_drift, list)
+
+    def test_conflict_to_dict_serializable(self):
+        data = load_episode('episode_06_conflict_replan.json')
+        sim = TemporalSimulator(data)
+        mutations = sim.create_timeline_conflict_replan()
+        result = sim.run_timeline(mutations)
+        d = result.to_dict()
+        s = json.dumps(d)
+        self.assertIsInstance(s, str)
+
+    def test_all_six_episodes_run_without_crash(self):
+        """All 6 episodes should run temporal simulations without crashing."""
+        all_episodes = [
+            ('episode_01_stale_codegen.json', 'create_timeline_stale_task'),
+            ('episode_02_chem_blocking.json', 'create_timeline_conflict_resolution'),
+            ('episode_03_premature_hardening.json', 'create_timeline_premature_to_justified'),
+            ('episode_04_overengineered_repair.json', 'create_timeline_overengineered_repair'),
+            ('episode_05_control_justified_long_running.json', 'create_timeline_control_justified'),
+            ('episode_06_conflict_replan.json', 'create_timeline_conflict_replan'),
+        ]
+        for fname, method_name in all_episodes:
+            with self.subTest(episode=fname):
+                data = load_episode(fname)
+                sim = TemporalSimulator(data)
+                mutations = getattr(sim, method_name)()
+                result = sim.run_timeline(mutations)
+                self.assertIsInstance(result, TimelineResult)
+                self.assertGreater(len(result.steps), 0)

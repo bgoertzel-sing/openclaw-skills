@@ -78,7 +78,8 @@ class TestEscalate(unittest.TestCase):
         d = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         for ep in ['episode_01_stale_codegen.json', 'episode_02_chem_blocking.json',
                     'episode_03_premature_hardening.json', 'episode_04_overengineered_repair.json',
-                    'episode_05_control_justified_long_running.json']:
+                    'episode_05_control_justified_long_running.json',
+                    'episode_06_conflict_replan.json']:
             with open(os.path.join(d, 'replay_corpus', ep)) as f:
                 data = json.load(f)
             pipeline = IntegratedGovernorPipeline(data)

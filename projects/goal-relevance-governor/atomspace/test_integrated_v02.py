@@ -11,6 +11,7 @@ ALL_EPISODES = [
     'episode_03_premature_hardening.json',
     'episode_04_overengineered_repair.json',
     'episode_05_control_justified_long_running.json',
+    'episode_06_conflict_replan.json',
 ]
 
 def load_episode(fname):
@@ -75,6 +76,7 @@ class TestIntegratedV02(unittest.TestCase):
             'episode_03_premature_hardening.json': {'DEFER': 1},
             'episode_04_overengineered_repair.json': {'REPLAN': 2},
             'episode_05_control_justified_long_running.json': {'CONTINUE': 1},
+            'episode_06_conflict_replan.json': {'REPLAN': 1, 'ESCALATE': 1},
         }
         for fname in ALL_EPISODES:
             with self.subTest(episode=fname):

@@ -249,3 +249,104 @@ class TemporalSimulator:
             all_correct=all_correct,
             verdict_drift=verdict_drift,
         )
+
+    def create_timeline_overengineered_repair(self) -> list[Mutation]:
+        """Timeline: tasks on superseded goal get replanned as new goal emerges.
+
+        Episode 04: two tasks (t-process-inspector, t-launch-wrappers) contribute
+        to a superseded goal. Timeline shows the goal transition and verdict change.
+        """
+        return [
+            Mutation(
+                timestep=0,
+                description='Initial state: tasks on superseded goal',
+                changes=[],
+                expected_verdicts={},
+            ),
+            Mutation(
+                timestep=1,
+                description='New goal explicitly replaces old; tasks should replan',
+                changes=[
+                    ('goals', 'g-restore-agents-original', 'status', 'abandoned'),
+                ],
+                new_frozen_at=self._advance_frozen_at(48.0),
+                expected_verdicts={},
+            ),
+            Mutation(
+                timestep=2,
+                description='Tasks redirected to new goal g-restore-agents-v2',
+                changes=[
+                    ('tasks', 't-process-inspector', 'status', 'completed'),
+                    ('tasks', 't-launch-wrappers', 'status', 'stopped'),
+                ],
+                new_frozen_at=self._advance_frozen_at(96.0),
+                expected_verdicts={},
+            ),
+        ]
+
+    def create_timeline_control_justified(self) -> list[Mutation]:
+        """Timeline: long-running benchmark task stays CONTINUE across time.
+
+        Episode 05: a justified task should keep its CONTINUE verdict
+        as time advances and the project stays mature.
+        """
+        return [
+            Mutation(
+                timestep=0,
+                description='Initial state: justified long-running benchmark',
+                changes=[],
+                expected_verdicts={'t-run-benchmark': 'CONTINUE'},
+            ),
+            Mutation(
+                timestep=1,
+                description='Time advances, project still hardened',
+                changes=[],
+                new_frozen_at=self._advance_frozen_at(24.0),
+                expected_verdicts={'t-run-benchmark': 'CONTINUE'},
+            ),
+            Mutation(
+                timestep=2,
+                description='Benchmark completes successfully',
+                changes=[
+                    ('tasks', 't-run-benchmark', 'status', 'completed'),
+                    ('goals', 'g-wmtm-validation', 'status', 'achieved'),
+                ],
+                new_frozen_at=self._advance_frozen_at(48.0),
+                expected_verdicts={},
+            ),
+        ]
+
+    def create_timeline_conflict_replan(self) -> list[Mutation]:
+        """Timeline: approach conflict resolves as weaker task is replanned.
+
+        Episode 06: two tasks (t-rest-wrapper, t-grpc-wrapper) compete for
+        the same exclusive resource (r-api-gateway) with the same goal.
+        The weaker task should get REPLAN, then gets stopped.
+        """
+        return [
+            Mutation(
+                timestep=0,
+                description='Initial state: two tasks contending for shared resource',
+                changes=[],
+                expected_verdicts={},
+            ),
+            Mutation(
+                timestep=1,
+                description='Weaker task (grpc-wrapper) replanned/stopped',
+                changes=[
+                    ('tasks', 't-grpc-wrapper', 'status', 'stopped'),
+                ],
+                new_frozen_at=self._advance_frozen_at(12.0),
+                expected_verdicts={},
+            ),
+            Mutation(
+                timestep=2,
+                description='REST wrapper proceeds unopposed, goal achieved',
+                changes=[
+                    ('tasks', 't-rest-wrapper', 'status', 'completed'),
+                    ('goals', 'g-unified-api', 'status', 'achieved'),
+                ],
+                new_frozen_at=self._advance_frozen_at(48.0),
+                expected_verdicts={},
+            ),
+        ]

@@ -34,6 +34,10 @@ EPISODES = [
     ('episode_05_control_justified_long_running.json', {
         't-run-benchmark': 'CONTINUE',
     }),
+    ('episode_06_conflict_replan.json', {
+        't-rest-wrapper': 'ESCALATE',
+        't-grpc-wrapper': 'ESCALATE',
+    }),
 ]
 
 

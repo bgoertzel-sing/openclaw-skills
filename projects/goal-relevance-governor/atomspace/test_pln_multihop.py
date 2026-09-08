@@ -18,6 +18,7 @@ ALL_EPISODES = [
     'episode_03_premature_hardening.json',
     'episode_04_overengineered_repair.json',
     'episode_05_control_justified_long_running.json',
+    'episode_06_conflict_replan.json',
 ]
 
 

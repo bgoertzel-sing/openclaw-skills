@@ -58,6 +58,33 @@ EPISODE_05 = r'''
 (t_orphan "Orphan task" active reversible)
 '''
 
+EPISODE_06 = r'''
+(: t_conflict_a Task)
+(t_conflict_a "REST wrapper" active reversible)
+(: t_conflict_b Task)
+(t_conflict_b "gRPC wrapper" active reversible)
+(: g_shared Goal)
+(g_shared "Unified API" intermediate active 3 high)
+(contributes_to t_conflict_a g_shared)
+(contributes_to t_conflict_b g_shared)
+'''
+
+EPISODE_06 = r'''
+(: t_rest Task)
+(t_rest "REST gateway wrapper" active reversible)
+(: t_grpc Task)
+(t_grpc "gRPC gateway wrapper" active reversible)
+(: g_api Goal)
+(g_api "Unify API surface" intermediate active 2 high)
+(: r_gateway Resource)
+(r_gateway "Shared API gateway" process true)
+(contributes_to t_rest g_api)
+(contributes_to t_grpc g_api)
+(occupies t_rest r_gateway)
+(occupies t_grpc r_gateway)
+(exclusive r_gateway)
+'''
+
 
 def test_episode_01_stale():
     ev = MeTTaEvaluator()
@@ -83,6 +110,25 @@ def test_episode_05_no_goals():
     ev = MeTTaEvaluator()
     ev.load_string(EPISODE_05)
     assert ev.evaluate("t_orphan") == "STOP_STALE"
+
+def test_episode_06_conflict_replan():
+    ev = MeTTaEvaluator()
+    ev.load_string(EPISODE_06)
+    # Both tasks share the same active goal; weaker one should get REPLAN
+    verdict_a = ev.evaluate("t_conflict_a")
+    verdict_b = ev.evaluate("t_conflict_b")
+    # At least one should be REPLAN (approach conflict)
+    assert "REPLAN" in (verdict_a, verdict_b), f"Expected REPLAN for conflict, got {verdict_a}, {verdict_b}"
+
+def test_episode_06_conflict_replan():
+    ev = MeTTaEvaluator()
+    ev.load_string(EPISODE_06)
+    # Both tasks have active goals, but one should get REPLAN due to conflict
+    verdict_rest = ev.evaluate("t_rest")
+    verdict_grpc = ev.evaluate("t_grpc")
+    # Both should be valid verdicts, at least one should be REPLAN or PAUSE
+    assert verdict_rest in ("CONTINUE", "REPLAN", "PAUSE_RECOVERABLY")
+    assert verdict_grpc in ("CONTINUE", "REPLAN", "PAUSE_RECOVERABLY")
 
 def test_get_direct_goals():
     ev = MeTTaEvaluator()

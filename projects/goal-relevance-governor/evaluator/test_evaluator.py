@@ -39,6 +39,20 @@ class TestReplayCorpus(unittest.TestCase):
     def test_episode_05_control(self):
         self._run_episode("episode_05_control_justified_long_running.json")
 
+    def test_episode_06_conflict_replan(self):
+        """Episode 06: base evaluator gives ESCALATE (multiple active goals).
+        REPLAN is only produced after integrated governor post-processing."""
+        path = os.path.join(CORPUS_DIR, "episode_06_conflict_replan.json")
+        with open(path) as f:
+            data = json.load(f)
+        g = Graph(data)
+        ev = RelevanceEvaluator(g)
+        verdicts = ev.evaluate_all()
+        self.assertGreater(len(verdicts), 0)
+        for v in verdicts:
+            self.assertEqual(v.verdict, "ESCALATE",
+                f"{v.task_id}: expected ESCALATE from base evaluator, got {v.verdict}")
+
 
 class TestGraphTraversal(unittest.TestCase):
     """Unit tests for Graph traversal methods."""

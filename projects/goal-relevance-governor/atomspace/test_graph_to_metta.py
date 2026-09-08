@@ -123,6 +123,7 @@ def test_all_5_episodes_generate_valid_metta():
         "episode_03_premature_hardening.json",
         "episode_04_overengineered_repair.json",
         "episode_05_control_justified_long_running.json",
+        "episode_06_conflict_replan.json",
     ]
     for ep in episodes:
         data = load_episode(ep)

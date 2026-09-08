@@ -19,6 +19,7 @@ EPISODES = [
     ('episode_03_premature_hardening.json', {'t-hardening-guards': 'DEFER'}),
     ('episode_04_overengineered_repair.json', {'t-process-inspector': 'REPLAN', 't-launch-wrappers': 'REPLAN'}),
     ('episode_05_control_justified_long_running.json', {'t-run-benchmark': 'CONTINUE'}),
+    ('episode_06_conflict_replan.json', {'t-rest-wrapper': 'ESCALATE', 't-grpc-wrapper': 'ESCALATE'}),
 ]
 
 def load_episode(fname):

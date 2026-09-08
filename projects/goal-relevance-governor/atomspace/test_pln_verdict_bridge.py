@@ -24,7 +24,8 @@ class TestPLNVerdictBridge(unittest.TestCase):
                       'episode_02_chem_blocking.json',
                       'episode_03_premature_hardening.json',
                       'episode_04_overengineered_repair.json',
-                      'episode_05_control_justified_long_running.json']:
+                      'episode_05_control_justified_long_running.json',
+                      'episode_06_conflict_replan.json']:
             with self.subTest(episode=fname):
                 data = load_episode(fname)
                 bridge = PLNVerdictBridge(data)
@@ -123,7 +124,8 @@ class TestPLNVerdictBridge(unittest.TestCase):
                       'episode_02_chem_blocking.json',
                       'episode_03_premature_hardening.json',
                       'episode_04_overengineered_repair.json',
-                      'episode_05_control_justified_long_running.json']:
+                      'episode_05_control_justified_long_running.json',
+                      'episode_06_conflict_replan.json']:
             with self.subTest(episode=fname):
                 data = load_episode(fname)
                 bridge = PLNVerdictBridge(data)

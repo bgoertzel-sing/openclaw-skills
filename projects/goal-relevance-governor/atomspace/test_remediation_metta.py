@@ -53,6 +53,7 @@ class TestMettaRemediationConsistency(unittest.TestCase):
             ('episode_03_premature_hardening.json', 'DEFER'),
             ('episode_04_overengineered_repair.json', 'REPLAN'),
             ('episode_05_control_justified_long_running.json', 'CONTINUE'),
+            ('episode_06_conflict_replan.json', 'REPLAN'),
         ]
 
     def test_metta_rules_file_exists(self):
