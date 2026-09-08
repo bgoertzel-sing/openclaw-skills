@@ -14,7 +14,7 @@ def run_corpus(corpus_dir):
     all_pass = True
     for ep_path in episodes:
         data = json.loads(ep_path.read_text())
-        expected = data.get("expected_verdict", "")
+        expected = data.get("base_expected_verdict", data.get("expected_verdict", ""))
         g = Graph(data)
         ev = RelevanceEvaluator(g)
         verdicts = ev.evaluate_all()
