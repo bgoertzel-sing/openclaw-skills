@@ -237,11 +237,28 @@ class RelevanceEvaluator:
             [],
             generated_at=self.now)
     def evaluate_all(self) -> list:
-        """Evaluate all active tasks and return a list of Verdicts."""
+        """Evaluate all active and blocked tasks and return a list of Verdicts.
+        
+        Active tasks get their normal verdict evaluation.
+        Blocked tasks (status == 'blocked') get an explicit BLOCKED verdict
+        so they appear in governor recommendations and can be tracked.
+        """
         verdicts = []
         for node in self.graph.nodes.values():
-            if node.get("kind") == "task" and normalize_status(node.get("status", "active")) == "active":
+            if node.get("kind") != "task":
+                continue
+            status = normalize_status(node.get("status", "active"))
+            if status == "active":
                 verdicts.append(self.evaluate_task(node))
+            elif status == "blocked":
+                verdicts.append(Verdict(
+                    node["id"],
+                    BLOCKED,
+                    ["Task status is blocked"],
+                    ["status=blocked"],
+                    ["Resolve blocking issue or replan around it"],
+                    generated_at=self.now,
+                ))
         return verdicts
 
 
