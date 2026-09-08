@@ -37,6 +37,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from pln_propagation import PLNPropagator, TruthValue
 from datetime import datetime, timezone
+from pln_propagation import normalize_status
 
 # Staleness settings (mirrors pln_verdict_bridge.py)
 STALENESS_THRESHOLD_DAYS = 14
@@ -162,7 +163,7 @@ class ECANAttentionAllocator:
                     pass  # Unparseable timestamp, skip staleness
 
             # VLTI for terminal/achieved goals (rent-free)
-            vlti = node.get("status") in ("achieved", "terminal", "abandoned")
+            vlti = normalize_status(node.get("status", "active")) in ("achieved", "cancelled")
 
             self.attention[nid] = AttentionValue(
                 node_id=nid,

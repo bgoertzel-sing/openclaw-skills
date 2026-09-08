@@ -16,6 +16,7 @@ Rule cascade mirrors relevance_evaluator.py (pure Python) exactly:
 from __future__ import annotations
 import sys
 from pathlib import Path
+from pln_propagation import normalize_status
 
 try:
     from hyperon import MeTTa
@@ -157,7 +158,7 @@ class MeTTaEvaluator:
             return "STOP_STALE"
 
         active_goals = [g for g in direct_goals
-                        if self.get_goal_status(g) == "active"]
+                        if normalize_status(self.get_goal_status(g) or "active") == "active"]
 
         # Rule 2: BLOCKED
         blockers = self.get_blocking_constraints(task_id)
@@ -178,7 +179,7 @@ class MeTTaEvaluator:
                 holder_goals = self.get_direct_goals(holder_id)
                 for hg_id in holder_goals:
                     hg = self.get_goal_info(hg_id)
-                    if not hg or hg["status"] != "active":
+                    if not hg or normalize_status(hg.get("status", "active")) != "active":
                         continue
                     for tg_id in active_goals:
                         tg = self.get_goal_info(tg_id)
@@ -205,7 +206,7 @@ class MeTTaEvaluator:
         # Rule 5: REPLAN
         for g in direct_goals:
             status = self.get_goal_status(g)
-            if status == "superseded":
+            if normalize_status(status or "active") == "superseded":
                 superseding = self.get_superseding_goals(g)
                 if superseding:
                     return "REPLAN"
@@ -214,7 +215,7 @@ class MeTTaEvaluator:
         if active_goals and len(active_goals) > 1:
             has_results = any(self.has_results_for_goal(g) for g in active_goals)
             if not has_results:
-                if task_info and task_info["status"] == "active":
+                if task_info and normalize_status(task_info.get("status", "active")) == "active":
                     return "ESCALATE"
 
         # Rule 7: CONTINUE

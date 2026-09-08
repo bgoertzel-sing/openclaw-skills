@@ -8,6 +8,7 @@ truth values (strength, confidence) for integration with OpenCog AtomSpace.
 from __future__ import annotations
 from dataclasses import dataclass
 import json
+from pln_propagation import normalize_status
 
 
 @dataclass
@@ -86,21 +87,21 @@ def graph_to_pln_atoms(graph):
         atoms.append({
             "atom_type": "ConceptNode",
             "name": goal["id"],
-            "truth": status_to_truth(goal.get("status", "unknown")).to_dict(),
+            "truth": status_to_truth(normalize_status(goal.get("status", "active"))).to_dict(),
             "outgoing": [],
         })
     for task in graph.get("tasks", []):
         atoms.append({
             "atom_type": "ConceptNode",
             "name": task["id"],
-            "truth": status_to_truth(task.get("status", "active")).to_dict(),
+            "truth": status_to_truth(normalize_status(task.get("status", "active"))).to_dict(),
             "outgoing": [],
         })
     for res in graph.get("resources", []) + graph.get("constraints", []):
         atoms.append({
             "atom_type": "ConceptNode",
             "name": res["id"],
-            "truth": status_to_truth(res.get("status", "unknown")).to_dict(),
+            "truth": status_to_truth(normalize_status(res.get("status", "active"))).to_dict(),
             "outgoing": [],
         })
     for edge in graph.get("edges", []):
@@ -139,7 +140,7 @@ def compute_task_relevance(graph, task_id):
         goal = goals_by_id.get(edge["to"])
         if not goal:
             continue
-        goal_tv = status_to_truth(goal.get("status", "unknown"))
+        goal_tv = status_to_truth(normalize_status(goal.get("status", "active")))
         edge_tv = edge_to_truth("contributes_to")
         goal_relevance = pln_and(goal_tv, edge_tv)
         combined = pln_or(combined, goal_relevance)

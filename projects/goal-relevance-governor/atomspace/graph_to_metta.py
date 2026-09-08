@@ -33,6 +33,7 @@ from __future__ import annotations
 import json
 import re
 from typing import Any
+from pln_propagation import normalize_status
 
 
 # --- Helpers ---
@@ -64,7 +65,7 @@ def encode_goal(node: dict) -> str:
     gid = _atom_id(node["id"])
     title = node.get("title", "")
     level = node.get("level", "intermediate")
-    status = node.get("status", "active")
+    status = normalize_status(node.get("status", "active"))
     rank = node.get("priority", {}).get("rank", 999)
     urgency = node.get("priority", {}).get("urgency", "medium")
     return (
@@ -88,7 +89,7 @@ def encode_project(node: dict) -> str:
 def encode_task(node: dict) -> str:
     tid = _atom_id(node["id"])
     title = node.get("title", "")
-    status = node.get("status", "active")
+    status = normalize_status(node.get("status", "active"))
     rev = node.get("reversibility", "reversible")
     return (
         f'(: t_{tid} Task)\n'

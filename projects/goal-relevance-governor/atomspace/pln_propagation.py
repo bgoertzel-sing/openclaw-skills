@@ -109,6 +109,62 @@ STATUS_CONFIDENCE = {
     "completed": 0.95,
 }
 
+# Aliases for common real-world status strings → canonical status.
+# This prevents silent dropping of tasks/goals whose status field uses
+# non-canonical conventions (e.g. "in_progress", "pending", "done").
+STATUS_ALIASES = {
+    # active canonical group
+    "in_progress": "active",
+    "in-progress": "active",
+    "inprogress": "active",
+    "pending": "active",
+    "queued": "active",
+    "running": "active",
+    "waiting": "active",
+    "ready": "active",
+    "started": "active",
+    "open": "active",
+    "wip": "active",
+    # completed canonical group
+    "done": "completed",
+    "finished": "completed",
+    "succeeded": "completed",
+    "success": "completed",
+    "resolved": "completed",
+    "closed": "completed",
+    # achieved canonical group (primarily goals)
+    "met": "achieved",
+    "reached": "achieved",
+    # blocked canonical group
+    "stalled": "blocked",
+    "stuck": "blocked",
+    "paused": "blocked",
+    "suspended": "blocked",
+    # cancelled canonical group
+    "abandoned": "cancelled",
+    "dropped": "cancelled",
+    "rejected": "cancelled",
+    # superseded canonical group
+    "deprecated": "superseded",
+    "obsolete": "superseded",
+    "replaced": "superseded",
+    # failed — not a canonical status, but common; map to cancelled
+    "failed": "cancelled",
+    "error": "cancelled",
+}
+
+
+def normalize_status(raw) -> str:
+    """Normalize a status string to a canonical status.
+
+    Handles case-insensitivity, spaces/hyphens, and common aliases.
+    Returns 'active' for None/missing values.
+    """
+    if raw is None:
+        return "active"
+    s = str(raw).strip().lower().replace(" ", "_").replace("-", "_")
+    return STATUS_ALIASES.get(s, s)
+
 PRIORITY_URGENCY = {
     "urgent": 0.95,
     "high": 0.8,
@@ -119,7 +175,7 @@ PRIORITY_URGENCY = {
 
 def _initial_tv(node: dict) -> TruthValue:
     """Assign an initial truth value based on node properties."""
-    status = node.get("status", "active")
+    status = normalize_status(node.get("status", "active"))
     strength = STATUS_STRENGTH.get(status, 0.5)
     confidence = STATUS_CONFIDENCE.get(status, 0.5)
 
@@ -265,7 +321,7 @@ class PLNPropagator:
         node = self.nodes.get(goal_id)
         if not node:
             return False
-        return node.get("status", "active") == "active"
+        return normalize_status(node.get("status", "active")) == "active"
 
     def propagate_downward(self) -> dict[str, float]:
         relevance: dict[str, float] = {}
@@ -289,7 +345,7 @@ class PLNPropagator:
                 if not gn or gn.get("kind") != "goal":
                     continue
                 edge_conf = _edge_confidence(edge)
-                status = gn.get("status", "active")
+                status = normalize_status(gn.get("status", "active"))
 
                 if status == "active":
                     has_active = True
@@ -332,15 +388,15 @@ class PLNPropagator:
                     if e2["from"] == nid:
                         continue
                     on = self.nodes.get(e2["from"])
-                    if not on or on.get("status") != "active":
+                    if not on or normalize_status(on.get("status", "active")) != "active":
                         continue
                     for og in self._outgoing(e2["from"], "contributes_to"):
                         ogn = self.nodes.get(og["to"])
-                        if ogn and ogn.get("kind") == "goal" and ogn.get("status") == "active":
+                        if ogn and ogn.get("kind") == "goal" and normalize_status(ogn.get("status") or "active") == "active":
                             orank = ogn.get("priority", {}).get("rank", 999)
                             for tg in self._outgoing(nid, "contributes_to"):
                                 tgn = self.nodes.get(tg["to"])
-                                if tgn and tgn.get("kind") == "goal" and tgn.get("status") == "active":
+                                if tgn and tgn.get("kind") == "goal" and normalize_status(tgn.get("status") or "active") == "active":
                                     trank = tgn.get("priority", {}).get("rank", 999)
                                     if orank < trank:
                                         has_res_conflict = True
@@ -412,7 +468,7 @@ class PLNPropagator:
 
             # Rule 1: STOP_STALE
             if direct_goals and all(
-                self.nodes.get(g, {}).get("status") in ("achieved", "cancelled")
+                normalize_status(self.nodes.get(g, {}).get("status", "active")) in ("achieved", "cancelled")
                 for g in direct_goals
             ):
                 suggested = "STOP_STALE"
@@ -434,16 +490,16 @@ class PLNPropagator:
                         if other_id == nid:
                             continue
                         other_node = self.nodes.get(other_id)
-                        if not other_node or other_node.get("status") != "active":
+                        if not other_node or normalize_status(other_node.get("status", "active")) != "active":
                             continue
                         other_goals = self._get_transitive_goals(other_id)
                         for og in other_goals:
                             ogn = self.nodes.get(og)
-                            if not ogn or ogn.get("status") != "active":
+                            if not ogn or normalize_status(ogn.get("status", "active")) != "active":
                                 continue
                             for tg in active_transitive:
                                 tgn = self.nodes.get(tg)
-                                if not tgn or tgn.get("status") != "active":
+                                if not tgn or normalize_status(tgn.get("status", "active")) != "active":
                                     continue
                                 orank = ogn.get("priority", {}).get("rank", 999)
                                 trank = tgn.get("priority", {}).get("rank", 999)
@@ -472,7 +528,7 @@ class PLNPropagator:
             if suggested == "CONTINUE":
                 for g in transitive_goals:
                     gn = self.nodes.get(g)
-                    if gn and gn.get("status") == "superseded":
+                    if gn and normalize_status(gn.get("status") or "active") == "superseded":
                         superseding = self._get_superseding_goals(g)
                         if superseding:
                             suggested = "REPLAN"

@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 from datetime import datetime, timezone
+from pln_propagation import normalize_status
 
 CONTINUE = "CONTINUE"
 ACCELERATE = "ACCELERATE"
@@ -85,7 +86,7 @@ class Graph:
         results = []
         for e in self.incoming(resource_id, "occupies"):
             t = self.get(e["from"])
-            if t and t.get("status") == "active":
+            if t and normalize_status(t.get("status", "active")) == "active":
                 results.append(t)
         return results
 
@@ -130,7 +131,7 @@ class RelevanceEvaluator:
                 ["Link task to an active goal or close it"],
                 generated_at=self.now)
 
-        all_direct_inactive = all(g.get("status") in ("achieved", "cancelled") for g in direct_goals)
+        all_direct_inactive = all(normalize_status(g.get("status", "active")) in ("achieved", "cancelled") for g in direct_goals)
         if all_direct_inactive:
             return Verdict(tid, STOP_STALE,
                 ["All direct parent goals are achieved or cancelled"],
@@ -140,7 +141,7 @@ class RelevanceEvaluator:
 
         # Get transitive goals for remaining rules
         goals = self.graph.get_active_goals_for(tid)
-        active_goals = [g for g in goals if g.get("status") == "active"]
+        active_goals = [g for g in goals if normalize_status(g.get("status", "active")) == "active"]
 
         # Rule 2: BLOCKED if blocked by constraint
         blockers = self.graph.get_blocking_constraints(tid)
@@ -162,7 +163,7 @@ class RelevanceEvaluator:
                     continue
                 holder_goals = self.graph.get_active_goals_for(holder["id"])
                 for hg in holder_goals:
-                    if hg.get("status") != "active":
+                    if normalize_status(hg.get("status", "active")) != "active":
                         continue
                     for tg in active_goals:
                         hg_rank = hg.get("priority", {}).get("rank", 999)
@@ -192,7 +193,7 @@ class RelevanceEvaluator:
 
         # Rule 5: REPLAN if parent goal has been superseded
         for g in goals:
-            if g.get("status") == "superseded":
+            if normalize_status(g.get("status", "active")) == "superseded":
                 superseding = self.graph.get_superseding_goals(g["id"])
                 if superseding:
                     return Verdict(tid, REPLAN,
@@ -208,7 +209,7 @@ class RelevanceEvaluator:
                 if self.graph.incoming(g["id"], "provides_evidence_for"):
                     has_results = True
                     break
-            if not has_results and task.get("status") == "active":
+            if not has_results and normalize_status(task.get("status", "active")) == "active":
                 return Verdict(tid, ESCALATE,
                     ["Task has multiple active goals and no recorded results to disambiguate priority"],
                     [str(len(active_goals)) + " active goals, no provides_evidence_for edges"],
@@ -224,7 +225,7 @@ class RelevanceEvaluator:
     def evaluate_all(self) -> list:
         verdicts = []
         for node in self.graph.nodes.values():
-            if node.get("kind") == "task" and node.get("status") == "active":
+            if node.get("kind") == "task" and normalize_status(node.get("status", "active")) == "active":
                 verdicts.append(self.evaluate_task(node))
         return verdicts
 

@@ -23,6 +23,7 @@ from collections import defaultdict
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from pln_propagation import TruthValue, _edge_confidence, _initial_tv
+from pln_propagation import normalize_status
 
 
 @dataclass
@@ -222,7 +223,7 @@ class ChainMiner:
         """Find chains for all active tasks in the graph."""
         results = {}
         for nid, node in self.nodes.items():
-            if node.get('kind') == 'task' and node.get('status') == 'active':
+            if node.get('kind') == 'task' and normalize_status(node.get('status', 'active')) == 'active':
                 results[nid] = self.find_chains(nid, max_depth=max_depth)
         return results
 
