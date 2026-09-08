@@ -5,7 +5,6 @@ Maps GRG graph nodes and edges to PLN (Probabilistic Logic Networks)
 truth values (strength, confidence) for integration with OpenCog AtomSpace.
 """
 
-from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pln_propagation import normalize_status

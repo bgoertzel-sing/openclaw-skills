@@ -29,10 +29,8 @@ Verdict atoms:
   (verdict {task_id} {VERDICT})
 """
 
-from __future__ import annotations
 import json
 import re
-from typing import Any
 from pln_propagation import normalize_status
 
 

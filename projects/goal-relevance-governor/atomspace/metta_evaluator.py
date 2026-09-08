@@ -13,7 +13,6 @@ Rule cascade mirrors relevance_evaluator.py (pure Python) exactly:
   7. CONTINUE          - healthy
 """
 
-from __future__ import annotations
 import sys
 from pathlib import Path
 from pln_propagation import normalize_status

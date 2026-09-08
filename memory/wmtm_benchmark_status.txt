@@ -11,14 +11,13 @@ TEST VERIFICATION (2026-09-08):
 - Iter-port: 12/12 tests pass
 - Petta-memory: 14/14 tests pass
 - Conversation governor: 17/17 tests pass (E1a active egress)
-- Goal Relevance Governor: 200/200 tests pass, 170 subtests (1.40s)
+- Goal Relevance Governor: 298/298 tests pass, 215 subtests (2.33s)
 
 GIT STATUS:
 - iter-port repos: 68 commits on master, 67 unpushed
-- Conversation governor: E1a changes uncommitted (core.js +53, index.js +46, test +62 lines)
-- Goal Relevance Governor: committed + pushed (4 new commits this session)
+- Goal Relevance Governor: latest commit ac739ee (coverage closure pass 2)
 
-GOAL RELEVANCE GOVERNOR (2026-09-08) — v0.2.2:
+GOAL RELEVANCE GOVERNOR (2026-09-08) — v0.2.1:
 - Phase 0 COMPLETE: schema v0.1 + evaluator + 6-episode replay corpus
 - Evaluator: 7 verdict rules (STOP_STALE, BLOCKED, PAUSE_RECOVERABLY, DEFER, REPLAN, ESCALATE, CONTINUE)
 - Replay corpus: 6/6 episodes pass
@@ -26,11 +25,9 @@ GOAL RELEVANCE GOVERNOR (2026-09-08) — v0.2.2:
 - PLN Truth-Value Mapping v0.1: 13/13 tests pass
 - PLN Evidence Propagation: 18/18 tests pass (pln_propagation.py)
 - Episode 06: conflict-to-verdict post-processing — weaker task → REPLAN when shared exclusive resource + same goals
-- ECAN Staleness LTI Decay: nodes >14 days get LTI×0.5 (commit 4db9035)
-- LTI_FLOOR eviction threshold: LTI < 5.0 → eviction candidate (commit 4b78088)
-- Pipeline passes `now` to ECAN for staleness activation (commit af79d61)
-- Full pipeline verified on all 6 episodes with eviction flags working
-- Latest commits: 4db9035, af79d61, 4b78088, af5662a (all pushed)
-- Next: Dynamic LTI_FLOOR based on memory pressure, or deeper PLN/Atomspace integration, or await Ben approval for live enforcement
+- Coverage closure pass 2 (ac739ee): 35 new tests for encode_project/resource/result/constraint, Graph.outgoing/incoming/get_occupied_resources, ReasoningExplainer.explain_task, run_replay, TruthValue.from_dict
+- ALL 181 public functions now have test coverage (0 untested)
+- Latest commit: ac739ee
+- Next: Deeper PLN/Atomspace integration (exploratory), or await Ben approval for live enforcement
 
-SESSION STATE: All systems healthy. 4 commits pushed this session. Send channel has persistent ChannelContractError. Awaiting user input.
+SESSION STATE: All systems healthy. Coverage closure pass 2 complete. 298 tests, 215 subtests, 0 untested public functions. Awaiting user input.

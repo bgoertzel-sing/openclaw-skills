@@ -13,10 +13,8 @@ Each explanation follows the pattern:
   4. ACTION: What to do next
 """
 
-from __future__ import annotations
 import json
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))

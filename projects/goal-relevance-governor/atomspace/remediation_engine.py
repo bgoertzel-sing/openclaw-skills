@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Remediation Engine v0.1 - generates structured action plans for each verdict."""
-from __future__ import annotations
 from dataclasses import dataclass, field
-import json
 
 @dataclass
 class RemediationStep:

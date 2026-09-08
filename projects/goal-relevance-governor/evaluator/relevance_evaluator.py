@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Goal Relevance Governor - Read-Only Relevance Evaluator v0.1."""
 
-from __future__ import annotations
 import json
 from dataclasses import dataclass, field, asdict
 from typing import Optional

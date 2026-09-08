@@ -41,11 +41,8 @@ This is exploratory — not a production enforcement layer.  It demonstrates
 how PLN continuous reasoning can enhance discrete rule-based decisions.
 """
 
-from __future__ import annotations
 import json
-import math
 from dataclasses import dataclass, field, asdict
-from typing import Optional
 from datetime import datetime, timezone, timedelta
 
 import sys
@@ -55,7 +52,6 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from pln_propagation import PLNPropagator, TruthValue
 from relevance_evaluator import Graph, RelevanceEvaluator
-from pln_truth_mapping import verdict_to_truth
 
 
 # ─── Configuration ───────────────────────────────────────────────────

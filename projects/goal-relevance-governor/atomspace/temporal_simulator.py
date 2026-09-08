@@ -6,11 +6,8 @@ Simulates task/goal/resource state transitions over discrete timesteps
 and verifies the governor produces correct verdicts at each step.
 """
 
-from __future__ import annotations
 import copy
-import json
 from dataclasses import dataclass, field
-from typing import Optional, Any
 from datetime import datetime, timedelta
 
 import sys, os

@@ -19,7 +19,6 @@ The pipeline produces a single JSON document that combines:
   4. Executive summary with top-priority tasks and recommended actions
 """
 
-from __future__ import annotations
 import json
 from dataclasses import dataclass, field, asdict
 from typing import Optional
@@ -30,7 +29,7 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'evaluator'))
 
-from pln_propagation import PLNPropagator, TruthValue
+from pln_propagation import PLNPropagator
 from ecan_attention import ECANAttentionAllocator
 from pln_verdict_bridge import PLNVerdictBridge
 from pln_multihop import MultiHopEvaluator
