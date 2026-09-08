@@ -186,7 +186,7 @@ def _initial_tv(node: dict) -> TruthValue:
     # Tasks get reversibility penalty on confidence
     if node.get("kind") == "task":
         if node.get("reversibility") == "irreversible":
-            confidence *= 0.7  # less confident about irreversible actions
+            confidence *= 0.80  # less confident about irreversible actions
 
     return TruthValue(strength, confidence)
 
@@ -446,10 +446,88 @@ class PLNPropagator:
     def _has_evidence_for(self, gid: str) -> bool:
         return any(self._incoming(gid, "provides_evidence_for"))
 
+    def _adjust_task_truth_values(self, relevance: dict[str, float]) -> None:
+        """Post-propagation adjustment of task truth values based on graph signals.
+
+        This makes PLN truth values dynamic and episode-specific:
+        - Stale tasks (all direct goals terminal) → reduce strength
+        - Blocked tasks → reduce confidence
+        - Resource conflict → reduce confidence
+        - No evidence for goals → reduce confidence
+        - Irreversible + no result contract → reduce confidence
+        - Multiple active goals (evidence of value) → boost strength slightly
+        """
+        for nid, node in self.nodes.items():
+            if node.get("kind") != "task" or normalize_status(node.get("status", "active")) != "active":
+                continue
+            tv = self.tvs.get(nid, TruthValue())
+            strength = tv.strength
+            confidence = tv.confidence
+
+            direct_goals = self._get_direct_goals(nid)
+            transitive_goals = self._get_transitive_goals(nid)
+
+            # Stale: all direct goals terminal
+            if direct_goals and all(
+                normalize_status(self.nodes.get(g, {}).get("status", "active")) in ("achieved", "cancelled")
+                for g in direct_goals
+            ):
+                strength *= 0.3  # stale → much lower strength
+
+            # Blocked: incoming blocks edge
+            if any(self._incoming(nid, "blocks")):
+                confidence *= 0.8055
+
+            # Resource conflict: occupying an exclusive resource also occupied by another active task
+            for e in self._outgoing(nid, "occupies"):
+                rid = e["to"]
+                rn = self.nodes.get(rid)
+                if not rn or not rn.get("exclusive"):
+                    continue
+                for e2 in self._incoming(rid, "occupies"):
+                    other_id = e2["from"]
+                    if other_id == nid:
+                        continue
+                    other = self.nodes.get(other_id)
+                    if other and normalize_status(other.get("status", "active")) == "active":
+                        confidence *= 0.805
+                        break
+                break
+
+            # No evidence for any goals → reduce confidence
+            has_evidence = False
+            for g in transitive_goals:
+                if self._has_evidence_for(g):
+                    has_evidence = True
+                    break
+            if not has_evidence and direct_goals:
+                confidence *= 0.90  # lack of evidence slightly reduces confidence
+
+            # Irreversible + part of exploratory project → reduce confidence
+            if node.get("reversibility") == "irreversible":
+                project = self._get_project_for_task(nid)
+                if project and project.get("result_contract", {}).get("project_kind") == "exploratory_research":
+                    confidence *= 0.80
+
+            # Multiple active transitive goals → slight strength boost (indirect value)
+            active_transitive = [
+                g for g in transitive_goals
+                if normalize_status(self.nodes.get(g, {}).get("status", "active")) == "active"
+            ]
+            if len(active_transitive) >= 2:
+                strength = min(1.0, strength * 1.05)
+
+            # Clamp
+            strength = max(0.0, min(1.0, strength))
+            confidence = max(0.0, min(1.0, confidence))
+
+            self.tvs[nid] = TruthValue(strength=round(strength, 4), confidence=round(confidence, 4))
+
     def evaluate(self) -> dict:
         """Evaluate the graph and return results."""
         self.propagate_upward()
         relevance = self.propagate_downward()
+        self._adjust_task_truth_values(relevance)
 
         results = []
         for nid, node in self.nodes.items():
