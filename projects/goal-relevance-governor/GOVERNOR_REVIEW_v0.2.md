@@ -70,6 +70,7 @@ Episode Data (JSON)
 | DEFER | episode_03 | irreversible_on_early_stage_research |
 | REPLAN | episode_04 | goal_superseded, superseded_by |
 | CONTINUE | episode_05 | healthy, high_relevance |
+| REPLAN | episode_06 | conflict (shared exclusive resource) |
 | BLOCKED | example_graph | (edge case) |
 
 ## Remediation Plans
@@ -130,7 +131,7 @@ Each verdict produces a structured plan with:
 python3 demo_pipeline.py --all
 ```
 
-Runs the full pipeline on all 5 episodes with formatted output showing:
+Runs the full pipeline on all 6 episodes with formatted output showing:
 1. Pipeline recommendations with verdicts and signals
 2. Remediation plans with prioritized steps
 3. Human-readable reasoning explanations

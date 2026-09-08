@@ -2,7 +2,7 @@
 """
 Goal Relevance Governor v0.2 — End-to-End Demo
 
-Runs the full pipeline on all 5 replay episodes:
+Runs the full pipeline on all 6 replay episodes:
   Episode Data → PLN → ECAN → Verdict → Multi-hop → Conflict → Explainer → Remediation → Temporal
 
 Usage:
