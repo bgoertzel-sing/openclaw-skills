@@ -1,0 +1,111 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-unified-api",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-rest-wrapper",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-grpc-wrapper",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "r-api-gateway",
+      "truth": {
+        "strength": 0.5,
+        "confidence": 0.5
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-rest-wrapper_to_g-unified-api",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-rest-wrapper",
+        "g-unified-api"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-grpc-wrapper_to_g-unified-api",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-grpc-wrapper",
+        "g-unified-api"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_g-unified-api_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "g-unified-api",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "occupies_t-rest-wrapper_to_r-api-gateway",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-rest-wrapper",
+        "r-api-gateway"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "occupies_t-grpc-wrapper_to_r-api-gateway",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-grpc-wrapper",
+        "r-api-gateway"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}
