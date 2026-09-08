@@ -126,3 +126,24 @@ class TestVerdictStructure(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestRunReplay:
+    """Tests for run_replay function."""
+
+    def test_run_replay_returns_bool(self):
+        from evaluator.replay_runner import run_replay
+        result = run_replay()
+        assert isinstance(result, bool)
+
+    def test_run_replay_all_pass(self):
+        from evaluator.replay_runner import run_replay
+        result = run_replay()
+        assert result is True  # All 6 episodes should match expected verdicts
+
+    def test_run_replay_verbose(self, capsys):
+        from evaluator.replay_runner import run_replay
+        result = run_replay(verbose=True)
+        captured = capsys.readouterr()
+        assert "episodes correct" in captured.out
+        assert result is True

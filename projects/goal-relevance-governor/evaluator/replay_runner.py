@@ -18,7 +18,7 @@ def run_replay(verbose=False):
         g = Graph(data)
         ev = RelevanceEvaluator(g)
         verdicts = ev.evaluate_all()
-        expected = data.get("expected_verdict", "?")
+        expected = data.get("base_expected_verdict", data.get("expected_verdict", "?"))
         v = verdicts[0]
         match = (v.verdict == expected)
         if not match:

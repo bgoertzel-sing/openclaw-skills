@@ -4,7 +4,7 @@
   "episode_title": "Conflict-driven replan: two tasks with contradictory approaches to the same shared resource and goal",
   "frozen_at": "2026-09-08T06:30:00Z",
   "expected_verdict": "REPLAN",
-  "narrative": "Two tasks target the same goal (unify API surface) via conflicting approaches — one wrapping agents behind a REST gateway, the other behind gRPC. Both occupy the shared API gateway resource, causing contention. The conflict detector should flag this as a resource conflict with shared goals. The weaker task (t-grpc-wrapper, lower STI) should get a REPLAN or PAUSE verdict.",
+  "narrative": "Two tasks target the same goal (unify API surface) via conflicting approaches \u2014 one wrapping agents behind a REST gateway, the other behind gRPC. Both occupy the shared API gateway resource, causing contention. The conflict detector should flag this as a resource conflict with shared goals. The weaker task (t-grpc-wrapper, lower STI) should get a REPLAN or PAUSE verdict.",
   "goals": [
     {
       "id": "g-unified-api",
@@ -12,7 +12,10 @@
       "title": "Unify API surface across all agent services",
       "level": "intermediate",
       "status": "active",
-      "priority": {"rank": 2, "urgency": "high"},
+      "priority": {
+        "rank": 2,
+        "urgency": "high"
+      },
       "source": "Ben Goertzel",
       "as_of": "2026-09-01T00:00:00Z"
     },
@@ -22,7 +25,10 @@
       "title": "Build and operate OmegaClaw persistent agent infrastructure",
       "level": "top",
       "status": "active",
-      "priority": {"rank": 1, "urgency": "high"},
+      "priority": {
+        "rank": 1,
+        "urgency": "high"
+      },
       "source": "Ben Goertzel",
       "as_of": "2026-08-14T00:00:00Z"
     }
@@ -94,5 +100,6 @@
       "relation": "occupies",
       "confidence": "high"
     }
-  ]
+  ],
+  "base_expected_verdict": "ESCALATE"
 }
