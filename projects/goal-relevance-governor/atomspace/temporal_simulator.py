@@ -73,13 +73,26 @@ class TemporalSimulator:
         self.episode_id = base_data.get('episode_id', 'unknown')
 
     def _apply_mutation(self, data: dict, mutation: Mutation) -> dict:
-        """Apply a mutation to a copy of the data."""
+        """Apply a mutation to a copy of the data.
+        
+        Supports dot-notation for nested fields, e.g. 'result_contract.maturity_stage'.
+        """
         data = copy.deepcopy(data)
         for node_type, node_id, field_name, new_value in mutation.changes:
             nodes = data.get(node_type, [])
             for node in nodes:
                 if node.get('id') == node_id:
-                    node[field_name] = new_value
+                    if '.' in field_name:
+                        # Nested field: traverse/create path
+                        parts = field_name.split('.')
+                        obj = node
+                        for part in parts[:-1]:
+                            if part not in obj or not isinstance(obj[part], dict):
+                                obj[part] = {}
+                            obj = obj[part]
+                        obj[parts[-1]] = new_value
+                    else:
+                        node[field_name] = new_value
                     break
         if mutation.new_frozen_at:
             data['frozen_at'] = mutation.new_frozen_at
@@ -165,7 +178,7 @@ class TemporalSimulator:
                 timestep=1,
                 description='Project stage advanced to implementation',
                 changes=[
-                    ('projects', 'p-omegaclaw', 'stage', 'implementation'),
+                    ('projects', 'p-research-infra', 'result_contract.maturity_stage', 'implementation'),
                 ],
                 new_frozen_at=self._advance_frozen_at(168.0),
                 expected_verdicts={},

@@ -85,7 +85,7 @@ class Graph:
         results = []
         for e in self.incoming(resource_id, "occupies"):
             t = self.get(e["from"])
-            if t:
+            if t and t.get("status") == "active":
                 results.append(t)
         return results
 
