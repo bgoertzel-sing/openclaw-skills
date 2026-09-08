@@ -48,6 +48,7 @@ STALENESS_LTI_DECAY = 0.5  # stale nodes get LTI * 0.5
 STI_INITIAL_SCALE = 100.0     # PLN relevance [0,1] -> STI [0, 100]
 LTI_INITIAL_SCALE = 100.0     # PLN confidence [0,1] -> LTI [0, 100]
 STI_FLOOR = 10.0              # Below this, node is a deferral candidate
+LTI_FLOOR = 5.0               # Below this LTI, stale nodes face eviction
 STI_DECAY = 0.95              # Per-cycle STI decay multiplier
 LTI_DECAY = 0.99              # Per-cycle LTI decay (slower)
 SPREAD_FACTOR = 0.15          # Fraction of STI spread to neighbors per cycle
@@ -229,7 +230,7 @@ class ECANAttentionAllocator:
 
         # 4. Update eviction candidates
         for nid, av in self.attention.items():
-            av.eviction_candidate = (av.sti < STI_FLOOR) and not av.vlti
+            av.eviction_candidate = (av.sti < STI_FLOOR or av.lti < LTI_FLOOR) and not av.vlti
 
         return total_rent, total_spread
 
