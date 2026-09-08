@@ -1,0 +1,30 @@
+{
+  "contract_version": "frame-oracle-v5-gate-1",
+  "created_utc": "2026-08-03T17:25:00Z",
+  "cases": [
+    {"case_id":"v5_capital_lyria_plain","expected":{"predicate":"capital_of","entity_a":"lyria","entity_b":"aurum","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_capital_vespera_possessive","expected":{"predicate":"capital_of","entity_a":"vespera","entity_b":"nacre","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_capital_orinth_negated","expected":{"predicate":"capital_of","entity_a":"orinth","entity_b":"bellweather","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v5_capital_meridia_possible","expected":{"predicate":"capital_of","entity_a":"meridia","entity_b":"solace","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v5_capital_switzerland_false","expected":{"predicate":"capital_of","entity_a":"switzerland","entity_b":"geneva","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_capital_switzerland_negated","expected":{"predicate":"capital_of","entity_a":"switzerland","entity_b":"bern","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v5_author_glass_orchard_passive","expected":{"predicate":"authored_by","entity_a":"glass orchard","entity_b":"imani vale","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_author_glass_orchard_negated","expected":{"predicate":"authored_by","entity_a":"glass orchard","entity_b":"imani vale","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v5_author_copper_rain_possible","expected":{"predicate":"authored_by","entity_a":"copper rain","entity_b":"taro lin","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v5_author_frankenstein_true","expected":{"predicate":"authored_by","entity_a":"frankenstein","entity_b":"mary shelley","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_author_frankenstein_false","expected":{"predicate":"authored_by","entity_a":"frankenstein","entity_b":"bram stoker","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_location_observatory_plain","expected":{"predicate":"located_in","entity_a":"glass observatory","entity_b":"meridian park","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_location_observatory_negated","expected":{"predicate":"located_in","entity_a":"glass observatory","entity_b":"meridian park","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v5_location_kiosk_possible","expected":{"predicate":"located_in","entity_a":"bronze kiosk","entity_b":"harbor square","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v5_location_eiffel_false","expected":{"predicate":"located_in","entity_a":"eiffel tower","entity_b":"rome","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_location_kiln_inverted","expected":{"predicate":"located_in","entity_a":"blue kiln","entity_b":"old mill","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_state_beacon_active","expected":{"predicate":"state","entity_a":"amber beacon","entity_b":"active","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v5_state_beacon_negated","expected":{"predicate":"state","entity_a":"amber beacon","entity_b":"active","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v5_state_hatch_possible","expected":{"predicate":"state","entity_a":"west hatch","entity_b":"sealed","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v5_state_hatch_possible_negated","expected":{"predicate":"state","entity_a":"west hatch","entity_b":"sealed","polarity":"negated","modality":"possible","abstain":false}},
+    {"case_id":"v5_unknown_question","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v5_unknown_two_propositions","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v5_unknown_fragment","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v5_unknown_outside_ontology","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v9-gate-1",
+  "opened": false,
+  "answer_file_sha256": "e4b3be28da545cd6e82f272c183da85e643c9804551dc4ab91bdcce0fd67e0b4",
+  "cases": [
+    {"case_id":"v9_capital_velmora_plain","sentence":"The capital of Velmora is Istren.","stratum":"capital"},
+    {"case_id":"v9_capital_olyra_plain","sentence":"Darsen serves as the capital of Olyra.","stratum":"capital"},
+    {"case_id":"v9_authorship_glass_tides","sentence":"Nalara composed the treatise 'Glass Tides'.","stratum":"authorship"},
+    {"case_id":"v9_authorship_ashen_compass","sentence":"'The Ashen Compass' was written by Corven.","stratum":"authorship"},
+    {"case_id":"v9_location_amber_observatory","sentence":"The amber observatory stands within Keld Province.","stratum":"location"},
+    {"case_id":"v9_state_cobalt_switch","sentence":"The cobalt switch is active.","stratum":"state"},
+    {"case_id":"v9_state_eastern_lattice","sentence":"The eastern lattice remains dormant.","stratum":"state"},
+    {"case_id":"v9_negation_veyra_capital","sentence":"The capital of Veyra is not Solmere.","stratum":"negation"},
+    {"case_id":"v9_negation_hollow_lanterns","sentence":"Teren did not write 'Hollow Lanterns'.","stratum":"negation"},
+    {"case_id":"v9_negation_silver_archive","sentence":"The silver archive is not located in Brann Ward.","stratum":"negation"},
+    {"case_id":"v9_negation_upper_resonator","sentence":"The upper resonator is not stable.","stratum":"negation"},
+    {"case_id":"v9_modality_arquen_capital","sentence":"The capital of Arquen may be Pell.","stratum":"modality"},
+    {"case_id":"v9_modality_winter_circuit","sentence":"'Winter Circuit' might have been authored by Liora.","stratum":"modality"},
+    {"case_id":"v9_modality_northern_vault","sentence":"The northern vault may be situated in Edrin County.","stratum":"modality"},
+    {"case_id":"v9_modality_quartz_relay","sentence":"The quartz relay could be offline.","stratum":"modality"},
+    {"case_id":"v9_modality_negation_garden_terminal","sentence":"The garden terminal might not be ready.","stratum":"modality_negation"},
+    {"case_id":"v9_abstention_conditional_bell","sentence":"If the western bell rings, the courier will depart.","stratum":"abstention"},
+    {"case_id":"v9_abstention_bronze_current","sentence":"Why did the bronze current reverse?","stratum":"abstention"},
+    {"case_id":"v9_abstention_disjunction_lenses","sentence":"Either the red lens or the blue lens is cracked.","stratum":"abstention"},
+    {"case_id":"v9_abstention_harbor_sensor","sentence":"Please calibrate the harbor sensor before noon.","stratum":"abstention"},
+    {"case_id":"v9_world_moon_capital","sentence":"The capital of the Moon is Selene Port.","stratum":"world_knowledge_trap"},
+    {"case_id":"v9_world_sun_location_negated","sentence":"The Sun is not located in Ember Bay.","stratum":"world_knowledge_trap"},
+    {"case_id":"v9_world_mars_capital","sentence":"The capital of Mars is Auric Haven.","stratum":"world_knowledge_trap"},
+    {"case_id":"v9_world_jupiter_location","sentence":"Jupiter is located in the Lumen District.","stratum":"world_knowledge_trap"}
+  ]
+}

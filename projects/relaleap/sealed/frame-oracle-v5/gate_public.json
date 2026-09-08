@@ -1,0 +1,32 @@
+{
+  "contract_version": "frame-oracle-v5-gate-1",
+  "created_utc": "2026-08-03T17:25:00Z",
+  "opened": false,
+  "answer_file_sha256": "72097ca3560a8a14d3cd523a0b44d35fd02b084953983ac04526e3e3ed0ce51c",
+  "cases": [
+    {"case_id":"v5_capital_lyria_plain","sentence":"The stated capital of Lyria is Aurum.","stratum":"capital"},
+    {"case_id":"v5_capital_vespera_possessive","sentence":"Vespera's capital is Nacre.","stratum":"capital"},
+    {"case_id":"v5_capital_orinth_negated","sentence":"Orinth's capital is not Bellweather.","stratum":"negation"},
+    {"case_id":"v5_capital_meridia_possible","sentence":"Meridia's capital might be Solace.","stratum":"modality"},
+    {"case_id":"v5_capital_switzerland_false","sentence":"The capital of Switzerland is Geneva.","stratum":"world_knowledge_trap"},
+    {"case_id":"v5_capital_switzerland_negated","sentence":"Bern is not the capital of Switzerland.","stratum":"world_knowledge_trap"},
+    {"case_id":"v5_author_glass_orchard_passive","sentence":"The novella Glass Orchard was authored by Imani Vale.","stratum":"authorship"},
+    {"case_id":"v5_author_glass_orchard_negated","sentence":"Imani Vale did not author the novella Glass Orchard.","stratum":"negation"},
+    {"case_id":"v5_author_copper_rain_possible","sentence":"The essay Copper Rain may have been authored by Taro Lin.","stratum":"modality"},
+    {"case_id":"v5_author_frankenstein_true","sentence":"Mary Shelley wrote Frankenstein.","stratum":"authorship"},
+    {"case_id":"v5_author_frankenstein_false","sentence":"Frankenstein was authored by Bram Stoker.","stratum":"world_knowledge_trap"},
+    {"case_id":"v5_location_observatory_plain","sentence":"The glass observatory is located in Meridian Park.","stratum":"location"},
+    {"case_id":"v5_location_observatory_negated","sentence":"The glass observatory is not located in Meridian Park.","stratum":"negation"},
+    {"case_id":"v5_location_kiosk_possible","sentence":"The bronze kiosk could be located in Harbor Square.","stratum":"modality"},
+    {"case_id":"v5_location_eiffel_false","sentence":"The Eiffel Tower is located in Rome.","stratum":"world_knowledge_trap"},
+    {"case_id":"v5_location_kiln_inverted","sentence":"Inside the old mill stands the blue kiln.","stratum":"location"},
+    {"case_id":"v5_state_beacon_active","sentence":"The amber beacon is active.","stratum":"state"},
+    {"case_id":"v5_state_beacon_negated","sentence":"The amber beacon is not active.","stratum":"negation"},
+    {"case_id":"v5_state_hatch_possible","sentence":"The west hatch may be sealed.","stratum":"modality"},
+    {"case_id":"v5_state_hatch_possible_negated","sentence":"The west hatch is possibly not sealed.","stratum":"modality_negation"},
+    {"case_id":"v5_unknown_question","sentence":"Did the amber beacon become active?","stratum":"abstention"},
+    {"case_id":"v5_unknown_two_propositions","sentence":"The amber beacon is active, and the west hatch is sealed.","stratum":"abstention"},
+    {"case_id":"v5_unknown_fragment","sentence":"Quickly beyond the northern arch.","stratum":"abstention"},
+    {"case_id":"v5_unknown_outside_ontology","sentence":"The river feeds the reservoir.","stratum":"abstention"}
+  ]
+}

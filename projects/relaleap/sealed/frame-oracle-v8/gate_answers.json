@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v8-gate-1",
+  "cases": [
+    {"case_id":"v8_capital_orveth_plain","expected":{"predicate":"capital_of","entity_a":"orveth","entity_b":"lumaire","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_capital_avenfall_plain","expected":{"predicate":"capital_of","entity_a":"avenfall","entity_b":"soryn","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_author_solstice_loom_plain","expected":{"predicate":"authored_by","entity_a":"solstice loom","entity_b":"nera valen","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_author_rillwake_plain","expected":{"predicate":"authored_by","entity_a":"rillwake","entity_b":"daro quill","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_location_observatory_plain","expected":{"predicate":"located_in","entity_a":"brass observatory","entity_b":"ember hollow","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_state_copper_dial_plain","expected":{"predicate":"state","entity_a":"copper dial","entity_b":"steady","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_state_lower_beacon_plain","expected":{"predicate":"state","entity_a":"lower beacon","entity_b":"quiet","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_negation_kareth_capital","expected":{"predicate":"capital_of","entity_a":"velora","entity_b":"kareth","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v8_negation_dust_cartography","expected":{"predicate":"authored_by","entity_a":"dust cartography","entity_b":"iven marr","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v8_negation_glass_skiff","expected":{"predicate":"located_in","entity_a":"glass skiff","entity_b":"pelden reach","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v8_negation_west_relay","expected":{"predicate":"state","entity_a":"west relay","entity_b":"active","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v8_modality_meralis_capital","expected":{"predicate":"capital_of","entity_a":"thornmere","entity_b":"meralis","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v8_modality_river_index","expected":{"predicate":"authored_by","entity_a":"river index","entity_b":"sela dorn","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v8_modality_survey_pod","expected":{"predicate":"located_in","entity_a":"survey pod","entity_b":"cinder basin","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v8_modality_upper_turbine","expected":{"predicate":"state","entity_a":"upper turbine","entity_b":"dormant","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v8_modality_negation_quartz_capsule","expected":{"predicate":"located_in","entity_a":"quartz capsule","entity_b":"ravel station","polarity":"negated","modality":"possible","abstain":false}},
+    {"case_id":"v8_unknown_competing_ideas","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v8_unknown_exclamation","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v8_unknown_conditional_fragment","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v8_unknown_metalinguistic","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v8_world_moon_capital","expected":{"predicate":"capital_of","entity_a":"moon","entity_b":"alder quay","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_world_frankenstein_author","expected":{"predicate":"authored_by","entity_a":"frankenstein","entity_b":"ada lovelace","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_world_sahara_location","expected":{"predicate":"located_in","entity_a":"sahara","entity_b":"norway","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v8_world_sun_state_negated","expected":{"predicate":"state","entity_a":"sun","entity_b":"bright","polarity":"negated","modality":"asserted","abstain":false}}
+  ]
+}

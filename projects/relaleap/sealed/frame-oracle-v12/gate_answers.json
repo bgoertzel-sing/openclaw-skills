@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v12-gate-1",
+  "cases": [
+    {"case_id": "v12-direct-01", "expected": {"predicate": "capital_of", "entity_a": "Lyravia", "entity_b": "Noren", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-direct-02", "expected": {"predicate": "authored_by", "entity_a": "Glass Orchard", "entity_b": "Mira Quell", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-direct-03", "expected": {"predicate": "state", "entity_a": "signal lantern", "entity_b": "crimson", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-direct-04", "expected": {"predicate": "located_in", "entity_a": "archive", "entity_b": "western annex", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-01", "expected": {"predicate": "capital_of", "entity_a": "Vardesh", "entity_b": "Belcor", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-02", "expected": {"predicate": "authored_by", "entity_a": "Silent Harbor", "entity_b": "Ivo Renn", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-03", "expected": {"predicate": "state", "entity_a": "copper valve", "entity_b": "open", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-04", "expected": {"predicate": "located_in", "entity_a": "telescope", "entity_b": "north dome", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-05", "expected": {"predicate": "authored_by", "entity_a": "Winter Circuit", "entity_b": "Lysa Dorn", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-negation-06", "expected": {"predicate": "located_in", "entity_a": "lantern", "entity_b": "service tunnel", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-possible-01", "expected": {"predicate": "capital_of", "entity_a": "Orinth", "entity_b": "Selka", "polarity": "affirmed", "modality": "possible", "abstain": false}},
+    {"case_id": "v12-possible-02", "expected": {"predicate": "authored_by", "entity_a": "Ember Atlas", "entity_b": "Taren Voss", "polarity": "affirmed", "modality": "possible", "abstain": false}},
+    {"case_id": "v12-possible-03", "expected": {"predicate": "state", "entity_a": "backup rotor", "entity_b": "stable", "polarity": "affirmed", "modality": "possible", "abstain": false}},
+    {"case_id": "v12-possible-04", "expected": {"predicate": "located_in", "entity_a": "survey drone", "entity_b": "Hangar Seven", "polarity": "affirmed", "modality": "possible", "abstain": false}},
+    {"case_id": "v12-possible-05", "expected": {"predicate": "authored_by", "entity_a": "Copper Meridian", "entity_b": "Oren Vale", "polarity": "affirmed", "modality": "possible", "abstain": false}},
+    {"case_id": "v12-paraphrase-01", "expected": {"predicate": "capital_of", "entity_a": "Ardel", "entity_b": "Mera", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-abstention-01", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v12-abstention-02", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v12-abstention-03", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v12-abstention-04", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v12-world-trap-01", "expected": {"predicate": "capital_of", "entity_a": "Australia", "entity_b": "Sydney", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-world-trap-02", "expected": {"predicate": "authored_by", "entity_a": "Moby-Dick", "entity_b": "Virginia Woolf", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-world-trap-03", "expected": {"predicate": "located_in", "entity_a": "Mount Fuji", "entity_b": "Brazil", "polarity": "affirmed", "modality": "asserted", "abstain": false}},
+    {"case_id": "v12-world-trap-04", "expected": {"predicate": "state", "entity_a": "Moon", "entity_b": "square", "polarity": "affirmed", "modality": "asserted", "abstain": false}}
+  ]
+}

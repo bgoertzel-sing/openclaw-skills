@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v7-gate-1",
+  "cases": [
+    {"case_id": "v7_capital_lyrava_plain", "expected": {"predicate": "capital_of", "entity_a": "Lyrava", "entity_b": "Orsen", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_capital_merev_plain", "expected": {"predicate": "capital_of", "entity_a": "Merev", "entity_b": "Darsin", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_author_amber_ledger_plain", "expected": {"predicate": "authored_by", "entity_a": "The Amber Ledger", "entity_b": "Sela Vorn", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_author_quiet_meridian_plain", "expected": {"predicate": "authored_by", "entity_a": "The Quiet Meridian", "entity_b": "Iven Ro", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_location_basalt_archive_plain", "expected": {"predicate": "located_in", "entity_a": "the basalt archive", "entity_b": "Qorin", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_location_silver_gantry_negated", "expected": {"predicate": "located_in", "entity_a": "the silver gantry", "entity_b": "Pelar", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_state_north_turbine_plain", "expected": {"predicate": "state", "entity_a": "the north turbine", "entity_b": "active", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_negation_zaref_capital", "expected": {"predicate": "capital_of", "entity_a": "Zaref", "entity_b": "Monda", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_negation_clockwork_delta", "expected": {"predicate": "authored_by", "entity_a": "The Clockwork Delta", "entity_b": "Nira Pell", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_negation_cedar_vault", "expected": {"predicate": "located_in", "entity_a": "the cedar vault", "entity_b": "Rusk", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_negation_east_beacon", "expected": {"predicate": "state", "entity_a": "the east beacon", "entity_b": "dormant", "polarity": "negated", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_modality_tavin_capital", "expected": {"predicate": "capital_of", "entity_a": "Tavin", "entity_b": "Eshra", "polarity": "positive", "modality": "possible", "abstain": false}},
+    {"case_id": "v7_modality_green_ratio", "expected": {"predicate": "authored_by", "entity_a": "The Green Ratio", "entity_b": "Oren Vale", "polarity": "positive", "modality": "possible", "abstain": false}},
+    {"case_id": "v7_modality_cloud_depot", "expected": {"predicate": "located_in", "entity_a": "the cloud depot", "entity_b": "Surn", "polarity": "positive", "modality": "possible", "abstain": false}},
+    {"case_id": "v7_modality_harbor_lamp", "expected": {"predicate": "state", "entity_a": "the harbor lamp", "entity_b": "stable", "polarity": "positive", "modality": "possible", "abstain": false}},
+    {"case_id": "v7_modality_negation_lower_pump", "expected": {"predicate": "state", "entity_a": "the lower pump", "entity_b": "operational", "polarity": "negated", "modality": "possible", "abstain": false}},
+    {"case_id": "v7_unknown_question", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v7_unknown_fragment", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v7_unknown_outside_ontology", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v7_unknown_two_propositions", "expected": {"predicate": "unknown", "entity_a": "", "entity_b": "", "polarity": "unknown", "modality": "unknown", "abstain": true}},
+    {"case_id": "v7_world_canberra_capital", "expected": {"predicate": "capital_of", "entity_a": "Canberra", "entity_b": "New Zealand", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_world_frankenstein_author", "expected": {"predicate": "authored_by", "entity_a": "Frankenstein", "entity_b": "Charles Dickens", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_world_sahara_location", "expected": {"predicate": "located_in", "entity_a": "The Sahara Desert", "entity_b": "Brazil", "polarity": "positive", "modality": "asserted", "abstain": false}},
+    {"case_id": "v7_world_moon_state", "expected": {"predicate": "state", "entity_a": "The Moon", "entity_b": "made of polished glass", "polarity": "positive", "modality": "asserted", "abstain": false}}
+  ]
+}

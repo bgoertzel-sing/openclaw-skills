@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v9-gate-1",
+  "cases": [
+    {"case_id":"v9_capital_velmora_plain","expected":{"predicate":"capital_of","entity_a":"Velmora","entity_b":"Istren","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_capital_olyra_plain","expected":{"predicate":"capital_of","entity_a":"Olyra","entity_b":"Darsen","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_authorship_glass_tides","expected":{"predicate":"authored_by","entity_a":"Glass Tides","entity_b":"Nalara","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_authorship_ashen_compass","expected":{"predicate":"authored_by","entity_a":"The Ashen Compass","entity_b":"Corven","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_location_amber_observatory","expected":{"predicate":"located_in","entity_a":"amber observatory","entity_b":"Keld Province","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_state_cobalt_switch","expected":{"predicate":"state","entity_a":"cobalt switch","entity_b":"active","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_state_eastern_lattice","expected":{"predicate":"state","entity_a":"eastern lattice","entity_b":"dormant","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_negation_veyra_capital","expected":{"predicate":"capital_of","entity_a":"Veyra","entity_b":"Solmere","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v9_negation_hollow_lanterns","expected":{"predicate":"authored_by","entity_a":"Hollow Lanterns","entity_b":"Teren","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v9_negation_silver_archive","expected":{"predicate":"located_in","entity_a":"silver archive","entity_b":"Brann Ward","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v9_negation_upper_resonator","expected":{"predicate":"state","entity_a":"upper resonator","entity_b":"stable","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v9_modality_arquen_capital","expected":{"predicate":"capital_of","entity_a":"Arquen","entity_b":"Pell","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v9_modality_winter_circuit","expected":{"predicate":"authored_by","entity_a":"Winter Circuit","entity_b":"Liora","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v9_modality_northern_vault","expected":{"predicate":"located_in","entity_a":"northern vault","entity_b":"Edrin County","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v9_modality_quartz_relay","expected":{"predicate":"state","entity_a":"quartz relay","entity_b":"offline","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v9_modality_negation_garden_terminal","expected":{"predicate":"state","entity_a":"garden terminal","entity_b":"ready","polarity":"negated","modality":"possible","abstain":false}},
+    {"case_id":"v9_abstention_conditional_bell","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v9_abstention_bronze_current","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v9_abstention_disjunction_lenses","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v9_abstention_harbor_sensor","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v9_world_moon_capital","expected":{"predicate":"capital_of","entity_a":"Moon","entity_b":"Selene Port","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_world_sun_location_negated","expected":{"predicate":"located_in","entity_a":"Sun","entity_b":"Ember Bay","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v9_world_mars_capital","expected":{"predicate":"capital_of","entity_a":"Mars","entity_b":"Auric Haven","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v9_world_jupiter_location","expected":{"predicate":"located_in","entity_a":"Jupiter","entity_b":"Lumen District","polarity":"positive","modality":"asserted","abstain":false}}
+  ]
+}

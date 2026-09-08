@@ -1,0 +1,269 @@
+{
+  "contract_version": "frame-oracle-v10-gate-1",
+  "cases": [
+    {
+      "case_id": "v10_capital_direct",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "arkenfell",
+        "entity_b": "mossbridge",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_capital_possible_paraphrase",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "veloria",
+        "entity_b": "cinder quay",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_capital_possible_direct",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "norwyn",
+        "entity_b": "alderport",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_capital_negated",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "sorelia",
+        "entity_b": "emberton",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_capital_world_trap",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "norway",
+        "entity_b": "valencia",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_author_direct",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "silver orchard",
+        "entity_b": "leona voss",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_author_negated_passive",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "clockwork harbor",
+        "entity_b": "idris morn",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_author_possible",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "winter lantern",
+        "entity_b": "mira pell",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_author_negated_active",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "sapphire map",
+        "entity_b": "orin vale",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_author_world_trap",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "hamlet",
+        "entity_b": "ada lovelace",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_state_negated_direct",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "amber beacon",
+        "entity_b": "active",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_state_direct",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "western valve",
+        "entity_b": "closed",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_state_possible",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "backup conduit",
+        "entity_b": "unstable",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_state_negated_paraphrase",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "observatory hatch",
+        "entity_b": "sealed",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_state_world_trap",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "copper sample",
+        "entity_b": "transparent",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_location_direct",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "cedar archive",
+        "entity_b": "north hall",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_location_paraphrase",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "bluewind station",
+        "entity_b": "caldera district",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_location_possible",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "lost observatory",
+        "entity_b": "frostmere valley",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_location_negated",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "weather mast",
+        "entity_b": "bay sector",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_location_world_trap",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "mount everest",
+        "entity_b": "portugal",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v10_unknown_fragment_one",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v10_unknown_fragment_two",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v10_unknown_fragment_three",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v10_unknown_fragment_four",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    }
+  ]
+}

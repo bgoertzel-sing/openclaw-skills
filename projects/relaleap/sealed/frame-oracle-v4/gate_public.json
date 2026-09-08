@@ -1,0 +1,32 @@
+{
+  "answer_file_sha256": "a37d32e0759baa1eda208c2b87bd89296886e2ff5be7c555882bc85e215a0efc",
+  "cases": [
+    {"case_id": "v4_capital_australia_direct", "sentence": "The capital of Australia is Canberra.", "stratum": "capital"},
+    {"case_id": "v4_capital_peru_possessive", "sentence": "Peru's capital is Lima.", "stratum": "capital"},
+    {"case_id": "v4_capital_portugal_false", "sentence": "The capital of Portugal is Porto.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v4_capital_denmark_negated", "sentence": "The capital of Denmark is not Aarhus.", "stratum": "negation"},
+    {"case_id": "v4_author_kindred_active", "sentence": "Octavia Butler wrote the novel Kindred.", "stratum": "authorship"},
+    {"case_id": "v4_author_left_hand_passive", "sentence": "The novel The Left Hand of Darkness was written by Ursula K. Le Guin.", "stratum": "authorship"},
+    {"case_id": "v4_author_hobbit_false", "sentence": "Virginia Woolf wrote The Hobbit.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v4_author_earthsea_negated", "sentence": "Ursula K. Le Guin did not write A Wizard of Earthsea.", "stratum": "negation"},
+    {"case_id": "v4_state_valve_open", "sentence": "The valve is open.", "stratum": "state"},
+    {"case_id": "v4_state_mirror_negated", "sentence": "The mirror is not spotless.", "stratum": "negation"},
+    {"case_id": "v4_state_signal_red", "sentence": "The signal is red.", "stratum": "state"},
+    {"case_id": "v4_state_kettle_possible", "sentence": "The kettle may be warm.", "stratum": "modality"},
+    {"case_id": "v4_located_louvre", "sentence": "The Louvre is located in Paris.", "stratum": "location"},
+    {"case_id": "v4_located_telescope", "sentence": "The telescope is located in the dome.", "stratum": "location"},
+    {"case_id": "v4_located_eiffel_false", "sentence": "The Eiffel Tower is located in Lyon.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v4_located_archive_negated", "sentence": "The archive is not located in the basement.", "stratum": "negation"},
+    {"case_id": "v4_modal_capital", "sentence": "Canberra might be the capital of Australia.", "stratum": "modality"},
+    {"case_id": "v4_modal_author", "sentence": "Mira may have written Ashfall.", "stratum": "modality"},
+    {"case_id": "v4_modal_located", "sentence": "The rover might be located in the crater.", "stratum": "modality"},
+    {"case_id": "v4_modal_state_negated", "sentence": "The hatch may not be sealed.", "stratum": "modality_negation"},
+    {"case_id": "v4_unknown_fragment", "sentence": "Although the hour was late.", "stratum": "abstention"},
+    {"case_id": "v4_unknown_two_propositions", "sentence": "Rome is located in Italy and Paris is located in France.", "stratum": "abstention"},
+    {"case_id": "v4_unknown_out_of_ontology", "sentence": "The committee approved the budget.", "stratum": "abstention"},
+    {"case_id": "v4_unknown_question", "sentence": "Is the valve open?", "stratum": "abstention"}
+  ],
+  "contract_version": "frame-oracle-v4-gate-1",
+  "created_utc": "2026-08-03T05:10:00Z",
+  "opened": false
+}

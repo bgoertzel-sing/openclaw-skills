@@ -1,0 +1,772 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amsmath,amssymb}
+
+\hypersetup{colorlinks=true,linkcolor=blue!55!black,urlcolor=blue!55!black}
+\setlist{nosep,leftmargin=*}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,
+  frame=single,showstringspaces=false}
+
+\title{Plain2MeTTa General Semantic Validation\\
+       Architecture and Integration Specification}
+\author{Working specification for review}
+\date{2026-08-16, revision 0.2}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document specifies a general semantic-validation capability for
+Plain2MeTTa.  The capability converts reviewed Plain requirements into typed
+contracts, independently generated validation plans, executable oracles,
+properties, and formal obligations.  Generated MeTTa and grounded Python are
+then evaluated under bounded runtimes, with exact provenance from source text
+to evidence.  The design does not claim that arbitrary English can be proved
+correct automatically.  It makes the interpretation boundary explicit,
+requires human approval where meaning is uncertain, grades the strength of
+evidence, and fails closed rather than silently manufacturing semantics.
+\end{abstract}
+
+\tableofcontents
+
+\section{Purpose and non-goals}
+
+The current Plain2MeTTa evaluation workbench demonstrates three reviewed
+examples that pass through Plain, a logical intermediate representation (IR),
+generated MeTTa and Python, and bounded dual-runtime checks.  Those examples
+use exact, curated behavioral profiles.  This specification generalizes that
+mechanism without replacing it with an ever larger table of example-specific
+code.
+
+The intended result is a framework in which each requirement is associated
+with explicit semantic obligations and independently inspectable evidence.
+The framework must answer five different questions separately:
+
+\begin{enumerate}
+\item Was the source text preserved and reviewed?
+\item Is the logical contract well formed and internally consistent?
+\item Did generated artifacts execute in their declared runtimes?
+\item Did observations satisfy independently specified examples and
+      properties?
+\item Is any stronger statement formally established, and under which
+      assumptions?
+\end{enumerate}
+
+Non-goals include unrestricted execution of generated code, automatic proof
+of arbitrary natural-language intent, treating model consensus as proof,
+silently filling policy or domain gaps, and collapsing MeTTa reasoning into
+Python implementation details.
+
+\section{Normative terminology and evidence grades}
+
+The words MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are normative.
+
+\begin{longtable}{p{0.15\linewidth}p{0.77\linewidth}}
+\toprule
+Grade & Meaning \\
+\midrule
+G0: preserved & Exact reviewed source bytes, identities, and hashes are known. \\
+G1: structured & The contract and validation plan pass schema, type, provenance,
+and consistency checks. \\
+G2: executable & The generated artifact starts and terminates under its declared
+bounded runtime. \\
+G3: examples & Independent concrete input/output examples pass. \\
+G4: properties & Property-based, metamorphic, state-machine, or differential
+checks pass over a recorded test domain. \\
+G5: proved & A stated formula is proved or exhaustively checked in a named formal
+system under explicit assumptions and bounds. \\
+G6: observed & A deployed system satisfies monitored obligations over a recorded
+operational interval; this is not a universal proof. \\
+\bottomrule
+\end{longtable}
+
+Grades are not interchangeable.  G2 does not imply G3.  G4 does not imply G5.
+A result MUST report a vector of grades per obligation rather than one global
+``semantically valid'' Boolean.  A convenient summary MAY be the weakest grade
+required by an approved acceptance policy.
+
+\section{Trust model and independence}
+
+Semantic validation is vulnerable to correlated mistakes.  If one model or
+one deterministic transformation writes both the implementation and its
+oracle, both can encode the same misunderstanding.  Plain2MeTTa therefore
+separates four roles:
+
+\begin{description}
+\item[Interpretation author] Converts reviewed Plain into typed contracts and
+marks unresolved meaning.
+\item[Implementation author] Produces MeTTa and grounded modules from approved
+contracts.
+\item[Validation author] Produces examples, properties, generators, and oracle
+logic from the approved source and contract, without reading generated
+implementation bodies by default.
+\item[Evidence runner] Executes immutable implementation and validation
+artifacts under bounded, identified runtimes and records observations.
+\end{description}
+
+The roles MAY use different models, deterministic compilers, or humans.  Their
+inputs, prompts, versions, and outputs MUST be recorded.  The validation author
+MUST NOT derive expected output by invoking the implementation under test.
+When full independence is impossible, the shared dependency MUST be named and
+the evidence downgraded.
+
+\section{Extension to the logical IR}
+
+The existing logical IR already carries contracts, obligations, dependencies,
+invariants, source clauses, and operational holes.  The following immutable,
+content-addressed artifacts extend it.
+
+\subsection{SemanticContract}
+
+\begin{lstlisting}
+SemanticContract := {
+  contract_id: CanonicalID,
+  source_clause_refs: [ArtifactSpanRef, ...],
+  name: Identifier,
+  inputs: [TypedVariable, ...],
+  output: TypeExpression,
+  preconditions: [Predicate, ...],
+  postconditions: [Predicate, ...],
+  invariants: [Predicate, ...],
+  effects: [EffectDeclaration, ...],
+  temporal_constraints: [TemporalFormula, ...],
+  nondeterminism: DeterminismPolicy,
+  environment_assumptions: [Assumption, ...],
+  unresolved_holes: [HoleRef, ...]
+}
+\end{lstlisting}
+
+Predicates MUST use a typed, finite core language.  An extension MAY embed
+MeTTa terms, but it MUST declare evaluation semantics and purity.  Free prose
+MAY accompany a predicate but MUST NOT substitute for an executable or formal
+meaning.
+
+\subsection{ValidationObligation}
+
+\begin{lstlisting}
+ValidationObligation := {
+  obligation_id: CanonicalID,
+  contract_ref: ArtifactRef,
+  source_clause_refs: [ArtifactSpanRef, ...],
+  claim: Predicate | TemporalFormula | StatisticalClaim,
+  required_grade: EvidenceGrade,
+  admissible_methods: [MethodKind, ...],
+  domain: TestDomain,
+  assumptions: [AssumptionRef, ...],
+  severity: critical | major | minor,
+  unresolved: bool
+}
+\end{lstlisting}
+
+No obligation may be considered discharged if it is unresolved, references a
+stale contract, or relies on an unapproved assumption.
+
+\subsection{ValidationPlan}
+
+\begin{lstlisting}
+ValidationPlan := {
+  plan_id: CanonicalID,
+  reviewed_contract_refs: [ArtifactRef, ...],
+  author_provenance: AdapterProvenance,
+  examples: [ExampleOracle, ...],
+  generators: [InputGenerator, ...],
+  properties: [PropertyOracle, ...],
+  metamorphic_relations: [MetamorphicRelation, ...],
+  state_models: [StateMachineOracle, ...],
+  differential_oracles: [DifferentialOracle, ...],
+  formal_tasks: [FormalTask, ...],
+  coverage_claims: [CoverageClaim, ...]
+}
+\end{lstlisting}
+
+The plan is reviewed independently and approved against exact contract bytes.
+Changing a source clause, contract, assumption, generator, or oracle MUST
+invalidate downstream results.
+
+\subsection{RuntimeEvidence and ValidationVerdict}
+
+Runtime evidence records the runtime identity and hash, resource bounds, input
+seed or case identity, complete normalized observations, exit status, and
+artifact hashes.  A verdict joins evidence to one exact obligation and method:
+
+\begin{lstlisting}
+ValidationVerdict := {
+  verdict_id: CanonicalID,
+  obligation_ref: ArtifactRef,
+  implementation_ref: ArtifactRef,
+  validation_plan_ref: ArtifactRef,
+  runtime_evidence_refs: [ArtifactRef, ...],
+  grade_achieved: EvidenceGrade,
+  status: pass | fail | unknown | blocked,
+  counterexample_refs: [ArtifactRef, ...],
+  residual_risk: Text,
+  assumptions_used: [AssumptionRef, ...]
+}
+\end{lstlisting}
+
+\section{Predicate and oracle language}
+
+The first implementation SHOULD use a deliberately small contract language.
+It needs scalar and algebraic data types, records, finite collections, pure
+functions, equality and ordering, quantifiers over bounded domains, event
+traces, and explicit time.  It MUST prohibit implicit I/O and unbounded
+quantification in executable oracles.
+
+Example core forms are:
+
+\begin{lstlisting}
+(requires contract-id predicate)
+(ensures contract-id predicate)
+(invariant contract-id predicate)
+(always trace-predicate)
+(before event-a event-b)
+(exactly-once event-pattern)
+(for-all (x generator-id) predicate)
+(approximately expected observed tolerance confidence-policy)
+\end{lstlisting}
+
+Each form has both a canonical serialized representation and one or more
+runtime backends.  A deterministic reference interpreter SHOULD define the
+meaning of the core.  MeTTa MAY own symbolic reduction, contract composition,
+and provenance; Python MAY ground numerical, cryptographic, file, and systems
+operations.  The ownership locus MUST be declared per predicate.
+
+\section{Validation methods}
+
+\subsection{Concrete examples}
+
+Examples bind explicit inputs, initial state, permitted environment events,
+and expected observations.  They are useful but weak.  Boundary examples and
+negative examples are mandatory for critical obligations.
+
+\subsection{Property-based testing}
+
+An input generator is itself a reviewed artifact with a finite budget,
+distribution description, shrinker, and seed.  On failure, the smallest found
+counterexample is preserved.  Passing $N$ generated cases MUST be reported as
+bounded evidence, never as proof over an infinite domain.
+
+\subsection{Metamorphic testing}
+
+When an exact answer is difficult to compute, a transformation on input can
+imply a relation on output.  Examples include permutation invariance,
+monotonicity, scale equivariance, idempotence, round trips, conservation, and
+irrelevance of data outside an authorized window.
+
+\subsection{State-machine and trace testing}
+
+Stateful services require commands, preconditions, transitions, observations,
+and invariants.  Generated command sequences explore reachable states.  Trace
+oracles validate ordering, cardinality, secrecy, and temporal properties.
+
+\subsection{Differential and cross-runtime testing}
+
+When MeTTa and Python implement the same declared observable contract, they
+MUST be run on identical canonical inputs and their normalized outputs compared.
+Agreement is useful but not sufficient: two implementations can share a bad
+contract or generator.  A reference interpreter or independent oracle remains
+necessary.
+
+\subsection{Formal methods}
+
+Finite domains and pure contract fragments MAY be translated to SAT/SMT,
+model checking, or exhaustive MeTTa reduction.  Every proof result MUST include
+the exact theorem, assumptions, solver/runtime identity, resource bounds, and
+proof certificate or replay command when available.  Unknown and timeout are
+not pass.
+
+\subsection{Mutation and adversarial validation}
+
+The framework SHOULD mutate generated implementations and contracts.  Useful
+mutations include inverted comparisons, removed state updates, wrong event
+order, boundary shifts, leaked fields, changed time windows, and duplicated
+effects.  A validation plan that fails to reject relevant mutants has weak
+discriminative power and MUST expose that limitation.
+
+\section{Pipeline integration}
+
+The proposed extension preserves the current immutable phase chain.
+
+\begin{enumerate}
+\item \textbf{Source and elaboration.} Preserve original Plain bytes.  Mark
+every added interpretation as derived, guidance-specified, advisor-proposed,
+or unresolved.
+\item \textbf{Human review.} Review the elaborated specification and tests.
+Edits create new immutable snapshots.
+\item \textbf{Contract IR.} Produce typed contracts, assumptions, effects,
+and unresolved holes from reviewed snapshots.
+\item \textbf{Logical review.} Detect inconsistent types, contradictory
+invariants, unreachable obligations, temporal cycles, leakage, and missing
+groundings.  Critical open findings block later claims.
+\item \textbf{Independent validation synthesis.} Generate a ValidationPlan
+using a separate adapter boundary.  The adapter sees reviewed source and
+contracts, but not generated implementation bodies.
+\item \textbf{Plan review and approval.} A person or policy approves exact
+validation-plan bytes and any risk acceptance.
+\item \textbf{Compilation.} Generate MeTTa and grounded modules from approved
+contracts.  Record compiler provenance and exact generated-file hashes.
+\item \textbf{Bounded execution.} Run implementation and oracle artifacts in
+separate sandboxes where practical.  Network is denied by default; secrets are
+absent; file and process access are bounded.
+\item \textbf{Verdict.} Join exact obligations, plans, generated artifacts,
+runtimes, observations, and counterexamples into graded verdicts.
+\item \textbf{Traceability.} Reconstruct the full chain on every query.  Any
+stale or mismatched reference fails closed.
+\end{enumerate}
+
+\section{Service and Web UI requirements}
+
+The Web UI SHOULD show a left-to-right evidence graph:
+
+\begin{center}
+Plain $\rightarrow$ reviewed text $\rightarrow$ contracts $\rightarrow$
+validation plan $\rightarrow$ code $\rightarrow$ evidence $\rightarrow$ verdict
+\end{center}
+
+For each obligation it MUST show source text, interpretation status, contract,
+required evidence grade, plan author, implementation author, runtime identity,
+cases or proof tasks, counterexamples, achieved grade, and residual risk.
+Generated, executed, tested, proved, and operationally observed labels MUST be
+visually distinct.
+
+Suggested narrow APIs are:
+
+\begin{lstlisting}
+POST /api/validation-plan/<project-id>
+GET  /api/validation-plan/<project-id>
+POST /api/validation-plan-review/<project-id>
+POST /api/semantic-test/<project-id>
+GET  /api/semantic-results/<project-id>
+GET  /api/semantic-trace/<project-id>?obligation=<canonical-id>
+\end{lstlisting}
+
+POST routes MUST use bounded duplicate-safe JSON, exact canonical identities,
+explicitly injected adapters, and atomic admission.  They MUST NOT accept
+provider credentials or arbitrary commands.  GET routes return metadata by
+default; potentially sensitive bodies require separate authorization.
+
+\section{Qualitatively different examples}
+
+\subsection{Example A: pure numerical transformation}
+
+\paragraph{Plain.}
+``Given real $x$, lower bound $a$, and upper bound $b$ with $a<b$, return
+$(x-a)/(b-a)$ clipped to $[0,1]$.  The function must be monotone in $x$.''
+
+\paragraph{Contract.}
+Inputs are finite reals; precondition $a<b$; output $y$ is finite and
+$0\le y\le1$; $x\le x'$ implies $f(x,a,b)\le f(x',a,b)$; $f(a,a,b)=0$ and
+$f(b,a,b)=1$.
+
+\paragraph{Validation.}
+Concrete boundary examples, generated finite triples, monotonic pair tests,
+translation metamorphism $f(x+c,a+c,b+c)=f(x,a,b)$, differential MeTTa/Python
+comparison, and an SMT proof over an exact rational implementation.  Mutants
+that omit clipping or reverse subtraction must be killed.
+
+\subsection{Example B: stateful authentication service}
+
+\paragraph{Plain.}
+``A successful password reset revokes all existing sessions before success is
+reported.  Failed login and locked-account responses are indistinguishable to
+the client.  Passwords and bearer tokens never appear in logs.''
+
+\paragraph{Contract.}
+The state contains users, password verifiers, sessions, and an append-only
+audit trace.  Reset success requires every prior session for the user to be
+revoked in an earlier trace position.  Public failure observations are equal
+for bad credentials and lockout.  A secrecy predicate rejects credential
+substrings and structured secret fields in every emitted log event.
+
+\paragraph{Validation.}
+A model-based state-machine runner generates login, refresh, reset, revoke,
+and inspect-log commands.  Trace properties check ordering and noninterference.
+Metamorphic tests replace one invalid password with another and require the
+same public observation.  Fault injection interrupts the reset transaction.
+The validator must reject implementations that report success before
+revocation, leak a token, or distinguish lockout.
+
+\subsection{Example C: time-series model without future leakage}
+
+\paragraph{Plain.}
+``At prediction time $t$, features use no observation after $t$.  Normalization
+is fit on training data only.  Hyperparameters use validation data, never test
+data.  The selected model is evaluated exactly once on the test partition.''
+
+\paragraph{Contract.}
+Every feature value carries an event-time lineage set.  The maximum lineage
+time is at most its prediction time.  Scaler-fit lineage is a subset of the
+training partition.  Selection traces contain no test identifiers.  The test
+evaluation event has cardinality one and occurs after selection is frozen.
+
+\paragraph{Validation.}
+Synthetic datasets include a future-only sentinel.  Perturbing all future
+observations must not affect earlier predictions.  Shuffling or changing test
+labels must not change selected hyperparameters.  Provenance inspection checks
+lineage.  Mutation tests introduce a centered rolling window, global scaler,
+or repeated test evaluation and require counterexamples.  Statistical metric
+thresholds are separate claims with confidence and dataset assumptions; they
+must not be confused with leakage invariants.
+
+\subsection{Example D: idempotent distributed command handling}
+
+\paragraph{Plain.}
+``A transfer command has a client request ID.  Retrying the same command may
+return the prior result but must not debit twice.  Two distinct request IDs may
+represent distinct transfers.  A crash between durable debit and response must
+remain recoverable.''
+
+\paragraph{Contract.}
+The observable state includes balances, a durable request ledger, and emitted
+responses.  For one request ID and payload, at most one debit transition is
+committed.  Reuse of an ID with a different payload is rejected.  After any
+allowed crash point, replay converges to a state observationally equivalent to
+one uninterrupted execution.
+
+\paragraph{Validation.}
+The state-machine generator produces retries, reorderings, duplicate delivery,
+and crashes at named persistence boundaries.  Metamorphic replay duplicates
+messages without changing final balances.  A small-state model checker explores
+two accounts, bounded amounts, and finite crash points.  The runtime harness
+injects failures and compares MeTTa orchestration with a Python grounded store.
+Mutants that record the request after debit or key only by payload must fail.
+
+\subsection{Example E: policy-dependent data export}
+
+\paragraph{Plain.}
+``Support staff may export retained audit events only when authorized by the
+current policy.''
+
+This example is intentionally incomplete.  ``Current policy'', retention,
+staff identity, authorization source, and permitted fields are undefined.  The
+correct general validator creates typed unresolved holes and review questions.
+It may validate mechanics such as ``no export occurs without an authorization
+decision'', but MUST NOT invent a retention period or role policy.  Compilation
+or a strong verdict remains blocked until the holes are resolved and approved.
+
+\section{Acceptance criteria for the first general release}
+
+The first release is accepted only if all of the following hold:
+
+\begin{enumerate}
+\item At least four qualitatively different examples use data-driven contracts
+and plans, not code branches keyed to exact source text.
+\item At least one example exercises pure properties, one state-machine trace,
+one temporal/data-lineage invariant, and one unresolved policy hole.
+\item MeTTa and Python execute through pinned bounded runtimes where both are
+applicable, and cross-runtime comparison is explicit.
+\item Property generation records seeds and shrinking; counterexamples are
+immutable artifacts linked to source obligations.
+\item A meaningful mutation suite demonstrates that validation rejects seeded
+semantic defects.
+
+\section{Recommended software toolchain}
+
+No single formal tool is appropriate for every obligation.  Plain2MeTTa SHOULD
+route obligations by semantic shape and required assurance, while preserving a
+common immutable evidence envelope.
+
+\subsection{Hypothesis for executable properties and state machines}
+
+Python Hypothesis SHOULD be the default engine for generated examples,
+property-based tests, metamorphic relations, and executable state-machine
+testing.  In particular, \texttt{RuleBasedStateMachine} supports commands,
+preconditions, invariants, generated command sequences, reproducible seeds,
+and automatic counterexample shrinking.
+
+The Plain2MeTTa adapter MUST generate ordinary reviewable Python test modules,
+not hidden dynamic calls.  Each run records the Hypothesis version, settings,
+seed or database identity, maximum examples, deadlines, phases, and shrunk
+counterexample.  Health-check suppression MUST be explicit and justified.
+Hypothesis is the fast default bug-finding layer; passing a finite campaign is
+G4 bounded evidence, not a proof.
+
+\subsection{TLA+ and TLC for temporal and distributed state machines}
+
+TLA+ SHOULD be the canonical model language for concurrency, temporal
+ordering, retry/idempotency protocols, crash recovery, fairness, and safety or
+liveness invariants.  TLC SHOULD be the initial model checker because it has a
+mature semantics, explicit finite configurations, and concrete counterexample
+traces.
+
+A generated TLA+ bundle consists of a module, finite model configuration,
+source-to-variable map, invariant and temporal-property map, and normalization
+rules for counterexample traces.  A TLC pass is valid only for the exact finite
+scope recorded in the evidence.  State-space size, distinct states, depth,
+workers, symmetry sets, and liveness mode MUST be recorded.  Deadlock checking
+MUST NOT be disabled silently.
+
+Apalache MAY be added as a symbolic backend for bounded checking when explicit
+TLC exploration becomes too large.  Quint MAY be offered later as a friendlier
+authoring or simulation surface, but revision 0.2 keeps generated TLA+ as the
+canonical temporal artifact to avoid an unnecessary semantic translation in
+the first implementation.
+
+\subsection{Z3 through SMT-LIB for bounded logical obligations}
+
+Z3 SHOULD discharge satisfiability, finite arithmetic, reachability, type and
+contract consistency, bounded transition, and counterexample-generation tasks.
+Plain2MeTTa MUST emit canonical SMT-LIB text plus a declaration/source map,
+rather than persist opaque solver API objects.  The evidence records Z3
+version, command, logic, options, timeout, result, model or unsat core, and
+proof object when requested and supported.
+
+The trusted claim is exactly the encoded formula.  Therefore an independently
+tested encoder and round-trip fixtures are mandatory.  \texttt{unknown},
+timeout, resource exhaustion, or unsupported theory yields Unknown, never Pass.
+Solver satisfiability does not establish that the original English was
+interpreted correctly.
+
+\subsection{Lean 4 and Mathlib for durable theorem-level assurance}
+
+Lean 4 with Mathlib SHOULD define the small trusted Plain2MeTTa contract
+calculus and its denotational or operational semantics.  Lean is the preferred
+G5 layer for stable claims such as:
+
+\begin{itemize}
+\item well-typed contracts do not produce malformed observations;
+\item canonical serialization and IR normalization preserve meaning;
+\item approved lowering rules refine the contract semantics;
+\item selected pure algorithms satisfy their contracts;
+\item a finite-state transition model preserves a named invariant; and
+\item transformations used by test generation are sound for their stated
+metamorphic relation.
+\end{itemize}
+
+Lean SHOULD NOT be required for every generated runtime test.  Proof cost is
+reserved for the semantic kernel, reusable lowering theorems, high-risk pure
+algorithms, and explicitly requested application claims.  Each Lean artifact
+pins the Lean toolchain, Mathlib revision, imports, theorem statement, axioms,
+and build command.  Use of \texttt{sorry}, new axioms, unsafe declarations, or
+unreviewed native decision procedures MUST prevent a proved verdict.
+
+Where Z3 or TLC discovers a bounded result, Lean MAY separately prove a
+general theorem, but a solver's success MUST NOT be relabeled as a Lean proof.
+Likewise, generated proof scripts require kernel checking before admission.
+
+\subsection{Hyperon and Python runtime conformance}
+
+The existing pinned Hyperon CLI and bounded Python subprocess remain the
+implementation-evidence layer.  Both receive identical canonical cases where
+their observable contracts overlap.  Normalized output is compared with the
+independent oracle and with the other runtime.  Cross-runtime agreement raises
+confidence but does not replace Hypothesis, TLA+, SMT, or Lean evidence.
+
+\subsection{Routing matrix}
+
+\begin{longtable}{p{0.24\linewidth}p{0.19\linewidth}p{0.47\linewidth}}
+\toprule
+Obligation shape & Primary tool & Secondary evidence \\
+\midrule
+Pure executable function & Hypothesis & Z3 for bounded arithmetic; Lean for
+selected general theorem \\
+Stateful sequential API & Hypothesis state machine & Lean for reusable state
+invariant if warranted \\
+Concurrent/distributed protocol & TLA+/TLC & Hypothesis fault-injection;
+Apalache for symbolic bounds \\
+Contract consistency & Z3/SMT-LIB & deterministic IR checks; Lean kernel
+metatheory \\
+Temporal/data-lineage rule & TLA+ or SMT by shape & Hypothesis metamorphic
+tests and runtime provenance \\
+Compiler/IR semantic preservation & Lean 4 & differential fixtures and
+mutation testing \\
+Concrete MeTTa/Python behavior & Hyperon/Python runtimes & independent oracle,
+Hypothesis, and differential comparison \\
+Unresolved policy or world fact & no automatic tool & explicit hole and human
+review \\
+\bottomrule
+\end{longtable}
+\item Changing source, contracts, assumptions, plans, generated code, or
+runtimes invalidates downstream verdicts.
+\item The UI displays evidence grades and never labels unsupported arbitrary
+input as semantically validated.
+\item Focused tests, the complete provider-free suite, live browser/API smoke,
+runtime smoke, repository hygiene, and credential scans pass.
+\end{enumerate}
+
+\section{Step-by-step plan for coding agents}
+
+Each stage is a separately reviewable task-branch increment.  Agents MUST read
+the current project records, repository instructions, CI, and applicable
+skills before editing.  They MUST preserve unrelated work, use immutable
+artifacts and exact hashes, run focused tests before the full suite, and create
+a reproducible experiment record.  An agent MUST NOT begin a dependent stage
+until the preceding acceptance gate passes.
+
+\subsection*{Stage 0: freeze interfaces and threat model}
+
+\textbf{Work.} Inventory current logical-IR, compiler-output, sandbox,
+traceability, evaluation UI, and dual-runtime schemas.  Write the canonical
+evidence-grade vocabulary, role-separation policy, runtime trust boundaries,
+and migration compatibility rules.  Select and pin candidate versions of
+Hypothesis, TLC, Z3, Lean 4/Mathlib, and Hyperon in isolated environments.
+
+\textbf{Gate.} A source-located interface map exists; upstream smoke tests for
+each chosen tool pass unchanged; no system-wide dependency change occurs; and
+the existing 662-test baseline and live three-example evaluation remain green.
+
+\subsection*{Stage 1: immutable semantic artifact model}
+
+\textbf{Work.} Implement strict schemas and canonical serialization for
+\texttt{SemanticContract}, \texttt{ValidationObligation},
+\texttt{ValidationPlan}, generators, oracles, runtime evidence,
+counterexamples, and graded verdicts.  Bind every artifact to exact reviewed
+source and contract references.  Extend transitive invalidation.
+
+\textbf{Gate.} Round-trip and adversarial-deserialization tests pass; forged,
+partial, duplicate, stale, path-confused, and hash-mismatched artifacts fail
+closed; changing any upstream byte invalidates every dependent verdict.
+
+\subsection*{Stage 2: finite contract calculus and interpreter}
+
+\textbf{Work.} Define the typed predicate core, effects, bounded quantifiers,
+trace primitives, time semantics, assumption references, and ownership locus.
+Implement a deterministic reference interpreter and canonical MeTTa projection.
+Keep unsupported constructs as typed holes.
+
+\textbf{Gate.} Gold fixtures cover pure, stateful, temporal, approximate, and
+unresolved contracts.  Type preservation and interpreter determinism pass
+provider-free tests.  No free prose is executed as a predicate.
+
+\subsection*{Stage 3: independent validation-plan synthesis}
+
+\textbf{Work.} Add a one-call, provider-independent validation-author adapter
+that sees reviewed source and contracts but not generated implementation
+bodies.  Admit only strict plans.  Add plan review, edits, decisions, and exact
+approval binding.
+
+\textbf{Gate.} Role separation is demonstrated by tests; malformed or
+misattributed adapter output causes no partial writes or retry; unresolved
+critical meaning blocks approval; source or contract edits invalidate the plan.
+
+\subsection*{Stage 4: Hypothesis backend}
+
+\textbf{Work.} Lower examples, generators, pure properties, metamorphic
+relations, and sequential state machines to reviewable Hypothesis modules.
+Run them in the bounded Python sandbox.  Persist settings, seeds, cases,
+shrinking history, and minimal counterexamples.
+
+\textbf{Gate.} Numerical, authentication, and idempotency fixtures pass.
+Seeded mutants yield stable shrunk counterexamples.  A zero-exit run with a
+wrong observation fails.  Replaying recorded seeds reproduces results.
+
+\subsection*{Stage 5: TLA+/TLC backend}
+
+\textbf{Work.} Lower finite transition contracts to TLA+ modules and TLC model
+configurations with source maps.  Parse TLC states and counterexample traces
+into bounded immutable evidence.  Initially cover authentication ordering and
+distributed idempotency/crash recovery.
+
+\textbf{Gate.} Correct models satisfy declared safety properties in recorded
+finite scopes; injected ordering, duplicate-debit, and recovery mutants produce
+source-linked counterexample traces.  State counts, depth, scope, fairness, and
+deadlock configuration are visible in the UI.
+
+\subsection*{Stage 6: SMT-LIB/Z3 backend}
+
+\textbf{Work.} Lower the supported pure and bounded-transition fragment to
+canonical SMT-LIB.  Add exact declaration maps, model/unsat-core parsing,
+timeouts, and Unknown handling.  Independently test the encoder using gold
+formulas and mutation pairs.
+
+\textbf{Gate.} Contradictory contracts, unreachable states, boundary errors,
+and finite counterexamples are detected.  Unknown and timeout fail closed.
+No solver result is admitted without exact formula and solver provenance.
+
+\subsection*{Stage 7: Lean 4 semantic kernel}
+
+\textbf{Work.} Create a small Lean package defining types, values, predicates,
+contract satisfaction, traces, and the supported lowering relation.  Prove
+core well-formedness and selected preservation theorems.  Add one pure example
+proof and one finite state-invariant proof.  Export theorem identities and
+source maps as evidence metadata.
+
+\textbf{Gate.} Pinned \texttt{lake build} passes with no \texttt{sorry}, new
+axioms, unsafe declarations, or unrecorded native trust.  Deliberately false
+theorems fail.  The UI displays exact theorem statements and assumptions and
+does not describe TLC/Z3 results as Lean proofs.
+
+\subsection*{Stage 8: dual-runtime and cross-tool verdict composition}
+
+\textbf{Work.} Generalize the existing Hyperon/Python runner to consume
+approved contracts and plans rather than exact-text profiles.  Normalize
+observations, compare both runtimes with independent oracles, and compose
+Hypothesis, TLC, Z3, and Lean evidence into per-obligation grade vectors.
+
+\textbf{Gate.} No single tool result can over-promote an obligation.  Shared
+dependencies and assumptions are reported.  Wrong-output, stale-evidence,
+cross-runtime divergence, and missing-proof cases produce the correct Fail,
+Unknown, or Blocked status.
+
+\subsection*{Stage 9: API and Web UI integration}
+
+\textbf{Work.} Add the narrow plan, review, execution, result, and trace routes.
+Extend the browser workbench with an evidence graph, tool-specific details,
+counterexample views, assumption/hole review, and artifact downloads.
+
+\textbf{Gate.} Browser and API tests cover exact identities, duplicate-safe
+framing, bounds, stale chains, and authorization.  The UI distinguishes G0--G6
+and never labels arbitrary unsupported input as semantically validated.
+
+\subsection*{Stage 10: vertical acceptance suite and mutation score}
+
+\textbf{Work.} Convert the current three profiles from source-text branches to
+data artifacts.  Implement the five examples in Section 9, including the
+intentionally blocked policy case.  Build a categorized mutation corpus.
+
+\textbf{Gate.} At least four semantic shapes use the general pipeline; relevant
+mutants are killed at an agreed threshold with surviving mutants reviewed;
+focused and full tests, live dual-runtime replay, model checking, SMT checks,
+Lean replay, secret/large-file/untracked audits, and exact trace reconstruction
+all pass.  Publish only to a task branch and draft PR.
+
+\subsection*{Stage 11: independent review and stabilization}
+
+\textbf{Work.} Ben evaluates concrete UI examples.  Revise behavior before
+writing a polished design report.  Then solicit frontier-model review with
+frozen artifacts, incorporate accepted findings, and finally seek human MeTTa
+and formal-methods developer review.
+
+\textbf{Gate.} Review findings have explicit accept/reject/defer decisions and
+regression evidence.  Default-branch merge or release remains a separate human
+decision.
+
+\section{Open design questions}
+
+\begin{itemize}
+\item Which contract core should be canonical: a restricted MeTTa vocabulary,
+JSON with MeTTa projection, or both bound by a canonical hash?
+\item Which property-testing engine should ground generation and shrinking,
+and how should generators be represented for replay in MeTTa?
+\item Which formal backends provide useful proof certificates without making
+the core dependent on a large solver stack?
+\item What separation between interpretation and validation authors is enough
+for each risk tier?
+\item Which claims require human approval, two-model review, mutation score,
+formal proof, or operational monitoring?
+\item How should probabilistic and approximate requirements express tolerances,
+confidence, multiple comparisons, and distribution-shift assumptions?
+\end{itemize}
+
+\section{Summary}
+
+General semantic validation in Plain2MeTTa should be an evidence-producing
+contract system.  Plain meaning is reviewed into typed contracts; validation
+plans are independently authored; MeTTa and grounded modules execute under
+bounded runtimes; examples, properties, traces, mutations, and formal tasks
+produce graded evidence; and every claim remains hash-bound to its exact source
+and assumptions.  The architecture increases confidence without pretending
+that execution, model agreement, or a finite test suite proves arbitrary
+natural-language intent.
+
+\end{document}

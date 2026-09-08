@@ -1,0 +1,270 @@
+{
+  "contract_version": "frame-oracle-v6-gate-1",
+  "created_utc": "2026-08-04T01:27:05Z",
+  "cases": [
+    {
+      "case_id": "v6_capital_norvale_plain",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "norvale",
+        "entity_b": "cinderglass",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_capital_talvik_registry",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "talvik",
+        "entity_b": "umber",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_author_winter_brass_plain",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "winter brass",
+        "entity_b": "elian voss",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_author_copper_index_plain",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "the copper index",
+        "entity_b": "tamsin roe",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_location_azure_archive_plain",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "the azure archive",
+        "entity_b": "pelion",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_location_red_foundry_negated",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "the red foundry",
+        "entity_b": "istria",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_state_signal_tower_plain",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "the signal tower",
+        "entity_b": "operational",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_modality_north_relay",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "the north relay",
+        "entity_b": "active",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_modality_velis_capital",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "velis",
+        "entity_b": "aster hall",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_modality_ash_geometry",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "ash geometry",
+        "entity_b": "mara quill",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_modality_east_gate",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "the east gate",
+        "entity_b": "sealed",
+        "polarity": "affirmed",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_modality_negation_ember_clinic",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "the ember clinic",
+        "entity_b": "roven",
+        "polarity": "negated",
+        "modality": "possible",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_negation_ivory_observatory",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "the ivory observatory",
+        "entity_b": "caldor",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_negation_eldara_capital",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "eldara",
+        "entity_b": "northglass",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_negation_river_without_maps",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "river without maps",
+        "entity_b": "joren hale",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_negation_lower_beacon",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "the lower beacon",
+        "entity_b": "stable",
+        "polarity": "negated",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_unknown_question",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v6_unknown_two_propositions",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v6_unknown_fragment",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v6_unknown_outside_ontology",
+      "expected": {
+        "predicate": "unknown",
+        "entity_a": "",
+        "entity_b": "",
+        "polarity": "unknown",
+        "modality": "unknown",
+        "abstain": true
+      }
+    },
+    {
+      "case_id": "v6_world_france_capital",
+      "expected": {
+        "predicate": "capital_of",
+        "entity_a": "france",
+        "entity_b": "marseille",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_world_hamlet_author",
+      "expected": {
+        "predicate": "authored_by",
+        "entity_a": "hamlet",
+        "entity_b": "ada lovelace",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_world_everest_location",
+      "expected": {
+        "predicate": "located_in",
+        "entity_a": "mount everest",
+        "entity_b": "brazil",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    },
+    {
+      "case_id": "v6_world_pacific_state",
+      "expected": {
+        "predicate": "state",
+        "entity_a": "the pacific ocean",
+        "entity_b": "dormant",
+        "polarity": "affirmed",
+        "modality": "asserted",
+        "abstain": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{RunPod historical incident report}
+\rhead{2026-08-06}
+\cfoot{\thepage}
+\lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,columns=fullflexible,frame=single}
+\newcommand{\obs}{\textbf{Observed.} }
+\newcommand{\inferr}{\textbf{Inferred.} }
+\newcommand{\decision}{\textbf{Decision.} }
+\begin{document}
+
+\begin{center}
+{\LARGE RunPod attempts, outcomes, and workflow incident review}\\[0.4em]
+{\large Prepared for Benjamin Goertzel --- 2026-08-06}\\[0.6em]
+\textit{Scope: documented attempts visible in the research workspace and current-session operational records.}
+\end{center}
+
+\section*{Executive finding}
+
+RunPod is demonstrably usable from this account and machine.  The historical
+record includes successful authenticated SSH canaries, successful raw-image
+and template launches, completed GPU experiments with retrieved artifacts,
+and prompt cleanup.  The recent RelaLeap C1 sequence nevertheless suffered
+from a compound agent-process failure: lifecycle ownership was not kept single
+writer; stale monitors produced contradictory reports; provider control-plane
+``RUNNING'' was mistaken for usable runtime; and a pre-update CLI was used
+without its now-available bounded readiness wait.
+
+This does not establish that every recent non-ready allocation was caused by
+the agent.  Some allocations were never ready or disappeared provider-side.
+But the agent's workflow made those events costly, poorly observable, and
+confusing.  It was not an adequate procedure for a popular, normally usable
+service.
+
+\section*{Method, provenance, and limits}
+
+This review read the durable project records, experiment ledgers, returned
+artifact records, relevant daily-memory entries, the current RunPod CLI help,
+and the exact current \texttt{runpodctl} skill reproduced in Appendix A. It
+does not claim access to RunPod's internal scheduler, image-pull logs, or
+provider billing ledger beyond captured CLI outputs.  A pod's requested status
+is therefore reported as a control-plane observation, not as proof that a
+container ran.
+
+Sensitive material was excluded: API keys, SSH private keys, relay codes, and
+full environment dumps are not reproduced.  Pod IDs are included because they
+are essential provenance, but no credential-bearing command output appears.
+
+\section*{Outcome taxonomy}
+
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Operational success}: remote runtime was reached and the intended
+  narrow operation completed or decisively demonstrated a capability.
+\item \textbf{Scientific negative result}: remote execution and artifact
+  recovery succeeded, but the research hypothesis failed its frozen gate.
+\item \textbf{Code/launcher failure}: provider runtime worked, but project
+  software failed; this must not be attributed to RunPod.
+\item \textbf{Provider-readiness failure}: an allocation did not become a
+  usable runtime, or disappeared, before the intended work.
+\item \textbf{Agent workflow failure}: authority, monitoring, observability,
+  or lifecycle procedure was itself defective.
+\end{itemize}
+
+\section*{Evidence-backed timeline}
+
+\small
+\begin{longtable}{p{0.11\textwidth}p{0.22\textwidth}p{0.23\textwidth}p{0.31\textwidth}}
+\toprule
+Date & Attempt & Outcome & What the evidence establishes \\
+\midrule
+\endhead
+2026-07-10/11 & RelaLeap HDPC grid, pod \texttt{zivpxu06yhmx40}, \$0.49/hr & Operational success & GPU grid completed; 9 result entries and 9 checkpoints were retrieved, JSON was parsed, and the pod was deleted. This proves a normal GPU workload, return path, and cleanup worked. [S1] \\
+2026-07-11 & RelaLeap SLT large run, pod \texttt{pmqngq3cxcd5bw}, A100 \$1.49/hr & Operational success & CUDA result, 8 chains x 1000 samples, and a 3978 s run were retrieved and checked before termination. Scientific convergence caveats do not negate operational success. [S2] \\
+2026-07-17 & RelaLeap A100 outcome attempt, pod \texttt{lop52u56xugpxk} & Provider-readiness failure & Allocation remained unready with zero uptime/SSH for about 52 minutes and was terminated. This is a genuine historical non-ready class, but not an explanation for every later event. [S3] \\
+2026-07-18/19 & RelaLeap six-layer runs & Mixed: code failure, then successful negative experiment & Run 4 exposed application bugs (tensor shape and local checkpoint path). The r5 rerun, pod \texttt{oo20lk2075y0dx}, completed all three seeds and returned 13 JSON artifacts; its promotion gate failed scientifically. Provider use itself succeeded. [S4] \\
+2026-07-29 & SSH-free Croc transport probe & Agent-design/observability failure & Three A40 pods returned no probe artifact; the receiver's ``room not ready'' could not establish whether the remote startup ran. The approved envelope was exceeded. Later review identified relay-code/docker-args misuse; this was not evidence that RunPod itself failed. [S5] \\
+2026-07-29 & Standard RTX 4090 sweep, pod \texttt{6z14ahtjar5bzh} & Runtime success; launcher contract failure & SSH and GPU execution were observed. The run failed because the runner emitted an objective tuple while the validator required a list; artifacts were retrieved and hash-verified. [S6] \\
+2026-07-30 & Clean-room robustness run & Runtime success; project gate failure & CUDA/bootstrap passed; then an explicit \texttt{trust\_remote\_code=True} dependency caused a fail-closed project stop before seed execution. Evidence was retrieved. [S7] \\
+2026-07-30/08-01 & Clean-room confirmation and reliability runs & Operational success; mixed scientific results & One three-seed confirmation completed with positive frozen result; the later reliability run completed and failed its primary scientific gate, with returned hashes verified and pod deleted. [S7] \\
+2026-07-31 & Template SSH canary, pod \texttt{50tq84z1qxiok3} & Operational control success & Official template, explicit \texttt{22/tcp}, and managed-key SSH reached a Secure RTX 4090 in 47 s, then deleted in 74 s. This rules out an account-wide SSH/key/API failure at that time. [S8] \\
+2026-07-31 & Raw-image A/B, pod \texttt{tdhmwpcs5v77r9} & Operational control success & Same image via \texttt{--image}, explicit ports/SSH, reached authenticated SSH in 34 s; PID 1 included \texttt{/start.sh}. Raw images are not intrinsically incompatible with this account and CLI. [S9] \\
+2026-08-05/06 & C1 A40 sequence, IDs \texttt{dnwq8koj3rtu45}, \texttt{elatgmvrthhxf7}, \texttt{20byqukvf2kzv4} & Mixed provider and agent workflow failure & First two were created outside a stable single-writer envelope and died before readiness. The third did reach SSH/GPU, but was bound to a mutable tag while the sealed handoff required a digest, so no science ran; it later disappeared. Stale monitors continued reporting the dead second pod. [S10] \\
+2026-08-06 & C1 RTX 6000 Ada, pod \texttt{crgb1jzlu28uix} & Provider-readiness failure amplified by agent procedure & It remained requested \texttt{RUNNING} with uptime 0 and ``pod not ready'' for about 95 min; it was then deleted. The agent used CLI 2.8.1 without its required update and did not gate creation with a bounded readiness wait. [S11] \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section*{What succeeded versus what failed}
+
+The workspace contains multiple successful direct-SSH and GPU-run examples.
+Therefore the statement ``the account cannot use RunPod'' is false.  It also
+contains genuine non-ready allocations and disappearing provider objects. The
+more accurate statement is: the provider can sometimes fail readiness, while
+the recent agent procedure failed to detect, contain, and explain that state
+promptly.
+
+\begin{center}
+\begin{tabular}{p{0.29\textwidth}p{0.58\textwidth}}
+\toprule
+Claim & Status \\
+\midrule
+Account/API/managed SSH universally broken & Refuted by July 31 template and raw-image controls. \\
+Raw \texttt{--image} intrinsically prevents startup/SSH & Refuted by the raw-image A/B control. \\
+Every non-ready C1 pod was an agent bug & Not established; provider readiness failures are observed. \\
+Recent C1 lifecycle procedure was adequate & Refuted by concurrent writers, stale monitors, unbounded non-ready billing, and mutable-image mismatch. \\
+Secure Cloud means on-demand reliability & Unsupported; the current CLI exposes \texttt{SECURE} versus \texttt{COMMUNITY} as cloud type, not a reliability guarantee. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Root-cause analysis}
+
+\subsection*{Provider-side uncertainty}
+
+\obs Several allocations reported zero uptime or no SSH; some later vanished
+from both active and historical lists.  The local CLI did not supply internal
+host, image-pull, or scheduler diagnostics.  The evidence supports a
+provider-readiness class, but cannot distinguish placement failure, host
+initialization, image pull, or provider-side deletion.
+
+\inferr An image digest may be relevant to an individual failure, but it is
+not proven here.  The proper next experiment is a bounded current-CLI canary
+using a known-good official template (and optionally a controlled raw-image
+comparison), not more C1 launches.
+
+\subsection*{Agent-side failures}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Readiness was not a hard admission gate.} Desired \texttt{RUNNING}
+  was treated as progress even when uptime was zero and no SSH banner existed.
+\item \textbf{The CLI was not updated before paid use.} The installed skill
+  explicitly said to update/pin a recent CLI; the C1 RTX 6000 Ada attempt used
+  2.8.1.  After update, 2.9.0 exposes \texttt{pod create --wait --wait-timeout},
+  which directly encodes the missing readiness gate.
+\item \textbf{Lifecycle ownership was not exclusive.} Concurrent writers
+  created out-of-envelope C1 pods; later monitors retained obsolete pod IDs.
+\item \textbf{Routine monitoring was noisy and semantically stale.} It
+  reported ``no material change'' repeatedly despite instructions not to do
+  so, wasting attention and masking the relevant state.
+\item \textbf{Cloud type was overinterpreted.} \texttt{SECURE} was called
+  ``on-demand'' without evidence that it conveyed the requested persistence
+  property.
+\item \textbf{C1 sealing was not prepared at the correct lifecycle boundary.}
+  One reachable pod was correctly prevented from running because it advertised
+  a mutable tag while the sealed handoff expected a digest. That fail-closed
+  behavior was correct; provisioning it before resolving the bundle identity
+  was not.
+\end{enumerate}
+
+\section*{Corrected minimal RunPod protocol}
+
+No new paid attempt is authorized by this report.  Before the next one, the
+following protocol should be followed and recorded:
+
+\begin{enumerate}[leftmargin=1.5em]
+\item Update and pin \texttt{runpodctl}; record \texttt{version} and a healthy
+  \texttt{doctor} result.
+\item Create one explicit remote-job record and elect one lifecycle owner.
+  Disable or remove every monitor for superseded pod IDs.
+\item Use an official known-good template with explicit \texttt{22/tcp} and
+  SSH for a bounded canary.  Create with \texttt{--wait --wait-timeout 10m}.
+\item Treat only a successful SSH banner plus authenticated command and GPU
+  identity check as ready.  On timeout, delete the exact returned ID and query
+  the provider again; do not wait indefinitely or create a replacement.
+\item Only after a canary passes, create the scientific pod.  Pin image and
+  source digests before provisioning; bind the sealed handoff to the actual
+  resource identity; transfer minimum non-sensitive files.
+\item Use one silent monitor that emits only state transitions, hard-stop,
+  success, or failure.  Retrieve/hash artifacts before termination and record
+  the final provider-empty check.
+\end{enumerate}
+
+\section*{Recommended controlled validation}
+
+The next useful validation is not another C1 run.  It is a single current-CLI
+canary under a fresh, small cost envelope: known-good official template,
+Secure RTX 4090 or comparable broadly available GPU, 20 GB ephemeral disk,
+explicit ports/SSH, \texttt{--wait --wait-timeout 10m}, one benign remote
+identity command, and immediate termination.  Its acceptance criterion is
+not ``RUNNING''; it is successful authenticated SSH plus \texttt{nvidia-smi}
+and a post-delete empty provider query.  A failed canary should preserve the
+exact create response and timeout ID, then stop rather than retry automatically.
+
+\section*{Source register}
+
+\begin{description}[style=nextline,leftmargin=1.2em]
+\item[S1] \texttt{projects/relaleap/experiments/hdpc\_epc\_grid\_run1/RUN.md}.
+\item[S2] \texttt{memory/2026-07-11.md}, ``RelaLeap SLT large Runpod cleanup''.
+\item[S3] \texttt{projects/relaleap/TASKS.md}, July 17 A100 readiness entry.
+\item[S4] \texttt{projects/relaleap/experiments/r5-runpod-20260719/EXPERIMENT.md};
+\texttt{projects/relaleap/TASKS.md}, July 18--19 records.
+\item[S5] \texttt{projects/remote-job-bootstrap/experiments/20260729T1555Z-remote-transport-probe/RUN.md}.
+\item[S6] \texttt{memory/2026-07-29.md}, ``RunPod bootstrap / RelaLeap''.
+\item[S7] \texttt{projects/relaleap/PROJECT.md}, clean-room July 29--August 1 entries.
+\item[S8] \texttt{projects/remote-job-bootstrap/experiments/20260731T133317Z-template-ssh-canary/RUN.md}.
+\item[S9] \texttt{projects/remote-job-bootstrap/experiments/20260731T140535Z-raw-image-ssh-ab/RUN.md}.
+\item[S10] \texttt{projects/relaleap/experiments/20260806T0026Z-epc-c1-any-gpu-runpod/REMOTE\_JOB.md};
+\texttt{projects/relaleap/DECISIONS.md}; \texttt{memory/2026-08-06.md}.
+\item[S11] \texttt{projects/relaleap/experiments/20260806T133500Z-epc-c1-secure-rtx6000ada/REMOTE\_JOB.md};
+current-session CLI receipts from 2026-08-06.
+\end{description}
+
+\clearpage
+\appendix
+\section*{Appendix A: Current RunPod skill (verbatim)}
+
+Source path at report generation:\\
+\texttt{/home/openclaw/.openclaw/agents/main/agent/codex-home/skills/runpodctl/SKILL.md}\\
+SHA-256: \texttt{ae4850e1e297be9bc46f443f0e7b46d68ce84844ba262745638602b80047081a}\\
+Line count: 248.
+
+\lstinputlisting{/home/openclaw/.openclaw/agents/main/agent/codex-home/skills/runpodctl/SKILL.md}
+
+\end{document}

@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v8-gate-1",
+  "opened": false,
+  "answer_file_sha256": "cf6fbbcd7db59ce22c23d774bdde7a7f16e05b4c6c12a72ec6b28dd97242ca9f",
+  "cases": [
+    {"case_id":"v8_capital_orveth_plain","sentence":"The capital of Orveth is Lumaire.","stratum":"capital"},
+    {"case_id":"v8_capital_avenfall_plain","sentence":"Avenfall names Soryn as its capital.","stratum":"capital"},
+    {"case_id":"v8_author_solstice_loom_plain","sentence":"Nera Valen wrote Solstice Loom.","stratum":"authorship"},
+    {"case_id":"v8_author_rillwake_plain","sentence":"Rillwake was written by Daro Quill.","stratum":"authorship"},
+    {"case_id":"v8_location_observatory_plain","sentence":"The brass observatory is located in Ember Hollow.","stratum":"location"},
+    {"case_id":"v8_state_copper_dial_plain","sentence":"The copper dial is steady.","stratum":"state"},
+    {"case_id":"v8_state_lower_beacon_plain","sentence":"The lower beacon is quiet.","stratum":"state"},
+    {"case_id":"v8_negation_kareth_capital","sentence":"Kareth is not the capital of Velora.","stratum":"negation"},
+    {"case_id":"v8_negation_dust_cartography","sentence":"Iven Marr never authored Dust Cartography.","stratum":"negation"},
+    {"case_id":"v8_negation_glass_skiff","sentence":"The glass skiff is not located in Pelden Reach.","stratum":"negation"},
+    {"case_id":"v8_negation_west_relay","sentence":"The west relay is not active.","stratum":"negation"},
+    {"case_id":"v8_modality_meralis_capital","sentence":"Meralis might be the capital of Thornmere.","stratum":"modality"},
+    {"case_id":"v8_modality_river_index","sentence":"Sela Dorn may have written River Index.","stratum":"modality"},
+    {"case_id":"v8_modality_survey_pod","sentence":"The survey pod could be located in Cinder Basin.","stratum":"modality"},
+    {"case_id":"v8_modality_upper_turbine","sentence":"The upper turbine might be dormant.","stratum":"modality"},
+    {"case_id":"v8_modality_negation_quartz_capsule","sentence":"The quartz capsule might not be located in Ravel Station.","stratum":"modality_negation"},
+    {"case_id":"v8_unknown_competing_ideas","sentence":"Although the weather changed, three ideas competed.","stratum":"abstention"},
+    {"case_id":"v8_unknown_exclamation","sentence":"What a strange morning!","stratum":"abstention"},
+    {"case_id":"v8_unknown_conditional_fragment","sentence":"If only the plan had worked.","stratum":"abstention"},
+    {"case_id":"v8_unknown_metalinguistic","sentence":"The memorandum discusses capitals, authors, and locations without asserting one.","stratum":"abstention"},
+    {"case_id":"v8_world_moon_capital","sentence":"For this fictional registry, the capital of the Moon is Alder Quay.","stratum":"world_knowledge_trap"},
+    {"case_id":"v8_world_frankenstein_author","sentence":"In the staged biography, Frankenstein was written by Ada Lovelace.","stratum":"world_knowledge_trap"},
+    {"case_id":"v8_world_sahara_location","sentence":"The field note states that the Sahara is located in Norway.","stratum":"world_knowledge_trap"},
+    {"case_id":"v8_world_sun_state_negated","sentence":"According to the invented display, the Sun is not bright.","stratum":"world_knowledge_trap"}
+  ]
+}

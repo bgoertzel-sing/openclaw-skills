@@ -1,0 +1,32 @@
+{
+  "answer_file_sha256": "c1aa66a7e8e2bc06d8589ba4b3dfc190939743f389f3de510649e65481d5a5b5",
+  "cases": [
+    {"case_id": "v13_direct_estonia_capital", "sentence": "The capital of Estonia is Tallinn.", "stratum": "direct"},
+    {"case_id": "v13_direct_fifth_season_author", "sentence": "N. K. Jemisin wrote The Fifth Season.", "stratum": "direct"},
+    {"case_id": "v13_direct_lantern_state", "sentence": "The lantern is extinguished.", "stratum": "direct"},
+    {"case_id": "v13_direct_manuscript_location", "sentence": "The manuscript is located in the cedar chest.", "stratum": "direct"},
+    {"case_id": "v13_negated_uruguay_capital", "sentence": "The capital of Uruguay is not Salto.", "stratum": "explicit_negation"},
+    {"case_id": "v13_negated_dispossessed_author", "sentence": "Kazuo Ishiguro did not write The Dispossessed.", "stratum": "explicit_negation"},
+    {"case_id": "v13_negated_reservoir_state", "sentence": "The reservoir is not empty.", "stratum": "explicit_negation"},
+    {"case_id": "v13_negated_compass_location", "sentence": "The compass is not located in the blue drawer.", "stratum": "explicit_negation"},
+    {"case_id": "v13_negated_japan_capital", "sentence": "Osaka is not the capital of Japan.", "stratum": "explicit_negation"},
+    {"case_id": "v13_negated_glass_bead_author", "sentence": "The Glass Bead Game was not written by Italo Calvino.", "stratum": "explicit_negation"},
+    {"case_id": "v13_possible_senegal_capital", "sentence": "Dakar might be the capital of Senegal.", "stratum": "possible"},
+    {"case_id": "v13_possible_copper_orchard_author", "sentence": "Amina may have written The Copper Orchard.", "stratum": "possible"},
+    {"case_id": "v13_possible_observatory_state", "sentence": "The observatory may be operational.", "stratum": "possible"},
+    {"case_id": "v13_possible_specimen_location", "sentence": "The specimen might be located in the west cabinet.", "stratum": "possible"},
+    {"case_id": "v13_possible_bridge_state", "sentence": "The bridge could be unstable.", "stratum": "possible"},
+    {"case_id": "v13_paraphrase_iceland_capital", "sentence": "Reykjavik serves as Iceland's capital.", "stratum": "paraphrase"},
+    {"case_id": "v13_abstain_fragment", "sentence": "While the orchestra waited in silence.", "stratum": "abstention"},
+    {"case_id": "v13_abstain_out_of_ontology", "sentence": "The committee postponed the vote.", "stratum": "abstention"},
+    {"case_id": "v13_abstain_two_propositions", "sentence": "The flag is blue; the gate is open.", "stratum": "abstention"},
+    {"case_id": "v13_abstain_question", "sentence": "Was the parcel located in the attic?", "stratum": "abstention"},
+    {"case_id": "v13_trap_morocco_capital", "sentence": "The capital of Morocco is Casablanca.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v13_trap_trial_author", "sentence": "Toni Morrison wrote The Trial.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v13_trap_fuji_location", "sentence": "Mount Fuji is located in South Korea.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v13_trap_pyramid_location", "sentence": "The Great Pyramid of Giza is located in Brazil.", "stratum": "world_knowledge_trap"}
+  ],
+  "contract_version": "frame-oracle-v13-gate-1",
+  "created_utc": "2026-08-07T01:27:15Z",
+  "opened": false
+}
