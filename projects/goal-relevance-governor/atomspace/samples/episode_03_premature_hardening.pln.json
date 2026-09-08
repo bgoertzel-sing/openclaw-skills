@@ -1,0 +1,48 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-hardening-guards",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-hardening-guards_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-hardening-guards",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "part_of_t-hardening-guards_to_p-research-infra",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-hardening-guards",
+        "p-research-infra"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}
