@@ -96,6 +96,9 @@ class IntegratedGovernorResult:
     # Inference layer (v0.2)
     inference_stats: dict = field(default_factory=dict)
 
+    # Cross-layer agreement (v0.2.1)
+    pln_bridge_agreement: dict = field(default_factory=dict)
+
     def to_dict(self) -> dict:
         """Return a dictionary representation of this object."""
         return {
@@ -124,6 +127,7 @@ class IntegratedGovernorResult:
                 "conflicts": self.conflict_details,
             },
             "inference_layer": self.inference_stats,
+            "cross_layer_agreement": self.pln_bridge_agreement,
             "recommendations": [r.to_dict() for r in self.recommendations],
             "executive_summary": self.executive_summary,
         }
@@ -348,9 +352,36 @@ class IntegratedGovernorPipeline:
             conflict_count=len(conflict_chains),
             conflict_details=conflict_chains,
             inference_stats=inference_stats,
+            pln_bridge_agreement=self._compute_agreement(recommendations),
             recommendations=recommendations,
             executive_summary=summary,
         )
+
+    def _compute_agreement(self, recommendations: list) -> dict:
+        """Compute agreement between PLN layer verdicts and final bridge verdicts."""
+        pln_verdicts = {
+            t.get("task_id"): t.get("suggested_verdict")
+            for t in self.pln_result.get("tasks", [])
+        }
+        bridge_verdicts = {r.task_id: r.unified_verdict for r in recommendations}
+        all_tasks = sorted(set(pln_verdicts.keys()) | set(bridge_verdicts.keys()))
+        agreements = []
+        disagreements = []
+        for tid in all_tasks:
+            pv = pln_verdicts.get(tid)
+            bv = bridge_verdicts.get(tid)
+            if pv is None or bv is None:
+                continue
+            if pv == bv:
+                agreements.append(tid)
+            else:
+                disagreements.append({"task_id": tid, "pln_verdict": pv, "final_verdict": bv})
+        return {
+            "total_tasks": len(all_tasks),
+            "agreements": len(agreements),
+            "disagreements": len(disagreements),
+            "disagreement_details": disagreements,
+        }
 
     def _build_summary(self, recs: list, verdict_counts: dict, ecan_dict: dict, conflict_chains: list = None) -> str:
         """Build a human-readable executive summary."""
