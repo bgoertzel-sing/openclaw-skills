@@ -1,0 +1,65 @@
+
+# GOLEM-Iter Phase G6 Design: Adaptive Stimulus & Forgetting
+
+## Context
+G1-G5 implemented: stimulus injector (G1), claim-state tagger (G2), attention-ranked context injection (G3), rhythm-only empty-AF (G4), 1000-cycle conservation/claim-state invariants (G5). G6 was deferred post-v0.1.
+
+## G6 Objective
+Implement adaptive forgetting and evidence-based stimulus boosting so the ECAN attention bank maintains a healthy cycling of beliefs without manual parameter tuning.
+
+## Components
+
+### G6.1: Evidence-Weighted STI Boost (DONE in ECAN tuning)
+- Already implemented in commit 1614ea9: evidence_sti_boost scales stimulus by evidence support count
+- Lowered from 5.0→2.0 default, 50.0→20.0 max in commit 0e0c82e
+- This means beliefs with more evidence get proportionally more STI from the same stimulus
+
+### G6.2: Adaptive Forgetting Threshold
+**Problem**: FORGET_THRESHOLD=0.05 is effectively zero — atoms are never forgotten. The AF grows unbounded.
+**Design**: 
+- Track AF_SIZE_RATIO = len(AF) / AF_MAX_SIZE
+- When ratio > 0.8, raise FORGET_THRESHOLD dynamically: forget_threshold = MIN_AF_STI * (1 - 0.5 * (1 - AF_SIZE_RATIO))
+- When ratio < 0.3, reset to base threshold
+- This creates a natural backpressure: as AF fills, more aggressively forget old beliefs
+
+### G6.3: Stimulus Decay Scheduler  
+**Problem**: All stimuli hit at once, creating STI spikes that take 200+ cycles to drain with default rent.
+**Design**:
+- StimulusQueue: stimuli are queued and released over N cycles (default N=5)
+- Each cycle releases 1/N of queued stimulus
+- This smooths the STI curve and reduces AF churn
+- Combined with the evidence-weighted boost (G6.1), this creates a more stable attention landscape
+
+### G6.4: LTI-Based Long-Term Promotion
+**Problem**: LTI accumulates but has no effect on which beliefs survive forgetting.
+**Design**:
+- When a belief reaches LTI > PROMOTION_LTI_THRESHOLD (default 50000), mark it as "tenured"
+- Tenured beliefs get a FORGET_IMMUNITY flag — they are excluded from forget candidate scanning
+- This preserves well-established beliefs while allowing recent/contested beliefs to cycle naturally
+- Tenure is revoked if LTI drops below threshold - hysteresis (default 40000) to prevent flapping
+
+### G6.5: Cross-Domain Evidence Diffusion
+**Problem**: Importance diffusion only flows along evidence links within the same domain (ECAN bridge sync).
+**Design**:
+- When two beliefs share a common evidence source, create a virtual diffusion link
+- Stimulus to one belief partially diffuses to co-evidenced beliefs (MAX_SPREAD_PERCENTAGE * 0.5)
+- This creates "evidence cluster priming" — supporting one belief in a cluster boosts all
+- Already partially implemented in commit dcd7fba (cross-cluster evidence discovery)
+
+## Testing Plan
+- G6.2: Test that FORGET_THRESHOLD adapts with AF_SIZE_RATIO, verify forgetting kicks in when AF is crowded
+- G6.3: Test that stimulus is released over N cycles, verify smoothed STI curve
+- G6.4: Test tenure promotion/revocation, verify tenured beliefs survive forget cycle
+- G6.5: Test cross-domain diffusion with shared evidence sources
+
+## Estimation
+- G6.2: ~80 LOC + 15 test cases
+- G6.3: ~60 LOC + 12 test cases  
+- G6.4: ~50 LOC + 10 test cases
+- G6.5: ~70 LOC + 15 test cases
+- Total: ~260 LOC + 52 tests, est 2-3 hours
+
+## Dependencies
+- Requires merged ECAN tuning (agent/ecan-tuning → main)
+- Requires G1-G5 (already done)
+- No external dependencies

@@ -1,0 +1,10 @@
+[
+  {
+    "expect": "HUMAN-MSG:",
+    "answer": "(query \"REAL_METTA_CHROMA_20260813\")"
+  },
+  {
+    "expect": "amber otter 4517",
+    "answer": "(send \"QUERY_THROUGH_PETTA_OK: amber otter 4517\")"
+  }
+]

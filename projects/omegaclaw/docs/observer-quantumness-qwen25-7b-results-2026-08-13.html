@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Observer-Relative Operator-Linguistics Experiment — Qwen2.5-7B Results</title>
+<style>
+@page { size: Letter; margin: 0.68in 0.68in 0.72in; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: #667085; } }
+body { font-family: "DejaVu Sans", sans-serif; color: #17202a; font-size: 9.3pt; line-height: 1.38; }
+h1 { font-size: 21pt; color: #17324d; margin: 0 0 6px; line-height: 1.12; }
+h2 { font-size: 14pt; color: #174f6b; margin: 18px 0 7px; border-bottom: 1px solid #b9ced9; padding-bottom: 3px; }
+h3 { font-size: 11pt; color: #27566d; margin: 13px 0 4px; }
+p { margin: 5px 0 8px; }
+ul, ol { margin: 4px 0 9px 20px; padding: 0; }
+li { margin: 2px 0; }
+.subtitle { color: #526676; font-size: 11pt; margin-bottom: 14px; }
+.verdict { border-left: 6px solid #a33a2b; background: #fff2ef; padding: 10px 12px; margin: 13px 0; font-size: 11pt; }
+.finding { border-left: 5px solid #28728f; background: #eef7fa; padding: 8px 11px; margin: 10px 0; }
+.note { border-left: 4px solid #b8851e; background: #fff8e8; padding: 8px 10px; margin: 10px 0; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 8.2pt; }
+th { background: #e8f1f5; text-align: left; color: #17324d; }
+th, td { border: 1px solid #b8c7cf; padding: 4px 5px; vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafb; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.small { font-size: 7.8pt; color: #536371; }
+.figure { text-align: center; margin: 10px 0 14px; page-break-inside: avoid; }
+.figure img { max-width: 88%; max-height: 3.15in; }
+.caption { font-size: 8pt; color: #536371; margin-top: 4px; }
+.pagebreak { page-break-before: always; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.2pt; background: #f2f4f5; padding: 1px 3px; }
+.path { word-break: break-all; font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; }
+</style>
+</head>
+<body>
+<h1>Observer-Relative Operator-Linguistics Experiment</h1>
+<div class="subtitle">Completed Qwen2.5-7B run: methods, results, negative conclusion, and follow-up questions<br>Prepared 13 August 2026 for Benjamin Goertzel and the model that produced the source package</div>
+
+<div class="verdict"><strong>Bottom line.</strong> This run found strong ambiguity-dependent response variability and query-order sensitivity, but it did <strong>not</strong> provide positive evidence for “quantumness” under the package’s own conservative criteria. No Contextuality-by-Default result had a bootstrap lower bound above zero, and the complex-POVM model predicted held-out behavior substantially worse than the strongest signed-real, NMF, and matched/larger real-POVM baselines.</div>
+
+<h2>1. Provenance and scope</h2>
+<p>The experiment was based on the supplied archive <code>ollama_observer_quantumness_experiment.zip</code>, preserved byte-for-byte with SHA-256:</p>
+<p class="path">2f01eecef140f6b8d3e05c34f4353b8885c1b40d398c62f8f8974d970df4551a</p>
+<p>The archive contains the black-box Ollama implementation, task definitions, tests, documentation, and a broader research specification. The local working tree later acquired a resumable background runner, the completed run artifacts, and limited source/document changes. This report distinguishes the <em>implemented black-box pipeline</em> from future experiments merely proposed in the specification.</p>
+
+<table>
+<tr><th>Item</th><th>Recorded value</th></tr>
+<tr><td>Model</td><td><code>qwen2.5:7b</code>, Q4_K_M, 7.6B parameters</td></tr>
+<tr><td>Model digest</td><td class="path">845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e</td></tr>
+<tr><td>Ollama / Python / OS</td><td>Ollama 0.31.1; Python 3.10.12; Linux 7.0.11-76070011-generic x86_64</td></tr>
+<tr><td>Generation</td><td>temperature 0.85; top-p 0.95; max 24 predicted tokens; base seed 20260812</td></tr>
+<tr><td>Design</td><td>5 tasks × 2 ambiguity conditions × 4 cycle edges × 2 query directions × 24 repeats</td></tr>
+<tr><td>Observed execution</td><td>1,920 complete paired trials = 3,840 sequential model calls; 0 failed trials; 80/80 expected cells</td></tr>
+<tr><td>Compression</td><td>dimension 2; five model classes; 8 restarts/model; 1,600 optimization steps/restart</td></tr>
+</table>
+
+<h2>2. What was and was not executed</h2>
+<h3>Completed</h3>
+<ol>
+<li><strong>Choice uncertainty:</strong> test whether ambiguous passages yield more variable judgments than resolved passages.</li>
+<li><strong>Sequential order effects:</strong> compare joint responses when related binary questions are asked in opposite orders.</li>
+<li><strong>Residual contextuality:</strong> apply a cyclic-4 Contextuality-by-Default (CbD) inequality after including observed marginal/direct influences.</li>
+<li><strong>Operator compression:</strong> compare a complex state-plus-POVM model against nonnegative, signed-real, same-dimension real-POVM, and matched/larger-budget real-POVM baselines on held-out repeats.</li>
+</ol>
+<h3>Not completed</h3>
+<ul>
+<li>Replication across additional random seeds, model families, parameter scales, or quantizations.</li>
+<li>Proposed semantically independent, deterministic, and intentionally order-sensitive negative controls.</li>
+<li>Synthetic finite-sample/null calibration beyond the reported bootstrap analysis.</li>
+<li>Additional explicit classical latent-update baselines.</li>
+<li>White-box hidden-state collection, Koopman/dynamic-mode analysis, observer-alignment tests, activation patching, causal scrubbing, or other interventions. Ollama’s public generation API does not expose the required internal states.</li>
+</ul>
+
+<h2>3. Run integrity and manipulation checks</h2>
+<table>
+<tr><th>Diagnostic</th><th class="num">Result</th><th>Interpretation</th></tr>
+<tr><td>Complete paired trials</td><td class="num">1,920</td><td>Full planned black-box behavioral grid completed.</td></tr>
+<tr><td>Failed trials</td><td class="num">0</td><td>No missing cells due to recorded call failures.</td></tr>
+<tr><td>Non-JSON fallback parses</td><td class="num">0 / 3,840</td><td>All answers satisfied the structured-output path.</td></tr>
+<tr><td>Positive option mapped to label A, first question</td><td class="num">0.510</td><td>Label randomization was approximately balanced.</td></tr>
+<tr><td>Positive option mapped to label A, second question</td><td class="num">0.501</td><td>Label randomization was approximately balanced.</td></tr>
+<tr><td>Resolved-condition agreement with explicit facts</td><td class="num">0.954</td><td>The disambiguating manipulation generally produced the intended answer.</td></tr>
+</table>
+
+<div class="finding"><strong>Observed manipulation effect:</strong> mean empirical binary entropy was <strong>0.5045 bits</strong> for ambiguous passages and <strong>0.1408 bits</strong> for resolved passages. The ambiguity manipulation clearly altered response variability.</div>
+<div class="figure"><img src="../workspace/experiments/ollama_observer_quantumness_experiment/runs/full_qwen25_7b/choice_entropy_by_condition.png"><div class="caption">Choice entropy by condition. Source: completed run artifact.</div></div>
+
+<h2 class="pagebreak">4. Sequential order effects</h2>
+<p>The principal order-effect statistic was the total-variation distance between the joint response distributions obtained under forward and reverse question order.</p>
+<table>
+<tr><th>Condition</th><th class="num">Mean TV swap defect</th></tr>
+<tr><td>Ambiguous</td><td class="num">0.4058</td></tr>
+<tr><td>Resolved</td><td class="num">0.0846</td></tr>
+<tr><td><strong>Ambiguous − resolved</strong></td><td class="num"><strong>0.3212</strong></td></tr>
+</table>
+<div class="finding"><strong>Supported claim:</strong> sequential judgments were substantially more order-sensitive before disambiguating evidence was supplied. This is evidence of observer/query-order disturbance, but order effects alone are compatible with ordinary classical sequential dependence and do not establish quantum-like contextuality.</div>
+<div class="figure"><img src="../workspace/experiments/ollama_observer_quantumness_experiment/runs/full_qwen25_7b/swap_defect_by_condition.png"><div class="caption">Swap defect by ambiguity condition. Source: completed run artifact.</div></div>
+
+<h2>5. Contextuality-by-Default result</h2>
+<p>The cyclic-4 test compared the maximum odd-signed sum of four context-specific product expectations against the noncontextual bound <code>2 + ICC</code>, where ICC captures marginal inconsistency/direct influence. A positive point estimate is not persuasive by itself because maximization produces upward bias in finite samples; the preregistered interpretation requires a bootstrap lower bound above zero.</p>
+<table>
+<tr><th>Condition</th><th class="num">Tasks with positive point estimate</th><th class="num">Tasks with bootstrap lower bound &gt; 0</th></tr>
+<tr><td>Ambiguous</td><td class="num">2 / 5</td><td class="num"><strong>0 / 5</strong></td></tr>
+<tr><td>Resolved</td><td class="num">0 / 5</td><td class="num"><strong>0 / 5</strong></td></tr>
+</table>
+<div class="verdict"><strong>CbD gate: not passed.</strong> The run did not establish statistically secure residual contextuality beyond measured marginal/direct influences.</div>
+<div class="figure"><img src="../workspace/experiments/ollama_observer_quantumness_experiment/runs/full_qwen25_7b/contextuality_by_condition.png"><div class="caption">CbD contextuality screen by condition. Positive point estimates did not survive the bootstrap lower-bound criterion.</div></div>
+
+<h2 class="pagebreak">6. Operator-compression comparison</h2>
+<p>Lower held-out bits per response pair is better. The package’s positive criterion requires the complex model to beat <em>all four</em> controls, including signed-real and matched-or-larger-budget real-POVM models.</p>
+<table>
+<tr><th>Model</th><th class="num">Mean held-out bits/pair</th><th class="num">SD</th><th class="num">Best restart</th><th class="num">Effective parameters</th></tr>
+<tr><td>signed rank 4</td><td class="num"><strong>0.6200</strong></td><td class="num">0.0695</td><td class="num">0.5531</td><td class="num">168</td></tr>
+<tr><td>NMF rank 4</td><td class="num">0.7359</td><td class="num">0.0603</td><td class="num">0.6693</td><td class="num">168</td></tr>
+<tr><td>real POVM d3, matched/larger budget</td><td class="num">0.8198</td><td class="num">0.0161</td><td class="num">0.8096</td><td class="num">252</td></tr>
+<tr><td>complex POVM d2</td><td class="num"><strong>1.1378</strong></td><td class="num">0.000002</td><td class="num">1.1378</td><td class="num">168</td></tr>
+<tr><td>real POVM d2, same dimension</td><td class="num">1.1661</td><td class="num">0.0066</td><td class="num">1.1590</td><td class="num">126</td></tr>
+</table>
+<div class="verdict"><strong>Compression gate: decisively not passed.</strong> The d2 complex POVM narrowly outperformed only the smaller same-dimension real-POVM control. It performed much worse than signed-real, NMF, and the matched/larger-budget real-POVM model. The data therefore favor simpler classical or real-valued predictive descriptions among those tested.</div>
+<div class="figure"><img src="../workspace/experiments/ollama_observer_quantumness_experiment/runs/full_qwen25_7b/compression_comparison_d2.png"><div class="caption">Held-out compression comparison across five candidate model classes and eight restarts each.</div></div>
+
+<h2>7. Scientific interpretation</h2>
+<h3>Directly supported</h3>
+<ul>
+<li>The ambiguity manipulation changed response uncertainty.</li>
+<li>Qwen2.5-7B’s sequential judgments were strongly query-order-sensitive in ambiguous passages, and this effect largely collapsed after explicit resolution.</li>
+</ul>
+<h3>Not supported by this run</h3>
+<ul>
+<li>Statistically secure residual CbD contextuality.</li>
+<li>A complex operator model as a more economical held-out predictor than the tested classical and real-operator alternatives.</li>
+<li>Internal long-lived complex resonances or causal phase variables; no hidden states were observed.</li>
+<li>Any claim that language, words, or the model are intrinsically or physically quantum.</li>
+</ul>
+<div class="note"><strong>Epistemic status:</strong> this is a negative result for one Qwen2.5-7B quantization, one task collection, one prompt protocol, and one base seed. It narrows the hypothesis but does not prove that no model/task/observer configuration can exhibit the stronger signatures.</div>
+
+<h2>8. Questions for the model that authored the ZIP</h2>
+<ol>
+<li>Do you agree that the package’s own positive criterion fails because both the bootstrap-secure CbD gate and the all-baseline complex-compression gate failed?</li>
+<li>Is held-out “bits per pair” directly comparable across every fitted model in the current implementation, including preprocessing, train/test split, normalization, and regularization? Please audit for any asymmetry.</li>
+<li>The complex d2 loss has extremely small restart variance while the low-rank classical models vary materially. Does this suggest stable convergence, a restrictive parameterization, vanishing gradients, or an implementation pathology?</li>
+<li>Could a dimension mismatch unfairly disadvantage complex d2? If higher dimensions are tested, what parameter-matched comparison would prevent flexibility from masquerading as quantum structure?</li>
+<li>Which negative controls and synthetic nulls are essential before interpreting positive point-estimate CbD excess?</li>
+<li>What minimum replication matrix across seeds, paraphrases, model families, and quantizations would make either a positive or negative conclusion persuasive?</li>
+<li>What explicit classical latent-update or sequential-response baselines should be added to explain the large swap defect without operator language?</li>
+<li>Which white-box experiment would most sharply discriminate ordinary contextual computation from a persistent complex-mode explanation?</li>
+</ol>
+
+<h2>9. Artifact references</h2>
+<p class="small">Run root:</p>
+<p class="path">projects/omegaclaw/workspace/experiments/ollama_observer_quantumness_experiment/runs/full_qwen25_7b/</p>
+<p class="small">Principal evidence: <code>manifest.json</code>, <code>records.jsonl</code>, <code>analysis_summary.md</code>, <code>analysis_aggregate.json</code>, <code>swap_defects.csv</code>, <code>cbd_contextuality.csv</code>, <code>choice_entropy.csv</code>, <code>resolved_accuracy.csv</code>, <code>compression_summary_d2.csv</code>, and <code>compression_restarts_d2.csv</code>. Package interpretation rules: preserved archive <code>README.md</code> and <code>CODING_AGENT_SPEC.md</code>.</p>
+<p class="small">This summary was generated from preserved local artifacts; no experiment was rerun and no empirical file was modified.</p>
+</body>
+</html>

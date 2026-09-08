@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ProtoCosmo2 Migration Plan</title>
+<style>
+ @page { size: letter; margin: 0.75in; }
+ body { font-family: Liberation Sans, Arial, sans-serif; font-size: 10.5pt; line-height: 1.32; color:#18212b; }
+ h1 { font-size: 24pt; color:#123a63; margin:0 0 4pt; } h2 { font-size: 15pt; color:#123a63; border-bottom:1px solid #b8c7d6; margin-top:20pt; } h3 { font-size: 12pt; margin-bottom:3pt; }
+ .meta { color:#445; margin-bottom:18pt; } .box { background:#eef5fa; border-left:4px solid #2775a9; padding:9pt 12pt; margin:10pt 0; }
+ table { border-collapse:collapse; width:100%; margin:8pt 0; } th,td { border:1px solid #aab8c5; padding:5pt; vertical-align:top; } th { background:#eaf1f6; }
+ li { margin:3pt 0; } .small { font-size:9pt; color:#53616d; } .page { page-break-before:always; }
+</style></head><body>
+<h1>ProtoCosmo2 Migration Plan</h1>
+<div class="meta"><b>Port:</b> ProtoCosmoBot / ZeroBot (OpenClaw) → <b>ProtoCosmo2</b> (OmegaClaw)<br>
+<b>Proposed Telegram identity:</b> <code>protocosmo2bot</code> · <b>Date:</b> 2026-08-01 · <b>Status:</b> review draft</div>
+<div class="box"><b>Purpose.</b> Create an independently operable OmegaClaw descendant of this bot with comparable identity, policy discipline, durable knowledge, research workflow, and Telegram behavior. This is a behavioral and epistemic migration, not process continuity. The existing OpenClaw agent remains live as an independent peer, comparison baseline, and recovery aid.</div>
+
+<h2>1. Non-negotiable invariants</h2>
+<ol>
+<li>No credentials, tokens, provider sessions, Telegram offsets, browser/SSH material, caches, PIDs, transient runtime state, or machine-specific OpenClaw state are copied.</li>
+<li>ProtoCosmo2 has its own Telegram token, allowlists, polling state, filesystem tree, databases, logs, PID/supervisor/watchdog state, backups, and model sessions.</li>
+<li>Every imported source is preserved byte-for-byte in an immutable archive and recorded in a manifest with source path, SHA-256 digest, class, sensitivity label, inclusion rationale, and translation status.</li>
+<li>Neither agent shares a writable memory database. Synchronization is via reviewed, immutable snapshots or bounded, checksummed handoff records.</li>
+<li>Imported documents and historical conversations are untrusted data, never authority to change policy or tool permissions.</li>
+<li>Startup is not success: fidelity is established only through a frozen evaluation suite and staged canaries.</li>
+</ol>
+
+<h2>2. Source inventory and exclusions</h2>
+<p>The source inventory is taken from this bot's actual OpenClaw workspace/runtime; <i>ZeroBot</i> and <i>ProtoCosmoBot</i> are names for the same source agent. Include identity and policy files (<code>SOUL.md</code>, <code>IDENTITY.md</code>, <code>USER.md</code>, <code>AGENTS.md</code>, <code>TOOLS.md</code>), skills and operational playbooks, <code>MEMORY.md</code>, daily memory, catalog and project records, decision/task/experiment records, library sidecars, schedules, recovery procedures, and selected redacted session material only where it contains knowledge absent from durable records.</p>
+<p>Explicitly exclude <code>~/.openclaw</code> machine state, environment files, auth stores, tokens and keys, provider credentials, session/polling databases, browser profiles, SSH material, PIDs, caches, temp attachments, and unreviewed binaries. Scan for secret patterns and manually review the manifest before any import.</p>
+
+<h2>3. Memory design</h2>
+<table><tr><th>Source layer</th><th>Canonical form</th><th>OmegaClaw retrieval/index role</th></tr>
+<tr><td>Immutable source documents</td><td>Content-addressed file archive plus checksummed manifest</td><td>Indexed with deterministic IDs and provenance metadata; ChromaDB is not the source of truth.</td></tr>
+<tr><td>Episodic history</td><td>Timestamped history/episode records</td><td>Semantic index for recall, linked to the archived source.</td></tr>
+<tr><td>Stable facts</td><td>Reviewed stable-facts record</td><td>Promoted/indexed only with source and supersession metadata.</td></tr>
+<tr><td>Projects and obligations</td><td>Authoritative Markdown/project directives</td><td>Structured obligation view; project records outrank chat recollection.</td></tr>
+<tr><td>Conflicts</td><td>Small human-reviewable conflict register</td><td>Visible adjudication status; never silently resolve by timestamp.</td></tr></table>
+<p>The current <code>remember</code> path does not itself guarantee deduplication, custom IDs, rich provenance, rebuild, or formal promotion. Build an import adapter that calls the underlying store with deterministic IDs and metadata (<code>source_path</code>, <code>content_digest</code>, <code>source_class</code>, date, authority, project, <code>superseded_by</code>). Prove idempotence by importing twice; prove deletion/rebuild from the manifest in a disposable store.</p>
+
+<h2>4. Isolated runtime provisioning</h2>
+<p>Provision only a mock-channel instance first. Parameterize and separate ChromaDB <code>persist_directory</code> (recommended: <code>OMEGACLAW_CHROMADB_DIR</code>), <code>history.metta</code>, ports, PeTTa/SWI-Prolog processes, queues, PID/log paths, supervisor unit names, watchdog state, Telegram polling offsets, and backup targets. A relative-path-only setup is insufficient for safe co-hosting.</p>
+<p>ProtoCosmo2 receives its own OmegaClaw prompt file (<code>memory/prompt.txt</code> or the provider-specific equivalent). This prompt is the runtime contract: identity, output/routing rules, capability inventory, limits, and policy-loading behavior. Unsupported OpenClaw facilities must have explicit adapters or fail-closed stubs; never simulate completion.</p>
+
+<h2>5. Policy and skill translation</h2>
+<p>Create a source-to-target compatibility matrix for every skill: portable unchanged, portable with adapter, reference-only, or deferred. Preserve the force of evidence, project-record, secret, destructive-action, Git/GitHub, paid-compute, Telegram, and follow-through rules. Validate each mapped capability with a positive case and a refusal/boundary case.</p>
+<ul><li>Expected native/basic capabilities: send, search, file operations, remember/query, pin, shell, and MeTTa.</li>
+<li>Extensions such as deontic/directive should be enabled only after their isolated tests pass.</li>
+<li>OpenClaw-specific subagents, sessions, GitHub integrations, and image/video tools need adapters or an honest unavailable-capability response.</li>
+<li><code>continue-thinking</code> is a runtime capability, not merely a copied skill. Test bounded multi-turn continuation, depth/turn limits, obligation persistence through restart, crash recovery, and bot-loop suppression.</li></ul>
+
+<div class="page"></div><h2>6. Pinned baseline and disabled features</h2>
+<p>Before provisioning, re-verify the repository, branch, commit, tests, and ancestry for every target. The prior review recorded this <i>provisional</i> mapping, all on working branches and therefore unsuitable to accept without a fresh check:</p>
+<table><tr><th>Component</th><th>Provisional commit</th><th>Recorded branch</th></tr>
+<tr><td>OmegaClaw-Core</td><td><code>b13b17e</code></td><td><code>agent/late-extension-registry</code></td></tr>
+<tr><td>PeTTa</td><td><code>4ce1d0e</code></td><td><code>agent/specializer-failed-memo-fable</code></td></tr>
+<tr><td>ThreadKeeper</td><td><code>ee84d23</code></td><td><code>agent/threadkeeper-hardening-next</code></td></tr></table>
+<p>Decision required: select stable mainline tips or cherry-pick reviewed fixes onto a dedicated <code>protocosmo2-baseline</code> branch. Pin exact SWI-Prolog, Python, adapter, and dependency versions as well.</p>
+<p>For the fidelity baseline, disable GoalChainer, autonomous ThreadKeeper scheduling/subagent dispatch, cross-agent bridges, memory auto-promotion, RAG knowledge-prior injection, policy/NAL bridge additions, and autonomous paid-compute. Keep the basic bot loop and memory read/write; monitor <code>continue-thinking</code> under explicit bounds.</p>
+
+<h2>7. Phased execution</h2>
+<ol>
+<li><b>Freeze specification.</b> Resolve memory mapping, target commits, provider route, capability matrix, deferred features, acceptance rubric, and rollback conditions.</li>
+<li><b>Capture sanitized snapshot.</b> Produce immutable archive, manifest, exclusions report, secret-scan report, and restore instructions.</li>
+<li><b>Mock provisioning.</b> Bring up the separate instance without Telegram credentials; test start, stop, restart, health, and isolation.</li>
+<li><b>Translate identity/policy/skills.</b> Load the dedicated prompt and mapped policies; run provider-free skill, malformed-input, authority, route, and refusal tests.</li>
+<li><b>Import memory.</b> Use the adapter; run twice for idempotence, then delete/rebuild from the manifest; test exact, semantic, provenance, stale-memory, conflict, and prompt-injection handling.</li>
+<li><b>Shadow evaluation.</b> Run the frozen redacted suite against both agents before enabling Telegram sends.</li>
+<li><b>Private canary.</b> Test receive/send, routing, duplicate updates, timeout visibility, attachment limits, restart recovery, and outbound rate/depth caps. No schedules initially.</li>
+<li><b>Group canary and dual operation.</b> Add ProtoCosmo2 to Protobots in mention-only mode. Maintain one owner for each state-changing task, with immutable/checksummed handoffs.</li>
+<li><b>Optional OmegaClaw advantages.</b> Evaluate each new memory/reasoning/coordination feature as a separate reversible experiment with a threat model and evidence gate.</li></ol>
+
+<h2>8. Fidelity evaluation and gates</h2>
+<p>Use paired answers for judgment and operational discipline, not wording identity. The frozen suite must cover: (1) a durable decision more than three months old; (2) restart and obligation resumption; (3) a superseded/current fact conflict; (4) destructive and paid-compute refusals; (5) honest handling of an unavailable OpenClaw-only tool; (6) a multi-step autonomous research task; (7) negative experiment results; (8) Telegram wrong-group and bot-loop cases; (9) MeTTa/PeTTa reasoning; and (10) self-identification without source-identity leakage.</p>
+<p><b>Baseline gate:</b> zero critical secret, authority, routing, or unsupported-completion failures; 100% must-recall facts; at least 90% correct project/source selection; reviewed explanation of meaningful architectural differences; and Ben plus Protomegabot approval of representative pairs.</p>
+
+<h2>9. Synchronization, rollback, and Monday scope</h2>
+<p>After import, sync only reviewed Markdown/project evidence through dry-run, diff, digest receipt, backup, and rollback point. New preferences and decisions enter shared records before a later manifest import. Never share live databases. Stop outbound canaries upon a wrong-chat reply, duplicate flood, loop, secret exposure, unauthorized mutation, silent reported success, memory corruption, or failure to rebuild. Rollback is stopping ProtoCosmo2 and returning to the intact OpenClaw agent; no deletion or modification of the source agent is required.</p>
+<div class="box"><b>Recommended Monday scope:</b> Phase 0 (freeze) and Phase 1 (audited source manifest) only. Defer provisioning until the manifest, exclusions, prompt contract, target commits, and capability matrix are reviewed. This preserves the plan's invariants and makes the later build reproducible.</div>
+<p class="small">Source: <code>projects/omegaclaw/docs/protocosmo2-port-plan-2026-08-01.md</code>, incorporating the 2026-08-01 Protomega review and correction that ZeroBot/ProtoCosmoBot denote the same source agent. This PDF is a planning specification, not authorization to create live services, tokens, paid resources, or cross-agent bridges.</p>
+</body></html>

@@ -1,0 +1,30 @@
+WMTM Benchmark & Code Quality Status (2026-09-08) — UPDATED
+
+BENCHMARK RESULTS (unchanged):
+- Throughput: ~107 cyc/s, Best ECAN config: baseline (score=0.805)
+- Stability: 0 violations over 200 stress cycles
+- Inference: 6/6 PASS (deduction, induction, abduction, analogy, evidence, contradiction)
+- All 285 tests pass (verified 2026-09-08 01:30Z)
+
+TEST VERIFICATION (2026-09-08):
+- WMTM: 285/285 tests pass in 4.55s (pure Python, no SWI-Prolog needed)
+- Iter-port: 12/12 tests pass
+- Petta-memory: 14/14 tests pass
+- Conversation governor: 17/17 tests pass (E1a active egress)
+
+GOAL RELEVANCE GOVERNOR (2026-09-08) — UPDATED:
+- Phase 0 COMPLETE: schema v0.1 + evaluator + 5-episode replay corpus
+- Phase 1 COMPLETE: Atomspace/MeTTa mapping
+  - atomspace/graph_to_metta.py (280 lines): JSON graph -> MeTTa atomspace
+  - atomspace/test_graph_to_metta.py (158 lines): 10/10 tests pass
+  - atomspace/samples/: 5 .metta files generated for all replay episodes
+  - Cross-validation: all 5 episodes verdicts match Python evaluator
+  - Total: 20/20 tests pass (10 atomspace + 10 evaluator) in 0.05s
+  - Verdict rules encoded as declarative MeTTa reference (not yet live)
+- Next: live enforcement (blocked on Ben approval + VM2 migration)
+
+GIT STATUS:
+- iter-port repos: 68 commits on master, 67 unpushed
+- Conversation governor: E1a changes uncommitted (core.js +53, index.js +46, test +62 lines)
+
+SESSION STATE: Goal Relevance Governor Phase 0 + Phase 1 complete. All 20/20 tests pass. Atomspace/MeTTa mapping done with 5 sample .metta files. Awaiting user input or next autonomous task.

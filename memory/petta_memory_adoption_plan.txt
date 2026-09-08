@@ -1,0 +1,11 @@
+PETTA-MEMORY STATE (09-06 15:55)
+TRUTH: detached @23a5d6f (M3 work). ECAN commits FOUND in petta-memory repo on agent/ecan-tuning branch (3 ahead of main, unmerged). Suite 927t+215sub PASS (22.55s). ECAN-specific 119t+9sub PASS in petta-memory repo. Runtime iter @f4064d9. Channel protocosmo2. Mem cap 3000.
+JOURNAL: 578 episodes (manual/auto/note), 50 facts, 0 beliefs, 716 promotions. 2795 Contradicts edges (suspicious - may be mislabeled EvidenceFor). EvidenceFor, Supersedes, PromotesFrom also present. Only 1 unlinked non-note/auto episode. Journal appears fully saturated.
+v2 LIVE: reader injects Supersedes-resolved Beliefs; append via petta_append; recall via petta_recall. Activation gated on Ben's go.
+ROADMAP Ben: 1 petta-memory+GOAL-SYSTEM (impl-complete); 2 ECAN-in-petta (iCog metta-attention; integrate+tune) — integrate DONE, TUNE DONE; 3 GOLEM-Iter (G1-G5 DONE, G6 deferred post-v0.1).
+WMTM: Architecture design doc written (/tmp/wmtm_architecture_design.md, 400 lines). WMTM is ALREADY IMPLEMENTED on petta-memory main (5 modules, 823L, 70 tests pass) but NOT activated in live loop. Ben asked about it in #9809. send_document failed due to invoke_dynamic path collision bug (Krilling fixed locally, PR pending to patham9/iter). Need to resend document.
+SEND_DOCUMENT BUG: invoke_dynamic(path,...) collides with send_document's path param. Krilling fixed locally (path→file_path). Astra reviewed and confirmed fix: use positional-only syntax `def invoke_dynamic(path, /, function, *args, **kwargs)`. Branch fix/invoke-dynamic-path-collision pushed to bgoertzel-sing/iter fork. Ready for PR to patham9/iter.
+MODEL: ProtoCosmo2 switched to openai/gpt-5.6-astra (per Ben #9871). Astra is now expert frontier reference (smarter than Sol/Fable).
+PROTOCOSMO2 local HEAD a6baa65 AHEAD of origin 108ec49. DO NOT push w/o explicit instruction.
+GC: PR#2 OPEN @33f58a2 (provenance-dedup c9ad95b). 4f pre-existing. Ball with Patrick/MesTTo.
+NEXT: 1) Resend WMTM architecture doc to Ben. 2) All autonomous work done. Ben go to merge agent/ecan-tuning into petta-memory main + push ECAN+journal. 3) Wire WMTM into iter.py agent loop (Ben's go). 4) PR for invoke_dynamic fix to patham9/iter.

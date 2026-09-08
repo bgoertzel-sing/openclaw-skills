@@ -1,0 +1,2013 @@
+                                                        ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+                                                           Cédric Goemaere 1 Gaspard Oliviers 2 3 Rafal Bogacz 2 3 Thomas Demeester 1
+
+
+                                                                 Abstract                                    distinct learning dynamics (Bogacz, 2017; Whittington &
+                                                                                                             Bogacz, 2017, 2019; Millidge et al., 2022a). Unlike back-
+                                             Predictive Coding (PC) offers a brain-inspired al-
+                                                                                                             prop, PC produces weight gradients through a two-step
+                                             ternative to backpropagation for neural network
+                                                                                                             process: first, infer the optimal state of neuron activations
+                                             training, described as a physical system minimiz-
+                                                                                                             that should result from learning, and only then update the
+arXiv:2505.20137v5 [cs.LG] 8 Jun 2026
+
+
+
+
+                                             ing its internal energy. While ideally suited for
+                                                                                                             weights. This approach of “inferring activity before plas-
+                                             analog implementation, such hardware does not
+                                                                                                             ticity” (Song et al., 2024) has been found advantageous for
+                                             exist yet, and thus, in practice, PC is predom-
+                                                                                                             learning: it improves the geometry of the loss landscape
+                                             inantly digitally simulated, requiring excessive
+                                                                                                             (Innocenti et al., 2024a) and reduces interference between
+                                             amounts of compute while struggling to scale to
+                                                                                                             competing training signals, leading to improved capabilities
+                                             deeper architectures. This paper reformulates PC
+                                                                                                             in online and continual learning settings (Song et al., 2024).
+                                             to overcome this hardware-algorithm mismatch.
+                                             First, we uncover how the canonical state-based                 Our work focuses on PC’s critical first step, inferring the
+                                             formulation of PC (sPC) is, by design, deeply in-               optimal activations, specified as an energy minimization.
+                                             efficient in digital simulation, inevitably resulting           Concretely, each layer tries to predict the state of the next
+                                             in exponential signal decay that stalls the entire              layer, continually adjusting its own state to reduce the lo-
+                                             numerical process. Then, to overcome this fun-                  cal prediction loss (known as ‘energy’). Reminiscent of a
+                                             damental limitation, we introduce error-based PC                physical process, PC would, in theory, be ideally suited for
+                                             (ePC), a novel reparameterization of PC which                   an analog implementation, promising fast and ultra-energy-
+                                             does not suffer from signal decay. Though no                    efficient AI training. However, no such hardware exists yet,
+                                             longer directly implementable in analog, ePC nu-                and instead, current PC research must rely on digital simu-
+                                             merically computes exact PC weights gradients                   lation with numerical solvers, requiring numerous iterations
+                                             and runs orders of magnitude faster than sPC.                   to reach state convergence. Due to this hardware-algorithm
+                                             Experiments across multiple architectures and                   mismatch, PC incurs substantial overhead compared to back-
+                                             datasets demonstrate that ePC matches backprop-                 propagation, which maps naturally to digital hardware.
+                                             agation’s performance even for deeper models
+                                                                                                             Another scaling issue, observed by Pinchetti et al. (2025), is
+                                             where sPC struggles. Besides practical improve-
+                                                                                                             that, even in simple supervised settings, deeper PC-trained
+                                             ments, our work provides theoretical insight into
+                                                                                                             models often perform worse than shallower ones, in contrast
+                                             PC dynamics and establishes a foundation for scal-
+                                                                                                             to backprop. Recent efforts have explored this depth scaling
+                                             ing PC-based learning to deeper architectures in
+                                                                                                             failure from different angles. Several observed a highly
+                                             digital simulation and beyond.
+                                                                                                             uneven energy distribution across the network (Pinchetti et
+                                                                                                             al., 2025; Qi et al., 2025; Ha et al., 2026), leading to weaker
+                                                                                                             weight gradients for deeper layers; however, the underlying
+                                        1. Introduction
+                                                                                                             mechanism remained unclear. Proposed solutions either
+                                        Originally a neuroscience theory of cortical function (Fris-         modify PC’s weight gradient formulas (Qi et al., 2025),
+                                        ton & Kiebel, 2009), Predictive Coding (PC) has recently             impose a fixed-prediction assumption (Ha et al., 2026) or
+                                        been reformulated as a general machine learning algorithm,           stay limited to residual architectures (Innocenti et al., 2025).
+                                        offering a bio-inspired alternative to backpropagation with          A general solution for standard feedforward models using
+                                            1
+                                                                                                             exact PC remains an open problem.
+                                              IDLab, Ghent University – imec, Belgium 2 Brain Network
+                                        Dynamics Unit, University of Oxford, UK 3 MRC CoRE in Restora-       In this paper, we address the fundamental limitations of
+                                        tive Neural Dynamics, UK. Correspondence to: Cédric Goemaere         PC’s digital simulation—which currently represents nearly
+                                        <cedric.goemaere@ugent.be>.                                          all practical PC research. Our work connects the seemingly
+                                        Proceedings of the 43 rd International Conference on Machine         disparate problems of depth scaling and computational effi-
+                                        Learning, Seoul, South Korea. PMLR 306, 2026. Copyright 2026         ciency in PC networks, uncovering a common underlying
+                                        by the author(s).                                                    cause and providing a simple solution.
+
+                                                                                                         1
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+                           State-based PC (standard)                                   Error-based PC (ours)
+
+
+
+
+Figure 1. Dynamics of layerwise energies in Predictive Coding. Standard state-based PC struggles to propagate signals through the
+network (from output to input), with progressively longer delays at deeper layers. By contrast, error-based PC converges to equilibrium in
+just a few update steps, thanks to its global signal propagation. Results for an untrained 20-layer MLP on a random MNIST input.
+
+
+
+Our contributions                                                       2. A Primer on Predictive Coding
+• We identify a fundamental signal decay mechanism in
+                                                                        As foundation for our contributions, we first present the
+  traditional state-based PC (sPC), whereby signals attenu-
+                                                                        canonical formulation of PC as an energy minimization over
+  ate exponentially as they propagate through the network
+                                                                        neural states. We will refer to this as state-based PC (sPC).
+  (see Fig. 1), explaining both slow convergence and poor
+                                                                        Note that sPC is just one possible instantiation of PC; while
+  performance in deeper PC network simulations.
+                                                                        this distinction is often missing from literature, it is crucial
+• We introduce error-based PC (ePC), a novel reparame-                  to our premise.
+  terization of PC that eliminates signal decay by directly             In sPC (and PC in general), each layer attempts to predict
+  optimizing over prediction errors rather than faithfully              the state of the next layer. The main goal is to minimize the
+  simulating the physical process. Crucially, ePC provably              energy function E, the sum of all prediction errors:
+  computes the exact same state equilibrium as sPC.
+
+• We empirically show that ePC converges up to three or-                                         L−1
+  ders of magnitude faster than sPC on deep networks, re-                                      1X
+                                                                                  E(s, θ) =          ∥si − ŝi ∥2 + L(ŷ, y)          (1)
+  solving a major computational bottleneck in PC research.                                     2 i=0
+
+• Through comprehensive experiments across architectures
+  of varying depths, mirroring the setup of Pinchetti et al.
+                                                                        si denotes the neural state at layer i and ŝi := fθi (si−1 )
+  (2025), we demonstrate that ePC consistently achieves
+                                                                        the parametrized prediction of si based on the preceding
+  performance comparable to backprop, providing an effec-
+                                                                        layer’s state si−1 , as illustrated in Fig. 2a.
+  tive solution to PC’s depth scaling issues in simulation.
+                                                                        For ease of notation, we define s−1 := x (the input data)
+                                                                        and ŷ := ŝL (output prediction of the target y). The output
+Scope and motivation While PC originated as a neuro-
+                                                                        loss L may be chosen freely (Pinchetti et al., 2022), with
+science theory, our work focuses solely on its application
+                                                                        squared error being the common choice in PC literature.
+as a machine learning algorithm. Enforcing strict locality is
+essential for physical realizations (like the brain), but not for       As a learning algorithm, PC’s primary purpose is to produce
+simulations, where it leads to slow convergence, as we will             informative gradients for training the parameters θ. Con-
+show. By relaxing this constraint, ePC is able to offer much            trary to backprop, sPC achieves this through purely local
+faster PC simulations, finally enabling the iterative digital           weight updates, relying on intermediaries (like the states) to
+verification needed to commence analog chip development.                spread the relevant learning signals across the network.
+
+                                                                    2
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+
+
+       (a) State-based PC, the standard formulation of PC                     (b) Error-based PC, our reparametrization of PC
+            with a locally connected computational graph                         with a fully-connected (global) graph structure
+                   Figure 2. Structural comparison of sPC (left) and ePC (right), highlighting functional equivalence
+
+
+A single weight update step in sPC consists of a two-phased            solvers (Innocenti et al., 2024b) or momentum-based opti-
+energy minimization of E(s, θ):                                        mizers (Pinchetti et al., 2025). Others have explored approx-
+                                                                       imate one-step regimes (Salvatori et al., 2024), sequential
+1. State updates: With the parameters θ kept fixed, the                update orders (Alonso et al., 2024), or auxiliary networks
+   states s evolve continuously to minimize E, until equilib-          for direct equilibrium prediction (Tschantz et al., 2023). Yet,
+   rium is reached. The state dynamics for layer i follow:             despite these advances, substantial gaps remain in computa-
+                                                                       tional efficiency and overall understanding of PC.
+                                      ∂fθi+1 T
+                                            
+   ∂si
+        = −∇si E(s, θ) = −ϵi +                   ϵi+1 , (2)            Feedforward state initialization A common practice is
+    ∂t                                  ∂si
+                                                                       to set the initial states st=0 via a feedforward pass of the
+   where ϵi := si − ŝi represents the local prediction error.         input x through the network. At each layer, the prediction ŝi
+                                                                       is copied onto si , initializing the local energy Ei to exactly
+2. Weight update: With s kept fixed, the parameters θ are              zero. Despite lacking theoretical justification and physical
+   updated once, further minimizing E:                                 implementability, this numerical technique is widely used
+                                          T                          due to its empirical success in accelerating the simulated
+                                      ∂fθi                             state optimization process.
+          ∆θi ∝ −∇θi E(s, θ) =                ϵi .    (3)
+                                       ∂θi
+
+Full training involves repeating this process over numerous            3. The Problem of Exponential Signal Decay in
+data batches, as in standard Deep Learning. The distinctive               State-based Predictive Coding
+feature of sPC, however, is that both phases can be imple-
+mented efficiently in brain-like circuits with strictly local          In this section, we uncover a previously unidentified mecha-
+computation (Whittington & Bogacz, 2017, 2019), be it                  nism in state-based PC networks: the exponential decay of
+biological or electronic.                                              training signal during energy minimization. This discovery
+                                                                       represents a fundamental limitation that affects the scala-
+Finding the state equilibrium Notice how Eq. (3) re-                   bility of deep PC network simulations and helps explain
+quires only the final equilibrium states, discarding the trajec-       the performance gap with backprop, which was observed to
+tory taken to reach them. The specific method used to find             worsen for deeper models (Pinchetti et al., 2025).
+these states is irrelevant to PC’s weight updates, allowing
+researchers to freely choose their preferred approach.                 3.1. Observation: Signals Do Not Propagate Smoothly
+For digital simulations, the most popular choice is to dis-            In sPC simulations, after feedforward state initialization, all
+cretize Eq. (2) in time, reducing it to an SGD optimization            energies are set to zero except for the output loss L. Next,
+             SGD
+                                                                       state updates should drive a backward signal from output to
+          si ← si − λ∇si E,                 (State update step)        input, advancing one layer per update step.
+ with λ the state learning rate (commonly, λ ∼ 0.01-0.1). In           The theory suggests a clear chain reaction: non-zero energy
+practice, the number of update steps T is often kept constant
+                                                                       at any layer should induce changes in neighboring states,
+(a hyperparameter), and convergence is simply assumed.
+                                                                       thereby continuously propagating the signal further down
+The PC community has also experimented with more ad-                   the network. However, our empirical observations do not
+vanced simulation options. Some have looked into ODE                   reflect this expected behavior.
+
+                                                                   3
+                                  ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Fig. 1 illustrates how, in practice, the signal travels discon-                       stability). With each subsequent layer traversal, this attenu-
+tinuously through the network, halting at deeper layers with                          ation compounds multiplicatively, resulting in exponential
+progressively longer delays.                                                          decay with respect to network depth.
+Paradoxically, we observe that a non-zero energy at one                               Specifically, for a network of depth L, the first non-zero
+layer fails to immediately propagate to adjacent layers, re-                          signal to reach state si can be modelled as
+maining dormant for multiple update steps before inducing
+detectable changes. This behavior seems to scale logarith-                                                              ∆si ∝ λL−i ∇ŷ L,          (4)
+mically with time, requiring exponentially many update
+steps for signals to reach the bottom layers—an impractical                           with ∇ŷ L the initial loss gradient and the ∝-sign used to
+computational requirement.                                                            ignore layer effects, both pathological (vanishing/exploding)
+                                                                                      and corrective (skip connections/normalisation).
+3.2. Uncovering the Cause: a Problematic Mechanism                                    Crucially, this implies that the signal decay is unavoidable,
+     of Exponential Signal Decay in sPC                                               even in carefully crafted, hyper-stable architectures like µPC
+                                                                                      (Innocenti et al. (2025); as demonstrated in Appendix D.1).
+To gain some insight into the cause of this suppressed signal
+propagation, we can track the state dynamics at the start of                          Moreover, for typical values of λ (0.01-0.1), signals fall
+sPC. Below, in Fig. 3, we present a detailled, step-by-step                           below numerical precision bounds within just 4 to 8 update
+description of the initial wavefront travelling backwards                             steps.1 This explains why theoretically continuous propaga-
+through the network.                                                                  tion manifests as discrete, delayed jumps in practice, with
+                                                                                      increasingly pronounced effects at greater network depths.
+Our analysis uncovers a signal decay mechanism: when an
+energy gradient propagates from one layer to the next, it is                              1
+                                                                                            In float32, addition only works up to 8 orders of magnitude
+attenuated by the state learning rate λ (necessarily < 1 for                          (e.g., 1+10−8 = 1), a concept known as "machine epsilon".
+
+
+
+
+                                 To reduce clutter, layer effects are folded into the ∝-sign, which indicates matrix proportionality.
+
+
+                Step-by-step dynamics of state-based Predictive Coding for input x and target y
+
+                 1 Feedforward initialization: Due to state copying, all internal energies E0 , . . . , EL−1
+                   start at zero, with in general a non-zero output energy EL .
+
+                 2 Start of energy minimization: As gradient descent (with state learning rate λ) begins,
+                   the output loss introduces the only non-zero gradient ∇ŷ L.
+
+                 3 Top-layer state update: The top layer is updated first, raising its energy above zero.
+
+                 4 Recursive propagation: A backward wavefront emerges: each non-zero energy induces
+                   a state change in the preceding layer, recursively propagating a diminishing signal.
+
+                 5 Exponential decay: By the input layer, the signal has faded exponentially with depth L.
+
+                 Figure 3. Step-by-step dynamics of sPC reveals an exponential signal decay in the backward path.
+
+
+                                                                                 4
+                                  ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Persisting beyond just the initial wavefront, the signal decay         The key insight of ePC is to reformulate PC dynamics in
+mechanism plagues the entire energy minimization process.              terms of errors rather than states. By restructuring the com-
+Appendix B provides an approximate global analysis, hint-              putational graph from locally to globally connected, ePC
+ing at a hardware-algorithm mismatch where digital simula-             enables signals to reach all layers simultaneously without
+tions of sPC are problematic, not sPC itself. While physical           attenuation.
+realizations (like the brain) would handle local interactions
+                                                                       While no longer directly implementable in a physical sub-
+efficiently, enforcing these constraints digitally leads to sig-
+                                                                       strate (e.g., an analog circuit), ePC forms a helpful simula-
+nal decay and potentially misleading conclusions on (s)PC.
+                                                                       tion tool that provably computes the same state equilibrium
+                                                                       as sPC, resulting in exact-PC weight gradients. This means
+3.3. Implications for Training Deep sPC Networks                       one may use ePC to signficantly speed up digital verifica-
+This exponential signal decay has profound implications for            tion simulations of sPC circuits, paving the way towards
+the digital simulation of sPC networks. Critically, deeper             practically viable analog hardware development for PC.
+layers may remain entirely untrained if optimization is
+terminated before any signal has arrived, with these layers            4.1. Mathematical Formulation of Error-Based PC
+now effectively representing purely random input transfor-
+                                                                       ePC reparameterizes PC by making the prediction errors ϵ
+mations. Such incomplete training would be hard to detect
+                                                                       the primary variables to optimize, rather than the states s.
+from state convergence metrics alone, which may incor-
+rectly suggest equilibrium has been reached, when in reality,          The energy function remains the same, now formulated as:
+these layers have yet to begin meaningful optimization.                              L−1
+                                                                                   1X
+                                                                        E(ϵ, θ) =        ∥ϵi ∥2 +L(ŷ, y) with ŷ = fθ (x, ϵ) (5)
+A more nuanced implication emerges when considering                                2 i=0
+which signals do successfully penetrate the network. Only
+hard-to-classify or mislabeled inputs could produce output             The core dynamics remain unchanged: during training, er-
+gradients ∇ŷ L that are large enough to overcome the ex-              rors ϵ are iteratively updated to minimize E, followed by
+ponential attenuation, potentially creating a systemic bias            a gradient step to further minimize E with respect to θ
+where different layers of the feedforward network train on             (exactly Eq. (3) again). Crucially, ePC remains a valid PC
+different subsets of the data distribution.                            algorithm (as technically verified in Appendix C.1).
+
+Even when signals eventually reach deeper layers, the en-              When needed, states can be derived from errors through
+suing state modification will struggle to propagate back to            the recursive relationship si := ŝi + ϵi , where still ŝi :=
+upper layers. This creates a persistent misalignment where             fθi (si−1 ). Conceptually, this amounts to a feedforward
+top layers, despite receiving strong output signals, cannot            pass starting from the input x with perturbations ϵi applied
+efficiently adapt to changes in deeper representations. While          at each layer, as graphically shown in Fig. 2b.
+feedforward state initialization partially mitigates this issue,       Fig. 4 demonstrates the close algorithmic parallels between
+it cannot eliminate the intrinsic interdependencies that exist         sPC and ePC, with a more extensive comparison given in
+between states throughout optimization.                                Fig. A.1. Such strong similarities should not be surprising,
+This signal propagation challenge represents a significant             as both methods are valid parametrizations of PC; in fact,
+theoretical and practical limitation to scaling sPC networks           they are equivalent (see proof in Appendix C.2).
+in digital simulation. Common remedies, like increased
+learning rates (Pinchetti et al., 2025), higher numerical              4.2. How ePC Avoids Signal Decay
+precision (Appendix B), careful weight initialization (Ap-
+pendix D.1) or alternative optimizers (Pinchetti et al., 2025),        The key difference between sPC and ePC lies in the structure
+all address symptoms without resolving the core issue, un-             of their computational graph, as shown in Fig. 2. Striving for
+derscoring the need to identify a more suitable standard               biological plausibility, sPC intentionally breaks the graph
+formulation of PC.                                                     to enforce local update information, inadvertently resulting
+                                                                       in exponential signal decay when simulated numerically, as
+                                                                       explained in Section 3.
+4. Shifting from States to Errors: Predictive
+                                                                       To avoid this issue, ePC reconnects the entire network graph,
+   Coding without Signal Decay                                         thereby creating a direct relationship between all input vari-
+                                                                       ables and the predicted output:
+We introduce error-based PC (ePC), a novel reparameteri-
+zation of PC that directly addresses the exponential signal                       (ePC) ŷ = func(x, ϵ0 , ϵ1 , . . . , ϵL−1 )
+decay problem identified in the previous section.                              vs. (sPC) ŷ = func(sL−1 )
+
+
+                                                                   5
+                                      ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+
+Algorithm 1: State-based PC (standard)                                    Algorithm 2: Error-based PC (ours)
+      State updates                                                             Error updates
+ 1: Initialize states {si } ← ff_init(x)                                   1: Initialize errors {ϵi } ← zero_init
+ 2: for t = 1 to T do                                                      2: for t = 1 to T do
+ 3:     s−1 ← x                                                            3:     s−1 ← x
+ 4:     for i = 0 to L − 1 do                           ▷ Parallel         4:     for i = 0 to L − 1 do                     ▷ Sequential
+ 5:          ŝi ← fθi (si−1 )                                             5:          ŝi ← fθi (si−1 )
+ 6:          ϵi ← si − ŝi                                                 6:          si ← ŝi + ϵi
+ 7:     ŷ ← fθL (sL−1 )                                                   7:     ŷ ← fθL (sL−1 )
+                  PL−1                                                                      PL−1
+ 8:      E ← 21       i=0    ∥si − ŝi ∥2 + L(ŷ, y)                       8:      E ← 21       i=0   ∥ϵi ∥2 + L(ŷ, y)
+                             ∂ ŝj+1 T                                                          ∂ ŷ      T
+ 9:      ∇sj E ← ϵj −          ∂sj     ϵj+1               ▷ Local          9:      ∇ϵj E ← ϵj + ∂ϵ j
+                                                                                                     ∇ŷ L           ▷ Reverse-mode AD
+10:      sj ← sj − λ∇sj E for all j                                       10:      ϵj ← ϵj − λ∇ϵj E for all j
+
+      Weight update                                                             Weight update
+                  ∂ ŝj T                                                                   ∂ ŝ T
+11: ∇θj E ← − ∂θ            ϵj                            ▷ Local         11: ∇θj E ← − ∂θj ϵj                                  ▷ Local
+                      j                                                                         j
+
+12: θj ← θj − η∇θj E for all j                                            12: θj ← θj − η∇θj E for all j
+
+Figure 4. Algorithmic comparison of sPC vs. ePC, with structural differences highlighted in color. Loops over j are omitted for brevity.
+An extended version is provided in Appendix A.
+
+
+This restructuring enables the main advantage of ePC: the                 4.3. Proof-of-Concept on MNIST
+use of reverse-mode automatic differentiation (AD)2 to trans-
+mit signals from the output loss L(ŷ, y) directly to all errors          To evaluate the practical advantages of ePC over sPC, we
+ϵi via ŷ, without intermediate attenuation.                              compared the two methods for a 20-layer linear network
+                                                                          trained on MNIST.
+A brief step-by-step analysis reveals how ePC successfully
+decouples stability from propagation speed, which were                    This architecture forms an ideal testbed as it is reasonably
+problematically intertwined in sPC. First, reverse-mode AD                deep and offers a unique, analytically tractable equilibrium
+computes gradients throughout the entire network, ensuring                solution that can serve as ground truth. We picked a simple
+signals reach all layers unattenuated. Only thereafter, during            task to match the network’s limited representational capac-
+the actual error update step, is the learning rate applied,               ity. For an unbiased comparison, we used identical network
+affecting stability but not propagation reach. This separation            weights for both methods (obtained through backpropaga-
+allows signals to influence all network layers simultaneously,            tion as neutral learning method), with hyperparameters opti-
+regardless of depth, thereby eliminating the exponential                  mized for convergence speed. Complete details are provided
+decay problem seen in sPC.                                                in Appendix E.1.
+
+While ePC might appear to be a hybrid of PC and backprop,                 Fig. 5 illustrates how both sPC and ePC converge to the
+this characterization is misleading: ePC remains fundamen-                analytical optimum, reconfirming their theoretical equiva-
+tally a PC algorithm. Reverse-mode AD serves only as a                    lence. However, for the exact same model, ePC converges
+computational backbone to efficiently reach state equilib-                over 100× faster than sPC, a huge difference in speed that
+rium in digital simulation, without influencing the weight                highlights ePC’s practical advantage for training deep PC
+updates, which stay temporally local following PC princi-                 networks on digital hardware.
+ples. Appendices C.3 and C.4 explore the nuanced rela-                    The figure also provides further evidence for the discontin-
+tionship between ePC and backpropagation in greater detail.               uous signal propagation issue identified in Section 3. In
+                                                                          sPC, the signal takes roughly 30 steps to advance 9 layers
+    2
+                                                                          and reach s9 , and nearly 100 steps to traverse the 20-layer
+      We use “reverse-mode AD” to refer to the efficient numerical
+                                                                          network and reach s0 . In contrast, ePC has long converged
+method to compute gradients of a parametrized function. Though
+often used interchangeably, we reserve “backprop(agation)” for the        by then, with its global connectivity enables all layers to
+learning algorithm that uses these gradients for parameter updates.       optimize immediately and simultaneously.
+
+
+
+                                                                      6
+                                  ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+
+
+Figure 5. State convergence dynamics for the bottom, middle, and top hidden layers in a 20-layer linear PC network trained on MNIST.
+Curves show batch medians (n=64) of L2 distance to the analytical optimum, with interquartile shading. Thanks to its superior signal
+propagation, ePC converges over 100× faster than sPC, while reaching the exact same equilibrium.
+
+
+
+Additional experiments with deep non-linear MLPs (see Ap-            vergence improvements, validating this theoretical advance-
+pendix D.2) yielded similar results, with ePC consistently           ment and motivating large-scale empirical evaluation.
+outperforming sPC in terms of convergence speed. No-
+tably, sPC required an impractical number of update steps
+(>100,000) to actually reach proper convergence, reinforc-
+                                                                     5. Experiments
+ing the necessity of our ePC reformulation for scaling PC to         To evaluate ePC’s effectiveness in training deep networks
+deeper networks.                                                     and compare it against sPC, we conducted extensive exper-
+                                                                     iments using backprop as gold standard. Our experimen-
+4.4. Implications for Deep PC Networks                               tal design follows the community’s established benchmark
+                                                                     from Pinchetti et al. (2025), allowing direct comparison
+The benefits of ePC’s improved signal propagation extend             with their findings.
+beyond faster convergence, addressing several fundamental
+limitations of sPC. Most importantly, by providing signal
+to all layers from the first step, ePC completely resolves the       5.1. Experimental Setup
+issue of untrained deep layers. It enables all layers to begin       We evaluated performance across four standard computer
+optimization simultaneously, regardless of network depth.            vision datasets: MNIST (LeCun, 1998; Cohen et al., 2017),
+Furthermore, ePC eliminates the potential systemic bias in           FashionMNIST (Xiao et al., 2017), and CIFAR-10/100
+sPC, where only inputs generating large output gradients             (Krizhevsky, 2009). The architecture selection spanned an
+could successfully influence deeper layers. With ePC, all            MLP, VGG-style convolutional networks of various depths
+inputs contribute equally to training at all depths, promoting       (Simonyan & Zisserman, 2014), and a deep residual net-
+uniform learning across the network.                                 work (He et al., 2016). The output loss L is either Mean
+                                                                     Squared Error (MSE) or Cross-Entropy (CE), again mirror-
+Moreover, any change in deeper layers is efficiently com-            ing Pinchetti et al. (2025).
+municated to the upper layers through the feedforward pass
+required for ŷ. This bidirectional efficiency explains why          Complete implementation details, including hyperparameter
+the widely-used feedforward state initialization heuristic in        settings, are provided in Appendix E. All code is available
+PC works so well: it essentially implements the first step of        at https://github.com/cgoemaere/error_based_PC.
+ePC. Our formulation thus provides theoretical backing for
+this empirical practice while extending its benefits through-        5.2. Results and Analysis
+out the optimization process.
+                                                                     Our results in Table 1 confirm the significant performance
+By resolving these fundamental limitations, ePC establishes          gap between sPC and backpropagation previously reported
+a solid foundation for scaling PC to deeper architectures.           by Pinchetti et al. (2025), while demonstrating that ePC
+Our MNIST proof-of-concept demonstrates significant con-             substantially narrows this gap.
+
+                                                                 7
+                                   ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+                  Table 1. Test accuracies (in %) of ePC, sPC and backprop for various models, losses, and datasets.
+                   Bold indicates best results within confidence intervals (mean ± 1 std. dev.; taken over 5 seeds).
+
+      Loss L                              Mean Squared Error                                  Cross-Entropy
+      Training algorithm           ePC           sPC       Backprop                ePC            sPC            Backprop
+      MLP (4 layers)
+      MNIST                   98.28±0.09       98.42±0.08      98.30±0.15 98.11±0.08           98.01±0.15      98.13±0.08
+      FashionMNIST            87.02±0.24       88.01±0.09      88.79±0.21 87.58±0.13           88.00±0.24      88.87±0.27
+      VGG-5
+      CIFAR-10          88.70±0.12             86.67±0.20      88.58±0.12 88.27±0.18            84.66±0.33     87.95±0.29
+      CIFAR-100 (Top-1) 64.37±0.17             50.41±1.45      64.80±0.24 63.39±0.25            56.85±0.69     63.83±0.15
+      CIFAR-100 (Top-5) 85.28±0.38             77.41±1.21      85.80±0.13 87.34±0.14            83.11±0.19     87.43±0.06
+      VGG-7
+      CIFAR-10          88.98±0.19             77.79±0.34      88.94±0.32      88.84±0.31       77.98±0.40     89.60±0.16
+      CIFAR-100 (Top-1) 66.55±0.45             42.90±0.43      66.23±0.42      58.62±0.20       53.45±0.38     65.14±0.29
+      CIFAR-100 (Top-5) 85.65±0.12             70.01±0.52      84.10±0.39      85.09±0.14       80.48±0.38     88.60±0.24
+      VGG-9
+      CIFAR-10          88.80±0.71             76.40±0.20      90.04±0.50 86.81±0.09            78.60±0.30     89.76±0.20
+      CIFAR-100 (Top-1) 61.35±0.76             45.70±0.14      66.28±0.29 60.65±0.25            54.19±0.41     61.11±0.45
+      CIFAR-100 (Top-5) 84.74±0.40             73.04±0.46      84.96±0.29 85.84±0.15            80.65±0.41     85.14±0.32
+      ResNet-18
+      CIFAR-10          92.17±0.26 “53.74±0.43 ” 92.36±0.12 91.73±0.21 “43.19±0.61 ” 91.85±0.24
+      CIFAR-100 (Top-1) 68.52±0.34 “22.83±0.38 ” 69.94±0.54 69.47±0.32 “16.01±0.42 ” 71.46±0.32
+      CIFAR-100 (Top-5) 86.86±0.44 “50.18±0.52 ” 87.76±0.41 90.47±0.12 “40.67±0.70 ” 91.91±0.23
+       “...”: ResNet-18 was unstable in our sPC experiments, so we copied the results from Pinchetti et al. (2025)
+
+
+
+Several key findings emerge from our experiments:                     6. Conclusion and Future Directions
+                                                                      This paper identifies and addresses a fundamental limita-
+• ePC scales well to deeper networks, attaining ever im-
+                                                                      tion in PC simulations: exponential signal decay during
+  proved accuracies similar to backpropagation and unlike
+                                                                      state-based energy minimization. Our proposed error-based
+  sPC, which degraded with network depth. This is most no-
+                                                                      formulation overcomes this limitation by restructuring PC’s
+  ticeable for ResNet-18, where ePC achieved competitive
+                                                                      computational graph while preserving theoretical equiva-
+  performance while sPC suffered from instability issues
+                                                                      lence, achieving dramatic performance improvements that
+  in our implementation.
+                                                                      finally establish PC as a competitive alternative to backprop
+• ePC matches backpropagation’s results across most                   for training deep neural networks.
+  datasets and architectures, with results often falling within
+  statistical confidence bounds.                                      6.1. Reinterpreting PC as Minimal-Norm Perturbations
+
+• These trends hold across both loss functions in our                 ePC provides a fresh perspective on PC’s energy minimiza-
+  setup, despite CE’s typically superior gradient properties.         tion process. Essentially, (e)PC searches for minimal-norm
+  However, we did observe greater sensitivity to hyperpa-             layerwise perturbations that collectively produce optimal
+  rameter selection with CE loss in both ePC and sPC.                 outputs. At each layer, these corrections are added to the
+                                                                      feedforward pass, incrementally refining the final output
+                                                                      prediction. From these targeted state modifications, local
+Overall, our experimental results validate ePC’s theoretical          weight learning rules can then be derived.
+advantages. By resolving sPC’s signal decay problem, ePC
+successfully scales PC to deeper architectures, unlocking             This reframing connects naturally with the Least-Control
+its ability to handle substantially more complex machine              Principle (Meulemans et al., 2022), in which an external
+learning challenges than previously possible.                         controller tries to minimally steer network activities to pro-
+
+                                                                  8
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+duce the target output. In their Appendix S4, they briefly              puts an upper limit on PC’s computational efficiency (as
+explore PC through the lens of control theory, identifying              noted before in Zahid et al., 2023), few-step ePC could
+the errors as an optimal control. With their framework allow-           offer a compromise that maintains PC’s unique properties
+ing arbitrary controller circuits, it may be possible to find           while keeping training times practical.
+a biologically plausible implementation of ePC that does
+not explicitly require reverse-mode AD, thereby addressing           With ePC effectively addressing PC’s computational limita-
+what some may consider essential for a PC algorithm.                 tions in digital simulation, the field must now face its true
+                                                                     test: demonstrating that Predictive Coding offers substan-
+6.2. Predictive Coding Beyond The Hardware Lottery                   tive advantages in specific domains, sufficient to justify its
+                                                                     adoption over established approaches.
+Algorithmic success is often dictated not by theoretical merit
+but by compatibility with prevailing hardware (Hooker,               A limitations section is provided at the start of the appendix.
+2021). Serving as a prime example, PC has struggled to
+prove its worth despite theoretical soundness. To unlock its         Reproducibility Statement
+full potential, ePC reformulates PC in a way that aligns natu-
+rally with digital processors, relying on reverse-mode AD to         We took great care to ensure reproducibility, listing architec-
+efficiently spread signals across deep networks. Meanwhile,          tural details, hyperparameter sweep intervals, final values
+sPC remains highly relevant for neuromorphic implementa-             and even pseudorandom seeds, which can all be found in
+tions, where physical energy minimization occurs naturally           Appendix E. On the algorithmic level, Appendix A pro-
+and near-instantaneously, regardless of network depth.               vides an extensive description of both sPC and ePC. Finally,
+                                                                     our code is available at https://github.com/cgoemaere/error_
+Despite their structural differences, both approaches still          based_PC.
+minimize the same energy function to reach identical equi-
+libria. This functional equivalence creates a pragmatic re-
+search methodology: rather than being limited by sPC’s               Acknowledgments and Disclosure of Funding
+digital inefficiency, researchers can turn to ePC for rapid          We are grateful to the anonymous reviewers and the T2K
+prototyping, generating insights that remain valid for under-        team at Ghent University for their valuable feedback on
+standing bio-plausible PC learning mechanisms.                       the manuscript, which helped improve the presentation,
+                                                                     clarity, and accessibility of this paper. We also thank
+6.3. The Road Ahead for Predictive Coding                            Francesco Innocenti for helpful discussions on signal decay
+                                                                     in continuous-time systems that improved the correctness
+With PC’s viability as a learning algorithm now firmly estab-        of Appendix B.
+lished, research must shift from proof-of-concept to impact.
+We highlight two research directions with great potential:           Final revisions were completed during CG’s research visit
+                                                                     to Prof. Bogacz’s group in Oxford.
+1. Unblocking neuromorphic hardware development:
+   Despite its theoretical suitability for ultra-energy-             This research was partly funded by the Research Foundation
+   efficient neuromorphic implementation, hardware de-               – Flanders (FWO-Vlaanderen) through CG’s PhD Fellow-
+   velopment for PC has been scarce. A key obstacle is               ship (11PR824N) and grants G0C2723N and V439825N
+   our limited understanding of PC’s behavior at exact               (the latter supporting the Oxford visit), as well as by the
+   equilibrium—the regime to which any physical imple-               Flemish Government’s AI Research Program. RB and GO
+   mentation would naturally settle. While a recent analysis         were supported by the Medical Research Council (grants
+   of this setting identified improved learning capabilities         MC_UU_00003/1 and UKRI/MR/B000936/1) and Well-
+   (Innocenti et al., 2024a), our experiments consistently           come Trust (grant 313955/Z/24/Z).
+   preferred hyperparameter configurations of approximate
+   backpropagation, leaving little appeal to hardware de-            Impact Statement
+   velopers. With ePC as an efficient tool to further study
+   equilibrium dynamics, research can finally begin to ad-           This paper presents work whose goal is to advance the field
+   dress this critical barrier to neuromorphic advancement.          of Machine Learning. There are many potential societal
+                                                                     consequences of our work, none which we feel must be
+2. Identifying PC’s distinctive advantages: Rather than              specifically highlighted here.
+   competing with backprop in its domains of strength, re-
+   search should focus on areas where PC uniquely excels.
+   As Song et al. (2024) demonstrated with online and con-
+   tinual learning, such domains exist but remain under-
+   explored. Although ePC’s reliance on reverse-mode AD
+
+                                                                 9
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+References                                                           Lee, K., Pennartz, C. M. A., & Mejias, J. F. (2025). Cor-
+                                                                       tical networks with multiple interneuron types generate
+Alonso, N., Krichmar, J., & Neftci, E. (2024). Understand-             oscillatory patterns during predictive coding. PLOS Com-
+  ing and improving optimization in predictive coding net-             putational Biology, 21(9), 1–25.
+  works. Proceedings of the AAAI Conference on Artificial            Loshchilov, I., & Hutter, F. (2019). Decoupled weight de-
+  Intelligence, 38(10), 10812–10820.                                   cay regularization. International Conference on Learning
+Bogacz, R. (2017). A tutorial on the free-energy framework             Representations.
+  for modelling perception and learning. Journal of Mathe-           Meulemans, A., Zucchet, N., Kobayashi, S., Von Oswald,
+  matical Psychology, 76, 198–211.                                     J., & Sacramento, J. (2022). The least-control principle
+Cohen, G., Afshar, S., Tapson, J., & Van Schaik, A. (2017).            for local learning at equilibrium. Advances in Neural
+  EMNIST: Extending MNIST to handwritten letters. Inter-               Information Processing Systems, 35, 33603–33617.
+  national Joint Conference on Neural Networks (IJCNN),              Millidge, B., Salvatori, T., Song, Y., Bogacz, R., &
+  2921–2926.                                                           Lukasiewicz, T. (2022a). Predictive coding: Towards a fu-
+Friston, K., & Kiebel, S. (2009). Predictive coding under the          ture of deep learning beyond backpropagation? Proceed-
+  free-energy principle. Philosophical transactions of the             ings of the Thirty-First International Joint Conference on
+  Royal Society B: Biological sciences, 364(1521), 1211–               Artificial Intelligence, IJCAI-22, 5538–5545.
+  1221.                                                              Millidge, B., Seth, A., & Buckley, C. L. (2021). Pre-
+Ha, M. H., Kim, H., Sung, Y., Jo, Y., Kang, M. S., & Lee,              dictive coding: A theoretical and experimental review.
+  S. W. (2026). Stable and scalable deep predictive coding             arXiv:2107.12979.
+  networks with meta-prediction errors. The Fourteenth               Millidge, B., Tang, M., Osanlouy, M., Harper, N. S., & Bo-
+  International Conference on Learning Representations.                gacz, R. (2024). Predictive coding networks for temporal
+He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual            prediction. PLOS Computational Biology, 20(4), 1–31.
+  learning for image recognition. Proceedings of the IEEE            Millidge, B., Tschantz, A., & Buckley, C. L. (2022b). Pre-
+  conference on Computer Vision and Pattern Recognition,               dictive coding approximates backprop along arbitrary
+  770–778.                                                             computation graphs. Neural Computation, 34(6), 1329–
+Hendrycks, D., & Gimpel, K. (2016). Gaussian error linear              1368.
+  units (GELUs). arXiv preprint arXiv:1606.08415.                    Oliviers, G., Bogacz, R., & Meulemans, A. (2024). Learning
+Hooker, S. (2021). The hardware lottery. Communications                probability distributions of sensory inputs with Monte
+  of the ACM, 64(12), 58–65.                                           Carlo predictive coding. bioRxiv, 2024–02.
+Hu, W., Xiao, L., & Pennington, J. (2020). Provable bene-            Pinchetti, L., Qi, C., Lokshyn, O., Emde, C., M’Charrak, A.,
+  fit of orthogonal initialization in optimizing deep linear           Tang, M., Frieder, S., Menzat, B., Oliviers, G., Bogacz, R.,
+  networks. International Conference on Learning Repre-                Lukasiewicz, T., & Salvatori, T. (2025). Benchmarking
+  sentations.                                                          predictive coding networks – made simple. The Thirteenth
+Innocenti, F., Achour, E. M., & Buckley, C. (2025). µPC:               International Conference on Learning Representations.
+  Scaling predictive coding to 100+ layer networks. The              Pinchetti, L., Salvatori, T., Millidge, B., Song, Y., Yordanov,
+  Thirty-ninth Annual Conference on Neural Information                 Y., & Lukasiewicz, T. (2022). Predictive coding beyond
+  Processing Systems.                                                  Gaussian distributions. 36th Conference on Neural Infor-
+Innocenti, F., Achour, E. M., Singh, R., & Buckley, C.                 mation Processing Systems.
+  (2024a). Only strict saddles in the energy landscape of            Qi, C., Lukasiewicz, T., & Salvatori, T. (2025). Training
+  predictive coding networks? The Thirty-eighth Annual                 deep predictive coding networks. New Frontiers in Asso-
+  Conference on Neural Information Processing Systems.                 ciative Memories.
+Innocenti, F., Kinghorn, P., Yun-Farmbrough, W., Varona,             Salvatori, T., Mali, A., Buckley, C. L., Lukasiewicz, T.,
+  M. D. L., Singh, R., & Buckley, C. L. (2024b). JPC:                  Rao, R. P., Friston, K., & Ororbia, A. (2026). A survey
+  Flexible inference for predictive coding networks in jax.            on neuro-mimetic deep learning via predictive coding.
+  arXiv preprint arXiv:2412.03676.                                     Neural Networks, 195, 108161.
+Kingma, D. P., & Ba, J. (2014). Adam: A method for stochas-          Salvatori, T., Song, Y., Millidge, B., Xu, Z., Sha, L., Emde,
+  tic optimization. arXiv preprint arXiv:1412.6980.                    C., Bogacz, R., & Lukasiewicz, T. (2024). Incremental
+Kingma, D. P., & Welling, M. (2013). Auto-encoding varia-              predictive coding: A parallel and fully automatic learning
+  tional Bayes. arXiv preprint arXiv:1312.6114.                        algorithm. International Conference on Learning Repre-
+Krizhevsky, A. (2009). Learning multiple layers of features            sentations.
+  from tiny images.                                                  Simonyan, K., & Zisserman, A. (2014). Very deep convolu-
+LeCun, Y. (1998). The MNIST database of handwritten                    tional networks for large-scale image recognition. arXiv
+  digits. http://yann.lecun.com/exdb/mnist/.                           preprint arXiv:1409.1556.
+
+
+
+                                                                10
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Song, Y., Lukasiewicz, T., Xu, Z., & Bogacz, R. (2020).
+  Can the brain do backpropagation? — Exact implemen-
+  tation of backpropagation in predictive coding networks.
+  Advances in Neural Information Processing Systems, 33.
+Song, Y., Millidge, B., Salvatori, T., Lukasiewicz, T., Xu,
+  Z., & Bogacz, R. (2024). Inferring neural activity before
+  plasticity as a foundation for learning beyond backpropa-
+  gation. Nature Neuroscience, 1–11.
+Tschantz, A., Millidge, B., Seth, A. K., & Buckley, C. L.
+  (2023). Hybrid predictive coding: Inferring, fast and slow.
+  PLOS Computational Biology, 19(8), 1–31.
+Whittington, J. C. R., & Bogacz, R. (2017). An approxima-
+  tion of the error backpropagation algorithm in a predictive
+  coding network with local Hebbian synaptic plasticity.
+  Neural Computation, 29(5).
+Whittington, J. C. R., & Bogacz, R. (2019). Theories of
+  error back-propagation in the brain. Trends in Cognitive
+  Sciences.
+Xiao, H., Rasul, K., & Vollgraf, R. (2017). Fashion-MNIST:
+  A novel image dataset for benchmarking machine learn-
+  ing algorithms. arXiv preprint arXiv:1708.07747.
+Zahid, U., Guo, Q., & Fountas, Z. (2023). Predictive cod-
+  ing as a neuromorphic alternative to backpropagation: A
+  critical evaluation. Neural Computation, 35(12), 1881–
+  1909.
+Zahid, U., Guo, Q., & Fountas, Z. (2024). Sample as you
+  infer: Predictive coding with Langevin dynamics. Forty-
+  first International Conference on Machine Learning.
+
+
+
+
+                                                                11
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Appendix
+Limitations
+Our work demonstrates significant improvements in Predictive Coding efficiency and scalability. Nonetheless, certain
+limitations remain, which we discuss below.
+Different optimization trajectories: While mathematically equivalent at equilibrium, sPC and ePC follow distinct
+optimization trajectories. Therefore, ePC cannot be used for research on the intermediate state dynamics of sPC (e.g.,
+Millidge et al., 2024; Lee et al., 2025). Furthermore, considering the abundance of local minima present in deep neural
+networks, it is, in theory, possible that ePC and sPC may converge to different equilibria, though we did not observe any
+evidence of this during our experiments, not even for very deep MLPs (see Appendix D.2).
+Experimental scope: Following the established PC benchmark by Pinchetti et al. (2025), we tested exclusively on standard
+supervised learning tasks (MNIST, FashionMNIST, CIFAR) where backprop is known to perform exceptionally well.
+The goal of our experiments was solely to demonstrate ePC’s superiority over sPC, not to prove PC superiority over
+backpropagation. It would be valuable to explore ePC in domains where PC might have advantages, such as online and
+continual learning (Song et al., 2024), to determine whether these benefits extend to deeper architectures (now possible with
+ePC) or were simply artifacts of sPC’s poor signal propagation.
+
+Clarifying Remarks
+Certain aspects of our methodology may be misunderstood as limitations, but they instead reflect deliberate design choices
+and intrinsic advantages. For clarity, we highlight them here.
+Choice of baseline methods: We compare ePC only against sPC and backprop (as neutral gold standard), rather than
+including a broad range of PC algorithms. This focused scope is intentional: Pinchetti et al. (2025) already extensively
+tested numerous PC variants and found that none successfully scaled to deep networks (see their Table 1). This is not
+surprising: these methods all build upon sPC, inheriting its signal decay problem. Thus, comparing against vanilla sPC (the
+most established and widely used PC algorithm) was the most appropriate choice.
+Biological plausibility: Although ePC preserves PC’s core theoretical foundations, its use of reverse-mode AD makes it
+unsuitable for direct biological implementation. However, ePC was never intended as a bio-plausible algorithm; instead, it
+serves as a computationally efficient tool for studying PC dynamics in digital simulation. In obeying physical constraints,
+sPC becomes impractical in simulation, as biological and digital systems operate under fundamentally different mechanisms.
+By turning PC into a practical numerical algorithm, ePC enables more extensive research into PC dynamics, potentially
+offering greater value to computational neuroscience than the biologically constrained but computationally intractable sPC.
+Computational efficiency: In a persistent misconception, sPC is often touted for its parallelization abilities (Millidge et al.,
+2022a; Pinchetti et al., 2022; Salvatori et al., 2024; Pinchetti et al., 2025). However, this alleged advantage is fundamentally
+flawed. Even with perfect parallelization, PC networks with depth L require at least L sequential update steps because
+signals can only advance one layer per step due to local-only interactions (Zahid et al., 2023). In fact, our experiments
+demonstrate this to be a very loose lower bound: sPC requires exponentially many update steps to reach equilibrium,
+fully undoing any potential (linear) speed-up from parallelization. Moreover, it may prove difficult to actually parallelize
+layers with different dimensions, forcing sequential processing in practice (Pinchetti et al., 2025, Section 6.1). As a result,
+our PyTorch implementation of ePC takes only 5-20% longer per step compared to sPC, despite its strictly sequential
+nature. This minor cost is easily offset by ePC’s exponential reduction in required steps, representing a massive net gain in
+computational efficiency. Of course, these comparisons of software implementations may ultimately be less relevant, as
+PC’s true advantage lies in its suitability for ultra-fast neuromorphic hardware.
+
+
+
+
+                                                              12
+                                   ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+A. Comparison of State-based vs. Error-based Predictive Coding
+
+
+
+
+Algorithm 3: State-based PC (standard)                                  Algorithm 4: Error-based PC (ours)
+Require:    Input x, target y, layers {fθi }L
+                                            i=0 ,                       Require: Input x, target y, layers {fθi }Li=0 ,
+   optimization steps T , state learning rate λ,                           optimization steps T , error learning rate λ,
+   weight learning rate η, output loss L                                   weight learning rate η, output loss L
+
+      Feedforward state initialization (ff_init)                              Zero error initialization (zero_init)
+ 1: s−1 ← x
+ 2: for i = 0 to L − 1 do                           ▷ Sequential         1: for i = 0 to L − 1 do                            ▷ Parallel
+ 3:     ŝi ← fθi (si−1 )                                                2:     ϵi ← 0
+ 4:     si ← ŝi
+
+    State updates                                                           Error updates
+ 5: for t = 1 to T do                                                    3: for t = 1 to T do
+                                                                         4:     s−1 ← x
+ 6:      for i = 0 to L − 1 do                        ▷ Parallel         5:     for i = 0 to L − 1 do                    ▷ Sequential
+ 7:          ŝi ← fθi (si−1 )                                           6:         ŝi ← fθi (si−1 )
+ 8:          ϵi ← si − ŝi                                               7:         si ← ŝi + ϵi
+ 9:      ŷ ← fθL (sL−1 )                                                8:     ŷ ← fθL (sL−1 )
+                 PL−1                                                                   PL−1
+10:      E ← 21 i=0 ∥si − ŝi ∥2 + L(ŷ, y)                              9:     E ← 21 i=0 ∥ϵi ∥2 + L(ŷ, y)
+
+         Local energy gradients w.r.t. states                                    Global reverse-mode AD w.r.t. errors
+11:      ϵL ← ∇ŷ L                                                     10:      ŝL ← ŷ
+12:      for j = 0 to L − 1 do                        ▷ Parallel        11:      for j = L − 1 to 0 do                ▷ Sequential
+                              ∂ ŝj+1 T                                                                 ∂ ŝj+1 T
+13:          ∇sj E ← ϵj −       ∂sj     ϵj+1                            12:          ∇ϵj L ≡ ∇ŝj L ←     ∂ ŝj   ∇ŝj+1 L
+14:          sj ← sj − λ∇sj E                                           13:      for j = 0 to L − 1 do                       ▷ Parallel
+                                                                        14:          ∇ϵj E ← ϵj + ∇ϵj L
+                                                                        15:          ϵj ← ϵj − λ∇ϵj E
+
+      Local weight update                                                     Local weight update
+15: for j = 0 to L − 1 do                             ▷ Parallel        16: for j = 0 to L − 1 do                            ▷ Parallel
+                   ∂ ŝ T                                                                  ∂ ŝ T
+16:      ∇θj E ← − ∂θjj ϵj                                              17:      ∇θj E ← − ∂θjj ϵj
+17:      θj ← θj − η∇θj E                                               18:      θj ← θj − η∇θj E
+
+                     Figure A.1. Full side-by-side comparison of state-based PC (left) and error-based PC (right)
+
+
+
+
+                                                                   13
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+
+
+              (a) State-based Predictive Coding                                (b) Error-based Predictive Coding
+                                Figure A.2. PyTorch-style pseudocode comparison of sPC vs. ePC
+
+
+
+
+B. Signal Decay in State-based PC, Across Time and Hardware Constraints
+This appendix extends our analysis of the exponential signal decay phenomenon identified in Section 3. While the main
+paper demonstrated how signals attenuate during the initial backward wavefront, we here derive a complete characterization
+of network dynamics that reveals the underlying mathematical structure governing signal propagation throughout energy
+minimization.
+Our analysis uncovers a striking similarity to a simple binomial model, providing both theoretical insights into the discrete-
+time nature of the problem and practical understanding of why physical implementations of sPC (like the brain) would not
+suffer from the same limitations.
+
+B.1. Introducing a Simplified sPC Model for Analytical Tractability
+To enable rigorous mathematical analysis, we introduce a simplified model that captures the essential dynamics while
+remaining analytically tractable. Note that this setting provides only a coarse approximation to the true state dynamics of
+sPC, in contrast to our exact analysis of the initial backward wavefront in Section 3.
+
+                                                             14
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Key Assumption for Appendix B After feedforward state initialization, all state predictions ŝi remain constant throughout
+energy minimization. This assumption implies that signal propagation occurs exclusively in the top-down direction, from
+output toward input layers.
+This simplification provides a reasonable approximation during early-stage optimization, where state dynamics are primarily
+driven by the output loss L before significant bottom-up signals emerge. However, it breaks down as the system evolves and
+predictions begin to change.
+
+Simplified Backward Dynamics As described in Section 2, the temporal dynamics of states in sPC follow gradient
+descent on the energy function E with state learning rate λ:
+                                           st+1
+                                            i   = sti − λ∇si E t
+                                                                            ∂fθi+1 t
+                                                    = sti − λϵti + λϵti+1         (si ),
+                                                                             ∂si
+where ϵi := si − ŝi represents the layerwise prediction error. Given our key assumption above, this is equivalent to the
+deviation of each layer’s state from its fixed prediction.
+                                           ∂fθi+1
+To further simplify our analysis, we set    ∂si     (sti ) ≡ I, reducing the dynamics to:
+
+                                                     st+1
+                                                      i   = sti − λϵti + λϵti+1
+
+B.2. The Emergence of Recursive Error Dynamics Beyond the Wavefront
+Since state predictions ŝi remain fixed by assumption, the prediction errors ϵi follow the same temporal dynamics as the
+states themselves:
+                                                        st+1
+                                                         i   = sti − λϵti + λϵti+1
+                                       ⇐⇒ (st+1
+                                            i   − ŝi ) = (sti − ŝi ) − λϵti + λϵti+1
+                                                  ⇐⇒ ϵt+1
+                                                      i   = ϵti − λϵti + λϵti+1
+                                                  ⇐⇒ ϵt+1
+                                                      i   = (1 − λ)ϵti + λϵti+1
+
+For small errors and/or learning rates, we can approximate the magnitude of the right-hand side as the sum of magnitudes,
+giving rise to recursive dynamics:
+                                            ||ϵt+1              t          t
+                                               i || ≈ (1 − λ)||ϵi || + λ||ϵi+1 ||
+
+This recursive formula, when traced through the first few time steps, generates a striking pattern. Writing the magnitudes
+relative to the driving signal (i.e., the output gradient ∇ŷ L) gives us:
+
+        Time    t=0      t=1          t=2                    t=3                  t=0       t=1       t=2           t=3
+  ||∇ŷ L|| ∝     1      1−λ      1 − 2λ + λ2         1 − 3λ + 3λ2 − λ3              1      (1 − λ) (1 − λ)2   (1 − λ)3
+ ||ϵL−1 || ∝      0       λ         2λ − 2λ2            3λ − 6λ2 + 3λ3 =             0         λ    2λ(1 − λ) 3λ(1 − λ)2
+ ||ϵL−2 || ∝      0       0            λ2                 3λ2 − 3λ3                  0         0       λ2     3λ2 (1 − λ)
+ ||ϵL−3 || ∝      0       0            0                      λ3                     0         0        0          λ3
+
+The state at time t = 0 follows from feedforward state initialization, where all internal errors begin at zero. By construction,
+every entry in the table equals the sum of (1 − λ) times its left neighbor (its previous value) and λ times its upper-left
+neighbor (influence from the layer above).
+
+B.3. A Binomial Formula for Signal Propagation
+Examining the coefficient patterns reveals a fundamental mathematical structure: Pascal’s triangle. We can formalize this
+behavior with the following binomial formula:
+                                                           
+                                                            t i
+                                              ||ϵtL−i || ∝    λ (1 − λ)t−i ,                                          (6)
+                                                            i
+
+                                                                 15
+                                   ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+where L + 1 representsthe total number of layers, i is the distance from the output layer, and t denotes the update step. The
+binomial coefficient ti encapsulates the number of possible paths through which a signal from the output layer can reach
+layer L − i within exactly t update steps, given our top-down propagation assumption.
+Aside from the initial signal ∇ŷ L at the output, the formula reveals three additional factors that influence signal magnitude
+throughout the network:
+
+  1. Exponential depth decay λi : confirms the exponential attenuation with network depth identified in Section 3. This
+     explains PC’s exponential energy decay across layers, as first observed by Pinchetti et al. (2025) and later reproduced
+     by Qi et al. (2025).
+
+  2. Temporal decay (1 − λ)t−i : represents the gradual weakening of the original output signal over time, an artifact of
+     our assumption that energy flows exclusively toward lower layers.
+
+                                          t
+                                           
+  3. Different propagation routes         i : accounts for the spatio-temporal variety of signal propagation pathways from
+     output to the current layer.
+
+B.4. High-Precision sPC Simulations: Perfect Signal Propagation, Still Slow Convergence
+The binomial formula of Eq. (6) serves as a powerful analytical tool to study sPC dynamics without the confound-
+ing effects of numerical precision limitations. By implementing this formula directly in logarithmic space using
+scipy.special.gammaln, we can achieve near-infinite precision and observe the theoretical behavior of signals
+in sPC unhindered by computational constraints.
+
+                     State-based PC (float64)                                     Binomial formula (∞-precision)
+
+
+
+
+Figure B.1. Evolution of layerwise energies for sPC with float64 vs. near-infinite precision (simulated via Eq. (6)). Same setup as in
+Fig. 1, described in Appendix E.2.1.
+
+
+Fig. B.1 presents a direct comparison between our high-precision binomial model and a float64 implementation of sPC for
+λ = 0.1. The striking similarity between these plots confirms that our mathematical characterization accurately captures
+the fundamental early-stage dynamics, despite simplifying assumptions. The orthogonal weight initialization used in our
+experiments certainly helps here, as it aligns well with our simplified backward dynamics assumption.
+Comparing the float64 implementation in Fig. B.1 with the float32 version from Fig. 1 highlights both the importance and
+limitations of numerical precision in sPC. Even with enhanced double-precision floating-point arithmetic, the discontinuous
+signal propagation persists, though manifesting later and less pronounced.
+
+                                                                 16
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+                             Table B.1. Properties of a physical implementation vs. digital simulation of PC
+
+            Property                    Physics-based analog system                       Digital simulation
+            Time dynamics               Continuous-time                                   Discrete-time
+            Time constant               τ →0                                              0 < λ < 1 (large for speed, small for stability)
+            Iterations per second       Near-infinite (= 1/τ )                            A few dozen on consumer hardware
+            Power consumption           Very low                                          Relatively high
+            Compute budget              Scales with time                                  Scales with energy cost
+            Generality                  Specialised (computes only itself)                General-purpose
+
+
+B.5. The Impact of Signal Decay in Digital Simulation vs. in Physical Reality
+B.5.1. D IFFERENT HARDWARE , DIFFERENT PROPERTIES
+The defining feature of sPC, and the cause of its popularity, is that it can be implemented in a physical substrate, like an
+analog circuit. But given sPC’s scaling issues, is it still interesting to develop such hardware? Yes, we believe it is. The
+crucial consideration lies in the unique properties of a physical implementation, compared to a digital simulation. We have
+listed a comparison in Table B.1.
+While signal decay remains a fundamental, hardware-independent property of sPC, it forms only a transient effect and
+does not necessarily pose a problem. The reason it becomes problematic in a digital simulation, is because the compute
+budgets are typically limited in practice, meaning that the (simulated) system does not receive sufficient iterations to reach
+convergence. By contrast, a physical chip could easily run millions of iterations per second, at neglegible monetary cost
+thanks to its low power consumption. The trade-off is that the chip can only compute this specific PC system, unlike a
+general-purpose digital processor.
+Therefore, we may conclude that neuromorphic implementations of sPC, like the brain, would not suffer from the exponential
+signal decay problem identified in our research (although other challenges will emerge, such as noise and non-idealities).
+
+B.5.2. O UR SIMPLIFIED S PC MODEL , IN CONTINUOUS - TIME
+To get some intuition for how signal propagation would look like in a physical substrate, we examine our binomial formula
+(Eq. (6)) in the continuous-time limit, where λ → 0 (infinitesimal state learning rate) and t → ∞ (continuous updates), with
+a constant total time λt.
+Setting t = τ /λ, we find:
+                                                               
+                                            t=τ /λ          τ /λ i
+                                    lim ||ϵL−i || ∝ lim           λ (1 − λ)τ /λ−i
+                                    λ→0                λ→0    i
+                                                                (τ /λ)i
+                                                     ≈ lim                  λi                      e−τ
+                                                       λ→0         i!                               |{z}
+                                                                | {z }                       (limit definition of e)
+                                                             (Stirling’s approximation)
+
+                                                         τ i −τ
+                                                     =      e
+                                                         i!
+
+Now, our binomial formula transforms into a Poisson distribution, representing the spatial profile of a diffusion process. In
+this regime, signals diffuse smoothly over time, rather than being subject to the stepwise attenuation seen in discrete updates.
+Although there is still some signal decay present across layers (governed by the factorial i!), keep in mind that this formula
+only applies to our simplified model, not to sPC in general.
+
+B.6. Temporal Scope and Limitations
+Our binomial model primarily captures early-stage dynamics but becomes progressively less accurate for extended optimiza-
+tion periods. For longer time horizons, especially with larger learning rates, our assumption of fixed predictions becomes
+increasingly unrealistic. The model dictates permanent downward energy transmission, moving from output to input, due to
+a lack of bottom-up signals. In practical implementations, however, layerwise energies will settle across the network in an
+
+                                                                    17
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+effort to minimize prediction errors globally. In particular, the output loss L will generally remain relatively large, even at
+equilibrium.
+
+C. Error-based PC and Connections to Other Algorithms
+This section examines how ePC related to other established learning algorithms. More specifically, we show that:
+
+  • Despite its lack of locality, ePC is still a valid PC algorithm, according to the definition by Salvatori et al. (2026).
+    (Appendix C.1)
+
+  • ePC and sPC are essentially the same PC algorithm, but follow different optimization paths. (Appendix C.2)
+
+  • Under specific conditions, ePC can implement exact backpropagation, closely resembling Zero-divergent Inference
+    Learning (Z-IL; Song et al., 2020). (Appendix C.3)
+
+  • In general, however, ePC generates weight gradients that are different from those in standard backpropagation, matching
+    those produced by full-equilibrium sPC. (Appendix C.4)
+
+  • When considering PC as a hierarchical probabilistic model, ePC simply implements the VAE reparametrization trick
+    from Kingma and Welling (2013). (Appendix C.5)
+
+C.1. ePC Broadens the Definition of Predictive Coding
+This appendix section analyzes the technical definition of PC by Salvatori et al. (2026) and demonstrates that ePC meets
+all criteria, thereby definitively establishing it as an exact PC algorithm. Moreover, we show that ePC broadens our
+understanding of what PC is, eliminating the condition of local-only interactions, commonly believed to be a core component
+of PC.
+
+   Informal definition of PC by Salvatori et al. (2026), adapted to our notation. Let us assume that we have a
+   hierarchical generative model g(x, s), inverted using an algorithm A.
+   Then, A is a Predictive Coding algorithm if and only if:
+      1. it maximizes the model evidence log p(s) by minimizing a variational free energy,
+      2. the posterior distributions of the nodes of the hierarchical structure are factorized via a mean-field approxima-
+         tion, and
+
+      3. each posterior distribution is approximated under the Laplace approximation
+         (i.e., random effects are Gaussian).
+   Note that the above definition does not say anything explicitly about prediction error or properties such as locality,
+   which, as mentioned earlier, are commonly used to describe PC. [...] the above definition is quite general and does
+   not impose any constraint on the exact computation of the posteriors as well as the optimization technique(s) used to
+   minimize the variational free energy.
+
+Let us go over each of the requirements of the definition:
+
+ 0. ePC employs the exact same hierarchical generative model g(x, s) as sPC, as reflected by its identical energy function
+    (see Appendix C.2). A reparametrization does not affect this property.
+
+ 1. ePC minimizes sPC’s variational free energy E and reaches the same state minima (see Appendix C.2). As in sPC, this
+    energy minimum corresponds to a maximum-likelihood estimation of the model evidence over the states.
+
+ 2. ePC imposes a mean-field approximation of the posterior distribution. Concretely, this means that every state component
+    sij can be set independently of any other state component. Although ePC builds a global computational graph, thereby
+    imposing a dependence of si on all previous states s<i , we can still set si to any arbitrary value by modifying ϵi .
+
+                                                              18
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+ 3. ePC’s ‘random effects’ are the errors ϵ, which are implicitly modelled as Gaussians. More specifically, the energy
+    E (representing − log g(x, s)) contains a ||ϵi ||2 term that corresponds to the negative log-likelihood of a standard
+    Gaussian N (0, 1). This is entirely analogous to the reparametrization trick in VAEs (Kingma & Welling, 2013), which
+    formulates any Gaussian as a transformation of a standard normal. We explore this connection further in Appendix C.5.
+
+Remarkably, requirement 2 does not imply the need for locality, despite Salvatori et al. (2026) noting that "the mean field
+approximation enforces independence, and hence, results in locality in the update rules". ePC proves that a non-local
+mean-field approximation exists, without violating the assumptions of the hierarchical model.
+Technically speaking, one might argue that the final node in our model, ŷ, is not independent of the other nodes. However,
+the loss L still provides the necessary freedom to deviate from y, effectively acting as an additional random effect. Along
+with the definition’s assumption of Gaussian posterior distributions, the loss L becomes an MSE loss and may be equivalently
+modelled as an additional error term ϵL .
+
+C.2. Theoretical Equivalence between sPC and ePC
+Here, we provide a formal proof of the theoretical equivalence between the state- and error-based formulations of PC. We
+demonstrate that despite their different parameterizations, both approaches converge to identical equilibrium points and
+represent the same underlying optimization problem.
+
+Bijective Mapping We first establish a bijective mapping between the optimization variables of sPC (the states s) and
+ePC (the errors ϵ).
+Theorem C.1 (Bijective Mapping). For any fixed set of parameters θ and input x, there exists a bijective mapping between
+any state configuration s = {s0 , s1 , . . . , sL−1 } in sPC and error configuration ϵ = {ϵ0 , ϵ1 , . . . , ϵL−1 } in ePC.
+
+Proof. Given states s = {s0 , s1 , . . . , sL−1 } in sPC, we can directly compute the corresponding errors:
+
+                               ϵi = si − ŝi = si − fθi (si−1 )     for   i ∈ {0, 1, . . . , L − 1}
+
+where for i = 0, we define s−1 := x (the input data).
+Conversely, given errors ϵ = {ϵ0 , ϵ1 , . . . , ϵL−1 } in ePC and input x, we can recursively compute the corresponding states:
+
+                               s0 = ŝ0 + ϵ0 = fθ0 (x) + ϵ0
+                               si = ŝi + ϵi = fθi (si−1 ) + ϵi     for   i ∈ {1, 2, . . . , L − 1}
+
+For a fixed set of parameters θ and input x, this mapping is one-to-one and onto (i.e., bijective): for any given s, there is
+exactly one corresponding ϵ, and for any given ϵ, there is exactly one corresponding s.
+
+Energy Function Equivalence        Next, we prove that under this mapping, the energy functions of both formulations are
+equivalent.
+Theorem C.2 (Energy Equivalence). Under the bijective mapping between s and ϵ, for any fixed parameter set θ and
+input-output pair (x, y), the energy functions EsPC (s, θ) and EePC (ϵ, θ) are identical when evaluated on corresponding
+configurations.
+
+Proof. Let us first recall the energy functions for both formulations:
+
+                                                           L−1
+                                                         1X
+                                         EsPC (s, θ) =         ∥si − ŝi ∥2 + L(ŷ, y)
+                                                         2 i=0
+                                                           L−1
+                                                         1X
+                                         EePC (ϵ, θ) =         ∥ϵi ∥2 + L(ŷ, y)
+                                                         2 i=0
+
+
+                                                              19
+                                     ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Starting with EePC and substituting the definition ϵi = si − ŝi :
+                                                              L−1
+                                                             1X
+                                             EePC (ϵ, θ) =         ∥ϵi ∥2 + L(ŷ, y)
+                                                             2 i=0
+                                                              L−1
+                                                           1X
+                                                         =       ∥si − ŝi ∥2 + L(ŷ, y)
+                                                           2 i=0
+                                                         = EsPC (s, θ)
+
+Therefore, the energy functions evaluate to the same value for corresponding configurations of states and errors.
+
+Jacobian of the Transformation To analyze how gradients and critical points relate between the two formulations, we
+need the Jacobian matrix of the transformation from errors to states.
+Lemma C.3 (Jacobian Structure). The Jacobian matrix J = ∂s   ∂ϵ representing how states change with respect to errors has a
+lower triangular structure with identity matrices on the diagonal.
+
+Proof. From the recursive definition of states in terms of errors:
+
+                                                        si = fθi (si−1 ) + ϵi
+
+Taking partial derivatives with respect to ϵj :
+
+               ∂si
+  1. If j > i: ∂ϵj
+                   = 0, since si doesn’t depend on future errors.
+
+  2. If j = i: ∂s
+               ∂ϵi = I, the identity matrix.
+                 i
+
+
+
+
+               ∂si     ∂fθi (si−1 ) ∂si−1
+  3. If j < i: ∂ϵj
+                   =     ∂si−1     · ∂ϵj
+
+                    ∂fθi+1 (si )
+Let’s denote Ji =       ∂si        as the Jacobian of layer i + 1 with respect to its input (state i).
+Then we can write:
+                                                        
+                                                   ∂si  0
+                                                                            if j > i
+                                                       = I                   if j = i
+                                                   ∂ϵj         ∂si−1
+                                                           i−1 · ∂ϵj
+                                                        J                   if j < i
+
+
+This recursive structure leads to a lower triangular Jacobian matrix with identity matrices on the diagonal:
+
+                                                                                   ···
+                                                                                            
+                                                  I               0         0             0
+                                               J0
+                                                                  I        0      ···    0 
+                                          J =  J1 J0
+                                                                 J1        I      ···    0
+                                                  ..               ..       ..            .. 
+                                                                                             
+                                                                                  ..
+                                                  .                .        .        .    .
+                                               QL−2           QL−2
+                                                k=0 Jk           k=1 Jk    ···   JL−2     I
+
+This structure has important implications: J is invertible with determinant 1, since the determinant of a triangular matrix is
+the product of its diagonal entries, all of which are 1.
+
+Gradient Equivalence and Critical Points We now establish the relationship between gradients in both formulations and
+use it to prove that they share the same critical points.
+
+                                                                   20
+                                  ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Theorem C.4 (Gradient Relationship). The gradients of the energy functions in the sPC and ePC formulations are related
+by:
+
+                                                    ∇ϵ EePC = JT ∇s EsPC
+
+where J = ∂s
+          ∂ϵ is the Jacobian matrix derived in Lemma C.3.
+
+
+Proof. By the chain rule of calculus:
+
+                                                 ∇ϵ EePC = ∇ϵ EsPC (s(ϵ), θ)
+                                                            T
+                                                            ∂s
+                                                         =          ∇s EsPC
+                                                            ∂ϵ
+                                                           = JT ∇s EsPC
+
+
+Theorem C.5 (Critical Point Correspondence). A configuration s∗ is a critical point of EsPC if and only if the corresponding
+configuration ϵ∗ is a critical point of EePC .
+
+Proof. From Theorem C.4, we have:
+
+                                                    ∇ϵ EePC = JT ∇s EsPC
+
+Since J is invertible (as shown in Lemma C.3), its transpose JT is also invertible. Therefore:
+
+                                  ∇ϵ EePC = 0 ⇐⇒ JT ∇s EsPC = 0 ⇐⇒ ∇s EsPC = 0
+
+This establishes that s∗ is a critical point of EsPC if and only if the corresponding ϵ∗ is a critical point of EePC .
+
+Local Structure of Critical Points To complete our proof of optimization equivalence, we need to show that the local
+structure of critical points (minima, maxima, or saddle points) is preserved between formulations.
+Theorem C.6 (Preservation of Local Structure). A critical point s∗ is a local minimum / maximum / saddle point of EsPC if
+and only if the corresponding critical point ϵ∗ is a local minimum / maximum / saddle point of EePC .
+
+Proof. The local structure of critical points is determined by the eigenvalues of the Hessian matrices:
+
+                                                         Hs = ∇2s EsPC
+                                                         Hϵ = ∇2ϵ EePC
+
+To relate these Hessians, we differentiate the relationship in Theorem C.4:
+
+                                                    ∇ϵ EePC = JT ∇s EsPC
+
+Taking another derivative with respect to ϵ:
+                                                     ∂
+                                          ∇2ϵ EePC =      JT ∇s EsPC
+                                                                     
+                                                     ∂ϵ
+                                                     ∂JT               ∂∇s EsPC
+                                                   =      ∇s EsPC + JT
+                                                      ∂ϵ                   ∂ϵ
+                                                        T
+                                                     ∂J                         ∂s
+                                                   =      ∇s EsPC + JT ∇2s EsPC
+                                                      ∂ϵ                        ∂ϵ
+                                                     ∂JT
+                                                   =      ∇s EsPC + JT Hs J
+                                                      ∂ϵ
+
+                                                               21
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+At a critical point where ∇s EsPC = 0, the first term vanishes, giving:
+
+                                                        Hϵ = JT Hs J
+
+This establishes that Hϵ and Hs are congruent matrices, considering J is invertible.
+By Sylvester’s law of inertia, congruent matrices have the same number of positive, negative, and zero eigenvalues.
+Therefore:
+
+   • Hs is positive definite (all eigenvalues positive) if and only if Hϵ is positive definite
+
+   • Hs is negative definite (all eigenvalues negative) if and only if Hϵ is negative definite
+
+   • Hs has mixed positive/negative eigenvalues (saddle point) if and only if Hϵ has the same eigenvalue signature
+
+This preserves the classification of critical points as local minima, maxima, or saddle points between the two formulations.
+
+
+
+Dynamical Systems Analysis While the energy functions and their critical points are identical, the optimization dynamics
+differ significantly due to the reparameterization.
+Theorem C.7 (Dynamical Equivalence). The continuous-time dynamics in sPC and ePC both converge to the same
+equilibrium points, but follow different trajectories in their respective spaces.
+
+Proof. Under the notation ẋ := dx
+                                dt , the continuous-time dynamics for both formulations are:
+
+                                                    sPC:    ṡ = −∇s EsPC
+                                                    ePC:    ϵ̇ = −∇ϵ EePC
+
+
+Using the relation ∇ϵ EePC = JT ∇s EsPC , the ePC dynamics can be rewritten as:
+
+                                                      ϵ̇ = −JT ∇s EsPC
+
+To compare these dynamics in the same space, we need to transform ϵ̇ to ṡ. Using the chain rule:
+
+                                                         ∂s
+                                                     ṡ =    ϵ̇
+                                                         ∂ϵ
+                                                       = Jϵ̇
+                                                       = −JJT ∇s EsPC
+
+Comparing with the sPC dynamics:
+
+                                                   ṡ sP C = −∇s EsPC
+                                                   ṡ eP C = −JJT ∇s EsPC
+
+
+The difference is the matrix JJT , which acts as a preconditioner for the gradient descent. This matrix is positive definite
+(since J has full rank), meaning that the ePC dynamics will always move in a descent direction for EsPC , but with a different
+step size and direction than sPC.
+Both dynamical systems will converge to the same equilibrium points where ∇s EsPC = 0, but will follow different
+trajectories to get there. Whereas sPC suffers from an ill-conditioned optimization landscape (Innocenti et al., 2025),
+explaining its slow convergence, ePC seems to solve this problem through a cleverly constructed preconditioner.
+
+                                                              22
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Global Connectivity and Signal Propagation The key computational advantage of ePC over sPC lies in its global
+connectivity structure. This difference affects how signals propagate through the network.
+Theorem C.8 (Signal Propagation). In the sPC formulation, signals propagate sequentially through the network layers,
+resulting in exponential decay with network depth. In contrast, ePC allows direct signal propagation to all layers
+simultaneously, eliminating the signal decay problem.
+
+
+Proof. In sPC, the state update equations are:
+
+                                               s˙i = −∇si EsPC
+                                                             ∂fθi+1 T
+                                                                  
+                                                   = −ϵi +            ϵi+1
+                                                               ∂si
+
+The crucial observation is that s˙i depends only on errors from adjacent layers (ϵi and ϵi+1 ). This local connectivity means
+that a signal from the output layer (∇ŷ L) must propagate through all intermediate layers to reach the input layer, attenuating
+at each step.
+In ePC, by contrast, the gradient is computed through the entire computational graph:
+
+                                                   ϵ˙i = −∇ϵi EePC
+                                                                 ∂ ŷ T
+                                                      = −ϵi −           ∇ŷ L
+                                                                 ∂ϵi
+
+
+                                                  ∂ ŷ     ∂ ŷ   ∂sL−1         ∂si
+                                        with           =        ·       · ... ·
+                                                  ∂ϵi    ∂sL−1 ∂sL−2            ∂ϵi
+
+Hence, ϵ˙i directly depends on all states from layer i to L. This global connectivity allows signals from the output layer to
+immediately affect all earlier layers, eliminating the signal decay problem.
+The mathematical consequence of this difference is that in sPC, the influence of the output error on layer i decreases
+exponentially with the distance from the output (as explained extensively in Section 3), while in ePC, this influence is direct
+and unattenuated.
+
+
+Limitations and Caveats While the two formulations are theoretically equivalent in terms of equilibrium points, several
+practical considerations affect their performance:
+
+
+  1. Optimization Landscape: The different parameterizations create different state trajectories that may encounter
+     different local minima under stochastic optimization.
+
+  2. Numerical Stability: The formulations may exhibit different numerical properties, particularly with respect to
+     hyperparameter sensitivity and discretization effects. For instance, in Section 3, the numerical issues of sPC are
+     highlighted.
+
+  3. Implementation Efficiency: The global connectivity of ePC imposes different computational demands than the
+     local connectivity of sPC, affecting implementation efficiency on different hardware architectures. On GPU, the
+     reverse-mode AD underlying ePC is highly efficient, despite being sequential. However, the local and parallel nature of
+     sPC enables a far more efficient neuromorphic implementation.
+
+
+Despite these practical differences, our theoretical equivalence analysis confirms that ePC is a valid reparameterization of
+PC that preserves its fundamental principles while offering significant computational advantages for deep networks.
+
+                                                              23
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+C.3. Exact Backpropagation using Error-based Predictive Coding
+Below, we explore an important theoretical property of ePC: under specific conditions, ePC can become mathematically
+equivalent to standard backpropagation. This relationship deserves careful examination, as it affects how researchers should
+implement and interpret ePC results.
+Note that, in general and under more reasonable circumstances, ePC does not equal backpropagation, and produces notably
+different weight gradients, as demonstrated in Appendix C.4.
+
+C.3.1. W HEN E PC R EDUCES TO BACKPROPAGATION
+The use of reverse-mode AD within ePC’s computational structure naturally raises the question of when the two methods
+become mathematically equivalent. We demonstrate that ePC may reduce to standard backpropagation under specific
+conditions. Importantly, these conditions do not make backprop a PC algorithm, which would require, at least in theory, for
+the errors to be at equilibrium.
+
+    Theorem C.9. ePC becomes mathematically equivalent to backpropagation when either:
+
+                    • The number of update steps T is exactly 1.
+                    • The error learning rate λ is sufficiently small relative to 1/T .
+
+
+Proof. We consider each case separately, proving their equivalence to backpropagation.
+Case 1: Single Update Step (T = 1)
+With a single update step, the error variables are updated to:
+                                                    ϵi = −λ∇ϵi L(ŷ, y)
+The subsequent parameter update becomes:
+
+                                                   ∂ŝi T        ∂ŝi T
+                                        ∆θi ∝ −           ϵi = λ        ∇ϵi L(ŷ, y)
+                                                   ∂θi           ∂θi
+                                                   ∂ŝi T ∂si T      @∂si T
+                                              =λ                             ∇si L(ŷ, y)
+                                                   ∂θi ∂ŝi           ∂ϵ@
+                                                          | {z }     | {zi@}
+                                                           ≡I          ≡I
+                                              = λ∇θi L(ŷ, y)
+This is precisely the gradient from standard backpropagation, but scaled by the error learning rate λ. Note that the weight
+update itself would involve an additional scaling by the weight learning rate.
+When λ = 1, we find that this setup exactly matches that of Zero-divergent Inference Learning (Z-IL; Song et al., 2020).
+Z-IL adds a "fixed prediction assumption" to sPC and only models a backward signal wavefront, similar to that of Section 3,
+but with λ = 1. With these two constraints added to sPC, Z-IL effectively implements a 1-step version of ePC, which, as we
+outlined above, indeed corresponds to exact backpropagation.
+Case 2: Small Learning Rate (λ ≪ 1/T )
+For a small λ, after T update steps, the error can be approximated as a linear accumulation of T identical updates:
+                                                   ϵi ≈ −λT ∇ϵi L(ŷ, y)
+Following the same reasoning as for case 1, the resulting parameter update now becomes:
+                                                   ∆θi ∝ λT ∇θi L(ŷ, y)
+This approximation holds when λT remains sufficiently small, such that the error-perturbed output prediction ŷ still closely
+approximates the unperturbed feedforward prediction ŷ of backprop. Note that, when using larger learning rates and/or
+sufficient update steps, this is no longer the case, and the output prediction ŷ differs sufficiently between ePC and backprop,
+with the natural consequence being notably distinct gradients.
+
+                                                                24
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+C.3.2. E XPERIMENTAL C ONSIDERATIONS
+In our experiments, we found that smaller values of λT generally performed best. However, we deliberately maintained this
+value above the threshold that would cause ePC to reduce to regular backpropagation. Complete experimental details are
+provided in Appendix E.
+
+C.3.3. C ONTRAST WITH S PC
+This situation differs notably from sPC, which can also become equivalent to backpropagation under certain conditions
+(Song et al., 2020; Millidge et al., 2022b). However, these conditions typically involve specific algorithmic tweaks that
+rarely occur in practice, thereby protecting sPC implementations from accidentally reducing to backpropagation.
+ePC, by contrast, presents a more subtle boundary. During hyperparameter tuning, one might inadvertently select learning
+rates and iteration counts that effectively transform ePC into standard backpropagation. Researchers working with ePC
+should therefore carefully monitor these parameters to ensure they are truly studying PC dynamics rather than rediscovering
+backprop in disguise.
+
+C.4. Weight Gradients from (Error-Based) PC are Distinct from Backprop
+In Section 4.3, we analyzed the evolution of states to equilibrium for a 20-layer linear PC network trained on MNIST. Here,
+we examine the evolution of the weight gradients themselves, which are ultimately the quantities of interest for learning.
+While weight gradients in PC have no inherent dynamics (they are computed only after energy minimization), we can track
+how they would evolve if optimization were stopped at intermediate steps using their local formulas (Eq. (3)). The results
+are shown in Fig. C.1.
+
+
+
+
+Figure C.1. Evolution of batch-averaged weight gradients of bottom, middle, and top hidden layers in a 20-layer linear PC network trained
+on MNIST (same setup as Fig. 5). ePC starts at backprop (rescaled by the error learning rate λ), while sPC starts mostly at zero. Both
+eventually reach the analytical PC gradients (notably distinct from backprop), with ePC converging roughly 100× faster than sPC.
+
+
+
+                                                                   25
+                                       ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+The analysis reveals several key insights about the gradient behavior of the two PC variants. Both ePC and sPC eventually
+converge to identical analytical PC weight gradients, reconfirming their theoretical equivalence from Appendix C.2. Notably,
+these PC gradients are distinct from backpropagation gradients across all layers, both in direction and in magnitude.
+
+
+                                             How does ePC differ from backprop?
+                         While backpropagation and ePC do share the same computational backbone, they
+                           ultimately solve very different optimization problems. A brief comparison:
+
+                                 Solver methods:                       BP                                 ePC
+                        Optimization problem                  Minimize loss L                  Minimize PC energy E
+                           Primary variables                  Model weights θ                         PC errors ϵ
+                            Method structure             One forward-backward pass           Iterative until convergence
+                      Computational backbone                 Reverse-mode AD                     Reverse-mode AD
+
+
+When comparing ePC to sPC, the gradient dynamics differ dramatically. At T = 1, ePC starts at λ-rescaled backprop
+gradients (as shown in Appendix C.3) and rapidly transitions toward the PC solution. By contrast, sPC appears to transition
+from exact-zero gradients directly to PC.3
+As expected, sPC suffers from severe signal propagation issues. Deeper layers stay at zero weight gradients for a long time,
+while layer 18 (the only initially non-zero gradient) actually becomes more aligned with backprop before slowly moving
+toward PC. This creates a significant risk, where early (pre-equilibrium) termination of sPC surely implements something
+other than true PC, despite achieving reasonable learning performance with extremely small yet informative gradients.
+
+C.5. ePC implements the VAE reparametrization trick in PC
+Although PC has long been described as a variational Bayes algorithm (Friston & Kiebel, 2009; Bogacz, 2017; Millidge
+et al., 2021), it is only recently that its probabilistic generative properties have been explored (Oliviers et al., 2024; Zahid
+et al., 2024). In this context, PC is seen as a hierarchical Gaussian graphical model, where:
+
+   • Layer predictions ŝi represent the predicted means (µ) of Gaussian distributions (where negative log-likelihood
+     corresponds to a squared error loss)
+
+   • Variance is typically fixed at σ = 1 (or precision weights are introduced)
+
+   • The states s are sampled from the predicted Gaussians: si ∼ N (ŝi , 1)
+
+   • Standard PC’s "energy minimization" (as described in Section 2) corresponds to finding the maximum-likelihood states
+     s instead of sampling from the full distribution
+
+When ported to this setting, ePC becomes:                                        si = ŝi + 1 ⊙ ϵi       (where 1 represents unit variance)
+A common problem in probabilistic graphical models is that direct sampling breaks the computational graph, inhibiting the
+gradient flow needed for reverse-mode AD. One ingenious and highly successful solution is the VAE reparameterization
+trick (Kingma & Welling, 2013), which transforms a standard normal into the predicted distribution:
+
+                                                      z = µ + σ ⊙ ϵ,        ϵ ∼ N (0, 1)
+
+Notice the strong similarity with the earlier formulation of ePC when z → s,                 µ → ŝi ,    σ→1
+Our description of ePC in Section 4.1 uses variational inference to find maximum-likelihood values for ϵi rather than
+drawing samples. However, under PC’s probabilistic interpretation, one could sample the error variables ϵi from a standard
+normal distribution, making the connection to the VAE reparameterization trick more direct. The mathematical structure is
+entirely analogous: both methods reparameterize in terms of error/noise variables to enable efficient gradient flow.
+   3
+       The directional wandering is likely just an artifact from the cosine similarity with a near-zero vector.
+
+                                                                       26
+                                   ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+D. Additional Experiments with Deep PC MLPs
+This appendix contains additional experiments on deep non-linear networks. The results demonstrate that ePC’s convergence
+advantages hold across non-linear architectures too, at least in our proof-of-concept setting.
+
+D.1. Proper Weight Initialization in sPC Helps To Mask Signal Decay, Not Solve It
+D.1.1. µPC ONLY TRAINS THE TOP PART OF THE NETWORK , LEAVING THE REST UNTRAINED
+In response to the observation by Pinchetti et al. (2025) that sPC doesn’t scale to deep architectures, Innocenti et al. (2025)
+suggested a clever weight initialization scheme, µPC, and demonstrated that it is sufficient to train a 128-layer sPC residual
+network, attaining excellent test accuracies using only 128 update steps. If signal decay is a fundamental limitation of sPC
+(as we claim), how can such a deep network be trained with so few steps? The answer: only a subset of the layers are
+actually trained.
+To demonstrate this, we reproduced the setup of µPC and the 128-layer network of Innocenti et al. (2025). Using the same
+set-up as Fig. 1, we run a single training step on a freshly initialized µPC network and track the dynamics of the layerwise
+energies. The results are shown in Fig. D.1.
+
+                        State-based µPC (Innocenti et al., 2025)               Error-based µPC (ours)
+
+
+
+
+Figure D.1. Same setup as Fig. 1, but for the 128-layer µPC network of Innocenti et al. (2025). Again, sPC struggles to propagate the
+signal throughout the network, whereas ePC converges within a few steps.
+
+As expected, skip connections and careful weight initialization do not help to solve the signal decay problem. Under
+an insufficient amount of update steps, the bottommost layers are left without gradient information, and thus generate
+exact-zero weight gradients under PC’s local formulas of Eq. (3). As predicted in Section 3.3, this leads to a silent flaw in
+the training procedure, where a large amount of layers are left untrained. This phenomenon only gets worse throughout
+training, because the gradient signals will only get smaller as the model becomes better at predicting the output.
+But if not all layers are trained, why does the model still attain such good test accuracies? This is where the beauty of µPC
+comes in. Any weight initialisation for deep networks must pass on the input signal with as little distortion as possible.
+This is a necessary (but not sufficient) condition for training deep networks, and explains why the addition of identity
+signal paths makes ResNets (He et al., 2016) so powerful. As such, the 80+ untrained layers of Fig. D.1 do not affect the
+performance of the model; they simply act as pass-through layers, perserving most of the data’s information, akin to a fixed
+preprocessing pipeline. And so, µPC does enable training of a 128-layer network with sPC and limited update steps, but
+sacrifices representional power, reducing the model to 80+ harmless input transformations in front of a 40-layer trained
+neural network. By contrast, ePC trains all layers of the network and converges almost instantaneously.
+
+D.1.2. O RTHOGONAL WEIGHT INITIALIZATION
+As an addition to the benchmark of Pinchetti et al. (2025), we evaluated the performance for a 20-layer deep MLP. As this
+architecture presents training challenges even with backprop, we used orthogonal weight initialization for enhanced stability
+(Hu et al., 2020). The results are stated in Table D.1. The exact hyperparameters used can be found in Appendix E.
+
+                                                                 27
+                                   ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Table D.1. Additional test accuracies (in %) of ePC, sPC and backprop for a deep MLP architecture. Bold indicates best results within
+confidence intervals (mean ± 1 std. dev.; taken over 5 seeds).
+
+          Loss L                            Mean Squared Error                              Cross-Entropy
+          Training algorithm          ePC          sPC      Backprop               ePC          sPC       Backprop
+          Deep MLP (20 layers)
+          MNIST                   97.11±0.39 96.89±0.33 97.89±0.15 94.84±0.54 95.23±1.24 97.20±0.07
+          FashionMNIST            85.04±2.94 84.92±0.40 87.91±0.45 81.37±0.40 79.95±1.62 87.78±0.18
+
+
+Despite our initial expectation of a large performance gap, both ePC and sPC performed similarly. The reason is the same
+as for µPC: untrained orthogonal layers do not degrade the input signal, and hence form a fixed, harmless preprocessing
+pipeline. As demonstrated in Fig. 1 (which uses the exact same architecture), the first few layers do not receive gradient
+information within the given update budget of 64 steps. Because the network is effectively reduced to a shallower subset,
+sPC generally underperforms ePC, even with this stable weight initialization.
+To avoid confusion, we decided to put these results in the appendix, rather than in Section 5.
+
+D.2. State Dynamics in Deep Non-Linear Models Trained on MNIST
+Building on our analysis of linear models in Section 4.3, we extend our investigation to the more practical scenario of
+non-linear networks. This extension allows us to evaluate whether the signal propagation advantages of ePC generalize
+beyond the analytically tractable linear case.
+
+D.2.1. E XPERIMENTAL S ETUP
+We employed the 20-layer “Deep MLP” architecture detailed in Appendix E, pretrained on MNIST using one of two different
+loss functions: squared error and cross-entropy. Unlike the linear models, these non-linear networks achieve higher test
+accuracy (95% vs. 85%), representing a more realistic training scenario. However, this improved performance introduces an
+important methodological consideration: since analytical solutions are unavailable for non-linear models, we must turn to
+ePC’s convergence state as our reference equilibrium point. This choice inherently favors ePC and should be considered
+when interpreting results.
+
+D.2.2. I MPACT OF L OSS F UNCTION AND I NPUT D IFFICULTY
+As pointed out in Section 3, the signal decay problem of sPC depends critically on the output gradient ∇ŷ L. In well-trained
+non-linear models, the loss—and hence its gradient—can become extremely small for easily classified examples, leading to
+even worse signal propagation issues. To investigate this effect systematically, we varied both the loss function (squared
+error vs. cross-entropy) and input difficulty (easy vs. hard-to-classify images). All experiments were implemented with
+float64 precision to ensure numerical stability and avoid precision-related confounders in the convergence analysis.
+Fig. D.2 presents the convergence dynamics for both sPC and ePC across these conditions. Several important observations
+emerge from these experiments:
+
+  1. Performance across loss functions: Cross-entropy loss appears to create a more challenging optimization landscape
+     for both sPC and ePC, despite its generally more favorable gradient properties compared to squared error. However, the
+     smaller gradient signals from squared error do lead to long propagation delays in sPC, requiring almost 1000 update
+     steps to progress just a single layer and reach s18 .
+
+  2. Input difficulty effects: For highly accurate models, most inputs will be “easy” (classified with high confidence),
+     thereby generating minimal loss gradients. This greatly hinders overall signal propagation, even for ePC in our float64
+     simulations. By contrast, “hard” inputs (resulting in larger gradients) greatly accelerate ePC, while modestly improving
+     sPC’s convergence speed.
+
+  3. Overall convergence speed: ePC consistently converges orders of magnitude faster than sPC across all experimental
+     conditions. This advantage is most pronounced with squared error loss on hard images (bottom left panel), where ePC
+     converges approximately 10,000 times faster than sPC for the exact same model.
+
+                                                                 28
+                                        ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+                                Squared Error Loss                                          Cross-Entropy Loss
+  Easy image
+  Hard image
+
+
+
+
+Figure D.2. Convergence dynamics in 20-layer PC-MLPs trained on MNIST with float64 precision. For easily-classified inputs (marked
+by near-zero loss), gradient signals become prohibitively small, hindering convergence. ePC consistently outperforms sPC by orders of
+magnitude across all conditions.
+
+
+  4. Identical equilibria: Even in the non-linear case, sPC and ePC seem to head towards the same equilibrium points,
+     highlighting their equivalence as established in Appendix C.2. Note that this is not necessarily true for all model
+     architectures and datasets, as spurious local minima may affect sPC and ePC in different ways.
+
+  5. Practical implications: Perhaps most critically, sPC requires an impractical number of update steps (>100,000) to
+     reach convergence in these non-linear networks, underscoring the practical importance of our ePC reformulation for
+     deep PC architectures.
+
+These findings extend and reinforce the convergence analysis presented in Section 4.3. They confirm that the advantages of
+ePC’s global connectivity structure generalize from the analytically tractable linear case to practical non-linear networks
+with different loss functions.
+
+E. Overview of Experimental Implementation Details
+In this appendix, we provide all details necessary to reproduce our experimental results from Section 4.3 and Table 1. Our
+code is available at https://github.com/cgoemaere/error_based_PC.
+
+E.1. Details of Deep Linear Network Trained on MNIST
+Below, we briefly summarize the technical details needed to reproduce Fig. 5. Specifically, we used the following
+architecture:
+
+     • Number of layers: 20
+               – Specifically: x − s0 − s1 − · · · − s8 − s9 − s10 − · · · − s17 − s18 − y
+                 where ’−’ represents a layer (20 layers in total, leading to 19 hidden states si )
+
+     • Hidden state dim: 128
+
+     • Activation function: None (not even at the output)
+
+     • Weight init: orthogonal (linear gain) (Hu et al., 2020)
+
+                                                                     29
+                                 ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+  • Bias init: zero
+  • State/error optimizer: SGD
+  • Pretraining
+       – Weight optimizer: Adam (Kingma & Ba, 2014)
+       – Weight learning rate: 0.001 (not tuned for this proof-of-concept)
+       – Gradient algorithm: Backpropagation (fast, stable, and neutral w.r.t. sPC & ePC)
+       – Dataset: EMNIST-MNIST (Cohen et al., 2017)
+       – Batch size: 64
+       – Epochs: 2
+       – Final test accuracy: 84.5%
+
+For a fair comparison between sPC and ePC, we tuned the internal learning rate for both, with the objective of maximum
+convergence to the analytical optimum:
+
+  • ePC
+       – e_lr sweep: {0.001, 0.005, 0.01, 0.05, 0.1}
+       – Optimal e_lr: 0.05
+       – #iters: 256
+  • sPC
+       – s_lr sweep: {0.05, 0.1, 0.3, 0.5}
+       – Optimal s_lr: 0.3
+       – #iters: 4096
+
+The analytical solution was obtained via sparse matrix inversion using scipy.sparse.linalg.spsolve.
+Note: Fig. 5 shows state dynamics for both sPC and ePC. To get states for the latter, we project from errors to states at every
+time step.
+
+E.2. MLPs on MNIST & FashionMNIST
+Compute resources
+
+  • CPU: Intel Xeon E5-2620 v4
+  • RAM: 32 GiB
+  • GPU: NVIDIA GeForce GTX 1080 Ti
+  • Compute time per experiment: (without early stopping or failure)
+       – MNIST - MLP:
+          * ePC: 10min (#iters=4, 25 epochs) – 1h (#iters=256, 5 epochs)
+          * sPC: 10min (#iters=4, 25 epochs) – 45min (#iters=256, 5 epochs)
+          * Backprop: 2-7min
+       – MNIST - Deep MLP:
+          * ePC: 12min (#iters=4, 25 epochs) – 3h (#iters=256, 5 epochs)
+          * sPC: 25min (#iters=4, 25 epochs) – 3h (#iters=256, 5 epochs)
+          * Backprop: 2-8min
+       – FashionMNIST - MLP:
+          * ePC: 6min (#iters=4, 14 epochs) – 14min (#iters=64, 5 epochs)
+
+                                                              30
+                                  ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+          * sPC: 13min (#iters=16, 14 epochs) – 45min (#iters=256, 5 epochs)
+          * Backprop: 3-7min
+       – FashionMNIST - Deep MLP:
+           * ePC: 20min (#iters=4, 17 epochs) – 45min (#iters=64, 5 epochs)
+           * sPC: 1h (#iters=64, 7 epochs) – 5h30 (#iters=256, 13 epochs)
+           * Backprop: 4-7min
+
+   • Total compute time estimate:
+
+       – MNIST: ±150h
+       – FashionMNIST: ±150h
+
+
+Architecture
+
+   • Number of layers: 4 (MLP), 20 (Deep MLP; see below)
+
+   • Hidden state dim: 128
+
+   • Activation function: GELU (Hendrycks & Gimpel, 2016) (+ Sigmoid for MSE loss)
+
+   • Weight init: orthogonal (with ReLU gain) (Hu et al., 2020)
+
+   • Bias init: zero
+
+   • Pseudorandom seed: 42 for hyperparameter sweep, {0, 1, 2, 3, 4} for final test accuracy over 5 seeds. We set the seed
+     using lightning.seed_everything(workers=True) before any data or weight initialization.
+
+   • State/error optimizer: SGD
+
+   • Weight optimizer: Adam (Kingma & Ba, 2014)
+
+E.2.1. D ETAILS OF F IGURE 1
+Below, we provide all details necessary to reproduce Fig. 1. Above all, our goal was to illustrate the problem of signal decay
+under realistic conditions.
+The model is an untrained Deep MLP + Cross-Entropy, as detailed above. We track the layerwise energies throughout
+energy minimization for a single MNIST data pair (x, y). These are calculated using the energy functions corresponding to
+sPC and ePC (shown side-by-side in Fig. 2). We perform 64 update steps for sPC and 8 for ePC, both with a learning rate
+λ = 0.1.
+
+E.2.2. MNIST
+Data We used EMNIST-MNIST (Cohen et al., 2017), which is a well-documented reproduction of the original MNIST
+dataset (LeCun, 1998). The images are first rescaled to the range [0, 1], then they are normalized using the fixed values
+mean=0.5 and std=0.5 (same as Pinchetti et al., 2025). We set the batch size constant at 64. The validation set was 10% of
+the training data, split randomly but with a fixed seed. For final test performance, we don’t split a separate validation set, but
+simply train on the whole training set.
+
+ePC First, we did a hyperparameter sweep over the inner optimization hyperparameters (error learning rate (e_lr) and
+number of update steps (#iters)), with the weight learning rate (w_lr) constant at 3e-4 (or 3e-5 for Deep MLP+CE). During
+these sweeps, we train for 5 epochs. Then, we fixed the best inner optimization hyperparameters for each setting, and tuned
+w_lr and the number of epochs by means of early stopping, with a maximum of 25 epochs. See Table E.1 for more details.
+
+                                                               31
+                                ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+                     Table E.1. Hyperparameter sweep intervals and optimal values for ePC-MLPs on MNIST
+
+  Hyperparams                  Sweep values                   MLP+MSE     MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      e_lr          {0.001, 0.005, 0.01, 0.05, 0.1, 0.5}           0.05     0.001            0.001              0.001
+     #iters                  {4, 16, 64, 256}                       4         4                4                  4
+      w_lr       {1e-5, 3e-5, 5e-5, 1e-4, 3e-4, 5e-4, 1e-3}        1e-4      1e-4            1e-4               1e-5
+    #epochs        Early Stopping(patience=3), up to 25             25        20              14                 25
+
+
+sPC First, we did a hyperparameter sweep over the inner optimization hyperparameters (state learning rate (s_lr) and
+number of update steps (#iters)), with the weight learning rate (w_lr) constant at 1e-4 (the optimal rate for ePC). During
+these sweeps, we train for 5 epochs. Then, we fixed the best inner optimization hyperparameters for each setting, and tuned
+w_lr and the number of epochs by means of early stopping, with a maximum of 25 epochs. See Table E.2 for more details.
+
+                     Table E.2. Hyperparameter sweep intervals and optimal values for sPC-MLPs on MNIST
+
+ Hyperparams                  Sweep values                    MLP+MSE     MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      s_lr                {0.01, 0.03, 0.1, 0.3}                0.01        0.03              0.3                 0.3
+     #iters                 {4, 16, 64, 256}                     16           4               64                  64
+      w_lr         {3e-5, 5e-5, 1e-4, 3e-4, 5e-4, 1e-3}         1e-4        1e-4             1e-4                5e-5
+    #epochs       Early Stopping(patience=3), up to 25           25          21               12                  15
+
+
+Backprop Since there is no inner optimization in backprop, we simply tuned w_lr and the number of epochs by means of
+early stopping, with a maximum of 25 epochs. See Table E.3 for more details.
+
+                  Table E.3. Hyperparameter sweep intervals and optimal values for backprop-MLPs on MNIST
+
+ Hyperparams                  Sweep values                    MLP+MSE     MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      w_lr         {3e-5, 5e-5, 1e-4, 3e-4, 5e-4, 1e-3}         3e-4        1e-4             3e-4                5e-5
+    #epochs       Early Stopping(patience=3), up to 25           16          20               22                  18
+
+
+E.2.3. FASHION MNIST
+Data We used the FashionMNIST dataset (Xiao et al., 2017). The images are first rescaled to the range [0, 1], then they
+are normalized using the fixed values mean=0.5 and std=0.5 (same as Pinchetti et al., 2025). We set the batch size constant
+at 64. The validation set was 10% of the training data, split randomly but with a fixed seed. For final test performance, we
+don’t split a separate validation set, but simply train on the whole training set.
+
+ePC First, we did a hyperparameter sweep over the inner optimization hyperparameters (error learning rate (e_lr) and
+number of update steps (#iters)), with the weight learning rate (w_lr) constant at 1e-4 (3e-5 for Deep MLP+CE). During
+these sweeps, we train for 5 epochs. Then, we fixed the best inner optimization hyperparameters for each setting, and tuned
+w_lr and the number of epochs by means of early stopping, with a maximum of 25 epochs. See Table E.4 for more details.
+
+                 Table E.4. Hyperparameter sweep intervals and optimal values for ePC-MLPs on FashionMNIST
+
+ Hyperparams                  Sweep values                    MLP+MSE     MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      e_lr           {0.001, 0.003, 0.01, 0.03, 0.1}            0.01        0.003            0.001               0.001
+     #iters                    {4, 16, 64}                       16           4                4                   4
+      w_lr              {3e-5, 5e-5, 1e-4, 3e-4}                5e-5        5e-5             3e-4                3e-5
+    #epochs       Early Stopping(patience=3), up to 25           12          14               17                  2
+
+
+                                                              32
+                                ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+sPC First, we did a hyperparameter sweep over the inner optimization hyperparameters (state learning rate (s_lr) and
+number of update steps (#iters)), with the weight learning rate (w_lr) constant at 1e-4. During these sweeps, we train for 5
+epochs. Then, we fixed the best inner optimization hyperparameters for each setting, and tuned w_lr and the number of
+epochs by means of early stopping, with a maximum of 25 epochs. See Table E.5 for more details.
+
+                 Table E.5. Hyperparameter sweep intervals and optimal values for sPC-MLPs on FashionMNIST
+
+ Hyperparams                  Sweep values                 MLP+MSE        MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      s_lr                {0.01, 0.03, 0.1, 0.3}              0.03            0.01            0.3                0.1
+     #iters                 {4, 16, 64, 256}                   64              16             64                 256
+      w_lr              {3e-5, 5e-5, 1e-4, 3e-4}              1e-4            1e-4           5e-5                3e-5
+    #epochs       Early Stopping(patience=3), up to 25         14              14             7                    /
+
+
+Backprop Since there is no inner optimization in backprop, we simply tuned w_lr and the number of epochs by means of
+early stopping, with a maximum of 25 epochs. See Table E.6 for more details.
+
+                 Table E.6. Hyperparameter sweep intervals and optimal values for BP-MLPs on FashionMNIST
+
+ Hyperparams                  Sweep values                 MLP+MSE        MLP+CE       Deep MLP+MSE          Deep MLP+CE
+      w_lr              {3e-5, 5e-5, 1e-4, 3e-4}              3e-4            1e-4           1e-4                3e-4
+    #epochs       Early Stopping(patience=3), up to 25         15              25             17                  10
+
+
+E.3. VGG-models and ResNet-18
+Compute resources We report the resources used for training and each model’s training time. The training times
+required for a model with MSE or CE loss are comparable. For hyperparameter tuning, we evaluate 200 distinct parameter
+configurations, making the total computational cost approximately 200 times greater than that of a single training run.
+
+  • CPU: Intel Xeon w5-3423
+  • RAM: 197 GiB
+  • GPU: NVIDIA RTX A6000
+  • Compute time per experiment: (without early stopping or failure)
+
+                                Dataset        Model          ePC       sPC      Backprop
+                                               VGG-5          6min      9min         2min
+                                               VGG-7          7min     11min         2min
+                                CIFAR-10
+                                               VGG-9          9min     17min         3min
+                                               ResNet-18     29min       –           6min
+                                               VGG-5          6min      9min         2min
+                                               VGG-7          7min     12min         2min
+                                CIFAR-100
+                                               VGG-9          9min     19min         3min
+                                               ResNet-18     29min       –           6min
+
+
+  • Total compute time estimate for tuning across model architecture and loss function:
+       – ePC: ±680h
+       – sPC: ±510h
+       – Backprop: ±170h
+
+                                                            33
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Data We used the CIFAR-10/100 datasets (Krizhevsky, 2009). The images are first rescaled to the range [0, 1], then they
+are normalized with the mean and standard deviation given in Table E.7 (same as Pinchetti et al., 2025). We set the batch
+size constant at 256. The validation set was 5% of the training data, split randomly but with a fixed seed. For final test
+performance, we don’t split a separate validation set, but simply train on the whole training set.
+
+                                                     Table E.7. Data normalization
+
+                                                       Mean (µ)                         Std (σ)
+                              CIFAR-10         [0.4914, 0.4822, 0.4465]       [0.2023, 0.1994, 0.2010]
+                              CIFAR-100        [0.5071, 0.4867, 0.4408]       [0.2675, 0.2565, 0.2761]
+
+VGG architecture VGG models are deep convolutional neural networks (Simonyan & Zisserman, 2014). Table E.8
+provides a detailed summary of the model architectures used for the VGG-5, VGG-7 and VGG-9 models. After the
+convolutional layers, a single linear layer produces a class prediction. The activation function of the models was selected
+from among ReLU, Tanh, Leaky ReLU, and GELU (Hendrycks & Gimpel, 2016) during model tuning.
+
+Table E.8. Detailed architectures of VGG models. The locations of the pooling layers correspond to the indices of the convolutional layers
+after which the max-pooling operations are applied.
+
+                              VGG-5                           VGG-7                                       VGG-9
+    Channel Sizes      [128, 256, 512, 512]      [128, 128, 256, 256, 512, 512]        [128, 128, 256, 256, 512, 512, 512, 512]
+    Kernel Sizes            [3, 3, 3, 3]                [3, 3, 3, 3, 3, 3]                       [3, 3, 3, 3, 3, 3, 3, 3]
+       Strides              [1, 1, 1, 1]                [1, 1, 1, 1, 1, 1]                       [1, 1, 1, 1, 1, 1, 1, 1]
+      Paddings              [1, 1, 1, 1]                [1, 1, 1, 0, 1, 0]                       [1, 1, 1, 1, 1, 1, 1, 1]
+    Pool location           [0, 1, 2, 3]                    [0, 2, 4]                                  [0, 2, 4, 6]
+    Pool window                2×2                            2×2                                         2×2
+     Pool stride                 2                              2                                           2
+
+
+ResNet-18 architecture The ResNet-18 model is a convolutional neural network with skip connections (He et al., 2016).
+Our implementation follows the standard ResNet-18 architecture with modifications tailored for CIFAR-10/100. It is
+composed of an initial convolutional stem followed by four residual stages, each consisting of two residual blocks. Each
+residual block comprises two 3×3 convolutional layers with batch normalization and ReLU activation, followed by an
+identity shortcut connection. Spatial downsampling is performed via stride-2 convolutions at the beginning of each stage
+beyond the first. Table E.9 details the layer configuration.
+
+Table E.9. ResNet-18 architecture adapted for CIFAR-10/100 image classification. The feature shape describes the image height and
+width after each stage. The residual configuration gives the dimension of the convolution mask, the number of channels and the stride used
+for the residual stream. All the convolutional layers used a padding of one, and each convolution was followed by a batch normalisation
+layer. Stages one to four include skip connections for every residual.
+
+                              Stage           Feature shape              Residual configuration
+                              Conv Stem           32 × 32               Conv3x3, 64, stride = 1
+                                                                                            
+                                                                      Conv3x3, 64, stride = 1
+                              Stage 1             32 × 32                                      ×2
+                                                                      Conv3x3, 64, stride = 1
+                                                                                             
+                                                                      Conv3x3, 128, stride = 2
+                              Stage 2             16 × 16                                       ×2
+                                                                      Conv3x3, 128, stride = 1
+                                                                                             
+                                                                      Conv3x3, 256, stride = 2
+                              Stage 3               8×8                                         ×2
+                                                                      Conv3x3, 256, stride = 1
+                                                                                             
+                                                                      Conv3x3, 512, stride = 2
+                              Stage 4               4×4                                         ×2
+                                                                      Conv3x3, 512, stride = 1
+                              Head                  1×1            Global AvgPool + Linear classifier
+
+
+                                                                   34
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+Learning rate schedule        The following learning rate schedule was used to help stabilize training:
+
+  1. For the first 10% of training, the learning rate increases linearly from w_lr up to 1.1×w_lr.
+
+  2. After the warmup phase, a cosine decay is applied. The learning rate smoothly decreases to 0.1×w_lr, following a
+     cosine curve, for the remaining training steps.
+
+Weight initialization We used the default PyTorch weight initialization, which amounts to a random uniform weight and
+bias initialization. For pseudorandom seeds, we use 42 for the hyperparameter sweeps, and {0, 1, 2, 3, 42} for the final test
+accuracy over 5 seeds. We set the seed using lightning.seed_everything(workers=True) before any data or
+weight initialization.
+
+                    Table E.10. Summary of hyperparameter tuning and training settings for convolutional models
+
+ Method         Tuned hyperparameter range                     Optimizer                     Optim steps (T)    Epochs (sweep/final)
+                e_lr: fixed at 0.001
+                e_momentum: fixed at 0.0                       SGD (error)                                      25/25 (VGG)
+ ePC                                                           Adam (weights)                5 (all models)
+                w_lr: log-uniform [1e-5, 1e-2]                                                                  25/50 (ResNet-18)
+                                                               (Kingma & Ba, 2014)
+                w_decay: log-uniform [1e-6, 1e-3]
+                s_lr: log-uniform [1e-3, 5e-1]
+                                                               SGD (state)                   8 (VGG-5)
+                s_momentum: {0, 0.25, 0.5, 0.75, 0.9}
+ sPC                                                           AdamW (weights)               10 (VGG-7)         25/25 (VGG)
+                w_lr: log-uniform [1e-5, 1e-2]
+                                                               (Loshchilov & Hutter, 2019)   12 (VGG-9)
+                w_decay: log-uniform [1e-6, 1e-3]
+                w_lr: log-uniform [1e-5, 1e-2]                                                                  25/25 (VGG)
+ Backprop                                                      Adam (weights)                —
+                w_decay: log-uniform [1e-6, 1e-3]                                                               25/50 (ResNet-18)
+Glossary: w_lr: base weight learning rate (see learning rate schedule below), w_decay: weight decay, {e,s}_lr: error / state learning rate,
+                                  {e,s}_momentum: error / state momentum, T: nr. of update steps
+
+
+Hyperparameter tuning We performed hyperparameter tuning using Hyperband Bayesian optimization provided by
+Weights and Biases. The search was conducted over the hyperparameter spaces specified in Table E.10 across different
+model architectures, datasets, and loss functions. All tuning was guided by top-1 validation accuracy as the primary objective.
+Final top-5 accuracy metrics reported in Table 1 are for the models that achieved the highest top-1 accuracy. The best
+hyperparameters for each model identified through the sweep are provided in Table E.11, as well as in the "configs_results/"
+folder of the codebase. The "configs_sweeps/" folder contains all the sweep configs.
+
+
+
+
+                                                                    35
+                                    ePC: Fast and Deep Predictive Coding in Digital Simulation
+
+
+
+
+             Table E.11. Overview of optimal hyperparameter configurations, used in our experiments
+
+Data         Loss             Algo     Architecture     s/e_lr    s/e_momentum       w_lr        w_decay   act_fn
+                                       VGG-5           2.66e-2           0          4.21e-4      2.68e-6    gelu
+                              sPC      VGG-7           2.28e-3         0.05         2.07e-3      3.10e-6    gelu
+                                       VGG-9           1.73e-2          0.5         5.77e-5      6.49e-4    tanh
+                                       VGG-5            0.001            0          4.71e-4      1.48e-5    gelu
+              Squared Error
+
+
+
+
+                                       VGG-7            0.001            0          4.26e-4      2.16e-6    gelu
+                              ePC
+                                       VGG-9            0.001            0          6.61e-4      4.01e-5    gelu
+                                       ResNet-18        0.001            0          7.65e-4      1.82e-4     —
+                                       VGG-5              —             —           6.30e-4      1.09e-6    gelu
+                                       VGG-7              —             —           5.45e-4      1.37e-6    gelu
+                              BP
+                                       VGG-9              —             —           5.24e-4      1.27e-6    gelu
+ CIFAR-10
+
+
+
+
+                                       ResNet-18          —             —           3.00e-4      9.04e-4     —
+                                       VGG-5           1.47e-2         0.05         2.64e-4      1.21e-5    gelu
+                              sPC      VGG-7           1.59e-3           0          1.76e-3      1.03e-5    gelu
+                                       VGG-9           5.80e-2           0          8.09e-5      4.18e-5    tanh
+              Cross-Entropy
+
+
+
+
+                                       VGG-5            0.001            0          7.79e-4      1.72e-4    gelu
+                                       VGG-7            0.001            0          1.56e-3      5.46e-4    gelu
+                              ePC
+                                       VGG-9            0.001            0          5.36e-4      6.88e-4    tanh
+                                       ResNet-18        0.001            0          3.39e-3      1.51e-6     —
+                                       VGG-5              —             —           1.66e-3      4.55e-4    gelu
+                                       VGG-7              —             —           1.10e-3      4.51e-5    gelu
+                              BP
+                                       VGG-9              —             —           6.21e-4      3.58e-5    gelu
+                                       ResNet-18          —             —           1.67e-3      1.49e-4     —
+                                       VGG-5           3.73e-3         0.75         9.80e-4      2.14e-6    gelu
+                              sPC      VGG-7           1.44e-2           0          1.88e-4      9.38e-5    tanh
+                                       VGG-9           4.78e-2         0.25         7.07e-5      7.79e-5    tanh
+                                       VGG-5            0.001            0          8.05e-4      2.33e-6    gelu
+              Squared Error
+
+
+
+
+                                       VGG-7            0.001            0          4.02e-4      1.47e-5    gelu
+                              ePC
+                                       VGG-9            0.001            0          2.01e-4      2.62e-6    gelu
+                                       ResNet-18        0.001            0          3.67e-4      7.30e-4     —
+                                       VGG-5              —             —           4.57e-4      1.27e-5    gelu
+                                       VGG-7              —             —           4.47e-4      6.71e-6    gelu
+                              BP
+ CIFAR-100
+
+
+
+
+                                       VGG-9              —             —           4.70e-4      4.34e-6    gelu
+                                       ResNet-18          —             —           3.95e-4      5.45e-4     —
+                                       VGG-5           2.13e-2           0          8.61e-4      1.48e-6    tanh
+                              sPC      VGG-7           1.04e-1          0.5         3.00e-4      6.69e-5    tanh
+                                       VGG-9           1.25e-2         0.75         4.69e-4      3.45e-4    tanh
+              Cross-Entropy
+
+
+
+
+                                       VGG-5            0.001            0          8.27e-4      8.22e-4    tanh
+                                       VGG-7            0.001            0          3.13e-4      7.99e-4    tanh
+                              ePC
+                                       VGG-9            0.001            0          3.23e-4      4.03e-4    tanh
+                                       ResNet-18        0.001            0          3.03e-3      1.20e-5     —
+                                       VGG-5              —             —           1.04e-3      7.69e-4    gelu
+                                       VGG-7              —             —           1.38e-3      4.13e-4    gelu
+                              BP
+                                       VGG-9              —             —           8.24e-4      1.62e-6    gelu
+                                       ResNet-18          —             —           1.33e-3      1.96e-4     —
+
+
+
+
+                                                                 36
+
