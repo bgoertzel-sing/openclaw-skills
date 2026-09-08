@@ -225,6 +225,20 @@ class MeTTaEvaluator:
         return {t: self.evaluate(t) for t in tasks}
 
 
+    def evaluate_with_truth(self, task_id):
+        """Evaluate a task and return (verdict, TruthValue)."""
+        from pln_truth_mapping import verdict_to_truth
+        verdict = self.evaluate(task_id)
+        return verdict, verdict_to_truth(verdict)
+
+    def evaluate_all_with_truth(self):
+        """Evaluate all tasks and return {task_id: (verdict, TruthValue)}."""
+        from pln_truth_mapping import verdict_to_truth
+        tasks = self._match("(: $t Task) $t")
+        return {t: (self.evaluate(t), verdict_to_truth(self.evaluate(t)))
+                for t in tasks}
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <metta_file.metta> [task_id ...]")

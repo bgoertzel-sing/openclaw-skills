@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from metta_evaluator import MeTTaEvaluator
+from pln_truth_mapping import verdict_to_truth
 
 
 EPISODE_01 = r'''
@@ -176,3 +177,33 @@ def test_evaluate_all():
     results = ev.evaluate_all()
     assert results["t_codegen"] == "STOP_STALE"
     assert results["t_healthy"] == "CONTINUE"
+
+
+def test_evaluate_with_truth():
+    ev = MeTTaEvaluator()
+    ev.load_string(EPISODE_04)
+    verdict, tv = ev.evaluate_with_truth("t_healthy")
+    assert verdict == "CONTINUE"
+    assert tv.strength == 1.0
+    assert tv.confidence == 0.9
+
+def test_evaluate_with_truth_stale():
+    ev = MeTTaEvaluator()
+    ev.load_string(EPISODE_01)
+    verdict, tv = ev.evaluate_with_truth("t_codegen")
+    assert verdict == "STOP_STALE"
+    assert tv.strength == 0.0
+
+def test_evaluate_all_with_truth():
+    ev = MeTTaEvaluator()
+    ev.load_string(EPISODE_01)
+    ev.load_string(EPISODE_04)
+    results = ev.evaluate_all_with_truth()
+    assert "t_codegen" in results
+    assert "t_healthy" in results
+    v1, tv1 = results["t_codegen"]
+    v2, tv2 = results["t_healthy"]
+    assert v1 == "STOP_STALE"
+    assert v2 == "CONTINUE"
+    assert tv1.strength == 0.0
+    assert tv2.strength == 1.0
