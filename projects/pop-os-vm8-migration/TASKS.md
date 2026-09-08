@@ -4,6 +4,21 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [ ] **Complete attribution canaries, then activate Protomega2 (Ben,
+  Telegram 4627, 2026-09-08 11:49 PDT).** Deliverable: close the deployed
+  ProtoCosmo/ProtoCosmo2 routing repair with fresh human-authored Telegram
+  evidence, then finish the focused Protomega2 activation. Acceptance:
+  reference-only message yields no response from either attribution target;
+  each directly addressed target alone returns its exact requested token;
+  correlated ingress/session/egress evidence is recorded; Protomega2 then has
+  exactly one receiver, correct isolated identity/model/session state, passes
+  addressed and untargeted-message canaries, survives an owning-supervisor
+  restart, and retains a verified rollback. Next command: capture current
+  read-only target topology/log cursors, then ask Ben to send the three exact
+  human-authored canary messages. Evidence:
+  `experiments/20260907T2154PDT-cross-bot-prompt-attribution/RUN.md` and a new
+  focused Protomega2 activation run record.
+
 - [ ] **Repair cross-bot Telegram prompt attribution (Ben, Telegram 4529,
   2026-09-07).** Deliverable: prevent a sibling bot's untargeted group message
   from becoming a current `role:user` request for ProtoCosmo or ProtoCosmo2,
