@@ -158,7 +158,7 @@ class IntegratedGovernorPipeline:
         self.pln_result = self.propagator.evaluate()
 
         # Layer 2: ECAN attention
-        self.allocator = ECANAttentionAllocator(data)
+        self.allocator = ECANAttentionAllocator(data, now=self.now)
 
         # Layer 3: Verdict bridge
         self.bridge = PLNVerdictBridge(data, now=self.now)
