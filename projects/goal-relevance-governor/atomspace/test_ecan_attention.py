@@ -180,5 +180,39 @@ class TestECANAttention(unittest.TestCase):
         self.assertEqual(len(result.eviction_candidates), 0)
 
 
+    def test_lti_floor_eviction(self):
+        """Nodes with LTI below LTI_FLOOR become eviction candidates."""
+        from atomspace.ecan_attention import LTI_FLOOR, LTI_INITIAL_SCALE, STALENESS_LTI_DECAY
+        from datetime import datetime, timezone
+        data = load_episode('episode_02_chem_blocking.json')
+        # g-long-horizon-research: as_of=2026-08-01, confidence=0.6
+        # On Sept 8 (38 days old), LTI = 0.6 * 100 * 0.5 = 30.0 (above LTI_FLOOR=5)
+        # To test LTI_FLOOR eviction, we need a node with very low confidence * staleness
+        # Let's use a node with low confidence and high staleness
+        # g-long-horizon-research has conf=0.6, so after staleness: 0.6*100*0.5=30
+        # That's still above LTI_FLOOR=5. Let's verify it's NOT evicted by LTI alone.
+        alloc = ECANAttentionAllocator(data, now=datetime(2026, 9, 8, tzinfo=timezone.utc))
+        alloc.run(cycles=30)  # Run enough cycles to drain STI below floor
+        # Check that staleness-decayed nodes with low LTI get flagged
+        # Nodes with very low confidence would have LTI < LTI_FLOOR after decay
+        # g-long-horizon-research: LTI = 30 (not below floor)
+        av = alloc.attention['g-long-horizon-research']
+        self.assertGreater(av.lti, LTI_FLOOR,
+            msg='g-long LTI=30 should be above LTI_FLOOR=5')
+        # But if we had a node with conf=0.05, LTI = 0.05*100*0.5 = 2.5 < 5.0
+        # Let's verify the eviction logic includes LTI check
+        # Create a minimal test: set LTI below floor manually
+        av2 = alloc.attention['t-petta-chem']
+        original_lti = av2.lti
+        av2.lti = 2.0  # Below LTI_FLOOR
+        av2.sti = 50.0  # Above STI_FLOOR
+        av2.vlti = False
+        alloc._step()  # Step to update eviction_candidate
+        self.assertTrue(av2.eviction_candidate,
+            msg='Node with LTI < LTI_FLOOR should be eviction candidate')
+        # Restore
+        av2.lti = original_lti
+
+
 if __name__ == '__main__':
     unittest.main()
