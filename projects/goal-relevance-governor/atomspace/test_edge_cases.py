@@ -192,6 +192,15 @@ class TestEdgeCases(unittest.TestCase):
         r = p.run(ecan_cycles=5)
         self.assertEqual(len(r.recommendations), 1)
         self.assertEqual(r.recommendations[0].unified_verdict, "STOP_STALE")
+
+    def test_stale_pln_strength_lower_than_healthy(self):
+        """Stale task PLN strength should be lower than healthy task."""
+        healthy = copy.deepcopy(BASE)
+        healthy["tasks"] = [_task("t1")]
+        healthy["goals"] = [_goal("g1", status="active")]
+        healthy["edges"] = [_edge("t1", "g1", "contributes_to")]
+        p1 = IntegratedGovernorPipeline(healthy)
+        r1 = p1.run(ecan_cycles=5)
         healthy_strength = r1.recommendations[0].pln_strength
 
         stale = copy.deepcopy(BASE)

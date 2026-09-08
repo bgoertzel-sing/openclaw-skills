@@ -531,7 +531,11 @@ class PLNPropagator:
 
         results = []
         for nid, node in self.nodes.items():
-            if node.get("kind") != "task" or node.get("status") != "active":
+            if node.get("kind") != "task":
+                continue
+            # Include active and blocked tasks in results
+            task_status = node.get("status", "active")
+            if task_status not in ("active", "blocked"):
                 continue
             tv = self.tvs.get(nid, TruthValue())
             rel = relevance.get(nid, 0.0)
