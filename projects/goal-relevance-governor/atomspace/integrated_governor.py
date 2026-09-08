@@ -81,6 +81,8 @@ class IntegratedGovernorResult:
     multihop_task_count: int
     multihop_total_chains: int
     multihop_max_depth: int
+    conflict_count: int
+    conflict_details: list
 
     # Recommendations
     recommendations: list
@@ -107,6 +109,10 @@ class IntegratedGovernorResult:
                 "task_count": self.multihop_task_count,
                 "total_chains": self.multihop_total_chains,
                 "max_depth": self.multihop_max_depth,
+            },
+            "conflict_layer": {
+                "conflict_count": self.conflict_count,
+                "conflicts": self.conflict_details,
             },
             "recommendations": [r.to_dict() for r in self.recommendations],
             "executive_summary": self.executive_summary,
@@ -173,6 +179,9 @@ class IntegratedGovernorPipeline:
         # Run multi-hop chain reasoning
         multihop_results = self.multihop.evaluate()
 
+        # Run conflict chain detection
+        conflict_chains = self.multihop.evaluate_conflicts()
+
         # Build recommendations by combining all layers
         recommendations = []
         verdict_counts = {}
@@ -217,7 +226,7 @@ class IntegratedGovernorPipeline:
 
         # Executive summary
         summary = self._build_summary(
-            recommendations, verdict_counts, ecan_dict
+            recommendations, verdict_counts, ecan_dict, conflict_chains
         )
 
         # Top 3 priority from ECAN
@@ -243,11 +252,13 @@ class IntegratedGovernorPipeline:
             multihop_task_count=len(multihop_results),
             multihop_total_chains=mh_total_chains,
             multihop_max_depth=mh_max_depth,
+            conflict_count=len(conflict_chains),
+            conflict_details=conflict_chains,
             recommendations=recommendations,
             executive_summary=summary,
         )
 
-    def _build_summary(self, recs: list, verdict_counts: dict, ecan_dict: dict) -> str:
+    def _build_summary(self, recs: list, verdict_counts: dict, ecan_dict: dict, conflict_chains: list = None) -> str:
         """Build a human-readable executive summary."""
         lines = []
         lines.append(f"Pipeline evaluated {len(recs)} tasks.")
@@ -269,6 +280,11 @@ class IntegratedGovernorPipeline:
         total_chains = sum(r.multihop_chains for r in recs)
         max_d = max((r.multihop_max_depth for r in recs), default=0)
         lines.append(f"Multi-hop: {total_chains} chains found, max depth={max_d}")
+
+        # Resource conflicts
+        if conflict_chains:
+            competing = [c for c in conflict_chains if c.get('is_competing')]
+            lines.append(f"Conflicts: {len(conflict_chains)} resource conflicts ({len(competing)} competing goals)")
 
         # Eviction candidates
         evictions = [r for r in recs if r.eviction_candidate]
