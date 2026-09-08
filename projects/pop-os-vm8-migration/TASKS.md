@@ -4,22 +4,22 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
-- [ ] **Complete attribution canaries, then activate Protomega2 (Ben,
+- [ ] **Activate Protomega2 after attribution closure (Ben,
   Telegram 4627, 2026-09-08 11:49 PDT).** Deliverable: close the deployed
   ProtoCosmo/ProtoCosmo2 routing repair with fresh human-authored Telegram
   evidence, then finish the focused Protomega2 activation. Acceptance:
-  reference-only message yields no response from either attribution target;
-  each directly addressed target alone returns its exact requested token;
-  correlated ingress/session/egress evidence is recorded; Protomega2 then has
+  Attribution was operationally closed by Ben in Telegram 4636 despite
+  ProtoCosmo2 responding to the reference-only canary; that outcome remains a
+  recorded known limitation. Acceptance: Protomega2 has
   exactly one receiver, correct isolated identity/model/session state, passes
   addressed and untargeted-message canaries, survives an owning-supervisor
   restart, and retains a verified rollback. Next command: capture current
   read-only target topology/log cursors, then ask Ben to send the three exact
   human-authored canary messages. Evidence:
-  `experiments/20260907T2154PDT-cross-bot-prompt-attribution/RUN.md` and a new
-  focused Protomega2 activation run record.
+  `experiments/20260907T2154PDT-cross-bot-prompt-attribution/RUN.md` and
+  `experiments/20260908T1903Z-protomega2-activation/RUN.md`.
 
-- [ ] **Repair cross-bot Telegram prompt attribution (Ben, Telegram 4529,
+- [x] **Repair cross-bot Telegram prompt attribution (Ben, Telegram 4529,
   2026-09-07).** Deliverable: prevent a sibling bot's untargeted group message
   from becoming a current `role:user` request for ProtoCosmo or ProtoCosmo2,
   while retaining sender identity and reply/mention provenance in bounded
@@ -29,9 +29,10 @@ Use small, testable tasks. Keep the top of each section in priority order.
   message; distinct session/provider/egress evidence remains intact. Next
   command: obtain one human-authored negative reference canary and one direct
   address canary for each bot, then correlate ingress/session/egress logs. The
-  fixes are deployed to ProtoCosmo2 and VM2 ProtoCosmo; automated bot-authored
-  canaries produced no Telegram ingress and therefore cannot close the
-  external acceptance gate.
+  fixes are deployed to ProtoCosmo2 and VM2 ProtoCosmo. Ben operationally
+  accepted and closed testing in Telegram 4636 on 2026-09-08. ProtoCosmo2's
+  response to the reference-only canary is retained as a known limitation,
+  not relabeled as a passing negative canary.
   Evidence: `experiments/20260907T2154PDT-cross-bot-prompt-attribution/RUN.md`.
 
 - [ ] **Finish Protomega2 activation/repair on VM2 (Ben, Telegram 4546,
