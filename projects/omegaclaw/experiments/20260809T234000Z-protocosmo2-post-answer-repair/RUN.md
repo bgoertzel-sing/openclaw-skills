@@ -49,3 +49,19 @@ Production remains unchanged. A guarded restart must load the pinned repair, pre
 schema-3 durable state and exactly-one-receiver topology, and pass a fresh ordinary
 long-message Telegram canary. Until then, full-utilization acceptance remains withdrawn
 and petta-memory handoff remains paused.
+
+## Guarded production restart
+
+- Ben explicitly authorized the restart in Telegram source message 17899.
+- Pre-restart state snapshot SHA-256:
+  `874fe5e8eb1c839cb48dcb0c458c9b00244bf1616bfb7d122126aaa1a53212c5`.
+- The protected schema/identity/cursor/processed/outbox/pending/context/deferred
+  projection matched before and immediately after restart at SHA-256
+  `c7a211a80261b729590fc45ad3d8666343fc225896ad71a8b339209ecef6f71d`.
+- New identity-bound owner: PID 2682018; exactly one receiver child: PID 2682031.
+- Schema 3 and deferred mode remain active; no rollback marker was present.
+- Independent post-command cutover-lock acquisition passed. The first in-command lock
+  probe correctly failed because the cutover coordinator still owned descriptor 9; the
+  coordinator then exited and released it.
+- Process readiness passed. End-to-end acceptance remains open pending one fresh ordinary
+  long-message Telegram canary that exercises the message-848 failure shape.

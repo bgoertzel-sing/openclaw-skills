@@ -1,8 +1,8 @@
 # Run 20260727T140304Z-smoke-r2
 
 - Project: `hdc-musicgen`
-- Status: `terminated before execution; local handoff only`
-- Local or remote: `former RunPod Secure Cloud pod vbu5r47gstyl16 (deleted)`
+- Status: `both pods terminated before Stage 0/S/A; no-result`
+- Local or remote: `former RunPod Secure Cloud pods vbu5r47gstyl16 and 2jh6oxjzogdexe (deleted)`
 - Source commit: `8907d0fcba2897be48d435f49f501661ab4d8f4b`
 
 ## Question
@@ -10,13 +10,18 @@
 On an eight-track real-audio subset, do Stage 0/S/A pass the amended,
 support-aware smoke gate while retaining alignment and conditioning stops?
 
-## Result so far
+## Result
 
-**Observed:** RunPod preflight was healthy and later offered an RTX 3090; pod
-`vbu5r47gstyl16` was created in CZ at USD 0.50/hour. After two refused SSH
-connections, no Stage 0/S/A command, data transfer, or GPU work occurred.
-`runpodctl pod delete` returned `deleted: true`; the subsequent pod list was
-empty and lookup returned 404. No stage artifacts exist.
+**Observed:** RunPod preflight was healthy and later offered an RTX 3090. Pod
+`vbu5r47gstyl16` received the code and retained audio corpus and began
+dependency setup, but later became SSH-unreachable before any Stage 0/S/A
+command started; deletion returned `deleted: true`, followed by an empty list
+and provider 404. Replacement pod `2jh6oxjzogdexe` exposed a healthy GPU and
+local sshd through the web terminal, but provider SSH routing never supplied a
+usable shell; it was deleted before transfer, dependency installation, or any
+Stage 0/S/A command, and the subsequent all-pods list omitted it. No stage
+artifacts exist, so the run is a terminal no-result. See `REMOTE_JOB.md` for
+the retained chronology.
 
 ## Next command
 

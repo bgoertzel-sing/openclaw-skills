@@ -1,5 +1,371 @@
 # Decision Log
 
+## D-20260814-protomega-plugin-path: Make migrated memory plugins explicit in staging launch paths
+
+- Date: `2026-08-14`
+- Status: `accepted production-free staging rule`
+- Decision: A clean OmegaClaw runtime using the separately pinned
+  `petta_lib_chromadb` checkout must include that exact copied checkout in its
+  scrubbed Python module path. Do not infer availability from the current
+  directory or a developer shell.
+- Rationale: direct recall passed under an explicit module path while the
+  continuous loop failed with `ModuleNotFoundError: lib_chromadb`. Adding only
+  the disposable plugin path passed the two-process exact-recall gate.
+- Boundary: this authorizes only credential-free isolated staging launch
+  configuration. It does not authorize production stores, identities,
+  Telegram, or cutover.
+- Evidence:
+  `experiments/20260814T173641Z-protomega-full-loop-instrumentation/RUN.md`.
+
+## D-20260814-telegram-durable-ingest-ack: Acknowledge only with a durable local inbox
+
+- Date: `2026-08-14`
+- Status: `accepted by Ben; implemented production-free at b8c99e5`
+- Decision: Do not advance the Telegram cursor merely because an update was
+  returned by acquisition, and do not wait for full model/reply handling.
+  Atomically persist the complete update and its inbox classification together
+  with the advanced cursor. Resume unfinished local inbox work after restart;
+  use event IDs and the delivery ledger to prevent duplicate dispatch.
+- Rationale: raw-acquisition acknowledgement can silently lose a message if
+  the process crashes before handling. Full-handling acknowledgement needlessly
+  holds Telegram's cursor and invites refetch. Durable-ingest acknowledgement
+  separates reliable intake from potentially long model processing.
+- Boundary: this decision and its fixture implementation grant no real
+  Telegram, credential, production identity, or cutover authority.
+- Evidence: `experiments/20260814T170500Z-telegram-durable-ingest/`.
+
+## D-20260814-review-independence-labels: Separate model diversity from constitutional independence
+
+- Date: `2026-08-14`
+- Status: `accepted; supersedes ambiguous current review labels`
+- Decision: A review performed by a different model or subagent under the same
+  OpenClaw agent/runtime control is **model-diverse internal adversarial
+  review**, not a functionally independent review under Constitution Articles
+  XIII--XIV. Reserve **functionally independent external review** for a
+  separately controlled reviewer that can inspect evidence without depending
+  on the proponent's framing and can block advancement through a separately
+  controlled mechanism.
+- Consequence: Existing Fable receipts remain useful scoped engineering
+  evidence, but do not establish constitutional independent concurrence.
+  Preserve historical experiment wording as provenance and append this
+  superseding classification where those receipts affect current gates. No
+  production or cutover authority follows from same-control review.
+- Evidence: constitutional note received 2026-08-14 08:03 PDT;
+  `docs/constitution/constitution_draft_0.7.md`, Articles XIII--XIV.
+
+## D-20260814-addressed-routing-requires-core-envelope: Do not patch Telegram alone
+
+- Date: `2026-08-14`
+- Status: `accepted diagnosis; minimal production-free implementation reviewed`
+- Decision: Unchanged pinned upstream cannot meet immutable private/group reply
+  routing because its core transports only message text and Telegram delivery
+  uses global destination state. Require the smallest explicit event-ID seam
+  through receive, turn processing, and send; fail closed on missing/expired
+  IDs. Do not implement a mutable last/current-chat adapter.
+- Review correction: pinned Telegram drops non-bound origins; the misroute is a
+  model of a hypothetical mutable-route shim, not observed pinned behavior.
+  The seam must also preserve one event per receive, key novelty and send dedup
+  by event ID, and authenticate per origin.
+- Evidence: `experiments/20260814T123400Z-full-loop-addressed-concurrency/`.
+
+Implementation review confirms the core object handoff and event-keyed send
+primitive, but does not resolve routing authority. Do not treat an LLM-echoed
+event ID as equivalent to loop-bound authority: persisted history can expose
+still-pending IDs. Choose and test the pending-event/turn-binding model before
+any concrete channel migration. The LLM action signature mismatch was a
+critical blocker and is corrected in the isolated seam worktree.
+The reviewed incomplete state is durably frozen as local unpushed commit
+`6dbbbb3`; this commit is a checkpoint, not an accepted adapter or runtime.
+
+### D1 routing-authority resolution before full-loop acceptance
+
+Destination authority is loop/channel-bound; an LLM-emitted event ID is only a
+selector. Channels mint opaque IDs at acquisition and resolve destinations
+only from immutable acquisition-time envelopes. A selector is valid only for a
+live, unfinalized event previously presented in the current agent session.
+Unknown, empty, finalized, expired, foreign, or never-presented IDs must produce
+a visible bounded failure with no default/fallback delivery. This permits the
+frozen reverse-completion test while preventing model text from constructing or
+altering transport destinations. The remaining possibility of selecting the
+wrong still-live authorized conversation is an explicit risk to probe; future
+adapters must enforce per-origin authorization and bounded retention before
+Telegram work.
+
+Strict current-turn-only authority is rejected for this gate because it cannot
+satisfy the preregistered reverse-completion requirement. Per-origin auth,
+route expiry/caps, proactive/wake sends, startup version delivery, and adapter
+exactly-once acquisition are explicitly deferred design obligations, not
+silently accepted behavior.
+
+The complete generic production-free mock gate is accepted and frozen at local
+unpushed commit `744a7c1`. Real-loop reverse routing, scoped invalid-selector
+handling, controlled pending-route restart, history isolation, and zero
+descendants passed model-diverse internal Fable review. This acceptance applies only to
+the synthetic in-memory adapter. Any concrete transport requires a new phase
+covering per-origin authorization, bounded/durable route state, startup and
+proactive sends, and exactly-once acquisition before Telegram staging.
+
+### Concrete Telegram-shaped phase boundary
+
+The next authorized phase is schema-shaped and entirely in-process, not real
+Telegram staging. Build a new event-native sibling channel; never wrap
+upstream Telegram's global message/chat/outbox state. Its Bot-API-shaped
+transport is an injected callable, while URL and socket creation actively fail
+and Telegram/token/proxy environment fields are rejected. Persist only the
+monotone acquisition cursor; pending in-memory routes intentionally become
+stale across restart and fail visibly. Require per-chat/per-user allowlists,
+ignore edits, hard-cap live routes, use single-attempt sends, and forbid
+startup/proactive sends. Durable routes/outbox and real Telegram remain future
+decisions.
+
+Authorized route overflow must be checked before durable cursor advancement.
+An update rejected for capacity remains unacknowledged and eligible for later
+acquisition after capacity frees; silently dropping it is rejected. For the
+fixture timeout seam, a reported timeout is an uncertain single-attempt outcome
+because its daemon call may complete late. Never retry that event. This
+ambiguity, per-chunk deadlines/partial delivery, and unbounded stalled threads
+are accepted only as recorded synthetic limitations and must be redesigned
+before any real transport phase.
+
+## D-20260814-disposable-full-loop-fault-adapter: Keep failure injection staging-only
+
+- Date: `2026-08-14`
+- Status: `accepted for staging evidence only`
+- Decision: Use a disposable Test-provider copy to prove bounded correlated
+  error/stall behavior through the full loop. Do not port the injector into
+  pinned source or production. Treat addressed concurrency as still open until
+  a thin channel with immutable origin envelopes passes the full loop.
+- Evidence: `experiments/20260814T121646Z-full-loop-provider-faults/`.
+
+## D-20260814-protocosmo2-canonical-skill-bindings: Reference canonical KEEP skills
+
+- Date: `2026-08-14`
+- Status: `accepted for isolated staging`
+- Decision: Bind the nine KEEP-classified skills by canonical workspace path
+  and SHA-256. Do not copy stale snapshot versions or add a runtime loader.
+  REIMPLEMENT items require separate thin specs/tests; DROP and excluded
+  runtime components remain absent.
+- Evidence: `experiments/20260814T120200Z-protocosmo2-skill-port-manifest/`.
+
+## D-20260813-omegaclaw-clean-install-pivot: Rebuild upstream first; migrate assets by value
+
+- Date: `2026-08-13`
+- Status: `accepted; Ben-directed strategic pivot`
+- Decision owner: Benjamin Goertzel
+- Pivot evidence: `experiments/20260814T053851Z-clean-install-pivot/`
+
+Stop the generalized Phase-0 privileged-inspector effort after its current
+safe evidence checkpoint; retain its artifacts, but remove it from the repair
+critical path. Build one clean, pinned current-upstream OmegaClaw runtime and
+instantiate three isolated bot configurations from it. Prove ordinary private
+conversation and lifecycle behavior before porting custom Telegram-group
+behavior or skills.
+
+Asset priority is asymmetric. Protomega's preserved pre-dysfunction Chroma
+corpus is the highest-value recovery asset because it may contain accumulated
+Hyperseed-oriented memories from processed texts. Test only disposable copies
+against upstream, preserving the original byte-for-byte. ProtoCosmo2 has little
+memory but a valuable curated skill assemblage; inventory and selectively port
+those skills without copying coupled runtime machinery. Protomega2 is an
+experimental/test identity and is rebuilt last with no assumption that its
+state is valuable.
+
+Default DROP remains the private-canary/deferred-job stack, synchronous
+OpenClaw file bridge, phase5/phase6 case machinery, acceptance controller, and
+bespoke nested supervisors. Fable reviews the clean-install/migration plan and
+each production promotion boundary. Production identities remain stopped
+until autonomous staging passes and Ben explicitly authorizes cutover.
+
+The accepted non-Docker baseline uses only upstream runtime controls: Janus is
+given the pinned venv and repository module paths explicitly, `silent` avoids
+per-clause rendering, the Docker-path Landlock profile is disabled with the
+documented empty configuration value, and numeric YAML defaults are retained
+because upstream command-line parsing preserves numeric overrides as strings.
+These settings are staging-only evidence, not production policy or cutover
+approval. Cold startup exceeding 300 seconds remains a recorded limitation.
+
+Pinned `petta_lib_chromadb` commit `2184848` under ChromaDB `1.5.9` directly
+opens an ordinary disposable copy of the preserved Protomega store and exactly
+recalls its known dimension-384 record by ID and stored-vector query, including
+after a fresh-process restart. Therefore the smallest preservation decision is
+direct attachment of a disposable/staging copy; do not design or execute a
+one-way migration unless a later full-loop integration test exposes a concrete
+incompatibility. The authoritative source remains never-attached and immutable.
+Evidence: `experiments/20260814T111500Z-protomega-chroma-upstream-recall/`.
+
+The later exact-document text-query probe is the concrete incompatibility
+that activates the new-store-only migration contingency: upstream text
+embeddings are 1024-dimensional while the preserved collection is
+384-dimensional. Its first execution stopped before target creation because
+the upstream-forced offline model was not cached; do not substitute a model or
+enable an unrecorded download. Evidence:
+`experiments/20260814T113500Z-protomega-text-embedding-compatibility/` and
+`experiments/20260814T114759Z-protomega-reembedding/`.
+
+## D-20260813-omegaclaw-review-model-provenance: Review identity must be proven from runtime metadata
+
+- Date: `2026-08-13`
+- Status: `accepted for recovery governance`
+- Evidence:
+  `experiments/20260814T025329Z-upstream-recovery-phase0-privileged-inspector-v6/`
+  and
+  `experiments/20260814T031631Z-upstream-recovery-phase0-secure-capture-v7/`
+
+A reviewer label, prompt role, or requested model is not evidence that the
+required independent model actually ran. Every phase review must record and
+verify the session key/ID plus effective provider/model from runtime session
+metadata. The v6 reviewer requested as Fable actually ran on
+`openai/gpt-5.6-sol`; its useful NO-GO findings remain evidence, but it cannot
+satisfy the mandated Fable gate. The repaired unbound reviewer route later
+produced start and end reviews whose runtime metadata prove effective
+provider/model `anthropic/claude-fable-5`; both identities and exact reports
+are retained in the v7 ledger. Phase 0 still stays open because that end GO
+applies only to unprivileged capture primitives, not an integrated inspector,
+preservation fence, snapshot, Phase 1, or production.
+
+The v6 candidate also remains permanently unexecuted because its reviewed
+bytes and capture command have critical TOCTOU and output-clobber defects.
+Neither human privilege authorization nor urgency would cure defective exact
+bytes; a successor requires a fresh hash-bound review.
+
+## D-20260813-omegaclaw-session-restart-fence: Fence live sessions, not only schedules
+
+- Date: `2026-08-13`
+- Status: `accepted for recovery Phase 0`
+- Evidence:
+  `experiments/20260814T015539Z-upstream-recovery-phase0-snapshot-v3/`
+
+Disabling a legacy cron schedule is not sufficient production restart
+fencing. Before Omega state preservation or staging begins, every scheduled,
+queued, or already-running session capable of invoking a production launcher
+must be proven terminal or mechanically denied production launch authority.
+The fence must remain effective for the full capture/copy interval and must be
+revalidated afterward.
+
+This decision follows a direct counterexample: an already-running execution of
+the disabled Chroma-repair cron started all three production private-canary
+receivers after the replacement recovery job took ownership. Production
+transport state changed during that interval. The current bytes must be
+preserved; no rollback or inferred reconstruction is authorized. Snapshot v3
+is NO-GO and unexecuted.
+
+Fence-v4 and the v5 exact-inventory recheck establish that observation alone
+cannot close this invariant in the current sandbox. User crontab/at contents
+and ptrace-protected same-UID fd trees require a bounded read-only
+administrator inspection. A temporary production-identity denial may be
+considered only through the explicit exception protocol, with exact scope,
+rollback, expiry, and independent review; it must not modify legacy worktrees
+or imply snapshot/cutover approval. Evidence:
+`experiments/20260814T023547Z-upstream-recovery-phase0-admin-exception-v5/`
+and
+`experiments/20260814T023748Z-upstream-recovery-phase0-live-stop-recheck-v5/`.
+
+## D-20260806-protocosmo2-ambient-context: Observe all group traffic, respond only when addressed
+
+- Date: `2026-08-06`
+- Status: `accepted and active`
+- Decision owner: Benjamin Goertzel
+- Implementation: commit `4da168b`
+- Evidence: `experiments/20260807T011248Z-protocosmo2-telegram-context-ingestion/`
+
+Retain a bounded, durable, same-chat context window for all Telegram group
+messages delivered to ProtoCosmo2, including bot-authored discussion and
+bounded PDF/text extraction. Do not invoke the model or send output for
+ambient traffic; include recent context only when a human mentions the bot or
+replies to it, and label the entire context as external and untrusted. This
+resolves the prior mismatch where Telegram privacy was disabled but the
+transport discarded the surrounding discussion needed for awareness.
+Relevant Research Rules: 2, 5, and 7.
+
+## D-20260806-capacity-1-1-r4-v04: Accept empirical replay; keep harness closed
+
+- Date: `2026-08-06`
+- Status: `R4 empirical replay passed; R1/R2 required before harness adoption`
+- Evidence:
+  `artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v04-independent-replay/`
+
+Accept the v0.4 generic-failure sandbox as the passing empirical R4 replay for
+the frozen externally observable-effect contract. All twelve independently
+replayed cases pass, cover E1--E6, and hide candidate-controlled stderr behind
+the exact message `sandbox candidate failed`. Do not adopt the 26-case
+generator harness yet: executable R1 cases and an independently committed R2
+holdout are still missing. This decision grants no generator, integration,
+dispatch, memory-write, provider, Telegram, or other runtime authority.
+
+## D-20260806-capacity-1-1-r4-stderr: Keep R4 open after independent replay
+
+- Date: `2026-08-06`
+- Status: `revision required before harness adoption`
+- Evidence:
+  `artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v03-independent-replay/`
+
+Do not adopt the OS sandbox into the generator-acceptance harness. The
+independent twelve-case replay finds that `sandbox_gate.run_candidate()`
+returns bounded child stderr verbatim in `RuntimeError`; a private sentinel
+therefore crosses the boundary despite E6. Preserve the existing no-effect
+authority and revise the failure channel to a generic result before another
+content-bound independent replay. This is not a network escape, and it grants
+no generator or runtime authority.
+
+## D-20260805-protocosmo2-persistent-worker-adapter: Adopt bounded state-only v1
+
+- Date: `2026-08-05`
+- Status: `accepted and integrated offline; no autonomous executor authorized`
+- Decision owner: Benjamin Goertzel
+- Implementation: OmegaClaw-Core commit `5c64918` on
+  `agent/protocosmo2-phase6-live`
+- Evidence:
+  `experiments/20260805T160618Z-protocosmo2-persistent-worker-adapter-r6/`,
+  `experiments/20260805T160646Z-protocosmo2-persistent-worker-adapter-core-load/`,
+  and
+  `experiments/20260805T160829Z-protocosmo2-persistent-worker-adapter-configured-smoke/`
+
+Adopt the v1 OmegaClaw-native durable orchestration adapter. It exposes exact
+JSON MeTTa skills for create, status, checkpoint, pause/resume/cancel, and
+standing-approval checks. Manifests are immutable and digest-bound; events are
+bounded, hash-chained, atomically appended, and projected through an explicit
+state machine. Exact operator-installed approvals remain actionable across
+activations until revoked, superseded, expired, completed, or exhausted.
+
+The model-visible adapter cannot install/change/consume approvals, spawn an
+agent or process, schedule itself, call providers, use Telegram or shell, or
+perform remote compute. A later executor/consumption-receipt seam requires its
+own specification and authorization. This boundary makes the improved policy
+available to ProtoCosmo2 without silently granting the missing effects that
+originally caused the skill to be classified as deferred.
+
+Verification: 44 provider-free tests passed, the modified Core loaded through
+pinned PeTTa and returned the exact deterministic answer, and the configured
+mode-0700 state-root smoke failed closed canonically for an absent task.
+Research Rules applied: 2, 5, and 7.
+
+
+## D-20260804-protocosmo2-phase6: Begin bounded private Telegram canary
+
+- Date: `2026-08-04`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+- Related evidence: Protobots message 16261; runtime commit `bebe357`;
+  `experiments/20260804T211817Z-protocosmo2-phase5-retrieval-repair/`
+
+### Decision
+
+Accept Phase 5's G5/go-no-go gate and proceed to Phase 6. Start with a distinct
+ProtoCosmo2 private Telegram canary bound to Ben, with bounded outbound traffic,
+no autonomous schedules, no state-changing extras, and no group enrollment
+until the private-canary evidence is reviewed.
+
+### Rationale and consequences
+
+The pinned runtime completed the unchanged ten-case suite 10/10, all seven
+critical cases met frozen intent, and no crash or outbound delivery occurred.
+Ben then explicitly instructed the project to move to Phase 6. Relevant rules:
+2 (routed-system invariants), 5 (reproducible evidence), and 7 (transport
+seams). Live sending still requires a dedicated ProtoCosmo2 identity/config;
+existing bot credentials must not be reused. The canary must preserve hashes,
+incidents, latency/cost evidence, and a separate go/no-go before group use.
+
+
 ## D-20260717-protomega-overload-routing: Keep overload internal and Fable opt-in
 
 - Date: `2026-07-17`
@@ -323,6 +689,38 @@ authorization or policy decisions.
 
 Extends `D-20260715-threadkeeper-persistent-workers`; supersedes no existing
 decision.
+
+# D-20260729-protomegabot2-staging-approval: Approve staging without credential rotation
+
+- Date: `2026-07-29`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+- Related task/run/commit: `TASKS.md` ProtoMegaBot2 staging task; staging run record pending
+
+### Context
+
+Daily status messaging incorrectly retained rotated-credential attestation as
+a prerequisite for ProtoMegaBot2 staging, although the existing local
+credential configuration is already the intended staging substrate.
+
+### Decision
+
+Ben approves ProtoMegaBot2 staging and withdraws the token-rotation and
+rotated-credential-attestation prerequisites. Use the existing local
+credential configuration. Do not read, reveal, copy, log, rotate, or otherwise
+alter that credential as part of the staging work.
+
+### Consequences
+
+The next authorized action is bounded staging preflight/launch with a visible
+health record and rollback path. This authorization does not approve production
+deployment, broader access, credential changes, or removal of other runtime
+safety gates.
+
+### Revisit trigger
+
+Revisit on a staging failure, evidence of credential exposure, or before any
+production rollout.
 ## 2026-07-22 - Audited relative paths use one canonical spelling
 
 - Decision: require accepted ThreadKeeper file-tool paths and task-contract
@@ -332,3 +730,296 @@ decision.
   separators, or trailing separators create avoidable ambiguity.
 - Scope: bounded synchronous ThreadKeeper hardening only; file contents and
   valid normalized relative paths are unchanged.
+
+# D-20260802-protocosmo2-phase0-phase1: Freeze a sanitized snapshot before any target runtime
+
+- Date: `2026-08-02`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+- Related evidence: `docs/protocosmo2-phase0-freeze-2026-08-02.md`;
+  `experiments/20260803T045142Z-protocosmo2-phase1-sanitized-snapshot-rerun/`
+
+### Decision
+
+Execute only Phase 0 and Phase 1 of the ProtoCosmo2 migration first: pin a
+candidate baseline, capture an explicit allowlisted read-only source snapshot,
+and validate its manifest. Do not provision or run ProtoCosmo2 yet.
+
+### Rationale and consequences
+
+The source environment contains durable research records alongside live
+OpenClaw state and unrelated artifacts. A content-addressed snapshot preserves
+provenance while preventing raw session, credential, runtime, and cache copies.
+The first audited attempt failed closed on overly broad path logic and a
+symlink; the refined policy captures the intended 639 files with documented
+exclusions. The next step is a clean detached, mock-only target checkout.
+Telegram, provider credentials, network listeners, writable shared memory,
+ThreadKeeper/GoalChainer activation, and cross-agent bridges remain separately
+gated.
+
+# D-20260805-protocosmo2-phase6-private-canary-closeout: Accept the bounded private canary; retain wider gates
+
+- Date: `2026-08-05`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel (Phase-6 authorization); ZeroBot records acceptance evidence
+- Related evidence: `experiments/20260805T235502Z-protocosmo2-phase6-acceptance-provider-free/`;
+  `experiments/20260805T235543Z-protocosmo2-phase6-live-restart-recovery/`
+
+### Decision
+
+Accept ProtoCosmo2 Phase 6 only as a completed, stopped Ben-only private
+Telegram canary. Do not treat this as authorization for group enrollment,
+attachments, autonomous schedules, state-changing extras, or continuous
+service operation.
+
+### Evidence and rationale
+
+Two fresh authorized DMs each produced one reply, while the durable state
+recorded no pending transaction or incident. The focused contract/transport
+suite passed 17/17, including duplicate, crash recovery, allowlist,
+attachment, depth, and fixed-failure controls. A live controlled restart kept
+the state SHA-256 unchanged, retained both committed deliveries and cursor
+`387571971`, and made no new send; shutdown was clean.
+
+### Revisit trigger
+
+Require a separate Phase-7 decision and a new staged acceptance plan before
+any group, wider-user, attachment, background, or executor capability.
+
+# D-20260806-protocosmo2-universal-groups: Continuous operation in all Telegram groups
+
+- Date: `2026-08-06`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel
+- Related evidence: `experiments/20260806T224725Z-protocosmo2-universal-group-operation/`
+
+### Decision
+
+Authorize ProtoCosmo2 for continuous text operation in every Telegram group
+where Telegram delivers it messages. Any human group member may invoke the bot
+by mentioning `@Protocosmo2bot` or replying to it; direct messages remain
+Ben-only. Keep durable delivery deduplication/recovery, reply-depth control,
+bot-author exclusion, and a high emergency rate ceiling. Attachments,
+autonomous schedules, and state-changing extras remain disabled until their
+runtime paths exist and are separately reviewed.
+
+### Attachment revision authorized by Ben, 2026-08-06
+
+Ben subsequently requested repair of Telegram group attachment visibility.
+Permit bounded read-only extraction for addressed PDF and text documents: at
+most 10 MB downloaded and 60,000 extracted characters, labeled external
+untrusted content, with no attachment egress. Unsupported or malformed media
+fail closed. Unaddressed group attachments remain skipped. Evidence:
+`experiments/20260807T003656Z-protocosmo2-telegram-document-ingestion/`.
+
+### Evidence and operational note
+
+The focused suite passes 25/25 and Telegram reports group join/read-all
+capability. During the first broad-start probe, a bot-authored group update was
+incorrectly admitted and crash recovery sent one fixed failure reply (receipt
+`267`). The worker was stopped; explicit bot filtering, cursor advancement for
+ignored updates, and a regression were added. A second pending bot message was
+closed without output. The repaired supervisor is active with no pending
+transaction and no further delivery.
+
+## 2026-08-04 - Task-contract configuration has finite hard maxima
+
+- Decision: cap each ThreadKeeper task-contract list field at 256 entries,
+  each list item at 8,192 characters, and the objective at 65,536 characters,
+  even when environment configuration requests larger values.
+- Rationale: task contracts cross dispatch, queue, prompt, and durable-record
+  boundaries; operator-tunable validation limits must not permit unbounded
+  memory, parsing, prompt, or persistence work.
+- Scope: validation ceilings only. Existing defaults remain 32 entries, 512
+  characters per item, and 4,000 objective characters; no provider or runtime
+  activation is authorized.
+# D-20260806-protomega-native-document-egress: Use an explicit OmegaClaw action
+
+- Date: `2026-08-06`
+- Status: `accepted and live`
+- Evidence: OmegaClaw-Core commit `d914aaf`; Telegram delivery receipt `9471`
+
+Protomega attachments use the native `send-document absolute_path caption`
+action, not OpenClaw's textual `MEDIA:` convention. OmegaClaw consumes the raw
+model response as an action program and calls its Telegram transport directly;
+therefore a gateway-only convention is the wrong abstraction boundary. The
+transport accepts only regular `.pdf`, `.tex`, and `.latex` files below
+`/home/openclaw/research-agent`, limits files to 50 MB and captions to 1,024
+characters, binds delivery to the active inbound envelope, and requires a
+Telegram receipt. Six focused tests and a live group delivery passed.
+
+# D-20260806-iterative-worker-execution: Enable bounded resumable task-series execution
+
+- Date: `2026-08-06`
+- Status: `accepted and live`
+- Decision owner: Benjamin Goertzel
+- Evidence: `experiments/20260807T062249Z-output-fixes-worker-executor/`
+
+OmegaClaw agents may launch a detached local executor that iteratively invokes
+the configured LLM route over an exact, bounded directive plan. Execution is
+bound to the persistent-worker manifest: finite steps, runtime and token caps,
+explicit tools/effects and allowed paths, immutable request digest, per-step
+prompt/response hashes and token receipts, hash-chained checkpoints, and
+pause/resume/cancel states. Completed receipts are not replayed after a crash.
+
+This authorization does not grant remote-compute spend, destructive effects,
+or external messaging. Those remain subject to their existing explicit
+authority gates. Provider-free acceptance passed 34/34; both Telegram
+supervisors were restarted after loading the executor.
+# D-20260814-clean-mock-isolation-reopened: Verify opened history, not declared roots
+
+- Date: `2026-08-14`
+- Status: `accepted`
+- Evidence: `experiments/20260814T100700Z-restart-persistence/RUN.md`
+
+The clean-install three-configuration gate is reopened. Upstream
+`memoryDirectory` did not redirect the history path actually opened by
+`src/memory.metta`; the three successful per-identity exchanges shared the
+disposable runtime's `memory/history.metta`. Distinct declared state roots are
+insufficient until the actual conversational-history file is identity-local.
+The unchanged Test/test mocks are prerequisite smoke mechanisms, not frozen
+failure/concurrency acceptance: they expose neither fault injection/provider
+timeout nor addressed session envelopes. Prefer isolated runtime layouts and
+disposable thin test adapters; this decision authorizes no clean-source edit.
+
+# D-20260814-separate-disposable-upstream-runtimes: Isolate library-relative history by runtime
+
+- Date: `2026-08-14`
+- Status: `accepted for staging`
+- Evidence: `experiments/20260814T102825Z-corrected-three-runtime-isolation/RUN.md`
+
+Use one disposable same-commit upstream runtime copy per staging identity.
+This makes upstream's library-relative `memory/history.metta` path genuinely
+identity-local without editing the clean pinned source. Declared external
+state roots remain separate as defense in depth. Structural inode evidence is
+necessary but not conversational acceptance; each runtime must still pass
+fresh turns with negative cross-history assertions before the isolation gate
+closes. This decision grants no production identity or preserved-Chroma use.
+
+The conversational condition passed on 2026-08-14: all three runtimes
+completed two fresh turns and each actual history contained two own markers
+and zero foreign markers. Evidence:
+`experiments/20260814T103800Z-corrected-three-runtime-conversations/RUN.md`.
+
+# D-20260814-protomega-disposable-direct-attachment: Preserve source; defer migration
+
+- Date: `2026-08-14`
+- Status: `accepted for staging evidence only`
+- Evidence: `experiments/20260814T111500Z-protomega-chroma-upstream-recall/RUN.md`
+
+Pinned `petta_lib_chromadb` `2184848` with ChromaDB `1.5.9` can directly read
+and exactly recall the sole known Protomega record from a disposable ordinary
+copy. Therefore no schema/vector migration is justified unless later
+full-loop integration demonstrates a concrete incompatibility. The
+authoritative store remains preservation-only and must never be attached:
+review confirmed that Chroma attachment can change the disposable copy's
+SQLite bytes. Independent Fable review closed only the one-record disposable
+compatibility/exact-recall gate; text-query embedding compatibility,
+multi-record behavior, writes, full-loop use, production attachment, and
+cutover remain open.
+# D-20260814-protomega-reembedding-required: Do not directly attach for text recall
+
+- Date: `2026-08-14`
+- Status: `accepted for staging design`
+- Evidence: `experiments/20260814T113500Z-protomega-text-embedding-compatibility/`
+
+Pinned upstream local text embeddings are 1,024-dimensional, while preserved
+Protomega Chroma is 384-dimensional; exact-document query was rejected.
+Direct attachment is therefore preservation evidence only. Any staging use
+must re-embed one-way from a verified copy into a new store, reconcile all
+records, pass restart/full-loop recall, and retain path-selection rollback.
+The authoritative source remains unopened and immutable.
+
+# D-20260814-telegram-shaped-timeout-is-uncertain-final: Do not retry timed-out sends
+
+- Date: `2026-08-14`
+- Status: `accepted for injected-fixture phase only`
+- Evidence: `experiments/20260814T145500Z-telegram-shaped-addressed-adapter/RUN.md`
+
+The production-free injected transport has an adapter-enforced deadline.
+An acquisition timeout may be retried because it has no acknowledged cursor
+advance. A delivery timeout finalizes its event and must not be retried: the
+daemon fixture call cannot be cancelled and may have completed its external
+side effect after the caller's deadline. Surface this as an uncertain bounded
+failure rather than risking duplicate delivery. Commit `6082d60` extends the
+same conservative classification to all post-dispatch failures. Binding phase-
+end Fable review reproduced the late side effect and accepted this policy only
+for freezing the injected-fixture phase. It is not approval of a real Telegram
+transport. Before any such phase, fix the ledger-pruning route-restoration
+defect and explicitly decide whether acquire-time cursor acknowledgement and
+possible restart loss are acceptable.
+# D-20260814-protomega-crash-is-loop-specific: Stop widening component probes
+
+- Date: `2026-08-14`
+- Status: `accepted for diagnostic scope`
+- Evidence: `experiments/20260814T182200Z-protomega-repeat-isolation/RUN.md`,
+  `experiments/20260814T183300Z-protomega-repeated-petta-eval/RUN.md`
+
+Repeated offline E5/Chroma calls pass in Python, and twelve repeated exact
+recalls pass through one fresh PeTTa/SWI/Janus process (six direct `query` and
+six loop-style wrapped `eval(query)`). Do not widen generalized E5, Chroma, or
+standalone PeTTa investigation without new contradictory evidence. The next
+critical-path discriminator is a fresh nonce-separated OmegaClaw two-phase
+soak with response-anchored non-empty recall checks and isolated evidence.
+This decision grants no Telegram, production identity, or cutover authority.
+
+# D-20260814-protomega-soak-needs-exclusive-copy: Fence each acceptance copy
+
+- Date: `2026-08-14`
+- Status: `accepted for successor evidence`
+- Evidence: `experiments/20260814T184300Z-protomega-successor-soak/RUN.md`
+
+The nonce-separated successor again crashed on continuous-loop turn 3 after
+two genuine recalls, but its canonical migrated-copy manifest also changed
+during the run from overlapping access outside the harness. Future acceptance
+runs must create and exclusively reference a per-attempt ordinary copy. The
+authoritative original remains hash-only and unopened by the runtime. Do not
+require an attached Chroma 1.5.9 copy to remain byte-identical across open/read;
+the HNSW files may change. Instead preserve and hash the immutable input copy,
+permit mutations only in a separate runtime attachment, and verify recalled
+content plus rollback/disposal evidence.
+# 2026-08-14 11:56 PDT - Canonical-copy overlap is not the Protomega crash cause
+
+A fresh phase-1 discriminator used a uniquely named immutable migration input
+and a separate mutable runtime attachment. It still produced two exact recalls
+and crashed with SWI/Janus SIGSEGV on turn 3. Protected manifests, network
+denial, and zero-descendant teardown all held. Therefore canonical migrated-
+copy overlap and ordinary Chroma open-time mutation are excluded as causes of
+the reproducible third-turn failure. Keep soak NO-GO; next separate send-only
+from query-only conversational turns before altering code.
+# 2026-08-14 — Treat accumulated history as the next Protomega crash discriminator
+
+**Decision:** Keep production and Telegram unauthorized and investigate only
+disposable history copies. Stop extending Chroma/plugin diagnostics unless the
+history bisection contradicts the current separation.
+
+**Evidence:** Run `20260814T191100Z-protomega-history-discriminator` used the
+same pinned clean runtime and send-only transport shape. Empty history passed
+three turns; accumulated history acknowledged two turns and crashed on turn 3
+inside SWI/Janus. Kernel egress denial, protected-store byte stability, and
+zero-descendant teardown held.
+
+**Rationale:** This is the smallest observed variable that separates a passing
+three-turn loop from the repeated failure. It narrows but does not yet prove a
+specific history record, size threshold, logging defect, or Janus root cause.
+## 2026-08-14 — Treat Protomega's 21/22-record boundary as localization, not a repair
+
+- **Observed:** isolated prefix bisection and replay pass at 21 records / 4,201
+  bytes and reproduce SWI/Janus SIGSEGV at 22 records / 4,396 bytes.
+- **Decision:** keep production-free soak NO-GO. Do not truncate valuable
+  history as a putative fix; first distinguish boundary-record content from a
+  prompt/history-size threshold using disposable equal-size substitutions.
+- **Evidence:**
+  `experiments/20260814T192400Z-protomega-history-prefix-bisection/`.
+
+## 2026-08-14 — Exclude original record 22 content; cross count against bytes
+
+- **Observed:** original records 21 and 22 are both 195 bytes. Replacing record
+  21 with record 22 passes at 21 records / 4,201 bytes twice; replacing record
+  22 with a duplicate of record 21 still crashes at 22 records / 4,396 bytes
+  twice.
+- **Decision:** do not edit, truncate, or discard valuable accumulated history
+  as a repair. The next production-free discriminator independently crosses
+  record count and serialized byte size using disposable valid histories.
+- **Evidence:**
+  `experiments/20260814T193954Z-protomega-history-equal-size-substitution/`.

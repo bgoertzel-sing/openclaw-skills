@@ -113,8 +113,23 @@ export OMEGACLAW_OUTER_BOT_ID=8716054285
 export OMEGACLAW_OUTER_BOT_USERNAME=@protocosmo2bot
 export OMEGACLAW_OUTER_SESSION_PREFIX=protocosmo2-canary
 export OMEGACLAW_OUTER_AGENT_ID=main
-export OMEGACLAW_OUTER_MODEL=openai/gpt-5.6-sol
+export OMEGACLAW_OUTER_MODEL=anthropic/claude-opus-4-6
 export OMEGACLAW_OUTER_PROVIDER_TIMEOUT=300
 export OMEGACLAW_OUTER_POLL_TIMEOUT=15
+export OMEGACLAW_OUTER_CHROMA_DB_PATH="$PETTA/chroma_db"
+
+# Iter runtime: direct OpenAI-compatible endpoint, no OpenClaw gateway.
+# Ben directed 2026-09-02: rewire to not use the OpenClaw gateway; connect to a
+# smart model (OpenRouter z-ai/glm-5.2 — Ben directive 2026-09-03: switch away from kimi-k3 due to billing).
+# AI_API_KEY comes from the mode-0600 env file, never from this script.
+export OMEGACLAW_OUTER_USE_ITER=1
+export OMEGACLAW_OUTER_ITER_LOOP="$ROOT/protocosmo2/iter-port/bin/run-iter-loop.sh"
+export OMEGACLAW_OUTER_ITER_CHANNEL_ROOT="/home/openclaw/.openclaw/protocosmo2-canary-state/iter-channel"
+set -a
+. "$OMEGACLAW_OUTER_ENV_FILE"
+set +a
+: "${AI_API_KEY:?required from env file}"
+export LLM_MODEL=z-ai/glm-5.2
+export BASE_URL=https://openrouter.ai/api/v1
 
 exec "$ROOT/local/protomega-outer-telegram-supervisor.sh" "$@"

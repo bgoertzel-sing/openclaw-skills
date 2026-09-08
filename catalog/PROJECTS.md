@@ -8,6 +8,7 @@ Update this table whenever a project is created, paused, resumed, completed, or 
 | `openclaw-smoke` | OpenClaw configuration smoke test | `completed` | local-only `projects/openclaw-smoke/repos/tiny-python` | Setup verification complete; remaining gaps in `catalog/SETUP_REPORT.md` | 2026-06-25 |
 | `petta-chem` | PeTTa Abstract Algorithmic Chemistry | `idea` | `https://github.com/bgoertzel-sing/petta-chem` | Public repo active; building deterministic PeTTa chemistry experiments | 2026-06-27 |
 | `omegaclaw` | OmegaClaw Core Installation | `active` | local clones under `projects/omegaclaw/repos/` | ProtomegaTron Telegram/group setup and safe integration path | 2026-06-27 |
+| `goal-relevance-governor` | Goal Relevance Governor | `active` | local design project | Specify cross-project goal/task relevance control and LLM/PLN incarnations | 2026-08-14 |
 | `hyperseed-formalizations` | Hyperseed Formalizations | `active` | `https://github.com/bgoertzel-sing/hyperseed-formalizations` | Formalization notes for ProtomegaTron/OmegaClaw/PeTTa work | 2026-06-27 |
 | `petta-memory` | PeTTa Intermediate Memory Store | `active` | `https://github.com/bgoertzel-sing/petta-memory` | v0 append-only PLN-ready memory store prototype | 2026-06-27 |
 | `specatom-hs` | Plain2Metta / SpecAtom-HS compiler | `active` | public `bgoertzel-sing/plain2metta`; local `projects/specatom-hs/repos/specatom-hs` | Source-preserving fail-closed Plain-like compiler; public name Plain2Metta, internal IR/package `specatom_hs` | 2026-06-29 |
@@ -52,3 +53,5 @@ Keep only a compact rolling list. Detailed results belong in the relevant projec
 | `hdc-musicgen` | HDC × MusicGen Experiments | `active` | local `projects/hdc-musicgen/repos/` | GPU preparation frozen at `59eade2`; awaiting explicit paid-run approval | 2026-07-25 |
 | `hdc-cgcct-transformers` | HDC–CGCCT Transformer Programme | `active` | local project notebook + isolated P0 repository | Typed CMCP geometry at `f848c97` (305 tests); Phase 3 estimator comparison and Phase 4 assimilation-vs-maintenance are the active provider-free lane | 2026-07-31 |
 | remote-job-bootstrap | SSH-Free RunPod Bootstrap Bundles | active |  | confirm public GitHub owner/name, then publish hash-pinned bundles | 2026-07-29 |
+| pop-os-vm8-migration | Pop!_OS Proto-Hive Migration to VM8 | active | local project notebook; ASI:Cloud VM8 pending approved remote contract | local four-agent inventory; then bounded VM8 audit | 2026-08-11 |
+| goal-relevance-governor | Goal Relevance Governor | idea |  | define scope and first test | 2026-08-14 |

@@ -17,13 +17,17 @@ START_LOCK="${OMEGACLAW_OUTER_START_LOCK:-${PID_FILE}.start.lock}"
 CUTOVER_LOCK="${OMEGACLAW_CUTOVER_LOCK:-$ROOT/local/run-state/protomega-cutover.lock}"
 DEFERRED_DISABLE_MARKER="${OMEGACLAW_OUTER_DEFERRED_DISABLE_MARKER:-$ROOT/local/run-state/protomega-deferred-disabled}"
 IDENTITY="${OMEGACLAW_OUTER_IDENTITY:-ProtomegaTron}"
-BOT_ID="${OMEGACLAW_OUTER_BOT_ID:-8562797306}"
-BOT_USERNAME="${OMEGACLAW_OUTER_BOT_USERNAME:-@Protomegabot}"
+BOT_ID="${OMEGACLAW_OUTER_BOT_ID:-8680999952}"
+BOT_USERNAME="${OMEGACLAW_OUTER_BOT_USERNAME:-@protomega2bot}"
 SESSION_PREFIX="${OMEGACLAW_OUTER_SESSION_PREFIX:-protomegatron-live}"
 AGENT_ID="${OMEGACLAW_OUTER_AGENT_ID:-protomegabot-opus}"
 MODEL="${OMEGACLAW_OUTER_MODEL:-anthropic/claude-opus-4-6}"
 PROVIDER_TIMEOUT="${OMEGACLAW_OUTER_PROVIDER_TIMEOUT:-300}"
 POLL_TIMEOUT="${OMEGACLAW_OUTER_POLL_TIMEOUT:-15}"
+CHROMA_DB_PATH="${OMEGACLAW_OUTER_CHROMA_DB_PATH:-/home/openclaw/.openclaw/protomega-chroma-db}"
+USE_ITER="${OMEGACLAW_OUTER_USE_ITER:-0}"
+ITER_LOOP_SCRIPT="${OMEGACLAW_OUTER_ITER_LOOP:-}"
+ITER_CHANNEL_ROOT="${OMEGACLAW_OUTER_ITER_CHANNEL_ROOT:-}"
 
 validate_deferred_disable_marker() {
   MARKER_PATH="$DEFERRED_DISABLE_MARKER" python3 - <<'PY'
@@ -133,10 +137,15 @@ case "${1:-status}" in
     mv -f "$pid_tmp" "$PID_FILE"
     trap - EXIT
     child_pid=""
+    iter_pid=""
     terminate() {
       if [[ -n "$child_pid" ]]; then
         kill -TERM "$child_pid" 2>/dev/null || true
         wait "$child_pid" 2>/dev/null || true
+      fi
+      if [[ -n "${iter_pid:-}" ]]; then
+        kill -TERM "$iter_pid" 2>/dev/null || true
+        wait "$iter_pid" 2>/dev/null || true
       fi
       if [[ "$(cat "$PID_FILE" 2>/dev/null || true)" == "$$" ]]; then rm -f "$PID_FILE" "$PID_IDENTITY_FILE"; fi
       exit 0
@@ -148,16 +157,43 @@ case "${1:-status}" in
         validate_deferred_disable_marker
         deferred_args+=(--disable-deferred-jobs)
       fi
-      OMEGACLAW_EXPECTED_PARENT_PID="$$" python3 "$RUNNER" \
+      iter_args=()
+      if [[ "$USE_ITER" == 1 ]]; then
+        iter_args+=(--use-iter)
+        if [[ -n "$ITER_CHANNEL_ROOT" ]]; then
+          iter_args+=(--iter-channel-root "$ITER_CHANNEL_ROOT")
+        fi
+        if [[ -n "$ITER_LOOP_SCRIPT" ]]; then
+          ITER_OUTER_CHANNEL_ROOT="$ITER_CHANNEL_ROOT" \
+            bash "$ITER_LOOP_SCRIPT" >>"$LOG" 2>&1 &
+          iter_pid=$!
+        fi
+      fi
+      CHROMA_DB_PATH="$CHROMA_DB_PATH" OMEGACLAW_EXPECTED_PARENT_PID="$$" python3 "$RUNNER" \
         --env "$ENV_FILE" --config "$CONFIG" --state-dir "$STATE_DIR" \
         --worker-state-dir "$WORKER_STATE_DIR" --core "$CORE" \
         --transport-core "$TRANSPORT_CORE" --petta "$PETTA" --driver "$DRIVER" \
         --identity "$IDENTITY" --bot-id "$BOT_ID" --bot-username "$BOT_USERNAME" \
         --session-prefix "$SESSION_PREFIX" --agent-id "$AGENT_ID" --model "$MODEL" \
         --provider-timeout "$PROVIDER_TIMEOUT" --poll-timeout "$POLL_TIMEOUT" \
-        "${deferred_args[@]}" </dev/null >>"$LOG" 2>&1 &
+        "${iter_args[@]}" "${deferred_args[@]}" </dev/null >>"$LOG" 2>&1 &
       child_pid=$!
-      wait "$child_pid" || true
+      # Treat the receiver and Iter loop as one service.  If either sibling
+      # exits, stop the other and restart the pair; otherwise a healthy
+      # receiver can hide a dead Iter worker while requests accumulate.
+      while process_running "$child_pid"; do
+        if [[ -n "${iter_pid:-}" ]] && ! process_running "$iter_pid"; then
+          break
+        fi
+        sleep 1
+      done
+      kill -TERM "$child_pid" 2>/dev/null || true
+      wait "$child_pid" 2>/dev/null || true
+      if [[ -n "${iter_pid:-}" ]]; then
+        kill -TERM "$iter_pid" 2>/dev/null || true
+        wait "$iter_pid" 2>/dev/null || true
+        iter_pid=""
+      fi
       child_pid=""
       sleep 5
     done
@@ -213,7 +249,13 @@ case "${1:-status}" in
       pid=$(cat "$PID_FILE")
       children=$(child_count "$pid")
       echo "active pid $pid children=$children"
-      [[ "$children" -eq 1 ]] || { echo "readiness=failed expected_children=1" >&2; exit 1; }
+      if [[ "$USE_ITER" == 1 ]]; then
+        iter_children=$(ps -eo ppid=,args= | awk -v owner="$pid" '$1 == owner && /iter\.py/ {count++} END {print count + 0}')
+        echo "iter_children=$iter_children"
+        [[ "$children" -eq 1 && "$iter_children" -ge 1 ]] || { echo "readiness=failed expected_runner=1 iter>=1" >&2; exit 1; }
+      else
+        [[ "$children" -eq 1 ]] || { echo "readiness=failed expected_children=1" >&2; exit 1; }
+      fi
       echo "readiness=process-topology-ok (end-to-end Telegram delivery not proven)"
     else
       echo inactive

@@ -42,6 +42,22 @@ def _atom_id(raw_id: str) -> str:
     return raw_id.replace("-", "_").replace(".", "_")
 
 
+PREFIX_BY_TYPE = {
+    "goal": "g",
+    "project": "p",
+    "task": "t",
+    "resource": "r",
+    "result": "res",
+    "constraint": "c",
+}
+
+
+def _prefixed_atom_id(raw_id: str, node_type: str) -> str:
+    """Build a prefixed MeTTa atom ID matching the node encoder convention."""
+    prefix = PREFIX_BY_TYPE.get(node_type, "x")
+    return f"{prefix}_{_atom_id(raw_id)}"
+
+
 # --- Node encoders ---
 
 def encode_goal(node: dict) -> str:
@@ -113,10 +129,23 @@ NODE_ENCODERS = {
 }
 
 
-def encode_edge(edge: dict) -> str:
-    frm = _atom_id(edge["from"])
-    to = _atom_id(edge["to"])
+def encode_edge(edge: dict, node_lookup: dict | None = None) -> str:
+    """Encode an edge as a MeTTa relation atom.
+
+    If node_lookup is provided (mapping raw_id -> node dict with 'kind'),
+    the from/to IDs are prefixed to match the node encoder convention.
+    """
+    frm_raw = edge["from"]
+    to_raw = edge["to"]
     rel = edge["relation"]
+    if node_lookup is not None:
+        frm_type = node_lookup.get(frm_raw, {}).get("kind")
+        to_type = node_lookup.get(to_raw, {}).get("kind")
+        frm = _prefixed_atom_id(frm_raw, frm_type) if frm_type else _atom_id(frm_raw)
+        to = _prefixed_atom_id(to_raw, to_type) if to_type else _atom_id(to_raw)
+    else:
+        frm = _atom_id(frm_raw)
+        to = _atom_id(to_raw)
     return f"({rel} {frm} {to})"
 
 
@@ -151,10 +180,16 @@ def graph_to_metta(data: dict) -> str:
                 lines.append(encoder(node))
     lines.append("")
 
+    # Build node lookup for edge encoding
+    node_lookup: dict[str, dict] = {}
+    for key in ("goals", "projects", "tasks", "resources", "results", "constraints"):
+        for node in data.get(key, []):
+            node_lookup[node["id"]] = node
+
     # Edges
     lines.append(";; -- Edges --")
     for edge in data.get("edges", []):
-        lines.append(encode_edge(edge))
+        lines.append(encode_edge(edge, node_lookup))
     lines.append("")
 
     # Verdict rules

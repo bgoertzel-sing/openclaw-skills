@@ -48,8 +48,8 @@ cat > "$repo/RESTORE.md" <<'EOF'
 
 1. Recreate the OpenClaw research-agent workspace first, ideally from the ZeroBot recovery repo.
 2. Recreate `projects/omegaclaw/` notebooks and local non-secret wrappers from this repo.
-3. Re-clone upstream repositories listed in `omegaclaw/PROJECT.md` instead of restoring bulky local clones.
-4. Rebuild SWI/PeTTa/OmegaClaw dependencies according to `RUNBOOK.md` and current upstream docs.
+3. Re-clone upstream repositories listed in `omegaclaw/REPOSITORY_POINTERS.md` instead of restoring bulky local clones.
+4. Rebuild SWI/PeTTa/OmegaClaw dependencies according to `omegaclaw/RUNBOOK.md` and current upstream docs.
 5. Re-enter Telegram/OpenClaw/provider credentials manually into local secret files; do not source them from this repo.
 6. Run mock-mode and private Telegram smoke tests before any long-lived group or provider-backed run.
 EOF

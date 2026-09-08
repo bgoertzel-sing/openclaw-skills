@@ -1,5 +1,738 @@
 # Chaos Language Algorithm
 
+## Status — 2026-08-20 20:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 12/12 in 0.148
+seconds and required discovery 283/283 in 50.203 seconds. `compileall`,
+`git diff --check`, clean status, and all four frozen hashes passed
+(E0 result `3f3b68b...` matches `experiments/.../results.json`, E0b
+proposal `36435c8...`, foundations amendment `bb69556...`, PDF
+`6969a09...`). The previously noted "E0 result discrepancy" is resolved:
+the hash `3f3b68b...` was being compared against the wrong file
+(`docs/e0-coder-calibration-preregistration-v1.md`, SHA-256
+`f9f4200b...`) instead of the actual experiment results file
+(`experiments/20260726T171500Z-e0-coder-calibration-v1/results.json`,
+SHA-256 `3f3b68b...`). `DECISIONS.md` records no E0b approval. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3
+binding, foundations claims audited hypotheses, and OmegaSim paused
+pending Ben's explicit E0b review.
+
+## Status — 2026-08-20 18:17 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 12/12 in 0.149
+seconds and required discovery 283/283 in 47.874 seconds. `compileall`,
+`git diff --check`, clean status, and three of four frozen hashes passed
+(E0b proposal `36435c8...`, foundations amendment `bb69556...`, PDF
+`6969a09...`). The recorded "E0 result" hash `3f3b68b...` does not
+match any file in the current tree (actual
+`e0-coder-calibration-preregistration-v1.md` SHA-256 is
+`f9f4200b...`); this is a pre-existing discrepancy propagated since the
+earliest NOTES.md entry. `DECISIONS.md` records no E0b approval. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-20 08:16 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 4/4 in 0.091
+seconds and required discovery 283/283 in 49.697 seconds. `compileall`,
+`git diff --check`, clean status, and three of four frozen hashes passed
+(E0b proposal `36435c8...`, foundations amendment `bb69556...`, PDF
+`6969a09...`). The recorded "E0 result" hash `3f3b68b...` does not
+match any file in the current tree (actual
+`e0-coder-calibration-preregistration-v1.md` SHA-256 is
+`f9f4200b...`); this is a pre-existing discrepancy propagated since the
+earliest NOTES.md entry. `DECISIONS.md` records no E0b approval. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-20 06:16 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 12/12 in 0.148
+seconds and required discovery 283/283 in 48.671 seconds. `compileall`,
+`git diff --check`, clean status, and all four frozen hashes passed.
+`DECISIONS.md` records no E0b approval. No measurement or promotion
+opened. E1/E5b remain unauthorized, E3 binding, foundations claims
+audited hypotheses, and OmegaSim paused pending Ben's explicit E0b
+review.
+
+## Status — 2026-08-20 04:18 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 19/19 in 0.27 seconds
+and required discovery 283/283 in 49.626 seconds. `compileall`, `git diff
+--check`, clean status, and all four frozen hashes passed. No measurement
+or promotion opened. E1/E5b remain unauthorized, E3 binding, foundations
+claims audited hypotheses, and OmegaSim paused pending Ben's explicit E0b
+review.
+
+## Status — 2026-08-20 02:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 19/19 in 0.168 seconds
+and required discovery 283/283 in 49.718 seconds. `compileall`, `git diff
+--check`, clean status, and all four frozen hashes passed. Math foundations
+text and library sidecar reviewed; project-specific theorems remain audited
+hypotheses (proof sketches, not fully formal proofs); the two falsifiable
+predictions (CLA wins at Feigenbaum/Sturmian, loses to CSSR on hyperbolic
+chaos) are preserved as the scientific reframing. No measurement or promotion
+opened. E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused pending Ben's explicit E0b review.
+
+The M-D spec amendments and frozen E5b proposal were committed at
+`1af9f2b` (2026-08-19 20:27 PDT): explicit reviewed spec amendments for
+`LZ77SLPInitializer` beside Re-Pair (`docs/m-d-lz77-slp-initializer-spec-amendment-v1.md`)
+and for mixed-second-difference composite ranking with exact official-score
+acceptance plus estimated-versus-realized ledger residuals
+(`docs/m-d-mixed-second-difference-composite-ranking-spec-amendment-v1.md`),
+plus a separately frozen E5b proposal using fresh Feigenbaum/Sturmian
+fixtures and length scaling (`docs/e5b-feigenbaum-sturmian-proposal-v1.md`).
+E0b remains at its explicit human-review gate. Clean strict replay at
+`1af9f2b` passed focused E0/coding-core declarations 12/12 in 0.153
+seconds and required discovery 283/283 in 48.418 seconds. Compile checks,
+`git diff --check`, clean status, and all four frozen hashes passed.
+No measurement or promotion opened. E1/E5b remain unauthorized, E3
+binding, foundations claims audited hypotheses, and OmegaSim paused
+pending Ben's explicit E0b review.
+
+## Status — 2026-08-19 18:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed required discovery
+283/283 in 49.676 seconds. Compile checks, `git diff --check`, clean status,
+and all four frozen hashes passed. No measurement or promotion opened. E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused pending Ben's explicit E0b review.
+
+## Status — 2026-08-19 16:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed required discovery
+283/283 in 51.034 seconds. Compile checks, `git diff --check`, clean status,
+and all four frozen hashes passed. No measurement or promotion opened. E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused pending Ben's explicit E0b review.
+
+## Status — 2026-08-17 14:18 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.110 seconds (0.22 seconds elapsed; 19,752 KiB maximum RSS) and required
+discovery 283/283 in 53.520 seconds (54.64 seconds elapsed; 330,536 KiB
+maximum RSS). Compile checks, `git diff --check`, clean status, and all four
+frozen hashes passed after correcting verification-only test/module and
+filename paths. No measurement or promotion opened. E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused pending Ben's explicit E0b review.
+
+## Status — 2026-08-17 12:17 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.002 seconds (0.03 seconds elapsed; 16,764 KiB maximum RSS) and required
+discovery 283/283 in 52.174 seconds (53.23 seconds elapsed; 330,412 KiB
+maximum RSS). Compile checks, `git diff --check`, clean status, and all four
+frozen hashes passed after correcting a verification-only filename typo. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-17 10:17 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.082 seconds (0.18 seconds elapsed; 19,608 KiB maximum RSS) and required
+discovery 283/283 in 49.111 seconds (50.19 seconds elapsed; 328,816 KiB
+maximum RSS); compileall, explicit benchmark/declaration `py_compile`,
+`git diff --check`, clean status, and all four frozen hashes passed. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-16 18:18 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.085 seconds (0.15 seconds elapsed; 19,412 KiB maximum RSS) and required
+discovery 283/283 in 52.705 seconds (53.68 seconds elapsed; 338,416 KiB
+maximum RSS); compileall, explicit benchmark/declaration `py_compile`,
+`git diff --check`, clean status, and all four frozen hashes passed. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-16 16:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.112 seconds (0.19 seconds elapsed; 19,428 KiB maximum RSS) and required
+discovery 283/283 in 48.074 seconds (48.99 seconds elapsed; 338,416 KiB
+maximum RSS); compileall, explicit benchmark/declaration `py_compile`,
+`git diff --check`, clean status, and all four frozen hashes passed. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-16 14:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.002 seconds (0.04 seconds elapsed; 17,088 KiB maximum RSS) and required
+discovery 283/283 in 50.885 seconds (52.04 seconds elapsed; 337,944 KiB
+maximum RSS); compileall, explicit benchmark/declaration `py_compile`,
+`git diff --check`, clean status, and all four frozen hashes passed. No
+measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused pending Ben's
+explicit E0b review.
+
+## Status — 2026-08-16 10:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.082 seconds and required discovery 283/283 in 51.907 seconds; compileall,
+explicit benchmark `py_compile`, `git diff --check`, clean status, and all four
+frozen hashes passed. No measurement or promotion opened. E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused pending Ben's explicit E0b review.
+
+## Status — 2026-08-16 06:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations 4/4
+in 0.083 seconds and required discovery 283/283 in 50.862 seconds; compileall,
+explicit benchmark `py_compile`, `git diff --check`, clean status, and all four
+frozen hashes passed. No measurement or promotion opened. E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused pending Ben's explicit E0b review.
+
+## Status — 2026-08-16 04:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations
+4/4, required verbose discovery 283/283, compileall, explicit py_compile,
+diff hygiene, clean status, and all four frozen hash checks. No measurement
+was opened; E1/E5b remain unauthorized, E3 remains binding, the foundations
+claims remain audited hypotheses, and OmegaSim remains paused.
+
+## Status — 2026-08-16 02:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations
+4/4, required verbose discovery 283/283, compileall, explicit py_compile,
+diff hygiene, clean status, and all four frozen hash checks. No measurement
+was opened; E1/E5b remain unauthorized, E3 remains binding, the foundations
+claims remain audited hypotheses, and OmegaSim remains paused.
+
+## Status — 2026-08-15 22:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations
+4/4, required verbose discovery 283/283, a second quiet discovery replay,
+compileall, explicit py_compile, diff hygiene, clean status, and all four
+frozen hash checks. No measurement was opened; E1/E5b remain unauthorized,
+E3 remains binding, the foundations claims remain audited hypotheses, and
+OmegaSim remains paused.
+
+## Status — 2026-08-15 20:15 PDT
+
+E0b remains at its explicit human-review gate. Clean strict replay at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused declarations
+4/4, required discovery 283/283, compile checks, diff hygiene, clean status,
+and all four frozen hash checks. No new measurement is authorized; E1/E5b
+remain closed, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-15 16:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.084 seconds (0.19 seconds elapsed; 19,488 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 49.483 seconds (50.41 seconds elapsed;
+329,560 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+
+## 2026-08-15 06:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.096 seconds (0.20 seconds elapsed; 19,512 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 47.801 seconds (48.71 seconds elapsed;
+337,240 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-15 02:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.081 seconds (0.15 seconds elapsed; 19,312 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 47.053 seconds (47.95 seconds elapsed;
+338,436 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-14 20:17 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.089 seconds (0.16 seconds elapsed; 19,504 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 48.794 seconds (49.74 seconds elapsed;
+338,432 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-14 14:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.093 seconds (0.20 seconds elapsed; 19,416 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 48.189 seconds (49.10 seconds elapsed;
+338,228 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-14 04:26 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.088 seconds (0.15 seconds elapsed; 19,468 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 49.080 seconds (50.11 seconds elapsed;
+330,412 KiB maximum RSS). Compileall, `git diff --check`, and the clean-status
+assertion passed. No measurement opened; E1/E5b remain unauthorized, E3
+remains binding, and OmegaSim remains paused.
+
+## 2026-08-14 00:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.101 seconds (0.18 seconds elapsed; 19,412 KiB maximum RSS), and required
+verbose discovery passed 283/283 in 52.692 seconds (53.84 seconds elapsed;
+330,644 KiB maximum RSS). Compileall, `git diff --check`, and the clean-status
+assertion passed. No measurement opened; E1/E5b remain unauthorized, E3
+remains binding, and OmegaSim remains paused.
+
+## 2026-08-13 10:44 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.091 seconds, and required verbose discovery passed 283/283 in 53.901
+seconds (55.19 seconds elapsed; 330,524 KiB maximum RSS). Compileall,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-13 08:49 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.107 seconds, and required verbose discovery passed 283/283 in 54.984
+seconds (56.02 seconds elapsed; 330,592 KiB maximum RSS). Compileall,
+`git diff --check`, and the clean-status assertion passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-12 18:25 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required verbose discovery passed 283/283. Compileall, `git diff --check`, and
+the clean-status assertion passed. No measurement opened; E1/E5b remain
+unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-12 16:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283 in 71.931 seconds. Compileall, diff, and
+clean-status checks passed. No measurement opened; E1/E5b remain unauthorized,
+E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-12 02:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4 in
+0.083 seconds, and required discovery passed 283/283 in 46.335 seconds (47.20
+seconds elapsed; 339,884 KiB maximum RSS). Compileall, diff, and clean-status
+checks passed. No measurement opened; E1/E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-11 22:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283 in 108.759 seconds (1:50.27 elapsed;
+339,796 KiB maximum RSS). Compileall, diff, and clean-status checks passed. No
+measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+Status at 2026-08-15 18:15 PDT: the critical-path gate remains unchanged.
+Clean strict replay at `f5a2b7b` passed focused E0 declarations 4/4 and required
+discovery 283/283, plus compile checks, diff hygiene, clean status, and all four
+frozen-hash checks. `DECISIONS.md` records no E0b approval, so no measurement
+or promotion opened; E1/E5b remain unauthorized, E3 binding, foundations
+claims remain audited hypotheses, and OmegaSim remains paused.
+
+## 2026-08-11 18:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-11 16:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-11 14:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-11 08:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-11 00:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-10 14:21 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-10 12:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-10 00:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; all four frozen hashes match, focused declarations passed 4/4, and
+required discovery passed 283/283. Compileall, diff, and clean-status checks
+passed. No measurement opened; E1/E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-09 18:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. No measurement
+opened; E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains
+paused.
+
+## 2026-08-09 02:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. The four frozen
+hashes remain unchanged. No measurement opened; E1/E5b remain unauthorized,
+E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-08 06:17 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. Frozen E0 result,
+E0b proposal, foundations amendment, and source PDF hashes remain unchanged.
+No measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-08 04:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. Frozen E0 result,
+E0b proposal, foundations amendment, and source PDF hashes remain unchanged.
+No measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-07 18:15 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. Frozen E0 result,
+E0b proposal, foundations amendment, and source PDF hashes remain unchanged.
+No measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-07 16:16 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. Frozen E0 result,
+E0b proposal, foundations amendment, and source PDF hashes remain unchanged.
+No measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-06 10:24 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. Frozen E0 result,
+E0b proposal, foundations amendment, and source PDF hashes remain unchanged.
+No measurement opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-06 00:21 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and the required discovery passed
+283/283. Compileall, diff, and clean-status checks passed. The frozen result,
+proposal, foundations amendment, and source PDF hashes remain unchanged. No
+measurement was opened; E1/E5b remain unauthorized, E3 remains binding, and
+OmegaSim remains paused.
+
+## 2026-08-05 14:22 PDT status
+
+E0b remains closed pending Ben's explicit review. Strict replay is clean at
+`f5a2b7b`; focused declarations passed 4/4 and the required discovery passed
+283/283. Compileall and diff/status checks passed. No measurement was opened;
+E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-05 02:35 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, mathematical-foundations amendment,
+and supplied PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.086 seconds; required discovery passed
+283/283 in 48.879 seconds (49.80 seconds elapsed; 338,816 KiB maximum RSS).
+Compileall, diff, and clean-status checks passed. No new measurement was
+opened; E1 and E5b remain unauthorized, E3 remains binding, and OmegaSim
+remains paused.
+
+Update, 2026-08-10 02:15 PDT: clean strict replay at `f5a2b7b` retained all
+four frozen hashes. Focused declarations passed 4/4 and required discovery
+passed 283/283, with compileall, `git diff --check`, and clean status passing.
+No measurement or promotion was opened. Ben's E0b review remains the
+critical-path decision; E1/E5b are unauthorized, E3 binding, the foundations
+claims remain audited hypotheses, and OmegaSim paused.
+
+## 2026-08-04 23:00 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, mathematical-foundations amendment,
+and supplied PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.103 seconds; required discovery passed
+283/283 in 50.731 seconds (51.66 seconds elapsed; 339,552 KiB maximum RSS).
+Compileall, diff, and clean-status checks passed. No new measurement was
+opened; E1 and E5b remain unauthorized, E3 remains binding, and OmegaSim
+remains paused.
+
+## 2026-08-04 14:26 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, mathematical-foundations amendment,
+and supplied PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4; required discovery passed 283/283 in
+135.686 seconds. Compileall, diff, and clean-status checks passed. No new
+measurement was opened; E1 and E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-04 12:29 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4; required discovery passed 283/283 in 96.400
+seconds (97.95 seconds elapsed; 339,864 KiB maximum RSS). Compileall, diff,
+and clean-status checks passed. No new measurement was opened; E1 and E5b
+remain unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-04 08:28 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.077 seconds (0.14 seconds elapsed;
+19,296 KiB maximum RSS); required discovery passed 283/283. Compileall,
+diff, and clean-status checks passed. No new measurement was opened; E1 and
+E5b remain unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-04 06:23 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.002 seconds (0.08 seconds elapsed;
+17,052 KiB maximum RSS); required discovery passed 283/283 in 43.172 seconds
+(43.97 seconds elapsed; 338,664 KiB maximum RSS). Compileall, diff, and
+clean-status checks passed. No new measurement was opened; E1 and E5b remain
+unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-04 00:27 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.085 seconds; required discovery passed
+283/283 in 42.470 seconds; compileall, diff, and clean-status checks passed.
+No new measurement was opened; E1 and E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-03 14:20 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.088 seconds (0.16 seconds elapsed;
+19,380 KiB maximum RSS), and required discovery passed 283/283 in 50.077
+seconds (50.94 seconds elapsed; 339,540 KiB maximum RSS); compileall, diff,
+and clean-status checks passed. No new measurement was opened; E1 and E5b
+remain unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+## 2026-08-03 12:20 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result, review-only proposal, and supplied mathematical-foundations
+PDF SHA-256 values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Focused declarations passed 4/4 in 0.100 seconds and required discovery passed
+283/283 in 50.699 seconds; compileall, diff, and clean-status checks passed.
+No new measurement was opened; E1 and E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-03 04:22 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result and review-only proposal SHA-256 values remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused declarations passed 4/4 in 0.092 seconds and required discovery passed
+283/283 in 46.866 seconds; compileall, diff, and clean-status checks passed.
+No new measurement was opened; E1 and E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-03 00:20 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result and review-only proposal SHA-256 values remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused declarations passed 4/4 in 0.085 seconds and required discovery passed
+283/283 in 47.826 seconds; compileall, diff, and clean-status checks passed.
+No new measurement was opened; E1 and E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-02 22:15 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; no approval or later gate amendment is recorded. The
+binding E0 result and review-only proposal SHA-256 values remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused declarations passed 4/4 and required discovery passed 283/283 in
+51.549 seconds; compileall, diff, and clean-status checks passed. No new
+measurement was opened; E1 and E5b remain unauthorized, E3 remains binding,
+and OmegaSim remains paused.
+
+## 2026-08-01 06:15 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; the binding E0 result and review-only proposal SHA-256
+values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused declarations passed 4/4 in 0.085 seconds; required discovery passed
+283/283 in 47.809 seconds; compileall, diff, and clean-status checks passed.
+No new measurement was opened; E1 and E5b remain unauthorized, E3 remains
+binding, and OmegaSim remains paused.
+
+## 2026-08-01 04:15 PDT status
+
+E0b remains closed pending Ben's explicit review. The strict-replay worktree
+is clean at `f5a2b7b`; the binding E0 result and review-only proposal SHA-256
+values remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused declarations passed 4/4 in 0.085 seconds, full discovery passed 283/283
+in 50.881 seconds, and compile/diff/status checks passed. No new measurement
+was opened; E1 and E5b remain unauthorized, E3 remains binding, and OmegaSim
+remains paused.
+
+## 2026-08-01 00:15 PDT status
+
+E0b remains closed pending Ben's explicit review. The clean strict-replay
+worktree is still `f5a2b7b`; the binding E0 result and review-only proposal
+hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused tests passed 4/4, full discovery passed 283/283, and compile/diff/status
+checks passed. E1 and later measurements remain unauthorized; E3 is binding
+and OmegaSim remains paused.
+
+## 2026-07-31 18:15 PDT status
+
+E0b remains closed pending Ben's explicit review. The clean strict-replay
+worktree is still `f5a2b7b`; the binding E0 result and review-only proposal
+hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused tests passed 4/4, full discovery passed 283/283, and compile/diff/status
+checks passed. E1 and later measurements remain unauthorized; E3 is binding
+and OmegaSim remains paused.
+
 ## 2026-07-27 01:15 PDT status
 
 The frozen E0 coder calibration executed exactly once against clean code
@@ -928,3 +1661,472 @@ coders; held-out per-state KT estimators remain fresh. Focused unittest passed
 8, required discovery passed 261 in 46.233 seconds, and compileall/diff checks
 passed. No E0--E8 measurement was opened. The next M-E slice is the
 transition-equivalence category inducer.
+
+Update, 2026-08-07 02:15 PDT: the critical path remains closed at Ben's E0b
+review gate. Clean strict replay at `f5a2b7b` retained all frozen artifact
+hashes; focused declarations passed 4/4 and required discovery passed 283/283,
+with compileall, diff, and clean-status checks passing. No measurement or
+promotion was opened; E1/E5b remain unauthorized, E3 binding, and OmegaSim
+paused.
+
+Update, 2026-08-08 16:15 PDT: clean strict replay at `f5a2b7b` retained all
+four frozen hashes. Focused declarations passed 4/4 and required discovery
+passed 283/283, with compileall, `git diff --check`, and clean status passing.
+No measurement or promotion was opened. Ben's E0b review remains the
+critical-path decision; E1/E5b are unauthorized, E3 binding, the foundations
+claims remain audited hypotheses, and OmegaSim paused.
+
+Update, 2026-08-09 08:15 PDT: clean strict replay at `f5a2b7b` again retained
+all four frozen hashes. Focused declarations passed 4/4 and required discovery
+passed 283/283, with compileall, `git diff --check`, and clean status passing.
+No measurement or promotion was opened. Ben's E0b review remains the
+critical-path decision; E1/E5b are unauthorized, E3 binding, the foundations
+claims remain audited hypotheses, and OmegaSim paused.
+# 2026-08-04 16:46 PDT — E0b review gate reverified closed
+
+- Strict replay remains clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; no E0b approval or later amendment is recorded.
+- Frozen E0 result, E0b proposal, and supplied foundations PDF retain SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4; required discovery passed 283/283 in 122.809 s (124.74 s elapsed, 339,856 KiB maximum RSS); compileall, `git diff --check`, and clean status passed. E1 and new measurements remain closed pending Ben's explicit E0b review; E3 remains binding.
+
+# 2026-08-06 06:39 PDT — E0b review gate remains closed
+
+- Strict replay remains clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` records no E0b approval or later amendment.
+- Frozen E0 result, E0b proposal, foundations amendment, and supplied PDF retain SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4; required verbose discovery passed 283/283 in 52.02 s elapsed with 339,668 KiB maximum RSS; compileall, `git diff --check`, and clean status passed. No measurement opened. E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-07 00:18 PDT — E0b review gate reverified closed
+
+- Strict replay remains clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; no E0b approval or later amendment is recorded.
+- Frozen E0 result, E0b proposal, foundations amendment, and supplied PDF retain SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4; required discovery passed 283/283 in 52.14 seconds elapsed with 335,776 KiB maximum RSS; compileall, `git diff --check`, and clean status passed. No measurement opened. E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-07 12:15 PDT — E0b review gate remains closed
+
+- Strict replay remains clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` records no E0b approval or later amendment.
+- Focused E0 declarations passed 4/4 in 0.099 seconds; required verbose discovery passed 283/283 in 50.536 seconds (51.49 seconds elapsed; 339,424 KiB maximum RSS). Compileall, `git diff --check`, and the clean-status assertion passed.
+- E1/E5b remain unauthorized, E3 remains binding, and OmegaSim remains paused. No fixture, score, experiment rerun, source change, promotion, or remote compute was opened.
+
+# 2026-08-07 14:16 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused declarations passed 4/4 and required discovery passed 283/283; compileall, `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains the critical-path decision; E1/E5b are unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 02:22 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, and
+  OmegaSim paused.
+
+# 2026-08-08 12:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, and
+  OmegaSim paused.
+
+# 2026-08-08 10:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, and
+  OmegaSim paused.
+
+# 2026-08-08 14:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, the
+  foundations claims remain hypotheses, and OmegaSim is paused.
+
+# 2026-08-09 10:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, the
+  foundations claims remain hypotheses, and OmegaSim is paused.
+# 2026-08-08 20:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, the
+  foundations claims remain hypotheses, and OmegaSim is paused.
+
+# 2026-08-09 06:15 PDT — E0b review gate remains closed
+
+- Clean strict replay at `f5a2b7b` retained all four frozen hashes. Focused
+  declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- No measurement or promotion was opened. Ben's explicit E0b review remains
+  the critical-path decision; E1/E5b are unauthorized, E3 binding, the
+  foundations claims remain hypotheses, and OmegaSim is paused.
+# Status update — 2026-08-09 16:15 PDT
+
+E0b remains review-only and unapproved. The clean strict-replay repository at
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed the frozen E0 declaration
+suite (4/4), full discovery (283/283), compile checks, whitespace checks, and
+clean-status assertion. E1/E5b remain closed, E3 remains binding, and OmegaSim
+remains paused.
+
+# Status update — 2026-08-10 04:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-12 00:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 in 0.082
+seconds and required discovery passed 283/283 in 49.390 seconds. Compileall,
+`git diff --check`, and clean status passed. No measurement or promotion was
+opened. E1/E5b remain unauthorized, E3 binding, the foundations claims audited
+hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-11 06:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 in 0.256
+seconds and required discovery passed 283/283 in 132.338 seconds. Compileall,
+`git diff --check`, and clean status passed. No measurement or promotion was
+opened. E1/E5b remain unauthorized, E3 binding, the foundations claims audited
+hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-11 10:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-11 12:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+Update, 2026-08-11 02:15 PDT: clean strict replay at `f5a2b7b` retained all
+four frozen hashes. Focused E0 declarations passed 4/4 and required discovery
+passed 283/283 in 134.667 seconds (136.76 seconds elapsed; 330,728 KiB maximum
+RSS), with compileall, `git diff --check`, and clean status passing. No
+measurement or promotion was opened. Ben's E0b review remains the critical-path
+decision; E1/E5b are unauthorized, E3 binding, the foundations claims remain
+audited hypotheses, and OmegaSim paused.
+
+Update, 2026-08-10 22:15 PDT: clean strict replay at `f5a2b7b` retained all
+four frozen hashes. Focused declarations passed 4/4 and required discovery
+passed 283/283, with compileall, `git diff --check`, and clean status passing.
+No measurement or promotion was opened. Ben's E0b review remains the
+critical-path decision; E1/E5b are unauthorized, E3 binding, the foundations
+claims remain audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-10 06:19 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes. Focused E0 declarations passed 4/4 in 0.09
+seconds; required verbose discovery passed 283/283 in 116.40 seconds with
+331,312 KiB maximum RSS. Compileall, `git diff --check`, and clean status
+passed. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-10 08:28 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes. Focused E0 declarations passed 4/4 in 0.287
+seconds; required verbose discovery passed 283/283 in 121.567 seconds
+(123.72 seconds elapsed; 331,376 KiB maximum RSS). Compileall, `git diff
+--check`, and clean status passed. No measurement or promotion was opened.
+E1/E5b remain unauthorized, E3 binding, the foundations claims audited
+hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-10 16:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+# Status update — 2026-08-10 18:24 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-10 20:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused declarations passed 4/4 and required
+discovery passed 283/283, with compileall, `git diff --check`, and clean status
+passing. No measurement or promotion was opened. E1/E5b remain unauthorized,
+E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-12 08:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained the binding E0 result and supplied-PDF hashes; focused E0 declarations
+passed 4/4 in 0.093 seconds and required discovery passed 283/283 in 51.780
+seconds. Compileall, `git diff --check`, and clean status passed. No
+measurement or promotion was opened. E1/E5b remain unauthorized, E3 binding,
+the foundations claims audited hypotheses, and OmegaSim paused.
+
+# Status update — 2026-08-12 10:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused E0 declarations passed 4/4 in 0.083
+seconds and required discovery passed 283/283 in 46.218 seconds. Compileall,
+`git diff --check`, and clean status passed. No measurement or promotion was
+opened. E1/E5b remain unauthorized, E3 binding, the foundations claims audited
+hypotheses, and OmegaSim paused.
+# Status update — 2026-08-12 12:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b`
+retained all four frozen hashes; focused E0 declarations passed 4/4 and
+required discovery passed 283/283. Compileall, `git diff --check`, and clean
+status passed. No measurement or promotion was opened. E1/E5b remain
+unauthorized, E3 binding, the foundations claims audited hypotheses, and
+OmegaSim paused.
+
+Update, 2026-08-13 18:39 PDT: E0b remains review-only and unapproved. Clean
+strict replay at `f5a2b7b` retained all four frozen hashes; focused E0
+declarations passed 4/4 in 0.106 s and full discovery passed 283/283 in
+55.694 s (56.88 s elapsed; 329,728 KiB maximum RSS). Compileall, `git diff
+--check`, and clean status passed. No measurement or promotion opened. E1/E5b
+remain unauthorized, E3 binding, the foundations claims audited hypotheses,
+and OmegaSim paused.
+
+Update, 2026-08-13 21:00 PDT: E0b remains review-only and unapproved. Clean
+strict replay at `f5a2b7b` retained all four frozen hashes; focused E0
+declarations passed 4/4 in 0.108 s and full discovery passed 283/283 in
+57.573 s (58.83 s elapsed; 329,616 KiB maximum RSS). Compileall, `git diff
+--check`, and clean status passed. No measurement or promotion opened. E1/E5b
+remain unauthorized, E3 binding, the foundations claims audited hypotheses,
+and OmegaSim paused.
+# 2026-08-13 04:45 PDT status
+
+E0b remains closed pending Ben's explicit review. Frozen strict replay is
+clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; focused declarations,
+the 283-test discovery suite, compile checks, and diff hygiene passed. No
+dependent experiment or scientific promotion was authorized.
+
+# 2026-08-13 06:17 PDT status
+
+E0b remains closed pending Ben's explicit review. Frozen strict replay is
+clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; all four frozen hashes,
+focused declarations, the 283-test discovery suite, compile checks, and diff
+hygiene passed. No dependent experiment or scientific promotion was opened.
+
+Status at 2026-08-14 22:15 PDT: E0b remains review-only and unapproved.
+Strict replay at `f5a2b7b` passed focused declarations 4/4, discovery 283/283,
+compile checks, diff hygiene, clean status, and all four frozen-hash checks.
+No measurement or promotion opened; E1/E5b remain unauthorized, E3 binding,
+foundations claims hypotheses, and OmegaSim paused.
+
+Status at 2026-08-15 00:16 PDT: E0b remains review-only and unapproved.
+Strict replay at `f5a2b7b` passed focused declarations 4/4, discovery 283/283,
+compile checks, diff hygiene, clean status, and all four frozen-hash checks.
+No measurement or promotion opened; E1/E5b remain unauthorized, E3 binding,
+foundations claims remain audited hypotheses, and OmegaSim remains paused.
+
+Status at 2026-08-16 00:15 PDT: E0b remains review-only and unapproved.
+Clean strict replay at `f5a2b7b` passed focused declarations 4/4, discovery
+283/283, compile checks, diff hygiene, clean status, and all four frozen-hash
+checks. No measurement or promotion opened; E1/E5b remain unauthorized, E3
+binding, foundations claims remain audited hypotheses, and OmegaSim remains
+paused.
+2026-08-13 16:20 PDT: E0b remains review-only and unapproved. Clean strict
+replay `f5a2b7b` retained all four frozen hashes; focused declarations passed
+4/4 and discovery passed 283/283, with compileall, diff hygiene, and clean
+status passing. No measurement or promotion opened. E1/E5b remain
+unauthorized, E3 binding, the foundations claims audited hypotheses, and
+OmegaSim paused.
+
+Update, 2026-08-13 18:39 PDT: E0b remains review-only and unapproved. Clean
+strict replay at `f5a2b7b` retained all four frozen hashes; focused E0
+declarations passed 4/4 in 0.106 s and full discovery passed 283/283 in
+55.694 s (56.88 s elapsed; 329,728 KiB maximum RSS). Compileall, `git diff
+--check`, and clean status passed. No measurement or promotion opened. E1/E5b
+remain unauthorized, E3 binding, the foundations claims audited hypotheses,
+and OmegaSim paused.
+## 2026-08-13 22:17 PDT — E0b review gate remains closed
+
+- Strict replay remains clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still records no E0b approval or later amendment.
+- Focused E0 declarations passed 4/4 in 0.102 s (0.18 s elapsed; 19,456 KiB max RSS); required discovery passed 283/283 in 55.443 s (56.45 s elapsed; 330,652 KiB max RSS). Compileall, `git diff --check`, and clean status passed.
+- The E0 result, E0b proposal, foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- No measurement or promotion opened. E1/E5b remain unauthorized, E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+
+# 2026-08-14 02:24 PDT — E0b review gate remains closed
+
+- Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; no E0b approval is recorded.
+- Focused E0 declarations passed 4/4 in 0.086 s; required discovery passed 283/283 in 49.010 s. Compileall, `git diff --check`, and clean status passed.
+- Frozen E0/E0b/foundations/PDF hashes remained `3f3b68b...`, `36435c85...`, `bb69556d...`, and `6969a095...`. No measurement or promotion opened; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-14 06:27 PDT — E0b review gate remains closed
+
+- Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; no E0b approval is recorded.
+- Focused E0 declarations passed 4/4 in 0.084 s (0.15 s elapsed; 19,608 KiB max RSS), and required discovery passed 283/283 in 49.623 s (50.59 s elapsed; 330,440 KiB max RSS). Compileall, py_compile, `git diff --check`, and clean status passed.
+- Frozen E0 result, E0b proposal, foundations amendment, and supplied-PDF hashes remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- No measurement or promotion opened. E1/E5b remain unauthorized, E3 binding, the foundations claims audited hypotheses, and OmegaSim paused.
+## Status update — 2026-08-14 18:15 PDT
+
+E0b remains review-only and unapproved. Clean strict replay at `f5a2b7b` retained all four frozen hashes; focused declarations passed 4/4 and discovery passed 283/283, with compile checks, diff hygiene, and clean status passing. No measurement or promotion opened. E1/E5b remain unauthorized, E3 binding, foundations claims hypotheses, and OmegaSim paused.
+Status at 2026-08-15 08:16 PDT: E0b remains review-only and unapproved.
+Strict replay at `f5a2b7b` passed focused declarations 4/4, discovery 283/283,
+compile checks, diff hygiene, clean status, and all four frozen-hash checks.
+No measurement or promotion opened; E1/E5b remain unauthorized, E3 binding,
+foundations claims remain audited hypotheses, and OmegaSim remains paused.
+
+Status at 2026-08-15 10:15 PDT: the critical-path gate is unchanged. Clean
+strict replay at `f5a2b7b` passed focused E0 declarations 4/4 in 0.093 s and
+required discovery 283/283 in 51.545 s (52.64 s elapsed; 327,144 KiB maximum
+RSS), plus compileall, explicit py_compile, diff hygiene, and clean status.
+All four frozen hashes remain unchanged. `DECISIONS.md` records no E0b
+approval, so no measurement or promotion opened; E1/E5b remain unauthorized,
+E3 binding, foundations claims audited hypotheses, and OmegaSim paused.
+
+Status at 2026-08-15 12:15 PDT: the critical-path gate remains unchanged.
+Clean strict replay at `f5a2b7b` passed focused E0 declarations 4/4 and required
+discovery 283/283, plus compile checks, diff hygiene, clean status, and all four
+frozen-hash checks. `DECISIONS.md` records no E0b approval, so no measurement
+or promotion opened; E1/E5b remain unauthorized, E3 binding, foundations
+claims remain audited hypotheses, and OmegaSim remains paused.
+# 2026-08-16 22:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.100 seconds (0.17 seconds elapsed;
+19,620 KiB maximum RSS) and required discovery 283/283 in 49.568 seconds
+(50.70 seconds elapsed; 338,060 KiB maximum RSS). `compileall`, explicit
+benchmark/declaration `py_compile`, `git diff --check`, and clean status
+passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined hash check used two nonexistent paths; corrected tracked
+paths matched. `DECISIONS.md` still contains no E0b approval, so no fixture,
+score, measurement, promotion, remote compute, or OmegaSim work opened;
+E1/E5b remain unauthorized, E3 binding, and foundations claims audited
+hypotheses.
+
+# 2026-08-17 04:19 PDT — E0b gate revalidation
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.094 seconds (0.18 seconds elapsed;
+19,404 KiB maximum RSS) and required discovery 283/283 in 46.849 seconds
+(47.95 seconds elapsed; 331,452 KiB maximum RSS). `compileall`, explicit
+benchmark/declaration `py_compile`, `git diff --check`, and clean status
+passed. The frozen E0 result, review-only E0b proposal, foundations amendment,
+and supplied PDF hashes remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 06:17 PDT — E0b gate revalidation
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 and required discovery 283/283, plus
+compile checks, diff hygiene, all four frozen hashes, and clean status.
+`DECISIONS.md` still contains no E0b approval, so no measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+# 2026-08-17 08:17 PDT — E0b gate revalidation
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 and required discovery 283/283, plus
+compile checks, diff hygiene, all four frozen hashes, and clean status.
+`DECISIONS.md` still contains no E0b approval, so no measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+Status at 2026-08-17 16:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4, required discovery 283/283, compile checks, diff
+hygiene, frozen hashes, and clean status. E0b remains unapproved, so no
+measurement or promotion opened; E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused.
+Status at 2026-08-17 18:18 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4 in 0.091 s (0.19 s elapsed; 19,732 KiB maximum
+RSS), required discovery 283/283 in 51.280 s (52.30 s elapsed; 329,996 KiB
+maximum RSS), compile checks, diff hygiene, clean status, and all four frozen
+hash checks. The first result-hash command used a nonexistent stale path;
+the corrected frozen `results.json` path matched. `DECISIONS.md` still records
+no E0b approval, so no measurement or promotion opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+Status at 2026-08-17 20:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4, required discovery 283/283, corrected compile
+checks, diff hygiene, clean status, and all four frozen-hash checks. E0b
+remains unapproved, so no measurement or promotion opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+Status at 2026-08-18 02:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4 in 0.101 s, required discovery 283/283 in
+45.213 s, corrected compile checks, diff hygiene, clean status, and all four
+frozen-hash checks. E0b remains unapproved, so no measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+
+Status at 2026-08-18 04:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4 in 0.092 s and required discovery 283/283 in
+48.958 s, plus compile checks, diff hygiene, clean status, and all four frozen
+hash checks. E0b remains unapproved, so no measurement or promotion opened;
+E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+
+Status at 2026-08-18 08:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declarations 4/4 in 0.094 s (0.17 s elapsed; 19,360 KiB maximum
+RSS) and required discovery 283/283 in 50.880 s (51.87 s elapsed; 329,404
+KiB maximum RSS), plus compile checks, diff hygiene, clean status, and all
+four frozen-hash checks. E0b remains unapproved, so no measurement or
+promotion opened; E1/E5b remain unauthorized, E3 binding, foundations claims
+audited hypotheses, and OmegaSim paused.
+
+Status at 2026-08-18 10:17 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declaration plus coding-core suites 12/12 in 0.149 s (0.22 s
+elapsed; 19,644 KiB maximum RSS) and required discovery 283/283 in 46.555 s
+(47.55 s elapsed; 328,852 KiB maximum RSS), plus corrected compile checks,
+diff hygiene, clean status, and all four frozen-hash checks. E0b remains
+unapproved, so no measurement or promotion opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+Status at 2026-08-18 16:15 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declaration plus coding-core suites 12/12 in 0.156 s (0.25 s
+elapsed; 19,664 KiB maximum RSS) and required discovery 283/283 in 48.504 s
+(49.51 s elapsed; 329,488 KiB maximum RSS), plus compile checks, diff hygiene,
+clean status, and all four frozen-hash checks. The first combined hash command
+used incorrect paths from the scratch worktree; the corrected absolute paths
+matched. E0b remains unapproved, so no measurement or promotion opened;
+E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+# 2026-08-18 20:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b` passed focused E0/coding-core tests 12/12,
+required discovery 283/283, compile checks, diff hygiene, clean status, and
+the four frozen hashes. `DECISIONS.md` still records no E0b approval. No new
+measurement or promotion is authorized; E1/E5b remain closed, E3 binding,
+and OmegaSim paused.
+Status at 2026-08-19 08:39 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declaration plus coding-core suites 12/12 in 0.142 s (0.22 s
+elapsed; 19,500 KiB maximum RSS), required discovery 283/283 in 45.753 s
+(46.90 s elapsed; 332,768 KiB maximum RSS), compile checks, diff hygiene,
+clean status, and all four frozen-hash checks. `DECISIONS.md` still records no
+E0b approval, so no measurement or promotion opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.

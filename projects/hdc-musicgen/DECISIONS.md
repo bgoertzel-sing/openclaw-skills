@@ -100,3 +100,31 @@ warnings at any sample size.
 Commit `7afd4c4` implements and tests the amended gate. Provisioning remains
 conditional on the specifically approved RTX 3090 being live at a price within
 the four-hour/USD-3 bound; no substitute is authorized.
+
+## D-20260731-direct-recurrence-gate: Measure recurrence directly in Stage S
+
+- Date: `2026-07-31`
+- Status: `accepted prospectively`
+- Decision owner: Benjamin Goertzel (Telegram message 15337)
+- Related run/commit: `experiments/20260731T004101Z-persistence-proxy-calibration/`;
+  `experiments/20260731T004951Z-direct-recurrence-gate-validation/`; `74287d9`
+
+### Decision
+
+Replace Stage 0's adjacent-token persistence threshold with corpus coverage
+and codec-token integrity checks. Retain persistence as a diagnostic. Use
+cross-window chroma recurrence in Stage S as the direct corpus-structure gate:
+RELATED spans require similarity at least 0.80 outside the local window, and
+RELATED-minus-UNRELATED mean similarity must be at least 0.15 before Stage A.
+
+### Rationale and evidence
+
+Triplicating every r5 code sequence made recurrence exact but changed
+adjacent-token persistence by at most `6.56e-06`; the old statistic therefore
+does not identify long-range structure. The replacement passes exact-repeat
+versus nonrepeat controls and the 20-test local suite.
+
+### Consequences
+
+This does not reinterpret the r5 failure or authorize paid compute. Any future
+run must use the new source, rerun Stage 0, and pass Stage S before Stage A.

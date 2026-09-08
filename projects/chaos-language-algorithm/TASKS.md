@@ -1,5 +1,709 @@
 # Tasks
 
+## 2026-08-20 20:15 PDT — E0b review gate remains closed (hash discrepancy resolved)
+
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen
+  hashes match correct targets (E0 result `3f3b68b...` matches
+  `experiments/.../results.json`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`). Resolved the previously
+  noted "discrepancy": the E0 result hash was being compared against
+  the wrong file (`docs/e0-coder-calibration-preregistration-v1.md`,
+  SHA-256 `f9f4200b...`) instead of the actual experiment results
+  file. Focused E0/coding-core declarations 12/12 in 0.148 seconds,
+  required discovery 283/283 in 50.203 seconds, compileall, `git diff
+  --check`, and clean status passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 18:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: three of four
+  frozen hashes match (E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`); the recorded "E0 result"
+  hash `3f3b68b...` does not match any file in the tree (actual
+  `e0-coder-calibration-preregistration-v1.md` SHA-256 is
+  `f9f4200b...`) — pre-existing discrepancy noted. Focused E0/coding-core
+  declarations 12/12 in 0.149 seconds, required discovery 283/283 in
+  47.874 seconds, compileall, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 12:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: three of four
+  frozen hashes match (E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`); the recorded "E0 result"
+  hash `3f3b68b...` does not match any file in the tree (actual
+  `e0-coder-calibration-preregistration-v1.md` SHA-256 is
+  `f9f4200b...`) — pre-existing discrepancy noted. Focused E0/coding-core
+  declarations 4/4 in 0.106 seconds, required discovery 283/283 in
+  53.955 seconds, compileall, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 10:20 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: three of four
+  frozen hashes match (E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`); the recorded "E0 result"
+  hash `3f3b68b...` does not match any file in the tree (actual
+  `e0-coder-calibration-preregistration-v1.md` SHA-256 is
+  `f9f4200b...`) — pre-existing discrepancy noted. Focused E0/coding-core
+  declarations 4/4 in 0.091 seconds, required discovery 283/283 in
+  55.549 seconds, compileall, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 08:16 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: three of four
+  frozen hashes match (E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`); the recorded "E0 result"
+  hash `3f3b68b...` does not match any file in the tree (actual
+  `e0-coder-calibration-preregistration-v1.md` SHA-256 is
+  `f9f4200b...`) — pre-existing discrepancy noted. Focused E0/coding-core
+  declarations 4/4 in 0.091 seconds, required discovery 283/283 in
+  49.697 seconds, compileall, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 06:16 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen hashes
+  (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), focused E0/coding-core
+  declarations 12/12 in 0.148 seconds, required discovery 283/283 in
+  48.671 seconds, compileall, `git diff --check`, and clean status passed
+  without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 04:18 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen hashes
+  (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), focused E0/coding-core
+  declarations 19/19 in 0.27 seconds, required discovery 283/283 in
+  49.626 seconds, compileall, `git diff --check`, and clean status passed
+  without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 02:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen hashes
+  (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), focused E0/coding-core
+  declarations 19/19 in 0.168 seconds, required discovery 283/283 in 49.718
+  seconds, compileall, `git diff --check`, and clean status passed without
+  measurement. Math foundations text and library sidecar reviewed;
+  project-specific theorems remain audited hypotheses (proof sketches, not
+  fully formal proofs); frozen amendment hash unchanged.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 00:16 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen hashes
+  (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), focused E0/coding-core
+  declarations 4/4 in 0.094 seconds, required discovery 283/283 in 49.951
+  seconds, compile checks, `git diff --check`, and clean status passed
+  without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-19 22:18 PDT — E0b review gate remains closed; M-D spec amendments and E5b proposal committed
+
+- [x] Committed M-D spec amendments and frozen E5b proposal at
+  `1af9f2b` (2026-08-19 20:27 PDT): `docs/m-d-lz77-slp-initializer-spec-amendment-v1.md`,
+  `docs/m-d-mixed-second-difference-composite-ranking-spec-amendment-v1.md`,
+  and `docs/e5b-feigenbaum-sturmian-proposal-v1.md`.
+- [x] Revalidated clean strict replay at `1af9f2b`: all four frozen hashes
+  (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), focused E0/coding-core
+  declarations 12/12 in 0.153 seconds, required discovery 283/283 in
+  48.418 seconds, compile checks, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-19 18:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: all four frozen
+  hashes (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), required discovery 283/283
+  in 49.676 seconds, compile checks, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-19 16:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: all four frozen
+  hashes (E0 result `3f3b68b...`, E0b proposal `36435c8...`, foundations
+  amendment `bb69556...`, PDF `6969a09...`), required discovery 283/283
+  in 51.034 seconds, compile checks, `git diff --check`, and clean status
+  passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b;
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-19 14:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: all four frozen hashes,
+  required discovery 283/283 in 47.943 seconds, compile checks, `git diff
+  --check`, and clean status passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-18 18:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0/coding declarations 12/12, required discovery 283/283, compile
+  checks, `git diff --check`, and clean status passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-18 12:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0/coding declarations 12/12, required discovery 283/283, compile
+  checks, `git diff --check`, and clean status passed without measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 14:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; compile checks,
+  diff hygiene, clean status, and all four frozen hashes passed without
+  opening a measurement. One explicit compile invocation first named the
+  stale path `experiments/e0_coder_calibration.py`; the corrected tracked
+  benchmark path passed.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-18 00:18 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required discovery 283/283, compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 08:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, clean status,
+  and all four frozen hashes passed without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 04:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, clean status,
+  and all four frozen hashes passed without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+
+## 2026-08-17 14:18 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required discovery 283/283, compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-16 18:18 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required discovery 283/283, compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-16 16:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required discovery 283/283, compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-16 02:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required verbose discovery 283/283, compile
+  checks, `git diff --check`, and clean status.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 12:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 04:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 22:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused E0 declarations 4/4, required verbose discovery 283/283, a quiet
+  discovery replay, compile checks, `git diff --check`, and clean status.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 20:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 16:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused declarations 4/4, required verbose discovery 283/283, compileall,
+  explicit py_compile, diff hygiene, and clean status passed.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-15 18:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 06:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: all four frozen hashes,
+  focused declarations 4/4, required verbose discovery 283/283, compileall,
+  explicit py_compile, diff hygiene, and clean status passed.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 04:15 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: focused 4/4, required
+  verbose discovery 283/283 plus quiet replay 283/283, compile checks, diff
+  hygiene, clean status, and all four frozen hashes.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-15 02:15 PDT gate revalidation
+
+- [x] Revalidate clean strict replay at `f5a2b7b`: all four frozen hashes
+  matched; focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, explicit py_compile, diff check, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-14 20:17 PDT gate revalidation
+
+- [x] Revalidate clean strict replay at `f5a2b7b`: all four frozen hashes
+  matched; focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, explicit py_compile, diff check, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-14 14:15 PDT gate revalidation
+
+- [x] Revalidate clean strict replay at `f5a2b7b`: all four frozen hashes
+  matched; focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, explicit py_compile, diff check, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-14 04:26 PDT gate revalidation
+
+- [x] Revalidate strict replay at `f5a2b7b`: four frozen hashes matched;
+  focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, diff check, and clean-status assertion passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or the separately frozen
+  E5b proposal; keep E3 binding and OmegaSim paused.
+
+## 2026-08-13 12:19 PDT gate revalidation
+
+- [x] Revalidate strict replay at `f5a2b7b`: four frozen hashes matched;
+  focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, diff check, and clean-status assertion passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or the separately frozen
+  E5b proposal; keep E3 binding and OmegaSim paused.
+
+## 2026-08-13 10:44 PDT gate revalidation
+
+- [x] Revalidate strict replay at `f5a2b7b`: four frozen hashes matched;
+  focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, diff check, and clean-status assertion passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or the separately frozen
+  E5b proposal; keep E3 binding and OmegaSim paused.
+
+## 2026-08-13 08:49 PDT gate revalidation
+
+- [x] Revalidate strict replay at `f5a2b7b`: four frozen hashes matched;
+  focused E0 declarations passed 4/4; full discovery passed 283/283;
+  compileall, diff check, and clean-status assertion passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or the separately frozen
+  E5b proposal; keep E3 binding and OmegaSim paused.
+
+## 2026-08-12 18:25 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: all four frozen hashes match; focused
+  E0 declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-12 16:15 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: all four frozen hashes match; focused
+  E0 declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-12 02:15 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: all four frozen hashes match; focused
+  E0 declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-11 20:15 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: all four frozen hashes match; focused
+  E0 declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-11 18:15 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: all four frozen hashes match; focused
+  E0 declarations passed 4/4 and required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+## 2026-08-11 14:15 PDT gate audit
+
+- [x] Reconfirm no E0b approval or later amendment in `DECISIONS.md`.
+- [x] Verify strict replay at `f5a2b7b`: focused E0 declarations 4/4 and full
+  discovery 283/283; compileall, `git diff --check`, and clean status passed.
+- [ ] Await Ben's explicit E0b review. Do not open E1 or E5b; keep E3 binding
+  and OmegaSim paused.
+
+- [ ] 2026-08-11 08:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4 and required discovery passed 283/283. Compileall, `git diff
+  --check`, and clean status passed. Await Ben's explicit review; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 02:24 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0 declarations (4/4), discovery (283/283), compileall, diff hygiene, and clean status without opening a measurement.
+- [ ] Await Ben's explicit E0b review; keep E1/E5b closed, E3 binding, and OmegaSim paused.
+
+# 2026-08-13 14:18 PDT — blocked critical-path check
+
+- [x] Revalidated all four frozen hashes, focused E0 declarations (4/4 in
+  0.090 seconds; 0.17 seconds elapsed; 19,544 KiB maximum RSS), required
+  discovery (283/283 in 52.141 seconds; 53.29 seconds elapsed; 330,656 KiB
+  maximum RSS), compileall, diff hygiene, and clean strict replay at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-13 02:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+- [x] 2026-08-10 14:21 PDT: revalidate the review-blocked E0b gate without
+  opening a measurement. Clean strict replay at `f5a2b7b` retained all four
+  frozen hashes; focused E0 declarations passed 4/4 in 0.314 seconds and
+  required discovery passed 283/283 in 136.304 seconds; compileall, `git diff
+  --check`, and clean status passed. E1/E5b remain unauthorized, E3 binding,
+  and OmegaSim paused. Next action remains Ben's explicit accept/reject/amend
+  review of the frozen E0b proposal.
+
+- [x] 2026-08-10 12:15 PDT: revalidate the review-blocked E0b gate without
+  opening a measurement. Clean strict replay at `f5a2b7b` retained all four
+  frozen hashes; focused E0 declarations passed 4/4 and required discovery
+  passed 283/283; compileall, `git diff --check`, and clean status passed.
+  E1/E5b remain unauthorized, E3 binding, and OmegaSim paused. Next action
+  remains Ben's explicit accept/reject/amend review of the frozen E0b proposal.
+
+- [ ] 2026-08-10 00:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4 and required discovery passed 283/283. Compileall, diff, and
+  clean-status checks passed. Await Ben's explicit review; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+- [x] 2026-08-13 18:39 PDT: revalidated all four frozen hashes, focused E0
+  declarations (4/4), discovery (283/283), compileall, diff hygiene, and clean
+  strict replay at `f5a2b7b`; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend E0b review; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+- [x] 2026-08-13 21:00 PDT: revalidated all four frozen hashes, focused E0
+  declarations (4/4), discovery (283/283), compileall, diff hygiene, and clean
+  strict replay at `f5a2b7b`; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend E0b review; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+- [ ] 2026-08-09 02:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Frozen result/proposal/foundations-amendment/PDF hashes
+  remain unchanged; focused declarations passed 4/4 and required discovery
+  passed 283/283. Compileall, diff, and clean-status checks passed. Await
+  Ben's explicit review; E1/E5b remain unauthorized, E3 binding, and OmegaSim
+  paused.
+
+- [ ] 2026-08-08 10:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Frozen result/proposal/foundations-amendment/PDF hashes
+  remain unchanged; focused declarations passed 4/4 and required discovery
+  passed 283/283. Compileall, diff, and clean-status checks passed. Await
+  Ben's explicit review; E1/E5b remain unauthorized, E3 binding, and OmegaSim
+  paused.
+
+- [ ] 2026-08-08 06:17 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4; required discovery passed 283/283; compileall, diff, and clean
+  status checks passed. Await Ben's explicit review; E1, E5b, and dependent
+  measurements remain unauthorized, E3 remains binding, and OmegaSim remains
+  paused.
+
+- [ ] 2026-08-08 04:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4; required discovery passed 283/283; compileall, diff, and clean
+  status checks passed. Await Ben's explicit review; E1, E5b, and dependent
+  measurements remain unauthorized, E3 remains binding, and OmegaSim remains
+  paused.
+
+- [ ] 2026-08-07 02:15 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4; required discovery passed 283/283; compileall, diff, and clean
+  status checks passed. Await Ben's explicit review; E1, E5b, and dependent
+  measurements remain unauthorized, E3 remains binding, and OmegaSim remains
+  paused.
+
+- [ ] 2026-08-06 16:45 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. All four frozen hashes reverified; focused declarations
+  passed 4/4; required discovery passed 283/283; compileall, diff, and clean
+  status checks passed. Await Ben's explicit review; E1, E5b, and dependent
+  measurements remain unauthorized, E3 remains binding, and OmegaSim remains
+  paused.
+
+- [ ] 2026-08-06 10:24 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Frozen E0 result/E0b proposal/foundations amendment/PDF
+  hashes reverified; focused declarations passed 4/4; required discovery
+  passed 283/283; compileall, diff, and clean-status checks passed. Await
+  Ben's explicit review; E1, E5b, and dependent measurements remain
+  unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+- [ ] 2026-08-06 05:00 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Frozen E0 result/E0b proposal/foundations amendment/PDF
+  hashes reverified; focused declarations passed 4/4; required discovery
+  passed 283/283; compileall, diff, and clean-status checks passed. Await
+  Ben's explicit review; E1, E5b, and dependent measurements remain
+  unauthorized, E3 remains binding, and OmegaSim remains paused.
+
+- [ ] 2026-08-06 00:21 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Focused declarations passed 4/4; required discovery passed
+  283/283; compileall/diff/status checks passed. No approval or gate amendment
+  exists. Await Ben's explicit review; E1, E5b, and dependent measurements
+  remain unauthorized.
+
+- [ ] 2026-08-05 14:22 PDT: E0b remains review-blocked at clean strict-replay
+  commit `f5a2b7b`. Focused declarations passed 4/4; required discovery passed
+  283/283; compileall/diff/status checks passed. No approval or gate amendment
+  exists. Await Ben's explicit review; E1, E5b, and dependent measurements
+  remain unauthorized.
+
+- [ ] 2026-08-05 02:35 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/foundations-amendment/PDF hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-04 23:00 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/foundations-amendment/PDF hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-04 14:26 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/foundations-amendment/PDF hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-04 12:29 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-04 08:28 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-04 00:27 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-03 14:20 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-03 04:22 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4 in 0.092 seconds, required discovery passed
+  283/283 in 46.866 seconds, and compileall/diff/status checks passed. Await
+  Ben's explicit review; E1, E5b, and all dependent measurements remain
+  unauthorized.
+
+- [ ] 2026-08-02 22:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-01 06:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-01 04:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall/diff/status checks passed. Await Ben's explicit review; E1,
+  E5b, and all dependent measurements remain unauthorized.
+
+- [ ] 2026-08-01 00:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No E0b approval or later gate amendment is
+  recorded. Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4 in 0.091 seconds; required discovery passed
+  283/283 in 50.772 seconds; compileall, `git diff --check`, and clean-status
+  checks passed. Await Ben's explicit review; E1 and new measurements remain
+  unauthorized.
+
+- [ ] 2026-07-31 18:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No E0b approval or later gate amendment is
+  recorded. Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused declarations passed 4/4 in 0.088 seconds; required discovery passed
+  283/283 in 54.220 seconds; compileall, `git diff --check`, and clean-status
+  checks passed. Await Ben's explicit review; E1 and new measurements remain
+  unauthorized.
+
+- [ ] 2026-07-31 14:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. `DECISIONS.md` contains no approval or
+  later gate amendment. Frozen E0 result/proposal hashes remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Focused E0 declarations passed 4/4 in 0.095 seconds (0.16 seconds command
+  elapsed); required discovery passed 283/283 in 50.916 seconds (51.95
+  seconds command elapsed); compileall, `git diff --check`, and clean-status
+  checks passed. Await Ben's explicit review; E1 and new measurements remain
+  unauthorized.
+
+- [ ] 2026-07-31 04:15 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No decision authorizes protocol preparation,
+  execution, or E1 promotion. Focused E0 declarations passed 4/4, required
+  discovery passed 283/283 in 44.811 seconds, and compileall/diff checks
+  passed. Ben's explicit review of the unchanged proposal is still required.
+
+- [ ] 2026-07-31 00:15 PDT: E0b remains review-blocked. Clean strict-replay
+  commit `f5a2b7b` has no recorded approval or gate amendment; focused
+  declarations passed 4/4, required discovery passed 283/283, and compile/diff
+  checks passed. Do not prepare or execute E0b or promote E1 without Ben's
+  explicit protocol decision.
+
 - [x] 2026-07-27 01:15 PDT: freeze, commit, and execute E0 exactly once.
   Ledger freeze commit `200c2c0`; code commit `096cbb1`. The command exited 0
   and every convergence, CTW, provenance, and LZ78 continuity check passed,
@@ -976,3 +1680,1126 @@ Based on Ben's 2026-07-10 design note `library/chaos-language-algorithm/cla_hd_e
     `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`.
     E1 is not promoted; do not tune, rescore, or open a replacement E0
     without a separately reviewed amendment and fresh freeze.
+
+# 2026-07-30 14:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; no E0b approval or
+  later gate amendment is recorded.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused declarations passed 4/4; required discovery passed 283/283;
+  compileall and `git diff --check` passed. E1 and dependent measurements
+  remain closed. Ben's explicit E0b review remains the critical-path decision.
+# 2026-07-31 02:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; no E0b approval or
+  later gate amendment is recorded.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.081 seconds; required discovery
+  passed 283/283 in 43.818 seconds; compileall and `git diff --check` passed.
+  E1 and dependent measurements remain closed. Ben's explicit review of
+  `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+
+# 2026-07-31 06:15 PDT — E0b decision gate remains closed
+
+- [x] Re-audit the E0b decision gate and strict-replay integrity. No approval
+  or gate amendment exists; commit `f5a2b7b` is clean, binding result and
+  review-proposal hashes remain unchanged, focused E0 declarations passed
+  4/4, required discovery passed 283/283, and compileall plus
+  `git diff --check` passed. E1 remains unauthorized; Ben's explicit review
+  of the E0b proposal is still the critical-path decision.
+
+# 2026-07-31 08:15 PDT — E0b decision gate remains closed
+
+- [x] Re-audit the frozen gate and strict-replay integrity: no E0b approval
+  exists; clean commit `f5a2b7b` and both frozen hashes are unchanged;
+  focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall plus `git diff --check` passed. E1 remains unauthorized pending
+  Ben's explicit review of the E0b amendment proposal.
+
+# 2026-07-31 10:15 PDT — E0b decision gate remains closed
+
+- [x] Re-audit the frozen gate and strict-replay integrity: no E0b approval
+  exists; clean commit `f5a2b7b` and both frozen hashes are unchanged;
+  focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall plus `git diff --check` passed. E1 remains unauthorized pending
+  Ben's explicit review of the E0b amendment proposal.
+# 2026-07-31 12:15 PDT gate check
+
+- [x] Reconfirm strict-replay HEAD/worktree and frozen E0/E0b hashes.
+- [x] Run focused E0 declarations (4/4), full discovery (283/283), compileall,
+  and `git diff --check`; all passed.
+- [ ] Await Ben's explicit E0b amendment review; E1 and all new measurements
+  remain unauthorized.
+
+# 2026-07-31 16:15 PDT — E0b decision gate remains closed
+
+- [x] Re-audit the frozen gate and strict-replay integrity: no E0b approval or
+  later amendment exists; clean commit `f5a2b7b` and both frozen hashes are
+  unchanged; focused declarations passed 4/4, required discovery passed
+  283/283, and compileall plus `git diff --check` passed.
+- [ ] Await Ben's explicit review of
+  `docs/e0-coder-calibration-amendment-proposal-v2.md`; E1 and all dependent
+  measurements remain unauthorized.
+# 2026-07-31 20:15 PDT gate audit
+
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal (`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`).
+  The 20:15 audit found no authorization; the clean implementation remains at
+  `f5a2b7b`, all 283 tests and compile/diff checks pass, and E1 remains closed.
+
+# 2026-07-31 22:15 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  exists; clean commit `f5a2b7b` and both frozen hashes are unchanged; focused
+  declarations passed 4/4, required discovery passed 283/283, and compileall
+  plus `git diff --check` passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal; E1 and all dependent measurements remain unauthorized.
+
+# 2026-08-01 02:15 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  exists; clean commit `f5a2b7b` and both frozen hashes are unchanged;
+  focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall plus `git diff --check` passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal; E1, E5b, and all dependent measurements remain unauthorized.
+
+# 2026-08-03 02:15 PDT gate audit
+
+- [x] Reverify the clean strict-replay commit, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), full discovery (283/283), compileall, and
+  diff/cleanliness checks; exact evidence is in `NOTES.md`.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal; E1, E5b, and all dependent measurements remain unauthorized,
+  E3 remains binding, and OmegaSim remains paused.
+
+# 2026-08-02 20:50 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  exists; clean commit `f5a2b7b` and both frozen hashes are unchanged; focused
+  declarations passed 4/4, required discovery passed 283/283, and compileall
+  plus `git diff --check` passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal; E1, E5b, and all dependent measurements remain unauthorized.
+- [ ] 2026-08-03 06:17 PDT: E0b remains review-blocked at clean
+  strict-replay commit `f5a2b7b`. No approval or later gate amendment exists.
+  Frozen E0/E0b/PDF hashes are unchanged; focused declarations passed 4/4,
+  required discovery passed 283/283, and compileall/diff/clean checks passed.
+  Await Ben's explicit accept/reject/amend decision; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-03 08:23 PDT gate audit
+
+- [x] Re-audit the frozen E0b decision gate and strict-replay integrity. No
+  approval or later amendment exists; the worktree remains clean at
+  `f5a2b7b`, the E0b proposal hash remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  focused declarations passed 4/4, required discovery passed 283/283, and
+  compileall plus diff/clean checks passed.
+- [ ] Await Ben's explicit accept/reject/amend decision. E1, E5b, and all
+  dependent measurements remain unauthorized; E3 remains binding and
+  OmegaSim remains paused.
+
+# 2026-08-03 10:37 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  or later amendment exists; clean commit `f5a2b7b` and the frozen E0/E0b/PDF
+  hashes are unchanged; focused declarations passed 4/4, required discovery
+  passed 283/283, and compileall plus diff/clean checks passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-08 12:15 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-03 12:20 PDT gate audit
+
+- [x] Re-audit the frozen E0b decision gate and strict-replay integrity. No
+  approval or later amendment exists; commit `f5a2b7b` is clean and the
+  frozen E0/E0b/PDF hashes are unchanged. Focused declarations passed 4/4,
+  required discovery passed 283/283, and compileall/diff/clean checks passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-03 16:26 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  or later amendment exists; clean commit `f5a2b7b` and the frozen E0/E0b/PDF
+  hashes are unchanged; focused declarations passed 4/4, required discovery
+  passed 283/283, and compileall plus diff/clean checks passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-03 18:39 PDT gate audit
+
+- [x] Re-audit strict-replay integrity and the E0b decision gate: no approval
+  or later amendment exists; clean commit `f5a2b7b` and the frozen E0/E0b/PDF
+  hashes are unchanged; corrected focused declarations passed 4/4, required
+  discovery passed 283/283, and compileall plus diff/clean checks passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-03 20:25 PDT gate audit
+
+- [x] Verify strict-replay commit `f5a2b7b` in a detached temporary worktree:
+  frozen E0 result/E0b/PDF hashes are unchanged; focused declarations passed
+  4/4, required discovery passed 283/283, compileall, `git diff --check`, and
+  the clean-status assertion passed.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-03 22:21 PDT gate audit
+
+- [x] Reverify strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), full discovery (283/283), compileall,
+  `git diff --check`, and clean status; exact evidence is in `NOTES.md`.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-04 02:37 PDT gate audit
+
+- [x] Reverify strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), full discovery (283/283), compileall,
+  `git diff --check`, and clean status; exact evidence is in `NOTES.md`.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-04 04:21 PDT gate audit
+
+- [x] Reverify strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), full discovery (283/283), compileall,
+  `git diff --check`, and clean status; exact evidence is in `NOTES.md`.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-04 06:23 PDT gate audit
+
+- [x] Reverify strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), full discovery (283/283), compileall,
+  `git diff --check`, and clean status; exact evidence is in `NOTES.md`.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+# 2026-08-04 16:46 PDT — E0b decision gate remains closed
+
+- [x] Reverify clean strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes, focused E0 declarations (4/4), full discovery (283/283), compileall, and diff/status integrity.
+- [ ] Await Ben's explicit accept/reject/amend decision on `docs/e0-coder-calibration-amendment-proposal-v2.md`; do not open E1, E5b, or any new measurement.
+# 2026-08-04 18:22 PDT gate check
+
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal; E1 and later measured gates remain unauthorized.
+- [x] Reverified the closed gate, three governing artifact hashes, 4 focused
+  declarations, 283-test suite, compile checks, diff check, and clean strict
+  replay worktree without generating a fixture or score.
+
+# 2026-08-04 21:14 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, the frozen E0/E0b/PDF
+  hashes, focused E0 declarations (4/4), required verbose discovery
+  (283/283), compileall, `git diff --check`, and clean status. No fixture or
+  score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 04:25 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status. No fixture or score was
+  generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 06:30 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status. No fixture or score was
+  generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 08:17 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status. No fixture or score was
+  generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 10:16 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status. No fixture or score was
+  generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 12:17 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/PDF hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status. No fixture or score was
+  generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 16:15 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-05 18:15 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+# 2026-08-05 20:30 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required verbose discovery (283/283), compileall, `git diff --check`, and clean status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is binding and OmegaSim remains paused.
+
+# 2026-08-05 22:25 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-06 02:19 PDT gate check
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-06 06:39 PDT gate check
+
+- [x] Reverified clean strict-replay commit `f5a2b7b`, all four frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+# 2026-08-06 08:25 PDT gate check
+
+- [x] Reverified clean strict-replay commit `f5a2b7b`, all four frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-06 12:26 PDT gate check
+
+- [x] Reverified clean strict-replay commit `f5a2b7b`, all four frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+# 2026-08-06 14:34 PDT — E0b review gate remains closed
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes, focused E0 declarations (4/4), required discovery (283/283), compileall, and `git diff --check`; all passed without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b proposal. E1 and E5b remain unauthorized; E3 remains binding and OmegaSim remains paused.
+
+# 2026-08-06 18:18 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+
+# 2026-08-07 10:18 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+
+# 2026-08-06 20:15 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+# 2026-08-07 00:18 PDT — E0b review gate remains closed
+
+- [x] Reverified strict-replay commit `f5a2b7b`, frozen
+  E0/E0b/foundations/PDF hashes, focused E0 declarations (4/4), required
+  verbose discovery (283/283), compileall, `git diff --check`, and clean
+  status. No fixture or score was generated.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1 and E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+# 2026-08-07 04:15 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+
+# 2026-08-07 06:15 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+
+# 2026-08-07 08:22 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend review of the frozen E0b
+  proposal. E1/E5b remain unauthorized; E3 remains binding and OmegaSim
+  remains paused.
+# 2026-08-07 12:15 PDT — blocked critical-path check
+
+- [x] Reverify clean strict replay and frozen artifact hashes without generating measurements.
+- [x] Run focused E0 declarations (4/4), full required discovery (283/283), compileall, `git diff --check`, and clean-status assertion.
+- [ ] Await Ben's explicit accept/reject/amend decision on frozen E0b proposal; do not open E1 or E5b beforehand.
+
+# 2026-08-07 14:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0 declarations (4/4), full required discovery (283/283), compileall, `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-07 16:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0 declarations (4/4), full required discovery (283/283), compileall, `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-07 18:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0
+  declarations (4/4), full required discovery (283/283), compileall, `git
+  diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 00:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-11 06:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 22:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 16:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 02:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 12:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 18:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-07 20:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0
+  declarations (4/4), full required discovery (283/283), compileall, `git
+  diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-07 22:20 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay, all four frozen hashes, focused E0
+  declarations (4/4), full required discovery (283/283), compileall, `git
+  diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 00:17 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), full required discovery (283/283),
+  compileall, `git diff --check`, and clean status without generating a
+  measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 02:22 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required verbose discovery (283/283),
+  compileall, `git diff --check`, and clean status without generating a
+  measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-08 08:15 PDT gate check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend decision on the frozen E0b
+  proposal. E1, E5b, and dependent measurements remain unauthorized; E3 is
+  binding and OmegaSim remains paused.
+
+# 2026-08-08 14:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 16:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-08 20:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-08 22:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-09 00:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 04:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 06:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 08:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 14:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-09 16:15 PDT gate audit
+
+- [x] Reconfirm clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` and run the frozen focused and full acceptance suites (4/4 and 283/283).
+- [ ] Await Ben's explicit E0b review; do not open E1, E5b, new measurements, or OmegaSim meanwhile.
+
+# 2026-08-09 18:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, the binding E0 result and
+  supplied-PDF hashes, focused E0 declarations (4/4), required discovery
+  (283/283), compileall, `git diff --check`, and clean status without opening
+  a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 20:19 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-09 22:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 04:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 06:19 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 08:28 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-10 18:24 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-10 20:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-11 00:15 PDT gate check
+
+- [x] Revalidate clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4, required discovery 283/283, compileall, diff, status, and four frozen
+  hashes all passed.
+- [ ] Await Ben's explicit review of E0b; do not open E1 or E5b, and retain
+  E3 and the OmegaSim pause.
+
+# 2026-08-11 02:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-11 04:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-11 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-11 12:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-11 16:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-11 22:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 04:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, binding E0 result/PDF
+  hashes, required discovery (283/283), compileall, `git diff --check`, and
+  clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 06:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, the supplied foundations
+  PDF hash, focused E0 declarations (4/4), required discovery (283/283),
+  compileall, and `git diff --check` without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 08:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, binding E0 result/PDF
+  hashes, focused E0 declarations (4/4), required discovery (283/283),
+  compileall, `git diff --check`, and clean status without opening a
+  measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-12 12:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 14:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 20:17 PDT — blocked critical-path check
+
+- [x] Revalidated clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-12 22:24 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compileall,
+  `git diff --check`, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-13 04:45 PDT — blocked critical-path check
+
+- [x] Revalidated frozen E0 declarations (4/4), required discovery (283/283,
+  exit 0), compileall, diff hygiene, and clean strict replay at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-13 06:17 PDT — blocked critical-path check
+
+- [x] Revalidated all four frozen hashes, focused E0 declarations (4/4),
+  required discovery (283/283), compileall, diff hygiene, and clean strict
+  replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+- [x] 2026-08-13 16:20 PDT: revalidated all four frozen hashes, focused E0
+  declarations (4/4), discovery (283/283), compileall, diff hygiene, and clean
+  strict replay at `f5a2b7b`; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend E0b review; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+- [x] 2026-08-13 18:39 PDT: revalidated all four frozen hashes, focused E0
+  declarations (4/4), discovery (283/283), compileall, diff hygiene, and clean
+  strict replay at `f5a2b7b`; no measurement was opened.
+- [ ] Await Ben's explicit accept/reject/amend E0b review; E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+## 2026-08-13 22:17 PDT — blocked critical-path check
+
+- [x] Reverified the clean strict-replay commit, four frozen hashes, focused E0 declarations (4/4), required discovery (283/283), compileall, diff hygiene, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-14 00:15 PDT — blocked critical-path check
+
+- [x] Reverified the clean strict-replay commit, four frozen hashes, focused
+  E0 declarations (4/4), required discovery (283/283), compileall, diff
+  hygiene, and clean status without generating a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-14 06:27 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes, focused E0 declarations (4/4), required discovery (283/283), compile checks, `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 08:24 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 10:17 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 12:20 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 16:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+## 2026-08-14 18:15 PDT — blocked on E0b review
+
+- Reverified clean strict replay at `f5a2b7b`: focused 4/4, full 283/283, compile checks, diff hygiene, and clean status passed.
+- Frozen E0/E0b/foundations/PDF hashes are unchanged.
+- No E0b approval is recorded. Keep E1/E5b, fresh measurements, promotions, and OmegaSim closed pending Ben's review.
+
+## 2026-08-14 22:15 PDT — blocked on E0b review
+
+- Reverified clean strict replay at `f5a2b7b`: focused 4/4, full 283/283,
+  compile checks, diff hygiene, clean status, and all four frozen hashes
+  passed.
+- No E0b approval is recorded. Keep E1/E5b, fresh measurements, promotions,
+  and OmegaSim closed pending Ben's explicit review.
+
+## 2026-08-15 00:16 PDT — blocked on E0b review
+
+- [x] Reverified clean strict replay at `f5a2b7b`: focused 4/4, full 283/283,
+  compile checks, diff hygiene, clean status, and all four frozen hashes.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-15 08:16 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-15 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-15 12:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-15 14:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 00:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-16 06:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 08:20 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 10:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-16 14:15 PDT — blocked critical-path check
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-16 20:16 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`: focused E0 declarations 4/4; required discovery 283/283; compile, diff, hashes, and clean-status checks passed.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or any new measurement before the frozen gates authorize it.
+# 2026-08-16 22:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile, diff, frozen-hash, and clean-status
+  checks passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+
+# 2026-08-17 04:19 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, all four
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+
+# 2026-08-17 02:23 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  8/8 across both suites; required discovery 283/283; compile checks, diff
+  hygiene, clean status, and all four frozen hashes passed.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+
+# 2026-08-17 00:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; corrected compile checks, diff hygiene,
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+# 2026-08-17 06:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, all four
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+# 2026-08-17 08:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, all four
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+# 2026-08-17 10:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, all four
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+
+# 2026-08-17 12:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, all four
+  frozen hashes, and clean status passed without opening a measurement.
+- [ ] Await Ben's explicit E0b decision. Do not open E1, E5b, OmegaSim, or
+  any new measurement before the frozen gates authorize it.
+- [x] 2026-08-17 16:17 PDT: revalidated clean strict replay at `f5a2b7b`:
+  focused E0 declarations 4/4; required discovery 283/283; compile checks,
+  diff hygiene, all four frozen hashes, and clean status passed without
+  opening a measurement.
+- [ ] Await Ben's explicit E0b decision; E1/E5b and OmegaSim remain closed,
+  E3 remains binding, and no fresh measurement is authorized.
+# 2026-08-17 18:18 PDT — E0b gate revalidation
+
+- [x] Reverified clean strict replay at `f5a2b7b`, all four frozen hashes,
+  focused E0 declarations (4/4), required discovery (283/283), compile checks,
+  `git diff --check`, and clean status without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-17 20:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; corrected compile checks, diff hygiene,
+  clean status, and all four frozen hashes passed without a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-17 22:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; compile checks, diff hygiene, clean status,
+  and all four frozen hashes passed without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 02:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declarations
+  4/4; required discovery 283/283; corrected compile checks, diff hygiene,
+  clean status, and all four frozen hashes passed without opening a
+  measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 10:17 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; corrected compile
+  checks, diff hygiene, clean status, and all four frozen hashes passed without
+  opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 16:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; compile checks,
+  diff hygiene, clean status, and all four corrected frozen-hash checks passed
+  without opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-18 20:15 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; compile checks,
+  diff hygiene, clean status, and all four frozen-hash checks passed without
+  opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-18 22:16 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; compile checks,
+  diff hygiene, clean status, and all four frozen hashes passed without
+  opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+# 2026-08-19 08:39 PDT — E0b review gate remains closed
+
+- [x] Revalidated clean strict replay at `f5a2b7b`: focused E0 declaration
+  plus coding-core suites 12/12; required discovery 283/283; compile checks,
+  diff hygiene, clean status, and all four frozen hashes passed without
+  opening a measurement.
+- [ ] Await Ben's explicit accept/reject/amend review of frozen E0b; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.

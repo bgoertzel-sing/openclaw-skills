@@ -32,11 +32,27 @@
   `YYYY-MM-DDTHH:MM:SSZ|ok|<short-hash>|<file-count>` committed after every
   push, so backup health is verifiable from the repo itself.
 
-- [ ] Restore check cadence: first Saturday of each month, rotating owner
-  between ZeroBot and ProtoMegaBot. Run clone + RESTORE.md walk + secret scan
-  + manifest completeness check. Report pass/fail per repo, patch stale
-  steps, verify LAST_BACKUP marker freshness. Event-driven supplement: re-run
-  drill on any RESTORE.md edit.
+- [x] Restore check cadence: first Saturday of each month, rotating owner
+  between ZeroBot and ProtoMegaBot. Formalized in `RESTORE_DRILL_CHECKLIST.md`
+  with pass/fail criteria, alert path, and per-repo checks. 2026-07-28.
+
+- [x] **2026-08-02:** First scheduled monthly restore drill completed one day
+  late by ProtomegaTron. Both recovery repositories passed all five checks;
+  evidence is in `drill-reports/2026-08-02.md`. Four non-blocking restoration-
+  documentation findings remain as follow-up work.
+
+- [x] **2026-08-03:** Verified live backup-cron failure-alert routing. Cron
+  `5ae59dd5-dfe3-4ace-999d-a08ca153325e` has success delivery disabled and a
+  separate failure alert configured after one error to ProtoBots-updates
+  (`telegram:-1003983157420`) with a 24-hour cooldown. The observed
+  `not-requested` status followed a successful run and is expected; it does not
+  indicate missing failure routing. A real failure delivery has not been
+  induced merely to test notification transport.
+
+- [x] Resolve the four non-blocking restore-documentation findings listed in
+  `drill-reports/2026-08-02.md`: two RESTORE.md paths, the missing
+  `conversation-governor` remote pointer, and 13 absolute symlinks. All four
+  closed at commit `adb1013` on 2026-08-06; see drill report action items.
 
 ## Later
 

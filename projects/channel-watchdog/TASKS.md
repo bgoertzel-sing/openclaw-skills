@@ -2,6 +2,15 @@
 
 ## Now
 
+- [x] Suppress public `attachment promise not fulfilled` alerts. Deliverable:
+  keep this heuristic out of watchdog channel output while preserving other
+  alert classes. Acceptance: a provider-free regression produces `NO_REPLY`
+  for an unfulfilled attachment promise and still emits a dropped-continuation
+  alert. Next command: run the focused watchdog tests. Evidence:
+  `tests/test_channel_watchdog.py`.
+  Completed 2026-08-07: 2/2 focused tests pass and a live local invocation
+  returned `NO_REPLY` despite the previously detected canary findings.
+
 - [x] Create project notebook (2026-07-07).
 - [x] Repair RunPod heartbeat alarm sensing after false zero-uptime alarms and
   destructive cleanup. Deliverable: deterministic read-only evidence fusion,

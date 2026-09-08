@@ -4,6 +4,26 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [ ] **Ben 2026-08-03: approved reliable CAROM rerun.** Deliverable: run the
+  frozen piecewise-vs-OneCycle protocol sequentially on a Secure high-stock A40
+  within 12 hours / USD 5.28, with atomic checkpoints and locally hash-verified
+  evacuation throughout execution. Acceptance: SSH-stability preflight, local
+  schedule/telemetry tests, and each retrieved checkpoint manifest pass; then
+  record a valid scientific disposition or an explicit fail-closed stop and
+  terminate the pod. Next command: freeze the new checkpoint-evacuation bundle
+  and run its provider-free failure-injection preflight. Evidence: new
+  20260803 reliable-rerun experiment directory.
+
+- [ ] **Ben 2026-08-02: repair CAROM for a reliable GPU rerun.** Deliverable:
+  freeze and test a runner that records the realized learning-rate schedule,
+  restores optimizer/scheduler state when claiming continuation, bounds
+  structural gain, validates artifact/heartbeat/termination behavior, and
+  passes a CPU injected-failure preflight. Acceptance: schedule regression and
+  scientific validators pass locally; immutable source bundle and hashes are
+  recorded; a current priced RunPod proposal is presented before provisioning.
+  Next command: inspect the invalid piecewise runner and its forensics fixture.
+  Evidence: a new CAROM rerun-preflight experiment.
+
 - [ ] Execute the approved GPT-2 piecewise-vs-OneCycle schedule experiment.
   Deliverable: two complete 12,000-update arms with frozen evaluations and
   checkpoints, hash-verified retrieved artifacts, gate disposition, and

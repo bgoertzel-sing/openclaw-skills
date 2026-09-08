@@ -590,6 +590,34 @@ seed-cluster paired bootstrap upper bound.
 If the oracle passes and `K` fails, classify `readout_not_calibrated`, not
 `HDC_law_failed`. If both fail, classify `instrument_failed`.
 
+#### P1-G2 interpretation contract v2 (authorized post-hoc repair, 2026-08-03)
+
+The sealed v1 return omitted oracle confirmation cells and a frozen mapping
+from P1A's `D_pred` to P1B conditions. Contract v2 repairs interpretation only;
+it does not amend or overwrite criteria v1 and is labeled
+`post_hoc_contract_repair_not_sealed_confirmation`.
+
+For each confirmation seed, `H`, and code arm, set `k=H`, retain the P1A F1/F3
+dictionary size `M=32`, and at each candidate P1B dimension set `nu_D` to the
+maximum adjacent feature-code coherence. Select the first frozen P1B dimension
+that satisfies
+
+```text
+D >= alpha_hat * H/(1-nu_D) * log(2*32/epsilon).
+```
+
+Reconstruct oracle calibration and confirmation scores from the exact frozen
+manifest and deterministic target-code generator. Select oracle thresholds on
+the existing calibration split; never use confirmation labels for selection.
+Pool closure Bernoulli events over seeds, hierarchy lengths, code arms, edges,
+and confirmation samples. The paired difference uses exact enumeration of all
+`5^5` seed-cluster bootstrap resamples. Source hashes, schemas, seeds, manifest,
+sample order, grid, cell count, and raw-array shapes are fail-closed inputs.
+
+This mapping is scientifically interpretable because P1A F1/F3 uses an
+`H`-child constructed hierarchy condition, but its post-hoc status must remain
+visible in every report.
+
 ### P1-G3: conditional near-duplicate scaling
 
 For F3:

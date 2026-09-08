@@ -1,131 +1,102 @@
 ---
 name: "persistent-subagent-orchestration"
-description: "Run delegated research tasks persistently with evidence, bounded checkpoints, and explicit model/compute escalation."
+description: "Persistent delegated work with durable approval continuity, bounded execution, evidence, and recovery."
 ---
 
 # Persistent Subagent Orchestration
 
 ## Default operating contract
 
-When a parent delegates a concrete research or engineering task, the child is **persistent by default**:
+When a parent delegates a concrete research or engineering task, the child is persistent by default:
 
 1. Complete the current safe, bounded step.
 2. Inspect the result and select the next smallest useful step toward the delegated objective.
 3. Continue without waiting for a parent prompt.
 4. Maintain a durable task/run record with commands, artifacts, tests, findings, and next action.
-5. Stop only at a terminal condition, a material blocker, a required authority decision, an explicit budget/quality threshold, or an operator cancellation.
+5. Stop only at a terminal condition, material blocker, required authority decision, explicit budget/quality threshold, or operator cancellation.
 
-A subagent must not stop merely because it has completed a preparatory step, created a plan, obtained partial results, or would benefit from an ordinary review.
+Do not stop after preparation, a plan, partial results, or routine review.
 
 ## Delegation contract
 
-Every persistent delegation records:
+Record:
 
 - objective and acceptance conditions;
 - project/repository and allowed paths;
 - permitted external effects;
-- current step and next step;
-- local-resource limits;
-- model/provider routing;
-- expected artifacts and verification;
+- current and next steps;
+- resource limits and model/provider routing;
+- artifacts and verification;
 - checkpoint cadence;
 - termination and escalation conditions.
 
-Use a durable queue/worker record for work spanning more than one model turn. A parent must have a way to inspect, pause, resume, cancel, and retrieve a concise status.
+Use a durable queue/worker record for multi-turn work. The parent must be able to inspect, pause, resume, cancel, and retrieve concise status.
+
+## Authority continuity and precedence
+
+Treat exact recorded operator approvals as durable capabilities, not one-turn hints.
+
+1. Record the approval source, scope, resource/provider, time and cost bounds, allowed data/effects, stop/cleanup conditions, and whether it is one-shot or ongoing.
+2. Revalidate that record at every activation before exercising it.
+3. A valid approval remains actionable across scheduler activations and session/model handoffs until:
+   - the approved action completes;
+   - the operator explicitly revokes or supersedes it;
+   - its expiry, resource, time, cost, or usage bound is reached; or
+   - observed state makes the approved action unsafe or impossible.
+4. Generic safety defaults such as "no paid compute without approval" do not negate a matching recorded approval. Resolve them as conditional guards: no paid compute unless approved.
+5. If an activation payload literally contradicts a matching standing approval, do not silently choose the more restrictive text and loop forever. Compare provenance and specificity:
+   - a newer explicit operator instruction overrides;
+   - an exact standing approval overrides a generic scheduler default;
+   - genuinely ambiguous or materially broadened scope is `BLOCKED_AUTHORITY`.
+6. Never broaden approval by analogy. Changes to provider, resource class/count, region, image, storage, price, duration, data policy, or external effects require fresh authority unless the recorded envelope expressly permits them.
+7. Record consumption and terminal state so completed one-shot authority cannot be reused.
 
 ## Step loop
 
-At each checkpoint, the child classifies the outcome:
+At each checkpoint classify:
 
-- **advance:** perform the next safe step immediately;
-- **repair:** diagnose and repair a failed narrow check, then retry;
-- **branch:** pursue the highest-value bounded alternative while preserving the failed path;
-- **escalate-model:** route one hard reasoning subproblem to an approved stronger model;
-- **escalate-compute:** propose remote computation according to the compute policy;
-- **block:** report only a material blocker requiring operator authority or unavailable capability;
-- **complete:** verify acceptance criteria, record evidence, and hand off.
+- **advance:** perform the next safe step;
+- **repair:** diagnose and retry a failed check;
+- **branch:** pursue a bounded alternative;
+- **escalate-model:** use an approved stronger route;
+- **escalate-compute:** propose remote compute or exercise a matching standing approval;
+- **block:** report only a material authority/capability blocker;
+- **complete:** verify acceptance, record evidence, and hand off.
 
-The parent should receive compact updates only on real milestones, changed risk, budget threshold, important failure, or completion—not a stream of “still working” messages.
+Updates go to the parent only for milestones, changed risk, budget thresholds, important failures, or completion.
 
-## Resource routing
+## Remote compute
 
-Use local resources first when adequate. If local CPU/RAM/runtime capacity is the limiting factor, evaluate Runpod or another approved remote provider.
+Use local resources first when adequate. Before unapproved paid compute, invoke the remote-compute guardrail and present provider/account, hardware/image/storage/region, expected and maximum cost/time, transfer plan, stop/termination behavior, and artifact return.
 
-Before provisioning paid or remote compute, invoke the remote-compute guardrail and present:
-
-- provider/account context;
-- hardware, image, storage, region;
-- expected duration and cost estimate;
-- data transfer and artifact-return plan;
-- stop/termination criteria;
-- consequences of stop vs. terminate.
-
-The autonomous spend budget is zero unless the operator has explicitly authorized a concrete remote job. Do not provision, start, resize, or retain paid resources until that authorization exists.
-
-If approved Runpod capacity is insufficient (hardware, availability, network/data policy, cost cap, or required capability), report the specific insufficiency and alternatives. Do not silently downgrade a task’s required model or compute class.
-
-## Model routing
-
-Honor task-specific model preferences. For substantive research writing/reasoning, do not silently fall back to a materially weaker model. If the preferred route is unavailable:
-
-1. retry transient availability failures within bounded backoff;
-2. use an explicitly approved fallback hierarchy;
-3. otherwise report the blockage and preserve the task for resumption.
+When an exact approval already exists, revalidate its scope and current provider state, create/update the remote-job ledger, then proceed without requesting duplicate approval. Monitor cost and health, retrieve and verify artifacts, and terminate as approved. If capacity is unavailable or the envelope cannot be honored, report the precise mismatch; do not silently substitute.
 
 ## Verification and evidence
 
-Before declaring completion:
+Before completion:
 
-- run the narrowest relevant tests/checks;
+- run relevant checks;
 - inspect outputs and diffs;
-- record exact commands, versions, commits, seeds, and artifacts as applicable;
-- update project/task records and a concise daily-memory pointer;
+- record commands, versions, commits, seeds, artifacts, approval provenance, resource IDs, cost, and cleanup evidence;
+- update project/task records, Kanban, and concise daily memory;
 - distinguish observed results from interpretation.
 
-## Kanban board visibility
+## Failure recovery
 
-Every persistent subagent must update the cross-project Kanban board (`catalog/KANBAN.md`) when it starts, reaches a milestone, or changes status. This is required for cross-project visibility — project-level `TASKS.md` files are authoritative for project detail, but the Kanban index is how the parent and operator see all active workers at a glance.
-
-On each meaningful state change:
-- add or update the subagent's card in the In Progress / Running lane with current status and next action;
-- move to Blocked / Needs Ben if blocked;
-- move to Done / Archived on completion.
-
-Read the Kanban board at start to check for conflicting or overlapping work before beginning.
-
-## Control commands
-
-The orchestrator exposes durable operations:
-
-- `status <task/run>`
-- `pause <task/run>`
-- `resume <task/run>`
-- `cancel <task/run>`
-- `prioritize <task/run>`
-- `set-budget <task/run>` (requires explicit authorization for paid compute)
-- `handoff <task/run>`
-
-## Tool failure and recovery
-
-When a tool call fails, do not stop and report the failure as a terminal outcome. Instead:
-
-1. **Classify the failure:** transient (timeout, rate-limit, connection-refused, provider-unavailable) vs. permanent (file-not-found, permission-denied, schema-violation, logic-error).
-2. **Transient failures:** retry with bounded backoff (e.g., 2s, 5s, 10s, then give up after 3 attempts). If the failure persists, try an alternative tool or approach that achieves the same goal.
-3. **Permanent failures:** diagnose the root cause, attempt a repair (fix the file, adjust the command, correct the schema), and retry. If the repair itself fails, escalate to `block` with a precise diagnosis.
-4. **Infrastructure outages** (e.g., provider relay unavailable, gateway restarting): record the partial state, wait briefly, and resume from the last checkpoint. Do not declare the task failed unless the outage persists beyond a reasonable bounded wait.
-5. Never silently swallow a failure and proceed as if the tool succeeded. Record the failure, the retry attempt, and the outcome.
+Classify tool failures as transient or permanent. Retry transient failures with bounded backoff and try an equivalent route. Diagnose and repair permanent failures where possible. Preserve state across infrastructure outages. Never swallow failures or turn one tool error into a terminal blocker while alternatives remain.
 
 ## Anti-patterns
 
 Do not:
 
-- stop after producing only a plan when implementation/experiment work remains;
-- await a parent "continue" after each ordinary step;
-- fabricate progress while a worker is idle;
-- allow endless looping without bounded checkpoints or cancellation;
-- use paid compute without explicit approval;
-- silently use a weaker model for a quality-sensitive task;
-- mutate unrelated worktrees or publish/push without task authorization;
-- **restate your assigned task or objective as your output** — if you find yourself summarizing or repeating the assignment back to the parent, stop immediately and execute the first concrete step instead. The parent already knows the task; they need the result;
-- **stop and report a single tool failure as a terminal blocker** when alternative approaches exist — retry, repair, or branch before escalating to `block`;
-- **emit a plan-only response when the assignment asks for implementation** — a plan is a preparatory step, not a deliverable. Proceed to implementation unless a material blocker genuinely prevents it.
+- stop after a plan when implementation remains;
+- ask "continue?" after ordinary steps;
+- fabricate progress while idle;
+- loop indefinitely on unchanged `BLOCKED_AUTHORITY`;
+- discard or ignore a valid standing approval at the next activation;
+- reuse completed, expired, revoked, or exhausted authority;
+- use paid compute beyond exact approval;
+- weaken model/compute requirements silently;
+- mutate unrelated worktrees or publish without authority;
+- restate the assignment instead of executing;
+- treat a single recoverable tool failure as terminal.

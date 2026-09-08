@@ -2529,3 +2529,53 @@ test, threshold, or decision changed. No provider, network, remote
 resource, corpus download, or paid action occurred. Any new MusicGen run
 still requires fresh explicit provider/resource/price/cost/time/data/stop
 authorization.
+
+## 2026-08-20 23:46Z — Scheduled post-commit closure audit (local only)
+
+Reviewed the durable notebook (PROJECT/TASKS/DECISIONS) and latest completed
+GPU run (`20260730T203550Z-full-corpus-r5`, fail-closed at Stage 0). At
+`eb39c96` on `agent/direct-recurrence-stage0-gate`: full local suite passed
+26/26 in 0.82 s; `git status --short` empty; `git diff --check` passed.
+Worktree runtime source SHA-256
+`e1da8a357a7abe6e410173708a1807c591d20d54c041a4a9e90a512df4cdf24a` is
+byte-identical to the immutable A40-retry bundle copy of
+`hdc_musicgen_structural.py`, whose `artifacts/` contains only `local-sync/`
+(no returned GPU artifacts). The explicit filesystem gate confirmed
+`smoke-r2/artifacts/` remains absent. Smoke-r2 remains terminally a
+no-result and the support-aware NLL policy remains frozen; no source, test,
+threshold, or decision changed. No provider, network, remote resource,
+corpus download, or paid action occurred. Any new MusicGen run still
+requires fresh explicit provider/resource/price/cost/time/data/stop
+authorization.
+
+## 2026-08-21 03:55Z — Scheduled closure audit + NLL-gate synthetic replay (local only)
+
+Reviewed the durable notebook (PROJECT/TASKS/DECISIONS) and the most recent
+completed GPU run (`20260726T043220Z-gpu-run`, fail-closed at smoke Stage A).
+At `eb39c96` on `agent/direct-recurrence-stage0-gate`: full local suite
+passed 26/26 in 0.83 s; `git status --short` empty; `git diff --check`
+passed. Worktree `hdc_musicgen_structural.py` SHA-256
+`e1da8a357a7abe6e410173708a1807c591d20d54c041a4a9e90a512df4cdf24a` is
+byte-identical to the immutable A40-retry bundle copy. The explicit
+filesystem gate confirmed `smoke-r2/artifacts/` remains absent.
+
+- **Bounded step:** direct synthetic replay of `stageA_gate()` covering all
+  frozen policy clauses (7 cases, all expectations held):
+  1. smoke-r1-like summary (RELATED n=12 in band, UNRELATED n=1 at
+     1.23--1.27) passes as support-insufficient (`['unrelated']`);
+  2. sparse stratum at 0.49 fails with `nll_alignment_bug_stop` true;
+  3. sparse stratum at 8.01 fails with `nll_alignment_bug_stop` true;
+  4. supported stratum missing the `full` aggregate fails with
+     `nll_missing_conditions == {'related': ['full']}` (the `41022d5`
+     hardening);
+  5. supported stratum at 6.5 fails the ordinary band without the alignment
+     stop;
+  6. NaN in a supported stratum fails with `nll_nonfinite_stop` true;
+  7. in-band two-stratum summary with RELATED gain 0.05 and UNRELATED gain
+     ~0.0007 passes cleanly.
+- **Result:** fail-closed gates verified against fresh synthetic evidence;
+  smoke-r2 remains terminally no-result and the support-aware NLL policy
+  (D-20260727) remains frozen/accepted. No source, test, threshold, or
+  decision changed. No provider, network, remote resource, corpus download,
+  or paid action occurred. Any new MusicGen run still requires fresh
+  explicit provider/resource/price/cost/time/data/stop authorization.

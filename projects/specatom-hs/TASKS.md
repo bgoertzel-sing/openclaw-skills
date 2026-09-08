@@ -1,5 +1,1015 @@
 # Tasks
 
+- [x] **Revise expanded report with purpose, benchmark guidance, and serial /
+  parallel plans (Ben, 2026-08-19)** — extend the latest PDF without pretending
+  the future benchmark specifications are already complete.
+  **Acceptance test:** the report explains the conceptual purpose and design
+  rationale, summarizes prototype lessons, gives detailed authoring guidance
+  for each prospective benchmark, and provides separate plans for one coding
+  agent and six parallel coding agents; LaTeX compiles and sampled pages are
+  visually readable.
+  **Evidence:**
+  `docs/plain2metta-architecture-and-worked-examples-expanded.{tex,pdf}` and
+  `experiments/20260819T153624Z-plain2metta-expanded-r2-compile/`.  Tectonic,
+  PDF metadata, text extraction, section-marker, and three-page visual checks
+  passed.  Revised PDF is 30 pages / 12,802 extracted words; SHA-256
+  `1c9d6a564bb3c73f84acea92dbcd34a8ad7244fc8ac387c02f9cf0ed4c34da88`.
+  Published with curated reproducibility records on branch
+  `agent/publish-expanded-report`, commit `f626dfe`, draft GitHub PR #4.
+
+- [ ] **Realistic Plain2Metta benchmark suite and parallel acceleration plan
+  (Ben, 2026-08-19)** — specify several substantially more complex, realistic
+  cases in enough detail to drive the next implementation phase, and replace
+  the implicit serial 6--8 week schedule with an explicit dependency graph for
+  parallel coding agents.
+  **Acceptance test:** a durable design document defines each case's Plain
+  problem, semantic obligations, desired Plain→IR→MeTTa/Lean/runtime evidence,
+  G0--G6 targets, acceptable Unknowns, adversarial mutations, fixtures, and
+  measurable exit criteria; it also states agent/worktree ownership,
+  prerequisite interfaces, integration cadence, critical path, realistic
+  compressed schedule, and the tests preventing parallel merge drift.
+  **Next command:** inventory existing general-pipeline seams and select a
+  balanced benchmark portfolio spanning stateful/concurrent, transactional,
+  temporal/numerical, and policy/epistemic semantics.
+  **Evidence path:**
+  `docs/plain2metta-realistic-benchmarks-and-parallel-roadmap.{tex,pdf}` and a
+  compilation/verification experiment record.
+
+- [x] **Expanded expository Plain2Metta architecture report (Ben,
+  2026-08-18)** — replace the terse five-page status memo with a frontier-model
+  authored, source-fact-checked tutorial/report for readers casually familiar
+  with Plain, MeTTa, and Lean 4 but new to the Plain2Metta process.
+  **Acceptance test:** revised LaTeX compiles to a substantially longer PDF;
+  explains the artifact pipeline and Stages 1--11 in detail; walks through all
+  three examples with concrete source/generated/runtime behavior; distinguishes
+  observed evidence from limitations; and both files are delivered to Ben.
+  **Next command:** launch the requested frontier-model drafting pass against
+  the merged source and experiment records, then fact-check and compile it.
+  **Evidence path:**
+  `docs/plain2metta-architecture-and-worked-examples-expanded.{tex,pdf}`.
+  Frontier-model draft was fact-checked against source and durable run records,
+  compiled successfully with Tectonic, and verified with `pdfinfo` and
+  `pdftotext`: 19 pages and 7,411 extracted words. SHA-256: PDF
+  `5ab5ea6b0cbd759b9ee8dee2cbf663d213d66180479ecc1d52c953ccc0609402`;
+  LaTeX `28042907ddc65c5afb0722c9de413789c8c98c72fb46d71ac6982ff3653d7cd0`.
+
+- [x] **Plain2Metta architecture and progress report in LaTeX/PDF (Ben,
+  2026-08-18)** — document what has been implemented, the current end-to-end
+  architecture, validation/evidence stages, deployment state, and the three
+  worked examples, using merged source and experiment records as evidence.
+  **Acceptance test:** the LaTeX source compiles without errors to a readable
+  PDF; both artifacts are stored under `docs/`, include exact current commit
+  and deployment status, and are delivered to Ben.
+  **Next command:** inspect merged source, worked-example fixtures, and Stage
+  11/deployment records, then draft and compile the report.
+  **Evidence path:** `docs/plain2metta-current-architecture-and-progress.tex`
+  and `docs/plain2metta-current-architecture-and-progress.pdf`.
+  Compiled successfully with Tectonic; PDF integrity check reports 5 pages,
+  no encryption, and extractable text. SHA-256: source
+  `5d843f3916ffd523113160760d775a5400ca0daf9e882c2bf3dfab9edc39d268`;
+  PDF `4ec63e923c4177e2596599ab43ef97fe52b6e7af257ad2380904151ad1163202`.
+
+- [x] **Merge accepted evaluation UI and deploy to existing ASI:Cloud VM2
+  (Ben, 2026-08-18)** — merge draft PR #3 only if its head remains exact
+  accepted commit `1755dddcb31dc02c04d7db35dec01ba1fb6b9215` and GitHub reports
+  it mergeable, then deploy the resulting exact `main` commit to the existing
+  VM2 without provisioning, resizing, or changing provider resources.
+  **Acceptance test:** VM2 records the deployed Git commit, exactly one bounded
+  Plain2Metta web service is listening on the intended interface, GET `/` and
+  fresh POST `/api/evaluate` requests for all three bundled examples succeed
+  with server-derived Stage 1--10 evidence, and the pre-deployment checkout and
+  service configuration remain available as a rollback target.
+  **Next command:** capture VM2's read-only host/service/repository baseline and
+  PR identity, then merge PR #3 and deploy using the least-privilege existing
+  VM mechanism.
+  **Evidence:**
+  `experiments/20260818T153337Z-plain2metta-pr3-merge-vm2-deployment/`.
+  PR #3 merged at `5ce102cb02e72f377314205b28f102e5fc39911f`.
+  VM2 runs exactly one systemd worker on `127.0.0.1:8081`; all three exact
+  examples passed the Stage 1--10/G0--G6 canary after two fail-closed,
+  successfully rolled-back trials (Lean cache permissions; newline-stripping
+  canary bug). The exact release remains the rollback/restart target.
+
+- [x] **Vertical Stage 1--11 evaluation-UI integration (Ben,
+  2026-08-17)** — replace the legacy `/api/evaluate` shortcut and
+  browser-synthesized grades with one exact-ancestry execution path through the
+  revision-0.2 semantic-validation architecture. Work on public task branch
+  `agent/plain2metta-public-evaluation-ui`; do not merge, release, deploy to
+  VM2, expose a public service, use paid compute, install system-wide tools, or
+  weaken any fail-closed gate. Preserve the existing legacy endpoint only as
+  an explicitly labeled compatibility route if needed during migration.
+
+  **Implementation order (each gate must pass before the next begins):**
+
+  1. **Freeze the vertical contract.** Add a source-located route/service
+     contract mapping each live example request to Stage 1 artifacts, Stage 2
+     calculus, Stage 3 plan/review/approval, Stage 4--7 authorized backends,
+     Stage 8 verdict composition, and Stage 9 evidence/API/UI projection.
+     Define which Stage 10 corpus/calibration facts are immutable release
+     metadata rather than rerun per request, and treat Stage 11 as the final
+     acceptance gate rather than a runtime stage. Record resource bounds,
+     timeout behavior, supported-example policy, and all fail-closed states.
+  2. **Build the server-side orchestrator.** For each exact supported example,
+     construct canonical Stage 1 source/contract/obligation artifacts; lower
+     and interpret the Stage 2 typed contract; create and independently review
+     one Stage 3 plan; execute only the tools authorized by that approved plan.
+     Reuse the pinned Stage 4 Hypothesis, Stage 5 TLC, Stage 6 Z3, Stage 7 Lean,
+     Hyperon, and Python adapters without bypassing their hash, ancestry,
+     attribution, approval, or resource gates. A tool that is inapplicable must
+     yield an explicit justified non-applicability/Unknown result, never a
+     fabricated Pass.
+  3. **Compose and expose real evidence.** Feed admitted runtime/formal evidence
+     into the Stage 8 composer. The API response must be derived from stored
+     canonical artifacts and expose exact IDs/hashes, plan/review state,
+     backend attribution, counterexamples, assumptions/holes, residual risk,
+     and the actual G0--G6 vector. Remove client-side grade inference and all
+     hard-coded G4--G6 values; the Stage 9 UI must render only server-returned
+     evidence. Downloads must use the existing exact-hash authorization gate.
+  4. **Close semantic and adversarial tests.** Add end-to-end tests for all
+     three graduated UI examples plus at least: source-byte mutation; stale or
+     mismatched plan; missing approval; backend hash mismatch; timeout;
+     malformed/misattributed evidence; cross-runtime disagreement; failing
+     property/model/proof result; inapplicable backend; and unsupported or
+     reworded input. Every case must either produce the expected conservative
+     verdict/grade or fail atomically with no partial promoted state. Assert
+     that changing source, contract, plan, review, or approval invalidates all
+     downstream evidence and verdicts.
+  5. **Vertical acceptance and handoff.** From a clean checkout, run the new
+     focused vertical suite, the complete provider-free suite, pinned backend
+     replay, compilation/diff/secret/large-file hygiene, browser/API smoke,
+     and all three live dual-runtime examples. Create a reproducible experiment
+     record before the consequential run, including exact commit, commands,
+     tool hashes/versions, timings, and raw logs. Update the Stage 11 script so
+     it proves the UI request path itself traverses Stages 1--9 and consumes
+     recorded Stage 10 calibration metadata; it must not merely run component
+     tests beside the legacy UI. Obtain an independent code-path audit before
+     marking this task complete.
+
+  **Acceptance test:** a fresh `POST /api/evaluate` for each supported example
+  returns a server-derived exact-ancestry graph containing the canonical
+  Stage 1--8 artifacts/evidence and actual G0--G6 verdict, while instrumented
+  tests prove the approved Stage 4--7 adapters were invoked (or explicitly
+  adjudicated inapplicable) and all mutation/staleness cases fail closed. No
+  JavaScript grade synthesis remains. The full clean-checkout gate passes and
+  a new experiment record contains the evidence.
+
+  **Gate 4 increment 14 evidence (2026-08-17):** a current semantic-contract
+  byte change after plan approval returns error-only HTTP 422 before any Stage
+  4--7 adapter or legacy evaluation. Focused 1/1 and proportional 94/94 checks
+  passed with compilation and diff hygiene. Evidence:
+  `experiments/20260818T052300Z-plain2metta-evaluation-contract-invalidation/`
+  and
+  `experiments/20260818T052500Z-plain2metta-evaluation-contract-invalidation-proportional/`.
+  Task-branch-only commit `f221825` is pushed.
+  Next: one immutable-review invalidation case; Stage 11 remains unopened.
+
+  **Gate 4 increment 15 evidence (2026-08-17):** replacing the current
+  immutable Stage 3 review record after plan approval returns error-only HTTP
+  422 before any Stage 4--7 adapter or legacy evaluation. Focused 1/1 and
+  proportional 95/95 checks passed with compilation and diff hygiene.
+  Evidence:
+  `experiments/20260818T055528Z-plain2metta-evaluation-immutable-review-invalidation/`
+  and
+  `experiments/20260818T055546Z-plain2metta-evaluation-immutable-review-invalidation-proportional/`.
+  Task-branch-only commit `56b53f8` is pushed.
+  Next: Gate 5 begins with the smallest test-first change to
+  `scripts/run-stage11-acceptance.sh` proving the UI request traverses Stages
+  1--9 and consumes Stage 10 metadata. Create the consequential acceptance
+  ledger before running it.
+
+  **Gate 5 increment 1 evidence (2026-08-17):** the Stage 11 focused phase now
+  invokes the complete real-route `tests.test_evaluation_web` module. Its
+  29/29 tests passed, including fresh `/api/evaluate` assertions over Stage
+  1--8 exact ancestry, server-derived G0--G6 grades, Stage 9 projection, and
+  Stage 10 release metadata; shell syntax, compilation, and diff hygiene also
+  passed. Evidence:
+  `experiments/20260818T062821Z-plain2metta-evaluation-stage11-ui-instrumentation/`.
+  This is not the consequential Stage 11 acceptance or clean-checkout result.
+  Task-branch-only commit `1755ddd` is pushed.
+  Next: create the acceptance ledger before running the updated Stage 11
+  script.
+
+  **Gate 5 increment 2 evidence (2026-08-17):** the pre-recorded Stage 11
+  script passed on the clean task-branch working tree at exact commit
+  `1755ddd`: focused 106/106 and complete provider-free 777/777 tests, plus
+  compilation, diff, credential-pattern, large-file, and untracked-file
+  hygiene. Evidence:
+  `experiments/20260818T065419Z-plain2metta-evaluation-stage11-vertical-acceptance/`.
+  This is not the required fresh-clean-checkout replay or independent audit.
+  Next: create a new ledger and run the same script from a fresh temporary
+  clone of `origin/agent/plain2metta-public-evaluation-ui`.
+
+  **Gate 5 increment 3 evidence (2026-08-18):** a fresh single-branch clone
+  resolved both checked-out and remote-tracking task-branch identities to exact
+  commit `1755dddcb31dc02c04d7db35dec01ba1fb6b9215`, rebuilt the pinned Lean
+  package (3015 jobs), and passed the Stage 11 script: focused 106/106 in
+  54.455s, complete provider-free 777/777 in 70.111s, plus compilation, diff,
+  credential-pattern, large-file, and untracked-file hygiene. The post-run
+  checkout remained clean. Evidence:
+  `experiments/20260818T072517Z-plain2metta-evaluation-stage11-clean-checkout/`.
+  This does not complete the task: the required independent code-path audit is
+  still outstanding. Next: perform exactly that read-only audit against the
+  pushed commit before considering acceptance complete.
+
+  **Gate 5 increment 4 / completion evidence (2026-08-18):** an independent
+  read-only audit at exact pushed commit
+  `1755dddcb31dc02c04d7db35dec01ba1fb6b9215` confirmed that the browser POSTs
+  to `/api/evaluate`; the route invokes the Stage 1--8 orchestrator before the
+  compatibility evaluator; the server returns the Stage 9 evidence projection
+  with recorded Stage 10 release metadata; and JavaScript renders the returned
+  `grade_achieved.vector` without synthesizing grades. Evidence:
+  `experiments/20260818T075514Z-plain2metta-evaluation-stage11-independent-audit/`.
+  Together with the fresh-clean-checkout acceptance record above, this closes
+  the explicit task acceptance conditions. Merge, release, deployment, and
+  service exposure remain separate human decisions.
+
+  **Gate 1 evidence (2026-08-17):** frozen route/service contract added at
+  `docs/evaluation-vertical-contract.md`. The new real-route end-to-end test
+  returned HTTP 200 for the exact greeting example and then failed at the
+  first required field with `KeyError: 'ancestry'`, proving the legacy response
+  lacks Stage 1--8 ancestry; source inspection also locates browser grade
+  synthesis in `evidenceView`. The unchanged legacy evaluation suite passed
+  5/5 and diff hygiene passed. These changes intentionally remain uncommitted
+  while the required red test is failing.
+
+  **Gate 2 increment 1 evidence (2026-08-17):** `/api/evaluate` now admits only
+  exact checked-in example bytes, persists canonical Stage 1 contract and
+  obligation artifacts, checks/interprets the Stage 2 finite contract, and
+  admits one independently authored/reviewed/approved Stage 3 plan. No Stage
+  4--7 adapter is invoked. Focused checks passed 13 tests plus 10 subtests; the
+  frozen full assertion now fails at the honest `[1,2,3]` boundary. Evidence:
+  `experiments/20260817T181925Z-plain2metta-evaluation-vertical-stage123-r2/`.
+
+  **Gate 2 increment 2 evidence (2026-08-17):** the exact approved plan invokes
+  the existing bounded Hypothesis 6.138.15 coordinator with seed 417 and
+  persists one exact-ancestry Stage 4 runtime-evidence node. Its closed
+  `exact-equality` case validates only frozen source-byte admission, not general
+  semantic behavior. Focused checks passed 14 tests plus 3 subtests and diff
+  hygiene; the frozen full assertion remains red at `[1,2,3,4]` versus
+  `[1..8]`. Evidence:
+  `experiments/20260817T185258Z-plain2metta-evaluation-vertical-stage4/`.
+
+  **Gate 2 increment 3 evidence (2026-08-17):** the same exact approved plan
+  now carries a closed finite `exact-admission-stability` model, invokes pinned
+  TLC 1.7.4/engine 2.19, and persists one exact-ancestry Stage 5 evidence node.
+  Focused checks passed 31 tests plus 3 subtests and diff hygiene; the frozen
+  full assertion remains red at `[1,2,3,4,5]` versus `[1..8]`. Evidence:
+  `experiments/20260817T192622Z-plain2metta-evaluation-vertical-stage5-r2/`.
+
+  **Gate 2 increment 4 evidence (2026-08-17):** the exact approved plan now
+  includes a closed `exact-boolean-postcondition` task and invokes pinned Z3
+  4.15.3. The admitted Stage 6 node retains exact plan/review ancestry, formula
+  and source-map hashes, unsat core, proof, and resource bounds. Focused checks
+  passed 40 tests plus 3 subtests and diff hygiene; the frozen full assertion
+  remains red at `[1..6]` versus `[1..8]`. Evidence:
+    `experiments/20260817T195503Z-plain2metta-evaluation-vertical-stage6-r2/`.
+
+  **Gate 2 increment 5 evidence (2026-08-17):** the exact approved route plan
+  now invokes pinned Lean 4.33.0 with pinned Mathlib through the existing
+  hash-checked semantic-kernel coordinator. Its admitted Stage 7 node retains
+  plan/review ancestry, package manifest, tool hashes, theorem source map, and
+  bounds. Focused checks passed 36 tests plus 3 subtests and diff hygiene; the
+  frozen full assertion remains red at `[1..7]` versus `[1..8]`. Evidence:
+  `experiments/20260817T202518Z-plain2metta-evaluation-vertical-stage7-r3/`
+  and `experiments/20260817T202558Z-plain2metta-evaluation-vertical-stage7-boundary/`.
+
+  **Gate 2 increment 6 evidence (2026-08-17):** the route passes the four
+  stored exact-plan Stage 4--7 evidence refs to the existing conservative
+  Stage 8 composer and returns its stored verdict identity/hash plus the full
+  server-derived G0--G6 vector. The verdict is correctly `unknown` because the
+  canonical project still lacks admitted Hyperon/Python dual-runtime evidence;
+  no legacy output was fabricated into evidence. Focused checks passed 53
+  tests plus 3 subtests and diff hygiene. The frozen full assertion now reaches
+  Stage 8 and remains red only at missing Stage 10 release metadata. Evidence:
+  `experiments/20260817T205530Z-plain2metta-evaluation-vertical-stage8-r2/`.
+
+  **Gate 3 increment 1 evidence (2026-08-17):** the route now returns a
+  server-built `plain2metta-evaluation-evidence/v1` projection of the exact
+  Stage 1--8 ancestry and verdict, with exact plan/review refs, backend
+  attribution, counterexamples, assumptions, unresolved holes, and residual
+  risk. The focused test first failed at `KeyError: 'evidence_projection'`,
+  then passed. Proportional checks passed 36 tests plus 3 subtests and diff
+  hygiene; the frozen acceptance assertion remains red only at missing Stage
+  10 release metadata. Evidence:
+  `experiments/20260817T212620Z-plain2metta-evaluation-vertical-stage9-r2/`.
+
+  **Gate 3 increment 2 evidence (2026-08-17):** the Stage 10 loader now binds
+  the checked-in corpus to its exact SHA-256 and calibration release ID,
+  rejects changed bytes before parsing, and projects the validated threshold
+  and mutation result as server-owned release metadata. Focused checks passed
+  20/20 and the complete provider-free suite passed 763/763; compilation and
+  diff hygiene passed. The first ledger run exposed only an invalid mock of a
+  read-only `Path` method and is retained as failed evidence. Evidence:
+  `experiments/20260817T215617Z-plain2metta-evaluation-vertical-stage10/`,
+  `experiments/20260817T215712Z-plain2metta-evaluation-vertical-stage10-r2/`,
+  and
+  `experiments/20260817T215756Z-plain2metta-evaluation-vertical-stage10-full/`.
+  Commit `3812d0c` is pushed on the task branch only.
+
+  **Gate 4 increment 1 evidence (2026-08-17):** the browser now reads the
+  Stage 9 server projection for the ancestry graph, complete G0--G6 vector,
+  backend details, counterexamples, assumptions, and holes. Client-derived
+  G0--G6 logic and hard-coded G4--G6 values are removed. The browser assertion
+  first failed on the legacy synthesis. A source-byte mutation test also
+  proves the request is rejected before either the legacy evaluator or Stage 4
+  Hypothesis coordinator is called. Focused 2/2 and proportional 21/21 tests
+  plus diff hygiene passed. Evidence:
+  `experiments/20260817T222712Z-plain2metta-evaluation-browser-server-grades/`.
+  Task-branch-only commit `d5afa00` is pushed.
+
+  **Gate 4 increment 2 evidence (2026-08-17):** suppressing the exact Stage 3
+  plan-review/approval transition makes the real route return only HTTP 422
+  and the Hypothesis executor, TLC/Z3/Lean coordinators, and legacy evaluator
+  are all uncalled. The focused red/green test and proportional web/API suite
+  passed 16/16. Evidence:
+  `experiments/20260817T225627Z-plain2metta-evaluation-missing-approval/`.
+  Task-branch-only commit `b441698` is pushed.
+
+  **Gate 4 increment 3 evidence (2026-08-17):** forging the Stage 4 adapter
+  result's request hash makes the real route return only HTTP 422 after one
+  Hypothesis call and before TLC, Z3, Lean, or the legacy evaluator can run.
+  The focused test passed 1/1 and the proportional web/API plus Hypothesis
+  suite passed 22/22 with diff hygiene. Evidence:
+  `experiments/20260817T232547Z-plain2metta-evaluation-stage4-hash-mismatch/`
+  and `experiments/20260817T232554Z-plain2metta-evaluation-gate4-proportional/`.
+  Task-branch-only commit `eb2a0a2` is pushed.
+
+  **Gate 4 increment 4 evidence (2026-08-17):** an injected Stage 4
+  `subprocess.TimeoutExpired` now yields only HTTP 422 with a stable timeout
+  error after one Hypothesis call and before TLC, Z3, Lean, or the legacy
+  evaluator can run. The focused test passed 1/1; the proportional web/API
+  plus Hypothesis suite passed 23/23 with compilation and diff hygiene.
+  Evidence:
+  `experiments/20260817T235835Z-plain2metta-evaluation-stage4-timeout/`.
+  Task-branch-only commit `2fbb55d` is pushed.
+
+  **Gate 4 increment 5 evidence (2026-08-17):** a Stage 4 adapter result with
+  one unknown top-level claim now yields error-only HTTP 422 after one
+  Hypothesis call and before TLC, Z3, Lean, or legacy evaluation. Focused 1/1
+  and proportional web/API plus Hypothesis 24/24 tests passed with compilation
+  and diff hygiene. Evidence:
+  `experiments/20260818T002549Z-plain2metta-evaluation-malformed-stage4-evidence/`.
+  Task-branch-only commit `bb7b68f` is pushed.
+
+  **Gate 4 increment 6 evidence (2026-08-17):** a real-route Hyperon/Python
+  output disagreement now has a regression proving the legacy semantic result
+  fails while the canonical Stage 8 verdict remains honestly `unknown`, with
+  G2/G3 false and exactly the four admitted Stage 4--7 evidence references.
+  Legacy runtime output is not fabricated into the evidence graph. Focused
+  1/1 and proportional evaluation/verdict 36/36 tests passed with diff
+  hygiene. Evidence:
+  `experiments/20260818T005400Z-plain2metta-evaluation-cross-runtime-disagreement/`.
+  Task-branch-only commit `e65e839` is pushed.
+
+  **Next command:**
+  `rg -n "inapplicable|admissible_methods|formal_tasks|state_models" tests/test_evaluation_web.py src/specatom_hs/evaluation_vertical.py src/specatom_hs/validation_plan.py`.
+  Gate 4 must next add exactly one smallest inapplicable-backend case with an
+  explicit justified Unknown result; do not start Stage 11.
+
+  **Gate 4 increment 7 evidence (2026-08-17):** a valid failing Stage 4
+  property result now yields a conservative failed verdict with G4 false and
+  projects its exact obligation/evidence-bound persisted counterexample through
+  Stage 9. The focused test first failed at the prior hard-coded empty
+  counterexample list. Proportional evaluation/verdict/Hypothesis checks passed
+  42/42 with compilation and diff hygiene. Evidence:
+  `experiments/20260818T012701Z-plain2metta-evaluation-failing-property/`.
+  Task-branch-only commit `93f0581` is pushed.
+
+  **Gate 4 increment 8 evidence (2026-08-17):** an explicitly inapplicable
+  Stage 5 TLC backend is not invoked, is projected as justified `unknown`,
+  leaves G5 false, and contributes its `tla-tlc` limitation to the canonical
+  Stage 8 residual risk. The focused test first failed because no applicability
+  boundary existed. Focused 1/1 and proportional evaluation/verdict 38/38
+  tests passed with compilation and diff hygiene. Evidence:
+  `experiments/20260818T022403Z-plain2metta-evaluation-inapplicable-tlc/`.
+  Task-branch-only commit `d4837bc` is pushed.
+
+  **Next command:**
+  `rg -n "invariant_satisfied|counterexample_trace|formal backend rejected" tests/test_evaluation_web.py tests/test_tlc_backend.py src/specatom_hs/evaluation_vertical.py src/specatom_hs/verdict_composition.py`.
+  Gate 4 must next add exactly one failing TLC model-result case; do not start
+  Stage 11.
+
+  **Gate 4 increment 9 evidence (2026-08-17):** an admitted failing TLC model
+  result returns a server-derived Stage 5 `fail` status, forces the Stage 8
+  verdict to fail, keeps G5 false, and projects the persisted counterexample
+  through Stage 9. Focused 1/1 and proportional 39/39 tests passed with
+  compilation and diff hygiene. Evidence:
+  `experiments/20260818T025041Z-plain2metta-evaluation-failing-tlc-r2/`.
+  Task-branch-only commit `d894c6c` is pushed.
+
+  **Next command:**
+  `rg -n "replace_source|invalidate|stale|approval" tests/test_evaluation_web.py tests/test_projects.py src/specatom_hs/projects.py`.
+  Add exactly one uncovered transitive-invalidation case; Stage 11 remains
+  unopened.
+
+  **Gate 4 increment 10 evidence (2026-08-17):** a rejected Stage 7 Lean
+  result now has a real-route regression proving error-only HTTP 422 after one
+  Lean call and before legacy evaluation. No failed proof is admitted or
+  projected. Focused 1/1 and proportional evaluation/verdict/Lean 46/46 tests
+  passed with compilation and diff hygiene. Evidence:
+  `experiments/20260818T032408Z-plain2metta-evaluation-failing-lean/`.
+  Task-branch-only commit `3317133` is pushed.
+
+  **Gate 4 increment 11 evidence (2026-08-17):** replacing the exact source
+  immediately after Stage 3 approval returns error-only HTTP 422 before any
+  Stage 4--7 adapter or legacy evaluation call. Focused 1/1 and proportional
+  web/project/plan/verdict 91/91 tests passed with compilation and diff
+  hygiene. Evidence:
+  `experiments/20260818T035512Z-plain2metta-evaluation-source-invalidation-r2/`
+  and
+  `experiments/20260818T035525Z-plain2metta-evaluation-source-invalidation-proportional/`.
+  Task-branch-only commit `b545dc8` is pushed.
+
+  **Next command:**
+  `rg -n "add_semantic_artifact|submit_plan_review|decide\(|_invalidate" tests/test_evaluation_web.py tests/test_projects.py src/specatom_hs/evaluation_vertical.py src/specatom_hs/projects.py`.
+  Add exactly one remaining contract/plan/review/approval transitive-
+  invalidation case; Stage 11 remains unopened.
+
+  **Gate 4 increment 12 evidence (2026-08-17):** revoking the exact Stage 3
+  plan approval immediately after its independent review returns error-only
+  HTTP 422 before any Stage 4--7 adapter or legacy evaluation call. Focused
+  1/1 and proportional web/project/plan/verdict 92/92 tests passed twice with
+  compilation and diff hygiene. Evidence:
+  `experiments/20260818T042448Z-plain2metta-evaluation-approval-revocation/`,
+  `experiments/20260818T042503Z-plain2metta-evaluation-approval-revocation-proportional/`,
+  and its independent local rerun `experiments/20260818T042601Z-plain2metta-evaluation-approval-revocation-proportional-r2/`.
+  Task-branch-only commit `b4da714` is pushed.
+
+  **Next command:**
+  `rg -n "add_semantic_artifact|submit_plan_review|review|_invalidate" tests/test_evaluation_web.py tests/test_validation_plan.py src/specatom_hs/evaluation_vertical.py src/specatom_hs/projects.py`.
+  Add exactly one remaining contract, plan-byte, or review invalidation case;
+  Stage 11 remains unopened.
+
+  **Gate 4 increment 13 evidence (2026-08-17):** a new current validation-plan
+  version created after independent approval, with changed canonical bytes and
+  no matching immutable review, now has a real-route regression proving
+  error-only HTTP 422 before Hypothesis, TLC, Z3, Lean, or legacy evaluation.
+  Focused 1/1 and proportional web/project/plan/verdict 93/93 tests passed with
+  compilation and diff hygiene. Evidence:
+  `experiments/20260818T045459Z-plain2metta-evaluation-plan-byte-invalidation/`
+  and
+  `experiments/20260818T045510Z-plain2metta-evaluation-plan-byte-invalidation-proportional/`.
+  Task-branch-only commit `ced782f` is pushed.
+
+  **Next command:**
+  `rg -n "SEMANTIC_CONTRACT|add_semantic_artifact|review binding|requires an approved reviewed plan" tests/test_evaluation_web.py tests/test_validation_plan.py src/specatom_hs/evaluation_vertical.py src/specatom_hs/projects.py`.
+  Gate 4 must next add exactly one contract or immutable-review invalidation
+  case; do not start Stage 11.
+
+- [ ] **Implement general semantic validation revision 0.2 (Ben,
+  2026-08-16)** — implement
+  `docs/plain2metta-general-semantic-validation-spec.tex` revision 0.2 through
+  its ordered Stage 0--11 gates. Begin with Stage 0 only: freeze the current
+  interfaces and threat model; verify and pin candidate Hypothesis, TLA+/TLC,
+  Z3/SMT-LIB, Lean 4/Mathlib, and Hyperon toolchains in isolated environments;
+  preserve the live dual-runtime evaluation baseline. Acceptance for Stage 0:
+  a source-located interface/trust map, compatibility and migration rules,
+  unchanged upstream smoke tests for selected tools, full existing Plain2MeTTa
+  regression and live example replay, and reproducible evidence. Later stages
+  must not start until their predecessor's gate passes. Continue on
+  `agent/plain2metta-public-evaluation-ui` / draft PR #3 unless isolation or a
+  focused successor branch is needed. Never push/merge the default branch,
+  force-push, publish a release, install system-wide dependencies, expose the
+  UI publicly, or use paid compute. Stage 0 is complete: the interface map is
+  frozen, the 662-test and live baselines replayed, and isolated smokes passed
+  for Hypothesis 6.138.15, Z3 4.15.3, TLC 1.7.4, Lean/Mathlib 4.33.0, and
+  Hyperon 0.2.10. Stage 1 is complete at public task-branch commit
+  `3073448`: all eight strict semantic artifact types use canonical
+  schema v1 serialization and exact reviewed-source/contract ancestry;
+  adversarial inputs fail closed; a source-byte mutation invalidates the full
+  contract-to-verdict chain. Focused 6/6, full 668/668, compile/diff/hygiene,
+  and live three-example dual-runtime replay passed. Stage 2 is complete: the
+  finite closed calculus, deterministic provider-free interpreter, and typed
+  canonical MeTTa projection bind the exact Stage 1 artifact; unsupported or
+  unresolved meaning fails closed. Focused 9/9, full 677/677, static/hygiene,
+  and live dual-runtime gates passed. Stage 3 is complete: a one-call,
+  provider-independent validation author sees only exact reviewed source and
+  contracts/obligations; strict plan admission, immutable review/edit records,
+  exact approval binding, and transitive invalidation fail closed. Focused
+  12/12, full 683/683, static/hygiene, and live dual-runtime gates passed.
+  Current objective: **Stage 4 only**, the Hypothesis property/state-machine
+  backend; do not begin Stage 5. Evidence:
+  `experiments/20260817T035226Z-plain2metta-general-semantic-validation-stage0/`
+  `experiments/20260817T040300Z-plain2metta-stage0-tlc-lean/`, and
+  `experiments/20260817T073700Z-plain2metta-general-semantic-validation-stage1/`,
+  and
+  `experiments/20260817T075100Z-plain2metta-general-semantic-validation-stage2/`.
+  `experiments/20260817T080828Z-plain2metta-general-semantic-validation-stage3/`.
+
+- [x] **General semantic-validation architecture specification (Ben,
+  2026-08-16)** — wrote an ASCII-only LaTeX specification integrating typed
+  contracts, independent validation plans, graded evidence, executable
+  oracles, property/metamorphic/state-machine/differential/formal methods,
+  immutable provenance, narrow APIs, UI requirements, and five qualitatively
+  different examples. Revision 0.2 adds a concrete Hypothesis, TLA+/TLC,
+  Z3/SMT-LIB, Lean 4/Mathlib, and Hyperon/Python routing architecture plus an
+  eleven-stage coding-agent plan with acceptance gates. Tectonic produced an
+  11-page PDF; source and PDF hashes, textual completeness, metadata, and
+  visual inspection are
+  recorded in
+  `experiments/20260817T034237Z-plain2metta-semantic-validation-spec-r02-compile/`.
+  Artifacts:
+  `docs/plain2metta-general-semantic-validation-spec.{tex,pdf}`. Next: Ben
+  reviews revision 0.2 before it becomes an implementation milestone.
+
+- [x] **Runtime-validated mixed MeTTa/Python evaluation examples (Ben,
+  2026-08-16)** — extend the public evaluation UI so its representative
+  examples execute generated MeTTa through a real, pinned MeTTa runtime as
+  well as generated Python through the bounded sandbox. Add substantive,
+  example-specific expected-output assertions that test behavior against the
+  Plain requirements, rather than treating exit code 0 or balanced
+  parentheses as semantic validation. Acceptance: each graduated example
+  visibly preserves Plain → reviewed logical IR → generated artifacts
+  provenance; both runtime paths execute under recorded bounds; exact expected
+  results pass; negative/mismatch cases fail closed; focused/full tests and
+  live UI smoke pass; the public task branch/draft PR and an experiment record
+  contain the evidence. Completed at public task-branch head `752debd` and
+  draft PR #3. Hyperon CLI 0.2.10 and bounded Python execute exact behavioral
+  profiles for greeting trace retention, task validation/ownership, and
+  forecast split/horizon/baseline reporting, with assertions visible in the
+  default claim-evidence view. Focused 11/11 and full 662/662
+  passed; live dual-runtime replay passed all three examples; both language
+  mismatch cases fail closed. Evidence:
+  `experiments/20260816T223000Z-plain2metta-behavior-validation/`. PDF work
+  remains deferred until Ben evaluates this behavior.
+
+- [x] **Plain2MeTTa public evaluation milestone (Ben, 2026-08-16)** —
+  deliver an extended web UI for concrete examples across the logical-IR
+  pipeline, expose a safe experimental URL, integrate a real but sandboxed
+  path from Plain spec through logical IR to inspectable executable MeTTa and
+  Python outputs, publish the completed code on a task branch in the public
+  `bgoertzel-sing/plain2metta` repository, and produce a concise PDF design and
+  implementation report suitable for frontier-model review. Acceptance:
+  representative end-to-end examples in the UI; provenance/review gates remain
+  visible; generated code is explicitly distinguished from validated code;
+  focused/full tests and browser smoke pass; public branch/PR and PDF hashes
+  are recorded. Next command: audit the existing webapp and v2 worktrees,
+  public branches/PRs, and deployment options before choosing the smallest
+  Completed first usable evaluation release on public task branch
+  `agent/plain2metta-public-evaluation-ui` at `4683984`, draft PR #3. The
+  Tailnet-only UI is live at `http://100.72.218.34:8081/` in tmux session
+  `plain2metta-eval`. Focused tests passed 6/6 and full provider-free discovery
+  passed 655/655. The two-page PDF report was visually inspected; SHA-256
+  `3042d573728685b585f8165a50262ccd106a90393b79fe81fa3c4728291bbaeb`.
+  Evidence: `experiments/20260816T181041Z-plain2metta-public-evaluation-ui/`.
+  integration branch. Evidence path: a new run under `experiments/`.
+  **Priority order clarified by Ben:** (1) working extended UI; (2) concrete
+  executable MeTTa/Python examples that visibly pass through logical IR and
+  run/tests; (3) Ben evaluates and iterates on behavior; (4) only after the
+  design behaves sensibly, write the PDF; (5) incorporate frontier-model
+  review; (6) seek review from human MeTTa developers. PDF work must not delay
+  or substitute for UI/executable-example progress.
+  Latest product increment: branch `agent/plain2metta-public-evaluation-ui`
+  at `4c30a35` adds a browser-local download of the complete evaluation
+  evidence JSON. Focused tests passed 7/7, full discovery passed 658/658, and
+  live health/UI/export-marker/sandbox smoke passed at the Tailnet URL.
+
+- [x] **Plain2MeTTa v2 current-HEAD acceptance revalidation — 2026-08-16:**
+  at clean isolated revision `590fc7d`, reverified the expected PDF hash,
+  passed the focused artifact/version, approval, invalidation, persistence,
+  logical-IR, and end-to-end set 64/64, and passed the full provider-free suite
+  651/651. Byte-compilation, diff, credential-pattern, large-file, and
+  untracked-file checks also passed. Evidence:
+  `experiments/20260816T131920Z-plain2metta-v2-head-revalidation/RUN.md`.
+  Next: Ben must select any scope-expanding product milestone.
+
+- [x] **Plain2MeTTa v2 provider-free Phase 2–7 acceptance replay — 2026-08-14:**
+  added a persisted end-to-end exact-chain test and an original-source mutation
+  replay proving all downstream phases invalidate and trace retrieval fails
+  closed. Added a source-located PDF completion audit that distinguishes the
+  completed provider-free logical-IR core from the unimplemented web UI,
+  concrete provider/compiler, and sandbox-executor work. Focused tests passed
+  2/2; full provider-free suite passed 651/651. Evidence:
+  `experiments/20260814T165042Z-plain2metta-v2-end-to-end-acceptance/RUN.md`.
+  Next: Ben must select the next scope-expanding product milestone.
+
+- [x] **Plain2MeTTa v2 Phase 7 exact-chain traceability retrieval — 2026-08-14:**
+  strengthened the existing read-only trace query and exact
+  `GET /api/trace/<project-id>` route so the report is independently rebuilt
+  from the nine exact current artifact versions (original, elaborated, tests,
+  paired reviewed snapshots, logical IR, compiler output, sandbox handoff, and
+  test result). Noncanonical reports, incomplete or mismatched upstream chains,
+  stale source replacements, and unknown spec filters fail closed. The response
+  contains provenance and coverage/failure metadata but no artifact, generated
+  file, stdout, or stderr bodies and no mutation/execution authority. Focused
+  tests passed 40/40 and the full provider-free suite passed 649/649. Evidence:
+  `experiments/20260814T164358Z-plain2metta-v2-phase7-exact-chain/RUN.md`.
+  Local implementation commit: `361bdb7` (not pushed).
+  Next: provider-free end-to-end Phase 2–7 acceptance replay and PDF-derived
+  completion audit.
+
+- [x] **Plain2MeTTa v2 Phase 6 sandbox adapter and atomic admission — 2026-08-14:**
+  added an explicitly configured, provider-independent sandbox coordinator. It
+  makes exactly one injected adapter call with the canonical inert handoff,
+  validates strict result structure, request binding, and configured adapter
+  attribution, rechecks the exact handoff after external I/O, and atomically
+  saves the test result. Failures and concurrent mutation cause no retry or
+  partial result write. No built-in host executor, network, secrets, or file
+  publisher was added. Focused tests passed 4/4 and the full provider-free
+  suite passed 644/644. Evidence:
+  `experiments/20260814T160752Z-plain2metta-v2-sandbox-adapter/RUN.md`.
+  Local implementation commit: `91c9350` (not pushed).
+  Next: strict opt-in `POST /api/test/<project-id>` transport around this
+  configured coordinator.
+
+- [x] **Plain2MeTTa v2 validated compiler-output metadata query — 2026-08-14:**
+  added a read-only query and exact
+  `GET /api/compiler-output/<project-id>` route bound to the current validated
+  compilation-log/output/logical-IR chain. It returns compiler attribution,
+  artifact IDs/hashes, generated paths, per-file hashes/byte sizes, and
+  spec/test traceability IDs without generated bodies, guidance, mutation,
+  approval, publication, or execution authority. Focused tests passed 38/38
+  and the full provider-free suite passed 640/640. Evidence:
+  `experiments/20260814T155155Z-plain2metta-v2-compiler-output-query/RUN.md`.
+  Local implementation commit: `bba7a9c` (not pushed).
+  Next: provider-independent Phase 6 sandbox adapter envelope and atomic
+  test-result admission, without a built-in host executor.
+
+- [x] **Plain2MeTTa v2 Phase 5 single-call adapter and atomic admission — 2026-08-14:**
+  added an explicitly configured vendor-neutral compilation coordinator. It
+  makes exactly one call, binds the canonical prompt to exact current reviewed
+  spec/test and approved logical-IR bytes, validates provider/model attribution,
+  rechecks all inputs after external I/O, and atomically saves a canonical
+  provenance log plus inert compiler output. Reload rejects partial, forged, or
+  misattributed state. Focused tests passed 50/50 and the full provider-free
+  suite passed 635/635. Evidence:
+  `experiments/20260814T151947Z-plain2metta-v2-compilation-adapter/RUN.md`.
+  Local implementation commit: `f76d9b4` (not pushed).
+  Next: strict `POST /api/compile/<project-id>` transport without provider
+  selection, retry, credentials, publication, or execution authority.
+
+- [x] **Plain2MeTTa v2 deterministic type and obligation reachability checks — 2026-08-14:**
+  Phase 4 review now reports critical inconsistent-type findings for duplicate
+  contract names with differing signatures and typed holes that disagree with
+  their contract outputs. Requirement obligations whose source provenance
+  reaches no contract are reported as unreachable. Findings are deterministic,
+  source-linked, and use the existing exact review/decision/compile gates.
+  Focused tests passed 20/20 and the full provider-free suite passed 622/622.
+  Evidence: `experiments/20260814T144815Z-plain2metta-v2-logical-ir-type-reachability/`.
+  Local implementation commit: `282c12e` (not pushed).
+  Next: exercise exact repair/waive/defer decision replay across all eight PDF
+  §3.5 critical finding categories and verify regenerated-review stability.
+
+- [x] **Plain2MeTTa v2 deterministic Phase 4 consistency checks — 2026-08-14:**
+  added source-linked critical findings for exact contradictory invariant
+  polarities, invalid ordering endpoints/cycles, and positive future/test
+  leakage patterns. Explicit prohibitions remain non-findings. Focused tests
+  passed 14/14 and the full provider-free suite passed 619/619. Evidence:
+  `experiments/20260814T144044Z-plain2metta-v2-logical-ir-consistency/RUN.md`.
+  Local implementation commit: `ac5272e` (not pushed).
+  Next: deterministic inconsistent-type and unreachable-obligation checks.
+
+- [x] **Plain2MeTTa v2 Phase 4 logical-IR gold fixtures — 2026-08-14:**
+  added provider-free auth and ML/time-series logical-IR fixtures covering all
+  11 reviewed clauses, with exact requirement/test obligations and one explicit
+  typed operational hole per grounded contract. Real deterministic review
+  replay retains unresolved policy/model definitions as source-linked critical
+  findings and blocks compilation. Focused tests passed 4/4 and the full
+  provider-free suite passed 616/616. Evidence:
+  `experiments/20260814T143255Z-plain2metta-v2-logical-ir-gold-fixtures/RUN.md`.
+  Local implementation commit: `79c7d78` (not pushed).
+  Next: add deterministic Phase 4 checks for contradictory invariants,
+  invalid ordering/data flow, and possible leakage.
+
+- [x] **Plain2MeTTa v2 strict Phase 4 logical-IR POST transport — 2026-08-14:**
+  added exact `POST /api/logical-ir/<project-id>` to the bounded POST-only WSGI
+  adapter. It accepts only optional text guidance, requires an explicitly
+  configured coordinator, invokes its one-call transaction, and returns only
+  the admitted interaction-log, logical-IR, and logical-review identities and
+  hashes. Alternate identities, unknown/duplicate fields, bad framing,
+  unconfigured generation, and backend failure fail closed; failure makes no
+  artifact write or retry. Focused tests passed 23/23 and the full
+  provider-free suite passed 607/607. Evidence:
+  `experiments/20260814T134939Z-plain2metta-v2-logical-ir-post-transport/RUN.md`.
+  Local implementation commit: `e818489` (not pushed).
+  Next: strict read-only retrieval of the current validated logical-IR review
+  and exact-version finding-decision transport from PDF §§3.5 and 4.3.
+
+- [x] **Plain2MeTTa v2 Phase 4 single-call adapter and atomic admission — 2026-08-14:**
+  added an explicitly configured vendor-neutral logical-IR adapter boundary.
+  It makes one call, binds the canonical prompt to exact current reviewed
+  snapshot bytes, validates provider/model provenance, rechecks those versions
+  after the external call, and atomically persists the provenance log, strict
+  logical IR, and deterministic review. Reload rejects forged logs. Failure
+  cases leave no logical-IR write and trigger no retry. Focused tests passed
+  56/56; the full provider-free suite passed 604/604. Evidence:
+  `experiments/20260814T133600Z-plain2metta-v2-logical-ir-adapter/RUN.md`.
+  Local implementation commit: `83ede24` (not pushed). Next: expose the exact
+  `POST /api/logical-ir/<project-id>` boundary from PDF §5 without adding
+  provider selection, retry, credentials, or generic mutation authority.
+
+- [x] **Plain2MeTTa v2 Phase 4 reviewed-input admission — 2026-08-14:**
+  logical-IR creation now requires the exact current paired reviewed
+  elaborated/test snapshots and persists those refs as its upstream provenance.
+  Direct Phase 2 approvals cannot bypass Phase 3; reload rejects logical IRs
+  rebound to Phase 2 inputs. Phase 7 traceability now includes both reviewed
+  snapshots. Focused tests passed 49/49 and the full provider-free suite passed
+  594/594. Evidence:
+  `experiments/20260814T130310Z-plain2metta-v2-phase4-reviewed-inputs/RUN.md`.
+  Local commit: `92612b3` (not pushed). Next: add a provider-independent Phase 4
+  logical-IR request/response envelope bound to these reviewed refs.
+
+- [x] **Plain2MeTTa v2 reviewer-edited reviewed snapshots — 2026-08-14:**
+  Phase 3 review-log v2 accepts an exact paired elaborated/test edit set and,
+  only after full exact-input approval, persists those bytes as immutable
+  reviewed artifacts. Unchanged review remains byte-identical; partial, blank,
+  stale, unapproved, malformed, or forged edits fail closed. Read-only decision
+  retrieval returns edit hashes without bodies. Focused tests passed 38/38 and
+  the full provider-free suite passed 593/593. Evidence:
+  `experiments/20260814T125622Z-plain2metta-v2-reviewed-snapshot-edits/RUN.md`.
+  Next: bind Phase 4 logical-IR admission to the exact reviewed snapshot refs.
+
+- [x] **Plain2MeTTa v2 current Phase 3 review-decision retrieval — 2026-08-14:**
+  added a read-only query that strictly reparses and validates the current
+  review log against the exact current elaborated/test refs. Added exact
+  `GET /api/review-decisions/<project-id>` without query parameters, artifact
+  bodies, or mutation authority. Focused tests passed 12/12; the full suite
+  passed 590/590. Evidence:
+  `experiments/20260814T124300Z-plain2metta-v2-phase3-review-decision-query/RUN.md`.
+  Local implementation commit: `519938a` (not pushed).
+  Next: exact-version reviewer-edited reviewed snapshots for PDF §3.4.
+
+- [x] **Plain2MeTTa v2 exact Phase 3 review POST transport — 2026-08-14:**
+  added strict `POST /api/review/<project-id>` handling for the canonical
+  exact-version review log. It reuses bounded duplicate-safe JSON framing,
+  rejects alternate identities, stale hashes, expanded schemas, and malformed
+  decisions without persistence, and returns the immutable review-log ID/hash
+  after the atomic transaction creates reviewed snapshots. Focused Phase 3 and
+  transport tests passed 19/19; the full provider-free suite passed 588/588;
+  compileall and diff hygiene passed. Evidence:
+  `experiments/20260814T123554Z-plain2metta-v2-phase3-review-post-transport/RUN.md`.
+  Local implementation commit: `6d14384` (not pushed).
+  Next command: expose the validated current review log through the narrow
+  read-only query/GET boundary so persisted decisions are retrievable without
+  returning reviewed artifact bodies.
+
+- [x] **Plain2MeTTa v2 exact Phase 3 decisions and reviewed snapshots — 2026-08-14:**
+  added a strict transaction binding approve/request-changes/reject decisions,
+  optional section/item targets and comments, whole-second UTC timestamps, and
+  reviewer identities to the exact current elaborated/test hashes. Exact
+  artifact-level approval creates byte-identical reviewed-spec snapshots bound
+  to the immutable review log; source mutation transitively invalidates log,
+  snapshots, and approvals. Focused tests passed 60/60 and the full
+  provider-free suite passed 586/586; compileall, diff, credential, large-file,
+  and untracked inspection passed. Evidence:
+  `experiments/20260814T122412Z-plain2metta-v2-phase3-review-decisions/RUN.md`.
+  Local implementation commit: `1060d65` (not pushed).
+  Next command: expose this exact transaction through strict
+  `POST /api/review/<project-id>` transport without generic mutation authority.
+
+- [x] **Plain2MeTTa v2 exact Phase 3 review GET transport — 2026-08-14:**
+  added `GET /api/review/<project-id>` to the server-independent read-only WSGI
+  adapter. It returns the recomputed exact-version report, accepts no query
+  parameters, and rejects stale chains, unknown projects, noncanonical paths,
+  and mutation methods. Focused tests passed 17/17 and the full provider-free
+  suite passed 580/580; compileall and repository hygiene passed. Evidence:
+  `experiments/20260814T120953Z-plain2metta-v2-phase3-review-transport/RUN.md`.
+  Local implementation commit: `4840c4b` (not pushed).
+  Next command: add the Phase 3 exact-version review decision/log transition
+  and reviewed snapshots required by PDF §3.4.
+
+- [x] **Plain2MeTTa v2 deterministic Phase 3 review diff — 2026-08-14:**
+  bind the exact current original/elaborated/test versions to deterministic
+  original-to-elaborated and test-addition review views; strictly deserialize
+  and recompute them so stale, forged, malformed, or expanded reports fail
+  closed. Focused tests passed 4/4 and the full provider-free suite passed
+  579/579; compileall and diff hygiene passed. The existing query service also
+  exposes the recomputed report without artifact bodies or mutation authority. Evidence:
+  `experiments/20260814T120352Z-plain2metta-v2-phase3-review-diff/RUN.md`.
+  Superseded next step: exact GET route completed above.
+
+- [x] **Persistent Plain2MeTTa v2 implementation worker — launched
+  2026-08-07:** implement ProtomegaTron's revised logical-IR design from
+  `projects/omegaclaw/workspace/plain2metta-spec-v2-revised-logical-ir.pdf`
+  (SHA-256 `10969aabb39d4de057ca06cce151b780c07b381802a079f411814826665b2c4c`)
+  in the authoritative public implementation repository, not the deployment
+  lane. First milestone: preserve the existing compiler, then add the immutable
+  project/artifact/version model, provenance hashes, explicit approval state,
+  and invalidation when upstream source changes. Acceptance: focused tests plus
+  the full provider-free suite pass; implementation is committed on an isolated
+  task branch; `git diff --check` passes; evidence and the next PDF-derived
+  milestone are recorded. **Worker correction authorized by Ben 2026-08-14
+  00:30 PDT:** the old two-hour isolated cron was discovered spinning on the
+  already-completed Monday playground task. Retarget it to the v2 PDF as a
+  genuine persistent `openai/gpt-5.6-sol`/high session on a five-minute
+  continuation cadence. Each turn must execute as many consecutive safe,
+  unblocked acceptance steps as practical and report only evidence-backed
+  progress or a real blocker. Next command: create the isolated implementation
+  worktree and inspect the current package/API boundaries. Worker cron:
+  `31e85b3b-784f-4b80-ab24-43e7167561b8`; session:
+  `plain2metta-v2-sol`. Evidence path:
+  `projects/specatom-hs/experiments/<run-id>-plain2metta-v2-artifact-model/`.
+  **POST transport gate 2026-08-14 03:15 PDT:** added a separate POST-only WSGI
+  adapter for project creation, exact artifact-bound annotations, and declared
+  approval decisions. Bodies require strict UTF-8 JSON, explicit canonical
+  `Content-Length`, a 1 MiB maximum, unique schema fields, canonical paths, and
+  no transfer encoding. Focused v2 tests passed 65/65 and the full provider-free
+  suite passed 545/545; compileall and repository hygiene checks passed. Next
+  command: add optimistic, exact-upstream artifact-submission commands for the
+  elaborated-spec and test-spec stages. Evidence:
+  `experiments/20260814T101530Z-plain2metta-v2-post-transport-verification/RUN.md`.
+  Local implementation commit: `380e543` (not pushed).
+  **Exact-upstream submission gate 2026-08-14 03:24 PDT:** added optimistic
+  persisted commands and strict POST routes for original-spec → elaborated-spec
+  and elaborated-spec → test-spec transitions. Each requires the exact current
+  upstream artifact ID and SHA-256; stale, forged, wrong-stage, missing-stage,
+  or expanded-schema requests fail without persistence. Focused tests passed
+  19/19 and the full provider-free suite passed 549/549; compileall and hygiene
+  checks passed. Next command: define a pure elaboration request/response
+  protocol carrying provider provenance and validation admission without
+  invoking a provider. Evidence:
+  `experiments/20260814T102140Z-plain2metta-v2-spec-submission/RUN.md`.
+  Local implementation commit: `de832e7` (not pushed).
+  **Pure elaboration protocol gate 2026-08-14 03:35 PDT:** added canonical,
+  provider-neutral request/response/admission messages bound to exact source
+  and request hashes. Provider/model interaction provenance is mandatory;
+  marker loss, validation failures, blocking questions, forged admission, and
+  malformed/expanded schemas fail closed. The seam does not invoke a provider.
+  Focused tests passed 5/5 and the full provider-free suite passed 554/554;
+  compileall and hygiene checks passed. Next command: connect the existing
+  validation pipeline to an adapter-independent admission service and persist
+  the exact admitted outputs plus interaction log atomically. Evidence:
+  `experiments/20260814T103000Z-plain2metta-v2-elaboration-protocol/RUN.md`.
+  Local implementation commit: `4f070ae` (not pushed).
+  **Elaboration admission/persistence gate 2026-08-14 03:54 PDT:** connected
+  the existing SpecAtom-HS validator to an adapter-independent response seam.
+  Exact admitted returns atomically persist a canonical interaction log,
+  elaborated spec, and test spec; stale sources, marker loss, failures,
+  blocking questions, rewritten diagnostics, and forged provenance fail
+  closed without partial writes. Focused tests passed 9/9 and the full
+  provider-free suite passed 558/558; compileall and repository hygiene checks
+  passed. Next command: add a narrow request-construction boundary for the
+  exact current original spec, still without invoking a provider. Evidence:
+  `experiments/20260814T104243Z-plain2metta-v2-elaboration-admission-persistence/RUN.md`.
+  Local implementation commit: `273feaa` (not pushed).
+  **Exact-current request-construction gate 2026-08-14 04:00 PDT:** added a
+  read-only service that loads the exact current original-spec bytes and
+  identity and constructs a validated elaboration request with optional
+  guidance/section scope. Source replacement yields a different request;
+  malformed options fail closed, and the service has no save, provider,
+  retry, or execution capability. Focused tests passed 12/12 and the full
+  provider-free suite passed 561/561; compileall and hygiene checks passed.
+  Next command: define an explicitly configured provider-adapter contract and
+  response-import boundary without selecting a vendor or enabling retries.
+  Evidence:
+  `experiments/20260814T105531Z-plain2metta-v2-elaboration-request-builder/RUN.md`.
+  Local implementation commit: `0990f28` (not pushed).
+  **Configured adapter-contract gate 2026-08-14 04:14 PDT:** added an injected,
+  vendor-neutral `ElaborationBackend` contract plus immutable backend/model/
+  temperature/token configuration. The coordinator makes exactly one call,
+  checks exact request binding and returned provider provenance, then uses the
+  existing atomic validation-admission seam. Stale/misattributed responses,
+  malformed configuration, and adapter failures fail without retry or state
+  write. Focused tests passed 17/17 and the full provider-free suite passed
+  566/566; compileall and hygiene checks passed. Next command: define a strict
+  canonical elaboration prompt envelope that carries task constraints and
+  response format without provider-specific formatting or automatic retry.
+  Evidence:
+  `experiments/20260814T110830Z-plain2metta-v2-provider-adapter-contract/RUN.md`.
+  Local implementation commit: `fe06c12` (not pushed).
+  **Canonical elaboration-prompt gate 2026-08-14 04:25 PDT:** the configured
+  adapter now receives an exact request-bound two-message envelope with the
+  PDF's reviewable-English, marker-preservation, explicit-question, coverage,
+  and dependency constraints plus a provider-independent strict JSON response
+  schema. Non-JSON, blank, schema-expanded, prompt-tampered, and misattributed
+  completions fail before admission or persistence. Focused tests passed 21/21
+  and the full provider-free suite passed 570/570. Next command: add
+  gold-standard elaboration fixtures for the existing ML/auth examples and
+  validate their requirement-to-test coverage without a paid/provider call.
+  Evidence:
+  `experiments/20260814T112250Z-plain2metta-v2-elaboration-prompt-envelope/RUN.md`.
+  Local implementation commit: `c943558` (not pushed).
+  **First acceptance-gate advance 2026-08-14 00:37 PDT:** verified the PDF hash,
+  created isolated branch/worktree `agent/plain2metta-v2-logical-ir`, and added
+  the pure immutable project/artifact/version model with SHA-256 content
+  provenance, approvals bound to exact versions, transitive invalidation after
+  source or derived-version changes, and strict fail-closed serialization.
+  Focused tests passed 10/10; the unchanged baseline passed 471/471 and the
+  post-change provider-free suite passed 481/481; bytecode compilation and
+  `git diff --check` passed. Local commit: `713a720` (not pushed). **Second
+  acceptance-gate advance 2026-08-14 00:49 PDT:** added atomic filesystem
+  persistence with create/get/save/list-status operations, traversal-safe
+  project IDs, fully flushed atomic publication, and fail-closed malformed,
+  forged, symlink, duplicate, and unexpected-entry handling. Focused tests
+  passed 18/18 and the full provider-free suite passed 489/489; compileall and
+  `git diff --check` passed. Local commit: `0506f61` (not pushed). **Third
+  acceptance-gate advance 2026-08-14 01:04 PDT:** added exact artifact-bound
+  general/section/item annotations and the sole `add_logical_ir` transition,
+  requiring explicit approvals for both exact current elaborated-spec and
+  test-spec versions. Generic creation cannot bypass the gate; approval
+  revocation invalidates downstream logical IR; stale, malformed, and forged
+  review state fails closed. Focused tests passed 25/25 and the full
+  provider-free suite passed 496/496; compileall and `git diff --check` passed.
+  Local commit: `1cde4d2` (not pushed).
+  Superseded next command: the non-executable logical-IR schema and
+  machine-readable critical-finding review report from PDF §3.5 were completed,
+  followed by the provider-free Phase 2–7 pipeline. Final acceptance replay at
+  isolated revision `51fdefe` passed focused 64/64 and full 651/651 tests; see
+  `experiments/20260816T110303Z-plain2metta-v2-acceptance-revalidation/RUN.md`.
+  Earlier evidence:
+  `experiments/20260814T080406Z-plain2metta-v2-review-gate-verification/RUN.md`.
+  **Phase 6 protocol gate 2026-08-14 02:23 PDT:** added a pure canonical
+  sandbox request boundary and strict per-test result artifacts bound to the
+  exact request digest/current handoff. There remains no host invocation path.
+  Focused project tests passed 35/35 and the full provider-free suite passed
+  521/521; compileall, diff, credential, large-file, and untracked checks passed.
+  Next command: derive a provenance-chain report artifact from test results and
+  compiler traceability (PDF §§3.8 and 4.2.7). Evidence:
+  `experiments/20260814T091848Z-plain2metta-v2-sandbox-results/RUN.md`.
+  **Phase 7 traceability gate 2026-08-14 02:39 PDT:** added a canonical
+  full-chain report artifact joining each compiler-declared spec ID to generated
+  paths, planned tests, exact sandbox results, pass/fail/skip/untested status,
+  and failure detail. Unknown test/spec IDs, incomplete provenance, generic
+  creation bypass, and forged report state fail closed. Focused tests passed
+  55/55 and the full provider-free suite passed 526/526; compileall and
+  repository hygiene checks passed. Next command: expose the narrow read-only
+  status/version/trace query service boundary without LLM or execution
+  integration. Evidence:
+  `experiments/20260814T093310Z-plain2metta-v2-traceability-report/RUN.md`;
+  local commit `580ee3b` (not pushed).
+  **Read-query boundary gate 2026-08-14 02:46 PDT:** added a storage-agnostic,
+  read-only service for project list/status, artifact-version history, full
+  trace, and exact spec-ID trace queries. History omits artifact bodies and the
+  service has no mutation/execution/provider capability. Traversal IDs, missing
+  reports, malformed filters, and unknown spec IDs fail closed. Focused tests
+  passed 52/52 and the full provider-free suite passed 530/530; compileall and
+  repository hygiene checks passed. Next command: add the minimal read-only
+  transport adapter for the corresponding GET routes. Evidence:
+  `experiments/20260814T094318Z-plain2metta-v2-read-query-boundary/RUN.md`.
+  Local commit `2ae8ec4` (not pushed).
+  **Read-transport gate 2026-08-14 02:55 PDT:** added a server-independent
+  WSGI adapter exposing only exact GET routes for project list/status, version
+  metadata, full trace, and exact spec-ID trace. Non-GET methods, unknown or
+  ambiguous query parameters, alternate/encoded project identities, traversal,
+  missing state, and unknown routes fail closed; no server, socket, mutation,
+  execution, LLM, or provider capability was added. Focused tests passed 8/8
+  and the full provider-free suite passed 534/534; py_compile, diff, credential,
+  large-file, and untracked-artifact checks passed. Next command: define the
+  narrow framework-neutral command service for create/elaborated-review state
+  transitions before exposing any POST transport. Evidence:
+  `experiments/20260814T095338Z-plain2metta-v2-read-transport-verification/RUN.md`.
+  Local commit `7da5a0e` (not pushed).
+  **Command-service gate 2026-08-14 03:03 PDT:** added a framework-neutral
+  persisted boundary exposing only project creation, exact hash-bound review
+  annotations, and declared approval decisions. Malformed or stale commands
+  fail before persistence, and no generic artifact/provider/execution method is
+  exposed. Focused tests passed 52/52 and the full provider-free suite passed
+  540/540. Next command: add a strict bounded-JSON POST adapter for only these
+  operations. Evidence:
+  `experiments/20260814T100249Z-plain2metta-v2-command-service-verification/RUN.md`.
+
+- [x] **Graduated web-app example suite — completed 2026-08-06:** added five
+  readable Plain specifications with increasing complexity to the deployed
+  app and publish them with the `webapp` branch. Acceptance: the app's example
+  API lists every new file; each file compiles through `POST /api/compile`
+  with HTTP 200, zero Fail checks, resolvable JSON and nonempty MeTTa output;
+  focused regressions and the full provider-free suite pass; exact results are
+  preserved in an experiment record. Next command: inspect the concurrently
+  created candidate examples, add a web/API regression, and execute the
+  validation ledger. Evidence target:
+  `experiments/20260806T*-webapp-example-suite/RUN.md`.
+  Result: `01_hello_world` through `05_knowledge_graph` increase from 17 to
+  170 compiled objects. All five return HTTP 200 through the Flask test client,
+  emit JSON/MeTTa/diagnostics, have zero Fail checks, and have only Pass checks
+  for requirement/test coverage. Focused tests passed 2/2; the provider-free
+  suite passed 473/473; `git diff --check` passed. A concurrent `webapp`
+  commit contained byte-identical candidate files, so the validation commit
+  was rebased and fast-forward pushed without overwriting it. Published remote
+  commit: `0d4804ff7cd833f01f8bcfcb3e9720778f659c75` on `webapp`. Evidence:
+  `experiments/20260806T200134Z-webapp-example-suite/RUN.md`.
+
+- [ ] **Local Plain2Metta web-app deployment — requested 2026-08-06:** deploy
+  the published `webapp` branch on the Pop!_OS research laptop as a
+  non-public, Tailscale-bound service that Ben can open locally and from his
+  Tailscale-connected Mac. Acceptance: the service survives terminal logout;
+  `localhost` and the host's Tailscale address return the compiler page; a
+  real compile request succeeds; startup/restart instructions and the chosen
+  address are recorded. Next command: create an isolated `webapp` worktree
+  and virtual environment, then launch and probe the service.
+  Progress 2026-08-06: deployed checkout is detached at `6776842`; its `.venv`
+  uses Flask 3.1.3. Managed listeners are restricted to `127.0.0.1:8080` and
+  `100.72.218.34:8080` (no general-LAN listener). Both returned HTTP 200, and
+  the Tailnet endpoint completed a real compile request (`objects=6`,
+  Pass=227, Fail=0, Unknown=2, Refusals=76). Current URLs are
+  `http://localhost:8080/` and
+  `http://pop-os.tail7767ab.ts.net:8080/`. `tailscale ping benjamins-laptop`
+  succeeded via DERP. Tailscale Serve HTTPS is disabled by Tailnet admin
+  policy. The managed sessions are live, but automatic restart after a host
+  reboot remains blocked: the `openclaw` account has no user systemd manager
+  and cannot write a crontab/at queue. Evidence/restart commands: `NOTES.md`.
+  Correction 2026-08-06: the managed command sessions terminated across the
+  agent-turn boundary; port 8080 was no longer listening. The deployment task
+  therefore remains open and must not be described as persistent or currently
+  live until a host service is installed or the manual runner is restarted.
+  Progress 2026-08-06: published verified systemd template commit `ea45993`
+  to the non-default `webapp` branch. It runs two hardened, restart-on-failure
+  instances bound exactly to `127.0.0.1:8080` and `100.72.218.34:8080`. The
+  template passed `systemd-analyze verify`, but installation is blocked because
+  this agent's process has Linux `no_new_privileges` and cannot invoke sudo or
+  write `/etc/systemd/system`. Ben must run the documented root-owned install
+  commands in `repos/plain2metta-webapp/deploy/systemd/README.md`; then verify
+  with the two curl commands in that file.
+
 - [x] **Monday playability milestone — due 2026-08-03:** deliver one compact,
   reproducible Plain2Metta “lab bench” that Ben can install and explore after
   the conference. The primary episode must take a small, readable Plain
@@ -1136,7 +2146,10 @@ Use small, testable tasks. Keep the top of each section in priority order.
   tree scan and `git diff --check` passed; the pre-branding code suite had 306
   passing tests at `0777830`.
 
-- [ ] Remote repository creation/push - needs explicit user direction on name/visibility.
+- [x] Remote repository identity/publication — completed 2026-07-15 as public
+  `bgoertzel-sing/plain2metta`; internal package/IR remains `specatom_hs`.
+  Reconfirmed by Ben 2026-08-07 after a stale summary incorrectly requested a
+  repository-name/visibility decision.
 - [ ] Full PDF library preservation - needs a deliberate library-curation step if this source should be kept beyond the temporary attachment path.
 
 ## Someday or exploratory
@@ -1348,3 +2361,176 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [x] 2026-07-06: Added self-dependency review (`information-flow-self-dependency-reviewed`) for direct DataFlowEdge self-loops; unacknowledged component→same-component dependencies create Unknown blocking questions, acknowledged recursion/feedback/fixed-point wording Passes, and ordinary edges Pass; 183 tests pass.
 - [x] 2026-07-15: Refused non-string SpecObject IDs in both PeTTa reified emission and executable-skeleton gating, preventing numeric/boolean IDs from aliasing string IDs or crashing validation; focused profile suite passed 47 tests and full suite passed 307 tests; local commit `1367d46`.
 - [x] 2026-07-15: Refused non-enum SpecObject roles in both PeTTa reified emission and executable-skeleton gating, preventing malformed runtime roles from raising during `.value` serialization or leaking supported facts; targeted regression passed and full suite passed 308 tests; local commit `d844856`.
+- [x] 2026-08-14: Added the PDF §3.5 non-executable logical-IR schema and
+  hash-bound machine-readable critical-finding review report; 7 focused and 505
+  full provider-free tests pass. Evidence:
+  `experiments/20260814T082317Z-plain2metta-v2-logical-ir-schema/RUN.md`.
+- [x] 2026-08-14: Persisted logical-review decision transitions against the
+  exact report/IR version and expose a compile-admission predicate that requires
+  approved logical IR and no open/deferred critical findings. Deserialization
+  regenerates the baseline review and rejects dropped/rewritten findings.
+  Focused 37/37 and full provider-free 508/508 tests passed. Evidence:
+  `experiments/20260814T084048Z-plain2metta-v2-compile-admission/RUN.md`.
+- [x] 2026-08-14: Persisted a strict, inert compiler-output bundle only from
+  the exact admitted logical IR. Safe relative paths and per-file spec
+  traceability are required; publication/execution are absent; executable or
+  unknown fields, stale admission, and forged state fail closed. Focused 35/35
+  and full provider-free 513/513 tests passed. Evidence:
+  `experiments/20260814T085100Z-plain2metta-v2-compiler-output/RUN.md`.
+- [x] 2026-08-14: Added exact compiler-output approval admission and a strict,
+  inert sandbox-handoff manifest. The manifest is digest-pinned, explicitly
+  opt-in, resource-bounded, denies host filesystem/network/secrets, and must
+  name exactly the approved generated files; revocation and forged/weak state
+  fail closed. Focused 39/39 and full provider-free 517/517 tests passed.
+  Evidence: `experiments/20260814T091103Z-plain2metta-v2-output-handoff/RUN.md`.
+- [x] Defined the narrow non-invoking sandbox adapter protocol and structured
+  test-result artifact; see the Phase 6 evidence above.
+- [x] 2026-08-14: Added provider-free gold Phase 2 elaboration/test corpora for
+  the auth and ML/time-series examples plus exact requirement-to-test coverage
+  admission. Duplicate requirement IDs, unknown coverage targets, and missing
+  coverage fail before persistence. Focused 24/24 and full provider-free
+  573/573 passed. Evidence:
+  `experiments/20260814T113929Z-plain2metta-v2-gold-elaboration-fixtures/RUN.md`.
+- [x] Replay the gold elaborations through the real SpecAtom-HS validator and
+  define the narrow, explicit review-question disposition boundary. Both gold
+  corpora now declare `admission: reject`; their intended human questions are
+  matched exactly to real blocking `ExplicitQuestion` objects, and validator
+  failures/blockers cannot be mistaken for admission. Focused 10/10 and full
+  provider-free 574/574 passed. Evidence:
+  `experiments/20260814T115324Z-plain2metta-v2-gold-validator-replay/RUN.md`.
+- [x] Add the narrow Phase 3 review-diff artifact over exact original,
+  elaborated, and test-spec identities; acceptance: deterministic changed-ID,
+  retained-question, and coverage summaries fail closed on stale/malformed
+  inputs and do not imply approval. Focused review-diff/query tests passed 9/9
+  and the full provider-free suite passed 579/579. Evidence:
+  `experiments/20260814T120352Z-plain2metta-v2-phase3-review-diff/RUN.md`.
+- [x] 2026-08-14: Added the canonical provider-independent Phase 4 logical-IR
+  request/prompt/response envelope. Both exact reviewed snapshot identities
+  and bytes are hash-bound; strict logical-IR parsing rejects malformed,
+  expanded, executable, duplicate-key, or stale inputs. Focused 50/50 and full
+  provider-free 598/598 passed. Evidence:
+  `experiments/20260814T132457Z-plain2metta-v2-logical-ir-envelope/RUN.md`.
+- [x] 2026-08-14: Added fail-closed logical-review decision replay and exact
+  regenerated finding-order stability across all eight PDF §3.5 categories.
+  Focused tests passed 96/96 and the full provider-free suite passed 624/624.
+  Evidence:
+  `experiments/20260814T145802Z-plain2metta-v2-logical-review-replay/RUN.md`.
+  Next: provider-independent Phase 5 compilation envelopes bound to the exact
+  approved reviewed-spec, reviewed-test, and logical-IR versions.
+- [x] 2026-08-14: Added the canonical provider-independent Phase 5 compilation
+  request/prompt/response envelope. Request construction first enforces the
+  Phase 4 compile-admission gate, then hash-binds the exact reviewed spec,
+  reviewed tests, and approved logical IR bytes. Strict completion parsing
+  rejects malformed, expanded, duplicate-key, executed, stale, misattributed,
+  or guidance-mismatched output. Focused 45/45 and full provider-free 630/630
+  tests passed. Evidence:
+  `experiments/20260814T151308Z-plain2metta-v2-compilation-envelope/RUN.md`.
+  Next: single-call Phase 5 adapter and atomic compiler-output/provenance
+  admission transaction.
+- [x] 2026-08-14: Added strict opt-in `POST /api/test/<project-id>` through an
+  explicitly injected Phase 6 sandbox coordinator. Only `{}` is accepted;
+  canonical identity, one-call execution, atomic admission, and fail-closed
+  malformed/unconfigured/backend-failure behavior are tested. Focused 24/24
+  and full provider-free 647/647 passed. Evidence:
+  `experiments/20260814T162600Z-plain2metta-v2-test-post-transport/RUN.md`.
+  Next: validated read-only test-result metadata retrieval without output
+  bodies, mutation, or execution authority.
+- [x] 2026-08-14: Added validated `GET /api/test-result/<project-id>` bound to
+  the exact current sandbox handoff and canonical test-result artifact. The
+  response exposes statuses, durations, coverage, assertions, and captured
+  stream hashes/byte sizes, but never stdout/stderr bodies or mutation or
+  execution authority. Focused 38/38 and full provider-free 649/649 passed.
+  Evidence:
+  `experiments/20260814T163755Z-plain2metta-v2-test-result-query-verification/RUN.md`.
+  Next: Phase 7 exact-chain traceability/report retrieval for the completed
+  reviewed-input → logical-IR → compiler-output → sandbox-result path.
+# 2026-08-14 07:06 PDT — Phase 4 logical-review decision transport
+
+- [x] Expose validated current logical findings without logical-IR bodies.
+- [x] Persist repair/waive/defer decisions only against exact current IR and review hashes.
+- [x] Require reviewer identity/rationale and fail closed without writes on malformed or stale requests.
+- [x] Verify focused 38/38 and full provider-free 612/612 tests; commit `c77da79` (not pushed).
+- [x] Provider-free auth and ML/time-series logical-IR gold fixtures with
+  complete clause provenance and explicit operational holes were added and
+  validated; see
+  `experiments/20260814T143255Z-plain2metta-v2-logical-ir-gold-fixtures/RUN.md`.
+- Evidence: `experiments/20260814T135749Z-plain2metta-v2-logical-review-decisions/RUN.md`.
+# 2026-08-14 Phase 5 compile transport
+
+- [x] Add strict `POST /api/compile/<project-id>` over the explicitly configured
+  single-call coordinator, with optional text guidance only, atomic result
+  identities, and malformed/alternate/unconfigured/backend-failure cases.
+- [x] Validated read-only compiler-output metadata retrieval was added without
+  generated-file bodies, publication, approval, or execution authority; see
+  `experiments/20260814T155155Z-plain2metta-v2-compiler-output-query/RUN.md`.
+
+# 2026-08-16 Public evaluation example identity gate
+
+- [x] Replace general compiler fixtures in the UI picker with three valid,
+  explicit-ID graduated evaluation examples.
+- [x] Reject missing and duplicate requirement IDs rather than inventing or
+  silently deduplicating traceability identities.
+- [x] Verify 6/6 focused, 657/657 full, compile/diff/hygiene, and live Tailnet
+  example/sandbox smoke; published commit `c6d5d9a` to draft PR #3.
+- Evidence:
+  `experiments/20260816T195813Z-plain2metta-evaluation-example-validation/RUN.md`.
+- Next: Ben hands-on product feedback; PDF remains deferred.
+
+# 2026-08-16 Public evaluation API input bound
+
+- [x] Enforce the 128 KiB Plain specification limit at the Flask boundary and
+  on decoded UTF-8 text, independent of browser controls.
+- [x] Verify focused 7/7, full 658/658, compile/diff/hygiene, live valid
+  sandbox smoke, and live oversized HTTP 413; published `bfb8cc9` to PR #3.
+- Evidence: `experiments/20260816T203100Z-plain2metta-api-input-bound/RUN.md`.
+- Next: Ben hands-on product feedback; PDF remains deferred.
+# Runtime-validation milestone (2026-08-16)
+
+- [x] Execute generated MeTTa with pinned Hyperon CLI 0.2.10 and require exact
+  requirement-derived output, alongside bounded Python execution; fail closed
+  on output mismatch. Evidence:
+  `experiments/20260816T220300Z-plain2metta-metta-runtime-validation/RUN.md`.
+
+# General semantic validation Stage 4 (2026-08-17)
+
+- [x] Lower exact approved validation plans to canonical, closed-world
+  Hypothesis modules with pinned version, settings, seeds, and ancestry.
+- [x] Execute only in the bounded Python sandbox and persist immutable runtime
+  evidence plus replayable minimal counterexamples and shrink history.
+- [x] Pass numerical, authentication, idempotency, seeded-mutant,
+  fail-closed, invalidation, 13/13 focused, 690/690 full, hygiene, and live
+  dual-runtime gates. Evidence:
+  `experiments/20260817T082100Z-plain2metta-general-semantic-validation-stage4/`.
+- [x] Stage 5: implemented exact-ancestry canonical TLA+ lowering and bounded
+  pinned TLC execution with immutable model-check evidence and source-linked
+  traces. Authentication ordering and idempotency/recovery gold models plus
+  three mutants passed the 15/15 focused, 696/696 full, hygiene, and live
+  dual-runtime gates. Evidence:
+  `experiments/20260817T084600Z-plain2metta-general-semantic-validation-stage5/`.
+- [x] Stage 6: implemented exact-ancestry canonical SMT-LIB lowering and
+  bounded pinned Z3 execution with immutable formula, declaration/source-map,
+  model, unsat-core, optional proof, and replay evidence. Contradictory
+  contracts, unreachable states, boundary errors, and finite-counterexample
+  gold/mutation pairs passed 7/7 focused and 703/703 full tests, hygiene, and
+  live dual-runtime gates. Evidence:
+  `experiments/20260817T091400Z-plain2metta-general-semantic-validation-stage6/`.
+- [x] Stage 7: exact-ancestry Lean 4 semantic kernel passed pinned build,
+  focused 6/6, full 709/709, hygiene, and live dual-runtime gates. Evidence:
+  `experiments/20260817T092933Z-plain2metta-general-semantic-validation-stage7/`.
+- [x] Stage 8: approved-plan dual-runtime normalization and conservative cross-tool verdict synthesis (740/740 tests; experiment `20260817T094100Z-plain2metta-general-semantic-validation-stage8`).
+- [x] Stage 9: narrow authorized plan/review/execution/result/trace routes and
+  evidence-focused Web UI passed 12/12 focused and 746/746 full tests, pinned
+  backend replay, live dual-runtime replay, and hygiene gates. Evidence:
+  `experiments/20260817T101110Z-plain2metta-general-semantic-validation-stage9/`.
+- [x] Stage 10: five strict Section 9 data artifacts cover pure numerical,
+  authentication, temporal lineage, distributed idempotency, and intentionally
+  blocked policy shapes. The corpus killed 8/8 relevant mutants; its cosmetic
+  survivor was explicitly reviewed. Focused 3/3, full 749/749, pinned backend,
+  live dual-runtime, trace, and hygiene gates passed. Evidence:
+  `experiments/20260817T102837Z-plain2metta-general-semantic-validation-stage10/`.
+- [x] Stage 11: final hardening, clean-checkout reproduction, threat-model
+  matrix, pinned-tool replay, browser/API smoke, live dual-runtime replay, and
+  audits passed at 72/72 focused and 749/749 full tests. Evidence:
+  `experiments/20260817T104940Z-plain2metta-general-semantic-validation-stage11/`.
+- [x] Revision 0.2 implementation objective complete. Human review, merge, and
+  release remain separate decisions.

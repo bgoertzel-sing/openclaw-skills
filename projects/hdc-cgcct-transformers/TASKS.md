@@ -4,6 +4,66 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] **Ben 2026-08-02: repair the P1B interpretation contract and proceed.**
+  Deliverable: versioned P1-G2 contract v2 that reconstructs or explicitly
+  reruns the missing oracle-code arm, pins the P1A-derived `D_pred` mapping,
+  rejects provenance/shape/seed drift, and separates post-hoc repair evidence
+  from sealed confirmation evidence. Acceptance: constructed pass/fail and
+  existing-artifact tests pass; the five returned seeds become evaluable only
+  under an explicitly labeled v2 interpretation, or the validator proves a
+  bounded rerun is necessary. Next command: source-map `D_pred` and oracle-arm
+  omissions from the P1A/P1B runners and frozen artifacts. Evidence: a new
+  contract-repair experiment plus updated decision record. Completed locally
+  at nested commit `b34b6f1`: 31 tests passed, two full evaluation payloads
+  were byte-identical, and existing artifacts classify
+  `instrument_failed` under explicitly post-hoc contract v2. Evidence:
+  `experiments/20260803T080400Z-p1g2-contract-v2/`.
+
+- [x] **P1B interpretation gate contract repair:** the verified five-seed
+  confirmation return cannot be evaluated under frozen P1-G2 because the
+  confirmation cells omit the required oracle-code arm and frozen
+  `criteria.json` omits the P1A-derived `D_pred` mapping used to select cells.
+  Fail closed as `gate_not_evaluable_contract_incomplete`; do not infer a
+  scientific classification or provision more compute. Evidence:
+  `experiments/20260731T235800Z-p1b-gate-contract-audit/RUN.md`. Next action
+  requires an explicit decision between a versioned post hoc local contract
+  repair using already opened deterministic artifacts and stopping P1
+  interpretation. Ben authorized repair on 2026-08-02. Contract v2 pins the
+  missing mapping, reconstructs the oracle arm deterministically, and rejects
+  provenance/shape drift without opening a seed. P1-G2 is now evaluable only
+  under the post-hoc v2 label and classifies `instrument_failed`. Evidence:
+  `experiments/20260803T080400Z-p1g2-contract-v2/`.
+
+- [x] **P1B confirmation launch preparation (approved 2026-07-30):** Ben
+  approved one Secure L4 (24 GiB) RunPod confirmation run, maximum two hours
+  / USD 0.78, for the sealed seeds 15313, 16417, 17519, 18637, and 19739.
+  Preflight on 2026-07-30 passed 27/27 local tests.  Do not provision yet:
+  the current runner deliberately accepts calibration seeds only, so an
+  independently tested confirmation runner now consumes verified frozen
+  `criteria.json`, verifies the three returned calibration artifact hashes,
+  and applies the unchanged ridge/threshold selection algorithm to each
+  confirmation seed's disjoint calibration split, per Ben's 2026-07-30
+  exploratory-work decision. Its reduced non-sealed CPU path passed and the
+  full local suite passed 28/28. Terminate after return/hash verification or
+  any failed gate. Evidence: Telegram approval 15018 and
+  `experiments/20260730T202400Z-p1b-confirmation-runner-preflight/`.
+
+- [x] **Repair and reauthorize sealed P1B confirmation launch:** the first
+  separately authorized L4 launch failed closed: pod `9zwz0q1bkooc3y`
+  remained running past its two-hour deadline, contained no result files or
+  active P1B process when inspected, and was deleted at 2026-07-30T23:58Z.
+  No sealed seed opened. Diagnose the missing bootstrap/provider termination,
+  then obtain fresh explicit cost authorization and
+  a current L4 (or
+  compatible >=24-GiB) price/availability quote and write the exact remote
+  job record. Acceptance: a new authorization covers the quoted hardware,
+  storage, data, stop/retrieval, and independently enforced termination plan.
+  Execute only seeds
+  15313/16417/17519/18637/19739 with the verified criteria runner.
+  Completed 2026-07-31 through the separately approved reliability-first RTX
+  4090 retry: all five sealed seed artifacts and the summary verified locally,
+  and pod `38dun5tixpgvnd` was deleted with provider absence confirmed.
+
 - [x] **P1A full-grid calibration execution:** the complete metrics/calibration
   pipeline is implemented at nested commit `e4e1d65`. Its reduced two-replay
   smoke passed 18 tests and produced byte-identical payloads (SHA-256
@@ -82,12 +142,16 @@ Use small, testable tasks. Keep the top of each section in priority order.
   `experiments/20260727T213214Z-p0-g1-v2-authorized-grid/RUN.md`; runner
   commit `ce7616d`.
 
-- [ ] Persistent local P0/P1 worker: resume the interrupted P0-G1 replay,
+- [x] Persistent local P0/P1 worker: resume the interrupted P0-G1 replay,
   then progress through the recorded CPU-only P1 tasks with reproducible
   artifacts and fail-closed gates. Acceptance: each tick either leaves a
   verified artifact/test result or records its concrete blocker. It must not
   provision remote compute. Scheduler lane: `HDC CGCCT transformers progress
-  worker`.
+  worker`. Closed 2026-08-03 after the terminal contract-v2 replay: all 31
+  tests passed, the five-seed evaluation reproduced byte-for-byte, and P1-G2
+  classified `instrument_failed`. This stale execution lane must not rerun
+  P0, reopen calibration/confirmation seeds, or provision remote compute;
+  evidence: `experiments/20260803T120737Z-p1g2-terminal-replay/`.
 - [x] Complete and interpret P0-G1 independent-cleanup replay (failed closed, 2026-07-27). The P0 algebra/artifact
   implementation is committed at `repos/hdc-cgcct-probes/` commit `fa11721`; exact tests
   pass 13/13 and replay A exists. Acceptance: a fresh `p0-selftest-v2` execution writes
@@ -102,8 +166,9 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Next
 
-- [ ] Implement P1A independent/coherent/pathology/hierarchy-distance fixtures
-  and run local preflight only.
+- [x] Implement P1A independent/coherent/pathology/hierarchy-distance fixtures
+  and run local preflight only. Completed through the frozen full-grid run;
+  evidence: `experiments/20260728T002900Z-p1a-full-grid/`.
 - [x] Implement the P1B planted-PCFG next-token fixture and six-layer
   transformer without reusing the causal-fibres classifier as scientific
   evidence.
@@ -142,3 +207,23 @@ Move durable conclusions into `PROJECT.md`, `DECISIONS.md`, or experiment result
 - [x] Created project notebook and assigned persistent research subagent (2026-07-26).
 - [x] Implemented deterministic CPU P0 HDC algebra and fixtures (2026-07-26).
   Evidence: local commit `fa11721` on `agent/p0-core`; 13/13 exact tests.
+
+## 2026-07-30 RunPod recovery obligation
+
+- [x] Run the approved reliability-first P1B confirmation retry. The Secure RTX
+  4090 run completed all five sealed seeds; 160 returned manifest entries and
+  all five artifact digests verified locally. Pod `38dun5tixpgvnd` was deleted
+  and provider absence was confirmed at 2026-07-31T19:47Z. Approval: Ben,
+  Telegram 15548, 2026-07-31; maximum USD 1.38 / two hours. Evidence:
+  `experiments/20260731T190413Z-p1b-confirmation-reliability-retry/`.
+
+- [x] Launch the repaired P1B confirmation package after fresh authorization.
+  Acceptance: five sealed seeds pass through the frozen validator, artifacts
+  and hashes are retrieved, and the pod is deleted. Next command: provision
+  the approved Secure L4 and transfer the retry archive. Evidence:
+  `experiments/20260731T001144Z-p1b-confirmation-bootstrap-repair/`.
+  The initial L4 authorization was superseded by Ben's separately approved
+  reliability-first RTX 4090 retry (maximum USD 1.38). The package passed
+  28/28 tests; all five sealed seeds completed, returned artifacts verified,
+  and pod `38dun5tixpgvnd` was deleted with provider absence confirmed.
+  Evidence: `experiments/20260731T190413Z-p1b-confirmation-reliability-retry/`.

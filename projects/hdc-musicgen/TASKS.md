@@ -1509,6 +1509,27 @@ Use small, testable tasks. Keep the top of each section in priority order.
   and the support-aware NLL policy remains frozen with fail-closed safeguards.
   No provider, network, remote resource, corpus download, or paid action was
   used.
+  Latest evidence (2026-08-20): closure audit at `eb39c96` passed the full
+  local suite 26/26 in 0.82 s; `git status --short` empty; `git diff --check`
+  passed. Runtime source SHA-256
+  `e1da8a357a7abe6e410173708a1807c591d20d54c041a4a9e90a512df4cdf24a` is
+  byte-identical to the immutable A40-retry bundle, and `smoke-r2/artifacts/`
+  remains absent. Smoke-r2 stays terminally no-result; the support-aware NLL
+  policy stays frozen. No provider, network, remote resource, or data action.
+  Latest evidence (2026-08-21): closure audit at `eb39c96` passed the full
+  local suite 26/26 in 0.83 s; `git status --short` empty; `git diff --check`
+  passed. Runtime source SHA-256
+  `e1da8a357a7abe6e410173708a1807c591d20d54c041a4a9e90a512df4cdf24a` remains
+  byte-identical to the immutable A40-retry bundle, and `smoke-r2/artifacts/`
+  remains absent. A seven-case synthetic replay of `stageA_gate()` confirmed
+  every frozen clause: sparse sub-band stratum passes as support-insufficient;
+  sparse `<0.5` and `>8` values stop unconditionally; a missing condition
+  aggregate in a supported stratum fails closed with the correct missing set;
+  a supported out-of-band value fails the ordinary band without triggering
+  the alignment stop; non-finite NLL stops unconditionally; and an in-band
+  two-stratum summary passes cleanly. Smoke-r2 stays terminally no-result;
+  the support-aware NLL policy stays frozen. No provider, network, remote
+  resource, or data action.
 - [x] Prepare a replacement RunPod proposal for the 8-track full-length
   smoke-r2, including a runbook amendment for the one-span smoke NLL policy.
   The attempted continuation pod `mkiku77kmu4rf9` was unreachable (SSH

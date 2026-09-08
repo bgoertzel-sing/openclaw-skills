@@ -3,18 +3,40 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
-import hmac
 import json
 import os
-import re
 import secrets
+import sqlite3
 import stat
 import subprocess
 import sys
 import tempfile
 import time
 from pathlib import Path
+
+
+HASH_EMBEDDING_DIMENSION = 384
+
+
+def validate_live_chroma_dimension(chroma_root: Path) -> None:
+    """Fail before inference when an existing memories collection is incompatible."""
+    database = chroma_root / "chroma.sqlite3"
+    if not database.exists():
+        return
+    info = database.lstat()
+    if database.is_symlink() or not stat.S_ISREG(info.st_mode):
+        raise RuntimeError("live Chroma database must be a regular file")
+    try:
+        with sqlite3.connect(f"{database.as_uri()}?mode=ro", uri=True) as connection:
+            rows = connection.execute(
+                "SELECT dimension FROM collections WHERE name = ?", ("memories",)
+            ).fetchall()
+    except sqlite3.Error:
+        raise RuntimeError("live Chroma database metadata is unreadable") from None
+    if len(rows) > 1:
+        raise RuntimeError("live Chroma memories collection is ambiguous")
+    if rows and rows[0][0] not in (None, HASH_EMBEDDING_DIMENSION):
+        raise RuntimeError("live Chroma embedding dimension mismatch")
 
 
 def find_project_root(core: Path) -> Path:
@@ -46,88 +68,6 @@ def read_prompt(prompt: str | None, prompt_file: Path | None) -> str:
     finally:
         if fd >= 0:
             os.close(fd)
-
-
-def read_bridge_raw_answer(response_path: Path, *, request_id: str,
-                           prompt_sha256: str, session: str,
-                           secret: bytes) -> str | None:
-    """Read only an authenticated handoff for this exact live request."""
-    try:
-        payload = json.loads(response_path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
-        return None
-    if not isinstance(payload, dict):
-        return None
-    raw_answer = payload.get("raw_answer")
-    received_mac = payload.get("hmac_sha256")
-    signed = {
-        "status": payload.get("status"),
-        "request_id": payload.get("request_id"),
-        "prompt_sha256": payload.get("prompt_sha256"),
-        "session": payload.get("session"),
-        "raw_answer": raw_answer,
-    }
-    if (signed["status"] != "ok" or signed["request_id"] != request_id
-            or signed["prompt_sha256"] != prompt_sha256
-            or signed["session"] != session
-            or not isinstance(raw_answer, str) or not raw_answer.strip()
-            or not isinstance(received_mac, str) or len(received_mac) != 64):
-        return None
-    canonical = json.dumps(signed, ensure_ascii=False, sort_keys=True,
-                           separators=(",", ":")).encode("utf-8")
-    expected_mac = hmac.new(secret, canonical, hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(received_mac, expected_mac):
-        return None
-    return raw_answer
-
-
-def read_bridge_failure_code(response_path: Path, *, request_id: str,
-                             prompt_sha256: str, session: str,
-                             secret: bytes) -> str | None:
-    """Read only an authenticated fixed-vocabulary bridge failure."""
-    allowed = {
-        "provider_timeout", "provider_route_invalid", "provider_answer_invalid",
-        "provider_process_failed", "provider_bridge_failure",
-    }
-    try:
-        payload = json.loads(response_path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
-        return None
-    if not isinstance(payload, dict):
-        return None
-    cause_code = payload.get("cause_code")
-    received_mac = payload.get("hmac_sha256")
-    signed = {
-        "status": payload.get("status"), "request_id": payload.get("request_id"),
-        "prompt_sha256": payload.get("prompt_sha256"),
-        "session": payload.get("session"), "raw_answer": payload.get("raw_answer"),
-        "cause_code": cause_code,
-    }
-    if (signed["status"] != "error" or signed["request_id"] != request_id
-            or signed["prompt_sha256"] != prompt_sha256
-            or signed["session"] != session or signed["raw_answer"] is not None
-            or cause_code not in allowed or not isinstance(received_mac, str)
-            or len(received_mac) != 64):
-        return None
-    canonical = json.dumps(signed, ensure_ascii=False, sort_keys=True,
-                           separators=(",", ":")).encode("utf-8")
-    expected_mac = hmac.new(secret, canonical, hashlib.sha256).hexdigest()
-    return cause_code if hmac.compare_digest(received_mac, expected_mac) else None
-
-
-def await_bridge_answer_after_exit(response_path: Path, *, request_id: str,
-                                   prompt_sha256: str, session: str,
-                                   secret: bytes, timeout: float = 2.0) -> str | None:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        answer = read_bridge_raw_answer(
-            response_path, request_id=request_id, prompt_sha256=prompt_sha256,
-            session=session, secret=secret,
-        )
-        if answer:
-            return answer
-        time.sleep(0.05)
-    return None
 
 
 def terminate_process_group(process: subprocess.Popen, *, term_timeout: float = 10.0,
@@ -180,32 +120,13 @@ def emit_case_answer(answer: str, *, started: float, command: list[str],
 
 
 def select_polled_answer(*, live_transport: bool, output_answer: str,
-                         authenticated_answer: str | None,
                          child_returncode: int | None) -> tuple[str, bool]:
     """Select one answer and whether it coincided with an exited child."""
-    # Live transport has exactly one authority-bearing answer seam: the
-    # authenticated bridge receipt. ``output.txt`` is an inner diagnostic and
-    # can never substitute for that receipt.
-    answer = (authenticated_answer or "") if live_transport else output_answer
+    # In every mode, delivery authority belongs exclusively to the channel
+    # output written by PeTTa's evaluated ``send`` skill. Provider bridge
+    # responses are action proposals and can never become outer replies.
+    answer = output_answer
     return answer, bool(answer and child_returncode is not None)
-
-
-def live_bridge_still_running(*, live_transport: bool,
-                              bridge_directory: tempfile.TemporaryDirectory | None,
-                              bridge_process: subprocess.Popen | None) -> bool:
-    """Whether an exited inner runtime still has an authoritative producer.
-
-    The PeTTa loop and live provider bridge are separately owned processes.
-    PeTTa may finish after dispatch while the bridge is still awaiting the
-    provider.  Treating the PeTTa exit as terminal would race the only
-    authority-bearing response path.
-    """
-    return bool(
-        live_transport
-        and bridge_directory is not None
-        and bridge_process is not None
-        and bridge_process.poll() is None
-    )
 
 
 def main() -> int:
@@ -222,17 +143,27 @@ def main() -> int:
                         choices=("OpenClawCLI", "OpenClawBridge", "OpenClawFileBridge", "Test", "SubprocessProbe"))
     parser.add_argument("--test-answer",
                         help="deterministic Test-provider response; requires --provider Test")
+    parser.add_argument("--test-followup-answer",
+                        help="deterministic Test-provider response after a non-send action")
     parser.add_argument("--timeout", type=int, default=240)
     parser.add_argument("--file-channel", action="store_true")
     parser.add_argument("--live-transport", action="store_true",
                         help="use the live Telegram instruction for an outer Bot-API delivery path")
     parser.add_argument("--source", type=Path, action="append", default=[],
                         help="frozen project source to expose read-only to the host bridge")
+    parser.add_argument("--bridge-fixture", type=Path,
+                        help="explicitly enabled provider-free multi-round action fixture")
     args = parser.parse_args()
     args.prompt = read_prompt(args.prompt, args.prompt_file)
     args.petta = args.petta.resolve()
     args.core = args.core.resolve()
     args.source = [source.resolve() for source in args.source]
+    if args.bridge_fixture is not None:
+        args.bridge_fixture = args.bridge_fixture.resolve()
+        if args.provider != "OpenClawFileBridge":
+            raise RuntimeError("bridge fixture requires OpenClawFileBridge")
+        if os.environ.get("OMEGACLAW_ALLOW_BRIDGE_FIXTURE") != "1":
+            raise RuntimeError("bridge fixture not authorized")
 
     mock_dir = args.core / "Autotests" / "mock"
     sys.path.insert(0, str(mock_dir))
@@ -241,6 +172,11 @@ def main() -> int:
     from rpc import LOCALHOST  # type: ignore
 
     env = os.environ.copy()
+    if args.live_transport:
+        chroma_db_path = env.get("CHROMA_DB_PATH", "")
+        if not chroma_db_path or not os.path.isabs(chroma_db_path):
+            raise RuntimeError("live runtime requires an absolute CHROMA_DB_PATH")
+        validate_live_chroma_dimension(Path(chroma_db_path))
     # ``core`` lives under the isolated Phase-2 baseline while the recorded
     # SWI build is project-local.  Phase 2 did not create a venv inside the
     # detached PeTTa checkout; use it if present, otherwise use the existing
@@ -281,9 +217,7 @@ def main() -> int:
     bridge_process = None
     bridge_log = None
     bridge_directory = None
-    live_request_path = None
     bridge_request_id = secrets.token_hex(32)
-    bridge_prompt_sha256 = hashlib.sha256(args.prompt.encode("utf-8")).hexdigest()
     bridge_secret = secrets.token_bytes(32)
     if args.provider == "OpenClawBridge":
         bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
@@ -299,13 +233,9 @@ def main() -> int:
         bridge_log = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
         bridge_directory = tempfile.TemporaryDirectory(prefix="omegaclaw-file-bridge-")
         env["OMEGACLAW_SHADOW_FILE_BRIDGE"] = bridge_directory.name
-        if args.live_transport:
-            request_handle = tempfile.NamedTemporaryFile(
-                "w", encoding="utf-8", prefix="omegaclaw-live-request-", delete=False
-            )
-            request_handle.write(args.prompt)
-            request_handle.close()
-            live_request_path = request_handle.name
+        env["OMEGACLAW_SHADOW_BRIDGE_REQUEST_ID"] = bridge_request_id
+        env["OMEGACLAW_SHADOW_BRIDGE_SECRET_HEX"] = bridge_secret.hex()
+        env["OMEGACLAW_SHADOW_MAX_ROUNDS"] = "4"
         correlation_read_fd, correlation_write_fd = os.pipe()
         bridge_process = subprocess.Popen(
             [sys.executable, str(Path(__file__).with_name("phase5_openclaw_bridge.py")),
@@ -319,7 +249,9 @@ def main() -> int:
              # leaving another twenty seconds before the case deadline.
              "--timeout", str(max(30, args.timeout - 40)),
              *( ["--live-transport"] if args.live_transport else [] ),
-             *( ["--live-request-file", live_request_path] if live_request_path else [] ),
+             "--max-rounds", "4",
+             *( ["--provider-free-fixture", str(args.bridge_fixture)]
+                if args.bridge_fixture else [] ),
              *[item for source in args.source for item in ("--source", str(source))]],
             text=True, stdout=bridge_log, stderr=subprocess.STDOUT,
             start_new_session=True, pass_fds=(correlation_read_fd,))
@@ -327,7 +259,6 @@ def main() -> int:
         try:
             correlation_payload = json.dumps({
                 "request_id": bridge_request_id,
-                "prompt_sha256": bridge_prompt_sha256,
                 "secret_hex": bridge_secret.hex(),
             }, separators=(",", ":")).encode("ascii")
             os.write(correlation_write_fd, correlation_payload)
@@ -337,7 +268,7 @@ def main() -> int:
     command = ["sh", str(args.petta / "run.sh"), str(args.core / "run.metta"),
                "commchannel=file-shadow" if args.file_channel else "commchannel=mock",
                f"provider={args.provider}", "maxNewInputLoops=4", "maxWakeLoops=0",
-               "onlyOnNewInput=True", "sleepInterval=0", "maxOutputToken=1400", "embeddingprovider=Local",
+               "sleepInterval=0", "maxOutputToken=1400", "embeddingprovider=Local",
                "securityPolicyPath="]
     server = None if args.file_channel else CommMockServer((LOCALHOST, COMM_MOCK_PORT))
     llm_controller = (LlmMockController((LOCALHOST, LLM_MOCK_PORT))
@@ -380,6 +311,10 @@ def main() -> int:
                 raise RuntimeError("OmegaClaw Test provider did not initialize")
             if not llm_controller.set_answer(args.prompt, args.test_answer, timeout=5):
                 raise RuntimeError("failed to register deterministic Test-provider response")
+            if args.test_followup_answer and not llm_controller.set_answer(
+                "DO NOT RE-SEND OR SPAM!", args.test_followup_answer, timeout=5
+            ):
+                raise RuntimeError("failed to register deterministic Test-provider follow-up")
         if channel_directory is not None:
             # Publish input only after every responder dependency is ready.
             # Otherwise the fast file-channel loop can consume the prompt
@@ -401,19 +336,10 @@ def main() -> int:
                     output_path.read_text(encoding="utf-8")
                     if output_path.exists() else ""
                 )
-                authenticated_answer = None
-                if args.live_transport and bridge_directory is not None:
-                    bridge_response = Path(bridge_directory.name) / "response.json"
-                    authenticated_answer = read_bridge_raw_answer(
-                        bridge_response, request_id=bridge_request_id,
-                        prompt_sha256=bridge_prompt_sha256, session=args.session,
-                        secret=bridge_secret,
-                    )
                 child_returncode = process.poll()
                 answer, exited_with_answer = select_polled_answer(
                     live_transport=args.live_transport,
                     output_answer=output_answer,
-                    authenticated_answer=authenticated_answer,
                     child_returncode=child_returncode,
                 )
                 rescued_after_early_exit |= exited_with_answer
@@ -421,38 +347,6 @@ def main() -> int:
                 break
             child_returncode = process.poll()
             if child_returncode is not None:
-                # Dispatch completion and provider completion are independent
-                # in live file-bridge mode.  Keep waiting within the existing
-                # case deadline while the authoritative bridge owns work.
-                if live_bridge_still_running(
-                    live_transport=args.live_transport,
-                    bridge_directory=bridge_directory,
-                    bridge_process=bridge_process,
-                ):
-                    time.sleep(0.25)
-                    continue
-                # The PeTTa process can exit during finalization just as the
-                # separately owned bridge atomically publishes a valid answer.
-                # Give that immutable handoff a short bounded grace.
-                if args.live_transport and bridge_directory is not None:
-                    bridge_response = Path(bridge_directory.name) / "response.json"
-                    answer = await_bridge_answer_after_exit(
-                        bridge_response, request_id=bridge_request_id,
-                        prompt_sha256=bridge_prompt_sha256, session=args.session,
-                        secret=bridge_secret,
-                    )
-                    if answer:
-                        rescued_after_early_exit = True
-                        break
-                    failure_code = read_bridge_failure_code(
-                        bridge_response, request_id=bridge_request_id,
-                        prompt_sha256=bridge_prompt_sha256, session=args.session,
-                        secret=bridge_secret,
-                    )
-                    if failure_code:
-                        raise RuntimeError(
-                            f"OmegaClaw authenticated bridge failure: {failure_code}"
-                        )
                 bridge_state = "not_configured"
                 response_state = "not_configured"
                 if args.live_transport and bridge_directory is not None:
@@ -461,7 +355,7 @@ def main() -> int:
                         else "exited"
                     )
                     response_state = (
-                        "present" if (Path(bridge_directory.name) / "response.json").exists()
+                        "present" if any(Path(bridge_directory.name).glob("response-*.json"))
                         else "absent"
                     )
                 # Fixed-vocabulary state only: never include bridge output,
@@ -495,9 +389,6 @@ def main() -> int:
             bridge_log.close()
         if bridge_directory is not None:
             bridge_directory.cleanup()
-        if live_request_path is not None:
-            try: os.unlink(live_request_path)
-            except FileNotFoundError: pass
         if channel_directory is not None:
             channel_directory.cleanup()
         transcript_file.seek(0)

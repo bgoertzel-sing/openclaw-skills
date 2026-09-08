@@ -1,6 +1,7 @@
 # Protomega non-blocking long-task repair
 
-- Status: staging complete; production deployment pending final PASS
+- Status: complete; guarded production deployment and long-document concurrency
+  canary pass
 - Date: 2026-08-08
 - Project: `omegaclaw`
 - Question: can long/document requests be acknowledged and executed outside
@@ -246,3 +247,55 @@ tests pass; compilation, shell syntax, and scoped diff checks pass.
   checks; and found no remaining production-safety blocker in scope.
 - Verdict: `PASS`. This is technical readiness only and does not itself grant
   production restart authority.
+
+### Guarded production deployment and short-message canary — PASS
+
+- Ben explicitly authorized one guarded production deployment attempt in
+  Telegram message 17808 on 2026-08-09.
+- A pre-stop guard found production state schema 2; the pinned schema-3
+  transport explicitly migrates schema 2 by preserving the cursor, processed
+  IDs, outbox, rate state, incident sequence, and recent context while adding
+  an empty deferred-job ledger. The restart proceeded only after verifying
+  that boundary.
+- Pre-restart durable state was retained as
+  `artifacts/PRODUCTION_PRE_RESTART_20260809T121713Z.json` with a SHA-256
+  sidecar. The preserved-field projection hash was
+  `581be68af735dca908a7ee0d39d04dd8e01cc23296ed283b956d2cb73688b0f0`
+  before and after restart.
+- Only the owning outer supervisor was stopped and started under the cutover
+  lock. Owner PID changed from 2343127 to 2513255. Postconditions passed: one
+  owner/one receiver, schema 3, empty deferred-job ledger, no pending inbound,
+  all prior outbox receipts preserved, watchdog `OUTER_OWNER_RUNNING`, free
+  topology lock, and no synchronous-rollback marker. Rollback was not invoked.
+- Fresh external private message 9746 (`PROTOMEGA-PROD-17808`) was admitted by
+  the production receiver and answered exactly `PROD-OK` as Telegram receipt
+  9747, replying to source 9746 in chat 402314199. Ben supplied a client-side
+  screenshot confirming visibility.
+- This closes guarded deployment and fresh short-message production routing.
+  The repair's production long-document concurrency acceptance was then closed
+  by the trace below.
+
+### Production long-document concurrency canary — PASS
+
+- Successful long/document source message 9753 was durably acknowledged as
+  Telegram receipt 9754 and admitted as deferred task
+  `49e144e0166466e17b49a9ee3f3fbb7059866f186a7726b0cd65b16779e6d7b0`.
+- Interleaved short source 9755 received the exact clean reply
+  `PROD-SHORT-OK` as receipt 9756 while the deferred task remained active.
+- The task completed in 47 seconds and its clean document summary was delivered
+  as receipt 9757, immutably replying to source 9753 in chat 402314199.
+- Receipt 9756 preceded the long result by 23 seconds, directly proving the
+  production Telegram polling loop remained responsive during document work.
+- Final durable state: task `completed`, no pending inbound item, one owning
+  receiver, watchdog `OUTER_OWNER_RUNNING`, free topology lock, and no rollback
+  marker. The acknowledgement, short reply, and final result contain no leaked
+  internal `(send ...)` wrapper. Ben supplied client screenshots confirming all
+  three messages were visible at the intended destination.
+- Two earlier attempted inputs, sources 9749 and 9751, each received the
+  bounded visible failure response required by the routing contract; neither
+  remained pending or interfered with the successful source-9753 trace.
+
+Verdict: the non-blocking Protomega long/document repair is complete. Staging,
+independent review, guarded deployment, short production routing, and the full
+production long-plus-interleaved-short acceptance all pass. Rollback was not
+activated.

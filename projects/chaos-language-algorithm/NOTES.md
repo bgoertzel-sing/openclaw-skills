@@ -1,5 +1,1183 @@
 # Notes
 
+## 2026-08-20 20:15 PDT — E0b review gate revalidation (hash discrepancy resolved)
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+12/12 in 0.148 seconds and required discovery 283/283 in 50.203 seconds.
+`compileall`, `git diff --check`, and clean status passed. All four frozen
+hashes match correct targets:
+- E0 result `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  matches `experiments/20260726T171500Z-e0-coder-calibration-v1/results.json` ✓
+- E0b proposal `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606` ✓
+- Foundations amendment `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d` ✓
+- PDF `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb` ✓
+
+The previously noted "E0 result discrepancy" is resolved: earlier entries
+were comparing the hash `3f3b68b...` against
+`docs/e0-coder-calibration-preregistration-v1.md` (SHA-256 `f9f4200b...`)
+instead of the actual experiment results file
+(`experiments/20260726T171500Z-e0-coder-calibration-v1/results.json`,
+SHA-256 `3f3b68b...`). The hash matches the correct target.
+
+`DECISIONS.md` records no E0b approval. No measurement or promotion opened;
+E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+
+## 2026-08-20 12:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+4/4 in 0.106 seconds and required discovery 283/283 in 53.955 seconds.
+`compileall`, `git diff --check`, and clean status passed. Three of four
+frozen hashes match (E0b proposal `36435c8...`, foundations amendment
+`bb69556...`, PDF `6969a09...`); the recorded "E0 result" hash `3f3b68b...`
+does not match any file in the current tree (actual
+`docs/e0-coder-calibration-preregistration-v1.md` SHA-256 is
+`f9f4200b...`) — pre-existing discrepancy propagated since the earliest
+NOTES.md entry. `DECISIONS.md` records no E0b approval. No measurement or
+promotion opened; E1/E5b remain unauthorized, E3 binding, foundations
+claims audited hypotheses, and OmegaSim paused.
+
+## 2026-08-20 10:20 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+4/4 in 0.091 seconds and required discovery 283/283 in 55.549 seconds.
+`compileall`, `git diff --check`, and clean status passed. Three of four
+frozen hashes match (E0b proposal `36435c8...`, foundations amendment
+`bb69556...`, PDF `6969a09...`); the recorded "E0 result" hash `3f3b68b...`
+does not match any file in the current tree (actual
+`docs/e0-coder-calibration-preregistration-v1.md` SHA-256 is
+`f9f4200b...`) — pre-existing discrepancy propagated since the earliest
+NOTES.md entry. `DECISIONS.md` records no E0b approval. No measurement or
+promotion opened; E1/E5b remain unauthorized, E3 binding, foundations
+claims audited hypotheses, and OmegaSim paused.
+
+## 2026-08-20 08:16 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+4/4 in 0.091 seconds (0.15 seconds elapsed; 19,628 KiB maximum RSS) and
+required discovery 283/283 in 49.697 seconds (50.81 seconds elapsed;
+330,536 KiB maximum RSS). `compileall`, `git diff --check`, and clean
+status passed. Three of four frozen hashes match (E0b proposal
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+foundations amendment
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+PDF
+`6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`).
+The recorded "E0 result" hash
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+does not match any file in the current tree (actual
+`docs/e0-coder-calibration-preregistration-v1.md` SHA-256 is
+`f9f4200b657844597c53a15cf1d9ca1320eda99c30697aa993ec1882bd399c1d`);
+this is a pre-existing discrepancy propagated since the earliest NOTES.md
+entry. `DECISIONS.md` still records no E0b approval. No measurement or
+promotion opened; E1/E5b remain unauthorized, E3 binding, foundations
+claims audited hypotheses, and OmegaSim paused.
+
+## 2026-08-20 06:16 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+12/12 in 0.148 seconds and required discovery 283/283 in 48.671 seconds.
+`compileall`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-20 04:18 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+19/19 in 0.27 seconds and required discovery 283/283 in 49.626 seconds.
+`compileall`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. Math foundations text
+(`cla_math_foundations_ascii_1.txt`) and library sidecar
+(`library/cla-mathematical-foundations-2026/SOURCE.md`) reviewed;
+project-specific theorems (Invariance Lemma, recurrence-time ceiling,
+separation proposition, ε-machine MDL-optimality, categories as
+syntactic-monoid fibers) remain audited hypotheses — proof sketches, not
+fully formal proofs; the two falsifiable predictions (CLA wins at
+Feigenbaum/Sturmian, loses to CSSR on hyperbolic chaos) are preserved as
+the scientific reframing. No fixture, score, measurement, promotion, remote
+compute, or OmegaSim work opened; E1/E5b remain unauthorized, E3 binding,
+and OmegaSim paused.
+
+## 2026-08-20 02:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+19/19 in 0.168 seconds and required discovery 283/283 in 49.718 seconds.
+`compileall`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. Math foundations text
+(`cla_math_foundations_ascii_1.txt`) and library sidecar
+(`library/cla-mathematical-foundations-2026/SOURCE.md`) reviewed;
+project-specific theorems (Invariance Lemma, recurrence-time ceiling,
+separation proposition, ε-machine MDL-optimality, categories as
+syntactic-monoid fibers) remain audited hypotheses — proof sketches, not
+fully formal proofs; the two falsifiable predictions (CLA wins at
+Feigenbaum/Sturmian, loses to CSSR on hyperbolic chaos) are preserved as
+the scientific reframing. No fixture, score, measurement, promotion, remote
+compute, or OmegaSim work opened; E1/E5b remain unauthorized, E3 binding,
+and OmegaSim paused.
+
+## 2026-08-20 00:16 PDT — E0b review gate remains closed
+
+Clean strict replay at `1af9f2b` passed focused E0/coding-core declarations
+4/4 in 0.094 seconds and required discovery 283/283 in 49.951 seconds.
+`compileall`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+## 2026-08-19 14:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed required discovery 283/283 in 47.943 seconds. `compileall`, `git diff
+--check`, and clean status passed. Frozen E0 result/E0b proposal/foundations
+amendment/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+## 2026-08-19 10:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0/coding declarations 16/16 in 0.283 seconds and required
+discovery 283/283 in 49.380 seconds. `compileall`, `git diff --check`, and
+clean status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF
+hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+## 2026-08-17 12:17 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.002 seconds (0.03 seconds elapsed;
+16,764 KiB maximum RSS) and required discovery 283/283 in 52.174 seconds
+(53.23 seconds elapsed; 330,412 KiB maximum RSS). Compileall, explicit
+benchmark/declaration py_compile, `git diff --check`, and clean status passed.
+Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined verification command named the foundations amendment
+incorrectly and exited after the otherwise-passing tests; the corrected
+hash/check-only command passed. No fixture, score, measurement, promotion,
+remote compute, or OmegaSim work opened; E1/E5b remain unauthorized, E3
+binding, and foundations claims audited hypotheses.
+
+## 2026-08-16 16:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.112 seconds (0.19 seconds elapsed;
+19,428 KiB maximum RSS) and required discovery 283/283 in 48.074 seconds
+(48.99 seconds elapsed; 338,416 KiB maximum RSS). `compileall`, explicit
+benchmark/declaration `py_compile`, `git diff --check`, and clean status
+passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, and foundations claims remain audited hypotheses.
+
+## 2026-08-15 20:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.116 seconds (0.20 seconds elapsed;
+19,564 KiB maximum RSS) and required verbose discovery 283/283 in 54.372
+seconds (55.44 seconds elapsed; 330,384 KiB maximum RSS). Compileall,
+explicit py_compile, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+## 2026-08-15 06:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.096 seconds (0.20 seconds elapsed;
+19,512 KiB maximum RSS) and required verbose discovery 283/283 in 47.801
+seconds (48.71 seconds elapsed; 337,240 KiB maximum RSS). Compileall, explicit
+py_compile, `git diff --check`, and clean status passed. Frozen E0 result/E0b
+proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work was opened; E1/E5b remain
+unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+## 2026-08-15 02:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.081 seconds (0.15 seconds elapsed;
+19,312 KiB maximum RSS) and required discovery 283/283 in 47.053 seconds
+(47.95 seconds elapsed; 338,436 KiB maximum RSS). Compileall, explicit
+py_compile, `git diff --check`, and clean status passed. Frozen E0 result/E0b
+proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+
+## 2026-08-16 04:15 PDT — E0b review-gate replay
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.099 seconds (0.20 seconds elapsed;
+19,476 KiB maximum RSS), and required discovery passed 283/283 in 48.252
+seconds (49.24 seconds elapsed; 338,000 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. The binding
+E0 result, review-only E0b proposal, frozen foundations amendment, and supplied
+PDF retained SHA-256 values
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+
+## 2026-08-15 04:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.086 seconds (0.15 seconds elapsed;
+19,412 KiB maximum RSS), required verbose discovery 283/283, a second quiet
+discovery 283/283, `compileall`, explicit `py_compile`, `git diff --check`,
+and clean status. Frozen E0 result/E0b proposal/foundations amendment/PDF
+hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work was opened; E1/E5b remain
+unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-14 14:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.093 s (0.20 s elapsed; 19,416 KiB
+maximum RSS), and required discovery passed 283/283 in 48.189 s (49.10 s
+elapsed; 338,228 KiB maximum RSS). `compileall`, explicit `py_compile`,
+`git diff --check`, and clean status passed. The binding E0 result, review-only
+E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256
+values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work was opened; E1/E5b remain
+unauthorized, E3 binding, and the foundations claims remain audited
+hypotheses.
+
+# 2026-08-15 18:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.087 seconds (0.15 seconds elapsed;
+19,604 KiB maximum RSS), and required discovery passed 283/283 in 48.240
+seconds (49.22 seconds elapsed; 329,332 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. All four
+frozen hashes matched. `DECISIONS.md` still contains no E0b approval. No
+fixture, score, measurement, promotion, remote compute, or OmegaSim work was
+opened; E1/E5b remain unauthorized, E3 binding, and the foundations claims
+remain audited hypotheses.
+
+# 2026-08-14 04:26 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- E0 result, E0b proposal, foundations amendment, and supplied PDF retained
+  SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused declarations passed 4/4 in 0.088 seconds (0.15 seconds elapsed;
+  19,468 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  49.080 seconds (50.11 seconds elapsed; 330,412 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 08:49 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.107 seconds (0.22 seconds elapsed;
+  19,304 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  54.984 seconds (56.02 seconds elapsed; 330,592 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. An initial focused invocation used two
+  nonexistent module names and failed before running tests; the corrected
+  discovery pattern ran the frozen four-test declaration slice successfully.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 12:19 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.001 seconds (0.05 seconds elapsed;
+  16,692 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  54.908 seconds (56.07 seconds elapsed; 331,300 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. A first focused invocation used an absolute
+  unittest module path and failed import before running any test; rerunning
+  the unchanged declaration test from its ledger directory passed 4/4.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+
+## 2026-08-12 18:25 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.219 seconds (0.35 seconds elapsed;
+  19,508 KiB maximum RSS). Required verbose discovery passed 283/283.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+## 2026-08-12 16:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.198 seconds (0.32 seconds elapsed;
+  19,512 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  71.931 seconds. `python3 -m compileall -q src tests`, `git diff --check`,
+  and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+## 2026-08-12 02:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.083 seconds (0.14 seconds elapsed;
+  19,628 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  46.335 seconds (47.20 seconds elapsed; 339,884 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-12 10:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.083 seconds (0.14 seconds elapsed;
+  19,776 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  46.218 seconds (47.25 seconds elapsed; 338,524 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+## 2026-08-11 18:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.233 seconds (0.36 seconds elapsed;
+  19,624 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  61.010 seconds (62.41 seconds elapsed; 339,288 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-12 00:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.082 seconds (0.15 seconds elapsed;
+  19,640 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  49.390 seconds (50.30 seconds elapsed; 340,036 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+## 2026-08-11 14:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.110 seconds (0.20 seconds elapsed;
+  19,504 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  60.123 seconds (61.18 seconds elapsed; 339,508 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+## 2026-08-11 08:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.308 seconds (0.57 seconds elapsed;
+  19,336 KiB maximum RSS). Required verbose discovery passed 283/283.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+## 2026-08-10 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.302 seconds (0.44 seconds elapsed;
+  19,476 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  134.786 seconds (137.06 seconds elapsed; 331,332 KiB maximum RSS).
+  Compileall, `git diff --check`, and clean strict-replay status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 06:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.256 seconds (0.51 seconds elapsed;
+  19,444 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  132.338 seconds (134.62 seconds elapsed; 331,040 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.299 seconds (0.56 seconds elapsed;
+  19,296 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  129.790 seconds (132.11 seconds elapsed; 330,736 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. A subsequent hash command used a wrong E0b
+  filename and exited nonzero after verification; the corrected hashes above
+  passed and no measurement or repository state was changed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-11 02:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean strict
+  replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.337 seconds (0.53 seconds elapsed;
+  19,512 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  134.667 seconds (136.76 seconds elapsed; 330,728 KiB maximum RSS).
+  `compileall`, `git diff --check`, and the clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, or remote
+  compute was opened. E1/E5b remain unauthorized, E3 remains binding, the
+  foundations claims remain audited hypotheses, and OmegaSim remains paused.
+
+# 2026-08-10 22:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` retained the
+  binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied-PDF SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.234 seconds. Required verbose
+  discovery passed 283/283 in 135.426 seconds (137.41 seconds elapsed;
+  330,892 KiB maximum RSS). Compileall, `git diff --check`, and clean status
+  passed.
+- No measurement or promotion was opened. E1/E5b remain unauthorized, E3
+  binding, the foundations claims audited hypotheses, and OmegaSim paused.
+  Ben's explicit E0b review remains the critical-path decision.
+
+## 2026-08-09 02:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing work were untouched.
+- Binding E0 result, E0b proposal, foundations amendment, and supplied PDF
+  retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused declarations passed 4/4 in 0.213 seconds (0.34 seconds elapsed;
+  19,560 KiB maximum RSS). Required discovery passed 283/283 in 63.693
+  seconds (64.86 seconds elapsed; 329,140 KiB maximum RSS). Compileall,
+  `git diff --check`, and clean strict-replay status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. Ben's explicit E0b review remains the
+  critical-path decision.
+
+# 2026-08-14 02:24 PDT — E0b review gate remains closed
+
+- Strict replay was clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; all four frozen hashes matched.
+- Focused E0 declarations passed 4/4 in 0.086 s (0.15 s elapsed; 19,532 KiB maximum RSS). Full discovery passed 283/283 in 49.010 s (49.99 s elapsed; 330,692 KiB maximum RSS). Compileall, `git diff --check`, and clean status passed.
+- No measurement, promotion, source change, remote compute, or OmegaSim work opened. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-13 18:39 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- E0 result, E0b proposal, foundations amendment, and supplied PDF retained
+  SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused declarations passed 4/4 in 0.106 s; discovery passed 283/283 in
+  55.694 s (56.88 s elapsed; 329,728 KiB maximum RSS). Compileall, diff
+  hygiene, and clean status passed. No measurement or promotion opened; E1/E5b
+  remain unauthorized, E3 binding, and OmegaSim paused.
+
+## 2026-08-08 10:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing work were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retain SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.098 seconds (0.18 seconds elapsed;
+  19,644 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  53.716 seconds (54.78 seconds elapsed; 339,420 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-10 16:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.282 seconds (0.53 seconds elapsed;
+  19,556 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  134.609 seconds (137.16 seconds elapsed; 330,640 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. An initial mistyped focused class name
+  failed before the correct declaration suite; it generated no fixture or
+  score.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-08 18:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- The binding E0 result, review-only E0b proposal, foundations amendment, and
+  supplied PDF retained SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.111 seconds (0.20 seconds elapsed;
+  19,488 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  60.011 seconds (61.13 seconds elapsed; 339,212 KiB maximum RSS). Compileall,
+  `git diff --check`, and the clean strict-replay assertion passed.
+- No measurement or promotion opened. E1/E5b remain unauthorized, E3 binding,
+  the foundations claims remain audited hypotheses, and OmegaSim paused.
+  Ben's explicit E0b review remains the critical-path decision.
+
+# 2026-08-08 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Frozen E0 result, E0b proposal, foundations amendment, and supplied PDF
+  retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused declarations passed 4/4 in 0.102 seconds (0.18 seconds elapsed;
+  19,556 KiB maximum RSS). Required discovery passed 283/283 in 53.483
+  seconds (54.62 seconds elapsed; 338,076 KiB maximum RSS). Compileall,
+  `git diff --check`, and clean status passed. No measurement opened.
+- E1/E5b remain unauthorized, E3 binding, foundations claims remain audited
+  hypotheses, and Ben's explicit E0b review remains the critical-path decision.
+
+## 2026-08-06 00:21 PDT — review-blocked gate revalidation
+
+- Re-read the governing upgrade/evaluation documents, project records, recent
+  evidence, repository state, research rules, and the complete supplied
+  mathematical-foundations extraction; independently confirmed its PDF hash.
+- Strict replay remains clean at `f5a2b7b`; no Ben approval or later frozen
+  amendment authorizes E0b, E1, or E5b. The theorem statements remain audited
+  claims rather than silent gate mutations.
+- Focused E0 declarations passed 4/4 in 0.096 seconds (0.16 seconds elapsed;
+  19,652 KiB maximum RSS). Required discovery passed 283/283; compileall,
+  `git diff --check`, and clean status passed.
+- Frozen result/proposal/foundations-amendment/PDF SHA-256 values remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- No experiment or measurement was opened. E3 remains binding and OmegaSim
+  remains paused until E7 resolves and E8a passes.
+
+## 2026-08-05 02:35 PDT — review-blocked gate revalidation
+
+- Re-read the governing upgrade/evaluation documents, project records, recent
+  run evidence, repository README/config/tests, research rules, and the complete
+  supplied mathematical-foundations extraction; independently confirmed its
+  PDF SHA-256.
+- Strict-replay remains clean at `f5a2b7b`; no Ben approval or later frozen
+  amendment authorizes E0b, E1, or E5b. The supplied theorem statements remain
+  assumption- and citation-audited claims, not silent gate mutations.
+- Focused E0 declarations passed 4/4 in 0.086 seconds (0.15 seconds elapsed;
+  19,448 KiB maximum RSS). Required unittest discovery passed 283/283 in
+  48.879 seconds (49.80 seconds elapsed; 338,816 KiB maximum RSS).
+  `compileall`, `git diff --check`, and clean status passed.
+- No experiment or measurement was opened. E3 remains binding and OmegaSim
+  remains paused until E7 resolves and E8a passes.
+
+## 2026-08-04 23:00 PDT — review-blocked gate revalidation
+
+- Re-read the governing upgrade/evaluation documents, project records, recent
+  run evidence, repository state, and the complete supplied mathematical
+  foundations extraction; independently confirmed the supplied PDF SHA-256.
+- Strict-replay remains clean at `f5a2b7b`; no Ben approval or later frozen
+  amendment authorizes E0b, E1, or E5b.
+- Focused E0 declaration checks passed 4/4 in 0.103 seconds. Required unittest
+  discovery passed 283/283 in 50.731 seconds (51.66 seconds elapsed; 339,552
+  KiB maximum RSS). `compileall`, `git diff --check`, and clean status passed.
+- The initially attempted dotted unittest module name was not importable
+  because `tests/` is not a package; the required discovery command and the
+  corrected focused discovery command passed. This was a test-invocation
+  error only and produced no measurement.
+- No experiment or measurement was opened. E3 remains binding and OmegaSim
+  remains paused until E7 resolves and E8a passes.
+
+# 2026-08-04 14:26 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment. The unrelated primary checkout was
+  left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, reviewed mathematical-
+  foundations amendment, and supplied PDF retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.254 seconds. Required stdlib
+  discovery passed 283/283 in 135.686 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b proposal remains the
+  critical-path decision.
+
+# 2026-08-04 12:29 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment. The unrelated primary checkout was
+  left untouched.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.216 seconds (0.35 seconds elapsed;
+  19,312 KiB maximum RSS). Required stdlib discovery passed 283/283 in 96.400
+  seconds (97.95 seconds elapsed; 339,864 KiB maximum RSS). `python3 -m
+  compileall -q src tests`, `git diff --check`, and the clean-status assertion
+  passed. An initial mistyped focused module name failed import before the
+  correct frozen declaration suite ran; it generated no fixture or score.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-04 08:28 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment. The unrelated primary checkout was
+  left untouched.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.077 seconds (0.14 seconds elapsed;
+  19,296 KiB maximum RSS). Required stdlib discovery passed 283/283;
+  `python3 -m compileall -q src tests`, `git diff --check`, and the
+  clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-04 00:27 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment. The unrelated primary checkout was
+  left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+  19,392 KiB maximum RSS). Required stdlib discovery passed 283/283 in 42.470
+  seconds (43.31 seconds elapsed; 339,772 KiB maximum RSS). `python3 -m
+  compileall -q src tests`, `git diff --check`, and the clean-status assertion
+  passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-03 00:20 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  The supplied mathematical-foundations PDF retains expected SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+  19,568 KiB maximum RSS). Required discovery passed 283/283 in 47.826
+  seconds (48.75 seconds elapsed; 339,848 KiB maximum RSS). `python3 -m
+  compileall -q src tests`, `git diff --check`, and the clean-worktree
+  assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the E0b amendment proposal remains the critical-path
+  decision.
+
+# 2026-08-03 02:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Ben's mathematical-foundations PDF retains SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`;
+  its theorem statements remain assumption- and citation-audited hypotheses,
+  not amendments to frozen gates.
+- Focused E0 declarations passed 4/4 in 0.080 seconds (0.14 seconds command
+  elapsed; 19,424 KiB maximum RSS). Required discovery passed 283/283 in
+  51.917 seconds (52.84 seconds command elapsed; 339,924 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-10 02:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.221 seconds (0.39 seconds elapsed;
+  19,436 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  118.917 seconds (120.72 seconds elapsed; 331,224 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.248 seconds (0.45 seconds elapsed;
+  19,340 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  128.776 seconds (130.57 seconds elapsed; 331,208 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+## 2026-08-02 22:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.091 seconds; required stdlib
+  discovery passed 283/283 in 51.549 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean-worktree check passed. No fixture,
+  score, experiment rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding; Ben's explicit E0b review
+  remains the critical-path decision.
+
+## 2026-08-01 04:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds command
+  elapsed); required stdlib discovery passed 283/283 in 50.881 seconds
+  (51.79 seconds command elapsed). `python3 -m compileall -q src tests`,
+  `git diff --check`, and the clean-worktree check passed. No fixture, score,
+  experiment rerun, source change, E1 promotion, remote compute, or OmegaSim
+  work was opened. E3 remains binding; Ben's explicit E0b review remains the
+  critical-path decision.
+
+## 2026-08-01 00:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.091 seconds (0.16 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 50.772
+  seconds (51.74 seconds command elapsed). `compileall`, `git diff --check`,
+  and the clean-worktree check passed. No fixture, score, experiment, rerun,
+  source change, E1 promotion, remote compute, or OmegaSim work was opened.
+  E3 remains binding; Ben's explicit E0b review remains the critical-path
+  decision.
+
+## 2026-07-31 18:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.088 seconds (0.16 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 54.220
+  seconds (55.21 seconds command elapsed). `compileall`, `git diff --check`,
+  and the clean-worktree check passed. No fixture, score, experiment, rerun,
+  source change, E1 promotion, remote compute, or OmegaSim work was opened.
+  E3 remains binding; Ben's explicit E0b review remains the critical-path
+  decision.
+
+## 2026-07-31 14:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.095 seconds (0.16 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 50.916
+  seconds (51.95 seconds command elapsed). `compileall`, `git diff --check`,
+  and the clean-worktree check passed. No fixture, score, experiment, rerun,
+  source change, E1 promotion, remote compute, or OmegaSim work was opened.
+  E3 remains binding; Ben's explicit E0b review remains the critical-path
+  decision.
+
+## 2026-07-30 12:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.084 seconds (0.14 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 44.866
+  seconds (45.73 seconds command elapsed). `compileall` and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-08-01 02:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.094 seconds. Required stdlib
+  discovery passed 283/283; `python3 -m compileall -q src tests` and
+  repository `git diff --check` passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+
+# 2026-07-30 14:15 PDT — E0b gate audit and local verification
+
+- Strict-replay remains clean at `f5a2b7b`, with no recorded E0b approval.
+  The frozen result/proposal SHA-256 values remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.082 seconds; required discovery
+  passed 283/283 in 43.779 seconds; compileall and `git diff --check` passed.
+- E1 and dependent measurements remain unauthorized. No fixture, score,
+  experiment, source change, remote compute, or OmegaSim work was opened.
+  Ben's explicit E0b review remains the critical-path decision; E3 remains
+  binding.
+
+## 2026-07-30 10:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` is unchanged
+  since 2026-07-26 and contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Repository `git diff --check` passed.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+
+## 2026-07-30 08:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.079 seconds (0.14 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 45.388
+  seconds (46.27 seconds command elapsed). `compileall`, repository
+  `git diff --check`, and the clean-worktree check passed.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+
+## 2026-07-30 06:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.085 seconds (0.15 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 44.862
+  seconds (45.72 seconds command elapsed). `compileall`, repository
+  `git diff --check`, and the clean-worktree check passed.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+
+## 2026-07-30 02:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.088 seconds; required stdlib
+  discovery passed 283/283 in 43.368 seconds. Compilation of `src` and
+  `tests`, repository `git diff --check`, and the clean-worktree check passed.
+  An initial focused invocation used the wrong unittest module path and failed
+  before tests ran; the corrected discovery command above is the evidence.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+
+## 2026-07-29 00:15 PDT — E0b review remains the critical-path blocker
+
+The active strict-replay repository remains clean at `f5a2b7b`; repository
+status and project decisions contain no approval or gate amendment for E0b.
+The binding E0 v1 `results.json` remains SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+and the review-only E0b amendment proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+E1 and every dependent measurement therefore remain unauthorized. No fixture,
+score, fresh suffix, experiment ledger, source change, remote compute, or
+OmegaSim work was opened. Ben's explicit review of the E0b proposal remains
+the smallest critical-path decision. Focused E0 declaration tests passed 4/4;
+required stdlib discovery passed 283/283 in 45.847 seconds; `compileall` and
+repository `git diff --check` passed.
+
+## 2026-07-28 22:15 PDT — critical-path gate audit unchanged
+
+The strict-replay worktree remains clean at `f5a2b7b`; no E0b approval or
+other gate-changing decision is recorded. The binding E0 v1 result remains
+SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+and the review-only E0b amendment proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+E1 and all dependent measurements therefore remain unauthorized. No fixture,
+score, fresh suffix, experiment ledger, remote compute, or OmegaSim work was
+opened; Ben's explicit review of the E0b proposal remains the critical-path
+decision.
+
 ## 2026-07-27 01:15 PDT — E0 failed narrowly on uniform-v16 M2 redundancy
 
 - The complete E0 ledger was declaration-tested without frozen-seed sampling
@@ -2287,3 +3465,3225 @@ work. No fixture, score, test, source change, or experiment was opened.
 Ben's explicit review of
 `docs/e0-coder-calibration-amendment-proposal-v2.md` is still the next
 critical-path decision.
+
+## 2026-07-28 16:15 PDT — gate audit unchanged
+
+The strict-replay worktree is still clean at `f5a2b7b`. No E0b approval or
+other gate-changing decision is recorded. The binding E0 v1 result and the
+review-only amendment retain SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+E1 and dependent measurements therefore remain closed; no fixture, score,
+test, experiment, source change, or OmegaSim work was opened. Ben's review of
+the E0b proposal remains the critical-path decision.
+
+## 2026-07-28 14:15 PDT — gate audit unchanged; decision still required
+
+The active strict-replay worktree remains clean at `f5a2b7b`. The completed
+E0 v1 aggregate failure remains binding; its `results.json` SHA-256 is
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`.
+The review-only E0b proposal SHA-256 is
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+No approval or later gate-changing decision is recorded, so E1 and all
+dependent measurements remain closed. No fixture, coder score, test,
+experiment, source change, or OmegaSim work was opened. Ben's explicit review
+of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the only
+critical-path decision.
+
+## 2026-07-28 18:15 PDT — post-discussion gate audit unchanged
+
+The 18:00 PDT bot-bot discussion seed identified the E0b review as the
+critical decision but recorded no approval or gate amendment. The active
+strict-replay worktree remains clean at `f5a2b7b`. E0 v1 remains a binding
+aggregate failure with `results.json` SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+the review-only E0b proposal remains unchanged at SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+E1 and dependent measurements remain closed. No fixture, score, test,
+experiment, source change, remote compute, or OmegaSim work was opened.
+
+## 2026-07-28 20:15 PDT — critical-path gate audit unchanged
+
+The active strict-replay worktree remains clean at `f5a2b7b`; no approval or
+gate-changing decision is recorded. The binding E0 v1 result remains
+SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+and the review-only E0b amendment proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Consequently E1 and all dependent measurements remain unauthorized. Required
+stdlib discovery passed 283 tests in 44.211 seconds; compileall and repository
+`git diff --check` passed. No fixture, score, experiment, source change,
+remote compute, or OmegaSim work was opened; Ben's explicit review of the E0b
+proposal remains the critical-path decision.
+## 2026-07-29 02:15 PDT — E0b decision gate still closed
+
+The active strict-replay worktree remains clean at `f5a2b7b`. No E0b approval
+or later gate-changing decision is recorded. The binding E0 v1 result remains
+SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+the review-only E0b proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused E0 declaration tests passed 4, required discovery passed 283 tests in
+44.764 seconds, and compileall plus repository `git diff --check` passed.
+E1 and all dependent measurements remain unauthorized. No fixture, score,
+experiment, source change, remote compute, or OmegaSim work was opened. Ben's
+explicit review of the E0b proposal remains the critical-path decision.
+## 2026-07-29 04:15 PDT — E0b decision gate unchanged
+
+The active strict-replay worktree remains clean at `f5a2b7b`; project
+decisions contain no E0b approval or later gate amendment. The binding E0 v1
+`results.json` remains SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+and the review-only E0b proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+The complete verification suite last passed at 02:15 PDT against this unchanged
+commit (focused declarations 4/4, stdlib discovery 283/283, compileall, and
+`git diff --check`), so it was not redundantly rerun. E1 and every dependent
+measurement remain unauthorized. No fixture, score, experiment, source change,
+remote compute, or OmegaSim work was opened. Ben's explicit review of
+`docs/e0-coder-calibration-amendment-proposal-v2.md` remains the critical-path
+decision.
+
+## 2026-07-29 06:15 PDT — E0b gate verified; suite remains green
+
+The active strict-replay worktree remains clean at `f5a2b7b`, and project
+decisions still contain no E0b approval or later gate amendment. The binding
+E0 v1 `results.json` remains SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+the review-only E0b proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused E0 declaration tests passed 4/4, required stdlib discovery passed
+283/283 in 44.434 seconds, and compileall plus repository `git diff --check`
+passed. E1 and every dependent measurement remain unauthorized. No fixture,
+score, experiment, source change, remote compute, or OmegaSim work was opened.
+Ben's explicit review of the E0b amendment proposal remains the critical-path
+decision.
+
+## 2026-07-29 08:15 PDT — E0b decision gate still closed
+
+The active strict-replay worktree remains clean at `f5a2b7b`, and the project
+decision record contains no E0b approval or later gate amendment. The binding
+E0 v1 `results.json` remains SHA-256
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+the review-only E0b proposal remains SHA-256
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+Focused E0 declaration tests passed 4/4; required stdlib discovery passed
+283/283 in 44.509 seconds; compileall and repository `git diff --check`
+passed. E1 and every dependent measurement remain unauthorized. No fixture,
+score, experiment, source change, remote compute, or OmegaSim work was opened.
+Ben's explicit review of the E0b amendment proposal remains the
+critical-path decision.
+# 2026-07-29 10:15 PDT — E0 gate audit unchanged
+
+- The active strict-replay worktree is clean at `f5a2b7b`; no E0b approval or
+  other gate-changing decision is recorded.
+- E0 v1 remains a binding aggregate failure. Its `results.json` SHA-256 is
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal SHA-256 remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4; required stdlib discovery passed
+  283 tests in 46.458 seconds; compileall and repository `git diff --check`
+  passed. No fixture, score, experiment, rerun, source change, E1 promotion,
+  remote compute, or OmegaSim work was opened. Ben's explicit review remains
+  the critical-path decision.
+
+# 2026-07-29 12:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4; required stdlib discovery passed
+  283/283; compileall and repository `git diff --check` passed. No fixture,
+  score, experiment, rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding. Ben's explicit review of the
+  E0b proposal remains the critical-path decision.
+
+# 2026-07-29 14:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.083 seconds; required stdlib
+  discovery passed 283/283 in 44.590 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 00:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.089 seconds; required stdlib
+  discovery passed 283/283 in 45.480 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-29 16:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.093 seconds; required stdlib
+  discovery passed 283/283 in 46.056 seconds (47.02 seconds command elapsed);
+  compileall and repository `git diff --check` passed. No fixture, score,
+  experiment, rerun, source change, E1 promotion, remote compute, or OmegaSim
+  work was opened. E3 remains binding. Ben's explicit review of the E0b
+  proposal remains the critical-path decision.
+
+# 2026-07-29 18:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.082 seconds; required stdlib
+  discovery passed 283/283 in 46.291 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-29 20:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.085 seconds (0.15 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 45.298
+  seconds (46.14 seconds command elapsed); compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-29 22:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.081 seconds (0.14 seconds
+  command elapsed); required stdlib discovery passed 283/283 in 43.745
+  seconds (44.57 seconds command elapsed); compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 04:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.086 seconds; required stdlib
+  discovery passed 283/283 in 45.976 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 16:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.079 seconds; required stdlib
+  discovery passed 283/283 in 43.754 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 18:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.086 seconds; required stdlib
+  discovery passed 283/283 in 44.188 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 20:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declaration tests passed 4/4 in 0.080 seconds; required stdlib
+  discovery passed 283/283 in 46.132 seconds; compileall and repository
+  `git diff --check` passed. No fixture, score, experiment, rerun, source
+  change, E1 promotion, remote compute, or OmegaSim work was opened. E3
+  remains binding. Ben's explicit review of the E0b proposal remains the
+  critical-path decision.
+
+# 2026-07-30 22:15 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at `f5a2b7b`; the decision
+  record contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- A mistyped focused module name failed before tests ran; the corrected
+  focused E0 declaration command passed 4/4 in 0.086 seconds. Required stdlib
+  discovery then passed 283/283 in 44.664 seconds (45.50 seconds command
+  elapsed), and compileall plus repository `git diff --check` passed.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+# 2026-07-31 00:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; the decision record
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.087 seconds (0.15 seconds command
+  elapsed); required discovery passed 283/283 in 43.818 seconds (44.68
+  seconds command elapsed). `python3 -m compileall -q src tests` and
+  repository `git diff --check` passed.
+- No fixture, score, experiment, rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of the E0b proposal remains the critical-path decision.
+# 2026-07-31 02:15 PDT — E0 gate verification
+
+The strict-replay worktree was clean at `f5a2b7b`, with no decision authorizing
+E0b. The binding E0 v1 result hash remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+and the review-only E0b proposal hash remained
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+`PYTHONPATH=src python3 -m unittest tests.test_e0_coder_calibration -v`
+passed 4/4 in 0.081 seconds; required discovery passed 283/283 in 43.818
+seconds; compileall and `git diff --check` passed. No fixture, score, rerun,
+source change, E1 promotion, remote compute, or OmegaSim work was opened.
+
+# 2026-07-31 04:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree is clean at `f5a2b7b`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal SHA-256 remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- `PYTHONPATH=src python3 -m unittest tests.test_e0_coder_calibration -v`
+  passed 4/4 in 0.081 seconds. Required discovery passed 283/283 in 44.811
+  seconds; `python3 -m compileall -q src tests` and repository
+  `git diff --check` passed.
+- No fixture, score, rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding. Ben's explicit review of
+  `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+
+# 2026-07-31 10:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.095 seconds. Required stdlib
+  discovery passed 283/283 in 50.860 seconds; `python3 -m compileall -q src
+  tests` and repository `git diff --check` passed.
+- No fixture, score, rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding. Ben's explicit review of the
+  E0b proposal remains the critical-path decision.
+
+# 2026-07-31 08:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.098 seconds. Required stdlib
+  discovery passed 283/283; `python3 -m compileall -q src tests` and
+  repository `git diff --check` passed.
+- No fixture, score, rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding. Ben's explicit review of the
+  E0b proposal remains the critical-path decision.
+
+# 2026-07-31 06:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 `results.json` SHA-256 remains
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the review-only E0b proposal SHA-256 remains
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.089 seconds. Required stdlib
+  discovery passed 283/283; `python3 -m compileall -q src tests` and
+  repository `git diff --check` passed.
+- No fixture, score, rerun, source change, E1 promotion, remote compute, or
+  OmegaSim work was opened. E3 remains binding. Ben's explicit review of
+  `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+# 2026-07-31 12:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at `f5a2b7b`; `DECISIONS.md`
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds command
+  elapsed; 19,428 KiB maximum RSS). Required stdlib discovery passed 283/283
+  in 52.526 seconds (53.47 seconds command elapsed; 339,720 KiB maximum
+  RSS); `python3 -m compileall -q src tests` and repository `git diff
+  --check` passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+
+# 2026-07-31 16:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the project decision record
+  contains no E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds command
+  elapsed). Required stdlib discovery passed 283/283 in 51.488 seconds.
+  `python3 -m compileall -q src tests` and `git diff --check` passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+# 2026-07-31 20:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.099 seconds (0.17 seconds command
+  elapsed; 19,600 KiB maximum RSS). Required discovery passed 283/283 in
+  52.049 seconds (53.01 seconds command elapsed; 339,848 KiB maximum RSS).
+  `python3 -m compileall -q src tests` and repository `git diff --check`
+  passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+
+# 2026-07-31 22:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.103 seconds (0.18 seconds command
+  elapsed; 19,596 KiB maximum RSS). Required discovery passed 283/283 in
+  51.073 seconds (52.12 seconds command elapsed; 340,052 KiB maximum RSS).
+  `python3 -m compileall -q src tests` and repository `git diff --check`
+  passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, remote
+  compute, or OmegaSim work was opened. E3 remains binding. Ben's explicit
+  review of `docs/e0-coder-calibration-amendment-proposal-v2.md` remains the
+  critical-path decision.
+# 2026-08-01 06:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree is clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds command
+  elapsed; 19,568 KiB maximum RSS). Required discovery passed 283/283 in
+  47.809 seconds (48.72 seconds command elapsed; 339,680 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+  remains the critical-path decision.
+
+# 2026-08-01 08:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree is clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- Focused E0 declarations passed 4/4 in 0.110 seconds (0.20 seconds command
+  elapsed; 19,468 KiB maximum RSS). Required discovery passed 283/283 in
+  54.813 seconds (55.97 seconds command elapsed; 339,300 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-01 10:15 PDT — E0b decision gate remains closed
+
+- The strict-replay worktree is clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Both copies of Ben's supplied mathematical-foundations PDF retain the
+  expected SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.083 seconds (0.15 seconds command
+  elapsed; 19,424 KiB maximum RSS). Required discovery passed 283/283 in
+  45.184 seconds (46.07 seconds command elapsed; 338,928 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+
+# 2026-08-02 20:50 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- The supplied mathematical-foundations PDF hash was reverified as
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`;
+  its project-specific theorem statements remain hypotheses subject to their
+  stated assumptions and citation audit, not amendments to frozen gates.
+- Focused E0 declarations passed 4/4 in 0.078 seconds; required stdlib
+  discovery passed 283/283 in 43.059 seconds; `compileall`,
+  `git diff --check`, and clean-worktree checks passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the E0b amendment proposal remains the critical-path
+  decision.
+# 2026-08-03 04:22 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+- The supplied mathematical-foundations PDF hash reverified as
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`;
+  its project-specific theorems remain assumption- and citation-audited
+  hypotheses, not amendments to frozen gates.
+- Focused E0 declarations passed 4/4 in 0.092 seconds; required stdlib
+  discovery passed 283/283 in 46.866 seconds (47.88 seconds elapsed;
+  339,992 KiB maximum RSS). Compileall, `git diff --check`, and clean-status
+  checks passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the E0b amendment proposal remains the critical-path
+  decision.
+
+# 2026-08-03 06:17 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result and review-only E0b proposal retain SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  Ben's supplied mathematical-foundations PDF retains SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`;
+  its project-specific theorem statements remain assumption- and
+  citation-audited hypotheses, not amendments to frozen gates.
+- Focused E0 declarations passed 4/4 in 0.098 seconds (0.16 seconds command
+  elapsed; 19,452 KiB maximum RSS). Required stdlib discovery passed 283/283
+  in 48.298 seconds (49.27 seconds command elapsed; 339,660 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the
+  clean-worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the E0b amendment proposal remains the critical-path
+  decision.
+
+# 2026-08-03 08:23 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The review-only E0b proposal retains SHA-256
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`.
+  The binding E0 v1 result remains failed and unchanged; no result was
+  rescored.
+- An initial focused command used stale module names and failed at unittest
+  import before running tests. The corrected repository test command passed
+  4/4 declarations in 0.083 seconds (0.14 seconds elapsed; 19,360 KiB maximum
+  RSS). Required discovery then passed 283/283 in 48.407 seconds (49.35
+  seconds elapsed; 339,868 KiB maximum RSS). `compileall`, `git diff --check`,
+  and the clean-worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-03 10:37 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+  19,340 KiB maximum RSS). Required discovery passed 283/283 in 50.497
+  seconds (51.50 seconds elapsed; 339,324 KiB maximum RSS). `compileall`,
+  `git diff --check`, and the clean-worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the frozen E0b proposal remains the critical-path
+  decision.
+
+# 2026-08-03 12:20 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.100 seconds. Required discovery
+  passed 283/283 in 50.699 seconds. `compileall`, `git diff --check`, and the
+  clean-worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+# 2026-08-03 14:20 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` contains no
+  E0b approval or later gate amendment.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.088 seconds (0.16 seconds elapsed;
+  19,380 KiB maximum RSS). Required stdlib discovery passed 283/283 in
+  50.077 seconds (50.94 seconds elapsed; 339,540 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-03 16:26 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.092 seconds (0.16 seconds elapsed;
+  19,532 KiB maximum RSS). Required stdlib discovery passed 283/283 in
+  48.328 seconds (49.23 seconds elapsed; 339,732 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-03 18:39 PDT — E0b decision gate remains closed
+
+- The active strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` still contains
+  no E0b approval or later gate amendment.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- A first focused-test invocation used an invalid filesystem-style unittest
+  module name and failed before collecting tests; the corrected frozen
+  declaration command passed 4/4 in 0.082 seconds (0.14 seconds elapsed;
+  19,428 KiB maximum RSS). Required stdlib discovery passed 283/283 in
+  50.739 seconds (51.85 seconds elapsed; 339,612 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of `docs/e0-coder-calibration-amendment-proposal-v2.md`
+  remains the critical-path decision.
+
+# 2026-08-03 20:25 PDT — E0b decision gate remains closed
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. Since
+  the repository checkout is currently on unrelated branch
+  `agent/hd-embedding-cla`, strict-replay commit
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` was verified without changing
+  that checkout in detached temporary worktree `/tmp/cla-gate-20260804-8FpgYd`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.106 seconds (0.21 seconds elapsed;
+  20,924 KiB maximum RSS). Required stdlib discovery passed 283/283 in 55.246
+  seconds (56.25 seconds elapsed; 339,816 KiB maximum RSS). `python3 -m
+  compileall -q src tests`, `git diff --check`, and the detached worktree
+  clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit review of the frozen E0b amendment remains the critical-path
+  decision.
+
+# 2026-08-03 22:21 PDT — E0b decision gate remains closed
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.092 seconds (0.16 seconds elapsed;
+  19,576 KiB maximum RSS). Required stdlib discovery passed 283/283 in 47.328
+  seconds (48.34 seconds elapsed; 339,776 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-04 02:37 PDT — E0b decision gate remains closed
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.078 seconds (0.16 seconds elapsed;
+  19,416 KiB maximum RSS). Required stdlib discovery passed 283/283 in 42.316
+  seconds (43.34 seconds elapsed; 337,544 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-04 04:21 PDT — E0b decision gate remains closed
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.077 seconds (0.13 seconds elapsed;
+  19,408 KiB maximum RSS). Required stdlib discovery passed 283/283 in 42.709
+  seconds (43.51 seconds elapsed; 338,636 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+
+# 2026-08-04 06:23 PDT — E0b decision gate remains closed
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was left untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 v1 result, review-only E0b proposal, and supplied PDF retain
+  SHA-256 `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- The initial focused command used an invalid absolute unittest module name
+  and exited 1 before running a test; it generated no fixture or score. The
+  corrected direct declaration-test invocation passed 4/4 in 0.002 seconds
+  (0.08 seconds elapsed; 17,052 KiB maximum RSS). Required stdlib discovery
+  passed 283/283 in 43.172 seconds (43.97 seconds elapsed; 338,664 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the
+  clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+  explicit accept/reject/amend review of the frozen E0b amendment remains the
+  critical-path decision.
+# 2026-08-04 16:46 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` contains no E0b approval or later gate amendment. The strict-replay worktree is clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout remained untouched at `9cd37ca`.
+- E0 result/E0b proposal/PDF hashes reverified as `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused declarations passed 4/4 in 0.238 s. Required `PYTHONPATH=src python3 -m unittest discover -s tests -q` passed 283/283 in 122.809 s (124.74 s command elapsed; 339,856 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean-worktree assertion passed.
+- An initial focused invocation named a nonexistent unittest module and failed before collection; the corrected frozen discovery-pattern command generated no fixture or score. No source, fixture, result, gate, remote-compute, or OmegaSim state changed. The foundations theorems remain audited hypotheses, not gate amendments.
+# 2026-08-04 18:22 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- E0 result, E0b proposal, and supplied foundations PDF SHA-256 values remain
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.225 seconds (0.36 seconds command
+  elapsed; 19,448 KiB maximum RSS). Required discovery passed 283/283 in
+  116.861 seconds (118.56 seconds command elapsed; 340,112 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+  remote compute, or OmegaSim work was opened. E3 remains binding; the
+  foundations claims remain audited hypotheses rather than gate amendments.
+
+# 2026-08-04 21:14 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay worktree remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declaration discovery passed 4/4. The required exact verbose
+  command, `PYTHONPATH=src python3 -m unittest discover -s tests -v`, passed
+  all 283 tests; a quiet confirmation replay also exited successfully.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  worktree assertion passed.
+- An initial hash check referenced a nonexistent checkout-local result path
+  and stopped before tests; the corrected check used the immutable project
+  experiment result. It created no fixture or score. No source, result, gate,
+  remote-compute, or OmegaSim state changed. E3 remains binding, and the
+  mathematical-foundations claims remain audited hypotheses rather than gate
+  amendments.
+
+# 2026-08-05 00:16 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.103 seconds (0.23 seconds command
+  elapsed; 19,384 KiB maximum RSS). The required exact verbose discovery
+  command passed all 283 tests; a quiet confirmation replay also exited 0.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- An initial path-relative check selected a nonexistent test filename and ran
+  zero tests; the corrected command generated no fixture or score. No source,
+  result, gate, remote-compute, or OmegaSim state changed. E3 remains binding,
+  and the mathematical-foundations claims remain audited hypotheses rather
+  than gate amendments. Ben's explicit accept/reject/amend review of the
+  frozen E0b proposal remains the critical-path decision.
+
+# 2026-08-05 04:25 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- The binding E0 result, review-only E0b proposal, and foundations PDF retained
+  SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, and
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.088 seconds (0.15 seconds elapsed;
+  19,416 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 48.305 seconds (49.27 seconds elapsed; 338,484 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work was opened. E1/E5b remain unauthorized, E3 stays
+  binding, and the foundations claims remain hypotheses rather than gate
+  amendments. Ben's explicit E0b review remains the critical-path decision.
+
+# 2026-08-05 06:30 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  remained untouched on `agent/hd-embedding-cla` at `9cd37ca`.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.106 seconds. The exact required
+  verbose discovery passed all 283 tests in 50.772 seconds (51.68 seconds
+  elapsed; 338,572 KiB maximum RSS). `python3 -m compileall -q src tests`,
+  `git diff --check`, and the clean strict-replay status assertion passed.
+- An initial hash check used stale filenames/locations and failed before any
+  fixture or score was generated; corrected hashes are recorded above. No
+  source, result, gate, promotion, remote-compute, or OmegaSim state changed.
+  E1/E5b remain unauthorized, E3 remains binding, and the foundations claims
+  remain audited hypotheses. Ben's explicit E0b review remains the
+  critical-path decision.
+
+# 2026-08-05 08:17 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.115 seconds (0.19 seconds elapsed;
+  19,380 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 57.241 seconds (58.21 seconds elapsed; 338,396 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- An initial hash command used workspace-relative paths from inside the
+  strict-replay checkout and failed before tests; the corrected absolute-path
+  check generated no fixture or score. No source, result, gate, promotion,
+  remote-compute, or OmegaSim state changed. E1/E5b remain unauthorized, E3
+  remains binding, and the foundations claims remain audited hypotheses.
+  Ben's explicit E0b review remains the critical-path decision.
+
+# 2026-08-05 10:16 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.101 seconds (0.18 seconds elapsed;
+  19,516 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 54.240 seconds (55.38 seconds elapsed; 339,076 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work was opened. E1/E5b remain unauthorized, E3 is
+  binding, and the mathematical-foundations claims remain audited hypotheses.
+  Ben's explicit accept/reject/amend review of the frozen E0b proposal remains
+  the critical-path decision.
+
+# 2026-08-05 12:17 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, and supplied foundations
+  PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.106 seconds. The exact required
+  verbose discovery passed all 283 tests in 54.068 seconds (55.17 seconds
+  elapsed; 340,316 KiB maximum RSS). `python3 -m compileall -q src tests`,
+  `git diff --check`, and the clean strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work was opened. E1/E5b remain unauthorized, E3 is
+  binding, and the mathematical-foundations claims remain audited hypotheses.
+  Ben's explicit accept/reject/amend review of the frozen E0b proposal remains
+  the critical-path decision.
+# 2026-08-05 14:22 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.121 seconds (0.20 seconds elapsed;
+  19,420 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 56.234 seconds (57.36 seconds elapsed; 340,488 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- The first proposal-hash path was stale and reported a missing file after
+  tests; the correct immutable proposal remains
+  `docs/e0-coder-calibration-amendment-proposal-v2.md` with the recorded hash.
+  No fixture, score, rerun, source change, promotion, remote compute, or
+  OmegaSim work was opened. E1/E5b remain unauthorized, E3 is binding, and
+  the mathematical-foundations claims remain audited hypotheses. Ben's
+  explicit accept/reject/amend review remains the critical-path decision.
+
+# 2026-08-06 06:39 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- E0 result, E0b proposal, mathematical-foundations amendment, and supplied
+  PDF SHA-256 values remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.088 seconds. Required verbose
+  discovery passed all 283 tests in 52.02 seconds elapsed with 339,668 KiB
+  maximum RSS. `python3 -m compileall -q src tests`, `git diff --check`, and
+  the clean-status assertion passed.
+- An initial focused invocation named a nonexistent dotted test module and
+  failed before running tests; the corrected file-pattern invocation passed.
+  One initial hash operand also used the wrong filename; the actual frozen
+  amendment hash was then verified. No fixture, score, rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-07 02:15 PDT — E0b review gate reverified closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.092 seconds (0.17 seconds elapsed;
+  19,320 KiB maximum RSS). Required verbose discovery passed 283/283.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+  Ben's E0b review remains the critical-path decision.
+
+# 2026-08-05 16:15 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.113 seconds (0.19 seconds elapsed;
+  19,476 KiB maximum RSS). The exact required verbose discovery command
+  passed all 283 tests (58.23 seconds elapsed; 340,356 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work was opened. E1/E5b remain unauthorized, E3 is
+  binding, and the mathematical-foundations claims remain audited hypotheses.
+  Ben's explicit accept/reject/amend review of the frozen E0b proposal remains
+  the critical-path decision.
+
+# 2026-08-05 18:15 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. The
+  strict-replay checkout remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.095 seconds (0.16 seconds elapsed;
+  19,708 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 52.407 seconds (53.32 seconds elapsed; 340,140 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- An initial amendment-hash check used a stale filename and stopped before
+  tests; the corrected immutable file is
+  `docs/mathematical-foundations-amendment-v1.md`. No fixture, score,
+  experiment rerun, source change, promotion, remote compute, or OmegaSim work
+  was opened. E1/E5b remain unauthorized, E3 is binding, and the foundations
+  claims remain audited hypotheses. Ben's explicit accept/reject/amend review
+  of the frozen E0b proposal remains the critical-path decision.
+# 2026-08-05 20:30 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment. Strict-replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the primary checkout was untouched.
+- E0 result, E0b proposal, foundations amendment, and PDF SHA-256 values remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.109 s (0.18 s elapsed; 19,504 KiB max RSS). Full verbose discovery passed 283/283 in 50.319 s (51.35 s elapsed; 339,924 KiB max RSS). Compileall, `git diff --check`, and clean-status assertion passed.
+- No fixture, score, rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims hypotheses. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-05 22:25 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.089 seconds (0.16 seconds elapsed;
+  19,328 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 54.804 seconds (55.75 seconds elapsed; 340,172 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- An initial hash check used the singular `result.json` instead of frozen
+  `results.json` and stopped before tests; the corrected check generated no
+  fixture or score. No source, result, gate, promotion, remote-compute, or
+  OmegaSim state changed. E1/E5b remain unauthorized, E3 remains binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit
+  accept/reject/amend review remains the critical-path decision.
+
+# 2026-08-06 02:19 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  was not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.083 seconds (0.15 seconds elapsed;
+  19,652 KiB maximum RSS). The required verbose discovery passed all 283
+  tests in 54.163 seconds (55.10 seconds elapsed; 340,388 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed.
+- The combined verification shell returned 1 only because its final two
+  read-only hash operands used an incorrect relative path after all tests and
+  checks had passed; the hashes above were independently resolved from the
+  workspace root. No fixture, score, rerun, source change, promotion, remote
+  compute, or OmegaSim work was opened. E1/E5b remain unauthorized, E3 remains
+  binding, and the foundations claims remain audited hypotheses. Ben's E0b
+  review remains the critical-path decision.
+# 2026-08-06 05:00 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still contains no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked report files were not changed.
+- The binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+  19,508 KiB maximum RSS). The exact required verbose discovery passed all
+  283 tests in 53.567 seconds (54.45 seconds elapsed; 340,304 KiB maximum
+  RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the
+  clean-status assertion passed.
+- An initial focused-test invocation used a nonexistent dotted module and
+  failed before discovery; rerunning the repository's actual focused file
+  passed. No fixture, score, rerun, source change, promotion, remote compute,
+  or OmegaSim work was opened. E1/E5b remain unauthorized, E3 remains
+  binding, and the foundations claims remain audited hypotheses. Ben's
+  explicit accept/reject/amend review remains the critical-path decision.
+# 2026-08-06 08:25 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still records no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- E0 result, E0b proposal, foundations amendment, and supplied PDF retained
+  SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.090 seconds (0.16 seconds elapsed;
+  19,496 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  51.034 seconds (52.07 seconds elapsed; 339,140 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed. An initial focused filename pattern matched zero tests; the corrected
+  frozen E0 test file then passed 4/4.
+- No fixture, score, rerun, source change, promotion, remote compute, or
+  OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the
+  foundations claims audited hypotheses. Ben's explicit E0b review remains
+  the critical-path decision.
+# 2026-08-06 10:24 PDT — frozen-gate integrity replay
+
+- `DECISIONS.md` still records no E0b approval or later gate amendment.
+  Strict replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- The binding E0 `results.json`, review-only E0b proposal, mathematical-
+  foundations amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.079 seconds (0.14 seconds elapsed;
+  19,400 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  46.298 seconds (47.21 seconds elapsed; 335,452 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, rerun, source change, promotion, remote compute, or
+  OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the
+  foundations claims audited hypotheses. Ben's explicit E0b review remains
+  the critical-path decision.
+# 2026-08-06 12:26 PDT — E0b review gate remains closed
+
+- Strict replay remains clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; `DECISIONS.md` records no
+  E0b approval or later gate amendment.
+- Frozen E0 result, E0b proposal, foundations amendment, and supplied PDF
+  retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.111 seconds (0.18 seconds elapsed;
+  19,592 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  54.179 seconds (55.19 seconds elapsed; 335,584 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  status assertion passed. No fixture, score, experiment rerun, promotion,
+  remote compute, or OmegaSim work was opened. E1/E5b remain unauthorized,
+  E3 binding, and the foundations claims remain audited hypotheses.
+# 2026-08-06 14:34 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.095 seconds (0.17 seconds elapsed; 19,612 KiB maximum RSS). Required verbose discovery passed 283/283 in 51.233 seconds (52.24 seconds elapsed; 335,740 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status assertion passed. No fixture, score, experiment rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-06 16:45 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.127 seconds (0.22 seconds elapsed;
+  19,236 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  61.111 seconds (62.46 seconds elapsed; 335,560 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-06 18:18 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.212 seconds (0.34 seconds elapsed;
+  19,352 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  91.702 seconds (93.20 seconds elapsed; 335,988 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-06 20:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.211 seconds. Required verbose
+  discovery passed 283/283 in 89.242 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean-status assertion passed. No
+  fixture, score, experiment rerun, source change, promotion, remote compute,
+  or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the
+  foundations claims audited hypotheses.
+
+# 2026-08-06 22:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.216 seconds (0.39 seconds elapsed;
+  19,412 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  106.954 seconds (108.60 seconds elapsed; 335,684 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+# 2026-08-07 00:18 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+  19,516 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  51.258 seconds (52.14 seconds elapsed; 335,776 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+# 2026-08-07 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.084 seconds (0.15 seconds elapsed;
+  19,580 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  53.698 seconds (54.57 seconds elapsed; 339,228 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-07 06:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its pre-existing work were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.092 seconds (0.17 seconds elapsed;
+  19,608 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  50.373 seconds (51.53 seconds elapsed; 339,328 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+
+# 2026-08-07 08:22 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout
+  and its pre-existing work were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.078 seconds (0.13 seconds elapsed;
+  19,504 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  42.861 seconds (43.66 seconds elapsed; 339,328 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status
+  assertion passed. No fixture, score, experiment rerun, source change,
+  promotion, remote compute, or OmegaSim work opened. E1/E5b remain
+  unauthorized, E3 binding, and the foundations claims audited hypotheses.
+# 2026-08-07 10:18 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary checkout and its pre-existing work were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.097 seconds. Required verbose discovery passed 283/283 in 47.099 seconds (48.10 seconds elapsed; 339,296 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status assertion passed. No fixture, score, experiment rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims audited hypotheses.
+# 2026-08-07 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.099 seconds (0.17 seconds elapsed; 19,412 KiB maximum RSS). Required verbose discovery passed 283/283 in 50.536 seconds (51.49 seconds elapsed; 339,424 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and the clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims audited hypotheses. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-07 14:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.094 seconds (0.17 seconds elapsed; 19,448 KiB maximum RSS). Required verbose discovery passed 283/283 in 54.516 seconds (55.56 seconds elapsed; 339,464 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and clean status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims audited hypotheses. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-07 16:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.087 seconds (0.19 seconds elapsed; 19,512 KiB maximum RSS). Required verbose discovery passed 283/283 in 44.048 seconds (44.89 seconds elapsed; 339,084 KiB maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and clean status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims audited hypotheses. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-07 18:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing untracked reports were
+  untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.080 seconds (0.14 seconds elapsed;
+  19,632 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  43.733 seconds (44.56 seconds elapsed; 339,416 KiB maximum RSS). `python3
+  -m compileall -q src tests`, `git diff --check`, and clean status passed.
+  An initial mistyped focused module path failed before importing any test;
+  the corrected frozen test module then passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-09 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.248 seconds. Required verbose
+  discovery passed 283/283 in 96.351 seconds; `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-09 10:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; all four frozen artifact
+  hashes matched exactly.
+- Focused E0 declarations passed 4/4 in 0.179 seconds (0.31 seconds elapsed;
+  19,420 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  95.771 seconds (97.54 seconds elapsed; 330,000 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-07 20:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing untracked reports were
+  untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.093 seconds (0.16 seconds elapsed;
+  19,484 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  51.012 seconds (51.90 seconds elapsed; 339,088 KiB maximum RSS). `python3
+  -m compileall -q src tests`, `git diff --check`, and clean status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-07 22:20 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing work were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.112 seconds (0.20 seconds elapsed;
+  19,460 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  53.675 seconds (54.70 seconds elapsed; 339,372 KiB maximum RSS). `python3
+  -m compileall -q src tests`, `git diff --check`, and clean status passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-08 00:17 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.097 seconds (0.17 seconds elapsed;
+  19,596 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  55.858 seconds (56.91 seconds elapsed; 339,072 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-08 02:22 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.110 seconds (0.18 seconds elapsed;
+  19,500 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  57.441 seconds (58.38 seconds elapsed; 339,396 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+# 2026-08-08 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.102 seconds (0.17 seconds elapsed;
+  19,520 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  56.227 seconds (57.21 seconds elapsed; 339,424 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed. An initial mistyped focused module path failed before importing any
+  test; the corrected frozen module passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-08 06:17 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Strict
+  replay remained clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`;
+  the unrelated primary checkout and its pre-existing untracked reports were
+  untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.084 seconds (0.15 seconds elapsed;
+  19,392 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  48.949 seconds (49.84 seconds elapsed; 339,524 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-08 08:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary
+  checkout and its pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.098 seconds (0.17 seconds elapsed;
+  19,476 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  53.500 seconds (54.53 seconds elapsed; 339,556 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-08 14:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary
+  checkout and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.222 seconds (0.35 seconds elapsed;
+  19,472 KiB maximum RSS). Required verbose discovery passed 283/283;
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-08 16:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`; the unrelated primary
+  checkout and its two pre-existing untracked reports were untouched.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.115 seconds (0.21 seconds elapsed;
+  19,588 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  60.532 seconds (61.70 seconds elapsed; 338,920 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-08 20:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.110 seconds (0.20 seconds elapsed;
+  19,528 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  60.510 seconds (61.64 seconds elapsed; 339,152 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-08 22:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.114 seconds (0.20 seconds elapsed;
+  19,544 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  60.907 seconds (62.21 seconds elapsed; 339,168 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-09 00:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.236 seconds (0.37 seconds elapsed;
+  19,340 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  82.09 seconds elapsed (327,328 KiB maximum RSS). `python3 -m compileall -q
+  src tests`, `git diff --check`, and the clean-status assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-09 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.218 seconds (0.35 seconds elapsed;
+  19,476 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  64.032 seconds (65.41 seconds elapsed; 329,376 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed. An initial mistyped focused module name failed import before the
+  correct frozen declaration suite was invoked; it generated no fixture or
+  score.
+- No measurement, source change, promotion, remote compute, or OmegaSim work
+  opened. E1/E5b remain unauthorized, E3 binding, and the foundations claims
+  audited hypotheses. Ben's explicit E0b review remains the critical-path
+  decision.
+
+# 2026-08-09 06:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.248 seconds (0.47 seconds elapsed;
+  19,476 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  96.308 seconds (98.38 seconds elapsed; 328,180 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-09 08:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.218 seconds (0.35 seconds elapsed;
+  19,580 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  109.232 seconds (110.88 seconds elapsed; 329,204 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-09 14:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.235 seconds (0.39 seconds elapsed;
+  19,336 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  118.272 seconds (120.02 seconds elapsed; 331,100 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-09 16:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- The supplied mathematical-foundations PDF retained SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`;
+  its project-specific claims remain audited hypotheses and do not amend gates.
+- Focused E0 declarations passed 4/4 in 0.257 seconds (0.39 seconds elapsed;
+  19,572 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  116.236 seconds (118.03 seconds elapsed; 331,244 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and Ben's explicit E0b review remains the critical-path decision.
+
+# 2026-08-09 18:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- The binding E0 result retained SHA-256
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`;
+  the supplied mathematical-foundations PDF retained SHA-256
+  `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Its project-specific claims remain audited hypotheses and do not amend
+  frozen gates.
+- Focused E0 declarations passed 4/4 in 0.279 seconds (0.48 seconds elapsed;
+  19,464 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  130.266 seconds (132.25 seconds elapsed; 330,720 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and Ben's explicit E0b review remains the critical-path decision.
+
+# 2026-08-09 20:19 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.240 seconds (0.37 seconds elapsed;
+  19,384 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  118.350 seconds (120.16 seconds elapsed; 331,304 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and clean status
+  passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-09 22:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.230 seconds; required verbose
+  discovery passed 283/283 in 116.490 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 00:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.242 seconds (0.41 seconds elapsed;
+  19,484 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  120.109 seconds (121.87 seconds elapsed; 331,252 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 06:19 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.09 seconds with 16,720 KiB maximum
+  RSS. Required verbose discovery passed 283/283 in 116.40 seconds with
+  331,312 KiB maximum RSS. `python3 -m compileall -q src tests`, `git diff
+  --check`, and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 08:28 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.287 seconds (0.59 seconds elapsed;
+  19,508 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  121.567 seconds (123.72 seconds elapsed; 331,376 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 10:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.289 seconds (0.63 seconds elapsed;
+  19,504 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  132.124 seconds (134.57 seconds elapsed; 331,292 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+# 2026-08-10 14:21 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.314 seconds (0.59 seconds elapsed;
+  19,428 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  136.304 seconds (138.23 seconds elapsed; 331,340 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. An initial mistyped focused test class name
+  failed before the correct frozen declaration suite ran; it generated no
+  fixture or score.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-10 18:24 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.343 seconds; required verbose
+  discovery passed 283/283 in 135.969 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-10 20:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.257 seconds (0.55 seconds elapsed;
+  19,416 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  133.406 seconds (135.49 seconds elapsed; 330,680 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 00:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.327 seconds (0.57 seconds elapsed;
+  19,484 KiB maximum RSS). Required verbose discovery passed 283/283; the
+  combined focused-plus-discovery command completed in 24 seconds.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. An initial mistyped focused class name
+  failed before the corrected declaration command passed; it produced no
+  measurement or state change.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 10:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.382 seconds (0.66 seconds elapsed;
+  19,316 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  163.534 seconds (166.23 seconds elapsed; 331,124 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.083 seconds (0.16 seconds elapsed;
+  19,568 KiB maximum RSS). Required verbose discovery passed 283/283.
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 16:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.198 seconds (0.32 seconds elapsed;
+  19,544 KiB maximum RSS). Required discovery passed 283/283 in 96.165
+  seconds (97.61 seconds elapsed; 339,124 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-11 20:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.129 seconds (0.23 seconds elapsed;
+  19,628 KiB maximum RSS). Required discovery passed 283/283 in 106.914
+  seconds (108.28 seconds elapsed; 339,140 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+# 2026-08-11 22:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.231 seconds. Required verbose
+  discovery passed 283/283 in 108.759 seconds (1:50.27 elapsed; 339,796 KiB
+  maximum RSS). `python3 -m compileall -q src tests`, `git diff --check`, and
+  the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-12 04:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Required verbose discovery passed 283/283 in 53.110 seconds. `python3 -m
+  compileall -q src tests`, `git diff --check`, and the clean strict-replay
+  assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-12 06:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, and supplied foundations PDF
+  retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.100 seconds (0.17 seconds elapsed;
+  19,432 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  54.211 seconds (55.38 seconds elapsed; 339,908 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-12 08:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result and supplied foundations PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.093 seconds (0.16 seconds elapsed;
+  19,640 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  51.780 seconds (52.85 seconds elapsed; 336,504 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-12 12:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.087 seconds (0.15 seconds elapsed;
+  19,444 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  49.367 seconds (50.25 seconds elapsed; 338,748 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims audited hypotheses. Ben's explicit E0b review
+  remains the critical-path decision.
+
+# 2026-08-12 14:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.012 seconds (0.07 seconds elapsed;
+  17,056 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  65.685 seconds (67.29 seconds elapsed; 338,496 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-12 20:17 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.247 seconds (0.39 seconds elapsed;
+  19,464 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  106.964 seconds (108.86 seconds elapsed; 339,124 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. The combined shell returned nonzero only
+  after these checks because its first hash-check attempt used three incorrect
+  document paths; the corrected paths reproduced all four hashes above.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-12 22:24 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.101 seconds (0.17 seconds elapsed;
+  19,452 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  47.128 seconds (48.27 seconds elapsed; 337,720 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 00:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.226 seconds (0.40 seconds elapsed;
+  19,476 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  87.284 seconds (89.60 seconds elapsed; 327,048 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 02:16 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.274 seconds. Required verbose
+  discovery passed 283/283 in 95.308 seconds. `python3 -m compileall -q src
+  tests`, `git diff --check`, and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-13 04:45 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result and supplied foundations PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.149 seconds (0.28 seconds elapsed;
+  19,432 KiB maximum RSS). Required verbose discovery exited 0 with all
+  283 tests passing; the confirmation run took 111.46 seconds and 330,792
+  KiB maximum RSS. `python3 -m compileall -q src tests`, `git diff --check`,
+  and the clean strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 06:17 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.108 seconds (0.21 seconds elapsed;
+  19,376 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  57.063 seconds (58.19 seconds elapsed; 331,164 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed. An initial combined verification command
+  exited 1 only after all tests/checks passed because two artifact paths in
+  its final `sha256sum` were misspelled; the corrected paths produced the
+  recorded hashes above.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+# 2026-08-13 10:44 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.091 seconds (0.18 seconds elapsed;
+  19,376 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  53.901 seconds (55.19 seconds elapsed; 330,524 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+
+# 2026-08-13 14:18 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- Binding E0 result, review-only E0b proposal, mathematical-foundations
+  amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- Focused E0 declarations passed 4/4 in 0.090 seconds (0.17 seconds elapsed;
+  19,544 KiB maximum RSS). Required verbose discovery passed 283/283 in
+  52.141 seconds (53.29 seconds elapsed; 330,656 KiB maximum RSS).
+  `python3 -m compileall -q src tests`, `git diff --check`, and the clean
+  strict-replay assertion passed.
+- No fixture, score, experiment rerun, source change, promotion, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  and the foundations claims remain audited hypotheses. Ben's explicit E0b
+  review remains the critical-path decision.
+- 2026-08-13 16:20 PDT: `DECISIONS.md` still records no E0b approval or later
+  amendment. Clean strict replay remained at
+  `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`. E0 result, E0b proposal,
+  foundations amendment, and supplied PDF retained SHA-256 values
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+  Focused E0 declarations passed 4/4 in 0.099 s (0.17 s elapsed; 19,368 KiB
+  max RSS); discovery passed 283/283 in 59.076 s (60.43 s elapsed; 330,192
+  KiB max RSS). Compileall, diff hygiene, and clean status passed. The initial
+  combined command exited 1 only because its final hash command used a
+  nonexistent proposal filename; the corrected frozen path matched. No
+  measurement, promotion, source change, remote compute, or OmegaSim work
+  opened. E1/E5b remain unauthorized, E3 binding, and Ben's E0b review is the
+  critical-path decision.
+
+# 2026-08-13 18:39 PDT — E0b review gate remains closed
+
+- Strict replay remains clean at `f5a2b7b`; no E0b approval is recorded.
+- Frozen E0 result, E0b proposal, foundations amendment, and PDF hashes remain
+  `3f3b68b...`, `36435c85...`, `bb69556d...`, and `6969a095...`.
+- Focused declarations passed 4/4 and discovery passed 283/283; compileall,
+  diff hygiene, and clean status passed. No measurement opened. E1/E5b remain
+  unauthorized, E3 binding, and OmegaSim paused.
+
+# 2026-08-13 21:00 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` still records no E0b approval or later amendment. Clean
+  strict replay remained at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- E0 result, E0b proposal, foundations amendment, and supplied PDF retained
+  SHA-256 values `3f3b68b...`, `36435c85...`, `bb69556d...`, and
+  `6969a095...` respectively.
+- Focused E0 declarations passed 4/4 in 0.108 seconds (0.19 seconds elapsed;
+  19,324 KiB maximum RSS). Required discovery passed 283/283 in 57.573
+  seconds (58.83 seconds elapsed; 329,616 KiB maximum RSS). Compileall,
+  `git diff --check`, and clean status passed.
+- No measurement, fixture, score, promotion, source change, remote compute,
+  or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding, the
+  foundations claims audited hypotheses, and Ben's E0b review is the
+  critical-path decision.
+# 2026-08-13 22:17 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` contains no E0b approval or later amendment. Strict replay was clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- `PYTHONPATH=src python3 -m unittest tests.test_e0_coder_calibration -v` passed 4/4 in 0.102 s (0.18 s elapsed; 19,456 KiB max RSS). `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 283/283 in 55.443 s (56.45 s elapsed; 330,652 KiB max RSS). Compileall, `git diff --check`, and clean status passed.
+- E0 result/E0b proposal/foundations amendment/PDF SHA-256 values remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- No fixture, score, experiment rerun, promotion, source change, remote compute, or OmegaSim work opened. Ben's E0b review remains the critical-path decision.
+
+# 2026-08-14 00:15 PDT — E0b review gate remains closed
+
+- `DECISIONS.md` contains no E0b approval or later amendment. Strict replay
+  was clean at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`.
+- `PYTHONPATH=src python3 -m unittest tests.test_e0_coder_calibration -v`
+  passed 4/4 in 0.101 seconds (0.18 seconds elapsed; 19,412 KiB maximum RSS).
+  `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 283/283 in
+  52.692 seconds (53.84 seconds elapsed; 330,644 KiB maximum RSS). Compileall,
+  `git diff --check`, and the clean-status assertion passed.
+- E0 result/E0b proposal/foundations amendment/PDF SHA-256 values remained
+  `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+  `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+  `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+  and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+- No fixture, score, experiment rerun, promotion, source change, remote
+  compute, or OmegaSim work opened. E1/E5b remain unauthorized, E3 binding,
+  the foundations claims audited hypotheses, and Ben's E0b review remains the
+  critical-path decision.
+# 2026-08-14 06:27 PDT — strict replay evidence
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed 4/4 in 0.084 s (0.15 s elapsed; 19,608 KiB max RSS), and `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 283/283 in 49.623 s (50.59 s elapsed; 330,440 KiB max RSS). `compileall`, `py_compile`, `git diff --check`, and the clean-status assertion passed. The binding E0 result, review-only E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. No E0b approval was present, so no measurement or promotion was opened; E1/E5b remain closed, E3 binding, and OmegaSim paused.
+
+# 2026-08-14 08:24 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed 4/4 in 0.097 s (0.17 s elapsed; 19,572 KiB max RSS), and `PYTHONPATH=src python3 -m unittest discover -s tests -v` passed 283/283 in 46.548 s (47.59 s elapsed; 330,008 KiB max RSS). `compileall`, `py_compile`, `git diff --check`, and clean status passed. The binding E0 result, review-only E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. `DECISIONS.md` still contains no E0b approval, so no measurement or promotion was opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim paused.
+
+# 2026-08-14 10:17 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed 4/4 in 0.091 s (0.16 s elapsed; 19,436 KiB max RSS), and the required discovery completed successfully with all 283 tests. `compileall`, explicit `py_compile`, `git diff --check`, and clean status passed. The binding E0 result, review-only E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. `DECISIONS.md` still contains no E0b approval. No fixture, score, measurement, promotion, remote compute, or OmegaSim work was opened; E1/E5b remain unauthorized, E3 binding, and the foundations claims remain audited hypotheses.
+
+# 2026-08-14 12:20 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed 4/4 in 0.081 s (0.15 s elapsed; 19,536 KiB max RSS), and required discovery passed 283/283 in 47.003 s (47.95 s elapsed; 338,040 KiB max RSS). `compileall`, explicit `py_compile`, `git diff --check`, and clean status passed. The binding E0 result, review-only E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. `DECISIONS.md` still contains no E0b approval. No fixture, score, measurement, promotion, remote compute, or OmegaSim work was opened; E1/E5b remain unauthorized, E3 binding, and the foundations claims remain audited hypotheses.
+
+# 2026-08-14 16:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed 4/4 in 0.099 seconds (0.18 seconds elapsed; 19,652 KiB maximum RSS), and required discovery passed 283/283 in 47.118 seconds (48.00 seconds elapsed; 337,808 KiB maximum RSS). `compileall`, explicit `py_compile`, `git diff --check`, and clean status passed. The binding E0 result, review-only E0b proposal, frozen foundations amendment, and supplied PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. `DECISIONS.md` still contains no E0b approval. No fixture, score, measurement, promotion, remote compute, or OmegaSim work was opened; E1/E5b remain unauthorized, E3 binding, and the foundations claims remain audited hypotheses.
+## 2026-08-14 18:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c` passed focused E0 declarations 4/4 in 0.083 seconds (0.19 seconds elapsed; 19,436 KiB maximum RSS) and full discovery 283/283 in 45.503 seconds (46.42 seconds elapsed; 338,072 KiB maximum RSS). Compileall, explicit py_compile, `git diff --check`, and clean status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`, `36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`, `bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`, and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`. No E0b approval is recorded, so no measurement or promotion opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim paused.
+
+## 2026-08-14 20:17 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.089 seconds (0.16 seconds elapsed;
+19,504 KiB maximum RSS) and full discovery 283/283 in 48.794 seconds (49.74
+seconds elapsed; 338,432 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and clean status passed. Frozen E0 result/E0b
+proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+
+## 2026-08-15 00:16 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.089 seconds (0.15 seconds elapsed;
+19,528 KiB maximum RSS) and required discovery 283/283 in 48.759 seconds
+(49.73 seconds elapsed; 338,260 KiB maximum RSS). `compileall`, explicit
+`py_compile`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+
+## 2026-08-14 22:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.086 seconds (0.15 seconds elapsed;
+19,420 KiB maximum RSS) and full discovery 283/283 in 48.746 seconds (49.60
+seconds elapsed; 338,620 KiB maximum RSS). Compileall, explicit py_compile,
+`git diff --check`, and clean status passed. Frozen E0 result/E0b
+proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+# 2026-08-15 08:16 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.090 seconds (0.17 seconds elapsed;
+19,460 KiB maximum RSS) and required verbose discovery 283/283 in 48.958
+seconds (49.98 seconds elapsed; 336,980 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no measurement or promotion
+opened; E1/E5b remain unauthorized, E3 binding, foundations claims audited
+hypotheses, and OmegaSim paused.
+
+# 2026-08-15 10:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.093 seconds (0.20 seconds elapsed;
+19,456 KiB maximum RSS) and required discovery 283/283 in 51.545 seconds
+(52.64 seconds elapsed; 327,144 KiB maximum RSS). `compileall`, explicit
+`py_compile`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The combined verification command exited 1 only because its final hash check
+used a nonexistent foundations-amendment filename; the corrected frozen path
+matched. `DECISIONS.md` still records no E0b approval. No fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and the foundations claims audited
+hypotheses.
+
+# 2026-08-16 12:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.084 seconds and required discovery
+283/283 in 51.951 seconds (53.00 seconds elapsed; 336,820 KiB maximum RSS).
+`compileall`, explicit benchmark `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes
+remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first focused invocation used a nonexistent package-style test path and
+failed before any test or measurement; corrected file discovery passed.
+`DECISIONS.md` still contains no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 14:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.144 seconds
+(0.21 seconds elapsed; 19,604 KiB maximum RSS), and required discovery passed
+283/283 in 46.509 seconds (47.61 seconds elapsed; 325,304 KiB maximum RSS).
+`compileall`, corrected explicit benchmark/declaration `py_compile`, `git diff
+--check`, and clean status passed. The first explicit compile invocation named
+the nonexistent stale path `experiments/e0_coder_calibration.py`; the corrected
+tracked path passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 08:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declarations passed
+4/4 in 0.094 seconds (0.17 seconds elapsed; 19,360 KiB maximum RSS), and
+required discovery passed 283/283 in 50.880 seconds (51.87 seconds elapsed;
+329,404 KiB maximum RSS). `compileall`, explicit benchmark/declaration
+`py_compile`, `git diff --check`, and clean status passed. Frozen E0 result,
+review-only E0b proposal, foundations amendment, and supplied PDF hashes
+remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 10:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.149 seconds
+(0.22 seconds elapsed; 19,644 KiB maximum RSS), and required discovery passed
+283/283 in 46.555 seconds (47.55 seconds elapsed; 328,852 KiB maximum RSS).
+`compileall`, corrected explicit benchmark/declaration `py_compile`, `git diff
+--check`, and clean status passed. The initial focused invocation named the
+nonexistent `tests/test_coding.py`, and the initial explicit compile check used
+the nonexistent repository-root benchmark path; corrected tracked paths
+passed. Frozen E0 result, review-only E0b proposal, foundations amendment, and
+supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+
+# 2026-08-17 04:19 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.094 seconds (0.18 seconds elapsed;
+19,404 KiB maximum RSS), and required discovery passed 283/283 in 46.849
+seconds (47.95 seconds elapsed; 331,452 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes
+remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 04:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.092 seconds (0.16 seconds elapsed;
+19,600 KiB maximum RSS), and required discovery passed 283/283 in 48.958
+seconds (49.87 seconds elapsed; 329,760 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. The first combined hash command used paths relative to the
+strict-replay worktree and missed the two project-level files; the corrected
+absolute-path check passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-16 10:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.082 seconds (0.15 seconds elapsed;
+19,556 KiB maximum RSS) and required discovery 283/283 in 51.907 seconds
+(52.93 seconds elapsed; 337,916 KiB maximum RSS). `compileall`, explicit
+benchmark `py_compile`, `git diff --check`, and clean status passed. Frozen E0
+result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and the foundations claims audited
+hypotheses.
+
+# 2026-08-15 12:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.088 seconds (0.16 seconds elapsed;
+19,316 KiB maximum RSS), and required discovery passed 283/283 in 46.608
+seconds (47.67 seconds elapsed; 330,832 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. The binding
+E0 result, review-only E0b proposal, frozen foundations amendment, and supplied
+PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined post-test check exited 1 only because it referenced an
+obsolete runner path and two shortened amendment filenames; the corrected
+tracked paths compiled and matched. `DECISIONS.md` still contains no E0b
+approval. No fixture, score, measurement, promotion, remote compute, or
+OmegaSim work opened; E1/E5b remain unauthorized, E3 binding, and the
+foundations claims remain audited hypotheses.
+
+# 2026-08-15 14:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.094 seconds (0.20 seconds elapsed;
+19,484 KiB maximum RSS), and required discovery passed 283/283 in 49.003
+seconds (50.02 seconds elapsed; 329,224 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. The binding
+E0 result, review-only E0b proposal, frozen foundations amendment, and supplied
+PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, and the foundations claims remain audited
+hypotheses.
+
+# 2026-08-15 16:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.084 seconds (0.19 seconds elapsed;
+19,488 KiB maximum RSS), and required discovery passed 283/283 in 49.483
+seconds (50.41 seconds elapsed; 329,560 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. The binding
+E0 result, review-only E0b proposal, frozen foundations amendment, and supplied
+PDF retained SHA-256 values `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work opened; E1/E5b remain
+unauthorized, E3 binding, and the foundations claims remain audited
+hypotheses.
+# 2026-08-15 22:15 PDT — E0b review gate remains closed
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.083 seconds (0.14 seconds elapsed;
+19,476 KiB maximum RSS), required verbose discovery passed 283/283, and a
+second quiet discovery replay also exited successfully. Compileall, explicit
+py_compile, `git diff --check`, and the clean-status assertion passed. The
+binding E0 result, review-only E0b proposal, frozen foundations amendment, and
+supplied PDF retained SHA-256 values
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval. No fixture, score, measurement,
+promotion, remote compute, or OmegaSim work was opened; E1/E5b remain
+unauthorized, E3 binding, and the foundations claims remain audited
+hypotheses.
+
+# 2026-08-16 00:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.108 seconds (0.22 seconds elapsed;
+19,508 KiB maximum RSS) and required discovery 283/283 in 51.425 seconds
+(52.58 seconds elapsed; 337,836 KiB maximum RSS). `compileall`, explicit
+`py_compile`, `git diff --check`, and clean status passed. Frozen E0 result,
+E0b proposal, foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and the foundations claims audited
+hypotheses.
+## 2026-08-16 02:15 PDT — E0b review-gate replay
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.097 seconds (0.16 seconds elapsed;
+19,552 KiB maximum RSS), and required discovery passed 283/283 in 50.869
+seconds (51.87 seconds elapsed; 337,932 KiB maximum RSS). `compileall`,
+explicit `py_compile`, `git diff --check`, and clean status passed. The binding
+E0 result, review-only E0b proposal, frozen foundations amendment, and supplied
+PDF retained SHA-256 values
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+# 2026-08-16 06:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.083 seconds (0.16 seconds elapsed;
+19,516 KiB maximum RSS) and required discovery 283/283 in 50.862 seconds
+(51.84 seconds elapsed; 338,052 KiB maximum RSS). Corrected compileall and
+explicit benchmark `py_compile`, `git diff --check`, and clean status passed.
+Frozen E0 result, E0b proposal, foundations amendment, and supplied PDF hashes
+remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The initial post-test check referenced nonexistent `scripts` and singular
+`result.json`; corrected tracked paths passed. `DECISIONS.md` still contains
+no E0b approval, so no measurement or promotion opened; E1/E5b remain
+unauthorized, E3 binding, foundations claims audited hypotheses, and OmegaSim
+paused.
+
+# 2026-08-16 08:20 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.087 seconds (0.14 seconds elapsed;
+19,600 KiB maximum RSS) and required discovery 283/283 in 51.901 seconds.
+`compileall`, explicit `py_compile`, `git diff --check`, and clean status
+passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and the foundations claims audited
+hypotheses.
+
+# 2026-08-16 14:15 PDT — E0b review gate remains closed
+
+Clean strict replay at `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`
+passed focused E0 declarations 4/4 in 0.002 seconds (0.04 seconds elapsed;
+17,088 KiB maximum RSS) and required discovery 283/283 in 50.885 seconds
+(52.04 seconds elapsed; 337,944 KiB maximum RSS). `compileall`, explicit
+benchmark/declaration `py_compile`, `git diff --check`, and clean status
+passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes remain
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still contains no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and the foundations claims remain audited
+hypotheses.
+## 2026-08-16 18:18 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.085 seconds (0.15 seconds elapsed;
+19,412 KiB maximum RSS), and required discovery passed 283/283 in 52.705
+seconds (53.68 seconds elapsed; 338,416 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+No E0b approval is recorded, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+
+## 2026-08-16 20:16 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.092 seconds (0.17 seconds elapsed;
+19,408 KiB maximum RSS), and required discovery passed 283/283 in 46.310
+seconds (47.25 seconds elapsed; 338,236 KiB maximum RSS). Corrected
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first post-test check referenced obsolete experiment-local paths; the
+corrected tracked benchmark and project result paths passed. `DECISIONS.md`
+still contains no E0b approval, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+# 2026-08-16 22:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.100 seconds (0.17 seconds elapsed;
+19,620 KiB maximum RSS), and required discovery passed 283/283 in 49.568
+seconds (50.70 seconds elapsed; 338,060 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The initial combined hash check referenced nonexistent E0b and foundations
+amendment paths; corrected tracked paths matched. `DECISIONS.md` still records
+no E0b approval, so no fixture, score, measurement, promotion, remote compute,
+or OmegaSim work opened; E1/E5b remain unauthorized, E3 binding, and the
+foundations claims remain audited hypotheses.
+
+# 2026-08-17 00:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.093 seconds (0.15 seconds elapsed;
+19,536 KiB maximum RSS), and required discovery passed 283/283 in 49.164
+seconds (50.21 seconds elapsed; 339,736 KiB maximum RSS). Corrected
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The initial compile check referenced a nonexistent repository-root
+`benchmarks` directory; the corrected tracked package/tests plus the frozen
+experiment benchmark and preregistration compiled cleanly. `DECISIONS.md`
+still records no E0b approval, so no fixture, score, measurement, promotion,
+remote compute, or OmegaSim work opened; E1/E5b remain unauthorized, E3
+binding, and foundations claims remain audited hypotheses.
+
+# 2026-08-17 02:23 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+the two focused E0 declaration suites passed 8/8 in 0.23 seconds elapsed
+(19,692 KiB maximum RSS), and required discovery passed 283/283 in 48.204
+seconds (49.22 seconds elapsed; 340,112 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+An initial focused invocation used an invalid absolute-path unittest module
+argument and failed before running tests; the corrected direct-file commands
+passed. `DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 06:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.112 seconds (0.18 seconds elapsed;
+19,456 KiB maximum RSS), and required discovery passed 283/283. `compileall`,
+explicit E0 benchmark/test `py_compile`, `git diff --check`, and clean status
+passed. Frozen E0 result, review-only E0b proposal, foundations amendment, and
+supplied PDF hashes remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+An initial focused invocation named a nonexistent `tests.test_coding` module;
+the corrected focused command passed. `DECISIONS.md` still records no E0b
+approval, so no fixture, score, measurement, promotion, remote compute, or
+OmegaSim work opened; E1/E5b remain unauthorized, E3 binding, and foundations
+claims audited hypotheses.
+# 2026-08-17 08:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.081 seconds (0.15 seconds elapsed;
+19,416 KiB maximum RSS), and required discovery passed 283/283 in 49.555
+seconds (50.60 seconds elapsed; 333,436 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes
+remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 10:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.082 seconds (0.18 seconds elapsed;
+19,608 KiB maximum RSS), and required discovery passed 283/283 in 49.111
+seconds (50.19 seconds elapsed; 328,816 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result/E0b proposal/foundations amendment/PDF hashes
+remain `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 14:18 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.110 seconds (0.22 seconds elapsed;
+19,752 KiB maximum RSS), and required discovery passed 283/283 in 53.520
+seconds (54.64 seconds elapsed; 330,536 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+Two initial verification-only invocations used a non-package unittest module
+name and obsolete amendment filenames; corrected direct-file/path checks
+passed, and no scientific fixture or score was generated. `DECISIONS.md`
+still records no E0b approval, so no measurement or promotion opened; E1/E5b
+remain unauthorized, E3 binding, foundations claims audited hypotheses, and
+OmegaSim paused.
+# 2026-08-17 16:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.089 seconds (0.15 seconds elapsed;
+19,364 KiB maximum RSS), and required discovery passed 283/283 in 48.544
+seconds (49.53 seconds elapsed; 329,452 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 18:18 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.091 seconds (0.19 seconds elapsed;
+19,732 KiB maximum RSS), and required discovery passed 283/283 in 51.280
+seconds (52.30 seconds elapsed; 329,996 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined hash command named nonexistent stale path
+`experiments/20260726T234500Z-e0-coder-calibration-v1/RESULT.json`; the
+correct frozen artifact
+`experiments/20260726T171500Z-e0-coder-calibration-v1/results.json` matched.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-17 20:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.089 seconds (0.16 seconds elapsed;
+19,488 KiB maximum RSS), and required discovery passed 283/283 in 49.403
+seconds (50.31 seconds elapsed; 329,884 KiB maximum RSS). Corrected
+`compileall` and explicit benchmark/declaration `py_compile`, `git diff
+--check`, and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined post-test check used two stale paths; the corrected tracked
+paths passed. `DECISIONS.md` still records no E0b approval, so no fixture,
+score, measurement, promotion, remote compute, or OmegaSim work opened;
+E1/E5b remain unauthorized, E3 binding, and foundations claims audited
+hypotheses.
+
+# 2026-08-17 22:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.094 seconds (0.15 seconds elapsed;
+19,480 KiB maximum RSS), and required discovery passed 283/283 in 46.454
+seconds (47.35 seconds elapsed; 330,208 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 00:18 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.001 seconds (0.03 seconds elapsed;
+17,020 KiB maximum RSS), and required discovery passed 283/283 in 49.426
+seconds (50.36 seconds elapsed; 330,072 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 02:17 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declarations passed 4/4 in 0.101 seconds (0.17 seconds elapsed;
+19,512 KiB maximum RSS), and required discovery passed 283/283 in 45.213
+seconds (46.14 seconds elapsed; 329,756 KiB maximum RSS). `compileall`,
+corrected explicit benchmark/declaration `py_compile`, `git diff --check`, and
+clean status passed. The first explicit `py_compile` named a nonexistent stale
+benchmark path; the corrected tracked path passed. Frozen E0 result,
+review-only E0b proposal, foundations amendment, and supplied PDF hashes
+remained `3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 06:18 PDT — E0b gate revalidation
+
+At clean detached strict-replay commit
+`f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`, focused E0 declaration and
+coding-core suites passed 12/12 in 0.164 seconds (0.27 seconds elapsed;
+21,024 KiB maximum RSS), and required discovery passed 283/283 in 46.751
+seconds (47.74 seconds elapsed; 329,936 KiB maximum RSS). `compileall`,
+explicit benchmark/declaration `py_compile`, `git diff --check`, and clean
+status passed. Frozen E0 result, review-only E0b proposal, foundations
+amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-18 12:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.142 seconds
+(0.20 seconds elapsed; 19,856 KiB maximum RSS), and required discovery passed
+283/283 in 46.751 seconds (47.78 seconds elapsed; 330,448 KiB maximum RSS).
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+
+# 2026-08-18 16:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.156 seconds
+(0.25 seconds elapsed; 19,664 KiB maximum RSS), and required discovery passed
+283/283 in 48.504 seconds (49.51 seconds elapsed; 329,488 KiB maximum RSS).
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+The first combined hash command used incorrect relative paths from the scratch
+worktree; corrected absolute paths matched. `DECISIONS.md` still records no
+E0b approval, so no fixture, score, measurement, promotion, remote compute,
+or OmegaSim work opened; E1/E5b remain unauthorized, E3 binding, and
+foundations claims audited hypotheses.
+
+# 2026-08-18 18:15 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.144 seconds
+(0.21 seconds elapsed; 19,612 KiB maximum RSS), and required discovery passed
+283/283 in 50.719 seconds (51.74 seconds elapsed; 331,148 KiB maximum RSS).
+`compileall`, corrected explicit benchmark/declaration `py_compile`, `git diff
+--check`, and clean status passed. The first explicit `py_compile` named the
+stale path `benchmarks/e0_coder_calibration.py`; the corrected tracked path
+passed. Frozen E0 result, review-only E0b proposal, foundations amendment, and
+supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+Status at 2026-08-18 20:15 PDT: clean strict replay at `f5a2b7b` passed
+focused E0 declaration plus coding-core suites 12/12 in 0.137 s (0.20 s
+elapsed; 19,704 KiB maximum RSS) and required discovery 283/283 in 49.420 s
+(50.30 s elapsed; 331,428 KiB maximum RSS), plus compile checks, diff hygiene,
+clean status, and all four frozen-hash checks. Two initial focused invocations
+used stale nonexistent unittest module names; the corrected declared suites
+passed and the full required suite was unaffected. E0b remains unapproved, so
+no measurement or promotion opened; E1/E5b remain unauthorized, E3 binding,
+foundations claims audited hypotheses, and OmegaSim paused.
+
+# 2026-08-18 22:16 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.145 seconds
+(0.21 seconds elapsed; 19,628 KiB maximum RSS), and required discovery passed
+283/283 in 47.846 seconds (48.99 seconds elapsed; 326,888 KiB maximum RSS).
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-19 08:39 PDT — E0b gate revalidation
+
+At clean strict-replay commit `f5a2b7b5d5a7e055e0b1d3cecfafb2c62c60be7c`,
+focused E0 declaration and coding-core suites passed 12/12 in 0.142 seconds
+(0.22 seconds elapsed; 19,500 KiB maximum RSS), and required discovery passed
+283/283 in 45.753 seconds (46.90 seconds elapsed; 332,768 KiB maximum RSS).
+`compileall`, explicit benchmark/declaration `py_compile`, `git diff --check`,
+and clean status passed. Frozen E0 result, review-only E0b proposal,
+foundations amendment, and supplied PDF hashes remained
+`3f3b68b39425628f43e28f75758a7f722aba048a9d74aa4a254890dac8942f85`,
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`,
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`,
+and `6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+`DECISIONS.md` still records no E0b approval, so no fixture, score,
+measurement, promotion, remote compute, or OmegaSim work opened; E1/E5b
+remain unauthorized, E3 binding, and foundations claims audited hypotheses.
+# 2026-08-19 20:15 PDT — M-D spec amendments and frozen E5b proposal
+
+At strict-replay worktree commit `1af9f2b` (branch
+`agent/vector-recurrence-attractor-v1`, parent `f5a2b7b`), three review-only
+documents were committed:
+
+1. `docs/m-d-lz77-slp-initializer-spec-amendment-v1.md` — explicit spec
+   amendment for LZ77SLPInitializer beside Re-Pair (M-D requirement).
+2. `docs/m-d-mixed-second-difference-composite-ranking-spec-amendment-v1.md`
+   — explicit spec amendment for mixed-second-difference composite ranking
+   with exact official-score acceptance and estimated-versus-realized ledger
+   residuals (M-D requirement).
+3. `docs/e5b-feigenbaum-sturmian-proposal-v1.md` — separately frozen E5b
+   proposal using fresh Feigenbaum/Sturmian fixtures and length scaling.
+   NOT AUTHORIZED TO RUN until E3 pass, E5 pass, and Ben's explicit review.
+
+The strict-replay branch already contains M-A through M-F fully implemented
+(coding/, automata/, induction/, mining/ packages). Focused E0 declarations
+passed 4/4 in 0.085s; required `PYTHONPATH=src python3 -m unittest discover
+-s tests -v` passed 283/283 in 49.039s; `python3 -m compileall -q src tests`
+and `git diff --check` passed.
+
+E0b proposal SHA-256 remains
+`36435c853ac9f9d802fcf1b84caf24f2504fcc512257e8140831c1a44d3dd606`;
+mathematical-foundations amendment SHA-256 remains
+`bb69556d64e3d893ba05f52f915ee41abe994afbc565d96d1d1a3ca69249f65d`;
+supplied PDF SHA-256 remains
+`6969a095f1139d52fb64afa564cca7acbe40f2f79bf0f89cb4d4769fa385ebcb`.
+All remain assumption- and citation-audited hypotheses, not gate amendments.
+
+No fixture, score, experiment rerun, source change, E1 promotion, E5b run,
+remote compute, or OmegaSim work was opened. E3 remains binding. Ben's
+explicit E0b review remains the critical-path decision. The M-D spec
+amendments and E5b proposal are review-only documents awaiting Ben's
+explicit review.

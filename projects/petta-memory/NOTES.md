@@ -1,3 +1,51 @@
+## 2026-08-30 14:02 PDT - Fix _isolated_stage_worker stdout capture under pytest
+
+`_isolated_stage_worker` in `src/petta_memory/pettachainer_profile.py` redirected
+OS file descriptors 1 and 2 via `os.dup2()` but did not replace
+`sys.stdout`/`sys.stderr`. Under pytest's stdout capturing, `sys.stdout` is a
+pytest capture object, not the OS fd 1 wrapper. So `print()` in the subprocess
+worker wrote to pytest's capture buffer instead of the temp capture files,
+causing `test_isolated_stage_captures_output_and_result` to fail with
+`stdout_chars == 0`.
+
+Fix: after `os.dup2()` redirects the OS fds, open new Python file objects on
+fds 1 and 2 with `closefd=False` and assign them to `sys.stdout`/`sys.stderr`.
+Save and restore the originals in the `finally` block. This ensures both
+C-level writes (SWI-Prolog via fd 1) and Python-level writes (`print()` via
+`sys.stdout`) are captured.
+
+Full 718-test suite passes with `py_compile` and `git diff --check`. Local
+commit `8b94ccc`. No runtime invocation, promotion/write, live integration,
+dependency change, paid compute, or remote action.
+
+## 2026-08-30 14:15 PDT - Pipeline evaluation on rich 6-belief store with diverse EC
+
+Added 12 `PipelineEvaluationTests` on a realistic 6-belief store with 3 domains
+(memory-architecture, planning, reasoning) and diverse EC profiles:
+- Overwhelming support (50/2, STV 0.95/0.90)
+- Balanced (10/10, STV 0.55/0.50)
+- Strongly conflicting (1/20, STV 0.70/0.60)
+- No evidence (0/0, STV 0.50/0.35)
+- High STV with minimal EC (1/0, STV 0.85/0.75)
+- Mid-range (7/3, STV 0.72/0.62)
+
+Tests verify:
+1. Pipeline ranks overwhelming-support belief first by composite score
+2. Strongly conflicting EC lowers composite score below mid-range despite
+   similar base STVs
+3. No-evidence belief has lower composite score than supported beliefs
+4. Domain filter correctly isolates reasoning-domain beliefs (2 of 6)
+5. top_k=2 selects the 2 highest composite scores
+6. min_confidence=0.60 filters beliefs below the projected confidence threshold
+7. Combined domain + confidence filters interact correctly (planning domain
+   keeps balanced, filters no-evidence)
+8. EC projection edge cases: no evidence returns base STV, overwhelming support
+   stays high, strong conflict lowers strength, balanced stays moderate
+
+Full 730-test suite passes with `py_compile` and `git diff --check`. Local
+commit `b48975d`. No runtime invocation, promotion/write, live integration,
+dependency change, paid compute, or remote action.
+
 ## 2026-08-20 13:30 PDT - TraceAttribution: persisted proof-trace attribution
 
 - Implemented `TraceAttribution` frozen dataclass binding a compiled result to

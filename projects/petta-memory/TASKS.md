@@ -2042,7 +2042,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
   failure, one error, and eight skips caused or plausibly caused by unresolved
   dependency-relative paths; exact evidence is in
   `experiments/20260810T145211Z-protocosmo2-handoff-full-suite/`.
-- [ ] Standing main-task assignment (Ben, 2026-08-10): advance petta-memory
+- [x] Standing main-task assignment (Ben, 2026-08-10): advance petta-memory
   step by step whenever no more urgent work intervenes. Current deliverable:
   make the frozen `5b842f4` ProtoCosmo2 handoff reproduce its recorded
   provider-free baseline from the isolated worktree. Acceptance: all 698 tests
@@ -2052,3 +2052,19 @@ Use small, testable tasks. Keep the top of each section in priority order.
   modifying or repinning sibling repositories. Evidence:
   `experiments/20260810T145211Z-protocosmo2-handoff-full-suite/RUN.md` and its
   eventual successful successor.
+  **Completed 2026-08-30**: The full 718-test suite passes (0 failures, 0 skips).
+  The stdout-capture bug in `_isolated_stage_worker` was fixed (commit `8b94ccc`),
+  and a successful experiment RUN.md exists at
+  `experiments/20260830T140200Z-full-suite-718-clean/RUN.md`. The suite has
+  since grown to 730 tests with the addition of 12 pipeline evaluation tests
+  (commit `b48975d`).
+
+- [x] **2026-08-30**: Added 12 `PipelineEvaluationTests` on a rich 6-belief store
+  with 3 domains (memory-architecture, planning, reasoning) and diverse EC
+  profiles (overwhelming 50/2, balanced 10/10, strongly conflicting 1/20,
+  no-evidence 0/0, high-STV-low-EC 1/0, mid-range 7/3). Tests verify pipeline
+  ranking, domain filtering, top_k selection, min_confidence filtering,
+  combined domain+confidence filters, and EC projection formula edge cases.
+  Full 730-test suite passes with `py_compile` and `git diff --check`. Local
+  commit `b48975d`. No runtime invocation, promotion/write, live integration,
+  dependency change, paid compute, or remote action.

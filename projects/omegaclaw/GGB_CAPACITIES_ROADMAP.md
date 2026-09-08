@@ -1,10 +1,299 @@
 # Protobots GGB Capacities Roadmap
 
+As of 2026-08-15 15:30 UTC, the reusable ThreadKeeper gate for capacities
+3.2, 4.5, and 5.2 is refreshed to local branch head `4fdce91`. Queue state
+transitions and artifact cleanup now bind the validated queue parent to the
+device/inode of the directory descriptor actually opened, so a swap to a
+different real directory before rename or unlink fails closed. The two direct
+regressions and the complete boundary file pass (60 tests / 160 subtests), as
+do compilation, diff check, and the cross-project GGB fixture checker. This is
+local hardening evidence coordinated above draft PR #1's safety-floor ancestry;
+it grants no live worker, OmegaClaw/Telegram, push, merge, or runtime authority.
+
+As of 2026-08-15 07:30 UTC, the active conversational-memory/recovery gate for
+capacities 2.4, 3.1, 3.4, 4.2, 5.1, and 5.2 is production-free complete. The
+minimal logger repair at local unpushed OmegaClaw-Core commit `5b9a0aa` passed
+13 Python tests, all six upstream MeTTa test files, and a two-phase restart
+soak with six ACKs and six response-anchored exact recalls from the migrated
+1,024-D store. Kernel egress denial, protected-byte stability, and
+zero-descendant teardown passed. The next small task is a separate production
+promotion review; no push, merge, Telegram, credentials, production canary, or
+cutover is authorized. Evidence:
+`experiments/20260815T070910Z-protomega-staged-logger-integration/`.
+
+Capacities 1.3, 1.5, 2.4, 3.1, 3.4, 4.2, 5.1, and 5.2 now have a
+provider-free Iter three-bot baseline contract at
+`artifacts/ggb-capacity-gates/20260812-iter-three-bot-baseline-contract/`.
+Its v2 schema distinguishes deployment slot from declared runtime identity
+and fails closed on secret-like fields, ambiguous identity, noncanonical
+capture time, placeholder routing evidence, or live authority. Nine tests and
+compilation pass. The next empirical gate is a read-only, secret-free capture
+of the three requested slots followed by an independent comparison of source
+commits, receiver ownership, and routing fingerprints. Unknown facts must stay
+explicitly unknown; no receiver/process control, credential access, state
+mutation, Iter adapter, or ThreadKeeper PR #1 change is authorized.
+
+Capacity 1.2 now has an executable, fail-closed D2 decision-receipt contract at
+`artifacts/ggb-capacity-gates/20260811-motivation-materialization-decision-receipt-contract/`.
+It accepts only Ben's exact authority for one provider-free deterministic 64/32
+materialization and binds the reviewed generator and preregistration digests.
+Nine tests reject absent/declined/inferred decisions, source or scope drift,
+size/type/execution widening, secondary authority, duplicate members,
+oversized files, and symlinks; compilation and the five-file fixture checker
+pass. No receipt or dataset was created. Next: wait for Ben's explicit D2
+decision, then independently bind it to the source message before any separate
+one-shot materializer. Fitting, memory, ThreadKeeper, GoalChainer, provider,
+Telegram, and runtime authority remain closed.
+
+Capacity 1.1's current decision seam is now executable and fail closed at
+`artifacts/ggb-capacity-gates/20260811-heldout-decision-receipt-contract/`.
+The provider-free contract accepts only Ben's exact authorization for one
+local A09--A12 score run against the frozen candidate and sealed-copy digests;
+all other authority stays false. Nine tests cover exact acceptance plus
+missing/declined, drifted, widened, duplicate-member, oversized, symlink, and
+extra-field failures, and the five-file GGB fixture passes. This creates no
+approval receipt and does not reveal or execute held-outs. The next gate still
+requires Ben's explicit D1 decision, followed by independent source-message
+binding before any separate one-shot runner is built.
+
+Capacity 1.1 now has a fail-closed held-out authorization preflight at
+`artifacts/ggb-capacity-gates/20260810-heldout-authorization-preflight/`.
+It binds the frozen candidate, sealed A09--A12 commitment and encrypted-copy
+digest, and independent public verification without decrypting or revealing
+held-out bytes. Five provider-free checks, including four drift/authority
+negatives, pass. The only next action is Ben's explicit authorization for one
+four-case execution against candidate SHA-256
+`df182ee8cafab2a7356352375916e06c2b1e39a60aae61378bb918fb39a27126`
+through the bound v0.6 sandbox. Harness adoption, candidate edits,
+ThreadKeeper PR #1 changes, memory writes, dispatch, providers, Telegram,
+paid compute, and runtime effects remain separately closed.
+
+Capacity 1.1's frozen zero-effect candidate has passed independent freeze and
+public-replay verification at
+`artifacts/ggb-capacity-gates/20260809-request-to-contract-candidate-freeze-independent-verification/`.
+The verifier binds the candidate digest, public harness, complete v0.6 sandbox
+chain, and sealed commitment; all 22 public cases and the source-drift negative
+pass. The next empirical gate requires Ben's explicit authorization to reveal
+and execute A09--A12. Harness adoption is a separate post-score decision, and
+no ThreadKeeper PR #1, memory, provider, Telegram, dispatch, or runtime
+authority is granted.
+
+Capacity 1.1's combined R1/R2/R4 readiness and candidate-freeze review passes
+at `artifacts/ggb-capacity-gates/20260809-request-to-contract-combined-readiness-review/`.
+The review binds the public executable cases, sealed four-case commitment, and
+v0.6 containment/invocation replay, and fixes the next safe order: implement a
+non-live candidate without reveal, record and verify its source SHA-256, then
+seek separate held-out reveal/execution authorization. No harness, ThreadKeeper
+PR #1, memory, provider, Telegram, dispatch, or runtime authority is granted.
+
+Capacity 1.1's content-bound v0.6 Bubblewrap facade passes an independent
+twelve-probe R4 and public invocation-seam replay at
+`artifacts/ggb-capacity-gates/20260809-request-to-contract-os-sandbox-v06-independent-replay/`.
+All twelve cases pass with E1--E6 coverage; the v0.5 stderr-flood regression
+now fails with the exact generic error, while exact binary output, fixed input-
+rejection typing, and source-drift rejection pass. The next small gate is an
+independent combined R1/R2/R4 readiness and candidate-freeze review. Held-out
+reveal, harness adoption, ThreadKeeper PR #1 changes, and runtime effects remain
+unauthorized.
+
+Capacity 1.1's next producer revision is implemented at
+`artifacts/ggb-capacity-gates/20260808-request-to-contract-os-sandbox-v06-stream-bounds/`.
+The non-live facade now validates each captured stream and their aggregate
+before accepting the child report, including the v0.5 failure mode where a
+candidate catches stderr file-limit errors and returns normally. The next
+empirical gate is an independently content-bound twelve-probe R4 and public
+invocation-seam replay. No held-out reveal, harness adoption, ThreadKeeper PR
+#1 change, or runtime effect is authorized.
+
+Capacity 1.1's v0.5 independent R4 and invocation-seam replay found one
+containment regression at
+`artifacts/ggb-capacity-gates/20260808-request-to-contract-os-sandbox-v05-independent-replay/`.
+Eleven of twelve adversarial cases pass and E1--E6 are exercised; exact binary
+return, fixed candidate-rejection typing, and source-drift rejection also pass.
+The output-flood case fails because 1,000,000 stderr bytes are captured but not
+bounded or checked on the success path. Verdict:
+`revision_required_before_harness_adoption`. The next gate is a producer-only
+captured-stream/aggregate bound revision followed by a fresh independent
+replay. No held-out reveal, harness adoption, ThreadKeeper PR #1 change, or
+runtime effect is authorized.
+
+Capacity 1.1 now has a producer-side Bubblewrap facade revision that uses the
+accepted v0.3 child-result codec inside the isolated child and at the parent
+boundary. Exact binary bytes and the fixed rejection/generic-failure split pass
+four provider-free tests at
+`artifacts/ggb-capacity-gates/20260808-request-to-contract-os-sandbox-v05-codec-binding/`.
+The next gate is an independent, content-bound R4 and invocation-seam replay;
+held-out reveal, harness adoption, ThreadKeeper PR #1, and runtime effects stay
+closed.
+
+Capacity 1.1's bounded result-tag contract now fails independent
+implementability review at
+`artifacts/ggb-capacity-gates/20260807-request-to-contract-result-tag-contract-independent-review/`.
+The review content-binds the frozen contract and preserves its safe two-tag
+intent, but finds three ambiguities: the JSON canonicalization label does not
+freeze bytes, base64 canonicality and decoded size are unspecified, and
+non-bytes candidate returns have no generic-failure classification. One direct
+check and five tests pass. Verdict: `revision_required_before_implementation`.
+The next small task is a contract-only v0.2 revision; sandbox implementation,
+held-out reveal, harness adoption, and runtime effects remain closed.
+
+Capacity 1.1 now freezes the bounded result-tag contract needed to repair the
+public invocation seam without reopening candidate-controlled error detail.
+Only exact `ok` and `rejected_input` child reports are admitted; rejection is
+limited to a `ValueError` from the candidate call and maps to a generic parent
+`ValueError`, while all other failures remain generic `RuntimeError`. The
+contract requires fresh R4, seam, and public invalid-input replays before
+adoption. One direct check and seven tests pass at
+`artifacts/ggb-capacity-gates/20260807-request-to-contract-result-tag-contract/`.
+This authorizes no implementation, held-out reveal, harness, or runtime effect.
+
+Capacity 1.1 now records the independently authored A09--A12 reveal
+commitment before any generator implementation. The exact held-out bytes cover
+a new bounded PeTTa-memory record request and semantic paraphrase plus new live
+and mixed GoalChainer-to-ThreadKeeper task-claim requests. Their SHA-256 is
+content-bound at
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-heldout-commitment/`;
+only an encrypted sealed copy is in the gate and reveal remains unauthorized
+until a candidate hash is frozen. The direct checker and four negative tests
+pass. This closes the missing R2 commitment record, not held-out execution,
+R1, harness adoption, generator authority, or runtime authority.
+
+Capacity 1.1 now freezes executable implementations of all 22 public
+generator-facing cases (A01--A08 and N01--N14) at
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-public-executable-cases/`.
+The harness accepts a monitored invocation seam and tests exact canonical
+outputs, byte determinism, paraphrase equivalence, live/mixed authority,
+ordered provenance, digest/path/NFC/bound failures, and output authority
+confinement. Three self-tests pass. This advances but does not close R1: the
+independent A09--A12 reveal and its pre-implementation R2 commitment are still
+missing, and the production seam must be content-bound to the accepted v0.4
+sandbox before harness adoption. No generator or runtime authority is granted.
+
+Capacity 1.1's content-bound v0.4 generic-failure sandbox now passes an
+independent replay of all twelve frozen cases. The consumer binds the contract,
+producer record, facade, and underlying Bubblewrap sources, covers E1--E6,
+and confirms that the prior private stderr sentinel is exposed only as the
+exact message `sandbox candidate failed`. Five independent provider-free
+checks and compilation pass at
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v04-independent-replay/`.
+Verdict: `r4_empirical_replay_pass`. Next: implement and freeze R1 executable
+cases and an independent R2 held-out commitment before harness adoption. No
+generator or runtime effect is authorized.
+
+Capacity 1.1's independently implemented v0.3 consumer now binds the contract,
+producer binding, and sandbox source bytes and executes all twelve required
+cases without importing producer tests. Eleven pass, but E6 fails: a contained
+network adversary's private stderr sentinel is forwarded verbatim in
+`RuntimeError`. Five independent checks pass at
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v03-independent-replay/`.
+The generic-failure v0.4 revision and its passing replay are recorded above.
+R1/R2 and harness adoption remain open; generator and runtime effects remain
+unauthorized.
+
+Capacity 1.1 now has a frozen, testable resolution to the R4 contract mismatch.
+The v0.3 boundary evaluates externally observable outcomes rather than trying
+to detect every Python or native call: host immutability, network isolation,
+descendant teardown, ambient-authority removal, finite resource use, and output
+confinement. It requires twelve adversarial case classes and explicitly treats
+a fully confined `fork`/`exec` as internal computation, not an escaping effect.
+Five provider-free contract tests and the direct checker pass at
+`artifacts/ggb-capacity-gates/20260805-request-to-contract-effect-boundary-v03/`.
+The v0.4 content binding and passing empirical replay are recorded above. This
+does not authorize the harness, generator, or runtime effects; R1/R2 remain
+open.
+
+Capacity 1.1's independent R4 review stops the new OS sandbox before harness
+adoption. A content-bound candidate bypasses Python audit events through
+`ctypes`, calls libc `fork`/`execl`, completes `/usr/bin/true`, and receives
+`pass`. Bubblewrap still contains the process and blocks the demonstrated host
+filesystem escape, but the result contradicts the frozen contract that
+subprocess/exec effects and monitor bypass fail. Eight provider-free review
+checks pass at
+`artifacts/ggb-capacity-gates/20260805-request-to-contract-os-sandbox-independent-review/`.
+The v0.3 contract above resolves this by freezing the narrower externally
+observable boundary; its implementation and independent replay are still
+pending. R1/R2/R4 remain open; generator code and runtime effects remain
+unauthorized.
+
+Capacity 1.1's R4 revision moves candidate import and execution into a
+Bubblewrap OS boundary with disposable mount/network/PID namespaces, a
+read-only minimal runtime/work tree, descendant teardown, and hard CPU,
+address-space, file-size, process, open-file, captured-output, and wall-time
+limits. Ten provider-free adversarial tests pass, including the exact prior
+`os.symlink` escape and a native host-path write attempt. Evidence:
+`artifacts/ggb-capacity-gates/20260805-request-to-contract-os-sandbox/`.
+This is prototype evidence pending independent bypass review, not R4 closure
+or acceptance-harness adoption. R1 executable cases and R2 held-out commitment
+remain open; generator code and runtime effects remain unauthorized.
+
+Capacity 1.1's revised generator-acceptance preregistration also stops before
+implementation. An independent content review confirms the exact bytes API
+closes R3 at the contract level, but R1/R2/R4 remain open: its 26 cases are
+names without executable bodies, no held-out byte commitment exists, and the
+candidate is imported before an effect monitor that has no implementation.
+Eight provider-free checks pass at
+`artifacts/ggb-capacity-gates/20260805-request-to-contract-generator-acceptance-v02-independent-review/`.
+Next: freeze the executable harness, held-out commitment, and import-inclusive
+sandbox; generator code and runtime effects remain unauthorized.
+
+Capacity 1.1's first generator-acceptance preregistration failed independent
+implementability review because its advertised 20-case command only checked
+metadata, admitted fixture lookup, and left its API and effect observation
+ambiguous. Contract-level v0.2 now freezes an exact raw-bytes API, canonical
+JSON, a 26-case generator-facing target, explicit effect monitoring, and a
+held-out commitment/reveal boundary after candidate hash freeze. Ten
+provider-free structural tests pass. Evidence:
+`artifacts/ggb-capacity-gates/20260804-request-to-contract-generator-acceptance-preregistration-v02/`.
+Next: independent review must freeze the real 26 case implementations and
+held-out commitment and close R1--R4; no generator code or runtime effect is
+authorized.
+
+As of 2026-07-30 UTC, the motivational score-policy v0.2 deterministic
+generator has passed revised preregistration, independent review,
+implementation-only, and independent implementation-review gates. A separate
+materialization preflight binds the exact 64/32 synthetic split and fails
+closed while approval is absent. The next step is a decision from Ben on
+deterministic materialization only; fitting, memory writes, ThreadKeeper
+effects, providers, Telegram, and runtime behavior remain unauthorized.
+Evidence:
+`artifacts/ggb-capacity-gates/20260729-motivation-score-policy-v02-materialization-preflight/`.
+
 - Source: Gödel Oruži, `GGB Capacities Curriculum v0.1`, as forwarded by Ben; this file treats it as a rough medium-term planning scaffold, not a frozen spec.
 - Scope: upgrade `@Protomegabot`/ProtomegaTron intelligence through concrete empirical gates while coordinating with OmegaClaw Core, ThreadKeeper PR #1, PeTTa intermediate memory, and `petta-chem` algorithmic chemistry.
-- Last updated: 2026-07-27 19:33 UTC / 2026-07-27 12:33 PDT; refreshed during recurring Protobots GGB roadmap worker run.
+- Last updated: 2026-08-15 15:30 UTC / 2026-08-15 08:30 PDT; refreshed during recurring Protobots GGB roadmap worker run.
 
 ## Operating rule
+
+Capacity 1.1's frozen v0.3 externally observable-effect contract is now bound
+to the existing Bubblewrap implementation and exercised against all twelve
+required adversarial classes at
+`artifacts/ggb-capacity-gates/20260806-request-to-contract-os-sandbox-v03-binding/`.
+Fourteen provider-free tests cover host writes through Python and native calls,
+parent-path link escape, network, descendant teardown, credential environment,
+stdin, CPU/address-space/process/output exhaustion, and exact byte return.
+This closes the producer-side coverage gap only. R4 still requires an
+independently implemented, content-bound replay that does not import the
+producer tests; R1 and R2 also remain open. No harness, generator, memory,
+dispatch, provider, Telegram, or runtime authority is granted.
+
+The structural chemistry transfer lane is now sealed end-to-end at
+`artifacts/ggb-capacity-gates/20260731-chemistry-structural-transfer-evidence-receipt/`.
+The receipt content-binds the larger RAF-shape preregistration, independent
+runner, and four exact results; five provider-free checks fail on artifact or
+replay drift, duplicate JSON, and authority widening. This strengthens bounded
+cross-domain evidence/appraisal gates (capacities 2.2, 3.2, 4.1, 4.3, 5.2,
+5.4) but grants no execution or runtime authority. The lane stops for
+adjudication rather than extending the scorer again.
+
+The chemistry-to-planning lane now has a compact evidence receipt at
+`artifacts/ggb-capacity-gates/20260731-chemistry-candidate-scoring-evidence-receipt/`.
+It content-binds the read-only adapter, sealed preregistration, independent
+runner, and all four exact replay selections and score maps. Five provider-free
+checks reject artifact/replay mutation, duplicate JSON, and authority widening.
+This advances bounded evidence use and candidate appraisal (capacities 2.2,
+3.2, 4.1, 4.3, 5.2, 5.4) without authorizing chemistry execution, experiment
+scheduling, ThreadKeeper/PR #1 effects, or runtime behavior. Next: preregister
+one structurally different chemistry fixture before extending the scorer.
 
 Each capacity should graduate only through an archived, reproducible gate: prompt/task input, bounded permissions, artifacts changed, checks run, result summary, and known failure modes. Prefer local tests and project records over live chat demonstrations.
 
@@ -78,9 +367,11 @@ three admitted inputs. Eight provider-free checks cover sealed identity,
 caller-supplied derived values, malformed scalars, policy/expectation drift,
 candidate unreachability, admission weakening, and authority widening at
 `artifacts/ggb-capacity-gates/20260727-motivation-score-policy-v02-independent-runner/`.
-Next: preregister an out-of-sample v0.2 boundary suite around the new
-`inspect_evidence` decision region before any calibration. Neither artifact
-grants live, task, memory, or ThreadKeeper authority.
+The out-of-sample boundary, joint-feature, evidence-freeze, reviewed generator,
+and approval-preflight gates described below supersede that former next step.
+The current frontier is Ben's decision on deterministic 64/32 materialization
+only. None of these artifacts grants fitting, live, task, memory, provider,
+Telegram, runtime, or ThreadKeeper authority.
 
 The provider-free `motivation-state-v0.1` gate now binds a synthetic immutable
 `petta-memory`-shaped snapshot to two need variables and six bounded
@@ -203,6 +494,20 @@ shared code, hash disagreement, authority widening, and unknown fields.
 This admits portable evidence only; candidate selection remains adjudicated
 and ThreadKeeper effect remains `none`.
 
+The v0.2 synthetic score-policy generator has now crossed an
+implementation-only gate at
+`artifacts/ggb-capacity-gates/20260729-motivation-score-policy-v02-generator-implementation/`.
+Seven provider-free checks bind the reviewed preregistration, replay the exact
+SHA-256 counter primitive and family transforms, reject a cross-split duplicate,
+and demonstrate bounded exhaustion with no output. No 64/32 dataset, labels, or
+fit were materialized; the module intentionally has no full-dataset entry point.
+The independent formula/vector review also passes six provider-free checks at
+`artifacts/ggb-capacity-gates/20260729-motivation-score-policy-v02-generator-implementation-review/`.
+The subsequent materialization preflight binds the reviewed generator and exact
+64/32 scope, but direct execution exits blocked while approval is absent.
+Therefore the next action is Ben's decision on deterministic materialization
+only, not fitting or runtime integration.
+
 That normalization contract now passes at
 `artifacts/ggb-capacity-gates/20260721-motivation-normalization-contract/`.
 It normalizes pinned score fields by a declared positive finite scale and uses
@@ -265,7 +570,7 @@ The labels below are concise working names for the 25 capacities. Where the orig
 
 | ID | Working capacity | Existing anchor | Near-term empirical gate | Next small task |
 |---|---|---|---|---|
-| 1.1 | Task framing and done criteria | Project notebooks, `TASKS.md`, runbooks | Given a Ben request, emit a task contract with objective, allowed paths, forbidden actions, and done criteria before dispatch | Add task-contract fields to the first ThreadKeeper gate record using `GGB_CAPACITY_GATE_TEMPLATE.md` |
+| 1.1 | Task framing and done criteria | Project notebooks, `TASKS.md`, runbooks | Partial pass: the archived-record audit verifies six fields; v0.2 seals a GoalChainer offline/live pair, mixed activation negative, paraphrase pair, and invariant policy; an independent content-bound replay confirms all four; the strict interface freezes bounded input/output schemas and nine fail-closed decision triggers (`20260803-request-to-contract-generator-interface`) | Independently review schema completeness and fail-closed semantics; do not implement the generator, and treat five synthetic cases as insufficient evidence of free-form framing quality |
 | 1.2 | Bounded memory management | `petta-memory` MemoryCluster journal; OmegaClaw history caps | Partial pass: bounded prompt/index/PLN views, non-live OmegaClaw-style prompt/index fixture, and selected-space `static-import!` runtime fact-membership microbenchmarks pass locally | Next: decide whether the safe normalized `static-import!` loader path should become the first broader inference smoke, while keeping PeTTaChainer `compileadd` bottleneck work isolated |
 | 1.3 | Tool/result discipline | Existing project-record updates and checks; ThreadKeeper structured returns | Partial pass: ThreadKeeper hardening gate now has `.metta` sibling fixtures, focused hardening pytest evidence (268 passing tests at head `6e0e49b`), staged no-claim/env-file/@Protomegabot-config async worker-loop smoke gates, opened-fd/stream-capped env-file read evidence, audit/size-cap refresh fixture evidence, async-worker lock hardening fixture evidence, and dedicated query/shell/run-control execution-argument guards | Next: decide PR/update path after PR #1 coordination; keep adding fixture coverage to new gates |
 | 1.4 | Safe shell/file execution | ThreadKeeper PR #1 safety floor | Malicious path/shell fixtures fail closed; allowed argv-only command passes | Coordinate remaining work after PR #1 instead of rewriting sandbox code |

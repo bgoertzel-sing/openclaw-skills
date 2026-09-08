@@ -1,10 +1,1616 @@
 # PeTTa Abstract Algorithmic Chemistry
 
+2026-08-30 13:25 PDT RESUMED: Graph-seed-1003 attempt
+`neutral-v2-g1003-a002` launched from row zero after OOM review of the Aug 20
+row-242 failure. The review (`docs/neutral_calibration_g1003_oom_review.md`)
+concluded the exit 137 was a transient memory spike specific to
+`population-scaling-control-L5-f2-12-V200-g1003-d2003`, not a systematic V200
+problem — other V200/f2=12 rows completed successfully. All frozen identities
+re-verified and matching. Row 242 may OOM again; if it does, freeze and alert
+Ben without auto-retry. Monitoring crons: daily 7AM overview (`6fb7b7bc`) updated
+to active status, 2-hourly progress monitor (`f28e1331`) added.
+
+2026-08-20 13:17 PDT FAILURE: Graph-seed-1003 attempt
+`neutral-v2-g1003-a001` row 242 failed with exit code 137 (SIGKILL) after
+~5 minutes of computation. `FAILED.json` was written; the attempt is
+invalidated and cannot be resumed under v2 rules. The row
+(`population-scaling-control-L5-f2-12-V200-g1003-d2003`) was the same row
+that was in flight during the 2026-08-14 priority pause. A separate review
+is required to determine whether this is a transient OOM issue or a
+systematic problem with this row configuration. Receipts 0--241 remain
+valid and unchanged. Attempt-001 preserved unchanged.
+
+2026-08-14 00:34 PDT priority pause: Ben explicitly prioritized restoring the
+Omega bots over petta-chem. Graph-seed-1003 attempt
+`neutral-v2-g1003-a001` was interrupted recoverably at 242/276 durable
+receipts.
+
+2026-08-14 00:33 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy with receipts 0--241 contiguous,
+zero-exit, and mechanically query/stdout/stderr SHA-256-valid. Every frozen
+manifest/source/runner identity matched. Tmux, runner, and the row-242 PeTTa
+child were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 22:35 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 240. Receipts 0--239
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 240 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 20:54 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 234. Receipts 0--233
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 234 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 18:34 progress: the separately reviewed fourth lifecycle decision
+validated graph-seed-1003 receipts 0--231 as contiguous, zero-exit, and
+mechanically query/stdout/stderr SHA-256-valid; row 232 had the sole allowed
+unreceipted pair. Every frozen identity matched, no lifecycle or terminal
+manifest existed, and the focused durable-v2 runner, nine independent
+RAF-oracle tests, and `git diff --check` passed. The exact same-attempt command
+quarantined only row 232's pair and resumed at row 232; tmux, runner, and PeTTa
+child were live at handoff. No endpoint content was opened. Continue
+metadata-only monitoring to `raw-complete-unanalysed`. Review commit `743270d`
+was pushed normally to GitHub `main`.
+
+2026-08-13 18:03 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` stopped after durable receipt 231. Receipts
+0--231 were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 232 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched, but tmux, runner, and PeTTa
+child were absent, with neither terminal manifest present. The focused
+durable-v2 runner, nine independent RAF-oracle tests, and `git diff --check`
+passed. No endpoint content was opened and no attempt artifact was changed.
+Freeze for a separately reviewed fourth lifecycle decision; monitoring does
+not authorize restart.
+
+2026-08-13 14:35 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 226. Receipts 0--225
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 226 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 12:32 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 219. Receipts 0--218
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 219 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 10:40 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 217. Receipts 0--216
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 217 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 08:37 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 211. Receipts 0--210
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 211 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 06:33 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 208. Receipts 0--207
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 208 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 04:36 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 201. Receipts 0--200
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 201 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 02:39 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 196. Receipts 0--195
+were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; row 196 had the sole allowed unreceipted raw pair. Every frozen
+manifest/source/runner/runtime identity matched. Tmux, runner, and PeTTa child
+were live, with neither terminal manifest present. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring to
+`raw-complete-unanalysed`.
+
+2026-08-13 00:41 progress: separately reviewed and resumed graph-seed-1003
+attempt `neutral-v2-g1003-a001` after its third stopped lifecycle. Receipts
+0--193 were contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid, with no unreceipted raw pair. Every frozen identity matched,
+no lifecycle process or terminal manifest existed, and the durable-v2 and
+nine-oracle-test gates plus `git diff --check` passed. The exact same-attempt
+command resumed at row 194 without quarantining any artifact; tmux, runner,
+and PeTTa child are live. No endpoint content was opened. Continue
+metadata-only monitoring and stop at `raw-complete-unanalysed`. Review commit
+`29a231e` was pushed normally to GitHub `main`.
+
+2026-08-12 22:36 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` stopped after durable receipt 193. Receipts
+0--193 are contiguous, zero-exit, and mechanically query/stdout/stderr
+SHA-256-valid; there is no unreceipted raw pair. Frozen manifest, source,
+runner, PeTTa/runtime, and absent-MORK identities match, but tmux, runner, and
+PeTTa child are absent and neither terminal manifest exists. The focused
+durable-v2 runner, nine independent RAF-oracle tests, and `git diff --check`
+passed. No endpoint content was opened and no attempt artifact was changed.
+Freeze for a separately reviewed third lifecycle decision; monitoring does
+not authorize restart.
+
+2026-08-12 20:33 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 194. Receipts 0--193
+are contiguous, zero-exit, and mechanically query/stdout/stderr SHA-256-valid;
+row 194 has the sole allowed unreceipted pair. Frozen manifest, source,
+runner, PeTTa/runtime, and absent-MORK identities match. Tmux, runner, and
+PeTTa child are live; neither terminal manifest exists. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring.
+
+2026-08-12 18:36 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 187. Receipts 0--186
+are contiguous, zero-exit, and mechanically query/stdout/stderr SHA-256-valid;
+row 187 has the sole allowed unreceipted pair. Frozen manifest, source,
+runner, PeTTa/runtime, and absent-MORK identities match. Tmux, runner, and
+PeTTa child are live; neither terminal manifest exists. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring.
+
+2026-08-12 16:32 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 181. Receipts 0--180
+are contiguous, zero-exit, and mechanically query/stdout/stderr SHA-256-valid;
+row 181 has the sole allowed unreceipted pair. Frozen manifest, source,
+runner, PeTTa/runtime, and absent-MORK identities match. Tmux, runner, and
+PeTTa child are live; neither terminal manifest exists. The focused durable-v2
+runner, nine independent RAF-oracle tests, and `git diff --check` passed. No
+endpoint content was opened; continue metadata-only monitoring.
+
 - Slug: `petta-chem`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-07-28` (12:30)
+- Last reviewed: `2026-08-13` (20:54)
 - Owner: Benjamin Goertzel
+
+2026-08-12 14:44 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 176. Receipts 0--175
+are exactly contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 176 has the sole allowed unreceipted pair. Every frozen
+manifest/source/runner/runtime identity matches, and tmux, the v2 runner, and
+its PeTTa child are live with neither a failure nor completion manifest. The
+focused durable-v2 runner, nine independent RAF-oracle tests, and
+`git diff --check` passed. No endpoint content was opened; continue
+metadata-only monitoring.
+
+2026-08-12 14:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 171. Receipts 0--170
+are exactly contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 171 has the sole allowed unreceipted pair. Every frozen
+manifest/source/runner/runtime identity matches, and tmux, the v2 runner, and
+its PeTTa child are live with neither a failure nor completion manifest. The
+focused durable-v2 runner, nine independent RAF-oracle tests, and
+`git diff --check` passed. No endpoint content was opened; continue
+metadata-only monitoring.
+
+2026-08-12 12:33 progress: separately reviewed and resumed graph-seed-1003
+attempt `neutral-v2-g1003-a001` after its second stopped lifecycle. Receipts
+0--159 were contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 160 had the sole unreceipted pair. Every frozen identity
+matched, no lifecycle process or terminal manifest existed, and the durable-v2
+and nine-oracle-test gates plus `git diff --check` passed. The exact same-attempt
+command quarantined only row 160's pair and resumed at row 160; tmux, runner,
+and PeTTa child are live. No endpoint content was opened. Continue
+metadata-only monitoring and stop at `raw-complete-unanalysed`.
+
+2026-08-12 10:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` stopped after durable receipt 159. Receipts
+0--159 are exactly contiguous, zero-exit, and mechanically
+query/stdout/stderr hash-valid; row 160 has the sole allowed unreceipted pair.
+Every frozen manifest/source/runner/runtime identity matches, but tmux, the v2
+runner, and its PeTTa child are absent, with neither a failure nor completion
+manifest. The focused durable-v2 runner, nine independent RAF-oracle tests,
+and `git diff --check` passed. No endpoint content was opened and no attempt
+artifact was altered. Freeze the attempt for a separate lifecycle/restart
+review; do not resume under the monitoring task.
+
+2026-08-12 08:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 138. Receipts 0--137
+are exactly contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 138 has the sole allowed unreceipted pair. Every frozen
+manifest/source/runner/runtime identity matches, and tmux, the v2 runner, and
+its PeTTa child are live with neither a failure nor completion manifest. The
+focused durable-v2 runner, nine independent RAF-oracle tests, and
+`git diff --check` passed. No endpoint content was opened; continue
+metadata-only monitoring.
+
+2026-08-12 06:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 132. Receipts 0--131
+are exactly contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 132 has the sole allowed unreceipted pair. Every frozen
+manifest/source/runner/runtime identity matches, and tmux, the v2 runner, and
+its PeTTa child are live with neither a failure nor completion manifest. The
+focused durable-v2 runner, nine independent RAF-oracle tests, and
+`git diff --check` passed. No endpoint content was opened; continue
+metadata-only monitoring.
+
+2026-08-12 04:31 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 123. Receipts 0--122
+are exactly contiguous, zero-exit, and mechanically query/stdout/stderr
+hash-valid; row 123 has the sole allowed unreceipted pair. Every frozen
+manifest/source/runner/runtime identity matches, and tmux, the v2 runner, and
+its PeTTa child are live with neither a failure nor completion manifest. The
+focused durable-v2 runner, nine independent RAF-oracle tests, and
+`git diff --check` passed. No endpoint content was opened; continue
+metadata-only monitoring.
+
+2026-08-12 02:31 progress: separately reviewed and resumed graph-seed-1003
+attempt `neutral-v2-g1003-a001`. Receipts 0--72 were contiguous, zero-exit,
+and mechanically query/stdout/stderr hash-valid; row 73 had the sole
+unreceipted pair. Every frozen identity matched, no lifecycle process or
+terminal manifest existed, and the durable-v2 and nine-oracle-test gates plus
+`git diff --check` passed. The exact same-attempt command quarantined only row
+73's pair and resumed at row 73; tmux, runner, and PeTTa child are live. No
+endpoint content was opened. Continue metadata-only monitoring and stop at
+`raw-complete-unanalysed`.
+
+2026-08-12 00:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` stopped after durable receipt 72. Receipts
+0--72 are exactly contiguous, zero-exit, and mechanically
+query/stdout/stderr hash-valid; row 73 has the sole allowed unreceipted pair.
+Every frozen manifest/source/runner/runtime identity matches, but tmux, the v2
+runner, and its PeTTa child are absent, with neither a failure nor completion
+manifest. The focused durable-v2 runner, nine independent RAF-oracle tests,
+and `git diff --check` passed. No endpoint content was opened and no attempt
+artifact was altered. Freeze the attempt for a separate lifecycle/restart
+review; do not resume under the monitoring task.
+
+2026-08-11 22:30 progress: metadata-only validation found graph-seed-1003
+attempt `neutral-v2-g1003-a001` healthy at active row 54. Receipts 0--53 are
+exactly contiguous, zero-exit, and mechanically query/stdout/stderr hash-valid;
+row 54 has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+v2 runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK
+identities match. Tmux, runner, and PeTTa child remain live; no failure or
+completion manifest exists. The focused durable-v2 runner, nine independent
+RAF-oracle tests, and `git diff --check` passed. No endpoint content was opened;
+continue metadata-only monitoring.
+
+2026-08-11 20:31 progress: separately reviewed and launched graph seed 1003.
+The frozen preparation gates, durable-v2 synthetic gate, nine independent
+RAF-oracle tests, every neutral-source/runner/runtime identity, and
+`git diff --check` passed. The materialized shard contains exactly 276
+unique outcome-blind rows; manifest SHA-256 is
+`18b5a961215cd1d321e7919ae8b335d3b8e665772b19690935617f6bf98ade64`.
+Attempt `neutral-v2-g1003-a001` began from row zero with tmux, runner, and
+PeTTa child live, zero receipts, and no failure or completion manifest. No
+endpoint content was opened. Monitor metadata only and stop at
+`raw-complete-unanalysed`. Review commit `0d42874` was pushed normally to
+GitHub `main`.
+
+2026-08-11 18:30 progress: graph-seed-1002 attempt
+`neutral-v2-g1002-a001` reached the frozen `raw-complete-unanalysed`
+boundary. All 276 receipts are contiguous, zero-exit, and mechanically
+query/stdout/stderr hash-valid; the completion manifest reports 276/276 and
+no failure manifest exists. Frozen manifest, neutral-source, v2-runner,
+PeTTa/runtime, SWI-Prolog 9.3.36, and absent-MORK identities match, with no
+runner, child, or tmux session remaining. No endpoint content was opened. The
+focused durable-v2 runner and nine RAF-oracle tests plus `git diff --check`
+passed. Preserve the shard unanalysed; next work requires a separately
+reviewed graph-seed-1003 materialization/launch.
+
+2026-08-11 14:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 274. Receipts 0--273
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 274
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-11 12:34 progress: metadata-only inspection found graph-seed-1002
+attempt `neutral-v2-g1002-a001` interrupted after receipt 272, with only the
+allowed unreceipted row-273 raw pair and no live runner/child, failure
+manifest, or completion manifest. Frozen identities, the durable-v2 synthetic
+gate, nine RAF-oracle tests, and `git diff --check` passed. The reviewed v2
+policy quarantined that pair and resumed the same attempt at row 273; tmux,
+runner, and PeTTa child are live. No endpoint content was opened.
+
+2026-08-11 08:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 272. Receipts 0--271
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 272
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-11 06:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 271. Receipts 0--270
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 271
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-11 04:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 267. Receipts 0--266
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 267
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-11 00:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 266. Receipts 0--265
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 266
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 22:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 265. Receipts 0--264
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 265
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 20:30 progress: metadata-only validation found graph-seed-1002
+
+2026-08-10 18:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 264. Receipts 0--263
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 264
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 16:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 260. Receipts 0--259
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 260
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 14:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 259. Receipts 0--258
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 259
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 12:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 258. Receipts 0--257
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 258
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 08:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 257. Receipts 0--256
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 257
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 06:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 256. Receipts 0--255
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 256
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 04:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 251. Receipts 0--250
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 251
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 02:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 250. Receipts 0--249
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 250
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-10 00:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 249. Receipts 0--248
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 249
+has the sole allowed unreceipted pair. Frozen identities match, and the tmux
+session, runner, and PeTTa child remain live with no failure or completion
+manifest. No endpoint content was opened. The focused durable-v2 runner and
+nine RAF-oracle tests plus `git diff --check` passed; continue metadata-only
+monitoring.
+
+2026-08-09 22:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 249. Receipts 0--248
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 249
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 20:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 248. Receipts 0--247
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 248
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 18:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 243. Receipts 0--242
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 243
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 16:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 242. Receipts 0--241
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 242
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 14:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 241. Receipts 0--240
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 241
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 12:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 240. Receipts 0--239
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 240
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 10:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 236. Receipts 0--235
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 236
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 08:33 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 234. Receipts 0--233
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 234
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 06:33 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 233. Receipts 0--232
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 233
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 04:34 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 232. Receipts 0--231
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 232
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 02:32 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 225. Receipts 0--224
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 225
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-09 00:32 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 219. Receipts 0--218
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 219
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 22:30 progress: metadata-only inspection found graph-seed-1002
+attempt `neutral-v2-g1002-a001` stopped cleanly after durable receipt 216,
+with no live tmux, runner, or PeTTa process and no unreceipted raw pair. All
+receipts 0--216 were contiguous, zero-exit, and query/stdout/stderr hash-valid;
+every frozen source, runner, manifest, PeTTa, SWI-Prolog, and absent-MORK
+identity matched. The focused v2 runner and nine independent RAF-oracle tests
+plus `git diff --check` passed, so the exact reviewed command resumed the same
+attempt at row 217. The tmux session and runner are live. No endpoint content
+was opened or interpreted; continue metadata-only monitoring.
+
+2026-08-08 20:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 217. Receipts 0--216
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 217
+was executing before creating a raw pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 18:31 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 210. Receipts 0--209
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 210
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 16:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 203. Receipts 0--202
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 203
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 14:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 200. Receipts 0--199
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 200
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 12:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 192. Receipts 0--191
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 192
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 10:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 184. Receipts 0--183
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 184
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 08:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 170. Receipts 0--169
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 170
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 06:31 progress: metadata-only inspection found graph-seed-1002
+attempt `neutral-v2-g1002-a001` stopped cleanly after durable receipt 152,
+with no live tmux, runner, or PeTTa process and no unreceipted raw pair. All
+receipts 0--152 were contiguous, zero-exit, and query/stdout/stderr hash-valid;
+every frozen manifest/source/runner/runtime identity matched. The focused v2
+runner and nine independent RAF-oracle tests passed, so the exact reviewed
+command resumed the same attempt at row 153. The tmux session, runner, and
+pinned PeTTa child are live. No endpoint content was opened or interpreted;
+continue metadata-only monitoring.
+
+2026-08-08 04:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 153. Receipts 0--152
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 153
+is executing with no unreceipted raw pair yet. Frozen manifest, neutral
+sources, runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK
+identities match. The tmux session, runner, and PeTTa child remain live, with
+no failure or completion manifest. No endpoint content was opened. The
+focused durable v2 runner and nine independent RAF-oracle tests plus
+`git diff --check` passed; continue metadata-only monitoring.
+
+2026-08-08 02:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 134. Receipts 0--133
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 134
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-08 00:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 124. Receipts 0--123
+are exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 124
+has the sole allowed unreceipted pair. Frozen manifest, neutral sources,
+runner, PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities
+match. The tmux session, runner, and PeTTa child remain live, with no failure
+or completion manifest. No endpoint content was opened. The focused durable
+v2 runner and nine independent RAF-oracle tests plus `git diff --check`
+passed; continue metadata-only monitoring.
+
+2026-08-07 22:30 progress: metadata-only validation found graph-seed-1002
+attempt `neutral-v2-g1002-a001` healthy at active row 65. Receipts 0--64 are
+exactly contiguous, zero-exit, and query/stdout/stderr hash-valid; row 65 has
+the sole allowed unreceipted stdout/stderr pair. The manifest, v2 runner,
+PeTTa commit/entrypoints, SWI-Prolog 9.3.36, and absent-MORK identities match;
+the tmux session, runner, and PeTTa child remain live, with no failure or
+completion manifest. No endpoint content was opened or interpreted. The
+focused durable-v2-runner and nine independent RAF-oracle tests plus
+`git diff --check` passed; continue metadata-only monitoring.
+
+2026-08-07 20:30 progress: graph seed 1002 was separately identity-reviewed,
+materialized as 276 unique outcome-blind rows, and launched as isolated v2
+attempt `neutral-v2-g1002-a001`. Frozen neutral sources, runner, PeTTa commit,
+runtime files, SWI-Prolog 9.3.36, and absent-MORK identities all matched the
+reviewed graph-1001 envelope. Initial metadata showed the runner and PeTTa
+child live at row zero. No raw endpoint was opened; stop remains
+`raw-complete-unanalysed`. Focused preparation, v2 runner, RAF-oracle gates,
+and `git diff --check` passed; frozen untracked paths were untouched. Review
+commit `7724fc8` was pushed normally to GitHub `main`.
+
+2026-08-07 18:30 progress: froze the complete-batch acquisition plan before
+launching another neutral shard. A new synthetic preparation gate materializes
+all 32 graph-seed manifests in a temporary root and verifies 276 rows per
+shard, exactly 8,832 unique frozen row keys, outcome-free status, and refusal
+of an out-of-ledger seed. The independent RAF-oracle fixture suite remains
+green. No chemistry ran, no raw endpoint was opened, and frozen untracked paths
+were untouched. Focused batch/oracle gates and `git diff --check` passed.
+Implementation commit `e10346a` was pushed normally to GitHub `main`.
+
+2026-08-07 16:31 progress: corrected the inline-only synthetic extractor to
+the exact nested PeTTa `neutral-calibration-row` contract and exercised a
+fabricated 32-shard/8,832-row batch. It fails closed on missing or duplicate
+shards, receipt gaps, identity or coverage disagreement, malformed nesting,
+and any invented irrRAF count. No real raw endpoint was opened; the adapter
+has no path interface and frozen untracked paths were untouched. The focused
+synthetic gate and implementation-repo `git diff --check` passed.
+Implementation commit `b3ec38a` was pushed normally to GitHub `main`.
+
+2026-08-07 14:30 progress: froze the extractor-contract review without
+opening raw endpoints. The tracked PeTTa source emits a nested
+`neutral-calibration-row`, while the first synthetic extractor accepts an
+invented flat `neutral-calibration-endpoint`; therefore it is not a valid real
+adapter. The review fixes the exact nested mapping and the 32-shard/8,832-row
+receipt and identity preflight. It also records that irrRAF count is not
+serialized and must remain unavailable rather than be inferred in Python.
+Real parsing remains unauthorized pending a corrected nested synthetic gate
+and complete receipt-validated shards for graph seeds 1001--1032.
+Focused neutral SSA and synthetic extractor gates plus `git diff --check`
+passed; implementation commit `b0dbb32` was pushed normally to GitHub `main`.
+
+2026-08-07 12:31 progress: implemented the synthetic-only neutral outcome
+extractor gate. The inline-only adapter refuses non-synthetic input and has no
+raw-shard path interface; it validates canonical PeTTa-shaped records and
+hashes, exact unique row coverage, execution completeness, numeric/logical
+constraints, invariant structural values, and graph-level aggregation of four
+dynamics seeds. Synthetic coverage passes aggregation plus duplicate, missing,
+mis-keyed, malformed, censored-execution, hash-mismatch, and unauthorized-input
+refusals, with no partial return on failure. No real raw endpoint was opened
+and frozen untracked paths were untouched. Focused gate and implementation-repo
+`git diff --check` passed.
+Implementation commit `529087f` was pushed normally to GitHub `main`.
+
+2026-08-07 10:30 progress: froze `neutral-calibration-analysis-v1` before any
+raw endpoint inspection. The plan fixes the graph as the independent unit,
+within-graph dynamics-seed aggregation, the four endpoint estimands,
+not-applicable and censoring rules, Wilson/bootstrap uncertainty, a descriptive
+isotonic `f50`, complete-panel controls, validation failures, and immutable
+artifact provenance. It explicitly withholds real-data parsing until a
+synthetic-tested extractor and the complete declared batch are separately
+reviewed. No raw stdout/stderr was opened and frozen exp08/scratch/catalysis
+paths were untouched.
+Focused v2 synthetic gate and implementation-repo `git diff --check` passed;
+commit `cb18153` was pushed normally to GitHub `main`.
+
+2026-08-07 08:31 progress: the first v2 neutral-calibration attempt completed
+outcome-blind. `RUN_MANIFEST.json` declares schema
+`neutral-calibration-raw-shard-v2`, status `raw-complete-unanalysed`, and
+276/276 planned rows. Receipts 0--275 are contiguous; all 276 query hashes and
+552 raw-file hashes match their receipts; frozen manifest, neutral-source,
+runner, PeTTa, SWI-Prolog 9.3.36, and absent-MORK identities match. No tmux,
+runner, or PeTTa child remains. The focused v2 synthetic gate and
+`git diff --check` passed. No raw endpoint content was opened or interpreted;
+the completed artifact is preserved for a separately reviewed analysis gate.
+
+2026-08-07 06:43 progress: metadata-only monitoring confirms the third-resumed
+first v2 neutral-calibration attempt remains healthy at its final row. Every
+frozen manifest, neutral-source, runner, runtime, and receipt-bound query/raw
+identity matches; receipts 0--274 are exactly contiguous and hash-valid; and
+row 275 has the sole unreceipted stdout/stderr pair. The tmux session, v2
+runner, and pinned PeTTa child are live, while `FAILED.json` and
+`RUN_MANIFEST.json` are absent. The focused v2 synthetic gate and
+`git diff --check` passed. No endpoint content was opened or interpreted and
+no intervention was made; continue metadata-only monitoring until one 276-row
+`raw-complete-unanalysed` manifest exists.
+
+2026-08-07 04:36 progress: metadata-only monitoring confirms the third-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--272 are exactly contiguous and hash-valid; and row 273 has the
+sole unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned
+PeTTa child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent.
+The focused v2 synthetic gate and `git diff --check` passed. No endpoint
+content was opened or interpreted and no intervention was made; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-07 02:38 progress: metadata-only monitoring confirms the third-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--271 are exactly contiguous and hash-valid; and row 272 has the
+sole unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned
+PeTTa child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent.
+The focused v2 synthetic gate and `git diff --check` passed. No endpoint
+content was opened or interpreted and no intervention was made; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-07 00:38 progress: metadata-only inspection found the second-resumed
+first v2 neutral-calibration attempt had stopped cleanly after durable receipt
+266, with row 267 as the sole unreceipted stdout/stderr pair and no live tmux,
+runner, or PeTTa process. Every frozen identity matched and the focused v2
+synthetic gate plus `git diff --check` passed, so the exact reviewed command
+resumed the same attempt at row 267. The prior row-267 pair is quarantined
+intact; the tmux session, v2 runner, and pinned PeTTa child are live. No
+endpoint content was opened or interpreted; continue metadata-only monitoring
+until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 22:37 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--266 are exactly contiguous and hash-valid; and row 267 has the sole
+unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa
+child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The
+focused v2 synthetic gate and `git diff --check` passed. No endpoint content
+was opened or interpreted and no intervention was made; continue metadata-only
+monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 20:39 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--265 are exactly contiguous and hash-valid; and row 266 has the sole
+unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa
+child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The
+focused v2 synthetic gate and `git diff --check` passed. No endpoint content
+was opened or interpreted and no intervention was made; continue metadata-only
+monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 18:38 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--264 are exactly contiguous and hash-valid; and row 265 has the sole
+unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa
+child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The
+focused v2 synthetic gate and `git diff --check` passed. No endpoint content
+was opened or interpreted and no intervention was made; continue metadata-only
+monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 16:32 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--263 are exactly contiguous and hash-valid; and row 264 has the sole
+unreceipted stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa
+child are live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The
+focused v2 synthetic gate and `git diff --check` passed. No endpoint content
+was opened or interpreted and no intervention was made; continue metadata-only
+monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 14:31 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--257 are exactly contiguous; and row 258 has the sole unreceipted
+stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa child are
+live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The focused v2
+synthetic gate and `git diff --check` passed. No endpoint content was opened or
+interpreted and no intervention was made; continue metadata-only monitoring
+until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 12:31 progress: metadata-only monitoring confirms the second-resumed
+first v2 neutral-calibration attempt remains healthy. Every frozen manifest,
+neutral-source, runner, runtime, and receipt-bound query/raw identity matches;
+receipts 0--255 are exactly contiguous; and row 256 has the sole unreceipted
+stdout/stderr pair. The tmux session, v2 runner, and pinned PeTTa child are
+live, while `FAILED.json` and `RUN_MANIFEST.json` are absent. The focused v2
+synthetic gate and `git diff --check` passed. No endpoint content was opened or
+interpreted and no intervention was made; continue metadata-only monitoring
+until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 10:30 progress: metadata-only inspection found the resumed first
+v2 neutral-calibration attempt stopped cleanly after durable receipt 250, with
+no live tmux/runner/PeTTa process and no failure or completion manifest. Every
+frozen identity and all receipt-bound query/raw hashes matched; there was no
+unreceipted raw pair. The focused v2 synthetic gate passed, so the exact
+reviewed command resumed the same attempt at row 251. The tmux session, v2
+runner, and pinned PeTTa child are live again. No endpoint content was opened
+or interpreted; continue metadata-only monitoring until one 276-row
+`raw-complete-unanalysed` manifest exists.
+
+2026-08-06 08:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--250 are exactly contiguous and hash-valid; and row
+251 is active. `FAILED.json` and `RUN_MANIFEST.json` are absent. No raw endpoint
+content was opened or interpreted, and no intervention was made. The focused
+v2 synthetic gate and `git diff --check` passed; continue metadata-only
+monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-06 06:35 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--248 are exactly contiguous and hash-valid; and row
+249 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one 276-row
+`raw-complete-unanalysed` manifest exists.
+
+2026-08-06 04:51 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--244 are exactly contiguous and hash-valid; and row
+245 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one 276-row
+`raw-complete-unanalysed` manifest exists.
+
+2026-08-06 02:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--240 are exactly contiguous and hash-valid; and row
+241 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one 276-row
+`raw-complete-unanalysed` manifest exists.
+
+2026-08-06 00:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--234 are exactly contiguous; and row 235 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 22:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--232 are exactly contiguous; and row 233 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 20:34 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--226 are exactly contiguous; and row 227 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 18:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--224 are exactly contiguous; and row 225 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 16:34 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--217 are exactly contiguous; and row 218 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 14:36 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--215 are exactly contiguous; and row 216 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 12:31 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--208 are exactly contiguous; and row 209 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 10:31 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--201 are exactly contiguous; and row 202 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 08:42 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--194 are exactly contiguous; and row 195 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 06:37 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--186 are exactly contiguous; and row 187 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 04:51 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--178 are exactly contiguous; and row 179 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 02:32 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--167 are exactly contiguous; and row 168 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-05 00:30 progress: metadata-only monitoring confirms the resumed first
+v2 neutral-calibration attempt remains healthy. Every frozen manifest/source/
+runner/runtime identity matches; the tmux session, v2 runner, and pinned PeTTa
+child are live; receipts 0--145 are exactly contiguous; and row 146 has the
+sole unreceipted stdout/stderr pair. `FAILED.json` and `RUN_MANIFEST.json` are
+absent. No raw endpoint content was opened or interpreted, and no intervention
+was made. The focused v2 synthetic gate and `git diff --check` passed; continue
+metadata-only monitoring until one 276-row `raw-complete-unanalysed` manifest
+exists.
+
+2026-08-04 22:50 progress: metadata-only inspection found the first v2
+neutral-calibration attempt had stopped after durable receipt 133, leaving
+row 134 as the sole unreceipted stdout/stderr pair. No tmux session, runner,
+PeTTa child, `FAILED.json`, or `RUN_MANIFEST.json` remained. Every frozen
+manifest/source/runner/runtime identity matched; the focused synthetic gate
+and `git diff --check` passed. The exact reviewed command resumed the same
+attempt, mechanically accepted receipts 0--133, quarantined the unreceipted
+row-134 pair intact, and restarted row 134. The tmux session, runner, and
+pinned PeTTa child are live; no raw endpoint content was opened or interpreted.
+
+2026-08-04 20:58 progress: metadata-only monitoring confirms the frozen first
+v2 neutral-calibration attempt remains healthy. The tmux session, v2 runner,
+and pinned PeTTa child are live; receipts 0--130 are exactly contiguous and
+row 131 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one
+276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 18:43 progress: metadata-only monitoring confirms the frozen first
+v2 neutral-calibration attempt remains healthy. The tmux session, v2 runner,
+and pinned PeTTa child are live; receipts 0--125 are exactly contiguous and
+row 126 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one
+276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 16:32 progress: metadata-only monitoring confirms the frozen first
+v2 neutral-calibration attempt remains healthy. The tmux session, v2 runner,
+and pinned PeTTa child are live; receipts 0--119 are exactly contiguous and
+row 120 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one
+276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 14:40 progress: metadata-only monitoring confirms the frozen first
+v2 neutral-calibration attempt remains healthy. The tmux session, v2 runner,
+and pinned PeTTa child are live; receipts 0--110 are exactly contiguous and
+row 111 has the sole unreceipted stdout/stderr pair. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one
+276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 12:32 progress: metadata-only monitoring confirms the frozen first
+v2 neutral-calibration attempt remains healthy. The tmux session, v2 runner,
+and pinned PeTTa child are live; receipts 0--52 are present and contiguous,
+with one unreceipted stdout/stderr pair for active row 53. `FAILED.json` and
+`RUN_MANIFEST.json` are absent. No raw endpoint content was opened or
+interpreted, and no intervention was made. The focused v2 synthetic gate and
+`git diff --check` passed; continue metadata-only monitoring until one
+276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 10:30 progress: launched the frozen first v2 neutral-calibration
+attempt `neutral-v2-g1001-a001` from row zero with the unchanged 276-row
+manifest and exact reviewed detached command. All manifest, neutral-source,
+runner, PeTTa, SWI-Prolog 9.3.36, and absent-MORK identities matched, and the
+focused synthetic gate plus `git diff --check` passed before launch.
+Lifecycle-only verification found the tmux runner and PeTTa child live, row 0
+durably receipted, row 1 active, and no failure or completion manifest. No raw
+endpoint content was opened or interpreted. The next task is metadata-only
+health monitoring until one 276-row `raw-complete-unanalysed` manifest exists.
+
+2026-08-04 08:30 progress: reviewed the synthetic-gated v2 runner and froze
+the first fresh-attempt launch plan without launching chemistry. The plan pins
+the unchanged 276-row manifest, neutral source and runner hashes, PeTTa commit
+and entrypoint hashes, SWI-Prolog 9.3.36 path, absent MORK mode, separate v2
+attempt directory/ID, detached tmux command, and fail-closed resume/completion
+rules. Metadata-only review confirmed the v2 root is absent and the preserved
+v1 raw directory still has 468 files; no raw endpoint content was opened. The
+focused synthetic test and `git diff --check` passed. The next task is a
+separately observed row-zero launch using only the frozen command. Commit
+`18e2280` is on GitHub `main`.
+
+2026-08-04 06:30 progress: implemented and synthetic-gated the frozen v2
+durable-receipt runner without launching chemistry. Successful rows fsync raw
+stdout/stderr before atomic hash-bound receipt publication; restarts accept
+only the exact validated contiguous prefix, quarantine only the next
+unreceipted pair, and permanently reject nonzero attempts. Synthetic checks
+cover uninterrupted completion, both interruption boundaries, raw/query/
+receipt/manifest/runtime/gap/duplicate/order tampering, unexpected raw files,
+and v1-artifact refusal. The focused test and `git diff --check` passed;
+commit `4b7c6de` is on GitHub `main`. The current v1 raw directory was not
+inventoried, opened, archived, resumed, or changed, and no calibration was
+launched.
+
+2026-08-04 04:30 progress: froze the reviewed response to the second late
+`graph_seed=1001` interruption. The current raw directory remains unchanged
+and unusable; the consumed v1 recovery plan cannot authorize a third v1
+restart. Before any further chemistry runs, a synthetic-gated v2 runner must
+atomically receipt each successful row and resume only a mechanically
+validated contiguous prefix within one fresh attempt. That fresh attempt must
+start at row zero with the unchanged 276-row manifest. No endpoint was opened,
+archived, resumed, or restarted. The focused existing recovery test and
+`git diff --check` passed.
+
+2026-08-04 00:36 blocker: metadata-only inspection found that the detached
+fresh `graph_seed=1001` restart stopped during row 233 of 276. There are 234
+stdout/stderr pairs, row 233 is partial, no runner/child process or tmux
+session is live, `MANIFEST.json` remains `prepared-unrun`, and no run manifest
+exists. No raw endpoint content was opened or interpreted. Preserve this
+second interrupted whole-shard attempt unchanged; do not parse or restart
+until a reviewed recovery decision addresses the repeated late interruption.
+
+2026-08-03 22:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 232 of
+276 (233 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 20:32 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 226 of
+276 (227 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 18:35 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 219 of
+276 (220 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 16:31 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 216 of
+276 (217 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 14:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 209 of
+276 (210 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 12:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 202 of
+276 (203 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 10:32 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and is executing row 194 of
+276 (195 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 08:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 185 of
+276 (186 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 06:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 174 of
+276 (175 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 04:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 160 of
+276 (161 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 02:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 135 of
+276 (136 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-03 00:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 123 of
+276 (124 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-02 22:30 progress: metadata-only inspection confirms the detached,
+fresh `graph_seed=1001` restart remains healthy and has advanced to row 57 of
+276 (58 stdout/stderr pairs, with the current pair open). The prepared
+manifest remains unchanged and no run manifest exists. No raw endpoint content
+was opened or interpreted; the focused fail-closed runner test and
+`git diff --check` pass. Await one `raw-complete-unanalysed` manifest before
+parsing.
+
+2026-08-02 21:15 progress: launched the reviewed whole-shard restart for
+`graph_seed=1001` from row zero using the unchanged 276-row manifest and the
+pinned PeTTa/SWI-Prolog runtime in detached `tmux`. Metadata-only verification
+found the runner live and advancing into row 1; no raw endpoint content was
+opened and no run manifest exists yet. A short session-bound launch was first
+archived outcome-blind under the frozen recovery rule. Recovery/runner checks
+and `git diff --check` passed before launch; await one
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-08-02 20:19 progress: froze and enforced the conservative whole-shard
+recovery policy for interrupted neutral calibration attempts. Graph-seed 1001's
+472 raw files were atomically archived without opening their contents, and an
+outcome-blind recovery plan authorizes only a fresh restart of all 276 original
+manifest rows. Focused recovery/runner checks and `git diff --check` pass;
+commit `571bfa0` is on GitHub `main`. The restart remains unrun and no endpoint
+was parsed.
+
+2026-08-01 10:30 blocker: the detached pinned-runtime process is no longer
+live. It stopped after completing row 234 and while writing row 235; 236 raw
+stdout/stderr pairs exist, but the manifest remains `prepared-unrun` and no
+run manifest was produced. No raw endpoint output was opened or interpreted.
+The partial artifact is preserved unchanged; do not parse or selectively
+resume until a reviewed whole-shard recovery policy is frozen.
+
+2026-08-01 08:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 234 of 276 (235 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-08-01 06:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 232 of 276 (233 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-08-01 04:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 226 of 276 (227 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-08-01 02:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 219 of 276 (220 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-08-01 00:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 216 of 276 (217 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-07-31 22:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 209 of 276 (210 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-07-31 20:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 202 of 276 (203 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-07-31 18:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 194 of 276 (195 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-07-31 16:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 185 of 276 (186 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await the single
+`raw-complete-unanalysed` manifest before parsing.
+
+2026-07-31 12:30 progress: the detached, unchanged `graph_seed=1001` raw
+shard remains healthy at row 161 of 276 (162 stdout/stderr file pairs present,
+with the current pair still open). No raw endpoint output was opened or
+interpreted. The focused fail-closed runner test and `git diff --check` pass;
+the acceptance state remains `raw-complete-unanalysed`.
+
+2026-07-31 14:30 progress: the detached pinned-runtime process remains healthy
+and has advanced to row 176 of 276 (177 stdout/stderr pairs, with the current
+pair still open). No raw endpoint output was opened or interpreted. The
+focused fail-closed runner test and `git diff --check` pass; await a complete
+raw manifest before parsing.
+
+2026-07-31 04:30 progress: the first raw-only `graph_seed=1001` launch was
+terminated with its cron worker after twelve complete rows and during row 13,
+before a run manifest was written. The partial attempt was preserved without
+endpoint inspection. A detached full-manifest retry initially failed closed
+before chemistry because SWI-Prolog was absent from the cron `PATH`; that
+attempt was also preserved. The unchanged 276-row shard is now running under
+the pinned SWI-Prolog 9.3.36 path, detached from the worker lifecycle.
+
+2026-07-31 02:30 progress: began the first frozen graph-seed-complete neutral
+calibration shard (`graph_seed=1001`) without endpoint analysis. The initial
+launch exposed a pre-chemistry host boundary bug: PeTTa's shebang-less
+`run.sh` cannot be executed directly. The runner now invokes it through `sh`;
+the focused fail-closed test and `git diff --check` pass, commit `5d43d3d` is
+on GitHub `main`, and the same 276-row shard is running from its original
+manifest. Protected unresolved paths remain untouched.
+
+2026-07-31 00:30 progress: added the outcome-blind raw shard execution
+boundary for the frozen neutral calibration. It runs every prepared row in
+manifest order, records raw PeTTa stdout/stderr and hashes, and fails closed
+without interpreting endpoints or permitting selective continuation. Focused
+runner/query-preparation checks and `git diff --check` pass; no registered
+calibration chemistry ran.
+
+2026-07-30 22:30 progress: added an outcome-blind calibration query
+preparation boundary. It materializes exactly 276 scalar-only PeTTa queries
+for any frozen graph-seed-complete shard, with a prepared-unrun manifest and
+no endpoint fields. Focused query and shard-plan checks plus
+`git diff --check` pass; no registered calibration chemistry ran.
+
+2026-07-30 18:30 progress: completed the PeTTa-native canonical reaction
+constructor for the frozen binary-polymer systems. It exactly reproduces the
+reviewed `L=3` 40-reaction RAF catalog and yields the declared full directed
+ligation/cleavage counts `136/392/1032` at `L=4/5/6`. One hundred twenty-three
+focused SSA checks and `git diff --check` pass; calibration execution and
+endpoint inspection remain untouched.
+
+2026-07-30 20:30 progress: added the PeTTa-native ledger-row boundary. A row
+now accepts only frozen scalar fields, constructs its complete binary-polymer
+chemistry from `L`, records exact maximal-RAF rule identities, and composes
+the reviewed matched endpoints without host chemistry. One hundred
+twenty-four focused SSA checks and `git diff --check` pass; the registered
+calibration remains unrun and uninspected.
+
+2026-07-30 16:30 progress: added the missing PeTTa-native constructor for the
+frozen binary-polymer molecule universes through `L=6`. It emits literal
+polymer identities in increasing-length, within-layer lexical order and
+matches exact `L=2,3` catalogs plus the declared `L=4,5,6` cardinalities.
+One hundred sixteen focused SSA checks and `git diff --check` pass; reaction
+construction and calibration execution remain open, and no endpoint was
+inspected.
+
+2026-07-30 14:30 progress: closed the last host-supplied structural-input gap
+for one neutral calibration row. A PeTTa-native boundary now samples the
+pathway-independent graph, converts canonical SSA facts to the reviewed RAF
+interface, derives the maximal RAF, closure, and reachable required
+reactant/catalyst set, and composes the matched endpoints. One hundred ten
+focused SSA checks and `git diff --check` pass; no calibration chemistry ran
+and no endpoint was inspected.
+
+2026-07-30 12:30 progress: added the PeTTa-native polynomial maximal-RAF
+projection needed to derive full-system structural inputs without exhaustive
+powersets or host chemistry. Iterative food-closure pruning agrees with
+exhaustive tiny truth on positive, multiple-product/catalyst, unreachable,
+multi-pass deletion, and seeded-generated controls. Forty-four focused RAF
+checks and `git diff --check` pass; no calibration chemistry ran and no
+endpoint was inspected.
+
+2026-07-30 10:30 progress: closed the per-row PeTTa execution/measurement
+boundary for the frozen neutral calibration. One call now constructs the
+matched baseline/catalysis-ablation runs and emits separately labeled
+reachability, active/persistence, integrated-nonfood, and matched-delta
+endpoints from explicit maximal-RAF structural inputs. One hundred nine
+focused SSA checks and `git diff --check` pass; no calibration chemistry ran
+and no endpoint was inspected.
+
+2026-07-30 08:30 progress: composed both arms of the frozen matched catalysis
+intervention into one PeTTa-native endpoint record. Baseline and ablated
+dynamic reachability remain separately labeled, persistence uses only required
+RAF reactants/catalysts, reachability uses the full selected RAF closure, and
+causal/productive deltas are emitted without host replay. One hundred eight
+focused SSA checks and `git diff --check` pass; no calibration chemistry ran
+and no endpoint was inspected.
+
+2026-07-30 06:30 progress: composed the frozen causal/productive endpoint
+primitives into a PeTTa-native per-run summary and matched baseline-minus-
+ablation delta for RAF event count, persistence evidence-bin count, and
+time-integrated nonfood population. One hundred six focused SSA checks pass;
+no calibration chemistry ran and no endpoint was inspected.
+
+2026-07-30 04:30 progress: added the PeTTa-native time-integrated nonfood
+population endpoint primitive for matched neutral catalysis ablations. It
+integrates piecewise-constant counts only over the frozen half-open
+`[T_burn,T)` window, including exact burn-in/horizon clipping and empty-trace
+controls. One hundred four focused SSA checks and `git diff --check` pass; no
+calibration chemistry ran and no endpoint was inspected.
+
+2026-07-30 02:30 progress: added the frozen causal-ablation boundary in
+PeTTa. It deletes only catalysis edges targeting a selected maximal RAF and
+runs baseline/ablated arms with the same sampled graph, dynamics seed, initial
+counts, horizon, and event bound. Ninety-eight focused SSA checks and
+`git diff --check` pass; no calibration chemistry ran and no endpoint was
+inspected.
+
+2026-07-30 00:30 progress: added a PeTTa-native dynamic-reachability summary
+over endpoint-safe timed transitions. It reports the first time every selected
+RAF-closure molecule is simultaneously positive after every selected RAF
+reaction has fired, or explicit censoring. Ninety-four focused SSA checks and
+`git diff --check` pass; no calibration chemistry ran and no endpoint was
+inspected.
+
+2026-07-29 22:30 progress: added a PeTTa-native active/persistence summary
+over endpoint-safe binned transitions. It reports qualifying RAF event count,
+distinct evidence-bin count, total bins, and the frozen persistence
+classification without host-side chemistry. Ninety focused SSA checks and
+`git diff --check` pass; no calibration chemistry ran and no endpoint was
+inspected.
+
+2026-07-29 20:30 progress: added PeTTa-native active/persistence evidence
+predicates over endpoint-safe binned transitions. RAF event identity excludes
+influx/dilution, and required reactant/catalyst positivity is evaluated from
+the pre-event state. Eighty-seven focused SSA checks and `git diff --check`
+pass; no calibration chemistry ran and no endpoint was inspected.
+
+2026-07-29 18:30 progress: routed the frozen persistence-window projection
+through endpoint-safe PeTTa timed transitions, retaining both pre- and
+post-event resources in each binned record. The focused SSA suite now passes
+77 checks, including exact burn-in/horizon boundaries and a last-reactant
+consumption control; `git diff --check` passes. No calibration chemistry ran
+and no endpoint was inspected.
+
+2026-07-29 16:30 progress: corrected the endpoint-input boundary before any
+calibration run by adding PeTTa-native timed transitions with both pre- and
+post-event counts. Post-event-only rows can erase the last required reactant
+at the event used for persistence; the new endpoint-blind records preserve
+that state without evaluating RAF membership. Seventy-six focused SSA checks
+and `git diff --check` pass. No calibration chemistry ran and no endpoint was
+inspected.
+
+2026-07-29 14:30 progress: added an endpoint-blind PeTTa-native projection
+from timed abundance states into the frozen half-open persistence bins.
+Boundary controls exclude times before 100 and at/after 500, assign exact
+edges 100 and 110 to bins 0 and 1, and preserve ordered state records.
+Seventy-four focused SSA checks and `git diff --check` pass. No calibration
+chemistry ran and no endpoint was inspected.
+
+2026-07-29 12:30 progress: added a PeTTa-native projection from realized SSA
+draws and initial counts to ordered timed post-event abundance states. This
+closes the chemistry-state boundary required by the frozen reachability and
+persistence endpoints without host-side event replay. Sixty-seven focused
+checks pass, including exact ligation/cleavage state transitions and run
+projection. No calibration chemistry ran and no endpoint was inspected.
+
+2026-07-29 10:30 progress: added a PeTTa-native projection from realized SSA
+draws to ordered cumulative simulated-time events. This closes the trajectory
+clock boundary needed for the frozen burn-in and persistence bins without
+host-side reconstruction of chemistry timing. Sixty-five focused checks pass
+for exact event identity, index order, cumulative time, and replay projection.
+No calibration chemistry ran and no endpoint was inspected.
+
+2026-07-29 08:30 progress: connected the frozen neutral components through a
+single PeTTa-native execution boundary. Given separate graph/dynamics seeds,
+canonical molecule/reaction lists, exact `2f`, volume, and stop bounds, PeTTa
+now samples catalysis, constructs scaled initial counts, and invokes the
+time/event-bounded SSA without host chemistry. Sixty-three focused checks pass
+on tiny endpoint-blind controls. No calibration chemistry ran and no endpoint
+was inspected.
+
+2026-07-29 06:30 progress: added the PeTTa-native full-system catalysis
+sampling boundary required before neutral calibration. Given canonical
+molecule/reaction lists, graph seed, and exact `2f`, it samples every
+molecule/reaction pair independently at `p=min(1,f/|R_L|)` and emits the edge
+shape consumed directly by SSA. Sixty-one focused checks cover zero, full,
+exact seeded, empty, and replay cases. No calibration chemistry ran and no
+endpoint was inspected.
+
+2026-07-29 04:30 progress: added the missing PeTTa-native initial-state
+constructor for the frozen population-scaling controls. It assigns every food
+polymer `V/5` molecules and every nonfood polymer zero, with exact checks at
+`V={50,100,200}`. Fifty-three focused SSA checks pass. No calibration
+chemistry ran and no endpoint was inspected.
+
+2026-07-29 02:30 progress: repaired a calibration-blocking population-scaling
+error before any sampled run. The PeTTa-native food-influx weight now follows
+the frozen linear count/influx scaling at `V={50,100,200}` instead of silently
+using the `V=100` rate at every volume. Forty-eight focused SSA checks pass.
+No calibration chemistry ran and no endpoint was inspected.
+
+2026-07-29 00:30 progress: closed the remaining frozen-time execution
+boundary before calibration. A new PeTTa-native runner accumulates realized
+Gillespie waiting times, stops at either the simulated-time or event bound,
+and censors rather than applies an event whose waiting time crosses the
+horizon. Forty-six focused SSA checks pass. No calibration chemistry ran and
+no endpoint was inspected.
+
+2026-07-28 22:30 progress: corrected the PeTTa-native Gillespie waiting-time
+boundary before calibration. Every draw now records its uniform, exact total
+weight, common `10000*V^2` propensity denominator, and realized deterministic
+floating-point waiting time; the prior symbolic record omitted that denominator
+and could not support the frozen `T=500` stop or persistence bins. Forty-two
+focused SSA checks pass. The calibration remains unrun and endpoints
+uninspected.
+
+2026-07-28 20:30 progress: added a deterministic, outcome-blind execution
+plan for the frozen neutral calibration. It partitions all 8,832 declared runs
+into 32 graph-seed-complete shards of 276 runs, keeping all nested dynamics
+replicates together and explicitly forbidding endpoint-conditioned retries,
+omissions, extensions, or resampling. The ledger and shard-plan checks pass;
+no chemistry ran and no calibration endpoint was inspected.
+
+2026-07-28 18:30 progress: froze the unrun `neutral-calibration-ledger-v1`
+matrix after the oracle and SSA gates. The ledger declares 8,832 unique
+pathway-independent runs across the primary transition, finite-size, and
+population-scaling cohorts, with fixed graph/dynamics seeds, constants,
+endpoints, nested-replicate reporting, and a no-adaptation/no-resampling rule.
+A host-side validation expands and checks the matrix without running chemistry
+or inspecting an endpoint; all forty PeTTa SSA checks, the ledger check, and
+`git diff --check` pass. Protected unresolved files were untouched.
+
+2026-07-28 16:30 progress: added bounded multi-step PeTTa-native SSA
+execution that re-enumerates propensities from each current resource state,
+records every exact keyed draw, and stops explicitly at quiescence or the
+event bound. A two-step ligation/cleavage control replays exactly to its
+initial counts, and forty focused checks cover state-dependent enabling,
+quiescence, replay, and nonnegative inventory. The frozen calibration ledger
+remains next; no calibration endpoint was inspected. Commit `83baf93` was
+pushed normally to GitHub `main`.
+
+2026-07-28 14:30 progress: added canonical PeTTa-native enumeration of every
+enabled influx, dilution, ligation, and cleavage event using exact integer
+weights with common denominator `10000*V^2`. Zero-propensity dilution and
+reaction rows are excluded without host chemistry, and thirty-five focused
+SSA checks pass. Multi-step SSA execution and the frozen calibration ledger
+remain next; no calibration endpoint was inspected. Commit `97e1d13` was
+pushed normally to GitHub `main`.
 
 2026-07-28 12:30 progress: added canonical PeTTa-native application and
 resource guards for influx, dilution, ligation, and cleavage events. A

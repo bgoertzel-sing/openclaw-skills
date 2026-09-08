@@ -1,7 +1,7 @@
 # ProtoCosmo2 long-reply delivery failure
 
 - Started: 2026-08-11T18:45:00Z
-- Status: corrected request-bound candidate locally validated; independent review open; production unaccepted
+- Status: PASS — independently reviewed, guarded-deployed, and externally accepted
 - Scope: ProtoCosmo2 long migration-planning request at Telegram 11:28--11:29 PDT
 
 ## Deliverable
@@ -75,3 +75,28 @@ preservation.
 - Follow-up focused runtime/bridge tests: `24 passed in 0.46s`.
 - Follow-up full provider-free transport suite: `148 passed in 1.63s`.
 - Follow-up compilation and scoped `git diff --check`: passed.
+
+Independent re-review PASSED exact commits `6ace94f66df` +
+`42c0461b41d`, including 35 tracked relevant tests in the review checkout and
+confirmation that live `output.txt` is diagnostic-only, same-cycle nonzero
+exit remains an incident, post-exit grace is bounded/authenticated, and no new
+authority or lifecycle regression was found.
+
+ProtoCosmo2 alone was guarded-restarted at 2026-08-11 13:46 PDT. Production
+uses reviewed runner/ledger snapshot `7c57c98`, reviewed transport snapshot
+`df06c29`, and the bridge driver from exact repair snapshot `42c0461`. Mutable
+state stayed byte-identical across restart (SHA-256
+`9b2061ad029a1980bfa861bfc3a107d9f9f4cb548298bc2d18aed3874c2d4457`),
+cursor remained `387572903`, pending ingress remained zero, and exactly one
+ProtoCosmo2 receiver is owned by supervisor PID `3177100` (receiver `3177114`).
+Protomega and Protomega2 were not restarted.
+
+External acceptance passed on 2026-08-11 at approximately 14:22 PDT. Ben sent
+ProtoCosmo2 the Iter technical description and follow-up rollout instructions.
+The durable state binds source messages `1017`, `1018`, and `1021` to delivered
+deferred results with Telegram receipts `1023`, `1026`, and `1028`. This proves
+the repaired long/deferred reply crossed the live inner bridge and outer
+transport. The Iter handoff also exposed a separate limitation: the PDF's
+embedded GitHub hyperlink was not presented to the model as an explicit URL;
+that does not invalidate this delivery repair and should be handled as a
+separate attachment-link extraction task.

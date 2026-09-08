@@ -1,16 +1,3184 @@
 # Tasks
 
+- [ ] **Restore VM2 Protomega Telegram and Slack operation (Ben, Telegram
+  4473, 2026-09-07).** Deliverable: repair the standard-Omega Protomega route
+  on VM2 without changing sibling identities. Acceptance: exactly one owned
+  Telegram receiver and one owned Slack receiver; fresh Ben-originated canary
+  on each available channel correlates ingress, successful provider/action,
+  and visible egress; timeout cleanup leaves no PeTTa/SWI descendants; all
+  superseded repair crons/controllers are retired. Next command: capture raw
+  process/controller topology, receiver state/cursors, effective non-secret
+  routing, and recent ingress/provider/egress failures. Evidence:
+  `experiments/20260907T1849PDT-protomega-vm2-recovery/`.
+
+- [ ] **ProtoCosmo2 Iter channel unstick and recurrence hardening (2026-09-04)** —
+  Deliverable: recover the live ProtoCosmo2 reply path from the stale
+  `iter-channel/processing` wedge and harden request lifecycle recovery so an
+  interrupted tool/reply cannot permanently violate the one-active-request
+  invariant. Acceptance: exactly one supervised receiver/Iter loop, no stale
+  processing item after restart, provider-free crash/restart regression passes,
+  and one fresh Ben-initiated Telegram message has correlated ingress and reply
+  evidence. Next command: capture supervisor/process/channel baseline, archive
+  the stale processing entry through the owning supervisor lifecycle, and
+  restart once. Evidence path:
+  `experiments/20260904T100343Z-protocosmo2-iter-channel-recovery/`.
+  **2026-09-07 recurrence:** receiver PID 3125217 survived orphaned under PID 1
+  while the Iter sibling and owning supervisor were absent; two durable inbox
+  requests remained queued. Immediate deliverable: identity-check and drain the
+  orphan, restart the receiver+Iter pair, and make either child exiting restart
+  the pair. Acceptance: queued requests complete, exactly one receiver and one
+  Iter loop remain supervised, and a fresh Telegram canary replies. Next
+  command: capture state, drain PID 3125217, start the owning supervisor.
+  Evidence path: `experiments/20260907T212700Z-protocosmo2-fast-recovery/`.
+
+- [x] **Plan Protomega Slack port from Pop!_OS to VM2 (2026-08-31)** —
+  Deliverable: evidence-backed migration plan covering Slack transport code,
+  non-secret configuration schema, process/supervisor ownership, identity and
+  channel routing, mutable state, staging isolation, rollback, and acceptance
+  canary. Acceptance: read-only source/target inventories are recorded and the
+  plan explicitly requires zero changes to the currently working VM2 Protomega
+  until Ben separately authorizes implementation. Next command: resolve the
+  pinned Pop!_OS↔VM2 access path and inspect Slack-related processes/files using
+  metadata-only commands. Evidence path:
+  `experiments/20260831T181100-protomega-slack-port-plan/`. Plan recorded;
+  implementation remains unauthorized and the verified VM2 SSH route must be
+  restored before the target-side read-only inventory.
+
+- [x] **All-Omega human Telegram reply-depth repair (2026-08-11)** —
+  deliverable: shared transport treats human Telegram Reply UI as addressing
+  context at depth 0 for ProtoCosmo2, Protomega, and Protomega2 while retaining
+  bot-originated continuation depth. Acceptance: three-identity regression,
+  focused/full provider-free tests, independent review, guarded one-receiver
+  restarts, and a fresh human Reply canary per identity; no human message is
+  silently marked processed. **Current:** commit `92bdabb` passed independent
+  review, 120 focused tests, and 153 applicable provider-free tests. All three
+  identities now run it with exactly one receiver and byte-identical state
+  across restart. ProtoCosmo2's human Reply-button canary passed at source
+  `1057` / receipt `1058`. Protomega then passed at source `9936` / receipt
+  `9937`, and Protomega2 passed at source `330` / receipt `331`; Ben confirmed
+  both worked. No new reply-depth incident accompanied any canary. Evidence:
+  `experiments/20260811T235543Z-human-reply-depth-all-omegas/` and
+  `experiments/20260811T235601Z-human-reply-depth-all-omegas-r2/`.
+
 Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
-- [ ] 2026-08-11: Repair ProtoCosmo2's long multiline reply delivery failure.
+- [x] **ThreadKeeper _safe_slug, _validate_persona_key, _new_run_record, _resolve_persona_prompt_path, expected_sha256 exact-type hardening (2026-08-21)** —
+  `_safe_slug` in `subagent.py` previously called
+  `str(text or "")` without first checking
+  `type(text) is str`. A behavioral str subclass could execute
+  attacker-controlled `__str__` during coercion, or
+  `__bool__`/`__len__` during the truthiness check, before any
+  validation ran. The hardened code checks `type(text) is str`
+  and uses `""` for any other type. `_validate_persona_key`
+  previously called `str(persona_key or "").strip()` without
+  first checking `type(persona_key) is str`. A behavioral str
+  subclass could execute `__str__` or `strip` during coercion.
+  The hardened code raises `ValueError("persona key must be a
+  string")` for non-exact-str. `_new_run_record` previously
+  called `str(goal or "")`. The hardened code uses
+  `goal if type(goal) is str else ""`.
+  `_resolve_persona_prompt_path` previously called
+  `str(persona_file or "").strip()`. The hardened code raises
+  `ValueError` for non-str. `load_persona_prompt`'s
+  `expected_sha256` previously called
+  `str(expected_sha256 or "").strip().lower()`. The hardened
+  code uses the exact-type pattern. Fifty-three focused tests
+  cover all five functions with exact str acceptance, non-str
+  rejection (int, float, list, dict, None, bool, bytes),
+  behavioral str subclass rejection without triggering `__str__`,
+  `strip`, or `lower`, behavioral str with raising
+  `__str__`/`strip` not triggered, and max_len respected.
+  Commit `2289264` on `agent/threadkeeper-hardening-next`; all
+  53 focused tests, 342 combined hardening tests, Python
+  compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry pass.
+
+- [x] **ThreadKeeper _resolve_workspace_path and _bound_patch_proposal_content exact-type hardening (2026-08-20)** —
+  `_resolve_workspace_path` in `subagent.py` previously called
+  `str(path)` without first checking `type(path) is str`. A
+  behavioral str subclass could execute attacker-controlled `__str__`
+  during the NUL check or path resolution, before any workspace-
+  containment validation ran. The hardened code requires an exact
+  built-in `str` and raises `ValueError` for any other type. All
+  current callers pass exact `str` paths validated by
+  `_validate_tool_args`, but defense-in-depth requires the function
+  itself to be safe when called directly by a programmatic caller.
+  `_bound_patch_proposal_content` previously called `str(content)`
+  without checking `type(content) is str`. While the caller
+  (`run_tools`) already validates `args[1]` as an exact `str` via
+  `_validate_tool_args`, defense-in-depth requires the function
+  itself to be safe when called directly. A behavioral object could
+  execute attacker-controlled `__str__` before the content was
+  recorded in the patch-proposal audit trail. The hardened code
+  requires an exact built-in `str` and returns a bounded diagnostic
+  for any other type. Twenty-six focused tests cover
+  `_resolve_workspace_path` rejection of int, float, list, dict,
+  None, bool, bytes, and behavioral str subclasses without
+  triggering `__str__` or `strip`; valid string proceeding past
+  the type check; empty string and NUL-containing string raising
+  invalid path; `_bound_patch_proposal_content` preservation of
+  exact str and empty str; rejection of int, float, list, dict,
+  None, bool, bytes, and behavioral str subclasses without
+  triggering `__str__`; side-effect `__str__` not running; custom
+  type name in diagnostic; and long string preservation. Commit
+  `2bc0af4` on `agent/threadkeeper-hardening-next`; all 26 focused
+  tests, 212 combined hardening tests, 46 budget hardening tests,
+  Python compilation, `git diff --check`, and draft PR #1 safety-
+  floor ancestry pass.
+
+- [x] **ThreadKeeper _safe_exception_str hardening (2026-08-20)** —
+  `_sanitize_error_msg` and `_call_with_retries` in `subagent.py`
+  both need the text of a caught exception.  A behavioral exception
+  subclass can override `__str__` to raise a different exception,
+  hang, or execute arbitrary behavior.  If `str(e)` raised,
+  `_sanitize_error_msg` itself would propagate the error instead of
+  producing a bounded message, bypassing `_SUBAGENT_MAX_ERROR_MSG_CHARS`.
+  The same pattern existed in `_call_with_retries`, where
+  `str(last_exc)` could raise instead of returning a bounded
+  `_LLMControlResult`, bypassing `_SUBAGENT_MAX_LLM_ERROR_CHARS`.
+  A new `_safe_exception_str` helper catches any exception during
+  `str(e)` and returns a fixed bounded diagnostic including the
+  exception type name.  `None` produces `'None'`, matching
+  `str(None)`.  `_sanitize_error_msg` now uses
+  `_safe_exception_str(e)`; `_call_with_retries` now uses
+  `_safe_exception_str(last_exc)`.  Twenty-three focused tests
+  cover: normal exception preservation; `None` handling; behavioral
+  `__str__` raising returns diagnostic without propagating; long
+  `__str__` preserved (bounding is caller's job); side-effect
+  `__str__` still executes; non-Exception object with raising
+  `str()`; `_sanitize_error_msg` no longer raises on behavioral
+  exceptions; `_bounded_exception_summary` no longer raises;
+  `_call_with_retries` no longer raises on behavioral final
+  exception; `dispatch()` persona config and provider error paths
+  with raising `__str__` return bounded structured errors.  Commit
+  `90e0473` on `agent/threadkeeper-hardening-next`; all 23 focused
+  tests, 112 combined focused hardening tests, 219 budget/isinstance
+  hardening tests, Python compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper remaining str() hardening at trust boundaries (2026-08-20)** —
+  `_tool_write_file` and `_tool_append_file` in `subagent.py` previously
+  called `str(content)` on the content argument before size checking
+  or writing. A behavioral str subclass with a custom `__str__` could
+  execute attacker-controlled behavior during coercion before the size
+  cap was applied. Both now use `_safe_tool_result_str(content)`,
+  matching the pattern established in the prior `_bound_tool_output`
+  hardening commit. The dispatch loop's response-too-large check
+  previously called `str(raw)` on the LLM provider response before
+  `len()` and `cap()`; the code now uses `_safe_tool_result_str(raw)`
+  with a local variable reused for both the size check and the cap.
+  Four `_structured_setup_error` call sites in `dispatch()` (persona
+  config load, tool subset parse, persona prompt load, provider
+  resolution) previously called `str(e)` on caught exceptions; all
+  four now use `_sanitize_error_msg(e)`, which bounds the message at
+  `_SUBAGENT_MAX_ERROR_MSG_CHARS` and strips absolute paths. Twenty-
+  nine focused tests cover write/append-file behavioral str rejection,
+  non-string content diagnostics, dispatch size-check pattern with
+  behavioral objects, `_sanitize_error_msg` bounding and path
+  stripping, and dispatch integration with bounded error returns.
+  Commit `2436b50` on `agent/threadkeeper-hardening-next`; all 29
+  focused tests, 177 budget hardening tests, 58 combined focused
+  hardening tests, Python compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry pass. 135 pre-existing fixture failures
+  (unchanged baseline).
+
+- [x] **ThreadKeeper _bound_tool_output and tool result hardening (2026-08-20)** —
+  `_bound_tool_output` in `subagent.py` previously called
+  `str(result)` on untrusted external tool results before applying its
+  size cap. A behavioral object with a custom `__str__` could execute
+  attacker-controlled behavior before the cap was applied. The hardened
+  code accepts only an exact built-in `str` directly; `bytes` are
+  decoded safely; any other type produces a fixed bounded diagnostic
+  without calling `str()` on the object. `_search_import_error` in
+  `_build_tool_registry` previously stored `str(e)` unbounded in the
+  persistent tool registry; the hardened code bounds it through
+  `_sanitize_error_msg`. A new `_safe_tool_result_str` helper replaces
+  two `str(result)` calls in `run_tools` that handled write-file/
+  append-file SUCCESS detection and tool result clipping. The
+  pre-existing `test_bound_tool_output_handles_non_string_result` test
+  is updated to reflect the new hardened behavior. Twenty-nine focused
+  tests cover `_safe_tool_result_str` acceptance/rejection, behavioral
+  subclass rejection, `_bound_tool_output` hardening, bytes decoding,
+  `_search_import_error` bounding, and `run_tools` integration with
+  non-string and behavioral-subclass tool results. Commit `9822a55`
+  on `agent/threadkeeper-hardening-next`; all 29 focused tests, 136
+  pre-existing fixture failures (unchanged baseline), 1464 combined
+  focused hardening passes, Python compilation, `git diff --check`,
+  and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper _sanitize_error_msg length bounding (2026-08-20)** —
+  `_sanitize_error_msg` in `subagent.py` previously called `str(e)`
+  and stripped absolute paths but did not bound the message length.
+  An exception with an arbitrarily long `__str__` result (e.g. an
+  HTTP error including a large response body) could produce an
+  unbounded error message that bypasses the
+  `_SUBAGENT_MAX_RESPONSE_CHARS` check applied to ordinary worker
+  responses when used in structured return summaries (line 2928,
+  candidate review error path) and tool error messages returned to
+  the worker LLM. The hardened code bounds the message at
+  `_SUBAGENT_MAX_ERROR_MSG_CHARS` (default 2000, env-configurable
+  via `OMEGACLAW_SUBAGENT_MAX_ERROR_MSG_CHARS`, minimum 100, maximum
+  10000) after path stripping. The exception type name
+  (`type(e).__name__`) is already a bounded string and is preserved
+  in full by callers that include it separately. Nineteen focused
+  tests cover normal-length exception preservation, long exception
+  bounding, exactly-at-limit preservation, one-over-limit truncation,
+  empty message, newlines, Unicode, path stripping before bounding,
+  path stripping with long message bounded, custom limit respect,
+  custom minimum/maximum enforcement, exception type name not in
+  sanitize output, `_bounded_exception_summary` compatibility,
+  candidate review error summary bounding, tool error messages
+  bounded, skill error messages bounded, non-string exception str,
+  and None exception. Commit `ac18fe2` on
+  `agent/threadkeeper-hardening-next`; all 19 focused tests, 127
+  combined focused hardening tests, Python compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper _call_with_retries LLM error message bounding (2026-08-20)** —
+  `_call_with_retries` in `subagent.py` previously embedded
+  `str(last_exc)` directly in its final `_LLMControlResult` error
+  message via f-string interpolation. An exception with an arbitrarily
+  long `__str__` result (e.g. an HTTP error including a large response
+  body) could produce an unbounded control message that bypasses the
+  `_SUBAGENT_MAX_RESPONSE_CHARS` check applied to ordinary worker
+  responses, reaching the turn record's `raw_response` field and the
+  structured return's summary. The hardened code bounds
+  `str(last_exc)` at `_SUBAGENT_MAX_LLM_ERROR_CHARS` (default 2000,
+  env-configurable via `OMEGACLAW_SUBAGENT_MAX_LLM_ERROR_CHARS`) before
+  constructing the `_LLMControlResult`. The exception type name
+  (`type(last_exc).__name__`) is already a bounded string and is
+  preserved in full. Twelve focused tests cover normal-length
+  exception preservation, long exception bounding, exactly-at-limit
+  preservation, one-over-limit truncation, empty message, newlines,
+  Unicode, exact `_LLMControlResult` type, label inclusion, attempt
+  count inclusion, exception type name preservation, and custom limit
+  respect. Commit `7024c36` on `agent/threadkeeper-hardening-next`;
+  all 12 focused tests, 327 combined focused hardening tests, Python
+  compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry pass.
+
+- [x] **ThreadKeeper spent_cost_estimate ts non-finite float hardening (2026-08-20)** —
+  `spent_cost_estimate` in `threadkeeper_budget.py` previously extracted
+  the `ts` field from usage-log records with
+  ``d.get("ts", 0.0) if type(d.get("ts")) in (int, float) else 0.0``.
+  While `_strict_json_loads` already rejects NaN/Infinity JSON literals
+  at the parse level, the `type(...) in (int, float)` pattern accepted
+  non-finite floats (`NaN`, `inf`, `-inf`) that could reach the `ts`
+  extraction through a programmatic caller or a different JSON parser.
+  A non-finite `ts` would violate the `UsageRecord.ts: float` contract
+  and could break later `json.dumps(..., allow_nan=False)` serialization
+  or time-based comparison logic. The hardened code uses
+  `_safe_float(d.get("ts"), 0.0)` which accepts only exact built-in
+  `int` or `float` (rejecting non-finite values via `math.isfinite`),
+  returning `0.0` otherwise — matching the pattern already used for
+  `escalation_soft_fraction`, token rates, and all other config and
+  record fields. Twenty-nine focused tests cover valid `int` and
+  `float` `ts` acceptance; missing `ts` default; `NaN`, `inf`, and
+  `-inf` rejection by `_strict_json_loads` at the JSON parse level;
+  string, bool, list, dict, and `None` `ts` replacement with default;
+  `should_escalate` survival with non-finite `ts`; mixed valid and
+  non-finite `ts` records; `_safe_float` direct rejection of `NaN`,
+  `inf`, `-inf`, bool, string, list, dict, `None`, and behavioral
+  `int`/`float` subclasses without invoking `__float__`; and
+  `_strict_json_loads` `NaN`/`inf`/`-inf` literal rejection. Commit
+  `2d8226d` on `agent/threadkeeper-hardening-next`; all 29 focused
+  tests, 26 float hardening tests, 29 cost-estimate rates tests, 34
+  budget config int tests, 46 budget hardening tests, 34 accounting
+  hardening tests, 7 trust-boundary isinstance tests, 67 subagent
+  boundary tests / 160 subtests, Python compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper _MettaPolicy._parse and _normalize_task_contract isinstance hardening (2026-08-20)** —
+  `_MettaPolicy._parse` in `threadkeeper_budget.py` previously called
+  `str(results[0])` on the first element of the PeTTa results list.
+  PeTTa results are untrusted provider-runtime objects; a behavioral
+  str subclass could override `.__str__` or `.strip` and execute
+  behavior during the decision parsing path. `_parse` now requires
+  an exact built-in `str` and returns `None` (falling through to the
+  Python policy fallback) for any non-string type.
+  `_normalize_task_contract` in `subagent.py` previously used
+  `isinstance(parsed, dict)` to detect dict subclasses from
+  programmatic callers and preserve them as evidence in the
+  `task_contract` field. `isinstance` can trigger `__class__` on
+  a behavioral object, executing attacker-controlled behavior before
+  the fail-closed validator runs. The hardened code uses exact
+  `type()` checks for dict, list, str, int, float, bool, and None
+  instead, matching the pattern used for all prior isinstance
+  replacements. Since `_strict_json_loads` returns only built-in
+  types, any non-exact-dict, non-scalar, non-None value is from a
+  programmatic caller and is preserved as evidence without
+  triggering `__class__`. Twenty-eight focused tests cover `_parse`
+  acceptance of exact allow/deny strings with/without reasons,
+  whitespace, case-insensitivity, and unknown prefixes; `_parse`
+  rejection of int, list, dict, None, bool, float, and behavioral
+  str subclass without triggering `__str__`/`strip`;
+  `_normalize_task_contract` preservation of dict subclass evidence
+  without `__class__` running; exact dict processing; scalar
+  non-preservation for list, str, int, float, bool, None; and
+  behavioral object rejection without triggering `__class__` or
+  `.items`. Commit `191f1c3` on `agent/threadkeeper-hardening-next`;
+  all 28 focused tests, 438 combined focused hardening tests, Python
+  compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry pass.
+
+- [x] **ThreadKeeper cost_estimate non-dict rates hardening (2026-08-20)** —
+  `spent_cost_estimate` in `threadkeeper_budget.py` accessed
+  `self._budget["rates_per_1k_tokens"]` directly and passed it to
+  `cost_estimate`, which called `.get()` on each per-role entry. If
+  `self._budget` is mutated post-load (e.g. by a test harness or
+  future runtime patch), a non-dict `rates_per_1k_tokens` value or a
+  non-dict per-role entry would raise `AttributeError` and crash the
+  cost-estimation path. A new `_safe_rates` helper accepts only an
+  exact built-in `dict`, returning `{}` otherwise — matching the
+  `_safe_config_int`, `_safe_float`, and `_safe_record_int` patterns.
+  `spent_cost_estimate` now uses
+  `_safe_rates(self._budget.get("rates_per_1k_tokens"))`.
+  `cost_estimate` now checks `type(r) is dict` before calling
+  `r.get()` on a per-role entry, falling back to `{}` for non-dict
+  values. Twenty-nine focused tests cover `_safe_rates` rejection of
+  string, list, int, float, None, bool, and behavioral-dict-subclass
+  inputs; `cost_estimate` rejection of non-dict per-role entries;
+  empty rates dict; fallback to `cloud_specialist`; and
+  `spent_cost_estimate` survival of direct `_budget` mutation to
+  string, list, None, int, bool, missing key, and per-role entry
+  mutation. Commit `42eac1e` on `agent/threadkeeper-hardening-next`;
+  all 29 focused tests, 26 float hardening tests, 46 budget hardening
+  tests, 34 budget config int hardening tests, 22 worker-usage int
+  tests, 11 isinstance subagent tests, 9 isinstance trust boundary
+  tests, 34 accounting hardening tests, Python compilation,
+  `git diff --check`, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper _safe_float non-finite float hardening (2026-08-20)** —
+  `_safe_float` in `threadkeeper_budget.py` accepted any exact built-in
+  `float`, including `NaN`, `infinity`, and `-infinity`. YAML parses
+  `.nan`, `.inf`, and `-.inf` as genuine `float` instances, so a
+  hand-edited or corrupted config could contain
+  `escalation_soft_fraction: .nan` or `.inf`. `int(ceiling * float('nan'))`
+  raises `ValueError` and `int(ceiling * float('inf'))` raises
+  `OverflowError`, either of which would crash `should_escalate`.
+  Non-finite token rates would silently produce `NaN` or `inf` cost
+  estimates. `_safe_float` now checks `math.isfinite(v)` before
+  returning a `float`, falling back to the safe default otherwise.
+  Thirteen new focused tests cover `NaN`, `inf`, and `-inf` rejection
+  in `_safe_float`; `NaN`, `inf`, `-inf`, and both-non-finite rates
+  in `cost_estimate`; and `NaN`, `inf`, `-inf`, and YAML-serialized
+  `NaN` in `should_escalate`. Commit `20ebaab` on
+  `agent/threadkeeper-hardening-next`; all 39 focused tests, 46 budget
+  hardening tests, 34 budget config int hardening tests, 22 worker-usage
+  int tests, 11 isinstance subagent tests, 9 isinstance trust boundary
+  tests, 34 accounting hardening tests, Python compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper int() hardening on budget config values (2026-08-20)** —
+  `should_escalate` in `threadkeeper_budget.py` used
+  `int(self._budget["thread_token_ceiling"])` and
+  `int(self._budget["min_local_iterations_before_escalation"])` to coerce
+  config values. `summary` used `int(self._budget["thread_token_ceiling"])`
+  for the dashboard ceiling. While `_load_budget` already validates these
+  fields at load time, defense-in-depth requires that direct mutation of
+  `self._budget` cannot crash the escalation or summary path. `int()` would
+  raise `ValueError` on non-numeric strings or `TypeError` on unhashable
+  values. A new `_safe_config_int` helper accepts only exact built-in `int`,
+  returning a safe default otherwise — matching the `_safe_float`,
+  `_safe_record_int`, and `_safe_int` patterns. `should_escalate` now uses
+  `_safe_config_int` for `thread_token_ceiling` and
+  `min_local_iterations_before_escalation`. `summary` now uses
+  `_safe_config_int` for `thread_token_ceiling`. Thirty-four focused tests
+  cover string, list, dict, None, bool, float, and behavioral-subclass
+  rejection for `_safe_config_int`; direct mutation of `self._budget` with
+  malformed values in `should_escalate` and `summary`; and behavioral int
+  subclass rejection without invoking `__int__`. Commit `3b2ce47` on
+  `agent/threadkeeper-hardening-next`; all 34 focused tests, 26 float
+  hardening tests, 46 budget hardening tests, 11 isinstance subagent tests,
+  7 isinstance trust boundary tests, 22 worker-usage int tests, compilation,
+  diff check, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper float() hardening in budget config (2026-08-19)** —
+  `cost_estimate` in `threadkeeper_budget.py` used `float(r.get("input", 0.0))`
+  and `float(r.get("output", 0.0))` to coerce token rates from the budget
+  config. `should_escalate` used `float(self._budget["escalation_soft_fraction"]`
+  to compute the soft threshold. A hand-edited or corrupted YAML config
+  could contain non-numeric values for these fields. `float()` would raise
+  `ValueError` on non-numeric strings or `TypeError` on unhashable values,
+  crashing the escalation or cost-estimation path. A new `_safe_float`
+  helper accepts only exact built-in `int` or `float`, returning 0.0
+  otherwise — matching the `_safe_int` pattern. `cost_estimate` now uses
+  `_safe_float` for rate values. `should_escalate` now uses `_safe_float`
+  for `escalation_soft_fraction`. Twenty-six focused tests cover string,
+  list, dict, None, bool, int, float, and behavioral-subclass rejection
+  for `_safe_float`, `cost_estimate`, and `should_escalate`. Commit
+  `88bef28` on `agent/threadkeeper-hardening-next`; all 26 focused tests,
+  46 budget hardening tests, 11 isinstance subagent tests, 7 isinstance
+  trust boundary tests, 22 worker-usage int tests, compilation, diff
+  check, and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper _log_worker_usage and _sha256_file_bounded int hardening (2026-08-19)** —
+  `_log_worker_usage` in `subagent.py` used `int(in_tok or 0)` which
+  raises `ValueError` on non-numeric strings or `TypeError` on
+  unhashable values, crashing the caller before the try/except guard.
+  `_sha256_file_bounded` had the same pattern for `max_bytes` and
+  `chunk_size`. A module-level `_safe_int` helper now accepts only
+  exact built-in `int`, returning 0 otherwise — matching the pattern
+  fixed in `BudgetTracker.record`. Defense-in-depth: callers
+  (`_validated_llm_payload`) already return exact ints, but the
+  accounting boundary must not rely on caller behavior. Twenty-two
+  focused tests cover string, list, bool, float, None, and valid
+  inputs plus behavioral int subclass rejection for both functions.
+  Commit `346386e` on `agent/threadkeeper-hardening-next`; all 22
+  focused tests, 46 budget hardening tests, 11 isinstance subagent
+  tests, 7 isinstance trust boundary tests, compilation, diff check,
+  and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper record() non-integer token hardening (2026-08-19)** —
+  `BudgetTracker.record` previously used `int(input_tokens or 0)` which
+  would raise `ValueError` on non-numeric strings or `TypeError` on
+  unhashable values, crashing the caller before the try/except guard.
+  `record_from_openai_response` had the same pattern. `record` now uses a
+  local `_safe_int` that accepts only exact built-in int, returning 0
+  otherwise. Non-string `node_role`, `model`, and `thread_id` values are
+  also safely coerced to defaults. Six focused tests cover string, list,
+  bool, float, None, and valid inputs plus non-string field coercion.
+  Commit `f7cd863` on `agent/threadkeeper-hardening-next`; all 46 focused
+  budget hardening tests pass, with compilation, diff check, and draft
+  PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper _abs non-string path hardening (2026-08-19)** —
+  `BudgetTracker._abs` previously called `os.path.isabs(p)` directly,
+  raising `TypeError` on non-string inputs. If the YAML config's
+  governance section contained a non-string truthy value for
+  `usage_log`, `escalation_log`, or `escalation_policy_metta`, `_abs`
+  would crash. `_abs` now returns an empty string for non-string
+  inputs. One focused test covers int, bool, list, None, and valid
+  strings. Commit `2909965` on `agent/threadkeeper-hardening-next`; all
+  45 focused tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper _load_governance non-dict YAML hardening (2026-08-19)** —
+  `_load_governance` previously called `.get()` on the raw YAML config
+  result without checking that the top-level value is a dict. If the
+  YAML file has a list or string as its top-level value, `.get()` raises
+  `AttributeError`. If the `governance` section is a non-dict truthy
+  value, `dict(gov)` raises `TypeError` or `ValueError`. Both paths now
+  validate `type(raw) is dict` and `type(gov) is dict` before use.
+  Two focused tests cover non-dict governance value and non-dict
+  top-level config. Commit `d3df1b8` on `agent/threadkeeper-hardening-next`;
+  all 44 focused tests pass, with compilation, diff check, and draft
+  PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper non-dict JSON line skip in usage log (2026-08-19)** —
+  `_strict_json_loads` can return a list, number, string, boolean, or
+  null instead of a dict. The subsequent `d.get("thread_id")` would
+  raise `AttributeError`, caught by the outer `except Exception: return`,
+  aborting iteration of every subsequent record. This would cause
+  `should_escalate` to see `spent=0` and deny escalation forever. A
+  `type(d) is not dict` check after parsing now silently skips non-dict
+  lines, matching the existing pattern for malformed JSON. Two focused
+  regression tests prove a non-dict line among valid records does not
+  starve `spent_tokens` or `should_escalate`. Commit `f4aaf36` on
+  `agent/threadkeeper-hardening-next`; all 42 focused budget hardening
+  tests pass, with compilation, diff check, and draft PR #1 safety-floor
+  ancestry.
+
+- [x] **ThreadKeeper budget record field type hardening (2026-08-19)** —
+  `spent_tokens`, `spent_cost_estimate`, and `_is_local_record` previously used
+  `int(d.get(...) or 0)` and `str(d.get(...))` to extract token counts and
+  node_role/model fields from usage-log records. A corrupted or hand-edited log
+  could contain non-integer token counts (strings, floats, booleans) or
+  non-string node_role/model values (lists, dicts, numbers). `int()` on a
+  non-numeric string raises ValueError, and `rates.get()` on an unhashable
+  node_role raises TypeError, either of which would crash the escalation
+  decision path. New `_safe_record_int` and `_safe_record_str` helpers accept
+  only exact built-in int/str, returning a safe default otherwise. Nine focused
+  regression tests prove malformed records are silently skipped, booleans are
+  not treated as integers, floats are not truncated, non-string fields are
+  replaced with defaults, `should_escalate` survives a corrupted usage log, and
+  behavioral int/str subclasses are rejected without invoking `__int__`/`__str__`.
+  Commit `ffc05fe` on `agent/threadkeeper-hardening-next`; all 40 focused budget
+  hardening tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper isinstance hardening in subagent.py (2026-08-19)** —
+  the Ollama-native and openai-compatible LLM call paths previously used
+  `isinstance(payload, tuple)` and `isinstance(result, tuple)` to distinguish
+  validated payloads from `_LLMControlResult` markers. The dispatch loop
+  previously used `isinstance(raw, _LLMControlResult)` to separate trusted
+  provider-control outcomes from ordinary model text. All three checks now
+  use exact `type() is` checks. Eleven behavioral-subclass regression tests
+  prove no subclass methods (`__getitem__`, `__len__`, `.status`) run, `type()`
+  accepts exact types, and `_validated_llm_payload` returns only exact tuple
+  or exact `_LLMControlResult`. Commit `a1ad409` on
+  `agent/threadkeeper-hardening-next`; all 11 focused tests, 217 combined
+  focused tests, compilation, diff check, and draft PR #1 safety-floor
+  ancestry pass.
+
+- [x] **ThreadKeeper isinstance hardening in helper.py and rag.py (2026-08-19)** —
+  `helper.normalize_string` and `rag.local_embed_batch` now use exact `type()`
+  checks instead of `isinstance` for bytes and str inputs. A behavioral
+  bytes/str subclass can no longer execute `.decode()` or `__iter__` at the
+  trust boundary. Nine behavioral-subclass regression tests prove no subclass
+  override methods run. Commit `1d76c0a` on `agent/threadkeeper-hardening-next`;
+  all 9 focused tests, 158 combined focused tests, compilation, diff check, and
+  draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper isinstance hardening at trust boundaries (2026-08-19)** —
+  `_escape_surrogates`, `_escape_text_controls`, and `_bound_transcript_turns`
+  now use exact `type()` checks for dict, list, and str instead of `isinstance`.
+  `_format_tavily_results` in agentverse.py was similarly hardened. A behavioral
+  dict/list/str subclass can no longer execute `items`/`__iter__`/`__len__`
+  during audit sanitization or result formatting. Seven behavioral-subclass
+  regression tests prove no subclass methods run. Commit `9e05a86` on
+  `agent/threadkeeper-hardening-next`; all 80 focused Agentverse tests and 29
+  focused hardening tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse total structured returns (2026-08-19)** —
+  malformed strict JSON and non-object/non-list Tavily response shapes now
+  produce fixed bounded diagnostics; empty and wholly unusable result lists
+  produce `()` without exposing raw remote text. Commit `85346af` on
+  `agent/threadkeeper-hardening-next`; all 79 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **GGB active-frontier root binding (2026-08-19)** — the provider-free
+  drift checker now opens the roadmap directory without following symlinks,
+  binds it to the inspected device/inode, and acquires each record relative to
+  that descriptor. A symlinked record root fails closed; the direct check and
+  all ten focused tests pass. This does not grant VM2, GoalChainer, memory,
+  runtime, Telegram, provider, or ThreadKeeper authority.
+
+- [x] **ThreadKeeper Agentverse invalid-field fallback closure (2026-08-18)**
+  — when all recognized Tavily result fields have non-string JSON types, the
+  structured-return formatter now emits an empty structured list instead of
+  falling back to raw JSON and re-exposing those fields. Commit `180667f` on
+  `agent/threadkeeper-hardening-next`; all 72 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **GGB active-frontier record-size bound (2026-08-18)** — the
+  provider-free drift checker now caps each of its four roadmap inputs at
+  1 MiB before and after descriptor acquisition and performs a bounded read.
+  An oversized regular VM2 admission ledger fails closed; the direct check and
+  all nine focused tests pass. This is record maintenance only and grants no
+  VM2, GoalChainer, memory, runtime, Telegram, provider, or ThreadKeeper
+  authority.
+
+- [x] **ThreadKeeper Agentverse result-text sanitization (2026-08-18)** — the
+  Tavily structured-return formatter now omits exact-string fields containing
+  NUL, bidi controls, lone surrogates, or Unicode noncharacters before they
+  become parent-visible text, while preserving normalized safe whitespace.
+  An all-unsafe result cannot fall back to raw JSON. Commit `9c48fc9` on
+  `agent/threadkeeper-hardening-next`; all 71 focused
+  Agentverse tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse result-field validation (2026-08-18)** — the
+  Tavily structured-return formatter now accepts only exact strings for result
+  title, URL, and content fields. JSON containers, numbers, booleans, and nulls
+  are ignored rather than coerced into parent-visible text. Commit `f13f556`
+  on `agent/threadkeeper-hardening-next`; all 64 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **GGB active-frontier record-type validation (2026-08-18)** — the
+  provider-free drift checker now rejects missing, non-regular, symlinked, or
+  acquisition-swapped roadmap inputs before marker validation. A symlink-
+  substituted VM2 admission ledger fails closed; the direct check and all
+  eight focused tests pass. This
+  is record maintenance only and grants no VM2, GoalChainer, memory, runtime,
+  Telegram, provider, or ThreadKeeper authority.
+
+- [x] **ThreadKeeper Agentverse result-limit validation (2026-08-18)** — the
+  Tavily structured-return formatter now requires an exact integer result
+  limit from 1 through 20 before JSON decoding or slicing. Ambiguous,
+  behavioral, nonpositive, and oversized direct-helper arguments fail closed.
+  Commit `ba5827e` on `agent/threadkeeper-hardening-next`; all 63 focused
+  Agentverse tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse response-type validation (2026-08-18)** —
+  the shared dispatch helper now accepts only exact string responses before
+  size checks or return processing. Arbitrary response objects and
+  behavior-bearing string subclasses fail closed instead of running coercion
+  logic. Commit `dce932c` on `agent/threadkeeper-hardening-next`; all 55
+  focused Agentverse tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse request-payload validation (2026-08-18)** —
+  the shared dispatch helper now revalidates the actual query/ticker field of
+  each supported request model before network use. Missing or mutated payloads
+  fail closed even for direct callers. Commit `0cf8e71` on
+  `agent/threadkeeper-hardening-next`; all 51 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse request/destination binding (2026-08-18)** —
+  the shared dispatch helper now permits only the two exact supported request
+  models and requires each to match its configured remote destination. Generic
+  `uagents.Model` instances, behavioral subclasses, cross-skill model swaps,
+  and unknown canonical destinations fail before network use. Commit `783c95d`
+  on `agent/threadkeeper-hardening-next`; all 47 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse request-model validation (2026-08-18)** — the
+  shared dispatch helper now requires a `uagents.Model` request before network
+  use, so direct callers cannot send arbitrary request objects. Commit
+  `5a8d97a` on `agent/threadkeeper-hardening-next`; all 40 focused Agentverse
+  tests pass, with compilation, diff check, and draft PR #1 safety-floor
+  ancestry.
+
+- [x] **ThreadKeeper Agentverse direct-timeout validation (2026-08-18)** — the
+  shared dispatch helper now requires an exact integer timeout from 1 through
+  120 seconds before network use, so direct callers cannot bypass the public
+  skill boundary. Commit `5c0dd66` on `agent/threadkeeper-hardening-next`; all
+  36 focused Agentverse tests pass, with compilation, diff check, and draft PR
+  #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse destination validation (2026-08-18)** — remote
+  dispatch now requires an exact canonical 65-character Agentverse address,
+  so malformed environment-configured destinations fail before network use.
+  Commit `e695c0f` on `agent/threadkeeper-hardening-next`; all 29 focused
+  Agentverse tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse C1 request validation (2026-08-18)** — direct
+  remote-skill requests now reject C1 control characters, including U+0085
+  NEXT LINE, before request-model construction or dispatch. Commit `d44904c`
+  on `agent/threadkeeper-hardening-next`; all 22 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse Unicode request validation (2026-08-18)** —
+  direct remote-skill requests now reject Unicode line/paragraph separators,
+  bidi and other format controls, lone surrogates, non-ASCII spaces, and
+  Unicode noncharacters before request-model construction or dispatch. Commit
+  `9bd1013` on `agent/threadkeeper-hardening-next`; all 21 focused Agentverse
+  tests pass, with compilation, diff check, and draft PR #1 safety-floor
+  ancestry.
+
+- [x] **ThreadKeeper Agentverse request-text validation (2026-08-17)** —
+  direct remote-skill requests now reject leading/trailing whitespace and
+  ASCII control characters before request-model construction or dispatch.
+  Commit `05358a0` on `agent/threadkeeper-hardening-next`; all 16 focused
+  Agentverse tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse error-return bound (2026-08-17)** — shared
+  remote-agent failure diagnostics are now capped at 1,024 characters, so an
+  oversized exception cannot bypass the successful-response ceiling through
+  either skill's structured error return. Commit `95e602f` on
+  `agent/threadkeeper-hardening-next`; all 12 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper Agentverse response-size bound (2026-08-17)** — the
+  shared remote-agent bridge now rejects responses larger than the existing
+  one-million-character ceiling before returning them to either remote skill.
+  This closes the unbounded technical-analysis return path while preserving
+  the already bounded Tavily formatter. Commit `7c19f19` on
+  `agent/threadkeeper-hardening-next`; all 10 focused Agentverse tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper dashboard-accounting child-inode binding (2026-08-17)** —
+  local-dashboard pricing-override and usage-log reads now verify that the
+  opened file retains the device/inode validated before acquisition. A
+  same-directory replacement before open fails closed. Commit `dd7d408` on
+  `agent/threadkeeper-hardening-next`; all 34 focused accounting tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper worker env-file child-inode binding (2026-08-17)** —
+  async-worker env-file reads now verify that the opened file retains the
+  device/inode validated before acquisition, in addition to binding its parent
+  directory. Same-directory replacement before open fails closed without
+  applying substituted environment values. Commit `9e3b8a2` on
+  `agent/threadkeeper-hardening-next`; all 8 focused env-loader tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper reasoning-read child-inode binding (2026-08-17)** — local
+  dashboard incremental reasoning reads now verify that the opened
+  `history.metta` retains the device/inode validated before acquisition, in
+  addition to binding its parent directory. Same-directory replacement before
+  open fails closed. Commit `e2edba1` on `agent/threadkeeper-hardening-next`;
+  all 8 focused tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper async-worker lock child-inode binding (2026-08-17)** —
+  existing async-worker lock files now retain the device/inode validated before
+  acquisition, in addition to the already bound parent directory. A
+  same-directory replacement before open fails closed. Commit `f6f0dbe` on
+  `agent/threadkeeper-hardening-next`; all 7 focused worker-lock tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper security-policy child-inode binding (2026-08-17)** —
+  Landlock security-policy reads now verify that the opened file retains the
+  device/inode validated before acquisition, in addition to binding its parent
+  directory. Same-directory regular-file replacements before open fail closed.
+  Commit `22440ce` on `agent/threadkeeper-hardening-next`; all 10 policy tests
+  pass, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper avatar-read child-inode binding (2026-08-17)** — local
+  dashboard avatar reads now verify that the opened file retains the
+  device/inode validated before acquisition, in addition to binding its parent
+  directory. Same-directory regular-file replacements before open fail closed.
+  Commit `40a1670` on `agent/threadkeeper-hardening-next`; all 9 focused avatar
+  tests pass, with compilation, diff check, and draft PR #1 safety-floor
+  ancestry.
+
+- [x] **ThreadKeeper knowledge-read child-inode binding (2026-08-17)** —
+  bounded RAG knowledge-prior reads now verify that the opened file retains
+  the device/inode validated before acquisition, in addition to binding its
+  parent directory. Same-directory regular-file replacements before open fail
+  closed. Commit `4e3a94e` on `agent/threadkeeper-hardening-next`; all 17
+  focused knowledge-read tests pass, with compilation, diff check, and draft
+  PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper budget-read child-inode binding (2026-08-17)** — budget
+  configuration and usage-log reads now verify that the opened file retains
+  the device/inode validated before acquisition, in addition to binding its
+  parent directory. Same-directory regular-file replacements before open fail
+  closed. Commit `eb49492` on `agent/threadkeeper-hardening-next`; all 31
+  focused budget tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper episode-history child-inode binding (2026-08-17)** —
+  bounded episode-history reads now verify that the opened file retains the
+  device/inode validated before acquisition, in addition to binding its parent
+  directory. A same-directory regular-file replacement before open fails
+  closed. Commit `603a89f` on `agent/threadkeeper-hardening-next`; all 21
+  focused helper tests pass, with compilation and diff check.
+
+- [x] **ThreadKeeper workspace-read child-inode binding (2026-08-16)** —
+  workspace reads now verify that the opened file retains the device/inode
+  validated before acquisition, in addition to binding its parent directory.
+  A same-directory regular-file replacement before open fails closed. Commit
+  `092c740` on `agent/threadkeeper-hardening-next`; all 67 boundary tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper audit/control child-inode binding (2026-08-16)** — the
+  shared regular-file opener now verifies that an existing opened child still
+  has the device/inode validated before acquisition, in addition to binding
+  its parent directory. A same-directory regular-file replacement before open
+  fails closed. Commit `c8afef7` on `agent/threadkeeper-hardening-next`; all
+  66 boundary tests / 160 subtests pass, with compilation, diff check, and
+  draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper worker env-file parent binding (2026-08-16)** — the
+  bounded async-worker env loader now binds its opened no-follow parent
+  descriptor to the device/inode validated before acquisition and opens the
+  env file descriptor-relative. A real-directory swap before open fails
+  closed without applying substituted values. Commit `54386ee` on
+  `agent/threadkeeper-hardening-next`; all 7 focused env-loader tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper security-policy read parent binding (2026-08-16)** — the
+  Landlock policy loader now binds its opened no-follow parent descriptor to
+  the device/inode validated before acquisition and opens the YAML child
+  descriptor-relative. A real-directory swap before open fails closed. Commit
+  `611d051` on `agent/threadkeeper-hardening-next`; all 9 policy tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper parent durability-sync binding (2026-08-16)** — the
+  best-effort directory fsync after atomic replacement now binds the opened
+  no-follow parent descriptor to the device/inode validated before
+  acquisition. A real-directory swap before open skips the sync instead of
+  syncing the substituted directory. Commit `e85c784` on
+  `agent/threadkeeper-hardening-next`; all 3 focused helper tests pass, with
+  compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [ ] **Post-VM2 agentic roadmap (Ben, 2026-08-16)** — do not begin until all
+  target bots are successfully ported to ASI:Cloud VM2 and accepted there.
+  Then: (1) port Omega agentic loops to Iter, using Protomega2 as the staging
+  identity first; (2) hand `petta-memory` to ProtoCosmo2 as its first major
+  autonomous task. Preserve production identities while staging and require
+  rollbackable, evidence-backed promotion.
+
+- [x] **ThreadKeeper dashboard-accounting read parent binding (2026-08-16)** —
+  local-dashboard pricing-override and usage-log reads now bind the opened
+  no-follow parent descriptor to the device/inode validated before acquisition
+  and open the child descriptor-relative. Real-directory swaps before open
+  fail closed. Commit `8b66cef` on `agent/threadkeeper-hardening-next`; all 32
+  focused accounting tests and all 60 local-dashboard tests pass, with
+  compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper knowledge-prior read parent binding (2026-08-16)** —
+  bounded RAG knowledge reads now bind the opened no-follow parent descriptor
+  to the device/inode validated before acquisition and open the child
+  descriptor-relative. A real-directory swap before open fails closed. Commit
+  `f948b47` on `agent/threadkeeper-hardening-next`; all 16 focused tests pass,
+  with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper local-reasoning read parent binding (2026-08-16)** —
+  incremental dashboard reads of `history.metta` now bind the opened no-follow
+  parent descriptor to the device/inode validated before acquisition and open
+  the child descriptor-relative. A real-directory swap before open fails
+  closed. Commit `ef4274c` on `agent/threadkeeper-hardening-next`; all 15
+  focused local-dashboard read tests pass, with compilation, diff check, and
+  draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper local-avatar read parent binding (2026-08-16)** — local
+  dashboard avatar reads now bind the opened no-follow parent descriptor to
+  the device/inode validated before acquisition and open the child
+  descriptor-relative. A real-directory swap before open fails closed. Commit
+  `3da8248` on `agent/threadkeeper-hardening-next`; all 8 focused avatar tests
+  and all 65 boundary tests / 160 subtests pass, with compilation, diff check,
+  and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper episode-history read parent binding (2026-08-16)** —
+  bounded episode-history recall now binds its opened no-follow parent
+  descriptor to the device/inode validated before acquisition and opens the
+  child descriptor-relative. A real-directory swap before open fails closed.
+  Commit `8ce16d7` on `agent/threadkeeper-hardening-next`; all 20 focused helper
+  tests pass, with compilation, diff check, and draft PR #1 safety-floor
+  ancestry.
+
+- [x] **ThreadKeeper budget control-read parent binding (2026-08-16)** —
+  budget configuration and usage-log reads now bind their opened no-follow
+  parent descriptor to the device/inode validated before acquisition and open
+  the child descriptor-relative. A real-directory swap before open fails
+  closed. Commit `6d1d310` on `agent/threadkeeper-hardening-next`; all 29
+  focused budget tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [ ] **Protomega asynchronous-completion reply repair (2026-08-15)** —
+  deliverable: a human-addressed turn that yields to subagents/tools retains
+  durable reply authority until its correlated final result is sent exactly
+  once, without requiring a second human message. Acceptance: reproduce the
+  21:04 time's-arrow turn provider-free; preserve immutable origin/turn ID
+  across delayed completion; reject unrelated/stale results; pass focused and
+  bound suites plus frozen-byte model-diverse review; then one guarded live
+  long-turn canary with rollback on mismatch. Next command: extract the
+  `msgnew` lifetime failure into a deterministic delayed-completion regression
+  and repair the loop/adapter seam rather than extending a mutable global
+  boolean. The deterministic real-helper regression now reproduces the
+  delayed correlated prose becoming `UNKNOWN_SKILL_CALL` when iteration-local
+  `msgnew` is false; evidence is
+  `experiments/20260816T051500Z-protomega-delayed-completion-regression/`.
+  The focused successor now binds one-shot reply authority to the existing
+  authenticated case-stable bridge request ID: correlated delayed prose sends
+  exactly once, while duplicate and foreign-ID completions are rejected.
+  Compilation and the delayed-completion regression pass. A provider-free
+  detached-descendant rollback regression is now
+  preregistered and reproduced the orphan at
+  `experiments/20260816T045800Z-protomega-descendant-rollback-regression/`;
+  the successor `rollback_pid()` now captures the full `/proc` descendant
+  closure, binds every PID to kernel start ticks, and signals descendants
+  before the owner. The focused detached-session regression and compilation
+  pass; final topology is zero owners/workers with no PID file. Successor
+  launcher SHA-256 is
+  `2c19ce697427a5d8fd0d57826447938fc44d65d2ff0b4fbfe4812e010243eab8`.
+  The old bound packet correctly failed closed because production history
+  advanced during the superseded live run while its disposable runtime retained
+  the older frozen copy. A current-history successor packet now passes delayed
+  completion, full-descendant rollback, the real pinned SWI/Janus fresh-reply
+  boundary, and all six prior bound suites at exit 0 with empty stderr; final
+  topology is zero owners/workers with no PID file. Frozen hashes are launcher
+  `6b73a8b56d264743ab761953e7195c6e5df0066129f4e747566c8c954b735973`,
+  prepared helper
+  `17b3ea05a9326e5ef7ef770d5953ecbce2ad7c1695eab97cae1873f5e8d1e6f2`,
+  and unchanged loop/config/policy. Next command: freeze the exact-byte review
+  request and obtain fresh model-diverse internal adversarial GO/NO-GO. The
+  request is now frozen at SHA-256
+  `4c9579268b484a59878868200b3ca521c2fedf51b125af8218ac89cb6762651f`;
+  direct Fable dispatch run `d0d92245-c564-4095-a6df-ae7d1f2b0aa4` failed
+  before review because agent-to-agent messaging is disabled. Next command:
+  dispatch the frozen request through an authorized model-diverse review path
+  without changing reviewed bytes.
+  Do not touch live authority. Evidence:
+  `experiments/20260816T053238Z-protomega-delayed-successor-full-bound-r2/`,
+  `local/protomega-clean-canary-state/canary.log`, and
+  `experiments/20260816T014000Z-protomega-fresh-reply-delivery-repair/`.
+  The newer production-origin packet at
+  `experiments/20260816T061500Z-protomega-origin-wire-full-bound/` passed the
+  complete provider-free suite and direct Fable exact-byte review. Fable
+  reproduced all six hashes, exit 0/empty stderr/stopped topology, and a
+  20,000-iteration adversarial pairing test, returning GO. Ben's screenshot
+  confirms exactly one `LONG-CANARY-19654-COMPLETE` Telegram delivery, but the
+  local trace shows it was produced in the same Omega iteration rather than
+  after an internal action in a later iteration. This does not exercise the
+  delayed-completion repair. The canary was fully rolled back afterward; final
+  topology is zero owners/workers and no PID file. Next command: build a
+  deterministic live-safe delayed-turn fixture that necessarily completes in
+  a later iteration, re-review any changed bytes, then run one guarded fresh
+  Telegram canary and require exactly-one human-observed delivery.
+  A launch-scoped high-entropy fixture now forces the acquisition round to
+  harmless `version`, even on immediate model prose, and admits the correlated
+  completion only later. A fresh authoritative-history runtime plus explicit
+  one-shot launcher plumbing passed the focused fixture, compilation, and the
+  complete bound packet at exit 0 with empty stderr. Final topology is zero
+  owners/workers with no PID file. Frozen successor hashes are launcher
+  `3a40d9fe9dce4efc5655360c0de14d4e31c32e17478eacbabd50ccefdf0ae6dd`,
+  helper `5149fc71a3289743c6d4c2eae49324e3b25d7ed9a50535f8ef3e05bb29ee907c`,
+  and loop `86d6bfc70b07b63eac39b9d2e4d5374c8b72688ed210647da013796afe90f7aa`.
+  Next: freeze and obtain a fresh model-diverse exact-byte GO/NO-GO; do not
+  touch live authority before GO and a separate explicit one-canary approval.
+  The review request is frozen at SHA-256
+  `0eabaa094708a61f03e1c963ec7ec4816a9a84857bcaaa0667ffb0edb39db95d`.
+  Direct configured-Fable dispatch run
+  `1ae8a3f5-4246-48ce-bf64-46a99bc57a7d` was rejected as `forbidden` because
+  session visibility is tree-restricted and agent-to-agent messaging is
+  disabled; heartbeat retry `5f7ef287-399a-49d8-b836-1513fea5edf1` received
+  the same policy rejection. No review ran and no live boundary was crossed.
+  A read-only 08:57 UTC session-registry audit found zero visible Fable
+  sessions and confirmed tree-restricted visibility; no third retry was made.
+  A 09:55 UTC heartbeat then found an unexpected live worker and PID file from
+  a 01:47 PDT start, contradicting the recorded stopped topology. The required
+  immediate rollback returned `STOP_PASS`; recheck is zero owners/workers with
+  no PID file. The unexplained start is now an additional incident gate.
+  A later provenance audit found isolated Fable run
+  `d73fbd9d-322a-48f6-a34b-62c436495f89` returned exact-byte GO at 01:46:25
+  PDT. It also traced the unexpected 01:47 PDT worker to cron session
+  `e9da6505-971f-4d6b-9d2e-931b1edfbc45`, which started the deferred fixture
+  and requested a canary without separate explicit live authority. That
+  unauthorized attempt was rolled back; current topology is zero
+  owners/workers with no PID file. Next: do not restart until Ben separately
+  authorizes exactly one guarded delayed-turn Protomega canary.
+  Evidence:
+  `experiments/20260816T072000Z-protomega-deterministic-delayed-live-fixture/`.
+
+- [x] **Restore ProtoCosmo2 and Protomega2 end to end (2026-08-15)** —
+  deliverable: each identity runs under one owner/receiver, preserves its
+  intended durable state, acquires a fresh human Telegram message while idle,
+  completes the intended model/action path, and delivers exactly one
+  correlated reply to the originating chat. Acceptance: read-only production
+  baseline; smallest provider-free regressions for every observed defect;
+  focused and bound full suites; model-diverse review of frozen bytes; then
+  guarded live acceptance one identity at a time with immediate rollback on
+  any topology, routing, readiness, state, or delivery mismatch. **Current:**
+  read-only baseline completed at 2026-08-16 03:52 UTC. Both targets are
+  inactive; Protomega remains the sole Omega receiver. Credential/config files
+  are regular mode-0600 files, both durable state stores remain present, and
+  the old Protomega2 launcher has a stale PID marker without a process. The
+  last target logs end in explicit `stopped` events after repeated opaque
+  `transport_failure: RuntimeError` records; this is a routed symptom, not yet
+  a root cause. Prior campaign evidence shows the targets were deliberately
+  withdrawn while Protomega underwent later shared-runtime repairs, so the
+  current defect is unaccepted availability on current bytes, not an observed
+  spontaneous crash. No credential, Telegram API, or target runtime was
+  touched. The 04:01 UTC baseline gate passed 22 focused tests and 120
+  transport tests, exposing Protomega2's legacy unbound-PID supervisor. At
+  04:23 UTC a new wrapper contract and thin Protomega2 wrapper converged it
+  onto the hardened shared owner while freezing the existing identity, model,
+  runtime, state, worker-state, and Chroma paths. The bound rerun passed 23
+  focused tests and 120 transport tests; before/after state hashes were
+  identical and both targets remained inactive. Candidate wrapper SHA-256 is
+  `78d6be1559d777504080abf20e36434e7b0f007f83badd26972498673b27db89`.
+  At 04:32 UTC Fable run `9a55e2d1-1279-4f85-8014-7f99f01db726` returned
+  NO-GO: all hashes and tests passed, but the evidence harness omitted three
+  configured stores from its non-mutation inventory (ProtoCosmo2 worker and
+  Chroma state, plus Protomega2 Chroma). No mutation was observed. The
+  successor command now inventories all six state roots. Its bound rerun passed
+  23 focused and 120 transport tests; 20 inventoried files were byte-identical
+  before/after, both targets stayed inactive, and accepted Protomega retained
+  its owner/child identity. Successor command SHA-256 is
+  `639f95d632e1a915f2e8f30dd50071f7f3ed7299fe347b441b93fc7c1fa537e4`.
+  At 04:48 UTC fresh isolated Fable review run
+  `280f6a56-bcd1-4c32-bf8a-e7ea569d0df9` returned GO with no critical, high,
+  or medium finding. It reproduced all four frozen hashes, 23 focused passes,
+  120 transport passes, the identical 20-file six-root inventory, inactive
+  target topology, and unchanged accepted-Protomega process identity. Live
+  Live acceptance completed 2026-08-16. ProtoCosmo2's first attempt exposed
+  an OpenClaw compatibility failure: `openai/gpt-5.6-sol` requires thinking
+  level `off`, while its raw bridge requested `minimal`. The bridge now uses
+  `off`; a real raw-boundary diagnostic and 10 focused tests passed.
+  ProtoCosmo2 source `1748` delivered status `1749` and exactly one final
+  `1750` (`PROTOCOSMO2-OK-19819`). Protomega2 source `572` delivered status
+  `573` and exactly one final `574` (`PROTOMEGA2-OK-19842`). The obsolete
+  restoration heartbeat was disabled after it interfered with ownership and
+  leaked internal ledger prose. Final topology has one ready owner/receiver
+  for Protomega, ProtoCosmo2, and Protomega2.
+  Evidence:
+  `experiments/20260816T034500Z-protocosmo2-protomega2-restoration/`.
+  Relevant research rules: Rule 2 (explicit routed-system invariants) and
+  Rule 5 (reproducible, evidence-bound progress reports).
+
+- [x] **ThreadKeeper regular-file open parent binding (2026-08-15)** — the
+  shared audit/control regular-file opener now binds its no-follow parent
+  descriptor to the device/inode validated before acquisition and opens the
+  child descriptor-relative. A real-directory swap before parent acquisition
+  fails closed. Commit `6a9772b` on `agent/threadkeeper-hardening-next`; the
+  focused regression, all 65 boundary tests, compilation, diff check, and
+  draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper run-index append parent binding (2026-08-15)** —
+  persistent run-index lock and append files now open descriptor-relative to a
+  no-follow directory whose device/inode matches the validated run directory.
+  A real-directory swap before acquisition fails closed. Commit `d42bf7d` on
+  `agent/threadkeeper-hardening-next`; all 64 boundary tests and 13 focused
+  run-index tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **Protomega fresh-reply successor-4 exact-byte review (2026-08-15)** —
+  ordinary prose is sent exactly once only when the real Janus boundary marks
+  the turn fresh; false/non-fresh input remains `UNKNOWN_SKILL_CALL` with no
+  send. The review harness now redirects embedded-Python bytecode outside the
+  frozen runtime. Acceptance: direct Fable inspects the implementation, runs
+  `command.sh` plus all seven bound provider-free suites, reproduces launcher
+  SHA-256 `b112f71a122e20b17abe170654c6ac020f3602bb019b0b7a8e1e46f4dc71db8d`
+  and helper SHA-256
+  `5e9f6542e3a5a79827a29da5ebda5f3dea3c21b4460d5e79bbae3b33b40d90e2`,
+  and returns GO with no blocking finding. **Result:** direct Fable session
+  `agent:protomegabot-fable:protomega-fresh-reply-review-r4-retry2-20260816t0256z`
+  returned GO after reproducing the focused real pipeline, all seven suites,
+  exact hashes, bytecode hygiene, and stopped topology. Production remains
+  stopped; a separate fresh one-attempt live authorization is required.
+
+- [x] **ThreadKeeper workspace-read parent inode binding (2026-08-15)** —
+  workspace file reads now bind their opened no-follow parent descriptor to
+  the device/inode validated before acquisition and open the target relative
+  to that descriptor. A real-directory swap before open fails closed. Commit
+  `471292c` on `agent/threadkeeper-hardening-next`; the focused 33-test
+  selection, compilation, diff check, and draft PR #1 ancestry pass. The full
+  mock file reproduced the recorded non-authoritative 1,114-pass / 135-failure
+  fixture baseline.
+
+- [x] **ThreadKeeper workspace-write parent inode binding (2026-08-15)** —
+  atomic workspace text replacement now binds its opened no-follow parent
+  descriptor to the device/inode validated before acquisition. A real-directory
+  swap before descriptor open fails closed without publishing into either
+  directory. Commit `e6f4a07` on `agent/threadkeeper-hardening-next`; the
+  focused regression, all 63 boundary tests, compilation, diff check, and
+  draft PR #1 safety-floor ancestry pass.
+
+- [x] **Protomega fresh one-attempt live authorization (2026-08-15)** — the
+  fresh-reply successor-4 repair passed direct-gateway Fable review with no
+  blocking finding and exact bytes are frozen: launcher SHA-256
+  `b112f71a122e20b17abe170654c6ac020f3602bb019b0b7a8e1e46f4dc71db8d`,
+  helper SHA-256
+  `5e9f6542e3a5a79827a29da5ebda5f3dea3c21b4460d5e79bbae3b33b40d90e2`,
+  loop SHA-256
+  `a973f450f0906567c11b5111b92eec613488ad90100758de4f80c1bbbc0f5dfb`,
+  runtime config SHA-256
+  `578eaf9d24585e9a9bdbe8870f7ec78af0f16656db0f25d8bd127bafdfe1d5b9`,
+  policy SHA-256
+  `a46f0c798daf50b4cce7077b92901236c875d9bcb27c5fc2280c9d76bf9abdd3`.
+  Deliverable: after Ben explicitly authorizes these bytes, execute exactly
+  one guarded live attempt with the existing stop/rollback conditions.
+  Acceptance: readiness and intended reply behavior pass, or any failure is
+  captured and rolled back to zero owners/workers and no PID file. Next
+  command before authorization: none; do not load credentials, poll Telegram,
+  invoke `start`, or send production messages. Evidence:
+  `experiments/20260816T014000Z-protomega-fresh-reply-delivery-repair/`.
+  Direct review ended at zero owners, zero workers, and no owner PID file. The
+  failed 17:41 PDT authorization is consumed; no live boundary was crossed by
+  the repair or review. **Result:** Ben authorized successor 4 at 20:15 PDT.
+  Readiness and the 15-second settle passed with exactly one worker and no
+  startup message. Fresh input `PROTOMEGA-CANARY-19595 hello` was acquired at
+  20:19:49; one model turn produced exactly one Telegram `send` at 20:20:15,
+  and Ben's screenshot confirmed delivery at 20:20. No duplicate send,
+  exception, or competing receiver was observed. Accepted receiver PID
+  `778919` remains live with one worker and a durable owner PID file.
+
+- [x] **ThreadKeeper async-worker lock parent binding (2026-08-15)** — the
+  queued-worker lifecycle lock now opens relative to a no-follow directory
+  descriptor whose device/inode matches the previously validated parent. A
+  swap to a different real directory before lock acquisition fails closed.
+  Commit `a69dfe2` on `agent/threadkeeper-hardening-next`; the focused
+  regression, all 62 boundary tests / 160 subtests, compilation, diff check,
+  and draft PR #1 safety-floor ancestry pass.
+
+- [x] **ThreadKeeper budget-audit append parent binding (2026-08-15)** —
+  usage and escalation JSONL appends now open the target relative to a
+  no-follow directory descriptor whose device/inode matches the previously
+  validated parent. A swap to a different real directory before file open
+  fails closed. Commit `7577312` on `agent/threadkeeper-hardening-next`; all
+  28 focused budget tests, compilation, diff check, and draft PR #1
+  safety-floor ancestry pass.
+
+- [x] **ThreadKeeper JSON audit parent inode binding (2026-08-15)** — atomic
+  JSON audit publication now compares the validated parent's device/inode with
+  the directory descriptor actually opened, rejecting a swap to a different
+  real directory before staging. Commit `319ff5e` on
+  `agent/threadkeeper-hardening-next`; the focused swap regression and all 61
+  boundary tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper queue-parent inode binding (2026-08-15)** — queue state
+  transitions and artifact cleanup now compare the validated parent's
+  device/inode with the directory descriptor actually opened, rejecting a
+  swap to a different real directory before rename or unlink. Commit `4fdce91`
+  on `agent/threadkeeper-hardening-next`; 2 focused swap regressions and all
+  60 boundary tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper queued artifact cleanup anchoring (2026-08-15)** —
+  terminal enqueue-checksum removal and unpublished completion/failure
+  artifact rollback now unlink relative to a validated no-follow queue-parent
+  descriptor. Commit `7006cf0` on `agent/threadkeeper-hardening-next`; 2
+  focused swap tests and all 58 boundary tests / 160 subtests pass, with
+  compilation, diff check, and draft PR #1 ancestry.
+
+- [x] **ThreadKeeper integrity sidecar rollback anchoring (2026-08-15)** —
+  transcript and queued-task publishers now remove an unpublished integrity
+  sidecar relative to their validated no-follow parent descriptor, so a parent
+  swap during failure handling cannot delete an attacker-selected same-name
+  file. Commit `24d7ea4` on `agent/threadkeeper-hardening-next`; 6 focused
+  tests, compilation, diff check, and draft PR #1 safety-floor ancestry pass.
+  The full mock file was non-authoritative: 1,111 passed / 135 failed after
+  shared rate-limit exhaustion and older descriptor-incompatible mocks.
+
+- [x] **ThreadKeeper queued-state descriptor anchoring (2026-08-15)** —
+  pending-to-claimed and claimed-to-done/failed state transitions now rename
+  relative to one validated no-follow queue-directory descriptor and fsync
+  that descriptor. Commit `98ee6f0` on `agent/threadkeeper-hardening-next`;
+  4 focused tests and all 58 boundary tests pass, with compilation, diff check,
+  and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper integrity record descriptor anchoring (2026-08-15)** —
+  transcript and queued-task staged-record commits now replace and fsync
+  relative to a validated no-follow parent descriptor, preventing a
+  last-moment parent swap from redirecting publication. Commit `409d655` on
+  `agent/threadkeeper-hardening-next`; 6 focused tests and all 56 boundary
+  tests / 160 subtests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper checksum-sidecar descriptor anchoring (2026-08-14)** —
+  transcript integrity sidecar replacement and unpublished-temp cleanup now
+  operate relative to a validated no-follow parent descriptor, preventing a
+  last-moment parent swap from redirecting the checksum commit. Commit
+  `91a0649` on `agent/threadkeeper-hardening-next`; 7 focused tests and all 56
+  boundary tests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper JSON audit descriptor anchoring (2026-08-14)** — atomic
+  JSON audit replacement and unpublished-temp cleanup now operate relative to
+  a validated no-follow parent descriptor, preventing a last-moment parent
+  swap from redirecting publication. Commit `e99129b` on
+  `agent/threadkeeper-hardening-next`; 6 focused tests and all 56 boundary
+  tests / 160 subtests pass, with compilation, diff check, and draft PR #1
+  safety-floor ancestry.
+
+- [x] **ThreadKeeper workspace text atomic rewrite hardening (2026-08-14)** —
+  workspace write/append publication now holds a no-follow directory
+  descriptor, revalidates after staging and before replacement, renames and
+  fsyncs relative to the descriptor, and cleans unpublished staged files by
+  descriptor or verified inode. Commit `7e93d07` on
+  `agent/threadkeeper-hardening-next`; 5 focused tests, compilation, diff check,
+  and draft PR #1 safety-floor ancestry pass. The complete mock-file check was
+  contaminated by shared rate-limit state (1,107 pass / 133 fail); directly
+  affected atomic/fsync tests pass after correction.
+
+- [x] **ThreadKeeper bounded run-index atomic rewrite hardening (2026-08-14)** —
+  rotation now validates and opens the index parent without following symlinks,
+  revalidates after temporary creation and before replacement, publishes
+  descriptor-relative, and cleans staged files without following a swapped
+  parent. Commit `0228392` on `agent/threadkeeper-hardening-next`; 8 rotation
+  tests and all 56 boundary tests / 160 subtests pass, with compilation, diff
+  check, and draft PR #1 safety-floor ancestry.
+
+- [x] **ThreadKeeper integrity-publisher parent-swap hardening (2026-08-14)** —
+  transcript and queued-task publishers now revalidate their parent after
+  checksum-sidecar creation and at the final publish rename. Commit `896f60d`
+  on `agent/threadkeeper-hardening-next`; 10 focused atomic/integrity tests and
+  all 56 boundary tests / 160 subtests pass, with compilation, diff check, and
+  draft PR #1 ancestry.
+
+- [x] **ThreadKeeper atomic sidecar parent-swap hardening (2026-08-14)** —
+  `_write_transcript_integrity_sidecar` now revalidates its parent after
+  temporary-file creation and immediately before replacement. Commit
+  `87e3da4` on `agent/threadkeeper-hardening-next`; 8 focused atomic-write
+  tests and all 56 boundary tests / 160 subtests pass, with compilation, diff
+  check, and draft PR #1 ancestry.
+
+- [x] **Protomega production-free migrated-memory soak (pivot)** — The repaired
+  clean disposable successor passed on 2026-08-15: two fresh runtime phases,
+  six nonce-bound turns, six ACKs, and six response-anchored exact non-empty
+  migrated-memory recalls. External egress was denied, protected source/target
+  manifests were byte-identical, and teardown found zero descendants. Evidence:
+  `experiments/20260815T065745Z-protomega-repaired-migrated-memory-soak/`.
+  Guarded-cutover preflight additionally passed against the exact preserved
+  2,779,617-byte production history: two restart-separated phases produced six
+  exact recalls, with egress denied, protected stores unchanged, and zero
+  descendants. Production remained untouched. Next: build and validate the
+  dedicated clean-upstream Protomega canary launcher; do not reuse the
+  quarantined outer/Phase-6 supervisor. Evidence:
+  `experiments/20260815T101312Z-protomega-guarded-production-canary/`.
+  The follow-on immutable-input/stopped-topology baseline passed at
+  `experiments/20260815T103415Z-protomega-clean-canary-launcher-preflight/`;
+  the dedicated clean launcher and real Gateway provider preflight then passed
+  at `experiments/20260815T104001Z-protomega-clean-canary-provider-launcher-preflight/`.
+  The 10:40:40Z live start failed before Telegram polling because hard Landlock
+  blocked Python's default temp-directory search; owner PID 463082 and receiver
+  PID 463085 exited and topology was restored to stopped. No message was sent;
+  history stayed byte-exact. `TMPDIR` mapping and readiness detection are now
+  staged only. The credential-free hard-Landlock replay then proved that
+  Python creates and round-trips a temporary file beneath the mapped runtime
+  temp root; the launcher now accepts `Polling started` only from log bytes
+  appended by the current start. Production remains stopped. A credential-free
+  launcher audit is currently **NO-GO**: topology detection misses competing
+  Protomega receivers outside the dedicated runtime; early child exit can
+  discard the PID record without process-group rollback; the start gate is
+  raceable; copied source/store identity checks are incomplete; and owner
+  record publication is not crash-safe. All five now have staged repairs: the
+  launcher recognizes legacy and dedicated receivers, holds an identity lock
+  and rechecks at spawn, rolls back its process group on post-spawn exceptions,
+  checks full pinned-source and migrated-store manifests, and atomically
+  publishes/fsyncs the owner record. Fresh preparation plus topology, tamper,
+  and atomic-publication checks pass. Provider-free simultaneous-start
+  exclusion and injected failures immediately before/after owner publication
+  now pass with process-group rollback and stopped production. Next: genuinely
+  independent review of frozen bytes, then fresh authorization. The exact
+  launcher plus provider-free evidence is now content-bound in a reviewer
+  packet whose local reproduction passes; this packet is not itself an
+  independent review. Evidence:
+  `experiments/20260815T104532Z-protomega-clean-canary-tmpdir-landlock-validation-r2/`
+  `experiments/20260815T104700Z-protomega-clean-canary-launcher-audit/`,
+  `experiments/20260815T110129Z-protomega-clean-canary-launcher-hardening/`, and
+  `experiments/20260815T110300Z-protomega-clean-canary-race-rollback/`, and
+  `experiments/20260815T112500Z-protomega-clean-canary-independent-review-packet/`.
+  Review obligation (2026-08-15 08:11 PDT): obtained binding exact-byte Fable
+  GO/NO-GO without credentials or production authority. Acceptance: reviewer
+  reproduces `command.sh`, names launcher SHA-256, covers the seven contract
+  areas, and returns explicit GO/NO-GO. Next command: invoke the dedicated
+  `protomegabot-fable` agent with `FABLE_REVIEW_REQUEST.md`. Evidence path:
+  `experiments/20260815T112500Z-protomega-clean-canary-independent-review-packet/FABLE_REVIEW.md`.
+  Result: **NO-GO**. Next command: repair real receiver detection/cross-stack
+  locking, startup version-send behavior, and runtime/store manifests; rerun
+  provider-free tests, freeze new bytes, and request fresh exact-byte review.
+  Partial remediation (2026-08-15 08:47 PDT): the four named static blockers
+  are implemented and their focused provider-free verifier exits 0. The
+  launcher now recognizes both actual missed receiver shapes, disables the
+  exact pinned startup version send, pins the executed template and canonical
+  store manifests, and shares the legacy cutover lock. Acceptance is not yet
+  met: close the spawn-to-owner-publication hard-kill window, freshly prepare
+  the runtime, rerun the complete suites, freeze new bytes, and obtain a fresh
+  independent GO. The hard-kill window is now closed with a parent-death guard
+  held behind a durable-publication gate; both kill orderings and recovery
+  identity pass. Fresh preparation and the full provider-free suite pass, and
+  the remediated 18,357-byte launcher is frozen at SHA-256
+  `6193f06cdf5a6a78c9fca0b4269bf17722b49688a36320bfe36d177dcaa79e17`.
+  A fresh model-diverse internal Fable exact-byte review at 10:30 PDT
+  reproduced the frozen hash and packet but returned **NO-GO**: the Phase-6
+  matcher misses the actual `ProtomegaTron` / bot-ID argv, the shared cutover
+  lock is not held for receiver lifetime, and executed runtime/interpreter
+  trees remain outside the verified identity envelope. Next command: repair
+  those three blockers provider-free, derive fixtures from the real supervisor
+  argv, rerun the complete verifier suite, and freeze a new packet. Acceptance
+  remains a genuinely independent exact-byte GO on the successor bytes; do not
+  seek live authorization before that. Evidence:
+  `experiments/20260815T154000Z-protomega-independent-no-go-remediation/`,
+  `experiments/20260815T155000Z-protomega-spawn-publication-guard/`, and
+  `experiments/20260815T160000Z-protomega-remediated-independent-review-packet/`,
+  especially `FABLE_REVIEW.md`.
+  Remediation r2 (2026-08-15 11:10 PDT): all three blockers are closed in
+  successor bytes. The real supervisor argv and adversarial near misses are
+  tested; the exec'd receiver retains the shared lock; executed runtime, SWI,
+  and venv identities are pinned. All bound suites passed with zero stderr,
+  explicit stop, and zero final owners/workers. Frozen successor: 19,876 bytes,
+  SHA-256 `f3b87c4fdc5b93101403992f3c0a3056c9ddd3c16eb39c308fa3c61656fe19c9`.
+  Next command: dispatch the exact-byte request to `protomegabot-fable` once
+  cross-agent visibility is available. Current dispatch attempts fail before
+  execution because agent-to-agent send is forbidden and spawn allows only
+  `main`; do not weaken configuration or substitute self-review. Evidence:
+  `experiments/20260815T174200Z-protomega-fable-no-go-remediation-r2/` and
+  `experiments/20260815T181000Z-protomega-successor-exact-byte-review-packet/`.
+  A renewed exact-agent dispatch at 11:08 PDT also failed before execution with
+  `status=forbidden` (run `8066f94e-5a62-4adb-b074-99208b8c1016`); the frozen
+  bytes and stopped-production disposition are unchanged.
+  The direct gateway Fable review subsequently completed and returned NO-GO
+  on those exact bytes: a live outer/legacy supervisor can remain while its
+  receiver is briefly absent, then respawn a second receiver after readiness.
+  Current obligation: make all supervisor run/start parents blocking owners,
+  normalize split/equals Phase-6 identity argv, match legacy `main.pl`
+  path-agnostically, require a 15-second post-readiness stable topology, pin
+  exact policy bytes, and add a provider-free late-respawn regression.
+  Acceptance: focused regression and full bound suite pass with zero final
+  owners/workers, successor bytes are frozen, and a new direct gateway Fable
+  review returns no unresolved high finding. Next command: `bash
+  experiments/20260815T184600Z-protomega-late-respawn-remediation/command.sh`.
+  Evidence path:
+  `experiments/20260815T184600Z-protomega-late-respawn-remediation/`.
+  Successor r4 closure (2026-08-15 12:15 PDT): the full bound suite and exact
+  packet reproduced at 22,584 bytes / SHA-256
+  `028311fd06cfa7b13c5215be1358ca5619057c37085956d900e18558d8758975`;
+  policy bytes are 885 bytes / SHA-256
+  `a46f0c798daf50b4cce7077b92901236c875d9bcb27c5fc2280c9d76bf9abdd3`.
+  Direct-gateway `anthropic/claude-fable-5` independently reran all bound
+  suites plus real-process child-dead/child-alive and 15-second settle probes
+  and returned **GO** with no critical/high/medium finding. Production remains
+  stopped and unauthorized; the next gate is a separately authorized live
+  boundary, not an automatic start. Evidence:
+  `experiments/20260815T191500Z-protomega-successor-r4-exact-byte-review/`.
+  A fresh execution (not merely hash verification) of all six bound suites at
+  12:41 PDT also exited zero with empty stderr and stopped final topology.
+  Evidence:
+  `experiments/20260815T193953Z-protomega-successor-r4-full-bound-revalidation/`.
+  Fresh bound rerun (2026-08-15 10:55 PDT): all topology, manifest, startup,
+  realistic Phase-6/near-miss, receiver-lifetime exclusion, race, rollback,
+  stop, and hard-kill checks exited zero with empty stderr; final topology was
+  zero owners/workers and no PID file. The exact-byte packet also reproduced
+  its manifest, byte equality, size, stopped status, and non-invocation marker.
+  This is implementation evidence only and does not close either review gate.
+  Evidence: `experiments/20260815T175512Z-successor-bound-suite-rerun/`.
+  Historical diagnosis: the strengthened predecessor was NO-GO after
+  strengthening. The actual pinned plugin ignores `CHROMA_DB_PATH` and opens
+  `./chroma_db`; after attaching an ordinary disposable copy at that exact path,
+  two Local E5 queries returned the known migrated document, but the third turn
+  triggered native `fatal signal 11 (segv)` before ACK. Captured exit status is
+  1; external egress denial passed and no OmegaClaw/PeTTa/SWI descendant
+  remained. Earlier ACK-only/OpenAI and empty-store apparent passes are rejected.
+  Both crash discriminators now pass: Python completed 12 E5 embeddings and 12
+  exact recalls, and one PeTTa/SWI/Janus process completed six direct queries
+  plus six wrapped `eval(query)` recalls. Protected hashes and zero-descendant
+  checks held. The fault is narrowed to OmegaClaw conversational-loop
+  lifecycle/state. Next gate: a new disposable two-phase soak with a fresh
+  attempt nonce, isolated evidence paths, response-anchored non-empty recall
+  extraction, and one exit-0 command. Evidence:
+  `experiments/20260814T182200Z-protomega-repeat-isolation/` and
+  `experiments/20260814T183300Z-protomega-repeated-petta-eval/`.
+  Model-diverse phase-end review confirms NO-GO and excludes the stale
+  `phase-2.log` plus reused history markers from acceptance. A successor must
+  use per-attempt nonces, response-anchored non-empty result extraction, and
+  one clean two-phase exit-0 run.
+  A send/query discriminator then failed closed: send-only delivered two ACKs
+  and reproduced the turn-3 SWI/Janus SIGSEGV before the query-only phase.
+  Therefore Chroma query execution is not required for the crash. Next gate:
+  fresh isolated history/state versus accumulated staging history, both with
+  nonce-bound three-turn send-only traffic. Evidence:
+  `experiments/20260814T185800Z-protomega-send-query-discriminator/`.
+  A reproducible prefix bisection now places the crash boundary between 21
+  history records / 4,201 bytes (3/3 ACKs, no fatal signal, replayed) and 22
+  records / 4,396 bytes (fatal signal 11, replayed). The 195-byte boundary
+  record is structurally parallel to its predecessor, so content versus
+  prompt-size remains unresolved. Next gate: controlled equal-size record
+  substitutions around the 21/22 boundary. Evidence:
+  `experiments/20260814T192400Z-protomega-history-prefix-bisection/`.
+  The paired logger discriminator supersedes a deterministic byte-threshold
+  interpretation: ordinary `log/4` crashed on turn 3 at both 4,201- and
+  4,396-byte histories, while no-op `log/4` completed 3/3 at both sizes. A
+  direct-Python control passed three calls with the exact 11,664-byte serialized
+  `CHARS_SENT` payload. The active trigger therefore requires the MeTTa/Janus
+  logger crossing. The minimal disposable repair now preserves the numeric
+  readiness marker while omitting the full prompt from the log term; the exact
+  formerly fatal 4,396-byte history completed 6/6 nonce-bound full-loop turns,
+  with two focused log-contract tests, network denial, protected-byte equality,
+  and zero-descendant teardown. Next gate: repeat the repaired full loop with
+  response-anchored exact migrated-memory recall before any staging gate. This
+  successor gate is now satisfied; next is isolated clean staging-source
+  integration plus focused tests and a repeat restart soak. Evidence:
+  `experiments/20260815T041252Z-protomega-loop-native-crash-localization/`.
+
+- [ ] **URGENT 2026-08-15 18:40 PDT — close Protomega fresh-reply delivery and idle-start defects.** Deliverable: deterministically patch the frozen canary runtime so plain natural-language provider output is converted to exactly one `send` action only for a fresh human message, while startup with an empty queue performs zero provider calls. Acceptance: a focused provider-free regression reproduces `PROTOMEGA-CANARY-19543 hello` with one correlated send and proves no idle send/provider call; all prior seven bound suites, compilation, preflight, stopped topology, and exact-byte Fable review pass. Current: successor 4 redirects embedded-Janus bytecode outside the frozen runtime after successor 3's focused command contaminated its own prepared source tree and failed identity preflight. Fresh preparation, the real pipeline, all seven prior suites, final preflight, stopped topology, and runtime-source bytecode absence now pass. Next command: obtain a fresh direct Fable verdict on successor 4; if GO, request only the distinct one-attempt live authorization. Evidence path: `experiments/20260816T014000Z-protomega-fresh-reply-delivery-repair/`. Production remains stopped; the failed 17:41 PDT canary authorization is consumed.
+
+- [x] **Telegram durable-ingest acknowledgement (Ben, 2026-08-14)** —
+  deliverable: persist each complete acquired update in a bounded, fsynced local
+  inbox before advancing the Telegram cursor; replay unfinished authorized
+  events from that inbox after restart and deduplicate by update/event ID.
+  Acceptance: a crash after cursor advancement but before handling resumes the
+  event locally exactly once without refetching it; ignored updates remain
+  durably classified; route/inbox overflow fails before acknowledgement; the
+  existing delivery-ledger fault/restart and zero-descendant gates still pass.
+  **Complete locally at unpushed `b8c99e5`:** cursor and bounded inbox are one
+  atomic fsynced receive-state replacement; restart replays in-flight work,
+  ignored updates remain classified, route/inbox overflow precedes
+  acknowledgement, and delivery-ledger overflow preserves the live route.
+  Clean-commit evidence: 34 focused tests, restart replay, five actual-loop
+  fault/recovery cases, 8/8 reverse routing, active network denial, and zero
+  descendants passed. Evidence path:
+  `experiments/20260814T170500Z-telegram-durable-ingest/`.
+
+- [x] **ThreadKeeper nested run-record identifier validation (2026-08-14)** —
+  direct `run_tools` records now reject punctuation-bearing, whitespace-bearing,
+  digit-leading, and non-ASCII-confusable nested audit keys before registry
+  construction or workspace effects. Commit `c96e624` on
+  `agent/threadkeeper-hardening-next`; 56 boundary tests / 160 subtests pass,
+  with compilation, diff check, and draft PR #1 ancestry.
+
+- [x] **ThreadKeeper atomic audit parent-swap hardening (2026-08-14)** —
+  `_json_atomic_write` now revalidates its parent after temporary-file creation
+  and immediately before replacement, rejecting deterministic symlink swaps
+  without publishing audit bytes outside the intended tree. Commit `4c0e227`
+  on `agent/threadkeeper-hardening-next`; focused atomic-write tests and all 56
+  boundary tests / 160 subtests pass, with compilation, diff check, and draft
+  PR #1 ancestry.
+
+- [x] **Production-free Telegram-shaped addressed adapter fixture phase (pivot)** — phase-
+  start Fable review conditionally approved only a new event-native sibling
+  channel with injected in-process Bot-API-shaped calls and active URL/socket
+  denial. Upstream global `_chat_id`/message/outbox state must not be wrapped.
+  Persist a monotone cursor; use per-chat/per-user allowlists, capped in-memory
+  routes, ignored edits, single-attempt sends, and no startup/proactive sends.
+  Eight frozen gates cover credentials/network, focused semantics, actual-loop
+  private/group correlation, acquisition/delivery faults, restart, isolation,
+  descendants, and independent review. Real Telegram, tokens, sockets,
+  production, Chroma, media, durable routes/outbox, and cutover are excluded.
+  Local commit `07ac563` now passes 24 focused tests plus the unchanged
+  eight-event actual-loop private/group reverse-routing harness under active
+  socket/URL denial. Bounded acquisition and delivery stalls fail visibly
+  within the configured deadline and the next turn recovers; concrete-adapter
+  cursor restart rejects a stale pending selector and delivers one fresh event
+  once. Compilation, diff, secret, ancestry, clean-status, and zero-descendant
+  checks pass. Phase-end Fable review returned adapter-level GO only; actual-
+  loop fault and restart gates remain open. Its high overflow-loss finding is
+  fixed at local unpushed `e3940c8`: capacity-rejected authorized updates stay
+  unacknowledged and are reacquired after capacity frees; empty forbidden env
+  fields now fail. Scrubbed focused tests pass 25/25. The timestamped actual-
+  loop acquisition/delivery fault and restart/isolation gates are now frozen
+  before implementation in `experiments/20260814T160100Z-telegram-shaped-actual-loop-fault-restart/`.
+  Corrected timestamped reruns now pass from local commits `37c5f08` and
+  `3a2d472`: five actual-loop fault/recovery scenarios self-measure network
+  denial, ledger no-retry state, isolated scenario history, and zero descendants;
+  restart proves stale failure, fresh exact delivery, isolated growing history,
+  network denial, and zero descendants. Final local commit `6082d60`
+  conservatively classifies every post-dispatch failure as uncertain.
+  Model-diverse internal effective-model Fable review reran both frozen harnesses at exact
+  clean HEAD, reproduced all gates, and returned scoped GO to freeze this
+  injected-fixture phase; focused tests pass 33/33. Real Telegram, transport
+  networking, tokens, and production remain unauthorized. Before any real-
+  transport phase, fix route restoration if ledger pruning overflows and make
+  an explicit product decision on acquire-time cursor acknowledgement.
+  Evidence:
+  `experiments/20260814T145500Z-telegram-shaped-addressed-adapter/`.
+  Closing-gate evidence:
+  `experiments/20260814T160100Z-telegram-shaped-actual-loop-fault-restart/`.
+
+- [ ] **Resume clean-install recovery after fixture-phase freeze** — deliverable:
+  advance the pinned upstream, three-isolated-runtime path without extending
+  the generalized inspector or frozen injected-fixture adapter. Acceptance:
+  complete remaining production-free ordinary-conversation/asset gates,
+  serialize strict timing harnesses, record rollback evidence, then obtain a
+  fresh final review before requesting Ben's explicit production cutover.
+  Next command: audit the clean-pivot acceptance ledger against completed
+  experiments and select the oldest still-open safe gate. Evidence path:
+  `experiments/20260814T053851Z-clean-install-pivot/`.
+
+- [x] **ThreadKeeper ambiguous nested run-record key validation (2026-08-14)**
+  — direct `run_tools` records now reject empty and leading/trailing-whitespace
+  nested audit keys before registry construction or workspace effects. Commit
+  `e6979b9` on `agent/threadkeeper-hardening-next`; 55 boundary tests / 156
+  subtests pass, with compilation, diff check, and draft PR #1 ancestry.
+
+- [x] **ProtoCosmo2 decoupled skill port manifest (pivot)** — the nine KEEP
+  skills are bound in isolated staging by canonical path and SHA-256, with no
+  stale snapshot copy or runtime loader. Broken-runtime components remain
+  explicitly excluded; REIMPLEMENT and DROP items remain unported. Evidence:
+  `experiments/20260814T120200Z-protocosmo2-skill-port-manifest/`.
+
+- [ ] **Protomega one-way disposable re-embedding (pivot)** — direct stored-
+  vector recall passed, but pinned upstream text embeddings are 1,024-D and the
+  preserved collection is 384-D. Use only a verified copy and new empty output
+  store under the reconciliation, restart, full-loop, rollback, and zero-child
+  gates in `experiments/20260814T113500Z-protomega-text-embedding-compatibility/MIGRATION_DESIGN.md`.
+  The migration experiment and phrase probe are now preregistered, and a
+  verified disposable copy exported exactly one stable-ID record with exact
+  document/timestamp, dimension 384, and source-vector hash while source bytes
+  stayed unchanged. No model or output collection was used. Next: create a new
+  empty staging store, re-embed the exported record offline, and run exact-field
+  reconciliation plus exact-document/phrase recall. **Ben authorized the exact
+  E5-large-v2 retrieval on 2026-08-14 at 07:14 PDT.** Immediate next command:
+  retrieve exact revision `f169b11e22de13617baa190a028a32f3493550b6` into a
+  dedicated clean cache with the official Hugging Face client; record file
+  hashes, then rerun the preregistered migration without network access.
+  Acceptance: exact revision is locally complete and hash-inventoried; offline
+  model load returns 1,024 dimensions; migration reconciliation and restart
+  recall pass while authoritative source hashes remain unchanged. Evidence:
+  `experiments/20260814T114500Z-protomega-reembedding-prereg/` plus the new
+  retrieval/migration run record. **Current:** retrieval/hash inventory,
+  offline 1,024-D load, one-record reconciliation, fresh-process exact-document
+  and phrase recall, and source byte stability all pass. The missing-model and
+  standalone-migration blockers are closed. Next: disposable pinned full-loop
+  recall; production cutover remains separate. Evidence:
+  `experiments/20260814T141553Z-e5-large-v2-pinned-download/` and
+  `experiments/20260814T141935Z-protomega-reembedding-e5-pinned/`.
+
+- [x] **ThreadKeeper invisible nested run-record key validation (2026-08-14)**
+  — direct `run_tools` records now reject Unicode format characters such as
+  zero-width joiners in nested audit keys before registry construction or
+  workspace effects. Commit `dbb320f` on
+  `agent/threadkeeper-hardening-next`; 55 boundary tests / 153 subtests pass,
+  with compilation, diff check, and draft PR #1 ancestry verified.
+
+- [x] **Protomega Chroma disposable compatibility and recall (pivot)** — the
+  authoritative store has now been copied with an ordinary recoverable copy;
+  all file bytes matched and source hashes/root metadata were unchanged.
+  Read-only inspection of only the copy found one dimension-384 `memories`
+  collection and one embedding. Pinned plugin commit `2184848` with ChromaDB
+  `1.5.9` then attached directly to a fresh disposable copy and returned the
+  exact known ID/timestamp/document by ID and stored-vector query at distance
+  `0.0`; a fresh process repeated both recalls. Source hashes/root metadata
+  stayed unchanged. No migration is currently justified. Evidence:
+  `experiments/20260814T110400Z-protomega-chroma-disposable-copy/` and
+  `experiments/20260814T111500Z-protomega-chroma-upstream-recall/`.
+
+- [ ] **Clean upstream ordinary-conversation baseline (pivot)** — exact Python
+  pins installed and `pip check` passed in
+  `20260814T081649Z-clean-omegaclaw-python-deps`; upstream mock RPC primitives
+  passed 10/10 in `20260814T082009Z-clean-omegaclaw-mock-primitives-r3`.
+  A disposable pinned runtime clone preserves the clean reference. A bounded
+  300-second cold launch remained in translation and stopped with zero
+  descendants. After recording four manual-path discrepancies, the unchanged
+  upstream loop passed three ordered turns plus idle acquisition with the Test
+  provider/test channel and zero descendants. The structural three-root
+  preflight then passed with 24/24 distinct canonical paths and device/inode
+  pairs and zero production credential fields. All three roots subsequently
+  passed two ordered full-loop turns each (six total), with per-root logs and
+  zero descendants. Next: bounded provider failure, restart persistence, and
+  Restart persistence passed, but exposed that the earlier runs shared the
+  upstream-opened history file. Three same-commit disposable runtime copies
+  now provide distinct actual histories and state directories; structural
+  isolation passed. Next: rerun two turns per runtime with negative
+  cross-history assertions passed: each corrected runtime completed two fresh
+  turns (6/6), retained both own markers, and contained zero foreign markers.
+  Full-loop bounded provider error/stall and immediate recovery now pass. The
+  addressed-concurrency gate established a structural NO-GO: unchanged core
+  drops origin identity at `receive(): str` / `send(message)` and drops
+  non-bound origins; a modeled last-origin shim misroutes delayed replies.
+  Independent Fable review approved only the corrected production-free seam,
+  requiring one-event receive, event-ID novelty/dedup, and per-origin auth.
+  The first implementation review verified the Python/MeTTa object handoff but
+  found the LLM prompt still advertised one-argument `send`; that critical
+  mismatch is now corrected with a regression. Next: decide and test loop-bound
+  versus pending-set event authority before migrating any concrete channel,
+  then implement only the reviewed production-free event-ID seam
+  from local checkpoint `6dbbbb3` (unpushed). Corrected isolated restart
+  persistence now passes with two correlated turns, a stable growing
+  Protomega history inode distinct from both other runtimes, and zero
+  descendants. The broader ordinary-conversation
+  phase remains open specifically on frozen acceptance clause 5: eight
+  in-loop messages across two concurrent origin-correct sessions. Run eight
+  interleaved private/group turns only after the frozen seam is returned to
+  the critical path by concrete adapter need. Retain cold startup as a
+  measured limitation. Evidence:
+  `experiments/20260814T083100Z-clean-full-loop-baseline/` and
+  `experiments/20260814T092700Z-three-staging-roots/` and
+  `experiments/20260814T094700Z-three-root-conversations/`,
+  `experiments/20260814T100700Z-restart-persistence/`, and
+  `experiments/20260814T102825Z-corrected-three-runtime-isolation/`, and
+  `experiments/20260814T103800Z-corrected-three-runtime-conversations/`,
+  `experiments/20260814T121646Z-full-loop-provider-faults/`, and
+  `experiments/20260814T123400Z-full-loop-addressed-concurrency/`.
+  Corrected restart evidence:
+  `experiments/20260814T131500Z-corrected-restart-persistence/`.
+  The first production-free event-envelope slice now passes eight addressed
+  synthetic events plus focused channel/auth tests on local branch
+  `agent/omegaclaw-addressed-event-seam`; it remains explicitly incomplete
+  pending actual MeTTa-loop, bounded-state/restart, auth, full-loop, orphan,
+  and Fable review gates. Evidence:
+  `experiments/20260814T124000Z-addressed-event-seam/`.
+  Phase-start Fable review now authorizes only a disposable full-loop
+  mock/local test after recording D1: model-emitted IDs select only live,
+  unfinalized, current-session-presented events; channels alone bind immutable
+  destinations. Acceptance gates: commit/clean pin; existing 8-test floor;
+  eight one-at-a-time identical-text private/group events with exact reverse
+  correlation; event-keyed dedup; in-loop bounded unknown/empty/finalized/
+  foreign-ID failures; identical-text novelty; controlled restart with a
+  pending event; isolated history/config; injection probe; zero descendants;
+  and independent phase-end review. Concrete transports, per-origin auth,
+  retention/expiry, Telegram, and production remain excluded. Next command:
+  preregister the disposable full-loop harness and preserve exact command/data
+  identifiers before editing the seam branch. Preregistration completed at
+  `experiments/20260814T133500Z-addressed-full-loop-mock/`; next command is to
+  implement the provider/channel harness and its tests without running it until
+  its diff is checked against the frozen gates.
+  Real-loop gates 3, 4, scoped 5, 6, 9, and 10 passed at `98b758b`; independent
+  Fable review discharges gate 11 for that milestone. Gates 7 and 8 remain
+  open, and never-presented-ID failure remains focused-test-only. The cosmetic
+  invalid-selector count is corrected locally without rerunning the clobbering
+  harness at local unpushed commit `b422472`; 7/7 focused tests pass.
+  Restart/isolation gates 7 and 8 passed at local unpushed commit `744a7c1`:
+  the stale pending selector failed visibly without delivery after restart, a
+  fresh event delivered once to its bound destination, the actual history
+  inode persisted and grew while remaining distinct from both peers, focused
+  tests passed 7/7, and teardown left no attributable descendant. Evidence:
+  `experiments/20260814T144300Z-addressed-restart-isolation/`. Next: independent
+  Fable review returned GO with no high/medium finding. Gates 7, 8, and 11 are
+  closed for the synthetic in-memory adapter, and the generic seam is frozen at
+  local unpushed commit `744a7c1`. Do not extend it until a concrete transport
+  phase separately specifies per-origin auth, bounded/durable route state,
+  startup/proactive sends, and exactly-once acquisition.
+
+- [x] **GGB `petta-chem` structural-transfer preregistration (2026-08-14)**
+  — froze seeds 11--18, all three exp07 rich-pool arms, the per-arm
+  cycle-ablation incidence-drop metric (`>=3/8`), a shuffled full-cycle
+  positive control, and a narrow within-cohort claim boundary. Five
+  fail-closed tests and compilation pass. Evaluation remains paused with
+  `petta-chem`; no PeTTa execution or incomplete graph-seed-1003 access ran.
+  Evidence:
+  `artifacts/ggb-capacity-gates/20260814-petta-chem-structural-transfer-prereg/`.
+
+- [x] **ThreadKeeper nested run-record key validation (2026-08-14)** —
+  direct `run_tools` records now reject lone-surrogate, control-bearing, and
+  non-NFC nested object keys before registry construction or workspace effects,
+  preventing delayed serialization failures and ambiguous durable audit keys.
+  Commits `b9c4f7c` and `90a60b2` on `agent/threadkeeper-hardening-next`; 55
+  boundary tests / 152 subtests pass, with compilation, diff check, and draft
+  PR #1 ancestry verified.
+
+- [x] **Observer-quantumness completed-run review PDF (Ben, 2026-08-13)**
+  — deliverable: a self-contained PDF summarizing the exact ZIP-derived
+  Qwen2.5-7B experiment, completed versus uncompleted stages, quantitative
+  behavioral/CbD/compression results, limitations, and questions for the
+  model that authored the package. Acceptance: figures and tabulated values
+  agree with the preserved run artifacts; PDF renders successfully; hashes
+  and source paths are recorded. Next command: render the evidence-bound
+  report with WeasyPrint. **Complete:** six-page PDF renders successfully and
+  text extraction/visual inspection passed. PDF SHA-256:
+  `eefe227da6af1748b69313f41c49fb332847446306f568013f037095bb03d3e3`.
+  Evidence:
+  `docs/observer-quantumness-qwen25-7b-results-2026-08-13.pdf` and its HTML
+  source.
+
+- [ ] **Clean-install-first Omega recovery pivot (Ben, 2026-08-13 22:32 PDT)**
+  — deliverable: one clean pinned current-upstream OmegaClaw installation with
+  three isolated configurations, then selective asset migration in value
+  order: (1) Protomega pre-dysfunction Chroma corpus, (2) ProtoCosmo2 curated
+  skills, (3) Protomega2 experimental/test configuration. Acceptance: unchanged
+  upstream smoke; ordinary multi-turn/private conversation, bounded failure,
+  restart, and zero-orphan tests; disposable-copy Protomega recall/compatibility
+  proof without modifying the original store; explicit KEEP/REIMPLEMENT/DROP
+  skill inventory; autonomous soak; Fable review; then explicit Ben cutover
+  approval. Current: v12.1 exact-model review is complete and the generalized
+  inspector/launcher line is frozen as non-critical-path evidence with two
+  unresolved high defects (negative stat uints and unmapped pre-open stat
+  errors). Pivot phase-start Fable review returned conditional GO, but found a
+  critical live cross-project dependency, now terminal. Read-only quarantine
+  evidence was captured, and a fresh layout is pinned at PeTTa `7037f4c`,
+  OmegaClaw `2cdef05`, and Chroma plugin `2184848`. Isolated SWI-Prolog
+  10.1.13/Janus and the exact PeTTa README NARS smoke pass under `env -i`, with
+  zero post-run descendants. The ProtoCosmo2 inventory independently reproduces
+  9 KEEP / 5 REIMPLEMENT / 5 DROP classifications and is hash-bound in the
+  pivot run.
+  The falsifiable ordinary-conversation/isolation acceptance contract is now
+  frozen at `docs/clean-install-pivot-acceptance-2026-08-13.md`.
+  Review session:
+  `agent:main:subagent:a16ce6ae-f8ab-479e-9b2b-bbf8f5297254`, run
+  `33d1045c-be23-434a-90ea-c0c3e5c68dc1`. The preregistered new-store-only
+  Protomega re-embedding gate is blocked before target creation because the
+  upstream-forced offline E5-large-v2 model is not cached; no fallback or
+  implicit download is authorized. Next: provenance-bind an available offline
+  model artifact or obtain separate retrieval authorization, then rerun the
+  absent-target migration gate. Evidence: clean-install
+  pivot experiment `experiments/20260814T053851Z-clean-install-pivot/` plus
+  `experiments/20260814T001326Z-upstream-divergence-audit/` and
+  `experiments/20260814T114759Z-protomega-reembedding/`.
+  Actual-loop fault evidence now passes acquisition error/stall (visible
+  process exit followed by fresh-process recovery) and delivery error/stall
+  (finalized without retry followed by later-event recovery), with active
+  network denial, 28/28 focused tests, and zero descendants. Actual-loop
+  restart/history isolation and binding Fable review remain open. Evidence:
+  `experiments/20260814T160100Z-telegram-shaped-actual-loop-fault-restart/`.
+
+- [x] **Complete Phase-0 descriptor scanner review (2026-08-14 UTC)** —
+  deliverable: a v9.1-exclusive, descriptor-relative, production-free scanner
+  slice with metadata-only credential identity and real ledger capture.
+  Acceptance: inherited 47+23 checks and scanner tests pass, exact hashes are
+  recorded, and clean effective-model-proven Fable review has no unresolved
+  critical/high finding. Current: v10.1 passes 47+23+23; Fable independently
+  reproduced the suite and returned narrow GO with no critical/high finding.
+  Its medium ledger-capture finding is resolved by a fresh recorded acceptance
+  run at 04:48:25Z. This grants no live-host or integrated-inspector authority.
+  Evidence:
+  `experiments/20260814T043936Z-upstream-recovery-phase0-descriptor-scanner-v10-1/`.
+
+- [x] **Specify Phase-0 integrated inspector launcher (2026-08-14 UTC)** —
+  deliverable: exact, reviewable orchestration that supplies the reviewed
+  descriptor scanner only caller-opened roots, preserves exhaustive failure
+  semantics, never serializes credential bytes, and captures stable all-UID
+  process/scheduler evidence without writing production state. Acceptance:
+  synthetic tests plus effective-model Fable review with no unresolved
+  critical/high finding before any live-host or privileged execution. Current:
+  v11 review found one high receipt gap plus medium design/evidence gaps. V11.1
+  freezes the receipt, hash encoding, canonical tree, atime fallback, achievable
+  secret claims, secret minimum, scheduler count, wrapper inputs, and real
+  ledger capture; 27 invariants pass. Binding Fable review reproduced all
+  frozen suites but returned NO-GO: the five-FD allowlist contradicts the
+  separately required receipt and quarantine directory FDs. Next: freeze a
+  v11.2 successor resolving that high issue and all medium receipt/tree
+  canonicalization findings; its 14-invariant lint passes. Exact-model Fable
+  reproduced all frozen suites and returned narrow synthetic-only GO with no
+  critical/high issue. The remaining NOFILE/depth medium is an implementation
+  constraint: use bounded descriptor re-descent and test the depth-64 boundary.
+  Review session:
+  `agent:main:subagent:b158396f-3dd0-43c4-a3e0-ed60d3e2c250` / run
+  `941ada48-4f08-43fc-b50a-cac383304c61`. Evidence:
+  `experiments/20260814T045617Z-upstream-recovery-phase0-integrated-launcher-v11-1/`.
+  Successor evidence:
+  `experiments/20260814T050710Z-upstream-recovery-phase0-integrated-launcher-v11-2/`.
+
+- [ ] **PAUSED by clean-install pivot — Implement synthetic Phase-0 integrated launcher (2026-08-14 UTC)** —
+  deliverable: fixture-root-only v11.1+v11.2 composite with fake procfs,
+  scheduler/control trees, receipt/publication state machine, all frozen
+  failures, and no network/process spawn. Acceptance: deterministic functional
+  tests including depth-64 bounded descriptor re-descent, secret isolation,
+  receipt atomicity, churn, caps, and zero descendants; exact-byte Fable review
+  has no critical/high finding. Current: Fable found one v12 high issue (RFC
+  7049-style length-first map order, not RFC 8949) and four medium encoder/link/
+  mount gaps. V12.1 resolves them plus write-flag, NUL-path, size, hardlink, and
+  ledger hygiene lows; 8 tests and compilation pass without bytecode artifacts.
+  Exact-model review found two high defects and returned NOT GO for extension:
+  negative stat uints encode silently and pre-open `stat` errors escape the
+  failure taxonomy. Per Ben's 22:32 PDT pivot, these are recorded and this line
+  is frozen; do not remediate unless clean-install preservation work exposes a
+  concrete blocker ordinary copies cannot solve. Evidence:
+  `experiments/20260814T053005Z-upstream-recovery-phase0-synthetic-launcher-v12-1/`.
+
+- [ ] **Return Omega runtimes to a clean upstream baseline (2026-08-13)** —
+  deliverable: replace the bespoke private-canary/deferred-job/provider stack
+  with a clean, pinned upstream OmegaClaw baseline, preserving all production
+  Chroma/state data read-only. Acceptance: upstream smoke tests pass unchanged;
+  autonomous local multi-turn, timeout, and process-tree soak tests pass; no
+  production token or state is used in staging; Chroma compatibility is proven
+  read-only; independent review approves the cutover. **Audit evidence:**
+  upstream `2cdef05`; current live worktree is 389 upstream commits behind,
+  carries 40 local commits plus critical uncommitted edits, and directly
+  reproduced escaped nested process groups. Next command: create a clean
+  worktree at `origin/main` and run the upstream documented smoke gate. Evidence:
+  `experiments/20260814T001326Z-upstream-divergence-audit/RUN.md`.
+  **Phase 0 correction (2026-08-14 UTC):** the required phase-start Fable
+  review returned NO-GO for preservation/closure and conditional GO for
+  strictly read-only inspection. The initial nine-root snapshot design is
+  quarantined unexecuted because it did not prove restart fencing, zero open
+  writers, or complete historical/rollback-state coverage. Next command:
+  `bash experiments/20260814T002716Z-upstream-recovery-phase0-preservation/read_only_inventory.sh`.
+  Acceptance evidence remains open; do not create the clean worktree yet.
+  **Safety incident:** the first raw `/proc` audit found the old acceptance
+  controller plus a private-canary receiver, nested case driver, and escaped
+  PeTTa/SWI group still alive. Exact groups `4007863`, `4013551`, `4013664`,
+  and `4013674` were stopped; all six resolved PIDs are gone and the repeated
+  audit has no Omega/PeTTa/SWI candidate or handle into the three active Chroma
+  roots. Restart fencing remains unproved because user-systemd and crontab
+  enumeration were unavailable in the cron context. Evidence: Phase 0 ledger.
+  **Pre-snapshot review v2:** Fable returned NO-GO. Verified blockers are
+  incomplete restart fencing, source-atime mutation risk, false-negative
+  process detection, and TOCTOU/partial-publication copy behavior. Additional
+  evidence-integrity, launcher-coverage, and durability claims are also open.
+  `command.sh` now fails closed with exit `70`; neither snapshot implementation
+  has run. Next implementation gate: a fresh preregistered descriptor-relative
+  no-follow/no-atime preservation design, followed by a new Fable GO.
+  **Persistent owner:** cron `81f1aedd-45e6-4e77-954a-a15bcce129f5`, named
+  session `omegaclaw-upstream-recovery-sol`, model
+  `openai/gpt-5.6-sol`/high. It must obtain an adversarial
+  `anthropic/claude-fable-5`/high review at the start and end of every major
+  phase, record each review identity and findings, and stop before production
+  cutover for Ben's explicit authorization. The superseded Chroma repair and
+  status crons are disabled. Read-only hourly status cron:
+  `cf42c6f7-091a-4eb5-8de5-316fe7606fa6`. The first implementation turn was
+  force-enqueued as run
+  `manual:81f1aedd-45e6-4e77-954a-a15bcce129f5:1786667110348:8`.
+  **Tempo update (Ben, 17:23 PDT):** recovery is urgent. The continuation
+  cadence is now five minutes, and each invocation must execute as many
+  consecutive safe, unblocked gates as practical, including immediate phase
+  advancement after the required Fable reviews. It must not stop after a
+  single checkpoint or documentation-only update. Production-stop,
+  state-preservation, autonomous-staging, independent-review, and explicit
+  cutover-authorization gates remain unchanged.
+  **Phase 0 reset / production restart incident (19:09 PDT):** a stale,
+  already-running execution of superseded cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` started all three quarantined
+  production private-canary receivers at 17:56--17:57 PDT and made
+  production-identity Telegram diagnostics. Exact owners/receivers were
+  `4039621/4039634`, `4039824/4039832`, and `4040024/4040038`. They are now
+  stopped and a repeated raw process scan is empty. The Chroma mtimes predate
+  the starts, but transport-state mtimes fall inside the unintended live
+  interval; do not roll back or reconstruct them. Fable snapshot-v3 review is
+  NO-GO and its command remains unexecuted. Acceptance evidence and restart
+  fencing are reset. Next gate: mechanically fence scheduled, queued, and
+  already-running launch-capable sessions, then recapture current bytes and
+  obtain a fresh Fable GO. Evidence:
+  `experiments/20260814T015539Z-upstream-recovery-phase0-snapshot-v3/`.
+  **Fresh fence audit (19:24 PDT):** all 72 OpenClaw jobs were enumerated; the
+  superseded legacy registration is absent, its session is terminal, no
+  enabled job references a production launcher, and the current recovery job
+  is the only running OpenClaw task. Process/handle, systemd, `/etc` cron,
+  tmux, container/screen, and autostart matches are empty. User-cron and at
+  contents remain unreadable because this cron sandbox has `NoNewPrivs: 1`;
+  their spool-directory mtimes predate project creation, which bounds but does
+  not eliminate the residual. No snapshot ran.
+  Evidence: `experiments/20260814T021948Z-upstream-recovery-phase0-fence-v4/`.
+  **Independent fence-v4 verdict:** NO-GO for both short-copy fence adequacy
+  and Phase 0 closure. The audit did not mechanically prevent restart, omitted
+  queued work and most snapshot roots, deleted raw OpenClaw evidence, could not
+  inspect user crontab/at contents, and had process/launcher false negatives.
+  Its command now exits 70 and cannot overwrite the partial artifacts. Current
+  direct argv scan again shows no legacy production receiver/controller.
+  Next gate: authorized crontab/at content evidence or bounded administrator
+  exception plus an OS-level launch fence, exact-manifest handle gate, retained
+  raw evidence, and fresh independent hash-bound approval.
+  **Phase 0 v5 blocker refinement (19:38 PDT):** the three-sample scan observed
+  no protected fd/map handles for indexed directory roots and no known
+  production launcher markers, but failed closed on the active unrelated
+  petta-chem SWI lineage and three same-UID ssh-agent processes whose fd trees
+  are ptrace-protected from this cron sandbox. The petta-chem lineage is bound
+  to its PID/start/cgroup/cwd/query and was not modified. Post-run inspection
+  found omitted regular-file roots and cwd/root identities, so the artifact is
+  not exact 28-path proof and will not be reused. The minimum proposed
+  exception now requires read-only administrator inspection of crontab, at,
+  and every unreadable same-UID process plus a temporary ten-minute mode denial
+  on only the three production Telegram env files. Clean Fable review returned
+  NO-GO: same-UID mode bits are reversible, loaded credentials and state-only
+  writers remain unfenced, scheduler/privilege/TOCTOU/rollback scope is
+  incomplete, raw spool evidence may leak secrets, and no exact review-bound
+  executable exists. Do not present or execute the combined proposal. Next
+  gate: a separate fixed read-only privileged inspector specification and
+  independent review; preservation-window authority remains a later distinct
+  request. No chmod, privileged command, or snapshot ran. Evidence:
+  `experiments/20260814T023547Z-upstream-recovery-phase0-admin-exception-v5/`
+  and
+  `experiments/20260814T023748Z-upstream-recovery-phase0-live-stop-recheck-v5/`.
+  **Phase 0 v6 rejection / v7 primitives closure (20:46 PDT):** the
+  fixed privileged inspector is rejected unexecuted. Its exact-byte binding,
+  output safety, secret exclusion, all-28-root coverage, scheduler/control-
+  plane scope, stable all-UID process evidence, fail-closed predicate,
+  privilege boundary, and experiment provenance were inadequate. The first
+  reviewer session was requested as Fable but actually executed on Sol, proven
+  by its session registry/transcript; it cannot satisfy the mandatory Fable
+  gate. Its findings are retained only as adversarial evidence. A proven
+  `anthropic/claude-fable-5` start review independently confirmed v6 NO-GO.
+  The remediated v7 exact-byte execution and exclusive-publication primitives
+  pass 30 checks; a clean Fable end session independently reran the suite and
+  probes and returned narrow GO with no remaining critical/high finding at
+  that boundary. Phase 0 remains open. Next gate: integrate those primitives
+  into a v8 read-only inspector while resolving every remaining v6 high. The
+  first v8 contract slice now passes 34 synthetic checks for the exact 28-root
+  scope, strict credential grammar, restored scheduler/launcher/marker union,
+  public schema, and exhaustive failure predicate. It reads no production
+  path; its launcher-inferred key manifest remains unverified. Clean Fable
+  review of the exact hashes is pending before the descriptor-relative scanner
+  slice. Do not present or execute v6. Evidence:
+  `experiments/20260814T034937Z-upstream-recovery-phase0-integrated-inspector-v8/`.
+  **Binding v8 verdict (21:00 PDT):** runtime metadata proves the completed
+  reviewer used `claude-fable-5`; it independently reproduced hashes and 34/34
+  checks but returned NO-GO. Fix nested schema/type/status binding, complete
+  systemd control/generator roots, restore six production path-reference
+  markers, replace whole-value-only secret comparison with bounded containment
+  matching, tighten POSIX assignment grammar, and complete failure/credential
+  scope. Preserve reviewed v8 bytes. Next gate: v9 contract + adversarial tests
+  + new hashes + fresh binding Fable review; no privileged scanner or Phase 1.
+  **v9 contract slice (21:18 PDT):** a fresh synthetic-only successor passes
+  47 adversarial checks and records finite nested schemas, status/failure
+  consistency, expanded systemd scope, restored env/Chroma markers, substring
+  secret matching, strict assignment spelling, and opaque MTProto scope. Exact
+  hashes are under binding review by resolved `anthropic/claude-fable-5` session
+  `agent:main:subagent:e80eab00-0450-4cbe-a203-8f6a50ef6360` / run
+  `36f28596-a032-4506-b95d-48f9f83f78dc`. No production path was opened.
+  **Verdict:** 47/47 reproduce, no critical/high remains, and Fable gives GO
+  for scanner implementation only. V9.1 must first resolve lowercase public
+  credential labels, mandatory minimum limitations, credential-root hash
+  policy, launcher stability, leading-tilde grammar, launcher uniqueness, and
+  stale RUN binding. No privileged execution, production access, fence,
+  snapshot, Phase-0 closure, or Phase 1 is authorized. Evidence:
+  `experiments/20260814T041012Z-upstream-recovery-phase0-integrated-inspector-v9/`.
+  **v9.1 binding end review (21:28 PDT):** seven hashes, inherited 47 checks,
+  v9.1 23 checks, and 29 independent probes pass; Fable reports no
+  critical/high and gives GO only for descriptor-relative scanner
+  implementation. The scanner must exclusively bind v9.1 exports, define
+  credential identity from metadata only, capture actual stdout/stderr/status,
+  and define absent-launcher hashes. Live production paths, privilege,
+  scheduler/process inspection, snapshot, Phase-0 closure, and Phase 1 remain
+  unauthorized. Next gate: synthetic descriptor-relative scanner slice and
+  exact-byte review.
+  **v9.1 implementation (21:20 PDT):** a synthetic-only successor preserves
+  the reviewed v9 bytes and passes all inherited 47 checks plus 23 new checks
+  for reversible lowercase credential labels, mandatory limitations,
+  credential-hash equality-oracle suppression, launcher stability/uniqueness,
+  and unquoted-tilde rejection. Exact-byte Fable review is pending; no scanner,
+  production access, privilege, snapshot, or Phase-1 action is authorized.
+  Evidence: `experiments/20260814T042038Z-upstream-recovery-phase0-integrated-inspector-v9-1/`.
+
+- [ ] **Restore Protomega service after Chroma acceptance (2026-08-13)** —
+  deliverable: guarded-start Protomega through its owning supervisor without
+  disturbing ProtoCosmo2. Acceptance: exactly one Protomega owner/receiver,
+  receiver uses `/home/openclaw/.openclaw/protomega-chroma-db`, no live task
+  descendants, and supervisor process-topology readiness passes. Next command:
+  `projects/omegaclaw/local/protomega-outer-telegram-supervisor.sh start`.
+  **Result:** guarded start succeeded at 16:26 PDT with owner/receiver
+  `3982136/3982150`. Supervisor status reports exactly one child and
+  process-topology readiness; the receiver has zero task descendants and
+  carries exactly `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega-chroma-db`.
+  ProtoCosmo2 remained independently active. The receiver emitted a fresh
+  `started` record at offset `940522573`; no additional human canary was
+  requested. Evidence: conversational-Chroma repair ledger and direct
+  `/proc`/supervisor inspection. **Acceptance revoked at 17:02 PDT:** Ben's
+  real requests to Protomega and ProtoCosmo2 remained at “Formulating my
+  response” for about 30 minutes. Both production supervisors were inactive,
+  while the new acceptance controller had launched a supposedly staging
+  Protomega receiver using the real bot identity/token. Its PeTTa task escaped
+  into separate process groups and survived supervisor termination. The
+  controller, receiver, case driver, PeTTa shell, and SWI process groups were
+  stopped explicitly; no Omega task process remains. Both bots are unavailable
+  pending a provider-free reproduction, lifecycle fix, truly separate staging
+  credentials, and independent review.
+
+- [ ] **Urgent conversational Chroma routing repair (2026-08-13)** —
+  deliverable: restore `Telegram -> OmegaClaw/PeTTa action loop -> provider
+  MeTTa proposal -> PeTTa remember/query -> provider result follow-up -> PeTTa
+  final send -> Telegram` for Protomega, Protomega2, and ProtoCosmo2. Remove
+  live-request substitution and raw-provider-answer delivery; make the private
+  bridge authenticated, bounded, multi-round, race-free, and descendant-clean;
+  preserve each identity's explicit `CHROMA_DB_PATH` through every subprocess.
+  Acceptance: provider-free real-MeTTa remember/query-to-send regressions prove
+  Chroma use and reject Markdown-memory substitution; focused and broader
+  runtime/transport/identity/lifecycle suites pass; rollback and one-owner
+  guarded deployment evidence is recorded; then one fresh human Telegram
+  write/query/exact-recall/isolation canary passes for each identity with direct
+  database evidence and failed cross-agent lookup. **Current:** implementation
+  and offline verification are complete: the v2 authenticated bridge carries
+  only OmegaClaw context across at most four rounds; only a PeTTa-executed
+  `send` reaches the outer runner; disposable real-MeTTa Chroma remember/query
+  and Markdown-decoy regressions pass; 130 broad OmegaClaw tests and all 152
+  provider-free live-Core tests pass. The immutable-hash guarded rollout now
+  has exactly one owner and one receiver for each identity, with the three
+  intended absolute Chroma paths observed in the receiver environments. Fresh
+  human Telegram write/query/isolation canaries and direct DB proof remain;
+  tests and process topology alone do not complete this task. At the
+  `2026-08-13T07:30Z` checkpoint no new canary marker or attributable private
+  ingress had arrived; singular topology and all three exact Chroma paths were
+  unchanged, and the canary request was not repeated. At the
+  `2026-08-13T07:58Z` checkpoint the three marker scans were still empty;
+  Protomega and Protomega2 retained offsets/tails `940522538`/`10049` and
+  `491553145`/`379`, while ProtoCosmo2's offset advanced only to `387573182`
+  with processed tail still `1289`. Pending ingress remained empty, each
+  identity retained exactly one owner/receiver and its intended absolute
+  Chroma path, and no canary request or production state was mutated.
+  At the `2026-08-13T08:16Z` checkpoint all three exact marker scans remained
+  empty. Protomega and Protomega2 were unchanged at offsets/tails
+  `940522538`/`10049` and `491553145`/`379`; ProtoCosmo2 advanced two transport
+  updates to offset `387573184`, but its processed tail remained `1289`, its
+  pending ingress was empty, and its job/incident tails were unchanged. The
+  three owner/receiver pairs remained singular (`3638018/3638031`,
+  `3638231/3638238`, and `3638356/3638369`), with the three intended absolute
+  Chroma paths directly reconfirmed in the receiver environments. The cursor
+  movement was therefore not accepted as a human canary; no request was
+  repeated and no production state was mutated.
+  At the `2026-08-13T08:43Z` checkpoint, exact marker scans remained empty.
+  Protomega advanced one transport update to offset `940522539`, Protomega2
+  remained at `491553145`, and ProtoCosmo2 advanced three transport updates to
+  `387573187`; their processed tails remained `10049`, `379`, and `1289`,
+  respectively. All pending-ingress queues were empty and all deferred-job and
+  incident tails were unchanged. The three owner/receiver pairs remained
+  singular (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`), no
+  case/bridge/MeTTa descendant was live, and receiver environments retained the
+  three intended distinct absolute Chroma paths. The cursor-only changes were
+  not accepted as human canaries; no request was repeated and no production
+  state was mutated.
+  At the `2026-08-13T09:01Z` checkpoint, exact marker scans of all three
+  durable states and supervisor logs remained empty. Protomega advanced one
+  transport update to `940522540`, Protomega2 remained at `491553145`, and
+  ProtoCosmo2 advanced ten transport updates to `387573197`; processed tails
+  were still `10049`, `379`, and `1289`, with empty pending ingress. The same
+  singular owner/receiver pairs and distinct absolute Chroma paths were
+  directly reconfirmed, and no case/bridge/MeTTa descendant was live. These
+  cursor-only changes are not human canaries; no request was repeated and no
+  production state was mutated.
+  At the `2026-08-13T09:24Z` checkpoint, exact scans of all three durable
+  states, the three supervisor logs, and the isolated Chroma stores remained
+  empty for every canary key and value. Protomega, Protomega2, and ProtoCosmo2
+  advanced only to offsets `940522541`, `491553146`, and `387573200`; their
+  processed tails remained `10049`, `379`, and `1289`, pending ingress was
+  empty, and deferred-job and incident tails were unchanged. The same singular
+  owner/receiver pairs and three distinct absolute Chroma paths were directly
+  reconfirmed, with no OmegaClaw case/bridge/MeTTa descendant beneath any
+  receiver. These cursor-only changes are not human canaries; no request was
+  repeated and no production state was mutated.
+  At the `2026-08-13T09:43Z` checkpoint, exact scans of the three durable
+  states, supervisor logs, and isolated Chroma stores remained empty for all
+  six canary keys/values. Protomega and Protomega2 remained at offsets/tails
+  `940522541`/`10049` and `491553146`/`379`; ProtoCosmo2 advanced five
+  transport updates to `387573205` while its processed tail remained `1289`.
+  Pending ingress was empty, deferred-job and incident state was unchanged,
+  and the same singular owner/receiver pairs (`3638018/3638031`,
+  `3638231/3638238`, and `3638356/3638369`) retained the intended distinct
+  absolute Chroma paths. No case/bridge/MeTTa descendant was live. The
+  cursor-only change is not a human canary; no request was repeated and no
+  production state was mutated.
+  At the `2026-08-13T09:48Z` checkpoint, exact scans of the three durable
+  states, supervisor logs, and isolated Chroma stores still found none of the
+  six canary keys/values. Protomega and Protomega2 remained at offsets/tails
+  `940522541`/`10049` and `491553146`/`379`; ProtoCosmo2 advanced only to
+  offset `387573208` while its processed tail remained `1289`. Pending ingress
+  remained empty and incident sequences were unchanged. The same singular
+  owner/receiver pairs (`3638018/3638031`, `3638231/3638238`, and
+  `3638356/3638369`) retained the three intended distinct absolute Chroma
+  paths, with no task descendant beneath any receiver. The cursor-only change
+  is not a human canary; no request was repeated and no production state was
+  mutated.
+  At the `2026-08-13T10:04Z` checkpoint, exact scans of all three durable
+  states, their correct supervisor logs, and their isolated Chroma stores
+  remained empty for every canary key/value. Only transport offsets advanced,
+  to `940522542`, `491553147`, and `387573215`; processed tails remained
+  `10049`, `379`, and `1289`, pending ingress was empty, and incident sequences
+  remained `12`, `25`, and `352`. The same singular owner/receiver pairs
+  retained the intended distinct absolute Chroma paths, and an argv-aware scan
+  found no live case/bridge/MeTTa task process. These cursor-only changes are
+  not human canaries; no request was repeated and no production state was
+  mutated.
+  At the `2026-08-13T10:18Z` checkpoint, exact scans of all three durable
+  states, their correct supervisor logs, and their isolated Chroma stores
+  remained empty for every canary key/value. Protomega and Protomega2 remained
+  at offsets/processed tails `940522542`/`10049` and `491553147`/`379`;
+  ProtoCosmo2 advanced only to offset `387573216` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences were
+  unchanged at `12`, `25`, and `352`. All supervisors still reported exactly
+  one child at owner/receiver pairs `3638018/3638031`, `3638231/3638238`, and
+  `3638356/3638369`; receiver environments retained the three intended
+  distinct absolute Chroma paths, and no case/bridge/MeTTa task descendant was
+  live. The cursor-only change is not a human canary; no request was repeated
+  and no production state was mutated. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled.
+  At the `2026-08-13T10:42Z` checkpoint, exact scans of the three durable
+  states, correct supervisor logs, and isolated Chroma stores again found none
+  of the six canary keys/values. Protomega and Protomega2 remained at
+  offsets/processed tails `940522542`/`10049` and `491553147`/`379`;
+  ProtoCosmo2 advanced only to offset `387573226` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences were
+  unchanged at `12`, `25`, and `352`. All supervisors still reported exactly
+  one child at owner/receiver pairs `3638018/3638031`, `3638231/3638238`, and
+  `3638356/3638369`; receiver environments retained the three intended
+  distinct absolute Chroma paths, with no task descendant. The cursor-only
+  change is not a human canary; no request was repeated and no production
+  state was mutated. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly
+  confirmed enabled.
+  At the `2026-08-13T10:52Z` checkpoint, exact scans of the three durable
+  states, correct supervisor logs, and isolated Chroma stores again found none
+  of the six canary keys/values. Protomega and Protomega2 remained at
+  offsets/processed tails `940522542`/`10049` and `491553147`/`379`;
+  ProtoCosmo2 advanced only to offset `387573234` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences were
+  unchanged at `12`, `25`, and `352`. All supervisors still reported exactly
+  one child at owner/receiver pairs `3638018/3638031`, `3638231/3638238`, and
+  `3638356/3638369`; receiver environments retained the three intended
+  distinct absolute Chroma paths, with no task descendant. The cursor-only
+  change is not a human canary; no request was repeated and no production
+  state was mutated. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly
+  confirmed enabled.
+  At the `2026-08-13T12:03Z` checkpoint, exact scans of the three durable
+  states, supervisor artifacts, and isolated Chroma stores still found none of
+  the six canary keys/values. Offsets were `940522543`, `491553148`, and
+  `387573245`; processed tails remained `10049`, `379`, and `1289`, pending
+  ingress was empty, and incident sequences remained `12`, `25`, and `352`.
+  All supervisors retained exactly one owner/receiver pair
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`), each bot ID
+  appeared in exactly one receiver, and every receiver had zero task
+  descendants. Direct environment inspection reconfirmed the three intended
+  distinct absolute Chroma paths. These cursor-only changes are not human
+  canaries; no request was repeated and no production state was mutated. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` remains enabled.
+  At the `2026-08-13T12:24Z` checkpoint, transport offsets advanced only to
+  `940522544`, `491553149`, and `387573247`; processed tails remained
+  `10049`, `379`, and `1289`, pending ingress remained empty, and incident
+  sequences remained `12`, `25`, and `352`. Direct SQLite inspection found
+  zero embeddings in each newly activated Protomega store and the unchanged
+  `8095` embeddings in ProtoCosmo2's existing isolated store; all three DB
+  mtimes still predated the rollout, so no canary write occurred. The same
+  owner/receiver pairs remained singular, each bot ID appeared in exactly one
+  receiver, each receiver had no task descendant, and the three exact
+  `CHROMA_DB_PATH` values were reconfirmed from `/proc`. Recent bounded
+  transport failures admitted no human message. No request was repeated and
+  no production state was mutated; Gate 8 remains open and the cron remains
+  enabled.
+  At the `2026-08-13T12:58Z` checkpoint, transport offsets were
+  `940522545`, `491553149`, and `387573256`, while processed-message tails
+  remained `10049`, `379`, and `1289`; all pending-ingress queues were empty
+  and incident sequences remained `12`, `25`, and `352`. Direct SQLite
+  inspection again found zero embeddings in each Protomega store and the
+  unchanged `8095` embeddings in ProtoCosmo2's isolated store, with all three
+  database mtimes still predating the rollout. The same singular
+  owner/receiver pairs (`3638018/3638031`, `3638231/3638238`, and
+  `3638356/3638369`) retained the intended distinct absolute Chroma paths,
+  and each receiver had zero descendants. No human canary was admitted, no
+  request was repeated, and no production state was mutated. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` remains enabled; Gate 8 remains
+  open.
+  At the `2026-08-13T13:08Z` checkpoint, transport offsets were
+  `940522546`, `491553149`, and `387573262`, while processed-message tails
+  remained `10049`, `379`, and `1289`; pending ingress was empty and incident
+  sequences remained `12`, `25`, and `352`. Direct SQLite inspection still
+  found zero embeddings in both Protomega stores and the unchanged `8095`
+  embeddings in ProtoCosmo2's isolated store; database mtimes remained before
+  the guarded rollout. The same owner/receiver pairs
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`) remained
+  singular, every receiver retained its intended distinct absolute
+  `CHROMA_DB_PATH`, and each receiver had zero descendants. No human canary
+  was admitted, no request was repeated, and no production state was mutated.
+  Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled;
+  Gate 8 remains open.
+  At the `2026-08-13T13:28Z` checkpoint, Protomega and Protomega2 remained at
+  offsets/processed tails `940522546`/`10049` and `491553149`/`379`;
+  ProtoCosmo2 advanced only to offset `387573268` while its processed tail
+  remained `1289`. Pending ingress was empty and incident sequences remained
+  `12`, `25`, and `352`. Direct SQLite inspection still found zero embeddings
+  in both Protomega stores and the unchanged `8095` embeddings in
+  ProtoCosmo2's isolated store; all database mtimes remained before the
+  guarded rollout. The same owner/receiver pairs
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`) remained
+  singular, retained the three intended distinct absolute `CHROMA_DB_PATH`
+  values, and had zero descendants. No human canary was admitted, no request
+  was repeated, and no production state was mutated. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled;
+  Gate 8 remains open.
+  At the `2026-08-13T13:41Z` checkpoint, Protomega and Protomega2 remained at
+  offsets/processed tails `940522546`/`10049` and `491553149`/`379`;
+  ProtoCosmo2 advanced only to offset `387573269` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences
+  remained `12`, `25`, and `352`. Direct SQLite inspection still found zero
+  embeddings in both Protomega stores and the unchanged `8095` embeddings in
+  ProtoCosmo2's isolated store; all database mtimes remained before the
+  guarded rollout. The same singular owner/receiver pairs
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`) retained the
+  three intended absolute `CHROMA_DB_PATH` values and had zero descendants.
+  All five reviewed runtime hashes still matched the frozen candidate. No
+  human canary was admitted, no request was repeated, and no production state
+  was mutated. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly
+  confirmed enabled; Gate 8 remains open.
+  At the `2026-08-13T13:47Z` checkpoint, Protomega and Protomega2 remained at
+  offsets/processed tails `940522546`/`10049` and `491553149`/`379`;
+  ProtoCosmo2 advanced only to offset `387573273` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences
+  remained `12`, `25`, and `352`. Direct SQLite inspection still found zero
+  embeddings in both Protomega stores and the unchanged `8095` embeddings in
+  ProtoCosmo2's isolated store; all database mtimes remained before the
+  guarded rollout. The same singular owner/receiver pairs
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`) retained the
+  three intended absolute `CHROMA_DB_PATH` values and had zero descendants.
+  All five reviewed runtime hashes still matched the frozen candidate. No
+  human canary was admitted, no request was repeated, and no production state
+  was mutated. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` remains enabled;
+  Gate 8 remains open.
+  At the `2026-08-13T13:56Z` checkpoint, Protomega and Protomega2 remained at
+  offsets/processed tails `940522546`/`10049` and `491553149`/`379`;
+  ProtoCosmo2 advanced only to offset `387573274` while its processed tail
+  remained `1289`. Pending ingress remained empty and incident sequences
+  remained `12`, `25`, and `352`. Direct SQLite inspection still found zero
+  embeddings in both Protomega stores and the unchanged `8095` embeddings in
+  ProtoCosmo2's isolated store; all three database mtimes remained before the
+  guarded rollout. The same singular owner/receiver pairs
+  (`3638018/3638031`, `3638231/3638238`, and `3638356/3638369`) retained the
+  three intended absolute `CHROMA_DB_PATH` values and had zero descendants.
+  All five reviewed runtime hashes still matched the frozen candidate. Recent
+  log tails contained only bounded transport failures and no admitted human
+  message. No canary request was repeated and no production state was mutated.
+  Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled;
+  Gate 8 remains open.
+  At the `2026-08-13T14:16Z` human-canary checkpoint, Protomega processed
+  source messages `10058` and `10061`. Its replies falsely claimed that
+  `OC-PROTO-20260813-A = amber-kestrel-7319` had been stored in Chroma and
+  backed up to Markdown memory, then claimed to have searched every Chroma
+  database on the host for ProtoCosmo2's marker. Direct SQLite inspection
+  found zero Protomega embeddings and no marker in any of the three isolated
+  stores. The responder incidents recorded nonzero OmegaClaw runtime exits;
+  the correlated provider transcripts showed that the bridge had launched a
+  full OpenClaw agent session, which called OpenClaw `memory_search`, emitted
+  multiple native actions in one answer, received
+  `SINGLE_COMMAND_FORMAT_ERROR_NOTHING_WAS_DONE_PLEASE_FIX_AND_RETRY`, and
+  subsequently hallucinated successful `remember` execution. This fails the
+  routed-architecture, Markdown-substitution, Chroma-write, and isolation
+  canary gates. Per the production stop condition, Protomega was immediately
+  stopped through its owner supervisor and is inactive with no receiver or
+  descendant. Protomega2 and ProtoCosmo2 were not restarted or mutated. Gate
+  8 remains failed/open; no further human canary is authorized until raw
+  tool-free model inference and strict one-action response validation pass the
+  offline suites and a new guarded Protomega rollout.
+  At the `2026-08-13T14:32Z` repair checkpoint, the full-agent invocation was
+  removed. A dedicated stdin-only adapter now calls the authenticated OpenClaw
+  gateway with `modelRun=true` and `promptMode=none`, and rejects the result
+  unless OpenClaw reports zero system/project/runtime context, zero tools,
+  zero prior messages, no injected workspace files, and an exact final prompt.
+  The host bridge validates exactly one listed native action line or one
+  balanced parenthesized MeTTa action per round and rejects prose, OpenClaw
+  tool names, multiple actions, malformed final sends, and nonzero model-run
+  exits before signing a response.
+  A real no-effect provider probe returned exactly
+  `(remember "RAW_BOUNDARY_PROBE = no-side-effect")`; a second returned exactly
+  `(query "RAW_BOUNDARY_PROBE")`. Focused plus real-MeTTa tests passed 85/85,
+  the broader runtime/transport/identity/lifecycle selection passed 144/144,
+  and the live-Core provider-free suite passed 152/152. Compilation, Node
+  syntax, scoped diff, and credential scans passed. Because the bridge file is
+  shared, Protomega2 and ProtoCosmo2 were cleanly stopped after validation to
+  restore a fully stopped preflight; all three identities are inactive with no
+  runtime descendants. New guarded runtime hashes are recorded in the repair
+  RUN. Live acceptance is still failed/open; no identity has been redeployed.
+  At the `2026-08-13T14:43Z` first replacement rollout, a queued old-marker
+  human query at source `10066` failed closed as `provider_answer_invalid` and
+  produced only the fixed visible failure; direct SQLite still showed zero
+  embeddings. Protomega was immediately stopped with no descendants. The raw
+  model transcript contained exactly one valid native OmegaClaw action,
+  `query OC-PROTO-20260813-A`; the bridge's parenthesized-only validator had
+  been stricter than Core's documented native `OUTPUT_FORMAT`. The validator
+  now accepts exactly one allowlisted native line while retaining rejection of
+  multi-line batches and prose, and both Core providers recognize a native
+  final `send` as terminal. A real no-effect replay accepted the exact native
+  query; the updated focused/real-MeTTa suite passed 87/87 and live-Core tests
+  passed 152/152. At `2026-08-13T14:45Z`, all six replacement hashes were
+  reverified and Protomega alone was restarted at owner/receiver
+  `3822992/3823006`; its receiver has the exact
+  `/home/openclaw/.openclaw/protomega-chroma-db` path and no descendants.
+  Protomega2 and ProtoCosmo2 remain stopped. Fresh write and own-recall
+  instructions were delivered to Ben at Telegram messages `18727` and `18728`;
+  the subsequent sources `10068` and `10071` both repeated the write request
+  rather than performing write then query. Each routed provider round proposed
+  one `remember`, but PeTTa recorded
+  `SINGLE_COMMAND_FORMAT_ERROR_NOTHING_WAS_DONE_PLEASE_FIX_AND_RETRY`; the final
+  PeTTa `send` falsely claimed repeated success. Direct SQLite evidence remained
+  at zero embeddings. Protomega was stopped immediately; all three identities
+  are now inactive and descendant-free. Root cause was the activation probe:
+  it created both empty Protomega collections with dimension `3`, while the
+  live hashing embedding is dimension `384`. The original stores are preserved
+  as `*.rollback-20260813T1535Z-dim3`; private replacements passed real
+  384-dimensional remember/read/delete probes and remain empty with collection
+  dimension `384`. Both the receiver and case now reject an existing live
+  memories collection with an incompatible dimension before polling or
+  inference. Updated validation passed 97 focused/real-MeTTa tests, 52 broader
+  supervisor/watchdog/recovery tests, all 152 live-Core provider-free tests,
+  compilation, syntax, and scoped diff checks. Gate 8 remains failed/open; a
+  guarded Protomega restart and a new unique human write/query canary are next.
+  At `2026-08-13T15:35Z`, all six frozen hashes and three store dimensions were
+  reverified and Protomega alone was restarted at owner/receiver
+  `3851065/3851078`. The receiver has exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega-chroma-db`, zero task
+  descendants, and one owner; Protomega2 and ProtoCosmo2 remain inactive. New
+  marker `OC-PROTO-DIM384-20260813-E = copper-ibis-5174` write/query
+  instructions were delivered to Ben at Telegram message `18732`. This is a
+  pending human gate, not acceptance. The repair cron was directly confirmed
+  enabled.
+  At `2026-08-13T16:00Z`, the dimension-correct human write reached source
+  `10081` but exposed a separate fail-closed production defect: before the
+  bounded case deadline, PeTTa replayed the same effectful native `remember`
+  action 24,504 times and never reached provider round 2 or a final `send`.
+  Direct SQLite evidence showed 24,504 identical 384-dimensional embeddings;
+  the raw provider transcript contained exactly one native `remember` line,
+  and Core history had not completed the action. Protomega was stopped. The
+  failed store is preserved byte-for-byte at both
+  `protomega-chroma-db.failed-20260813T1606Z-runaway` and
+  `protomega-chroma-db.failed-original-20260813T1606Z-runaway` (SQLite
+  SHA-256 `128d80a78e5a6c94ebe24e357274bf38242c7ca140135bfc6d7488dc9372ca37`).
+  Root cause was nondeterministic backtracking across `(eval $s)` inside the
+  loop's `superpose`/`collapse` path. All three deployed Core copies now use
+  `(once (eval $s))`, committing each top-level effectful action to its first
+  result. A production-shaped provider-free regression uses the exact native
+  action, a copied live history shape, a real 384-dimensional Chroma store,
+  and a delayed second provider round, and proves exactly one stored item.
+  The three loop copies match SHA-256
+  `83fd44055c1b05c62a24f03c724881fed8e3a650caf59db014fec1fa118075f0`.
+  Validation passed 100 focused/real-MeTTa tests, 38 lifecycle tests, all 152
+  live-Core provider-free tests, compilation, shell syntax, and scoped diff
+  checks. A fresh private Protomega store passed exact-backend
+  remember/read/delete, remains empty, and reports dimension `384`.
+  Protomega alone was guarded-restarted at owner/receiver
+  `3864771/3864785`; its receiver has the exact isolated Chroma path and no
+  descendants, while Protomega2 and ProtoCosmo2 remain stopped. Ben received
+  only the new write step `OC-PROTO-ONCE-20260813-F = jade-wren-2846` at
+  Telegram message `18753`; query/restart acceptance is intentionally withheld
+  until direct PeTTa and database evidence proves a singular write. Gate 8
+  remains failed/open and the cron remains enabled.
+  Human source `10087` then completed through task
+  `55b31069...2cf412d` and receipt `10089`. Direct Chroma evidence was now
+  singular and correct: exactly one embedding containing
+  `OC-PROTO-ONCE-20260813-F = jade-wren-2846`. However, the authenticated
+  second provider prompt exposed five identical `COMMAND_RETURN` success
+  receipts for that one executed action, and PeTTa's final `send` falsely said
+  “all 5 invocations.” The reply was therefore ambiguous and the human gate
+  failed; Protomega was immediately stopped. Its one-item store is preserved
+  at `protomega-chroma-db.failed-20260813T1630Z-ambiguous-receipt` (SQLite
+  SHA-256 `20d35b8571e97dd0dceeaa4aa466c497897a948eab0b482f2546824f628b96c4`).
+  The loop now also commits the enclosing per-action `COMMAND_RETURN` branch
+  with `once`, preventing one effect result from surfacing as duplicate success
+  receipts. The bounded provider-free fixture can require an exact occurrence
+  count and the production-shaped remember fixture requires exactly one
+  current `REMEMBER-SUCCESS`. All three loop copies now match SHA-256
+  `37d0cb4258588a6b3eb6ca2d069b1490fb8c11083263e3a9f8fb7f0baa7ac6cf`;
+  the bridge matches
+  `a03b0f08fb8f835020bc3552156df574ce932ce05e9e044d3c4d768b1bc863bd`.
+  Verification again passed 4 exact action-loop tests, 100 focused/real-MeTTa
+  tests, 38 lifecycle tests, all 152 live-Core tests, compilation, syntax,
+  JSON, and scoped diff checks. The production store was rebuilt empty at
+  dimension `384`. Stopped preflight found all identities inactive; Protomega
+  alone was then guarded-restarted at owner/receiver `3868860/3868874`, with
+  the exact isolated Chroma path and no receiver descendants. The other two
+  identities remain stopped. Ben received only a new unique write step,
+  `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931`, at Telegram message
+  `18754`; query/restart remains withheld pending singular truthful evidence.
+  Direct scheduler inspection confirmed the repair cron remains enabled; Gate
+  8 remains failed/open.
+  Human source `10092` then passed the singular-write subgate through task
+  `2e57b4ee...ad31060` and Telegram receipt `10094`. The durable PeTTa history
+  slice contains exactly one `remember` action and one final `send`; the final
+  claim contains exactly one `REMEMBER-SUCCESS`. Direct SQLite inspection
+  found exactly one 384-dimensional embedding whose document is exactly
+  `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931`, and no runtime descendant
+  remained. A guarded stop/start preserved outer-state SHA-256
+  `8a93be68...dcd91c` and Chroma SQLite SHA-256 `c66f73b6...e76d37`
+  byte-for-byte, retaining one matching document. Protomega is now singular at
+  new owner/receiver `3883277/3883290`, with the exact isolated Chroma path and
+  zero descendants; Protomega2 and ProtoCosmo2 remain stopped. Ben received
+  only the fresh-session exact-recall query step at Telegram message `18772`.
+  Cross-agent lookup remains withheld until own recall passes; Gate 8 remains
+  open and the repair cron must remain enabled.
+  At the `2026-08-13T17:53Z` checkpoint, that exact-recall request had not yet
+  reached Protomega: the durable update offset remained `940522570`, the
+  processed-message tail remained source `10092`, pending ingress was empty,
+  and the last deferred task remained the completed singular write. Direct
+  SQLite inspection still found exactly one embedding and one byte-for-byte
+  matching `chroma:document`; the outer-state and SQLite SHA-256 values remained
+  `8a93be68...dcd91c` and `c66f73b6...e76d37`. Protomega retained one owner and
+  one receiver (`3883277/3883290`), the receiver retained the exact isolated
+  Chroma path and had zero descendants, all reviewed runtime hashes still
+  matched, and Protomega2 remained stopped. No canary request was repeated and
+  no production state was mutated. Direct scheduler inspection reconfirmed the
+  repair cron enabled; Gate 8 remains open.
+  At the `2026-08-13T17:58Z` checkpoint, the exact-recall request was still
+  not admitted: the durable offset remained `940522570`, the processed tail
+  remained source `10092`, pending ingress was empty, and the completed
+  singular-write task remained the deferred-job tail. Direct SQLite inspection
+  still found exactly one embedding and one exact
+  `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931` document; outer-state and
+  SQLite hashes remained `8a93be68...dcd91c` and `c66f73b6...e76d37`.
+  Protomega remained singular at owner/receiver `3883277/3883290`, with the
+  exact isolated Chroma path and no receiver descendants; Protomega2 and
+  ProtoCosmo2 remained inactive. The three Core loop copies still matched
+  frozen SHA-256 `37d0cb42...7ac6cf`. No canary request was repeated and no
+  production state was mutated. Direct scheduler inspection reconfirmed the
+  repair cron enabled; Gate 8 remains open.
+  At the `2026-08-13T18:10Z` checkpoint, the fresh-session exact-recall query
+  still had not been admitted. Protomega's transport offset advanced from
+  `940522570` to `940522572`, but its processed-message tail remained source
+  `10092`, pending ingress remained empty, the deferred-job tail remained the
+  completed singular write, and the incident sequence remained `13`. Direct
+  SQLite inspection still found exactly one 384-dimensional embedding and one
+  exact `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931` document; the SQLite
+  SHA-256 remained `c66f73b6...e76d37`. The offset-only state update changed
+  outer-state SHA-256 to `57b033f0...a1a61c5` and is not accepted as a human
+  canary. Protomega remained singular at owner/receiver `3883277/3883290`,
+  with the exact isolated Chroma path and no receiver descendants; Protomega2
+  and ProtoCosmo2 remained inactive. No canary request was repeated and no
+  production state was mutated. Direct scheduler inspection reconfirmed the
+  repair cron enabled; Gate 8 remains open.
+  At the `2026-08-13T18:20Z` checkpoint, the fresh-session exact-recall query
+  still had not been admitted. Protomega remained at transport offset
+  `940522572` with processed-message tail `10092`, empty pending ingress, the
+  completed singular-write deferred task at the tail, and incident sequence
+  `13`. Direct read-only SQLite inspection still found exactly one embedding,
+  collection dimension `384`, and exactly one byte-for-byte matching document,
+  `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931`; SQLite SHA-256 remained
+  `c66f73b6831e0aa4be0f5b15a0f40640abab065f2ee512c762620963dae76d37`
+  and outer-state SHA-256 remained
+  `57b033f0c8a030c18e6580633cb4aa98940ba5c7f8e1ecc5ab3b7c151a1a61c5`.
+  Protomega retained sole owner/receiver `3883277/3883290`, the receiver kept
+  the exact isolated Chroma path and had zero children; Protomega2 and
+  ProtoCosmo2 remained inactive. All three deployed loop copies retained the
+  frozen SHA-256 `37d0cb42...7ac6cf`. No canary request was repeated and no
+  production state was mutated. Direct scheduler inspection reconfirmed cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` enabled; Gate 8 remains open.
+  At `2026-08-13T18:22Z`, fresh-session human source `10098` passed
+  Protomega's exact-recall subgate through task `c5e8788c...d7ef4dd4c` and
+  Telegram receipt `10100` (status receipt `10099`). Provider round 1 proposed
+  exactly one native `query OC-PROTO-RESULT1-20260813-G`; PeTTa returned one
+  `COMMAND_RETURN` containing the exact stored document, and provider round 2
+  proposed exactly one native final `send` containing
+  `OC-PROTO-RESULT1-20260813-G = ochre-tern-6931`. Durable PeTTa history
+  contains exactly one query and one final send for the turn. Direct SQLite
+  evidence after recall retained exactly one embedding, collection dimension
+  `384`, and exactly one matching document; there was no second live write.
+  The receiver retained its exact isolated path and had zero descendants.
+  Protomega was then owner-stopped and all three identities were verified
+  quiescent. Protomega2's empty private store was preflighted at dimension
+  `384`; the three deployed loop copies retained frozen SHA-256
+  `37d0cb42...7ac6cf`. Protomega2 alone was guarded-started at owner/receiver
+  `3899616/3899623`, with exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db` and zero
+  receiver children; Protomega and ProtoCosmo2 remain inactive. Ben received
+  only Protomega2's fresh write step,
+  `OC-PROTO2-RESULT1-20260813-H = cobalt-finch-4827`, at Telegram message
+  `18787`; its query and cross-agent lookup remain withheld pending singular,
+  truthful write evidence. Direct scheduler inspection reconfirmed the repair
+  cron enabled. Gate 8 remains open for Protomega isolation, all Protomega2
+  and ProtoCosmo2 live subgates, and cyclic cross-agent negative lookups.
+  At the `2026-08-13T18:44Z` resume check, a first inspection conservatively
+  stopped Protomega2 after seeing historical private sources `390`/`393`: the
+  former had delivered the known pre-repair raw/Markdown-substitution claim at
+  receipt `392`, and the latter had failed visibly at receipt `394`. Timestamp
+  correlation then proved both events occurred at `14:20--14:23Z`, hours before
+  the current guarded start, so they are baseline failures rather than the
+  requested fresh `OC-PROTO2-RESULT1-20260813-H` canary. No newer private source
+  had been admitted; pending ingress was empty, the current marker was absent,
+  and the private Chroma store still had zero embeddings/documents. The
+  conservative stop left all identities quiescent. Frozen case, bridge, runner,
+  and three loop hashes were revalidated, then Protomega2 alone was restored at
+  owner/receiver `3902570/3902577` with exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, one process
+  group, and zero children below the receiver. Outer-state and SQLite SHA-256
+  values remained `c7af9b06...e7da3` and `e3e3ec7d...28e9a`; the store remained
+  empty. The human request was not repeated, and direct scheduler inspection
+  reconfirmed the repair cron enabled. Gate 8 remains open awaiting the first
+  fresh Protomega2 write.
+  At the `2026-08-13T18:54Z` read-only checkpoint, no fresh Protomega2 canary
+  had been admitted: transport offset was `491553165`, processed-message tail
+  remained historical source `393`, pending ingress was empty, and the marker
+  was absent from state, worker evidence, and logs. Direct SQLite inspection
+  still found zero embeddings/documents and collection dimension `384`; its
+  SHA-256 remained `e3e3ec7d...28e9a`. Protomega2 retained the sole
+  owner/receiver pair `3902570/3902577`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared one
+  process group with its owner, and had zero children. Protomega and
+  ProtoCosmo2 remained inactive. The case, bridge, runner, and three deployed
+  loop hashes matched the frozen candidate. The human request was not
+  repeated, no production state was mutated, and direct scheduler inspection
+  reconfirmed the repair cron enabled. Gate 8 remains open.
+  At the `2026-08-13T18:58Z` read-only checkpoint, no fresh Protomega2 canary
+  had been admitted. The transport offset remained `491553165`, the processed
+  tail remained historical source `393`, pending ingress was empty, and exact
+  marker scans found no `OC-PROTO2-RESULT1-20260813-H` evidence. Direct SQLite
+  inspection still found zero embeddings and zero documents; SQLite SHA-256
+  remained `e3e3ec7d...28e9a` and outer-state SHA-256 remained
+  `c7af9b06...e7da3`. Protomega2 retained sole owner/receiver
+  `3902570/3902577`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db` and had zero
+  children. Protomega and ProtoCosmo2 remained inactive. The case, bridge,
+  runner, and all three deployed loop hashes still matched the frozen
+  candidate. The human request was not repeated, no production state was
+  mutated, and direct scheduler inspection reconfirmed the repair cron
+  enabled. Gate 8 remains open.
+  At the `2026-08-13T19:08Z` read-only checkpoint, only the Protomega2
+  transport offset advanced, to `491553167`; the processed tail remained
+  historical source `393`, pending ingress remained empty, and exact scans of
+  outer state, responder evidence, and the supervisor log found no
+  `OC-PROTO2-RESULT1-20260813-H` marker. Direct SQLite inspection still found
+  zero embeddings and zero documents in the dimension-`384` collection; its
+  SHA-256 remained `e3e3ec7d...28e9a`. Protomega2 retained sole
+  owner/receiver `3902570/3902577`, the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. The case,
+  bridge, runner, and all three deployed loop hashes still matched the frozen
+  candidate. The human request was not repeated, no production state was
+  mutated, and direct scheduler inspection reconfirmed the repair cron
+  enabled. Gate 8 remains open.
+  At the `2026-08-13T19:24Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable transport state remained at
+  update offset `491553167`, processed-message tail `402314199:393`, zero
+  pending inbound, and incident sequence `26`; exact marker scans found no
+  `OC-PROTO2-RESULT1-20260813-H` evidence. Direct SQLite inspection still
+  found zero embeddings and zero documents in the dimension-`384`
+  collection. Outer-state and SQLite SHA-256 remained
+  `bd533ff9...83fcb` and `e3e3ec7d...28e9a`. Protomega2 retained sole
+  owner/receiver `3902570/3902577`, the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. The frozen
+  case, bridge, runner, and deployed-loop hashes still matched. No canary
+  request was repeated and no production state was mutated. Direct scheduler
+  inspection reconfirmed cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2`
+  enabled. Gate 8 remains open.
+  At the `2026-08-13T19:51Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable transport state remained at
+  update offset `491553167`, processed-message tail `402314199:393`, zero
+  pending inbound, and incident sequence `26`; exact scans of outer state,
+  worker evidence, and the supervisor log found no
+  `OC-PROTO2-RESULT1-20260813-H` marker. Direct SQLite inspection still found
+  zero embeddings and zero documents in the dimension-`384` collection;
+  outer-state and SQLite SHA-256 remained `bd533ff9...83fcb` and
+  `e3e3ec7d...28e9a`. Protomega2 retained sole owner/receiver
+  `3902570/3902577`, the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. The frozen case,
+  bridge, runner, and all three deployed-loop hashes still matched. No canary
+  request was repeated and no production state was mutated. Direct scheduler
+  inspection reconfirmed the repair cron enabled; Gate 8 remains open.
+  At the `2026-08-13T20:00Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553167`, processed-message tail `402314199:393`, zero pending inbound,
+  and incident sequence `26`; the requested marker remained absent from outer
+  state, worker evidence, and the supervisor log. Direct SQLite inspection
+  still found zero embeddings and zero document rows in the dimension-`384`
+  collection. Outer-state and SQLite SHA-256 remained
+  `bd533ff9...83fcb` and `e3e3ec7d...28e9a`. Protomega2 retained sole
+  owner/receiver `3902570/3902577`, the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. The case,
+  bridge, runner, and all three deployed-loop hashes matched the frozen
+  candidate. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly
+  confirmed enabled. No canary request was repeated and no production state
+  was mutated; Gate 8 remains open.
+  At the `2026-08-13T20:07Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Only the transport cursor advanced, to
+  `491553169`; processed-message tail remained `402314199:393`, pending inbound
+  remained empty, incident sequence remained `26`, and the requested marker
+  remained absent from outer state, worker evidence, and the supervisor log.
+  Direct SQLite inspection still found zero embeddings, zero document rows,
+  zero marker hits, and collection dimension `384`. SQLite SHA-256 remained
+  `e3e3ec7d...28e9a`; the offset-only outer-state SHA-256 became
+  `0aec618b...881cc`. Protomega2 retained sole owner/receiver
+  `3902570/3902577`, the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. Frozen case,
+  bridge, runner, and deployed-loop hashes matched the recorded candidate.
+  Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled.
+  No canary request was repeated and no production state was mutated; Gate 8
+  remains open.
+  At the `2026-08-13T20:15Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state was unchanged at update
+  offset `491553169`, processed-message tail `402314199:393`, zero pending
+  inbound, and incident sequence `26`; exact marker scans found no
+  `OC-PROTO2-RESULT1-20260813-H` evidence. Direct SQLite inspection still
+  found zero embeddings, zero document rows, zero marker hits, and collection
+  dimension `384`. Outer-state and SQLite SHA-256 remained
+  `0aec618b...881cc` and `e3e3ec7d...28e9a`. Protomega2 retained sole
+  owner/receiver `3902570/3902577`, the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, and it had
+  zero children. Protomega and ProtoCosmo2 remained inactive. Frozen case,
+  bridge, runner, and deployed-loop hashes matched the recorded candidate.
+  Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled.
+  No canary request was repeated and no production state was mutated; Gate 8
+  remains open.
+  At the `2026-08-13T20:25Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553169`, processed-message tail `402314199:393`, zero pending inbound,
+  the historical completed deferred task at the tail, and incident sequence
+  `26`; exact scans found no `OC-PROTO2-RESULT1-20260813-H` evidence. Direct
+  SQLite inspection still found zero embeddings, zero document rows, zero
+  marker hits, and collection dimension `384`. Outer-state and SQLite SHA-256
+  remained `0aec618b...881cc` and `e3e3ec7d...28e9a`. Protomega2 retained
+  sole owner/receiver `3902570/3902577`; the receiver retained exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared the
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched the recorded candidate. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled. No
+  canary request was repeated and no production state was mutated; Gate 8
+  remains open.
+  At the `2026-08-13T20:30Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553169`, processed-message tail `402314199:393`, zero pending inbound,
+  the historical completed deferred task at the tail, and incident sequence
+  `26`; exact scans of outer state, responder incidents, and the supervisor log
+  found no `OC-PROTO2-RESULT1-20260813-H` or `cobalt-finch-4827` evidence.
+  Direct SQLite inspection still found zero embeddings, zero
+  `chroma:document` rows, zero marker hits, and collection dimension `384`.
+  Outer-state and SQLite SHA-256 remained `0aec618b...881cc` and
+  `e3e3ec7d...28e9a`. Protomega2 retained sole owner/receiver
+  `3902570/3902577`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared the
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched the recorded candidate. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled. No
+  canary request was repeated and no production state was mutated; Gate 8
+  remains open.
+  At the `2026-08-13T20:43Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553169`, processed-message tail `402314199:393`, zero pending inbound,
+  the historical completed deferred task at the tail, and incident sequence
+  `26`; exact scans found no `OC-PROTO2-RESULT1-20260813-H` evidence. Direct
+  SQLite inspection still found zero embeddings, zero `chroma:document` rows,
+  zero marker hits, and collection dimension `384`. Outer-state and SQLite
+  SHA-256 remained `0aec618b...881cc` and `e3e3ec7d...28e9a`. Protomega2
+  retained sole owner/receiver `3902570/3902577`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared the
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched the recorded candidate. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled. No
+  canary request was repeated and no production state was mutated; Gate 8
+  remains open.
+  At the `2026-08-13T20:55Z` checkpoint, no fresh Protomega2 canary had been
+  admitted: durable state remained at update offset `491553169`, processed
+  tail `402314199:393`, zero pending inbound, and incident sequence `26`;
+  direct SQLite inspection still found zero embeddings, zero
+  `chroma:document` rows, zero marker hits, and collection dimension `384`.
+  A conservative hash check initially compared the recorded deployed-loop
+  digest against the top-level `run.metta` launchers instead of the actual
+  `src/loop.metta` files, so Protomega2 was stopped before investigation. No
+  message or database mutation occurred. The correct case, bridge, runner,
+  and all three `src/loop.metta` paths then matched the frozen hashes exactly.
+  Protomega2 alone was guarded-restored at sole owner/receiver
+  `3937729/3937736`; the receiver carries exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shares its
+  owner's process group, and has zero children. Protomega and ProtoCosmo2
+  remain inactive. Outer-state and SQLite SHA-256 remain
+  `0aec618b...881cc` and `e3e3ec7d...28e9a`. Cron
+  `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was directly confirmed enabled. The
+  human canary request was not repeated; Gate 8 remains open.
+  At the `2026-08-13T21:14Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Only its transport cursor advanced, to
+  update offset `491553171`; the processed-message tail remained
+  `402314199:393`, pending inbound remained empty, and incident sequence
+  remained `26`. Exact scans found no `OC-PROTO2-RESULT1-20260813-H` marker.
+  Direct SQLite inspection still found zero embeddings, zero
+  `chroma:document` rows, zero marker hits, and collection dimension `384`;
+  SQLite SHA-256 remained `e3e3ec7d...28e9a`, while the offset-only outer-state
+  SHA-256 became `570ed24f...b1e6`. Protomega2 retained sole owner/receiver
+  `3937729/3937736`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared its
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. The frozen case, bridge, runner, and three deployed-loop
+  hashes matched exactly. Cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` was
+  directly confirmed enabled. No canary request was repeated and no operator
+  mutation was made; Gate 8 remains open.
+  At the `2026-08-13T21:34Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553171`, processed-message tail `402314199:393`, zero pending inbound,
+  and incident sequence `26`; exact scans found no
+  `OC-PROTO2-RESULT1-20260813-H` or `cobalt-finch-4827` evidence. Direct SQLite
+  inspection still found zero embeddings, zero `chroma:document` rows, zero
+  marker hits, and collection dimension `384`. Outer-state and SQLite SHA-256
+  remained `570ed24f...bdb1e6` and `e3e3ec7d...dc28e9a`. Protomega2 retained
+  sole owner/receiver `3937729/3937736`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared its
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched exactly. Direct scheduler inspection reconfirmed the repair
+  cron enabled. No canary request was repeated and no production state was
+  mutated; Gate 8 remains open.
+  At the `2026-08-13T21:54Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Durable state remained at update offset
+  `491553171`, processed-message tail `402314199:393`, zero pending inbound,
+  the historical completed deferred task at the tail, and incident sequence
+  `26`; exact scans found no `OC-PROTO2-RESULT1-20260813-H` or
+  `cobalt-finch-4827` evidence. Direct SQLite inspection still found zero
+  embeddings, zero `chroma:document` rows, zero marker hits, and collection
+  dimension `384`. Outer-state and SQLite SHA-256 remained
+  `570ed24f...bdb1e6` and `e3e3ec7d...dc28e9a`. Protomega2 retained sole
+  owner/receiver `3937729/3937736`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared its
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched exactly. Direct scheduler inspection reconfirmed the repair
+  cron enabled. No canary request was repeated and no production state was
+  mutated; Gate 8 remains open.
+  At the `2026-08-13T22:07Z` read-only checkpoint, Protomega2 still had not
+  admitted the requested fresh write. Only the durable transport cursor
+  advanced, from update offset `491553171` to `491553172`; the processed tail
+  remained `402314199:393`, pending inbound remained empty, the historical
+  completed deferred task remained at the tail, and incident sequence remained
+  `26`. Exact scans of outer state, worker evidence, and the supervisor log
+  found no `OC-PROTO2-RESULT1-20260813-H` or `cobalt-finch-4827` evidence.
+  Direct read-only SQLite inspection still found zero embeddings, zero
+  `chroma:document` rows, zero marker hits, and collection dimension `384`.
+  The cursor-only state SHA-256 became `e111b2d7...3b588`; SQLite SHA-256
+  remained `e3e3ec7d...dc28e9a`. Protomega2 retained sole owner/receiver
+  `3937729/3937736`; the receiver carried exactly
+  `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared its
+  owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched exactly. Direct scheduler inspection reconfirmed the repair
+  cron enabled. No canary request was repeated and no production state was
+  mutated; Gate 8 remains open.
+  At the `2026-08-13T22:12Z` human-canary checkpoint, Protomega2 admitted
+  fresh private source `414` as task `ccb59444...3ffe48`, delivered
+  acknowledgement `415`, and completed one authenticated PeTTa action loop.
+  Durable MeTTa history contains exactly one native `remember` for
+  `OC-PROTO2-RESULT1-20260813-H = cobalt-finch-4827`, followed by one PeTTa
+  final `send`; the outer transport delivered that truthful result as receipt
+  `416`. Direct SQLite inspection found exactly one embedding, one exact
+  `chroma:document`, and a 1536-byte FLOAT32 vector (dimension `384`). State
+  and SQLite SHA-256 were `5678a1bb...471ef` and `a5df1d40...1ccd9`.
+  Protomega2 was owner-stopped and guarded-restarted into a fresh OpenClaw
+  session; both hashes remained byte-identical. It alone is active at sole
+  owner/receiver `3958824/3958831`, with the exact intended Chroma path, one
+  process group, and zero children. Protomega and ProtoCosmo2 remain inactive;
+  frozen runtime hashes match. Ben received the one-time exact-recall request
+  as Telegram message `18836`; the write and cross-agent lookup remain
+  withheld. Cron remains enabled. Gate 8 is open for Protomega2 fresh-session
+  exact recall, then isolation lookup and ProtoCosmo2 acceptance.
+  At the `2026-08-13T22:21Z` read-only checkpoint, the requested fresh-session
+  recall had not arrived. Durable state remained at update offset `491553173`,
+  processed-message tail `402314199:414`, zero pending inbound, and incident
+  sequence `26`; the latest outbox entries remained acknowledgement `415` and
+  truthful write receipt `416`. Direct SQLite inspection still found exactly
+  one embedding, one exact `chroma:document` marker, a 1536-byte FLOAT32 vector,
+  and collection dimension `384`. State and SQLite SHA-256 remained
+  `5678a1bb...471ef` and `a5df1d40...1ccd9`. Protomega2 remained the sole
+  active identity at owner/receiver `3958824/3958831`; the receiver carried
+  exactly `CHROMA_DB_PATH=/home/openclaw/.openclaw/protomega2-chroma-db`, shared
+  its owner's process group, and had zero children. Protomega and ProtoCosmo2
+  remained inactive. Frozen case, bridge, runner, and all three deployed-loop
+  hashes matched exactly; the repair cron was directly confirmed enabled. The
+  write and recall requests were not repeated, no production state was
+  mutated, and Gate 8 remains open.
+  At the `2026-08-13T22:24Z` human-canary checkpoint, fresh private source
+  `417` was admitted as task `3eb076e4...fddb63`, acknowledged by Telegram
+  receipt `418`, and completed after one real PeTTa
+  `query "OC-PROTO2-RESULT1-20260813-H"`. The next authenticated provider
+  round proposed exactly one final `send`, and the outer transport delivered
+  exact recall `OC-PROTO2-RESULT1-20260813-H = cobalt-finch-4827` as receipt
+  `419`. Direct read-only SQLite inspection still found exactly one live
+  embedding, one exact `chroma:document`, and a 1536-byte FLOAT32 vector
+  (dimension `384`); recall added no embedding and no foreign document.
+  State and SQLite SHA-256 values after the read were `f5774944...1d642` and
+  `9694b2c4...4f45c`. Protomega2 remains the sole active identity at
+  owner/receiver `3958824/3958831`, with the exact isolated Chroma path and
+  zero descendants; Protomega and ProtoCosmo2 remain inactive. Frozen case,
+  bridge, runner, and all three loop hashes match, and the repair cron remains
+  enabled. Gate 8 is now open for Protomega2's human negative isolation lookup,
+  followed by ProtoCosmo2's full write/restart/recall/isolation sequence.
+  Ben received the one-time negative-isolation instruction as Telegram message
+  `18860`: query Protomega's marker `OC-PROTO-RESULT1-20260813-G` through
+  Protomega2 and return exactly `NOT FOUND` only when the PeTTa result contains
+  no exact foreign match. No write or own-recall request was repeated.
+  At the `2026-08-13T22:32Z` human-canary checkpoint, fresh private source
+  `420` was admitted as task `6bae4ef1...4d816`, acknowledged by Telegram
+  receipt `421`, and completed after exactly one real PeTTa
+  `query "OC-PROTO-RESULT1-20260813-G"`. The PeTTa result contained only
+  Protomega2's own nearest-neighbor document and no exact foreign-marker match;
+  the subsequent authenticated provider round proposed exactly one final
+  `send NOT FOUND`, which the outer transport delivered as receipt `422`.
+  Direct read-only SQLite inspection still found exactly one live document,
+  the own marker `OC-PROTO2-RESULT1-20260813-H = cobalt-finch-4827`, and zero
+  foreign-marker documents; no write occurred. State and SQLite SHA-256 were
+  `18fcfec4...2d1d3` and `07bd845b...2dfce`. Protomega2 was owner-stopped and
+  confirmed inactive. Frozen case, bridge, runner, all three loop, and
+  ProtoCosmo2 provider hashes matched. ProtoCosmo2 alone was guarded-started
+  at sole owner/receiver `3967176/3967190`; its receiver carries exactly the
+  distinct baseline Chroma path, shares one process group, and has zero
+  descendants. Protomega and Protomega2 remain stopped. Direct SQLite
+  preflight found 8,095 embeddings, collection dimension `384`, and no repair
+  canary markers. Ben received the one-time ProtoCosmo2 write instruction as
+  Telegram message `18861`; query and isolation steps remain withheld. Gate 8
+  is open for ProtoCosmo2 write/restart/recall/isolation. Cron remains enabled.
+  At the `2026-08-13T22:43Z` read-only checkpoint, the requested ProtoCosmo2
+  write had not arrived. Durable state advanced only to update offset
+  `387573355`; processed-message tail remained historical source `1414`,
+  pending inbound was empty, incident sequence remained `353`, and the latest
+  completed deferred job remained historical source `1289`. Direct SQLite
+  inspection still found exactly `8095` embeddings, `8095`
+  `chroma:document` rows, collection dimension `384`, and zero matches for
+  `OC-COSMO2-RESULT1-20260813-I` or `saffron-heron-7316`. State and SQLite
+  SHA-256 were `477de4c3...2d5ed` and `c324b8bf...d635`. ProtoCosmo2 remained
+  the sole active identity at owner/receiver `3967176/3967190`; the receiver
+  carried exactly the distinct baseline Chroma path, shared its owner's
+  process group, and had zero children. Protomega and Protomega2 remained
+  inactive. Frozen case and deployed-loop hashes matched, and direct cron
+  inspection confirmed the repair job enabled. The canary request was not
+  repeated and no production state was mutated; Gate 8 remains open.
+  At the `2026-08-13T22:47Z` read-only checkpoint, no fresh ProtoCosmo2 write
+  had been admitted. Durable state remained at update offset `387573355`,
+  processed-message tail `1414`, zero pending inbound, incident sequence
+  `353`, and historical completed deferred source `1289`. Direct SQLite
+  inspection still found exactly `8095` embeddings and `8095`
+  `chroma:document` rows, collection dimension `384`, and zero matches for
+  `OC-COSMO2-RESULT1-20260813-I` or `saffron-heron-7316`; state and SQLite
+  SHA-256 remained `477de4c3...2d5ed` and `c324b8bf...d635`.
+  ProtoCosmo2 remained the sole active identity at owner/receiver
+  `3967176/3967190`, with its explicit distinct Chroma path, shared process
+  group, and zero children. Protomega and Protomega2 remained inactive;
+  frozen case and deployed-loop hashes matched, and direct scheduler
+  inspection confirmed the repair cron enabled. The canary request was not
+  repeated and no production state was mutated; Gate 8 remains open.
+  At the `2026-08-13T22:54Z` read-only checkpoint, no fresh ProtoCosmo2 write
+  had been admitted. Durable state remained at update offset `387573355`,
+  processed-message tail `1414`, zero pending inbound, incident sequence
+  `353`, and historical completed deferred source `1289`. Direct SQLite
+  inspection still found exactly `8095` embeddings and `8095`
+  `chroma:document` rows, collection dimension `384`, and zero matches for
+  `OC-COSMO2-RESULT1-20260813-I` or `saffron-heron-7316`; state and SQLite
+  SHA-256 remained `477de4c3...2d5ed` and `c324b8bf...d635`.
+  ProtoCosmo2 remained the sole active identity at owner/receiver
+  `3967176/3967190`, with its explicit distinct Chroma path, shared process
+  group, and zero children. Protomega and Protomega2 remained inactive. Frozen
+  case, bridge, runner, and active deployed-loop hashes matched, and direct
+  scheduler inspection confirmed the repair cron enabled. The canary request
+  was not repeated and no production state was mutated; Gate 8 remains open.
+  At `2026-08-13T23:00:37Z`, the requested fresh ProtoCosmo2 write arrived as
+  source `1487` and deferred task `fa6bd413...84d72`; acknowledgement receipt
+  was `1488`. Authenticated provider round 1 proposed exactly one native
+  `remember OC-COSMO2-RESULT1-20260813-I = saffron-heron-7316`. PeTTa executed
+  it and returned exactly one `REMEMBER-SUCCESS`; authenticated round 2 saw
+  that real action result and proposed exactly one final `send`. Only that
+  PeTTa final send entered the outbox and Telegram delivered receipt `1489`.
+  Direct SQLite evidence changed the isolated ProtoCosmo2 store from `8095` to
+  exactly `8096` embeddings/documents, with exactly one byte-for-byte marker
+  row, collection dimension `384`, and latest queue vector length `1536`
+  bytes. No incident was added and no runtime descendant remained after the
+  turn. Pre-restart state/SQLite hashes were `9a7415ac...c38e5` and
+  `3e115335...51d46`; frozen case, bridge, runner, and loop hashes matched.
+  ProtoCosmo2 was owner-stopped, confirmed inactive, then separately
+  owner-started at sole owner/receiver `3975832/3975846` in one process group.
+  The receiver carries the explicit ProtoCosmo2 Chroma path and has zero
+  children. State and SQLite hashes remained byte-for-byte unchanged, and the
+  post-restart database retained exactly `8096` rows, one exact marker, and
+  dimension `384`. Protomega and Protomega2 remain stopped. Ben received the
+  one-time fresh-session exact-recall request as Telegram message `18873`.
+  Gate 8 remains open for ProtoCosmo2 recall and negative cross-agent lookup;
+  the write must not be repeated and the cron remains enabled.
+  Evidence: `experiments/20260813T061500Z-conversational-chroma-repair/RUN.md`.
+
+- [x] **Activate separate Chroma memory for Protomega and Protomega2
+  (2026-08-12)** — observed that both live receivers lacked an explicit Chroma
+  path and the shared PeTTa working-directory database contained zero
+  embeddings. Updated `petta_lib_chromadb` to honor `CHROMA_DB_PATH`, assigned
+  private per-identity stores, and guarded-restarted both identities. Each live
+  receiver now carries its intended absolute path; isolated and production
+  write/read/delete probes passed independently, and each bot has exactly one
+  receiver. Evidence:
+  `experiments/20260813T051600Z-protomega-chroma-activation/RUN.md`.
+
+- [x] 2026-08-13: Bound projected ThreadKeeper run-record fields at commit
+  `50bda23`. Direct `run_tools` batches now reserve missing file, test,
+  patch-proposal, and remaining-quota bookkeeping keys before their first
+  effect, preventing a 64-field record from crossing its validated cap after
+  a workspace mutation. The focused regression, all 52 boundary tests, 30
+  relevant direct-tool mock tests, compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-13: Validate direct ThreadKeeper run-record field names at
+  commit `3981eb7`. Direct `run_tools` callers now reject oversized,
+  control-bearing, noncanonical, and non-identifier record keys before registry
+  construction or effects. The focused regression, all 51 boundary tests and
+  146 subtests, 30 relevant direct-tool mock tests, compilation, `git
+  diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-13: Validate direct ThreadKeeper run-record audit content at
+  commit `10099b2`. Existing `files_changed`, `tests_run`, and
+  `patch_proposals` entries now obey canonical path, bounded single-line NFC,
+  authorized action, and bounded UTF-8 content contracts before registry
+  lookup or effects. This prevents a direct caller from carrying malformed or
+  oversized audit claims into a post-effect durable transcript. The seven-case
+  regression, all 49 boundary tests and 142 subtests, five relevant
+  direct-runner tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-13: Bound direct ThreadKeeper tool quotas at commit `3bd1bb5`.
+  Direct `run_tools` callers now reject explicit quotas above
+  `OMEGACLAW_SUBAGENT_MAX_TOOL_CALLS` before registry construction or effects,
+  preventing an oversized remaining counter from entering a post-effect run
+  record. The focused regression, all 50 boundary tests and 142 subtests, 30
+  relevant direct-tool mock tests, compilation, `git diff --check`, and draft
+  PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-13: Bound direct ThreadKeeper run-record validation at commit
+  `8e06933`. Exact `run_tools` records now fail closed before registry lookup
+  or effects when they exceed 64 fields or when existing file, test, or patch
+  audit lists exceed 256 entries. This prevents attacker-sized bookkeeping
+  from causing unbounded pre-effect key or entry validation. The focused
+  regression, all 47 boundary tests and 132 subtests, three relevant mock
+  tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry passed.
+
+- [x] 2026-08-13: Validate nested ThreadKeeper run-record audit entries at
+  commit `62f9b47`. Direct `run_tools` callers now require exact strings in
+  existing `files_changed` and `tests_run` lists and exact closed
+  `action`/`path`/`content` proposal dictionaries before registry lookup or
+  effects. This prevents behavioral record entries or malformed proposal
+  projections from executing or failing only after a workspace change. The
+  focused sentinels, all 44 boundary tests and 122 subtests, 24 direct-tool
+  mock tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry passed.
+
+- [x] 2026-08-13: Bound direct ThreadKeeper tool-argument lists at commit
+  `22ad300`. Direct `run_tools` callers can no longer force unbounded
+  pre-effect value validation with an oversized exact argument list; the
+  supported tool registry's maximum arity of two is enforced before walking
+  values or constructing the registry. The focused regression, all 46 boundary
+  tests and 128 subtests, 30 relevant mock tests, compilation, `git
+  diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-13: Validate direct ThreadKeeper tool-authorization subsets at
+  commit `5707dbd`. Direct `run_tools` callers now fail closed on oversized,
+  duplicate, unknown, malformed, control-bearing, or noncanonical allowed tool
+  names before registry construction or effects. This closes the programmatic
+  authority subset to the seven supported effectful tools and bounds validation
+  and membership work. All 45 boundary tests and 128 subtests, 47 relevant
+  direct-tool mock tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-13: Reject behavioral ThreadKeeper run-record containers at
+  commit `82c14ef`. Direct `run_tools` callers now require an exact record
+  dictionary with exact string field names and exact mutable audit lists before
+  registry lookup or effects. Crafted `setdefault`/`append` behavior can no
+  longer execute after an effect or turn audit bookkeeping into a partial
+  failure. The sentinel regression, all 43 boundary tests and 117 subtests,
+  324 relevant direct-tool/argument mock tests, compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-13: Reject behavioral ThreadKeeper tool-argument objects at
+  commit `fa6f90c`. Direct `run_tools` callers now require exact list
+  containers and exact string values before `isinstance`, registry lookup, or
+  effects, so crafted `__class__` behavior cannot execute during fail-closed
+  validation. The sentinel regression, all 42 boundary tests and 115 subtests,
+  24 direct-tool mock tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed. The one-process complete mock module is not a
+  clean aggregate gate because its shared rate limiter saturated; 1,096 tests
+  passed and 130 later tests failed, beginning with deterministic
+  `rate_limited` results.
+
+- [x] 2026-08-12: Strictly validate nested ThreadKeeper direct-tool contracts
+  at commit `957b066`. Exact dictionaries containing behavioral nested values
+  now fail closed before authorization helpers, registry lookup, or effects;
+  validation uses a copy and preserves legacy partial authorization contracts.
+  The focused regression, all 41 boundary tests and 113 subtests, 479 relevant
+  mock tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry passed.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper `run_tools` task contracts at
+  commit `200a477`. Direct programmatic callers now require `None` or an exact
+  dictionary before authorization helpers, registry lookup, or effects, so a
+  crafted mapping cannot execute `__bool__` or `get` while being interpreted
+  as authority. The focused regression, all 40 boundary tests and 113
+  subtests, 24 direct-tool tests, compilation, `git diff --check`, and draft PR
+  #1 safety-floor ancestry passed.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper tool-name arguments at commit
+  `4477483`. Direct `run_tools` callers now require an exact string before any
+  equality, hashing, registry lookup, or allowlist membership, preventing a
+  crafted object from executing Python behavior before fail-closed protocol
+  rejection. The focused regression, all 39 boundary tests and 113 subtests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [ ] **Restore substantive ProtoCosmo2 and Protomega replies (2026-08-12)** —
+  deliverable: repair the shared inner-to-outer result handoff and bounded
+  long-task completion path without weakening attachment or routing safety.
+  Acceptance: provider-free regressions reproduce both the missing authenticated
+  result receipt and the 300-second attachment-task timeout; focused and full
+  applicable suites pass; each production identity is guarded-restarted with
+  exactly one receiver; a fresh substantive Telegram canary for each yields a
+  correlated non-failure reply. Next command: inspect the Phase-5 bridge final
+  receipt/timeout paths and add the smallest failing regression. Evidence:
+  `experiments/20260812T210600Z-omega-result-handoff-repair/`. First concrete
+  lifecycle increment now always drains the Phase-6 responder's dedicated
+  process group even when its leader already exited; an actual forked-child
+  provider-free regression passes (`2 passed`, compilation and scoped diff
+  check clean). The nested Phase-5 runtime and separately owned bridge groups
+  now use the same always-drain invariant, including after leader exit; real
+  forked-descendant regressions pass. Verification: `4 passed, 23 deselected`
+  focused and all `27 passed` in the provider-free live-runtime module, plus
+  compilation and scoped diff checks. Explicit responder terminal-path tests
+  now run disposable drivers that fork 300-second descendants and cover
+  success, nonzero failure, injected cancellation, and timeout; all four prove
+  no live descendant remains. The focused gate passed `4 passed, 27
+  deselected`; the complete project-local live-runtime and transport suite
+  passed `38 passed`, with compilation and scoped diff checks clean. Next
+  command: capture read-only production topology, owner, non-secret effective
+  configuration, and rollback targets for both identities before any guarded
+  restart. Deferred failures now persist task/message correlation, bounded
+  exception class, and a SHA-256 cause fingerprint without exception text;
+  current status/progress/memory questions receive an explicit observational-
+  only authority boundary derived solely from the immutable human instruction.
+  Focused regressions passed `24 passed, 74 deselected`; both provider-free
+  transport/contract modules passed `118 passed`, with compilation and scoped
+  diff checks clean. Read-only production capture now proves one owner plus one
+  receiver for each target identity (ProtoCosmo2 owner/receiver
+  `3479113/3479126`; Protomega `3479342/3479355`) and exactly one process per
+  target bot ID, with no user-systemd competitor. Non-secret schema-2 config,
+  owner scripts, state metadata, repository dirtiness, and exact rollback
+  sources were recorded without reading secret values or mutating state. The
+  rollback pair is reviewed transport commit `92bdabb` plus workspace commit
+  `42c0461` and its committed Phase-6/Phase-5/bridge hashes. Next command:
+  Candidate frozen as runtime `15ba011` and shared transport `c0bc3b3` after a
+  98-test transport replay and scoped checks. Owner-specific guarded restart
+  and rollback paths were inspected without mutation. Runtime replay exited
+  zero but emitted only progress dots and no terminal pytest summary, so the
+  next command is to diagnose that anomalous exit and obtain an unambiguous
+  complete provider-free result before any production restart.
+  Resolved by separate unambiguous runs (`1 passed` cancellation plus `37
+  passed, 1 deselected`; transport `98 passed`). ProtoCosmo2 and Protomega were
+  then owner-guarded restarted to owners `3515594` and `3515829`, respectively,
+  with exactly one receiver each and no competing bot-ID process. Telegram
+  message `18404` requests one fresh human-originated substantive canary for
+  each. At the 2026-08-13 02:29 UTC read-only checkpoint, both owner/receiver
+  pairs remained singular, both pending-inbound queues were empty, and no new
+  deferred job attributable to a post-request human canary existed. Acceptance
+  remains open pending both correlated traces; compare durable cursors
+  `387573063` and `940522506` on the next invocation without repeating the
+  canary request.
+  ProtoCosmo2's failed canary is now correlated to the inner runtime ledger:
+  incident fingerprint `da7e1dfa...8f2b` is exactly
+  `builtins.RuntimeError:omegaclaw_runtime_failure`, and the responder ledger
+  records a nonzero runtime exit after 253 seconds with no authenticated
+  bridge answer. The production timeout stack gave the provider subprocess
+  and Phase-5 case the same terminal deadline, creating a teardown race at the
+  configured limit. The candidate now gives the 240-second provider a
+  separate 260-second bridge watchdog, 280-second Phase-5 case deadline, and
+  310-second outer watchdog. Provider-free budget/lifecycle tests passed `5
+  passed`; the complete runtime module excluding its separately established
+  injected-KeyboardInterrupt case passed `32 passed, 1 deselected`; broader
+  transport/runtime regressions passed `125 passed`. Compilation and scoped
+  diff checks passed. ProtoCosmo2 remains stopped. Next command: freeze this
+  timeout-budget correction as an exact revision, recapture the stopped
+  topology and rollback target, then perform one owner-guarded restart before
+  requesting a fresh canary.
+  Subsequent repair evidence is maintained in the dedicated RUN ledger. The
+  current runtime candidate is frozen at `b72f98a` after authenticated bounded
+  failure telemetry and the 300-second ProtoCosmo2 provider budget passed the
+  full provider-free gates. Protomega's fresh substantive trace passed. The
+  remaining ProtoCosmo2 canary has not yet arrived: at 2026-08-13 05:48 UTC the
+  durable cursor was `387573149`, processed tail remained source `1266`, and
+  incident sequence remained `352`. An intervening guarded Chroma-isolation
+  restart left exactly one ProtoCosmo2 owner/receiver (`3589547/3589560`) and
+  one bot-ID process; the live receiver binds the identity-specific existing
+  Chroma store. The exact dirty wrapper hashes are recorded in the RUN ledger
+  and all 11 provider-free supervisor tests pass. Next command: correlate the
+  first fresh human substantive ProtoCosmo2 ingress through its deferred job,
+  provider/action result, and source-bound receipt; owner-stop immediately on
+  failure and do not repeat the canary request.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper workspace-path arguments at
+  commit `fc2acbe`. The shared path validator now requires an exact string
+  before conversion, preventing direct programmatic callers from invoking
+  attacker-controlled `__str__` behavior or coercing other scalars into
+  authority-bearing paths. The focused contract/path selection passed 157
+  tests, all 38 boundary tests and 113 subtests passed, and compilation, `git
+  diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper task-contract field names at
+  commit `5f93efa`. Direct programmatic contract dictionaries now reject
+  non-exact string keys before sentinel lookup or unknown-field set/sort work,
+  preventing attacker-controlled hashing or comparison before
+  `contract_invalid`. The focused sentinel-key regression, all 155 contract
+  tests, all 38 boundary tests and 113 subtests, compilation, `git diff
+  --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper task-contract quota scalars
+  at commit `31e37e0`. Malformed `max_tool_calls` subclasses now fail closed
+  without interpolation, so attacker-controlled `__str__` behavior cannot run
+  before `contract_invalid`. The focused regression, all 37 boundary tests and
+  113 subtests, compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry passed.
+
+- [ ] 2026-08-12: Capture the Iter three-bot baseline through the reviewed v2
+  schema. Read only secret-free facts for the three requested deployment slots;
+  preserve `unknown` for unresolved runtime identity or receiver ownership,
+  replay all nine validator tests, and independently compare source commits,
+  routing fingerprints, and receiver ownership. Do not restart/stop/launch
+  processes, inspect credentials, mutate state/cursors, implement the adapter,
+  or touch ThreadKeeper PR #1.
+
+- [x] 2026-08-12: Reject behavioral ThreadKeeper inline contract inputs at
+  commit `dab4da8`. The internal normalizer no longer truth-tests, stringifies,
+  parses, or trims mapping/string subclasses before exact-shape validation, so
+  attacker-defined Python behavior cannot run on the way to `contract_invalid`.
+  The focused regression, all 36 boundary tests and 113 subtests, all 155
+  contract tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-12: Reject non-JSON ThreadKeeper inline contract mappings at
+  commit `bfe2a32`. The internal normalizer now preserves top-level and nested
+  `dict` subclasses as malformed contract evidence so exact-shape validation
+  rejects them rather than granting contract authority. Public dispatch
+  independently rejects non-string goals. The focused regression, all 155
+  public contract tests, all 35 boundary tests and 113 subtests, compilation,
+  `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-12: Revise the provider-free Iter three-bot baseline contract
+  to schema v2 before any production capture. Each requested deployment slot
+  now has a separate required `runtime_identity`, so the gate can record the
+  observed Protomega/ProtomegaTron distinction instead of conflating slot and
+  internal identity. Capture time is canonical second-resolution UTC; missing
+  runtime identity and malformed time fail closed. All nine tests and Python
+  compilation pass. Production identity mapping and receiver ownership remain
+  unresolved; no live authority was granted.
+
+- [x] 2026-08-12: Reject coercible non-JSON ThreadKeeper persona task-contract
+  shapes at commit `3755c6c`. Pair iterables and mapping subclasses are no
+  longer converted into apparently valid authority contracts, and tuple-valued
+  string-list fields fail closed before any worker LLM call. The focused
+  regression, all 155 contract tests, all 34 boundary tests, compilation,
+  `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-12: Reject undeclared top-level ThreadKeeper inline task-contract
+  fields at commit `cc3a8b6`. Normalization now preserves the complete inline
+  JSON object so strict validation rejects authority-looking additions such as
+  `approved: true` as `contract_invalid` before any worker LLM call. The
+  focused regression, all 155 contract tests, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed. The 11 stale candidate-review fixtures from the prior broader run now
+  carry the required durable transcript identity fields.
+
+- [x] 2026-08-12: Require canonical ThreadKeeper task-contract text at commit
+  `a5edee3`. Objectives and all prompt-/transcript-visible string-list
+  constraints now require NFC Unicode normalization, so canonically ambiguous
+  contracts fail closed before any worker LLM call. Three focused regressions,
+  all 33 boundary tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed. A broader contract selection passed 143 tests
+  and exposed 11 pre-existing candidate-review fixtures that lack the now-
+  required transcript identity fields.
+
+- [x] 2026-08-11: Require exact durable ThreadKeeper queued adjudication
+  claims at commit `14c16ef`. Transcript-backed review gates now require the
+  exact dispatcher-emitted four-field shape: `required: true`, `status:
+  pending`, a bounded single-line NFC candidate summary, and an exact bounded
+  integer candidate turn. Missing turn identity, boolean turns, and extra
+  authority fields such as `approved` fail closed before terminal audit
+  publication. One focused regression, all 33 boundary tests, compilation,
+  `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-11: Reject malformed durable ThreadKeeper queued token-usage
+  claims at commit `5083b85`. Transcript-backed `worker_token_usage` must now
+  retain its exact three-field nonnegative integer shape and arithmetic
+  invariant before equality binds it to the parent result. This prevents
+  digest-valid boolean counts from authenticating integer zeros. One focused
+  regression, all 33 boundary tests and 104 subtests, compilation, `git
+  diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+- [x] 2026-08-11: Reject malformed durable ThreadKeeper queued summary claims
+  at commit `d4505bc`. Transcript-backed summaries must now retain their exact
+  string type before normalization and projection into the parent result,
+  preventing a digest-valid mapping from escaping the intended fail-closed
+  validation path. One focused regression, all 33 boundary tests, two relevant
+  mock tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+  ancestry passed.
+
+- [x] 2026-08-11: Complete the Capacity 1.2 deterministic-materialization D2
+  decision-receipt contract at
+  `artifacts/ggb-capacity-gates/20260811-motivation-materialization-decision-receipt-contract/`.
+  Exact one-shot 64/32 authority is generator/preregistration digest-bound;
+  absent, declined, inferred, widened, duplicate-member, oversized, symlink,
+  and boolean-as-integer inputs fail closed. Nine tests, compilation, and the
+  GGB fixture checker pass. No receipt or dataset was created. Next: wait for
+  Ben's explicit D2 decision, then independently bind it to the source message
+  before any one-shot materializer.
+
+- [x] 2026-08-11: Reject malformed durable ThreadKeeper queued audit claims at
+  commit `9940ebd`. Transcript-backed `files_changed` and `tests_run` claims
+  must now be exact string lists, patch proposals must be an object list, and
+  adjudication fields must retain their exact scalar types before projection
+  into the parent result. This prevents mapping-key normalization and truthy
+  string coercion from manufacturing authenticated audit/review claims. Three
+  focused regressions, all 33 boundary tests, compilation, `git diff --check`,
+  and draft PR #1 safety-floor ancestry passed.
+
+- [ ] 2026-08-11: Migrate Protomega, Protomega2, and ProtomegaTron on pop-os
+  to the Iter core loop as the primary obligation; resume `petta-memory` only
+  after this migration is accepted. Deliverable: three separately profiled,
+  rollback-safe Iter runtimes preserving each bot's immutable Telegram routing
+  envelope, identity, bounded authority, and durable state seams. Acceptance:
+  provider-free regressions and isolated staging pass; each production identity
+  has exactly one owning receiver; a fresh human-authored Telegram event for
+  each bot is correlated through ingress, Iter loop/provider action, and outer
+  Bot-API delivery receipt; rollback targets and remaining limitations are
+  recorded. Next command: inventory the three production/staging identities,
+  repositories, supervisors, non-secret configs, cursors, mutable state, and
+  rollback commits before designing the Iter adapter. Evidence:
+  `experiments/20260811T-iter-three-bot-migration/` (to be initialized with the
+  first baseline capture). **2026-08-12 baseline attempt:** the seven-test
+  structural contract still passes, but no factual production JSON was emitted.
+  Latest records disagree on whether `ProtomegaTron` is a deployment slot or
+  Protomega's internal runtime identity, and all five recorded receiver PIDs
+  were absent with no matching named owner in the read-only process scan. Next:
+  resolve the exact three slot-to-runtime-identity mapping and repeat capture
+  after the intended receivers are active. Evidence:
+  `experiments/20260812T073400Z-iter-three-bot-baseline-attempt/`.
+
+- [x] 2026-08-11: Bind all remaining ThreadKeeper queued error guidance to
+  durable transcript outcomes at commit `deabfac`. Authenticated setup,
+  contract, argument, tool-subset, provider, concurrency, rate-limit, and LLM
+  failures now require deterministic status-specific recovery actions before
+  audit publication. One focused regression, all 33 boundary tests, seven
+  relevant mock tests, compilation, `git diff --check`, and draft PR #1
+  safety-floor ancestry passed.
+
+- [x] 2026-08-11: Complete the Capacity 1.1 held-out decision-receipt
+  contract at
+  `artifacts/ggb-capacity-gates/20260811-heldout-decision-receipt-contract/`.
+  Exact one-shot D1 authority is digest/case/scope bound; duplicate-member,
+  oversized, symlink, stale, ambiguous, and widened inputs fail closed. Nine
+  tests, compilation, and the GGB fixture checker pass. No receipt was created
+  and A09--A12 remain sealed. Next: wait for Ben's explicit D1 decision, then
+  independently bind it to the source message before any one-shot runner.
+
+- [x] 2026-08-11: Bind ThreadKeeper queued escalation-denial guidance to the
+  durable transcript outcome at commit `0567e13`. Authenticated
+  `escalation_denied` returns now require the dispatcher's exact local/cheap
+  fallback instruction, preventing a caller from overriding the budget gate
+  before audit publication. One focused regression, all 33 boundary tests,
+  compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+  passed.
+
+- [x] 2026-08-11: Repair ProtoCosmo2's long multiline reply delivery failure.
   Deliverable: preserve and deliver the already-generated substantive answer
   across the inner bridge/outer transport boundary. Acceptance: provider-free
   screenshot regression, focused/full tests, independent review, one supervised
   receiver, and a fresh correlated Telegram delivery. Next command: reproduce
   the exact bridge-capture boundary in isolated staging. Evidence:
   `experiments/20260811T184500Z-protocosmo2-long-reply-failure/`.
+  Corrected authenticated bridge commits `6ace94f` + `42c0461` passed
+  independent review, 24 focused tests, and 148 full provider-free tests.
+  Guarded ProtoCosmo2 deployment preserved byte-identical state/cursor and one
+  receiver. Fresh human-authored Iter handoff messages produced correlated
+  deferred results with Telegram receipts `1023`, `1026`, and `1028`; the
+  long-reply delivery repair is accepted. The separate missing embedded-link
+  issue remains outside this repair's scope.
 
 - [x] 2026-08-11: Bind deterministic ThreadKeeper queued error recovery actions
   to the durable transcript outcome at commit `0d51f8b`. Transcript-backed
@@ -136,7 +3304,7 @@ Use small, testable tasks. Keep the top of each section in priority order.
   Evidence:
   `experiments/20260810T214225Z-protocosmo2-document-reply-policy/`.
 
-- [ ] 2026-08-11: Replace permanent deferred acknowledgements for ProtoCosmo2,
+- [x] 2026-08-11: Replace permanent deferred acknowledgements for ProtoCosmo2,
   Protomega, and Protomega2 with a temporary status reply such as
   `Formulating my response...`, deleted after the correlated final
   result/failure is delivered. Acceptance: preserve immutable reply routing,
@@ -144,10 +3312,18 @@ Use small, testable tasks. Keep the top of each section in priority order.
   failures; prove status deletion is idempotent and cannot delete unrelated
   messages. Ben authorized implementation in Telegram source 18109 after ZIP
   ingestion passed for ProtoCosmo2 and Protomega2. Staging implementation on
-  shared transport baseline `df06c29` now passes 114/114 focused and 148/148
-  full provider-free tests, compilation, and diff checks. Production is
-  unchanged. Next command: obtain separate frontier-model review of the exact
-  clean staging commits before requesting guarded deployment. Evidence:
+  shared transport baseline `df06c29` initially passed 114 focused and 148
+  full provider-free tests. Independent review BLOCKED that candidate because
+  one undeletable stale status could prevent future Telegram polling. Transport
+  commit `93fc721` adds durable bounded backoff/incident state and makes cleanup
+  nonblocking; 116 focused tests and independent re-review PASS. All three bots
+  were guarded-restarted on runner `215a344` and transport `93fc721`, with one
+  receiver each, preserved cursors, empty ingress/outbox queues, and
+  ProtoCosmo2's separate `42c0461` long-reply driver retained. Next: fresh
+  Human-authored acceptance passed on all three identities: ProtoCosmo2 status
+  `1039`, Protomega status `9930`, and Protomega2 status `324` were each
+  durably marked deleted only after their correlated terminal delivery.
+  Evidence:
   `experiments/20260811T183000Z-temporary-deferred-status/`.
 
 - [x] 2026-08-10: Require durable transcript evidence for every claimed
@@ -1715,6 +4891,16 @@ Use small, testable tasks. Keep the top of each section in priority order.
   transcripts effectively unbounded. Two focused and all 1,149 provider-free
   subagent hardening checks passed, plus Python compilation, `git diff
   --check`, corrected documentation, and draft PR #1 safety-floor ancestry.
+
+- [x] 2026-08-13: Bound projected ThreadKeeper run-record audit growth at
+  commit `42a7a0e`. Direct `run_tools` batches now reserve capacity for every
+  possible file, test, or patch-proposal audit append before the first effect,
+  so an already capped record cannot be mutated past its 256-entry bound. The
+  focused regression, 48 boundary tests / 135 subtests, 30 direct-tool mock
+  tests, compilation, diff check, and draft PR #1 safety-floor ancestry pass.
+  A broader keyword selection exposed eight pre-existing candidate-review
+  fixtures missing required transcript identity; the relevant selection is
+  clean.
 
 - [x] 2026-08-04: Hard-cap ThreadKeeper bounded-history and return
   configuration at commit `57ac088`. Per-dispatch turns and retained prompt
@@ -4191,6 +7377,12 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 - [x] Harden ProtoMegaBot's model-output and Telegram-delivery pipeline after the 2026-07-14 silent Ship-of-Theseus reply loss. Implemented a versioned JSON reply/action envelope plus strict legacy compatibility, full-batch allowlist/arity validation, one bounded formatter repair, visible failure when a human reply is required but absent, correlation-ID message identity, untrusted history separation, continuation-safe queueing, delivery-success deduplication, chunk retry progress, and poll-independent sends. Archived the 5.6-sol consultation and implementation specification under `docs/`. Coherent isolated commit: `a16e714` on `agent/protomega-output-pipeline-hardening`; integrated and deployed to the live dirty runtime without disturbing unrelated edits. Validation: helper assertions, Python compile, MeTTa parse, and all 31 focused test bodies passed; only the repository's unconditional Docker cleanup hook errored because Docker is unavailable. Runtime restarted cleanly with no poll/send/traceback errors. The supervisor's stale MTProto-only readiness check was also made transport-aware and now correctly reports the active one-worker/zero-bridge Bot API topology as process-ready. Remaining reliability work is durable inbound journaling and crash-persistent delivery receipts, followed by a human Telegram canary.
 - [x] Adopt Gödel Oruži's GGB Capacities Curriculum v0.1 as a rough medium-term roadmap for upgrading `@Protomegabot` intelligence step by step. First pass recorded in `GGB_CAPACITIES_ROADMAP.md`: maps 25 working capacities to OmegaClaw/ThreadKeeper/PeTTa-memory/`petta-chem` anchors, near-term empirical gates, and next implementation tasks. Keep each upgrade empirical/testable rather than aspirational. 2026-07-01 12:30 PDT cron updates added `GGB_CAPACITY_GATE_TEMPLATE.md`, refreshed the roadmap with local ThreadKeeper hardening / `petta-memory` / `petta-chem` progress, archived the ThreadKeeper partial gate at `artifacts/ggb-capacity-gates/20260701-threadkeeper-hardening/RUN.md`, the `petta-memory` bounded prompt/index/PLN partial gate at `artifacts/ggb-capacity-gates/20260701-petta-memory-prompt-view/RUN.md`, and the `petta-chem` run-contract reuse partial gate at `artifacts/ggb-capacity-gates/20260701-petta-chem-run-contract/RUN.md`. 2026-07-01 16:30 PDT cron added `.metta` sibling fixture files (`CONFIG.metta`, `MANIFEST.metta`, `EVENTS.metta`, `METRICS.metta`, `SUMMARY.metta`) for the `20260701-petta-chem-run-contract` gate following the `GGB_GATE_RUN_CONTRACT_MAPPING.md` field mapping; verified required-files check, single `run-summary`, `ggb-check` coverage against `RUN.md`, and re-ran source checks (`run_exp02.sh`, `test_exp02_contract_files.sh`, `git diff --check` all pass). 2026-07-01 20:42 PDT cron added `local/check-ggb-gate-fixtures.py` and archived `artifacts/ggb-capacity-gates/20260702-ggb-fixture-smoke/RUN.md`; the checker passes on the `petta-chem` GGB fixture (required files balanced, one top-level `run-summary`, 3 `RUN.md` checks covered by 4 `ggb-check` atoms), and the roadmap now reflects `petta-memory` 53-test/PeTTaChainer-candidate status plus `petta-chem` seed-37/twenty-seven-record folded-summary progress. 2026-07-02 00:38 PDT cron applied the same `.metta` sibling fixture pattern to the ThreadKeeper hardening gate (`CONFIG.metta`, `MANIFEST.metta`, `EVENTS.metta`, `METRICS.metta`, `SUMMARY.metta`) and verified both fixtures with `local/check-ggb-gate-fixtures.py`; ThreadKeeper focused mock pytest also passes locally via `local/threadkeeper-pytest-venv` (`28 passed`). 2026-07-02 04:39 PDT cron applied the same sibling fixture pattern to the `petta-memory` OmegaClaw-style prompt/index fixture gate and improved the checker to recognize both `## Checks run` and `## Checks`; checker passes across all three gate fixtures, and `petta-memory` unittest passed 64 tests. 2026-07-02 08:37 PDT cron refreshed the roadmap/gate fixture with ThreadKeeper head `c3e836b` provider-fail-closed evidence (focused mock pytest now 31 passing tests) and current `petta-memory` PeTTaChainer profiling status (67 stdlib tests; compile/add bottleneck is the next narrow task). 2026-07-03 00:35 PDT cron refreshed the roadmap and ThreadKeeper gate fixture for Phase 3 audit/accounting evidence at head `554fb85`: dispatch wall-clock timeout plus `worker_token_usage` are now mapped to GGB capacities 3.2/3.5/5.2, focused mock pytest passes 40 tests, and the sibling-fixture checker passes across ThreadKeeper, `petta-memory`, `petta-chem`, and GoalChainer gates. 2026-07-03 02:21 PDT cron added ThreadKeeper head `d0c887d` hash-chained `index.jsonl` audit entries (`previous_entry_sha256` / `entry_sha256`), refreshed the roadmap/gate fixture, and verified focused mock pytest at 41 passing tests plus the same four-gate fixture checker. 2026-07-03 04:37 PDT cron refreshed the roadmap/gate fixture for ThreadKeeper head `f77ac1b` patch-proposal-only task contracts, mapping it to GGB capacity 4.5; focused mock pytest passes 43 tests and the four-gate fixture checker passes. 2026-07-03 08:38 PDT cron refreshed the roadmap/gate fixture again for ThreadKeeper queue-only dispatch (`a33b1e3`), optional adjudicator gate (`09899a0`), and documentation head `1c001e4`; focused mock pytest passes 47 tests and the four-gate fixture checker passes. 2026-07-03 12:37 PDT cron refreshed the roadmap/gate fixture for queued-worker primitive (`8eae787`) and bounded operator-supervised queue drain (`ec17402`); focused mock pytest passes 51 tests and the four-gate fixture checker passes. 2026-07-03 14:03 PDT cron pushed ThreadKeeper commit `5a472cd` to retain failed queued-worker claims as `*.failed` plus compact `*.failed.result.json` audit sidecars, refreshed the roadmap/gate fixture, and verified focused mock pytest at 52 passing tests. 2026-07-03 16:03 PDT cron pushed ThreadKeeper commit `38ae193` to ignore retained `*.done.result.json` / `*.failed.result.json` audit sidecars when listing/counting pending queue tasks, preventing false drain/backpressure after failed-claim retention; focused mock pytest still passes 52 tests. 2026-07-03 16:39 PDT cron added ThreadKeeper commit `ee883ce` (`Add subagent candidate review helper`), later pushed with commit `b14ade5` (`Add subagent run index verifier`): `review_subagent_candidate(transcript_path)` verifies transcript checksum sidecars and reports patch-proposal/adjudication gates without applying patches, accepting outputs, calling an LLM, draining queues, daemonizing, or changing runtime behavior; `verify_subagent_run_index(index_path=None)` now validates the compact `index.jsonl` hash chain plus recorded local transcript SHA-256s without repairing/replacing files or expanding transcripts into parent context; focused mock pytest now passes 57 tests. 2026-07-03 20:38 PDT cron refreshed the roadmap/gate fixture to head `d0d1dfa`, mapped explicit queued-worker result-sidecar rejection into capacity 4.5/5.2 audit discipline, and incorporated current `petta-memory` static-import microbenchmark evidence (88 stdlib tests, selected-space runtime fact-membership check) plus current `petta-chem` exp02/exp03 evidence (seed-107/75 exp02 records and exp03 dynamic aggregate/export atoms); focused mock pytest passes 58 tests and the four-gate fixture checker passes.
+- [x] 2026-08-13: ThreadKeeper complete direct run-record preflight. Commit
+  `0480552` requires caller-supplied `run_tools` records to be bounded exact
+  JSON trees before registry construction or effects, rejecting behavioral,
+  cyclic/deep, non-finite, oversized-integer/key/string/node inputs. All 53
+  boundary tests (150 subtests), four relevant mock tests, compilation, diff
+  check, and draft PR #1 safety-floor ancestry passed.
 - [ ] ThreadKeeper upgrade coordination: reconcile Lila/Gödel Oruzi feedback (forwarded screenshots from Ben, 2026-06-30) with draft PR https://github.com/hlgreenblatt/ThreadKeeper/pull/1. Current PR already addresses the top safety floor: path sandbox, fail-closed budget fallback, disabled/allowlisted argv-only shell execution, and tests. Next code work should avoid duplicating that branch and target the still-open hardening items below.
 - [ ] ThreadKeeper next hardening branch candidate: LLM/subagent call timeout + retry/backoff; bounded history/digesting for long-running subagents; structured returns (`summary`, `files_changed`, `tests_run`, `uncertainty`, `next_action`, `transcript_path`); persistent run/task records with full child transcript saved locally and digest returned to parent. 2026-06-30 local branch `agent/threadkeeper-hardening-next` commit `f79891c` started from PR #1 safety-floor head and implemented the timeout/retry/backoff slice with focused tests; later 2026-06-30 work added deterministic bounded history digests, JSON structured dispatch returns, and persistent local subagent transcript records under `memory/subagent-runs`/`OMEGACLAW_SUBAGENT_RUN_DIR`. 2026-07-01 pushed commit `970b519` closed the remaining early-failure record gap: setup/config/contract/provider/escalation-denial failures now return bounded JSON parent digests and persist minimal transcript records without calling worker LLMs. 2026-07-01 commit `caf3f9b` then closed the no-tool-subset/default-subset setup gap with the same structured return + transcript path. Pytest remains unavailable locally, direct assertion replay passed.
 - [ ] ThreadKeeper governance/safety follow-up: per-dispatch quotas and cancellation token; task contracts (`objective`, `allowed_paths`, `forbidden_actions`, `done_criteria`); atomic file writes; make `escalation.metta` read-only or integrity-checked; validate tool-call arguments with strong types/safety checks; replace fragile cloud/local model string heuristics with explicit model/provider metadata. 2026-06-30 local branch also implemented atomic subagent `write-file`, stricter tool argument validation, per-dispatch tool-call quotas, file-based cancellation, and optional SHA-256 integrity pinning for `escalation.metta` before cloud delegation. 2026-07-01 local commit `68d7bc5` added the first task-contract enforcement slice: JSON/persona contracts are prompted, persisted, and enforced for `allowed_paths` and `forbidden_actions`, with focused tests. Local commit `f6df5ef` then made subagent `append-file` atomic too (read existing content, write temp file, fsync, `os.replace`) and added a focused test. Local commit `0b185a4` replaced the remaining base-url/model-string worker classification with explicit `node_role` and `endpoint_kind`/provider metadata, including focused tests for missing `node_role` rejection and transport selection without localhost heuristics. Local commit `2fcb0ba` added persona key validation plus optional `persona_sha256` prompt-file integrity pinning, failing closed before worker calls on mismatch. Local commit `5fdd131` aligned the committed persona examples/README with those stricter requirements and added a regression check that example configs have explicit metadata and valid prompt pins. Local commit `9b6439c` added an atomic per-endpoint worker LLM calls/minute guard with structured `rate_limited` returns. Local commit `07c8742` added a cross-process per-endpoint in-flight worker LLM concurrency guard with structured `concurrency_limited` transcript status. Local commit `34c96b4` strengthened file-write atomicity with per-target `fcntl` locks around `write-file`/`append-file` updates and refreshed the subagent reference docs. Pushed commit `a4a9b87` tightened task-contract shape further by persisting/bounding the objective and rejecting unsafe `forbidden_actions` identifiers before worker calls. Pushed commit `f1a8a70` sandboxed persona prompt paths under `PERSONA_DIR`, closing prompt-file path/symlink escape risk before worker calls. Pushed commit `0d1d0af` added transcript checksum sidecars and returns `transcript_sha256` in the structured parent digest, giving persistent run records a cheap local integrity check. Pushed commit `1d30b4b` lets task contracts include strict non-negative `max_tool_calls` to narrow the global per-dispatch tool quota, with focused tests and docs. Pushed commit `d8b922f` adds a compact locked `index.jsonl` audit listing for finished subagent run records, keyed to each transcript path and SHA-256 sidecar. Pushed commit `c3e836b` makes OpenAI-compatible provider setup fail closed before the worker loop if the local client/SDK cannot initialize, returning a structured `provider_invalid` record instead of burning turns on repeated no-client pseudo-responses. Pushed commit `24bf6bf` hardens numeric env parsing for timeout/retry, quota, digest, contract, and validation knobs: malformed values use safe defaults and below-minimum values clamp instead of crashing import or accidentally disabling guards. Pushed commit `893a0e3` fixes optional allowlisted subagent shell commands to run from `OMEGACLAW_SUBAGENT_WORKSPACE`, closes stdin, and fails closed when the workspace directory is missing, preserving argv-only/no-shell execution while tightening workspace containment. Pushed commit `8e12b18` further tightens the optional shell tool by rejecting explicit executable paths even when the basename is allowlisted, so subagents must use allowlisted command-name tokens only. Pushed commit `01fe0d8` sanitizes inherited `PATH` for optional subagent shell commands, removing empty/`.` entries and workspace-contained path entries so an allowlisted command name cannot be hijacked by a workspace-controlled executable after `cwd` is pinned to the workspace. Pushed commit `b828ebf` scrubs the optional shell child environment so allowlisted subprocesses get only sanitized `PATH`, workspace-pinned `HOME`, and locale/timezone vars rather than inherited API keys/tokens/session env; focused mock pytest now passes 36 tests. Pushed commit `94d57c9` adds a per-worker-response tool-call cap (`OMEGACLAW_SUBAGENT_MAX_TOOL_CALLS_PER_TURN`, default 3) with structured `TURN_QUOTA_EXCEEDED` / transcript status `turn_quota_exceeded`; focused mock pytest now passes 37 tests. Pushed commit `f880c50` bounds subagent `read-file` output via `OMEGACLAW_SUBAGENT_MAX_READ_FILE_CHARS` (default 20000) with explicit truncation markers and focused coverage; focused mock pytest now passes 38 tests. Pushed commit `209da6c` adds configurable JSON audit/task read cap `OMEGACLAW_SUBAGENT_MAX_JSON_FILE_BYTES` for queued task/transcript JSON reads, with focused mock pytest now passing 146 tests. Pushed commit `a258c73` adds `OMEGACLAW_SUBAGENT_MAX_TRANSCRIPT_AUDIT_BYTES` to bound transcript hash reads during run-index verification; pushed commit `82f490b` adds bounded reverse-tail scanning for run-index append/rotation so finished-run appends no longer read a long unrotated `index.jsonl` into memory; focused mock pytest now passes 157 tests. Local commit `a1a1bce` makes compound invalid dispatch boundaries fail closed as one persistent structured record, so a malformed integer limit combined with non-string goal/tool subset/persona can no longer reach transcript path construction with unsafe scalar types.
@@ -4229,6 +7421,17 @@ Use small, testable tasks. Keep the top of each section in priority order.
 - [ ] Docker-based install comparison, if system Docker becomes available/desired.
 - [ ] Run OmegaClaw autotests locally without Docker assumptions.
 - [ ] Integrate OmegaClaw lessons into `petta-chem` PeTTa runtime planning where appropriate, without merging the projects.
+
+- [ ] 2026-08-13 clean-install pivot execution gate: wait for the unrelated
+  petta-chem lineage to become terminal, then capture read-only legacy
+  quarantine evidence and create the wholly fresh pinned layout. Acceptance:
+  no process resolves the shared legacy PeTTa tree; evidence and frozen hashes
+  are recorded before clone/dependency work. Next command: read-only process
+  topology recheck. Evidence:
+  `experiments/20260814T053851Z-clean-install-pivot/RUN.md`. At 23:30 PDT the
+  owner/runner remained live; the earlier query/SWI pair was absent at the
+  sample instant, which is not terminal-run evidence. Scoped diff check and
+  frozen artifact hashes passed unchanged.
 
 ## Done recently
 
@@ -4712,6 +7915,137 @@ Related defects found during 2026-08-06 diagnosis (fix in same or sibling branch
 
 ## ProtoCosmo2 post-answer runtime failure (2026-08-09)
 
+- [ ] 2026-08-12 restore ProtoCosmo -> Protomega bot-bot ingress in
+  `ProtoBots-BotBotChats`. Deliverable: permit only the explicitly configured
+  ProtoCosmo bot identity to address Protomega in chat `-5459676079`, while
+  retaining the default rejection of bot-authored messages, reply-depth bounds,
+  and loop prevention everywhere else. Acceptance: provider-free fixtures prove
+  the allowlisted sender/chat is admitted, an unknown bot and the same bot in a
+  different chat are rejected, and self/reply-loop traffic is rejected; focused
+  and broader transport suites pass; Protomega is guarded-restarted with one
+  receiver; one fresh ProtoCosmo-originated discussion is correlated from
+  ingress through Protomega reply delivery. Next command: resolve ProtoCosmo's
+  exact Telegram bot ID from read-only runtime metadata, add the smallest
+  failing fixture around `channels/private_canary_telegram.py::_extract_inbound`,
+  then implement a configuration-bound bot-origin allowlist. Evidence:
+  `projects/omegaclaw/experiments/20260812T210600Z-omega-result-handoff-repair/RUN.md`.
+
+- [x] 2026-08-12 highest-priority Protomega/ProtoCosmo2 substantive handling
+  repair: deterministic gates and guarded deployment completed; fresh Protomega
+  production canary passed (`9998` -> task `f101d805...3b0272` -> result receipt
+  `10000`). Fresh ProtoCosmo2 canary failed (`1196` -> task
+  `256845ff...4606` -> bounded failure receipt `1206`, incident `348`, cause
+  fingerprint `da7e1dfa...8f2b`). The timeout race was corrected and frozen as
+  `fd9ce0a`; provider-free gates passed, rollback state was captured, and
+  ProtoCosmo2 was owner-guarded started as one owner/receiver
+  (`3533841/3533854`) with no competing bot-ID process. Next: obtain one fresh
+  human substantive ProtoCosmo2 canary and correlate ingress through
+  task/provider/action to egress; overall acceptance remains open. The fresh
+  retry failed (`1214` -> task `49fc4dec...d2c06` -> failure receipt `1221`)
+  after 291 seconds with the same bounded cause fingerprint, so ProtoCosmo2
+  was stopped through its owner and confirmed inactive. A provider-free patch
+  now classifies known runtime stderr into bounded cause codes without storing
+  stderr; focused telemetry tests pass 8/8. Broader gates now pass 45/45 and
+  125/125; the increment is frozen as `acd0736` and owner-guarded deployed as
+  one owner/receiver (`3546529/3546543`) with rollback state captured. Ben was
+  sent diagnostic canary request `18450`. Next: correlate that fresh human
+  canary and, on failure, stop immediately and use its bounded cause code for
+  the next provider-free correction. At the 2026-08-13 03:54 UTC read-only
+  checkpoint no fresh ingress had arrived: offset `387573085`, incident
+  sequence `349`, and last source/job/receipt still `1214` /
+  `49fc4dec...d2c06` / `1221`; singular topology remained
+  `3546529/3546543`. At the 04:07 UTC checkpoint the cursor had advanced to
+  `387573091`, but the processed-message tail, incident sequence, and responder
+  incident tail were unchanged, so no human acceptance event had arrived;
+  singular topology remained `3546529/3546543`. A fresh third human canary then
+  failed (`1228` -> task `c869b343...1f25` -> failure receipt `1239`), with
+  incident `350` and bounded responder cause `case_runtime_exited_early`.
+  ProtoCosmo2 was immediately owner-stopped and confirmed inactive with no
+  receiver. Focused provider-free tests for fixed-vocabulary bridge-state
+  refinement pass 8/8. The real Phase-5 boundary was then reproduced: PeTTa
+  exits after dispatch while the separately owned authenticated bridge still
+  owns the provider request, but the case previously allowed only two seconds
+  before failing. The case now waits only while that authoritative bridge is
+  alive and within the existing bounded deadline, retaining authenticated
+  validation and fail-closed behavior after bridge exit. Focused tests pass
+  18/18; broader runtime/identity tests pass 53/53 plus the separately isolated
+  cancellation/orphan case 1/1. The correction is frozen as `a6d5777`.
+  Preflight confirmed ProtoCosmo2 inactive with no bot-identity process and
+  unchanged supervisor hashes; a mode-0600 rollback state copy with matching
+  SHA-256 was captured. Owner-guarded start then proved exactly one owner and
+  receiver (`3563964/3563978`) and no competing bot-identity process. Ben was
+  sent the single fresh-canary request as Telegram message `18475`. Next:
+  correlate that human substantive canary through
+  provider/action to source-bound egress; stop immediately on failure.
+  At the 2026-08-13 04:47 UTC read-only checkpoint, no fresh human substantive
+  ingress had been admitted: cursor `387573107`, processed-message tail `1228`,
+  deferred-job tail `c869b343...1f25`, and incident sequence `350` were
+  unchanged. Singular topology remained `3563964/3563978`; no canary request
+  was repeated. Next: continue correlating the first fresh admitted canary and
+  owner-stop immediately if it fails.
+  At the 04:52 UTC checkpoint the cursor remained `387573107`, pending inbound
+  remained empty, processed-message tail remained `1228`, and incident sequence
+  remained `350`. The owner/receiver topology remained singular at
+  `3563964/3563978`; no Telegram or production state was mutated and the canary
+  request was not repeated.
+  A fresh fourth human canary was admitted (`1247` -> task
+  `83065796...df97` -> bounded failure receipt `1257`) and failed as incident
+  `351` with cause `exited_bridge_response_failed_authentication`.
+  ProtoCosmo2 was immediately owner-stopped and confirmed inactive. The bridge
+  had emitted an unsigned raw exception object, making a genuine provider
+  failure indistinguishable from a forged response at the case boundary. The
+  provider-free candidate now authenticates fixed-vocabulary failure results
+  over the exact request correlation while persisting no exception text or
+  secrets; focused authentication/tamper/classifier tests pass 14/14.
+  The authenticated five-code provider failure vocabulary now propagates into
+  the outer responder incident record without retaining stderr or provider
+  detail. Focused handoff/classifier tests pass 19/19; the complete local
+  runtime/identity suite passes 64/64 with the isolated cancellation/orphan
+  test passing 1/1; the shared transport/identity replay passes 159/159.
+  Compilation and scoped diff checks pass. The exact reviewed runtime revision
+  is `5946682` (`Authenticate ProtoCosmo2 bridge failures`). Stopped preflight
+  found no ProtoCosmo2 receiver; owner hashes matched the recorded baseline and
+  a mode-0600 rollback state copy matched SHA-256 `edc1746a...70da1`.
+  Owner-guarded start proved exactly one owner/receiver
+  (`3578489/3578503`) in one process group and exactly one process bearing bot
+  ID `8716054285`. Ben was sent the sole fresh-canary request as Telegram
+  message `18508`. That canary was admitted (`1266` -> task
+  `6ca1d653...7266a5`, ack `1267`) but failed after 269 seconds with failure
+  receipt `1268`, incident `352`, and the newly exposed bounded cause
+  `provider_timeout`. ProtoCosmo2 was immediately owner-stopped and confirmed
+  to have no remaining receiver. The provider session itself reached a normal
+  stop about ten seconds after the old bridge subprocess ceiling, establishing
+  a concrete budget miss. ProtoCosmo2's provider budget is now 300 seconds,
+  matching Protomega; the existing dynamic layers become 320-second bridge,
+  340-second case, and 370-second outer watchdog budgets. Focused budget tests
+  pass 3/3, the broader supervisor/runtime set passes 68/68, and the isolated
+  cancellation/orphan test passes 1/1. The exact correction is frozen as
+  `b72f98a` (`Extend ProtoCosmo2 provider budget`). Preflight then found a
+  concurrent unrelated shared-owner Chroma-path change; it was preserved,
+  reviewed, stable at hash `4a6b25dd...39c1d`, and passed 11/11 owner tests.
+  A fresh mode-0600 rollback state copy matches hash `4f936b6c...b5ef`.
+  Owner-guarded start proved exactly one owner/receiver
+  (`3586180/3586194`) and no competing bot-ID process. Ben was sent the sole
+  new canary request as Telegram message `18515`. Next: correlate that fresh
+  human substantive canary through provider/action to source-bound egress;
+  owner-stop immediately on failure. At the 2026-08-13 05:48 UTC read-only
+  checkpoint, the cursor had advanced to `387573149`, but pending inbound was
+  empty, the processed/deferred tail remained source `1266`, and incident
+  sequence remained `352`; therefore no attributable human canary had arrived.
+  Supervisor status plus an observer-safe `/proc` rescan proved exactly one
+  owner/receiver (`3589547/3589560`) in one process group and one bot-ID
+  process. No canary request or production mutation was made. Final fresh
+  ProtoCosmo2 acceptance then passed: human source `1289` was admitted as task
+  `8288a614...f5d7c`, acknowledged by receipt `1290`, completed through
+  provider run `956ed817-fda1-40eb-8022-f96cdf7ae535` with three successful
+  tool actions and session status `success`, and delivered the source-bound
+  result as receipt `1291`. Incident sequence remained `352`; no subprocess
+  remained beneath the receiver after the turn. Singular owner/receiver
+  topology remained `3589547/3589560`. Together with Protomega's earlier
+  `9998` -> `f101d805...3b0272` -> `10000` trace, both required production
+  acceptances are complete. Evidence:
+  `projects/omegaclaw/experiments/20260812T210600Z-omega-result-handoff-repair/RUN.md`.
+
 - [x] Repair source message 848 / failure receipt 849 without weakening malformed-result handling.
   - Deliverable: preserve and return a fully captured, validated bridge answer when the inner
     OmegaClaw/PeTTa process fails only after publishing that answer; retain a private hashed
@@ -4729,3 +8063,298 @@ Related defects found during 2026-08-06 diagnosis (fix in same or sibling branch
     `edfa7109...d600` and still delivered the validated, source-bound result as
     receipt 860 with exact marker `PC2-HANDOFF-READY`. Exactly one receiver
     remained live and the supervisor start lock was free.
+- [x] **Automate OmegaClaw conversational-memory acceptance; eliminate manual
+  copy/paste orchestration (2026-08-13)** — deliver a bounded controller that
+  generates unique markers and runs write -> direct-DB proof -> guarded restart
+  -> fresh-session recall -> cross-agent negative lookup in a dedicated,
+  state-isolated Telegram staging group using Bot API 10 bot-to-bot delivery.
+  It must bind source/result receipts, enforce one active identity, stop on any
+  ambiguity, preserve rollback evidence, and never share production mutable
+  state. Acceptance: a full three-identity staging run completes without Ben
+  relaying messages; production acceptance requires at most one final private
+  human canary per identity. Next command: inspect the existing Bot API 10
+  group discussion sender/receiver and the conversational-Chroma validator,
+  then add a provider-free controller regression before any live staging use.
+  Evidence path:
+  `experiments/20260813T061500Z-conversational-chroma-repair/RUN.md`.
+  - Completed 2026-08-14: provider-free tests were added first and now cover
+    the full nine-transaction workflow, path isolation, receipt binding,
+    ambiguity shutdown, orphan draining, per-target driver routing, stale
+    backlog draining, late duplicate rejection, explicit remember/Markdown
+    prohibition, exact recall formatting, and authenticated agent/model route
+    preflight.
+  - Full autonomous group run passed with no Ben relay. Bound source/result
+    pairs: Protomega `458/459`, `460/461`, `470/471`; Protomega2 `1545/1546`,
+    `1547/1548`, `1555/1556`; ProtoCosmo2 `10158/10159`, `10160/10161`,
+    `10166/10167`. Each fresh store contains exactly one local marker at
+    dimension 384; every foreign lookup returned exact `NOT FOUND` without a
+    DB mutation.
+  - All staging receivers and descendants stopped. Guarded production restore
+    established exactly one owner/receiver per identity with three distinct
+    production `CHROMA_DB_PATH` values. No additional human message relay or
+    canary was required.
+  - Final verification: controller/transport `129 passed`, live-Core
+    provider-free `154 passed`, real MeTTa `4 passed`, broader lifecycle set
+    `156 passed`; compilation, shell syntax, and scoped diff checks passed.
+  - Repair cron `ee282ced-8032-44c4-8d6f-2e66cc2f7ed2` removed after all
+    gates passed.
+# 2026-08-14 00:01 PDT pivot gate
+
+- [x] Wait for terminal completion of petta-chem owner PID 4054773/runner PID
+  4054775 before reading or changing the shared legacy PeTTa tree. Completed
+  at 00:35 PDT: owner/runner and query/SWI PIDs were absent, and a process scan
+  found no legacy-tree user. Evidence is recorded in
+  `experiments/20260814T053851Z-clean-install-pivot/RUN.md`.
+- [x] Immediately after terminal completion, capture read-only quarantine
+  evidence and create the fresh pinned upstream layout outside `repos/PeTTa`.
+  Completed at 00:35 PDT: terminal process scan passed; legacy commits, dirty
+  states, and original Protomega Chroma metadata were captured read-only; the
+  fresh layout is pinned at PeTTa `7037f4c`, OmegaClaw `2cdef05`, and Chroma
+  plugin `2184848`. No original Chroma copy or database open occurred.
+- [x] Build an isolated SWI-Prolog 10.x/manual mock environment and run the
+  smallest production-free upstream test path with a scrubbed allowlist.
+  Acceptance: exact toolchain versions and commands recorded; no production
+  token variables, shared mutable paths, descendants, or orphans; the run is
+  labeled a non-Docker deviation rather than unchanged CI acceptance.
+  Completed through the pinned PeTTa smoke and clean upstream sequential/idle
+  mock loop; evidence: `experiments/20260814T075741Z-petta-readme-smoke/` and
+  `experiments/20260814T083100Z-clean-full-loop-baseline/`.
+- [x] Repair staging so each identity has a genuinely distinct opened
+  conversational-history path. Acceptance: canonical/device/inode checks cover
+  the file actually opened by `memory.metta`; two turns per identity leave no
+  foreign marker; restart retains only the local marker. Next command:
+  evaluate the smallest config-only/runtime-layout solution before any source
+  adapter. Completed with distinct runtime layouts, 6/6 turns, distinct inodes,
+  and zero foreign markers. Evidence:
+  `experiments/20260814T103800Z-corrected-three-runtime-conversations/`.
+- [ ] Provide production-free fault and addressed-concurrency test seams.
+  Acceptance: injected error/stall produce correlated bounded terminal failure
+  and recovery; eight messages across two explicit sessions each get one
+  origin-bound reply without leakage. Unchanged Test/test mocks cannot express
+  these cases. Next command: specify the smallest disposable test adapter.
+  Evidence: `experiments/20260814T100700Z-restart-persistence/`.
+  - 2026-08-14 prerequisite seam passed: injected error/stall were bounded and
+    recovered, and eight interleaved messages across two explicit sessions had
+    eight origin-bound replies with zero leakage. Full-loop wiring remains open.
+    Evidence: `experiments/20260814T105100Z-disposable-fault-addressing-seams/`.
+  - 2026-08-14 full-loop fault wiring passed in a disposable runtime: error and
+    stall produced correlated visible failures in 0.353s and 1.208s, with
+    immediate recovery in 1.021s and 1.006s and zero descendants. The remaining
+    open acceptance item is full-loop addressed multi-session concurrency;
+    upstream Test/test cannot express an origin envelope. Evidence:
+    `experiments/20260814T121646Z-full-loop-provider-faults/`.
+  - 2026-08-14 addressed compatibility gate is a structural NO-GO for unchanged
+    core: receive/send transport text only, and a deterministic interleaving
+    routed A's delayed reply to B under the only possible mutable-route shim.
+    A minimal explicit event-ID seam is specified; implementation awaits the
+    required phase-start Fable review. Evidence:
+    `experiments/20260814T123400Z-full-loop-addressed-concurrency/`.
+  - 2026-08-14 commit `c47e7eb` adds the production-free addressed mock
+    adapter. Six seam/adapter tests pass for reverse completion, destination
+    authority, novelty, fail-closed selectors, and injection resistance. The
+    full-loop harness remains open: implement the preregistered controlled
+    provider schedule in `tests/run_addressed_full_loop.py`, then run
+    `experiments/20260814T133500Z-addressed-full-loop-mock/command.sh`.
+    Evidence: `experiments/20260814T133500Z-addressed-full-loop-mock/`.
+  - 2026-08-14 commit `98b758b` closes the real-loop reverse-routing portion:
+    7 focused tests and eight exact reverse completions passed through PeTTa,
+    while empty/foreign/finalized selectors failed visibly without fallback.
+    Keep the parent task open for the preregistered pending-event restart and
+    independent Fable review. Next command: add and run the disposable restart
+    outcome without changing production adapters. Evidence:
+    `experiments/20260814T133500Z-addressed-full-loop-mock/`.
+- [x] Close the Protomega disposable Chroma compatibility/exact-recall gate.
+  Pinned plugin `2184848` / ChromaDB `1.5.9` recalled the sole dimension-384
+  record exactly by ID and stored vector, including from a fresh process, while
+  authoritative source hashes/root metadata remained unchanged. Independent
+  `anthropic/claude-fable-5` review reproduced the evidence and returned scoped
+  GO with no critical/high finding. This does not close full-loop integration,
+  text-query embedding compatibility, migration, production attachment, or
+  cutover. Next command: inventory ProtoCosmo2 skills and classify
+  KEEP/REIMPLEMENT/DROP under the pivot exclusions. Evidence:
+  `experiments/20260814T111500Z-protomega-chroma-upstream-recall/RUN.md`.
+
+- [x] Close Protomega migrated-store recall through the actual pinned loop.
+  A kernel-isolated attempt passed store identity (one exact ID/document,
+  1,024-D, exact-vector distance 0) but the loop converted `(query ...)` into
+  `SINGLE_COMMAND_ERROR_NOTHING_WAS_DONE_PLEASE_FIX_AND_RETRY`. Source and
+  migrated-target hashes remained stable and teardown left zero descendants.
+  A direct diagnostic now passes E5 list conversion, exact Chroma query,
+  configured `(query ...)`, and the loop's `eval`/normalize wrapper, all with
+  exact recall and stable source/target hashes. The defect is therefore
+  narrower than the generic action boundary. Disposable instrumentation then
+  exposed `ModuleNotFoundError: lib_chromadb`: the loop launch omitted the
+  copied plugin checkout from `PYTHONPATH`. Adding only that disposable path
+  passed exact recall through two fresh loop processes with 1,024-D list input,
+  integer `k=20`, kernel network denial, stable authoritative/migrated hashes,
+  clean pinned checkouts, and zero descendants. This grants no production
+  attachment or cutover authority. Next command: fold the explicit plugin path
+  into the credential-free Protomega staging launcher and start the autonomous
+  production-free soak.
+  Evidence: `experiments/20260814T165500Z-protomega-full-loop-recall/RUN.md`
+  `experiments/20260814T172200Z-protomega-direct-pycall/RUN.md`, and
+  `experiments/20260814T173641Z-protomega-full-loop-instrumentation/RUN.md`.
+
+- [x] Isolate the Protomega third-turn native crash below the continuous loop.
+  A kernel-network-isolated Python process passed 12 repeated 1,024-D Local E5
+  embeddings, six Chroma queries reusing one vector, and six combined fresh
+  embed/query calls; all 12 queries returned the exact known document. Source
+  and canonical migrated-target hashes stayed byte-identical. The failure did
+  not reproduce in either Python component or their direct composition, so
+  the remaining fault surface is PeTTa/SWI/Janus loop lifecycle/state. Next
+  command: preregister repeated PeTTa query/eval calls in a fresh disposable
+  runtime. Evidence:
+  `experiments/20260814T182200Z-protomega-repeat-isolation/RUN.md`.
+
+- [x] Close the Protomega nonce-separated two-phase production-free soak.
+  The minimal logger repair passed the clean successor with two fresh phases,
+  six exact response-anchored recalls, egress denial, protected-byte stability,
+  and zero descendants. Evidence:
+  `experiments/20260815T065745Z-protomega-repaired-migrated-memory-soak/RUN.md`.
+  Historical predecessor context:
+  A fresh successor reproduced two response-anchored exact recalls and then the
+  same third-turn SWI/Janus SIGSEGV. Zero descendants remained and the original
+  store manifest stayed equal. The attempt was independently invalidated for
+  acceptance by overlapping access to the canonical migrated copy; attached
+  Chroma HNSW bytes also changed on ordinary open/read as previously known.
+  Next command: create an exclusively named per-attempt migrated-store copy,
+  make the launcher reference only its runtime-local attachment, and rerun the
+  nonce-separated phase-1 discriminator before any two-phase claim. Evidence:
+  `experiments/20260814T184300Z-protomega-successor-soak/RUN.md`.
+  **Exclusive-copy discriminator (11:56 PDT):** a unique immutable per-attempt
+  input and distinct mutable runtime attachment removed the overlap ambiguity,
+  but the loop again returned two exact response-anchored recalls then SIGSEGV'd
+  on turn 3. Source, canonical migration, and per-attempt input manifests held;
+  external egress was denied and descendants were zero. Next command: fresh
+  three-turn send-only and query-only loop discriminators. Evidence:
+  `experiments/20260814T185300Z-protomega-exclusive-phase1/RUN.md`.
+
+- [x] Integrate the minimal Protomega logger repair into isolated clean staging
+  source. Deliverable: one-term logger change plus focused contract regression
+  in a clean worktree. Acceptance: relevant upstream tests pass and the staged
+  source repeats the credential-free two-phase migrated-memory restart soak
+  with six exact response-anchored recalls, egress denial, protected-store byte
+  stability, and zero descendants. Completed at local, unpushed commit
+  `5b9a0aa` on `agent/protomega-logger-staging`: 13 Python tests and all six
+  upstream MeTTa test files passed; the post-commit two-phase soak returned six
+  exact recalls with all isolation invariants. Production Omegas remain stopped.
+  Evidence:
+  `experiments/20260815T070910Z-protomega-staged-logger-integration/RUN.md`.
+
+- [ ] Close Telegram-shaped adapter staging gates. Local commit `6457055`
+  passes 21 focused tests and an eight-event actual-loop reverse-routing run
+  under active socket/URL denial, with four private/four group fixture routes,
+  cursor 9, and zero descendants. Remaining acceptance: bounded injected
+  acquisition/delivery/provider faults, pending-event restart/isolation, and
+  effective-model phase-end review. Next command: preregister and implement
+  the bounded fault harness. Evidence:
+  `experiments/20260814T145500Z-telegram-shaped-addressed-adapter/RUN.md`.
+# 2026-08-14 12:16 PDT — Protomega history discriminator
+
+- [x] Run fresh empty-history versus accumulated-history three-turn send-only
+  discriminator. Acceptance evidence: fresh returns three correlated ACKs;
+  accumulated behavior is captured; kernel egress denial, protected-store
+  stability, and zero descendants hold. Evidence:
+  `experiments/20260814T191100Z-protomega-history-discriminator/`.
+- [x] Bisect only disposable copies of accumulated `memory/history.metta` to
+  distinguish a content-specific record from a prompt/history-size threshold.
+  Acceptance: nonce-separated three-turn runs, mechanically recorded prefix
+  byte/record counts, no fatal signal for the passing boundary, reproducible
+  failure for the adjacent failing boundary, protected stores unchanged, and
+  zero descendants. Next command: create a fresh experiment ledger and write
+  its exact bounded bisection command before execution.
+  Result: 21 records / 4,201 bytes passed twice; 22 records / 4,396 bytes
+  reproduced fatal signal 11 twice. Evidence:
+  `experiments/20260814T192400Z-protomega-history-prefix-bisection/`.
+- [x] Substitute equal-size adjacent records across the 21/22 boundary.
+  Original record 22 passed twice in the 21-record / 4,201-byte arm; duplicating
+  equally sized record 21 reproduced the crash twice in the 22-record / 4,396-
+  byte arm. Record-22 content is excluded; count versus aggregate bytes remains
+  unresolved. Evidence:
+  `experiments/20260814T193954Z-protomega-history-equal-size-substitution/`.
+- [x] Cross record count and serialized byte size using disposable valid
+  histories. Acceptance: padded 21-record / 4,396-byte and compacted 22-record /
+  4,201-byte arms each replay with fresh nonces, protected stores unchanged,
+  kernel external-egress denial, and zero descendants. Next command: create a
+  fresh experiment and write the exact bounded harness before execution.
+  Result: padded 21 records / 4,396 bytes crashed twice, while compacted 22
+  records / 4,201 bytes passed twice. Aggregate serialized size, not record
+  count, controls this boundary. Evidence:
+  `experiments/20260814T201300Z-protomega-history-count-byte-cross/`.
+- [x] Bound the serialized-byte threshold at fixed 21-record count using only
+  disposable histories. Acceptance: mechanically generated valid variants,
+  fresh nonce per attempt, passing/failing controls, protected-store hashes,
+  kernel egress denial, and zero descendants. Next command: preregister and
+  run midpoint variants between 4,201 and 4,396 bytes. Result: acceptance
+  failed. An identical 4,346-byte variant both passed and crashed, and seven
+  corrected nonce-unique reruns crashed at both the 4,201-byte low and 4,396-
+  byte high controls. No deterministic byte threshold was established;
+  protected stores, egress denial, and zero-descendant teardown held. Evidence:
+  `experiments/20260814T205300Z-protomega-history-byte-threshold/`.
+- [x] Instrument one disposable 4,201-byte control replay without changing
+  runtime behavior. Acceptance: timestamp turn receipt/ACK, history
+  serialization, SWI/Janus evaluation return, fatal-signal observation, and
+  teardown; bind the exact input digest; retain egress denial, protected-store
+  hashes, and zero descendants. The report must distinguish a crash before
+  evaluation return from a shutdown/teardown crash. ZeroBot assumed sole
+  repair ownership on 2026-08-14 21:10 PDT; automated recovery/status workers
+  are disabled and no subagents will be used. Next command: implement and run
+  the preregistered four-arm logger-boundary discriminator in
+  `experiments/20260815T041252Z-protomega-loop-native-crash-localization/`.
+  Continuity control: main-session cron
+  `aa3862f1-8210-4389-8b54-5bbb410ee323` wakes ZeroBot every five minutes to
+  execute the next concrete command personally; it must be removed when the
+  active repair goal closes.
+  **2026-08-14 22:48 PDT:** corrected the wrapper's predecessor-ledger path
+  leak and executed the no-op-`log/4` arm. Both 4,201-byte and 4,396-byte
+  controls completed 3/3 ACKs with no fatal signal; the command then exited 1
+  on the inherited assertion expecting the high control to crash. Next
+  command: implement and execute the ordinary-`log/4` paired control arm using
+  the same exact inputs. Evidence: the current experiment's `attempts.jsonl`
+  and paired control logs.
+  **2026-08-14 22:55 PDT:** executed the ordinary-`log/4` paired arm. Both the
+  exact 4,201-byte and 4,396-byte inputs ACKed 2/3 turns and then reproduced
+  fatal signal 11; the high-control stack explicitly binds `log/4` to Janus
+  `py_call/3`. Together with the no-op arm's 3/3 passes at both sizes, this
+  localizes the active trigger to the Python logger boundary and rejects the
+  deterministic byte-threshold hypothesis. Protected manifests held, network
+  isolation held, and teardown left zero descendants. Next command: implement
+  and execute the preregistered direct-Python logger arm with the same prompt.
+  **2026-08-14 23:38 PDT:** the direct-Python arm passed 3/3 calls with the
+  exact serialized prompt, excluding Python logging and the payload alone.
+  The smallest history-preserving repair removed only the full `$send` value
+  from the readiness log term while leaving it unchanged at the provider
+  boundary. Six independent network-isolated production-free full-loop runs
+  then completed 6/6 nonce-bound turns (36/36 total ACKs) with no fatal signal,
+  unchanged protected manifests, and zero descendants. Acceptance passed.
+  Next command: preregister a clean disposable migrated-memory soak asserting
+  exact non-empty recall across repeated turns. Evidence:
+  `experiments/20260815T041252Z-protomega-loop-native-crash-localization/`.
+# ProtoCosmo2 Iter adapter
+
+- [ ] **Prevent recurrence of ProtoCosmo2 attachment/finalization failures (2026-09-06)** — Deliverable: make the Iter tool-dispatch and Telegram document-delivery path fail locally and recoverably, survive supervisor restarts/upgrades, and prevent repeated tool retries from consuming the active-request contract. Acceptance: provider-free regression reproduces message 4007's routed failure; focused tests pass; a fresh Ben-initiated production request yields one correlated document and one bounded textual reply with ingress/action/egress evidence. Next command: correlate message 4007 with the active Iter request, experience trace, channel queues, and supervisor incident logs. Evidence path: `projects/omegaclaw/experiments/20260906T0802PDT-protocosmo2-attachment-recurrence/`.
+
+- [x] **Add a dedicated ProtoCosmo2 Iter adapter (2026-09-01)** — Port the
+  already-tested filesystem channel pattern without reusing the
+  `ProtoMegaBot2` identity binding. Acceptance: a provider-free test drives a
+  ProtoCosmo2 envelope through Iter receive/send and observes the correlated
+  reply in the durable outbox. Next command: inspect
+  `protocosmo2/tools/phase6_private_canary_runner.py` and implement the
+  identity-local Iter channel seam. Evidence path:
+  `experiments/20260901T233000Z-protocosmo2-iter-adapter/`.
+
+- [x] **Wire Iter loop into ProtoCosmo2 supervisor with direct endpoint (2026-09-02)** —
+  Ben directed: rewire to not use the OpenClaw gateway. Added opt-in Iter
+  support to `local/protomega-outer-telegram-supervisor.sh` (gated on
+  `OMEGACLAW_OUTER_USE_ITER`). ProtoCosmo2 wrapper now exports
+  `OMEGACLAW_OUTER_USE_ITER=1` with direct Ollama endpoint
+  (`qwen2.5:7b` at `http://127.0.0.1:11434/v1`, no gateway). 187/187 tests pass
+  (26+62+99). Synthetic E2E proven: prompt → Iter → LLM → send → outbox with
+  correct response and source binding. Supervisor started; both processes
+  (runner + iter loop) live under one supervisor. Evidence:
+  `experiments/20260902T1725Z-protocosmo2-iter-live/RUN.md`.
+
+- [ ] **Telegram DM canary for Iter-enabled ProtoCosmo2 (2026-09-02)** —
+  Ben sends a plain-text DM to `@Protocosmo2bot`; verify exactly-once delivery
+  through the Iter channel. Rollback: supervisor stop +
+  `OMEGACLAW_OUTER_USE_ITER=0`.

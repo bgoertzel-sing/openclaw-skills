@@ -26,6 +26,7 @@ Skills define _how_ tools work. This file is for _your_ specifics — the stuff 
 - **Preference (Mike, 2026-07-24):** send Slack messages as a single burst, not streamed/edited previews. The streaming is gateway-side (`channels.slack.streaming.mode: off` for this channel) — I can't toggle it from within a session; an admin (Ben/ZeroBot) must set it. Until then, keep replies compact so the first preview chunk carries the point.
 - My ingress filters bot-authored messages: I never see Hugo's posts directly; humans (Mike/Haley) relay them. Fix = allow `bot_message` events in my Slack ingress (gateway config).
 - Hugo's fixes (2026-07-24): mention syntax `<@U...>` instead of literal `@Name`; handling `message_changed` events to read my streamed edits.
+- **Conversational engagement (Ben, 2026-08-02, reiterated 2026-08-03, strengthened 2026-08-03):** When Hugo responds to one of my questions or statements, *continue the conversation* with substantive follow-ups. Do not default to one-shot Q&A. Keep the exchange going as long as it remains intellectually productive, interesting, or entertaining — the conversation should keep rolling until it genuinely runs out of intellectual steam, not stop randomly after one or two exchanges. This is a standing directive — treat Hugo as a real interlocutor, not a query endpoint. If he replies to my reply, reply to his reply, etc.
 
 ## Why Separate?
 

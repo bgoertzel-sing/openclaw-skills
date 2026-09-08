@@ -249,6 +249,60 @@ the approved resource envelope cannot execute the frozen design.
 Any change to the grid, atom namespace, role terms, or planted geometry
 requires a new explicit amendment before opening confirmation seeds.
 
+## D-20260803-p1g2-contract-v2: Interpret P1-G2 only under labeled post-hoc repair
+
+- Date: `2026-08-03`
+- Status: `accepted`
+- Decision owner: Benjamin Goertzel authorized repair and proceeding on
+  2026-08-02; concrete mapping implemented by the delegated progress worker
+- Related task/run/commit: `experiments/20260803T080400Z-p1g2-contract-v2/`,
+  nested commit `b34b6f1`
+
+### Context
+
+The five returned confirmation artifacts were hash-valid but the v1 contract
+omitted oracle confirmation metrics and the P1A-derived `D_pred` mapping. Ben
+authorized a versioned repair using already opened deterministic artifacts.
+
+### Decision
+
+Retain criteria v1 byte-for-byte. Create interpretation contract v2, always
+labeled `post_hoc_contract_repair_not_sealed_confirmation`. Map each P1B
+`(seed,H,code-arm)` condition using `k=H`, P1A/F1/F3 `M=32`, and the maximum
+adjacent feature-code coherence measured at each candidate dimension; select
+the first frozen dimension satisfying the P1A formula. Reconstruct oracle
+scores from the exact manifest and target generator, select thresholds only on
+the calibration split, and evaluate confirmation without refitting. Reject all
+source, seed, manifest, grid, sample-order, cell-count, and array-shape drift.
+
+### Alternatives considered
+
+Stop interpretation permanently; rerun the oracle arm remotely; use hierarchy
+length as dictionary size; use total lexical-plus-feature bundle load as `k`;
+or inspect outcomes while selecting a favorable mapping.
+
+### Rationale and evidence
+
+The chosen mapping transfers the P1A F1/F3 H-child constructed hierarchy
+condition without extrapolating below the calibrated `M=32`. Oracle codes and
+scores are deterministic functions of already opened sample identities, so no
+model or seed rerun is needed. The implementation passed 31 tests, verified all
+five artifacts, and produced byte-identical full results. Both oracle and
+linear-K fail the absolute P1-G2 criteria, yielding `instrument_failed` under
+v2; the paired linear-minus-oracle condition separately passes.
+
+### Consequences
+
+P1-G2 is now evaluable only under the post-hoc v2 label. It must not be
+described as a sealed v1 result. The `instrument_failed` classification stops
+downstream P2-P6 interpretation under the programme gate. No further P1 GPU
+work is required or authorized.
+
+### Revisit trigger
+
+A new prospectively frozen experiment, or evidence that the deterministic
+oracle reconstruction does not match the exact target-code contract.
+
 ## D-<YYYYMMDD>-<short-slug>: <Decision title>
 
 - Date: `<YYYY-MM-DD>`

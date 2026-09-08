@@ -1,5 +1,13 @@
 # Notes
 
+## 2026-08-07 — attachment-warning channel noise disabled
+
+Ben classified the public `attachment promise not fulfilled` diagnostics as
+useless channel noise. The watchdog now retains the heuristic internally but
+filters that pattern before public alert grouping/output; all other alert
+classes remain enabled. A focused regression passes, and invoking the actual
+cron target returned `NO_REPLY` against the current journals.
+
 ## 2026-07-21 — RunPod heartbeat sensor repair
 
 **Observed failure:** RunPod CLI returned `uptimeSeconds: 0` for healthy pods

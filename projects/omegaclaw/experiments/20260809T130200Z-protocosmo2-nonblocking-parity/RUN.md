@@ -198,3 +198,39 @@ obtain independent frontier PASS, then request one guarded production restart.
 - Independent final review replayed the same gates and returned PASS with no
   remaining production-safety blocker in scope. Production was not changed and
   remains online in synchronous rollback mode pending fresh cutover approval.
+
+### Fresh guarded cutover — process gates passed
+
+- Ben explicitly authorized the fresh cutover on 2026-08-09. The current
+  identity-bound rollback owner was stopped through its supervisor after a new
+  state snapshot at `production-pre-deferred-retry-state.json`, SHA-256
+  `daa6a1461ac05095aa6c3f7968c17caab08335528d279f11582c02da0a2d87d6`.
+- The secure rollback marker was validated and directory-anchored before exact
+  unlink; its opened inode was proven unlinked. The schema-3 supervisor started
+  in deferred mode as owner 2590176 with exactly one receiver child 2590189 and
+  no `--disable-deferred-jobs` flag.
+- The protected cursor/processed/outbox/pending/context projection matched the
+  snapshot exactly at SHA-256
+  `beb668895c6dbf41367f408992a34d083f365645aed66834f724639594ac8112`.
+  Watchdog returned `OUTER_OWNER_RUNNING`, and the topology lock was free.
+- Rollback was not activated. Process readiness passed; fresh short and
+  PDF-plus-interleaved-short external Telegram traces remain required for full
+  production acceptance.
+## Final production acceptance — 2026-08-09
+
+- Fresh short source 827 delivered exact `PC2-OK` as receipt 828.
+- PDF-related sources 840 and 841 entered durable task IDs
+  `7ac7316bc904...` and `cda87a9f6418...`; acknowledgements were receipts 842
+  and 843.
+- Interleaved short source 844 delivered exact `PC2-FULL-SHORT-OK` as receipt
+  845 before either PDF result.
+- Deferred results 846 and 847 remained bound to sources 840 and 841;
+  respectively, with receipt 847 containing the requested Omega Linux summary.
+- Both deferred tasks completed exactly once. Final checks found schema 3, no
+  pending inbound item, exactly one identity-bound receiver, healthy
+  ProtoCosmo2 watchdog ownership, a free topology lock, deferred mode enabled,
+  clean rendering, and no rollback.
+
+Result: production acceptance passed. ProtoCosmo2 is ready for normal/full use
+within its existing authorized capabilities. This does not expand unavailable
+tools, side-effect authority, paid-compute authority, or other approval gates.

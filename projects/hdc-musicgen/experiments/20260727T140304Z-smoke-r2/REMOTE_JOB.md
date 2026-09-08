@@ -1,7 +1,7 @@
-# Remote Job: smoke-r2 (awaiting RTX 3090 availability)
+# Remote Job: smoke-r2 (terminated before execution)
 
 - Project/run: `hdc-musicgen` / `20260727T140304Z-smoke-r2`
-- Status: `provisioned; setup in progress`
+- Status: `both provisioned pods deleted before execution; no artifacts`
 - Approval: Ben, Telegram message 13726, 2026-07-27; this confirms the
   proposed replacement amendment and run.
 
@@ -22,7 +22,8 @@ Immediately after the owner-confirmed launch extension, `runpodctl` still
 reported pod `vbu5r47gstyl16` as RUNNING at USD 0.50/hour, but its advertised
 SSH endpoint `213.192.2.68:40137` refused connections twice (including a
 15-second retry).  No Stage 0/S/A command was started, no GPU work occurred,
-and no new data were transferred.  Per the prior owner instruction to kill an
+and no additional data were transferred during this failed launch attempt.
+Per the prior owner instruction to kill an
 unreachable MusicGen pod rather than pay for an unusable resource, terminate
 this pod; do not provision a replacement without a fresh availability/cost
 check.

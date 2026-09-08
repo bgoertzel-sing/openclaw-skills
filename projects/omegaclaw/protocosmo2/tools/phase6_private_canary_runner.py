@@ -281,6 +281,13 @@ class Api:
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 payload = json.load(response)
+        except urllib.error.HTTPError as exc:
+            try:
+                raw = exc.read(4097)
+                description = json.loads(raw).get("description", "") if len(raw) <= 4096 else ""
+            except Exception:
+                description = ""
+            raise RuntimeError(f"telegram_HTTPError:{str(description)[:160]}") from None
         except Exception as exc:
             raise RuntimeError(f"telegram_{type(exc).__name__}") from None
         if not isinstance(payload, dict) or payload.get("ok") is not True:
@@ -295,8 +302,17 @@ class Api:
         return result if isinstance(result, list) else []
 
     def send_message(self, *, chat_id: int, text: str, reply_to_message_id: int) -> str:
-        result = self._call("sendMessage", {"chat_id": chat_id, "text": text,
-                                              "reply_parameters": json.dumps({"message_id": reply_to_message_id})}, 20)
+        params = {"chat_id": chat_id, "text": text,
+                  "reply_parameters": json.dumps({"message_id": reply_to_message_id})}
+        try:
+            result = self._call("sendMessage", params, 20)
+        except RuntimeError as exc:
+            # The reply target may have been deleted after the durable outbox
+            # record was queued. Fail over to a plain send so delivery is not
+            # head-of-line blocked forever on a vanished message.
+            if "message to be replied not found" not in str(exc):
+                raise
+            result = self._call("sendMessage", {"chat_id": chat_id, "text": text}, 20)
         if not isinstance(result, dict) or type(result.get("message_id")) is not int:
             raise RuntimeError("telegram_missing_receipt")
         return str(result["message_id"])
@@ -353,6 +369,32 @@ class Api:
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
                 payload = json.load(response)
+        except urllib.error.HTTPError as exc:
+            try:
+                raw = exc.read(4097)
+                description = json.loads(raw).get("description", "") if len(raw) <= 4096 else ""
+            except Exception:
+                description = ""
+            if "message to be replied not found" not in str(description):
+                raise RuntimeError(f"telegram_HTTPError:{str(description)[:160]}") from None
+            # Reply target vanished after queueing: resend without the reply field.
+            fields.pop("reply_parameters", None)
+            body = bytearray()
+            for name, value in fields.items():
+                body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode())
+            body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"document\"; filename=\"{filename}\"\r\n"
+                         f"Content-Type: {mime_type}\r\n\r\n").encode())
+            body.extend(path.read_bytes())
+            body.extend(f"\r\n--{boundary}--\r\n".encode())
+            request = urllib.request.Request(
+                f"{self.base}/sendDocument", data=bytes(body),
+                headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=60) as response:
+                    payload = json.load(response)
+            except Exception as exc2:
+                raise RuntimeError(f"telegram_{type(exc2).__name__}") from None
         except Exception as exc:
             raise RuntimeError(f"telegram_{type(exc).__name__}") from None
         result = payload.get("result") if isinstance(payload, dict) and payload.get("ok") is True else None
@@ -603,7 +645,7 @@ def main() -> int:
                         help="route responses through the Iter outer channel instead of the direct provider")
     parser.add_argument("--iter-channel-root", type=Path, default=None,
                         help="Iter outer-channel state root (defaults to state-dir/iter-channel)")
-    parser.add_argument("--iter-timeout", type=float, default=240.0,
+    parser.add_argument("--iter-timeout", type=float, default=900.0,
                         help="seconds to wait for Iter's reply before failing closed")
     args = parser.parse_args()
     chroma_db_path = os.environ.get("CHROMA_DB_PATH", "")
@@ -663,8 +705,13 @@ def main() -> int:
         load_config(args.config, expected_identity=args.identity), args.state_dir
     )
     deferred_callback = None
-    if not args.disable_deferred_jobs and not args.use_iter:
-        deferred_callback = lambda text, task_id: responder(text, args, task_id)
+    if not args.disable_deferred_jobs:
+        if args.use_iter:
+            # Deferred worker threads call on_before_respond before invoking
+            # this callback, so the thread-local binding is set correctly.
+            deferred_callback = lambda text, task_id: iter_responder_factory(text)
+        else:
+            deferred_callback = lambda text, task_id: responder(text, args, task_id)
     transport = PrivateCanaryTelegramTransport(
         contract, api, main_responder, bot_id=args.bot_id,
         bot_username=args.bot_username, attachment_label=args.identity,
@@ -686,7 +733,7 @@ def main() -> int:
             if any(result.values()):
                 print(json.dumps({"event": "cycle", **result}), flush=True)
         except Exception as exc:
-            print(json.dumps({"event": "transport_failure", "error": type(exc).__name__}), flush=True)
+            print(json.dumps({"event": "transport_failure", "error": type(exc).__name__, "detail": str(exc)[:300]}), flush=True)
             time.sleep(2)
     print(json.dumps({"event": "stopped"}), flush=True)
     return 0

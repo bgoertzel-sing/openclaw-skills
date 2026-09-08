@@ -14,6 +14,13 @@
 - Related projects: `projects/hyperseed-formalizations`, `projects/omegaclaw`, `projects/petta-memory`, `projects/petta-chem`
 - Stated intended use: CLA theory interpretation task for @Protomegabot (Ben, Telegram, 2026-07-04; corrected from earlier Ruiting note).
 
+## Version history
+
+- `2026-08-01`: Ben supplied `Weakness-Theory-10_1.pdf` in Telegram. Its
+  SHA-256 was exactly identical to the archived `Weakness-Theory-10.pdf`
+  (`f060f23a...07cee`), so no duplicate binary or replacement version was
+  created.
+
 ## Summary
 
 A 379-page early rough treatise proposing quantale-valued "weakness" as a generalized Occam/simplicity principle for cognitive science and AGI. It begins from Bennett-style set-theoretic weakness, lifts weakness into categorical/quantale settings, and develops applications to generalization, logic quantales, PLN, factor graphs, WAIXI/QWAIXI, decision theory, MetaMo, consciousness, information theory, pattern theory, multiresolution transforms, evolutionary learning, hypervector embeddings, predictive coding, SVM/PLN inference control, concept blending, and PRIMUS/Hyperon implementation.

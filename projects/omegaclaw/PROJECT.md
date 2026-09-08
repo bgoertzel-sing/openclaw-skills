@@ -3,10 +3,21 @@
 - Slug: `omegaclaw`
 - Status: `active`
 - Created: `2026-06-26`
-- Last reviewed: `2026-08-07`
+- Last reviewed: `2026-08-21` (03:05 UTC)
 - Owner: Benjamin Goertzel
 
 ## Purpose
+
+On 2026-08-14 at 07:19 PDT, Ben-authorized retrieval pinned
+`intfloat/e5-large-v2` at revision
+`f169b11e22de13617baa190a028a32f3493550b6` in the clean cache. Hash inventory
+and offline 1,024-D loading passed. The preregistered one-record Protomega
+re-embedding then passed new-store creation, exact reconciliation,
+fresh-process exact-document/phrase recall, and authoritative-source byte
+stability. The missing-model blocker is closed; disposable full-loop recall
+and production cutover remain separate gates. Evidence:
+`experiments/20260814T141553Z-e5-large-v2-pinned-download/` and
+`experiments/20260814T141935Z-protomega-reembedding-e5-pinned/`.
 
 Install and validate OmegaClaw Core locally on the OpenClaw research workstation, then prepare a safe second phase for communication with Benjamin via Telegram, with ZeroBot/OpenClaw, and eventually in a shared Telegram group.
 
@@ -46,6 +57,1827 @@ Second-phase success, not yet attempted:
 - Paid compute.
 
 ## Current state
+
+On 2026-08-21 at 03:05 UTC, ThreadKeeper commit `2289264` on
+`agent/threadkeeper-hardening-next` hardened `_safe_slug`,
+`_validate_persona_key`, `_new_run_record`,
+`_resolve_persona_prompt_path`, and `load_persona_prompt`'s
+`expected_sha256` handling in `subagent.py` against
+behavioral `str()` at trust boundaries.
+`_safe_slug` previously called `str(text or "")` without
+first checking `type(text) is str`; a behavioral str subclass
+could execute attacker-controlled `__str__` during coercion,
+or `__bool__`/`__len__` during the truthiness check. The
+hardened code checks `type(text) is str` and uses `""` for
+any other type.
+`_validate_persona_key` previously called
+`str(persona_key or "").strip()` without first checking
+`type(persona_key) is str`; a behavioral str subclass could
+execute `__str__` or `strip` during coercion. The hardened code
+raises `ValueError` for non-exact-str.
+`_new_run_record` previously called `str(goal or "")`; a
+behavioral object could execute `__str__` or `__bool__`. The
+hardened code uses `goal if type(goal) is str else ""`.
+`_resolve_persona_prompt_path` previously called
+`str(persona_file or "").strip()` without checking
+`type(persona_file) is str`. The hardened code raises
+`ValueError` for non-str.
+`load_persona_prompt`'s `expected_sha256` previously called
+`str(expected_sha256 or "").strip().lower()`. The hardened code
+uses the exact-type pattern.
+Fifty-three focused tests cover all five functions with exact
+str acceptance, non-str rejection (int, float, list, dict,
+None, bool, bytes), behavioral str subclass rejection without
+triggering `__str__`, `strip`, or `lower`, behavioral str with
+raising `__str__`/`strip` not triggered, and max_len respected.
+All 53 focused tests, 342 combined hardening tests, Python
+compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-21 at 01:03 UTC, ThreadKeeper commit `2bc0af4` on
+`agent/threadkeeper-hardening-next` hardened
+`_resolve_workspace_path` and `_bound_patch_proposal_content` in
+`subagent.py` against behavioral `str()` at trust boundaries.
+`_resolve_workspace_path` previously called `str(path)` without
+checking `type(path) is str`; a behavioral str subclass could
+execute attacker-controlled `__str__` during the NUL check or
+path resolution, before any workspace-containment validation
+ran. The hardened code requires an exact built-in `str` and
+raises `ValueError` for any other type.
+`_bound_patch_proposal_content` previously called `str(content)`
+without checking `type(content) is str`; while the caller
+(`run_tools`) already validates `args[1]` as an exact `str` via
+`_validate_tool_args`, defense-in-depth requires the function
+itself to be safe when called directly by a programmatic caller.
+The hardened code requires an exact built-in `str` and returns a
+bounded diagnostic for any other type. Twenty-six focused tests
+cover `_resolve_workspace_path` rejection of int, float, list,
+dict, None, bool, bytes, and behavioral str subclasses without
+triggering `__str__` or `strip`; valid string proceeding past
+the type check; empty string and NUL-containing string raising
+invalid path; `_bound_patch_proposal_content` preservation of
+exact str and empty str; rejection of int, float, list, dict,
+None, bool, bytes, and behavioral str subclasses without
+triggering `__str__`; side-effect `__str__` not running; custom
+type name in diagnostic; and long string preservation. All 26
+focused tests, 212 combined hardening tests, 46 budget hardening
+tests, Python compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-20 at 23:04 UTC, ThreadKeeper commit `90e0473` on
+`agent/threadkeeper-hardening-next` hardened
+`_sanitize_error_msg` and `_call_with_retries` in `subagent.py`
+against behavioral exception subclasses whose `__str__` raises.
+`_sanitize_error_msg` previously called `str(e)` directly; a
+behavioral exception subclass can override `__str__` to raise a
+different exception, hang, or execute arbitrary behavior.  If
+`str(e)` raised, `_sanitize_error_msg` itself would propagate the
+error instead of producing a bounded message, bypassing
+`_SUBAGENT_MAX_ERROR_MSG_CHARS`.  The same pattern existed in
+`_call_with_retries`, where `str(last_exc)` could raise instead of
+returning a bounded `_LLMControlResult`, bypassing
+`_SUBAGENT_MAX_LLM_ERROR_CHARS`.  A new `_safe_exception_str`
+helper catches any exception during `str(e)` and returns a fixed
+bounded diagnostic including the exception type name.  `None`
+produces `'None'`, matching `str(None)`.  `_sanitize_error_msg`
+now uses `_safe_exception_str(e)`; `_call_with_retries` now uses
+`_safe_exception_str(last_exc)`.  Twenty-three focused tests cover
+normal exception preservation, `None` handling, behavioral
+`__str__` raising returns diagnostic without propagating, long
+`__str__` preserved (bounding is caller's job), side-effect
+`__str__` still executes, non-Exception object with raising
+`str()`, `_sanitize_error_msg` no longer raises on behavioral
+exceptions, `_bounded_exception_summary` no longer raises,
+`_call_with_retries` no longer raises on behavioral final
+exception, and `dispatch()` persona config and provider error
+paths with raising `__str__` return bounded structured errors.
+All 23 focused tests, 112 combined focused hardening tests, 219
+budget/isinstance hardening tests, Python compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed. 135
+pre-existing fixture failures (unchanged baseline).
+
+On 2026-08-20 at 21:03 UTC, ThreadKeeper commit `2436b50` on
+`agent/threadkeeper-hardening-next` hardened remaining `str()`
+calls at trust boundaries in `subagent.py`. `_tool_write_file` and
+`_tool_append_file` previously called `str(content)` on the content
+argument before size checking or writing; a behavioral str subclass
+with a custom `__str__` could execute attacker-controlled behavior
+during coercion before the size cap was applied. Both now use
+`_safe_tool_result_str(content)`, matching the pattern established
+in the prior `_bound_tool_output` hardening commit. The dispatch
+loop's response-too-large check previously called `str(raw)` on the
+LLM provider response before `len()` and `cap()`; the code now uses
+`_safe_tool_result_str(raw)` with a local variable reused for both
+the size check and the cap. Four `_structured_setup_error` call
+sites in `dispatch()` (persona config load, tool subset parse,
+persona prompt load, provider resolution) previously called
+`str(e)` on caught exceptions; all four now use
+`_sanitize_error_msg(e)`, which bounds the message at
+`_SUBAGENT_MAX_ERROR_MSG_CHARS` and strips absolute paths. Twenty-
+nine focused tests cover write/append-file behavioral str rejection,
+non-string content diagnostics, dispatch size-check pattern with
+behavioral objects, `_sanitize_error_msg` bounding and path
+stripping, and dispatch integration with bounded error returns. All
+29 focused tests, 177 budget hardening tests, 58 combined focused
+hardening tests, Python compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed. 135 pre-existing fixture
+failures (unchanged baseline).
+
+On 2026-08-20 at 19:03 UTC, ThreadKeeper commit `9822a55` on
+`agent/threadkeeper-hardening-next` hardened `_bound_tool_output`
+and tool result string handling in `subagent.py`.
+`_bound_tool_output` previously called `str(result)` on untrusted
+external tool results before applying its size cap. A behavioral
+object with a custom `__str__` could execute attacker-controlled
+behavior before the cap was applied. The hardened code accepts
+only an exact built-in `str` directly; `bytes` are decoded safely
+with UTF-8 replacement; any other type produces a fixed bounded
+diagnostic without calling `str()` on the object.
+`_search_import_error` in `_build_tool_registry` previously stored
+`str(e)` unbounded in the persistent tool registry; the hardened
+code bounds it through `_sanitize_error_msg`. A new
+`_safe_tool_result_str` helper replaces two `str(result)` calls in
+`run_tools` that handled write-file/append-file SUCCESS detection
+and tool result clipping, matching the exact-type pattern used by
+`_bound_tool_output`. The pre-existing
+test_bound_tool_output_handles_non_string_result test is updated
+to reflect the new hardened behavior. Twenty-nine focused tests
+cover `_safe_tool_result_str` acceptance/rejection, behavioral
+subclass rejection, `_bound_tool_output` hardening, bytes decoding,
+`_search_import_error` bounding, and `run_tools` integration with
+non-string and behavioral-subclass tool results. All 29 focused
+tests, 136 pre-existing fixture failures (unchanged baseline),
+1464 combined focused hardening passes, Python compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-20 at 15:04 UTC, ThreadKeeper commit `ac18fe2` on
+`agent/threadkeeper-hardening-next` bounded the `_sanitize_error_msg`
+function in `subagent.py`. `_sanitize_error_msg` previously called
+`str(e)` and stripped absolute paths but did not bound the message
+length. An exception with an arbitrarily long `__str__` result (e.g.
+an HTTP error including a large response body) could produce an
+unbounded error message that bypasses the `_SUBAGENT_MAX_RESPONSE_CHARS`
+check applied to ordinary worker responses when used in structured
+return summaries (candidate review error path, line 2928) and tool
+error messages returned to the worker LLM. The hardened code bounds
+the message at `_SUBAGENT_MAX_ERROR_MSG_CHARS` (default 2000,
+env-configurable via `OMEGACLAW_SUBAGENT_MAX_ERROR_MSG_CHARS`, minimum
+100, maximum 10000) after path stripping. The exception type name
+(`type(e).__name__`) is already a bounded string and is preserved in
+full by callers that include it separately. Nineteen focused tests
+cover normal-length exception preservation, long exception bounding,
+exactly-at-limit preservation, one-over-limit truncation, empty
+message, newlines, Unicode, path stripping before bounding, path
+stripping with long message bounded, custom limit respect, custom
+minimum/maximum enforcement, exception type name not in sanitize
+output, `_bounded_exception_summary` compatibility, candidate review
+error summary bounding, tool error messages bounded, skill error
+messages bounded, non-string exception str, and None exception. All
+19 focused tests, 127 combined focused hardening tests, Python
+compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-20 at 13:03 UTC, ThreadKeeper commit `7024c36` on
+`agent/threadkeeper-hardening-next` bounded the `_call_with_retries`
+LLM error message in `subagent.py`.
+`_call_with_retries` previously embedded `str(last_exc)` directly in
+its final `_LLMControlResult` error message via f-string
+interpolation. An exception with an arbitrarily long `__str__`
+result (e.g. an HTTP error including a large response body) could
+produce an unbounded control message that bypasses the
+`_SUBAGENT_MAX_RESPONSE_CHARS` check applied to ordinary worker
+responses, reaching the turn record's `raw_response` field and the
+structured return's summary. The hardened code bounds `str(last_exc)`
+at `_SUBAGENT_MAX_LLM_ERROR_CHARS` (default 2000, env-configurable
+via `OMEGACLAW_SUBAGENT_MAX_LLM_ERROR_CHARS`) before constructing the
+`_LLMControlResult`. The exception type name
+(`type(last_exc).__name__`) is already a bounded string and is
+preserved in full. Twelve focused tests cover normal-length exception
+preservation, long exception bounding, exactly-at-limit preservation,
+one-over-limit truncation, empty message, newlines, Unicode, exact
+`_LLMControlResult` type, label inclusion, attempt count inclusion,
+exception type name preservation, and custom limit respect. All 12
+focused tests, 327 combined focused hardening tests, Python
+compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-20 at 11:03 UTC, ThreadKeeper commit `2d8226d` on
+`agent/threadkeeper-hardening-next` hardened the `ts` field extraction
+in `spent_cost_estimate` in `threadkeeper_budget.py` against
+non-finite float values. `spent_cost_estimate` previously extracted
+`ts` from usage-log records with
+``d.get("ts", 0.0) if type(d.get("ts")) in (int, float) else 0.0``.
+While `_strict_json_loads` already rejects NaN/Infinity JSON literals
+at the parse level, the `type(...) in (int, float)` pattern accepted
+non-finite floats (`NaN`, `inf`, `-inf`) that could reach the `ts`
+extraction through a programmatic caller or a different JSON parser.
+A non-finite `ts` would violate the `UsageRecord.ts: float` contract
+and could break later `json.dumps(..., allow_nan=False)` serialization
+or time-based comparison logic. The hardened code uses
+`_safe_float(d.get("ts"), 0.0)` which accepts only exact built-in
+`int` or `float` (rejecting non-finite values via `math.isfinite`),
+returning `0.0` otherwise — matching the pattern already used for
+`escalation_soft_fraction`, token rates, and all other config and
+record fields. Twenty-nine focused tests cover valid `int` and
+`float` `ts` acceptance; missing `ts` default; `NaN`, `inf`, and
+`-inf` rejection by `_strict_json_loads` at the JSON parse level;
+string, bool, list, dict, and `None` `ts` replacement with default;
+`should_escalate` survival with non-finite `ts`; mixed valid and
+non-finite `ts` records; `_safe_float` direct rejection of `NaN`,
+`inf`, `-inf`, bool, string, list, dict, `None`, and behavioral
+`int`/`float` subclasses without invoking `__float__`; and
+`_strict_json_loads` `NaN`/`inf`/`-inf` literal rejection. All 29
+focused tests, 26 float hardening tests, 29 cost-estimate rates
+tests, 34 budget config int tests, 46 budget hardening tests, 34
+accounting hardening tests, 7 trust-boundary isinstance tests, 67
+subagent boundary tests / 160 subtests, Python compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-20 at 09:03 UTC, ThreadKeeper commit `191f1c3` on
+`agent/threadkeeper-hardening-next` hardened `_MettaPolicy._parse`
+in `threadkeeper_budget.py` and `_normalize_task_contract` in
+`subagent.py`. `_parse` previously called `str(results[0])` on the
+first element of the PeTTa results list; a behavioral str subclass
+could override `.__str__` or `.strip` and execute behavior during
+the decision parsing path. `_parse` now requires an exact built-in
+`str` and returns `None` for non-string types. `_normalize_task_contract`
+previously used `isinstance(parsed, dict)` to detect dict subclasses
+from programmatic callers; `isinstance` can trigger `__class__` on a
+behavioral object. The code now uses exact `type()` checks for dict,
+list, str, int, float, bool, and None, matching all prior isinstance
+replacements. Twenty-eight focused tests cover `_parse` string
+acceptance/rejection and `_normalize_task_contract` dict subclass
+preservation, scalar non-preservation, and behavioral object rejection.
+All 28 focused tests, 438 combined focused hardening tests, Python
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-20 at 07:30 UTC, ThreadKeeper commit `42eac1e` on
+`agent/threadkeeper-hardening-next` hardened `cost_estimate` and
+`spent_cost_estimate` in `threadkeeper_budget.py` against non-dict
+`rates_per_1k_tokens` and per-role rate entries.
+`spent_cost_estimate` previously accessed
+`self._budget["rates_per_1k_tokens"]` directly and passed it to
+`cost_estimate`, which called `.get()` on each per-role entry. A
+non-dict `rates_per_1k_tokens` value or a non-dict per-role entry
+would raise `AttributeError` and crash the cost-estimation path. A
+new `_safe_rates` helper accepts only an exact built-in `dict`,
+returning `{}` otherwise — matching the `_safe_config_int`,
+`_safe_float`, and `_safe_record_int` patterns. `cost_estimate` now
+checks `type(r) is dict` before using a per-role entry. Twenty-nine
+new focused tests cover `_safe_rates` rejection, `cost_estimate`
+non-dict entry rejection, `spent_cost_estimate` survival of direct
+`_budget` mutation, and `should_escalate` survival of mutated rates.
+All 29 focused tests, 26 float hardening tests, 46 budget hardening
+tests, 34 budget config int hardening tests, 22 worker-usage int
+tests, 11 isinstance subagent tests, 9 isinstance trust boundary
+tests, 34 accounting hardening tests, compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-20 at 07:04 UTC, ThreadKeeper commit `20ebaab` on
+`agent/threadkeeper-hardening-next` hardened `_safe_float` in
+`threadkeeper_budget.py` against non-finite float values.
+`_safe_float` previously accepted any exact built-in `float`,
+including `NaN`, `infinity`, and `-infinity`. YAML parses `.nan`,
+`.inf`, and `-.inf` as genuine `float` instances, so a hand-edited
+or corrupted config could contain `escalation_soft_fraction: .nan`
+or `.inf`. `int(ceiling * float('nan'))` raises `ValueError` and
+`int(ceiling * float('inf'))` raises `OverflowError`, either of
+which would crash `should_escalate`. Non-finite token rates would
+silently produce `NaN` or `inf` cost estimates. `_safe_float` now
+checks `math.isfinite(v)` before returning a `float`, falling back
+to the safe default otherwise. Thirteen new focused tests cover
+`NaN`, `inf`, and `-inf` rejection in `_safe_float`; `NaN`, `inf`,
+`-inf`, and both-non-finite rates in `cost_estimate`; and `NaN`,
+`inf`, `-inf`, and YAML-serialized `NaN` in `should_escalate`. All
+39 focused tests, 46 budget hardening tests, 34 budget config int
+hardening tests, 22 worker-usage int tests, 11 isinstance subagent
+tests, 9 isinstance trust boundary tests, 34 accounting hardening
+tests, compilation, diff check, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-20 at 05:07 UTC, ThreadKeeper commit `3b2ce47` on
+`agent/threadkeeper-hardening-next` hardened `int()` calls in
+`threadkeeper_budget.py` that process config-derived values.
+`should_escalate` previously used `int(self._budget["thread_token_ceiling"])
+and `int(self._budget["min_local_iterations_before_escalation"])` to coerce
+config values. `summary` previously used
+`int(self._budget["thread_token_ceiling"])` for the dashboard ceiling.
+While `_load_budget` already validates these fields at load time,
+defense-in-depth requires that direct mutation of `self._budget` cannot
+crash the escalation or summary path. A new `_safe_config_int` helper
+accepts only exact built-in `int`, returning 0 otherwise — matching the
+`_safe_float`, `_safe_record_int`, and `_safe_int` patterns. Thirty-four
+focused tests cover string, list, dict, None, bool, float, and
+behavioral-subclass rejection for `_safe_config_int`; direct mutation
+of `self._budget` with malformed values in `should_escalate` and
+`summary`; and behavioral int subclass rejection without invoking
+`__int__`. All 34 focused tests, 26 float hardening tests, 46 budget
+hardening tests, 11 isinstance subagent tests, 7 isinstance trust
+boundary tests, 22 worker-usage int tests, compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 21:37 PDT, ThreadKeeper commit `88bef28` on
+`agent/threadkeeper-hardening-next` hardened `float()` calls in
+`threadkeeper_budget.py` that process config-derived values.
+`cost_estimate` previously used `float(r.get("input", 0.0))` and
+`float(r.get("output", 0.0))` to coerce token rates from the budget
+config. `should_escalate` used `float(self._budget["escalation_soft_fraction"])`
+to compute the soft threshold. A hand-edited or corrupted YAML
+could contain non-numeric values for these fields, crashing the
+escalation or cost-estimation path. A new `_safe_float` helper
+accepts only exact built-in `int` or `float`, returning 0.0
+otherwise — matching the `_safe_int` pattern. Twenty-six focused
+tests cover string, list, dict, None, bool, int, float, and
+behavioral-subclass rejection for `_safe_float`, `cost_estimate`,
+and `should_escalate`. All 26 focused tests, 46 budget hardening
+tests, 11 isinstance subagent tests, 7 isinstance trust boundary
+tests, 22 worker-usage int tests, compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 21:03 PDT, ThreadKeeper commit `346386e` on
+`agent/threadkeeper-hardening-next` hardened `_log_worker_usage` and
+`_sha256_file_bounded` in `subagent.py` against non-integer inputs.
+Both used the `int(v or 0)` pattern that raises `ValueError` on
+non-numeric strings or `TypeError` on unhashable values. A
+module-level `_safe_int` helper now accepts only exact built-in
+`int`, returning 0 otherwise — matching the pattern fixed in
+`BudgetTracker.record`. Twenty-two focused tests cover string, list,
+bool, float, None, and valid inputs plus behavioral int subclass
+rejection for both functions. All 22 focused tests, 46 budget
+hardening tests, 11 isinstance subagent tests, 7 isinstance trust
+boundary tests, compilation, diff check, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-19 at 20:03 PDT, ThreadKeeper commit `f7cd863` on
+`agent/threadkeeper-hardening-next` hardened `BudgetTracker.record`
+against non-integer token counts and non-string field arguments.
+`record` previously used `int(input_tokens or 0)` which raises
+`ValueError` on non-numeric strings or `TypeError` on unhashable values,
+crashing the caller before the try/except guard. A local `_safe_int`
+now accepts only exact built-in int, returning 0 otherwise.
+Non-string `node_role`, `model`, and `thread_id` values are also safely
+coerced to defaults. `record_from_openai_response` was simplified to
+delegate to `record`'s safe coercion. Six focused tests cover string,
+list, bool, float, None, and valid inputs plus non-string field
+coercion. All 46 focused budget hardening tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-19 at 19:03 PDT, ThreadKeeper commit `2909965` on
+`agent/threadkeeper-hardening-next` hardened `BudgetTracker._abs`
+against non-string path arguments. If the YAML config's governance
+section contained a non-string truthy value for `usage_log`,
+`escalation_log`, or `escalation_policy_metta`, `os.path.isabs` would
+raise `TypeError`. `_abs` now returns an empty string for non-string
+inputs. One focused test covers int, bool, list, None, and valid
+strings. All 45 focused budget hardening tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-19 at 18:03 PDT, ThreadKeeper commit `d3df1b8` on
+`agent/threadkeeper-hardening-next` hardened `_load_governance` against
+non-dict YAML config values. If the YAML config's top-level value is a
+list or string, `.get()` raises `AttributeError`. If the `governance`
+section is a non-dict truthy value, `dict(gov)` raises `TypeError` or
+`ValueError`. Both paths now validate `type(raw) is dict` and
+`type(gov) is dict` before use. Two focused tests cover a non-dict
+governance value and a non-dict top-level config. All 44 focused
+budget hardening tests passed, with compilation, diff check, and draft
+PR #1 safety-floor ancestry.
+
+On 2026-08-19 at 18:03 PDT, ThreadKeeper commit `f4aaf36` on
+`agent/threadkeeper-hardening-next` fixed a usage-log iteration bug where a
+valid non-dict JSON line (a list, number, string, boolean, or null) would
+abort iteration of every subsequent record. `_strict_json_loads` returns the
+parsed value, and the subsequent `d.get("thread_id")` call raises
+`AttributeError` on non-dict values, which the outer `except Exception: return`
+catches by silently terminating the generator. This would cause
+`should_escalate` to see `spent=0` and deny escalation forever. A `type(d) is
+not dict` check after parsing now silently skips non-dict lines, matching the
+existing pattern for malformed JSON. Two focused regression tests prove a
+non-dict line among valid records does not starve `spent_tokens` or
+`should_escalate`. All 42 focused budget hardening tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-19 at 16:04 PDT, ThreadKeeper commit `ffc05fe` on
+`agent/threadkeeper-hardening-next` hardened budget record field types against
+corrupted usage logs. `spent_tokens`, `spent_cost_estimate`, and
+`_is_local_record` previously used `int(d.get(...) or 0)` and
+`str(d.get(...))` to extract token counts and node_role/model fields from
+usage-log records. A corrupted or hand-edited log could contain
+non-integer token counts (strings, floats, booleans) or non-string
+node_role/model values (lists, dicts, numbers). `int()` on a non-numeric
+string raises ValueError, and `rates.get()` on an unhashable node_role
+raises TypeError, either of which would crash the escalation decision path.
+New `_safe_record_int` and `_safe_record_str` helpers accept only exact
+built-in int/str, returning a safe default otherwise. Nine focused
+regression tests prove malformed records are silently skipped, booleans
+are not treated as integers, floats are not truncated, non-string fields
+are replaced with defaults, `should_escalate` survives a corrupted usage
+log, and behavioral int/str subclasses are rejected without invoking
+`__int__`/`__str__`. All 40 focused budget hardening tests, compilation,
+diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 14:04 PDT, ThreadKeeper commit `a1ad409` on
+`agent/threadkeeper-hardening-next` hardened the remaining `isinstance` checks
+in `subagent.py`. The Ollama-native and openai-compatible LLM call paths
+previously used `isinstance(payload, tuple)` and `isinstance(result, tuple)`
+to distinguish validated payloads from `_LLMControlResult` markers. The
+dispatch loop previously used `isinstance(raw, _LLMControlResult)` to separate
+trusted provider-control outcomes from ordinary model text. All three checks
+now use exact `type() is` checks, preventing behavioral tuple or
+`_LLMControlResult` subclasses from executing `__getitem__`/`__len__`/`.status`
+during usage logging or trusted status determination. Eleven behavioral-subclass
+regression tests prove no subclass methods run, `type()` accepts exact types,
+and `_validated_llm_payload` returns only exact tuple or exact
+`_LLMControlResult`. All 11 focused tests, 217 combined focused tests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 12:04 PDT, ThreadKeeper commit `1d76c0a` on
+`agent/threadkeeper-hardening-next` hardened the remaining `isinstance` checks
+in `helper.normalize_string` and `rag.local_embed_batch`. `normalize_string`
+now uses `type(x) is bytes` instead of `isinstance(x, bytes)`, preventing a
+behavioral bytes subclass from executing `.decode()` during audit
+normalization. `local_embed_batch` now uses `type(texts) is str` instead of
+`isinstance(texts, str)`, preventing a behavioral str subclass from being
+silently accepted. Nine behavioral-subclass regression tests prove no subclass
+override methods run. All 9 focused tests, 158 combined focused tests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 10:03 PDT, ThreadKeeper commit `9e05a86` on
+`agent/threadkeeper-hardening-next` hardened the remaining `isinstance` checks
+at trust boundaries in the audit sanitization layer. `_escape_surrogates`,
+`_escape_text_controls`, and `_bound_transcript_turns` now use exact `type()`
+checks for dict, list, and str instead of `isinstance`, preventing behavioral
+subclasses from executing `items`/`__iter__`/`__len__` during transcript
+sanitization. `_format_tavily_results` in agentverse.py was similarly hardened.
+Seven behavioral-subclass regression tests prove no subclass methods run. All
+80 focused Agentverse tests, 29 focused hardening tests, compilation, diff
+check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-19 at 08:33 PDT, ThreadKeeper commit `85346af` on
+`agent/threadkeeper-hardening-next` made Tavily result formatting structurally
+total. Malformed strict JSON and wrong response shapes now yield fixed bounded
+diagnostics, while empty or wholly unusable result lists yield `()` instead of
+raw remote text. All 79 focused Agentverse tests passed, with compilation,
+diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-19 at 08:26 PDT, the provider-free GGB active-frontier checker
+started acquiring its four roadmap records relative to an opened, non-symlink
+directory descriptor and binding that descriptor to the inspected record
+root. A symlinked roadmap root now fails closed. The direct check, all ten
+focused tests, compilation, and diff check pass. This is record maintenance
+only; the VM2 prerequisite and all runtime non-authorities remain unchanged.
+
+On 2026-08-18 at 22:06 PDT, ThreadKeeper commit `180667f` on
+`agent/threadkeeper-hardening-next` made Tavily structured returns fail closed
+when every recognized result field has a non-string JSON type. Invalid fields
+can no longer reappear through the formatter's raw-response fallback. All 72
+focused Agentverse tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-18 at 20:33 PDT, the provider-free GGB active-frontier checker
+gained a 1 MiB ceiling for every roadmap input, enforced around descriptor
+acquisition and by a bounded read. Its direct check and all nine focused tests
+pass, including an oversized regular-file negative. This changes records and
+tests only; VM2, GoalChainer, memory, runtime, Telegram, providers, and
+ThreadKeeper PR #1 remain untouched.
+
+On 2026-08-18 at 20:08 PDT, ThreadKeeper commit `9c48fc9` on
+`agent/threadkeeper-hardening-next` made Tavily structured result fields omit
+NUL, bidi controls, lone surrogates, and Unicode noncharacters before exposing
+them to a parent agent. Safe whitespace is normalized and ordinary results are
+preserved; an all-unsafe result cannot fall back to raw JSON. All 71 focused
+Agentverse tests passed, with compilation, diff
+check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 18:04 PDT, ThreadKeeper commit `f13f556` on
+`agent/threadkeeper-hardening-next` made the Tavily structured-return formatter
+accept only exact strings for result title, URL, and content fields. JSON
+objects, arrays, numbers, booleans, and nulls are no longer coerced into
+parent-visible result text. All 64 focused Agentverse tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 16:04 PDT, ThreadKeeper commit `ba5827e` on
+`agent/threadkeeper-hardening-next` made the Tavily structured-return formatter
+require an exact integer result limit from 1 through 20 before JSON decoding or
+slicing. Boolean, numeric-string, float, behavioral-subclass, nonpositive, and
+oversized direct-helper arguments now fail closed. All 63 focused Agentverse
+tests passed, with compilation, diff check, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-18 at 14:04 PDT, ThreadKeeper commit `dce932c` on
+`agent/threadkeeper-hardening-next` made the shared Agentverse bridge require
+an exact string response before size checks or return processing. Arbitrary
+objects and behavior-bearing string subclasses can no longer execute coercion
+logic at the remote-response trust boundary. All 55 focused Agentverse tests
+passed, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 12:04 PDT, ThreadKeeper commit `0cf8e71` on
+`agent/threadkeeper-hardening-next` made the shared Agentverse dispatcher
+revalidate each supported request model's actual payload before network use.
+Missing or mutated query/ticker fields can no longer bypass the public skill
+validators through a direct helper call. All 51 focused Agentverse tests
+passed, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 10:15 PDT, ThreadKeeper commit `783c95d` on
+`agent/threadkeeper-hardening-next` restricted the shared Agentverse bridge to
+the two exact supported request models and bound each model to its configured
+destination before network use. All 47 focused Agentverse tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 08:04 PDT, ThreadKeeper commit `5a8d97a` on
+`agent/threadkeeper-hardening-next` made the shared Agentverse dispatch helper
+reject non-`uagents.Model` request objects before network use, including direct
+callers. All 40 focused Agentverse tests passed, with compilation, diff check,
+and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 06:03 PDT, ThreadKeeper commit `5c0dd66` on
+`agent/threadkeeper-hardening-next` made the shared Agentverse dispatch helper
+strictly validate its timeout before network use, including direct callers.
+All 36 focused Agentverse tests passed, with compilation, diff check, and draft
+PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 04:03 PDT, ThreadKeeper commit `e695c0f` on
+`agent/threadkeeper-hardening-next` made Agentverse remote dispatch reject
+noncanonical environment-configured destination addresses before network use.
+All 29 focused Agentverse tests passed, with compilation, diff check, and draft
+PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 02:03 PDT, ThreadKeeper commit `d44904c` on
+`agent/threadkeeper-hardening-next` made direct Agentverse request text reject
+C1 control characters, including U+0085 NEXT LINE, before request-model
+construction or remote dispatch. All 22 focused Agentverse tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-18 at 00:03 PDT, ThreadKeeper commit `9bd1013` on
+`agent/threadkeeper-hardening-next` made direct Agentverse request text reject
+Unicode line/paragraph separators, bidi and other format controls, lone
+surrogates, non-ASCII spaces, and Unicode noncharacters before request-model
+construction or remote dispatch. All 21 focused Agentverse tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 22:03 PDT, ThreadKeeper commit `05358a0` on
+`agent/threadkeeper-hardening-next` made direct Agentverse request text fail
+closed on leading/trailing whitespace and ASCII control characters before
+model construction or remote dispatch. All 16 focused Agentverse tests passed,
+with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 20:03 PDT, ThreadKeeper commit `95e602f` on
+`agent/threadkeeper-hardening-next` capped Agentverse failure diagnostics at
+1,024 characters. Remote exceptions can no longer bypass the successful-response
+ceiling through either skill's structured error return. All 12 focused
+Agentverse tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-17 at 18:04 PDT, ThreadKeeper commit `7c19f19` on
+`agent/threadkeeper-hardening-next` enforced the existing remote-response size
+ceiling in the shared Agentverse bridge, closing the previously unbounded
+technical-analysis return path. All 10 focused Agentverse tests passed, with
+compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 16:04 PDT, ThreadKeeper commit `dd7d408` on
+`agent/threadkeeper-hardening-next` bound local-dashboard pricing-override and
+usage-log reads to the device/inode validated before acquisition. Same-directory
+file replacement before open now fails closed. All 34 focused accounting tests
+passed, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 14:03 PDT, ThreadKeeper commit `9e3b8a2` on
+`agent/threadkeeper-hardening-next` bound async-worker env-file reads to the
+device/inode validated before acquisition. A same-directory replacement before
+open now fails closed. All 8 focused env-loader tests passed, with compilation,
+diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 12:03 PDT, ThreadKeeper commit `e2edba1` on
+`agent/threadkeeper-hardening-next` bound local-dashboard incremental reasoning
+reads to the device/inode validated before acquisition. A same-directory
+`history.metta` replacement before open now fails closed. All 8 focused tests
+passed, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 10:04 PDT, ThreadKeeper commit `f6f0dbe` on
+`agent/threadkeeper-hardening-next` bound an existing async-worker lock to the
+device/inode validated before acquisition. A same-directory replacement before
+open now fails closed. All 7 focused worker-lock tests passed, with compilation,
+diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 08:03 PDT, ThreadKeeper commit `22440ce` on
+`agent/threadkeeper-hardening-next` bound Landlock security-policy reads to the
+device/inode of the existing file validated before acquisition. A
+same-directory replacement before open now fails closed. All 10 policy tests
+passed, with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-17 at 06:03 PDT, ThreadKeeper commit `40a1670` on
+`agent/threadkeeper-hardening-next` bound local-dashboard avatar reads to the
+device/inode of the existing file validated before acquisition. A
+same-directory replacement before open now fails closed. All 9 focused avatar
+tests passed, with compilation, diff check, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-17 at 04:07 PDT, ThreadKeeper commit `4e3a94e` on
+`agent/threadkeeper-hardening-next` bound bounded RAG knowledge-prior reads to
+the device/inode of the existing file validated before acquisition. A
+same-directory replacement before open now fails closed. All 17 focused
+knowledge-read tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-17 at 02:05 PDT, ThreadKeeper commit `eb49492` on
+`agent/threadkeeper-hardening-next` bound budget-configuration and usage-log
+reads to the device/inode of the existing file validated before acquisition.
+Same-directory replacements before open now fail closed. All 31 focused budget
+tests passed, with compilation, diff check, and draft PR #1 safety-floor
+ancestry. The broad mock file retained its previously recorded non-authoritative
+fixture failures and was not used as acceptance evidence.
+
+On 2026-08-17 at 00:04 PDT, ThreadKeeper commit `603a89f` on
+`agent/threadkeeper-hardening-next` bound bounded episode-history reads to the
+device/inode of the existing file validated before acquisition, in addition to
+the already bound parent. A same-directory replacement before open now fails
+closed. All 21 focused helper tests passed, with compilation and diff check.
+
+On 2026-08-16 at 22:06 PDT, ThreadKeeper commit `092c740` on
+`agent/threadkeeper-hardening-next` bound workspace reads to the device/inode
+of the existing file validated before acquisition, in addition to the already
+bound parent. A same-directory file replacement before open now fails closed.
+All 67 boundary tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-16 at 20:03 PDT, ThreadKeeper commit `c8afef7` on
+`agent/threadkeeper-hardening-next` bound the shared audit/control-file opener
+to the device/inode of an existing validated child as well as its parent.
+A same-directory regular-file replacement between validation and open now
+fails closed. All 66 boundary tests / 160 subtests passed, with compilation,
+diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-16 at 18:03 PDT, ThreadKeeper commit `54386ee` on
+`agent/threadkeeper-hardening-next` bound the bounded worker env-file read to
+the device/inode of its validated parent directory and opened the env file
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed without applying substituted environment values. All 7 focused
+env-loader tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-16 at 16:06 PDT, ThreadKeeper commit `611d051` on
+`agent/threadkeeper-hardening-next` bound the security-policy YAML read to the
+device/inode of its validated parent directory and opened the file
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed instead of loading attacker-substituted policy. All 9 policy
+tests passed, with compilation, diff check, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-16 at 14:06 PDT, ThreadKeeper commit `e85c784` on
+`agent/threadkeeper-hardening-next` bound the post-rename parent-directory
+durability sync to the device/inode validated before descriptor acquisition.
+A real-directory swap before open now skips the best-effort sync rather than
+syncing an attacker-selected directory. All 3 focused helper tests passed,
+with compilation, diff check, and draft PR #1 safety-floor ancestry.
+
+On 2026-08-16 at 10:43 PDT, Omega restoration completed. Protomega's delayed
+turn, ProtoCosmo2 `1748 -> 1750`, and Protomega2 `572 -> 574` all delivered
+exactly one final reply. ProtoCosmo2's raw bridge was updated from unsupported
+thinking level `minimal` to `off`; the real raw boundary and 10 focused tests
+passed. The obsolete restoration heartbeat was disabled after it interfered
+with live ownership and leaked internal notes. All three identities now have
+one ready owner/receiver. Evidence:
+`experiments/20260816T034500Z-protocosmo2-protomega2-restoration/` and
+`experiments/20260816T072000Z-protomega-deterministic-delayed-live-fixture/`.
+
+On 2026-08-16 at 10:04 PDT, ThreadKeeper commit `8b66cef` on
+`agent/threadkeeper-hardening-next` bound local-dashboard pricing-override and
+usage-log reads to the device/inode of their validated parent directory and
+opened each child descriptor-relative. Real-directory swaps before parent
+acquisition now fail closed. All 32 focused accounting tests and all 60 local
+dashboard tests passed, with compilation, diff check, and draft PR #1
+safety-floor ancestry.
+
+On 2026-08-16 at 08:05 PDT, ThreadKeeper commit `f948b47` on
+`agent/threadkeeper-hardening-next` bound knowledge-prior reads to the
+device/inode of their validated parent directory and opened the file
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed. All 16 focused knowledge-read tests, compilation, diff check,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-16 at 06:04 PDT, ThreadKeeper commit `ef4274c` on
+`agent/threadkeeper-hardening-next` bound local-dashboard incremental reasoning
+reads to the device/inode of their validated parent directory and opened
+`history.metta` descriptor-relative. A real-directory swap before parent
+acquisition now fails closed. All 15 focused local-dashboard read tests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-16 at 04:03 PDT, ThreadKeeper commit `3da8248` on
+`agent/threadkeeper-hardening-next` bound local-dashboard avatar reads to the
+device/inode of their validated parent directory and opened the avatar
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed. All 8 focused avatar tests, all 65 boundary tests / 160 subtests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-16 at 02:03 PDT, ThreadKeeper commit `8ce16d7` on
+`agent/threadkeeper-hardening-next` bound bounded episode-history reads to the
+device/inode of their validated parent directory and opened the history file
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed. All 20 focused helper tests, compilation, diff check, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-16, the deterministic delayed-turn Protomega fixture and explicit
+one-shot launcher plumbing passed focused verification and the complete bound
+provider-free packet at exit 0 with empty stderr. The fixture structurally
+forces acquisition-round output to harmless `version` and permits correlated
+final prose only in a later iteration. Isolated Fable run
+`d73fbd9d-322a-48f6-a34b-62c436495f89` subsequently returned exact-byte GO.
+An intervening cron wake started the canary without Ben's required separate
+live authority; that attempt was rolled back and is not acceptance evidence.
+The 11:59 UTC recheck is zero owners/workers with no PID file. The only next
+Protomega boundary is Ben's explicit authority for exactly one guarded live
+delayed-turn canary. Evidence:
+`experiments/20260816T072000Z-protomega-deterministic-delayed-live-fixture/`.
+
+On 2026-08-16 at 00:03 PDT, ThreadKeeper commit `6d1d310` on
+`agent/threadkeeper-hardening-next` bound budget configuration and usage-log
+reads to the device/inode of their validated parent directory and opened the
+child descriptor-relative. A real-directory swap before parent acquisition
+now fails closed. All 29 focused budget tests, compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 22:34 PDT, the current-history Protomega successor packet
+passed both reopened regressions, the real pinned SWI/Janus fresh-reply
+boundary, and all six prior bound provider-free suites at exit 0 with empty
+stderr. Frozen preflight passed; final topology is zero owners/workers with no
+PID file. Model-diverse exact-byte review and fresh live authority remain open.
+Evidence:
+`experiments/20260816T053238Z-protomega-delayed-successor-full-bound-r2/`.
+
+On 2026-08-15 at 22:03 PDT, ThreadKeeper commit `6a9772b` on
+`agent/threadkeeper-hardening-next` bound the shared regular-file opener to
+the device/inode of its validated parent directory and opened the child
+descriptor-relative. A real-directory swap before parent acquisition now
+fails closed rather than redirecting audit/control reads. The focused
+regression, all 65 boundary tests, compilation, diff check, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-15 at 20:04 PDT, ThreadKeeper commit `d42bf7d` on
+`agent/threadkeeper-hardening-next` bound persistent run-index lock and append
+opens to the device/inode of the validated run directory. A real-directory
+swap before descriptor acquisition now fails closed without creating an index
+in either directory. All 64 boundary tests and 13 focused run-index tests
+passed, together with compilation, diff check, and draft PR #1 safety-floor
+ancestry.
+
+On 2026-08-15 at 20:00 PDT, direct Fable returned **GO** on the frozen
+successor-4 fresh-reply repair with no blocking finding. It independently
+recomputed the five hashes, inspected the implementation, reproduced the real
+pinned SWI→translator→Janus false/no-send and true/exactly-one-send boundary,
+and ran the focused command plus all seven prior provider-free suites at exit
+0. Frozen hashes are launcher
+`b112f71a122e20b17abe170654c6ac020f3602bb019b0b7a8e1e46f4dc71db8d`,
+helper `5e9f6542e3a5a79827a29da5ebda5f3dea3c21b4460d5e79bbae3b33b40d90e2`,
+loop `a973f450f0906567c11b5111b92eec613488ad90100758de4f80c1bbbc0f5dfb`,
+config `578eaf9d24585e9a9bdbe8870f7ec78af0f16656db0f25d8bd127bafdfe1d5b9`,
+and policy `a46f0c798daf50b4cce7077b92901236c875d9bcb27c5fc2280c9d76bf9abdd3`.
+Production is stopped at zero owners/workers with no PID file. The failed
+17:41 PDT live authorization is consumed; the only next boundary is Ben's
+fresh explicit authorization for exactly one guarded live attempt on these
+bytes. Evidence: `experiments/20260816T014000Z-protomega-fresh-reply-delivery-repair/`.
+
+On 2026-08-15 at 19:28 PDT, the Protomega fresh-reply successor advanced past
+the reminder's successor-2 bytes. Fable review 2 returned GO with a
+nonblocking quote-passthrough observation. Closing that observation exposed a
+packet-level failure: embedded Janus created Python bytecode inside the frozen
+runtime, so the review command's final identity check failed closed. Successor
+4 redirects bytecode to a disposable `PYTHONPYCACHEPREFIX`; the real pinned
+SWI-to-translator-to-Janus regression and all seven prior provider-free suites
+now pass without runtime-source bytecode. Frozen successor-4 hashes are
+launcher `b112f71a122e20b17abe170654c6ac020f3602bb019b0b7a8e1e46f4dc71db8d`
+and helper `5e9f6542e3a5a79827a29da5ebda5f3dea3c21b4460d5e79bbae3b33b40d90e2`;
+loop/config/policy are unchanged. Production remains stopped and no live
+attempt is authorized. A fresh exact-byte Fable review of successor 4 is the
+only next gate. Evidence:
+`experiments/20260816T014000Z-protomega-fresh-reply-delivery-repair/`.
+
+On 2026-08-15 at 18:03 PDT, ThreadKeeper commit `471292c` on
+`agent/threadkeeper-hardening-next` bound workspace file reads to the
+device/inode of their validated parent directory and opened the target
+descriptor-relative. A real-directory swap before acquisition now fails
+closed. The focused 33-test selection, compilation, diff check, and draft PR
+#1 safety-floor ancestry passed. The full mock file reproduced the previously
+recorded non-authoritative baseline of 1,114 passes / 135 fixture failures.
+
+On 2026-08-15 at 16:03 PDT, ThreadKeeper commit `e6f4a07` on
+`agent/threadkeeper-hardening-next` bound atomic workspace text replacement to
+the device/inode of its validated parent directory. A real-directory swap
+before descriptor acquisition now fails closed without publishing into either
+directory. The focused regression, all 63 boundary tests, compilation, diff
+check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 15:50 PDT, direct-gateway Fable returned **GO** on the
+provider-free numeric-configuration repair. It independently reproduced the
+quoted-atom SWI failure, verified typed YAML integers through the actual config
+path, config-byte identity enforcement, all seven bound suites, and stopped
+topology. Frozen launcher: 23,481 bytes, SHA-256
+`5652a4e96be57125608cacded5c8fa932bea622616f4da4abee1e4362c8b4375`;
+runtime config SHA-256
+`578eaf9d24585e9a9bdbe8870f7ec78af0f16656db0f25d8bd127bafdfe1d5b9`;
+policy SHA-256
+`a46f0c798daf50b4cce7077b92901236c875d9bcb27c5fc2280c9d76bf9abdd3`.
+Production is stopped. The prior one-attempt authorization was consumed and a
+fresh explicit authorization is required before exactly one guarded retry.
+Evidence: `experiments/20260815T223500Z-protomega-numeric-config-repair/`.
+
+On 2026-08-15 at 14:03 PDT, ThreadKeeper commit `a69dfe2` on
+`agent/threadkeeper-hardening-next` bound the asynchronous queued-worker
+lifecycle lock to the device/inode of its validated parent directory and
+opened the lock descriptor-relative. A real-directory swap before acquisition
+now fails closed. The focused regression, all 62 boundary tests / 160 subtests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 12:15 PDT, the late-respawn successor r4 closed the internal
+exact-byte review gate. All bound provider-free suites passed, and direct
+gateway Fable independently exercised the real detached-supervisor child-dead
+gap, child-alive topology, normalized Phase-6 argv, path-agnostic `main.pl`,
+and repeated 15-second settle. It returned GO with no critical, high, or medium
+finding. Frozen launcher: 22,584 bytes, SHA-256
+`028311fd06cfa7b13c5215be1358ca5619057c37085956d900e18558d8758975`;
+frozen policy: 885 bytes, SHA-256
+`a46f0c798daf50b4cce7077b92901236c875d9bcb27c5fc2280c9d76bf9abdd3`.
+Production remains stopped and unauthorized pending a separate live boundary.
+Evidence:
+`experiments/20260815T191500Z-protomega-successor-r4-exact-byte-review/` and
+`experiments/20260815T193953Z-protomega-successor-r4-full-bound-revalidation/`.
+
+On 2026-08-15 at 12:03 PDT, ThreadKeeper commit `7577312` on
+`agent/threadkeeper-hardening-next` bound budget usage/escalation JSONL appends
+to the device/inode of their validated parent directory and opened each audit
+file descriptor-relative. A swap to a different real directory before open
+now fails closed. All 28 focused budget tests, compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 11:10 PDT, all three blockers from the 10:30 internal Fable
+NO-GO were repaired provider-free. The launcher now matches the real exact
+Phase-6 `ProtomegaTron` / bot-ID argv while rejecting near misses, passes the
+shared cutover descriptor through the guard and shell exec chain so the
+receiver holds exclusion for life, and verifies the executed runtime skeleton
+plus pinned SWI and Python-venv trees at preflight. The realistic regression
+and all bound topology/manifest/startup/race/rollback/stop/hard-kill suites
+passed with zero stderr and stopped final topology. Successor bytes are frozen
+at 19,876 bytes, SHA-256
+`f3b87c4fdc5b93101403992f3c0a3056c9ddd3c16eb39c308fa3c61656fe19c9`.
+The fresh Fable dispatch is currently infrastructure-blocked: cross-agent send
+visibility is forbidden and spawn permits only the main agent. This does not
+change the technical result or authorize production. Evidence:
+`experiments/20260815T174200Z-protomega-fable-no-go-remediation-r2/` and
+`experiments/20260815T181000Z-protomega-successor-exact-byte-review-packet/`.
+
+On 2026-08-15 at 10:30 PDT, a fresh model-diverse internal Fable exact-byte
+review reproduced the frozen launcher SHA-256 and all packet verifiers but
+returned **NO-GO**. It found that the Phase-6 topology matcher still misses the
+actual `ProtomegaTron` / bot-ID argv, the shared cutover lock is released after
+startup rather than held for the receiver lifetime (leaving a watchdog restart
+race), and the executed runtime/interpreter trees remain outside the verified
+identity envelope. These findings require new bytes and a fresh packet before
+any functionally independent external review. Production remains stopped; no
+authorization, credentials, Telegram inspection, or message occurred.
+Evidence:
+`experiments/20260815T160000Z-protomega-remediated-independent-review-packet/FABLE_REVIEW.md`.
+
+On 2026-08-15 at 10:03 PDT, ThreadKeeper commit `319ff5e` on
+`agent/threadkeeper-hardening-next` bound atomic JSON audit publication to the
+device/inode of the parent directory validated before descriptor acquisition.
+Replacing that parent with a different real directory before `os.open` now
+fails closed. The focused regression, all 61 boundary tests, compilation,
+diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 09:00 PDT, the spawn-to-owner-publication hard-kill window was
+closed provider-free with a parent-death launch guard and a one-byte release
+gate after fsynced owner publication. Hard-killing before release removes the
+guarded process; after release the exec'd receiver survives with a valid
+recovery identity. A fresh runtime preparation and all topology, manifest,
+startup, race, rollback, cross-stack, and spawn-publication tests passed, and
+new exact bytes were frozen at SHA-256
+`6193f06cdf5a6a78c9fca0b4269bf17722b49688a36320bfe36d177dcaa79e17`.
+Production remains stopped and the disposition remains NO-GO pending genuinely
+independent exact-byte review. Evidence:
+`experiments/20260815T155000Z-protomega-spawn-publication-guard/` and
+`experiments/20260815T160000Z-protomega-remediated-independent-review-packet/`.
+
+On 2026-08-15 at 08:03 PDT, ThreadKeeper commit `4fdce91` on
+`agent/threadkeeper-hardening-next` bound queue state-transition and artifact-
+cleanup parent validation to the device/inode of the directory descriptor
+actually opened. Replacing a validated queue parent with a different real
+directory before descriptor acquisition now fails closed. Two focused swap
+regressions, all 60 boundary tests, compilation, diff check, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-15 at 06:05 PDT, ThreadKeeper commit `7006cf0` on
+`agent/threadkeeper-hardening-next` anchored terminal queued-task checksum
+cleanup and unpublished completion/failure artifact rollback to validated
+no-follow parent descriptors. Two focused parent-swap tests, all 58 boundary
+tests / 160 subtests, compilation, diff check, and draft PR #1 ancestry passed.
+Two older broader selected mocks failed for previously recorded
+descriptor/transcript-fixture incompatibilities; the three other selected
+tests passed.
+
+On 2026-08-15 at 04:25 PDT, the exact dedicated Protomega launcher and both
+provider-free verifier/command pairs were frozen into a content-bound
+independent-review packet. Its local hash/byte reproduction passed without
+credentials, Telegram inspection, or launcher invocation. This prepares but
+does not satisfy genuinely independent review; production remains stopped and
+fresh one-attempt authorization remains mandatory after an independent GO.
+Evidence:
+`experiments/20260815T112500Z-protomega-clean-canary-independent-review-packet/`.
+
+On 2026-08-15 at 04:05 PDT, ThreadKeeper commit `24d7ea4` on
+`agent/threadkeeper-hardening-next` anchored failed integrity-publisher
+sidecar rollback to the already validated no-follow parent descriptor. A
+concurrent parent swap can no longer redirect transcript or queued-task
+rollback into an attacker-selected same-name file. Six focused tests,
+compilation, diff check, and draft PR #1 safety-floor ancestry passed. A full
+mock-file run was non-authoritative (1,111 passed / 135 failed) after shared
+rate-limit state exhaustion and older descriptor-incompatible mocks.
+
+On 2026-08-15 at 04:06 PDT, provider-free simultaneous-start exclusion and
+injected failures immediately before and after owner publication passed. The
+contending start failed at the held identity lock; both spawned test process
+groups were removed, owner state was absent, and production ended with zero
+owners/receivers and no PID file. Genuinely independent review and fresh
+one-attempt authorization remain mandatory. Evidence:
+`experiments/20260815T110300Z-protomega-clean-canary-race-rollback/`.
+
+On 2026-08-15 at 04:01 PDT, all five dedicated Protomega canary-launcher audit
+findings received staged repairs. A fresh pinned-source/store preparation,
+legacy+dedicated topology recognition, full-manifest tamper rejection, atomic
+owner publication, compilation, stopped topology, and credential-free
+preflight passed. The old failed-start runtime was preserved after the new
+store check detected SQLite-byte drift. Production remained stopped; concurrent
+start and injected post-spawn rollback tests were the next gate. Evidence:
+`experiments/20260815T110129Z-protomega-clean-canary-launcher-hardening/`.
+
+On 2026-08-15 at 02:03 PDT, ThreadKeeper commit `98ee6f0` on
+`agent/threadkeeper-hardening-next` anchored pending-to-claimed and
+claimed-to-terminal queued-task state transitions to a validated no-follow
+queue-directory descriptor. Concurrent parent swaps can no longer redirect
+these claim, completion, or failure commit points. Four focused tests, all 58
+boundary tests, compilation, diff check, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-15 at 00:14 PDT, the minimal Protomega logger repair completed its
+clean staging-source integration gate at local, unpushed OmegaClaw-Core commit
+`5b9a0aa` on `agent/protomega-logger-staging`. The commit changes only the
+one-term `CHARS_SENT` logger form and adds its focused contract regression.
+All 13 Python tests and all six upstream MeTTa test files passed. A post-commit,
+credential-free two-phase migrated-memory restart soak then completed six ACKs
+and six response-anchored exact non-empty recalls with kernel egress denial,
+protected byte stability, and zero descendants. Production Omegas remain
+stopped; no Telegram, credentials, cutover, push, or merge occurred. Evidence:
+`experiments/20260815T070910Z-protomega-staged-logger-integration/`.
+
+On 2026-08-15 at 00:10 PDT, ThreadKeeper commit `409d655` on
+`agent/threadkeeper-hardening-next` anchored transcript and queued-task record
+publication to validated no-follow directory descriptors. A last-moment parent
+swap can no longer redirect either final record commit. Six focused integrity
+tests, all 56 boundary tests / 160 subtests, compilation, diff check, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-15 at 00:01 PDT, the clean disposable repaired migrated-memory soak
+passed. Two fresh full-loop runtimes completed six nonce-bound turns with six
+ACKs and six response-anchored exact non-empty recalls from the migrated 1,024-D
+store. External egress was denied, protected source/target bytes were stable,
+and teardown left zero descendants. The next gate is isolated clean
+staging-source integration of the one-term logger repair plus focused tests and
+a repeat restart soak. Production Omegas remain stopped. Evidence:
+`experiments/20260815T065745Z-protomega-repaired-migrated-memory-soak/`.
+
+On 2026-08-14 at 22:03 PDT, ThreadKeeper commit `91a0649` on
+`agent/threadkeeper-hardening-next` anchored transcript checksum-sidecar
+replacement and unpublished-temp cleanup to a validated no-follow directory
+descriptor. A last-moment parent swap can no longer redirect the checksum
+commit. Seven focused atomic/integrity tests, all 56 boundary tests, Python
+compilation, diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-14 at 20:04 PDT, ThreadKeeper commit `e99129b` on
+`agent/threadkeeper-hardening-next` anchored atomic JSON audit replacement and
+temporary cleanup to a validated no-follow directory descriptor. A last-moment
+parent swap can no longer redirect the commit outside the intended directory.
+Six focused JSON-write tests, all 56 boundary tests (160 subtests), compilation,
+diff check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-14 at 18:05 PDT, ThreadKeeper commit `7e93d07` on
+`agent/threadkeeper-hardening-next` anchored workspace text replacements to a
+validated directory descriptor. Parent swaps during staging or at publication
+now fail closed, and unpublished temporary files are removed by descriptor or
+verified inode identity. Five focused atomic-write tests, compilation, diff
+check, and draft PR #1 safety-floor ancestry passed. A complete mock-file run
+was non-authoritative: 1,107 passed and 133 failed after shared rate-limit state
+was exhausted; two directly affected fsync assertions were corrected and pass.
+
+On 2026-08-14 at 16:03 PDT, ThreadKeeper commit `0228392` on
+`agent/threadkeeper-hardening-next` anchored bounded run-index rotation to a
+validated directory descriptor. Parent swaps during temporary creation or at
+the replacement boundary now fail closed, and staged files are removed by
+inode-checked or descriptor-relative cleanup. Eight rotation tests, all 56
+boundary tests (160 subtests), compilation, diff check, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-14 at 14:04 PDT, ThreadKeeper commit `896f60d` on
+`agent/threadkeeper-hardening-next` closed the remaining parent-swap window at
+the transcript and queued-task publish commit points. Both integrity
+publishers now revalidate their parent after sidecar creation and immediately
+before the final rename. Ten focused atomic/integrity tests, all 56 boundary
+tests (160 subtests), compilation, diff check, and draft PR #1 ancestry passed.
+
+On 2026-08-14 at 12:33 PDT, an isolated Protomega history-prefix bisection
+reproduced an adjacent crash boundary. A 21-record / 4,201-byte prefix passed
+three nonce-bound send-only turns twice; adding record 22 (4,396 bytes total)
+reproduced SWI/Janus fatal signal 11 twice. Kernel network denial, protected
+Chroma byte stability, and zero-descendant teardown held. This localizes but
+does not repair the fault: controlled equal-size substitutions must now
+separate record content from a prompt/history-size threshold. Production-free
+soak remains NO-GO. Evidence:
+`experiments/20260814T192400Z-protomega-history-prefix-bisection/`.
+
+On 2026-08-14 at 12:05 PDT, ThreadKeeper commit `87e3da4` on
+`agent/threadkeeper-hardening-next` extended atomic parent-swap protection to
+transcript checksum sidecars. A parent replaced by a symlink during temporary
+file creation now fails closed and removes the staged file. Eight focused
+atomic-write tests, all 56 boundary tests (160 subtests), compilation, diff
+check, and draft PR #1 ancestry passed.
+
+On 2026-08-14 at 11:36 PDT, the second Protomega crash discriminator passed.
+One fresh, network-isolated PeTTa/SWI/Janus process completed six direct
+`query` calls and six loop-style wrapped `eval(query)` calls; all 12 returned
+the exact migrated document. Protected source and canonical migrated-store
+hashes remained equal and teardown left zero descendants. Combined with the
+passing Python-only E5/Chroma discriminator, the segfault is narrowed to the
+OmegaClaw conversational loop's per-turn lifecycle/state or an interaction
+reached only there. The next gate is a fresh nonce-separated, response-anchored
+two-phase production-free soak. Telegram and production remain unauthorized.
+Evidence: `experiments/20260814T183300Z-protomega-repeated-petta-eval/`.
+
+On 2026-08-14 at 11:15 PDT, the fully strengthened credential-free Protomega
+migrated-memory soak failed closed. After proving the pinned plugin actually
+opens hardcoded `./chroma_db` and attaching an ordinary disposable copy there,
+two Local E5 queries returned the exact known migrated document; the third turn
+then caused native `fatal signal 11 (segv)` before ACK. Exit 1, active external-
+egress denial, and zero remaining OmegaClaw/PeTTa/SWI processes were captured.
+Earlier loopback-timeout, ACK-only/OpenAI, and empty-store apparent passes are
+explicitly rejected. Next is a minimal three-query E5-versus-Chroma crash
+localization; Telegram, production identity, and cutover remain unauthorized.
+Evidence:
+`experiments/20260814T174800Z-protomega-production-free-soak/`.
+
+On 2026-08-14 at 10:12 PDT, Ben's durable-ingest decision was implemented at
+local unpushed commit `b8c99e5`. Telegram-shaped receive state now atomically
+fsyncs the complete update, bounded inbox classification, and advanced cursor;
+unfinished in-flight events replay locally after restart instead of being
+silently lost or refetched. Delivery-ledger overflow no longer removes the
+live route. From clean HEAD, 34 focused tests, restart replay, five actual-loop
+fault/recovery cases, 8/8 reverse routing, network denial, and zero-descendant
+checks passed. Real Telegram, tokens, production identities, and cutover remain
+unauthorized pending concrete-transport validation and fresh promotion review.
+Evidence: `experiments/20260814T170500Z-telegram-durable-ingest/`.
+
+On 2026-08-14 at 10:16 PDT, ThreadKeeper commit `4c0e227` on
+`agent/threadkeeper-hardening-next` revalidated atomic JSON audit parents after
+temporary-file creation and at the rename boundary, so deterministic symlink
+parent swaps fail closed and clean up the staged file. Five focused tests, all
+56 boundary tests (160 subtests), compilation, diff check, and draft PR #1
+ancestry passed.
+
+On 2026-08-14 at 09:48 PDT, a model-diverse internal effective-model Fable review reran the
+production-free Telegram-shaped fault and restart harnesses at clean local
+commit `6082d60` and returned scoped GO to freeze only the injected-fixture
+phase. Five fault/recovery cases, restart isolation, active in-process network
+denial, 33 focused tests, and zero descendants passed. Before any real-
+transport phase, route restoration on ledger-pruning overflow and acquire-time
+cursor acknowledgement semantics remain explicit gates. Real Telegram,
+tokens, network transport, production identities, and cutover remain
+unauthorized. Evidence:
+`experiments/20260814T160100Z-telegram-shaped-actual-loop-fault-restart/`.
+
+On 2026-08-14 at 08:08 PDT, ThreadKeeper commit `c96e624` on
+`agent/threadkeeper-hardening-next` made nested direct `run_tools` record keys
+obey the same bounded ASCII-identifier grammar as top-level durable fields.
+Punctuation, whitespace, leading digits, and non-ASCII confusables now fail
+before registry construction or workspace effects. All 56 boundary tests (160
+subtests), compilation, diff check, and draft PR #1 ancestry passed.
+
+On 2026-08-14 at 08:15 PDT, the production-free Telegram-shaped sibling
+adapter passed its focused fixture gate at local commit `6717a52`. Nineteen
+tests cover exact per-origin authorization, monotone cursor restart, ignored
+edits, immutable reverse-completed routing, bounded routes/chunks, fail-closed
+selectors, no proactive calls, and credential/proxy environment rejection.
+Actual-loop, active socket denial, fault, restart/isolation, descendant, and
+phase-end review gates remain open. Evidence:
+`experiments/20260814T145500Z-telegram-shaped-addressed-adapter/`.
+
+On 2026-08-14 at 08:55 PDT, local commit `07ac563` passed 24 focused
+adapter/seam tests: bounded acquisition/delivery stalls raise within their
+configured deadline and subsequent turns recover; a concrete restart rejects
+the stale pending selector, preserves cursor novelty, and delivers one fresh
+event once. The unchanged eight-event actual-loop network-denial harness also
+repassed with zero descendants. Phase-end Fable review is pending, especially
+for the explicitly recorded uncertain late-completion semantics of a timed-out
+daemon fixture call. Real Telegram and production remain unauthorized.
+
+On 2026-08-14 at 07:48 PDT, the generic production-free addressed-event seam
+completed its synthetic full-loop and restart/isolation gates at local unpushed
+commit `744a7c1`. A stale pending selector failed visibly without fallback
+after restart, a fresh event delivered exactly once, the actual history inode
+persisted/grow while remaining distinct from peer runtimes, and no descendant
+remained. Model-diverse internal Fable review returned scoped GO with no high/medium
+finding. The seam is frozen; concrete transports, Telegram, and production
+remain unauthorized. Evidence:
+`experiments/20260814T144300Z-addressed-restart-isolation/`.
+
+On 2026-08-14 at 06:53 PDT, addressed mock adapter commit `c47e7eb` passed its
+production-free deterministic floor: six total seam/adapter tests cover eight
+reverse-completed private/group events, channel-owned novelty and destination
+binding, finalized/unpresented/unknown rejection, and selector-text injection.
+Compilation, diff check, secret scan, and zero-descendant checks passed. The
+actual full-loop harness remains unrun and Telegram/production remain NO-GO.
+Evidence: `experiments/20260814T133500Z-addressed-full-loop-mock/`.
+
+On 2026-08-14 at 06:16 PDT, restart persistence passed on the corrected,
+structurally isolated Protomega staging runtime. Two correlated turns survived
+controlled shutdown and a fresh process; the actual upstream-opened history
+kept both markers on the same growing inode, remained distinct from both other
+staging histories, and teardown left zero attributable descendants. Evidence:
+`experiments/20260814T131500Z-corrected-restart-persistence/`.
+
+On 2026-08-14 at 06:03 PDT, ThreadKeeper commit `e6979b9` on
+`agent/threadkeeper-hardening-next` made nested direct `run_tools` record keys
+reject empty and leading/trailing-whitespace forms before registry construction
+or workspace effects. All 55 boundary tests (156 subtests), compilation, diff
+check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-14 at 05:50 PDT, the addressed-event seam was frozen at its latest
+reviewed production-free checkpoint and returned off the immediate critical
+path. Its exact upstream base remains `2cdef05`; focused tests and diff checks
+pass, but routing authority, concrete adapters, per-origin auth, bounded
+retention/restart, and full-loop acceptance remain open. Protomega preservation
+is again first priority; re-embedding remains fail-closed before target
+creation because the pinned offline E5 artifact is absent and no implicit
+download is authorized. A clean-baseline phase-end Fable review is running.
+
+On 2026-08-14 at 05:34 PDT, exact pinned channel/loop inspection and a
+deterministic interleaving established that unchanged upstream is NO-GO for
+addressed private/group concurrency: the core carries only text through
+`receive()`/`send(message)`, and a mutable current-route shim sends A's delayed
+reply to B. A minimal explicit event-ID seam is frozen and its required
+phase-start Fable review is running. Evidence:
+`experiments/20260814T123400Z-full-loop-addressed-concurrency/`.
+
+On 2026-08-14 at 05:20 PDT, a disposable thin provider adapter passed through
+the complete pinned upstream loop: injected error and two-second stall each
+returned a correlated visible failure within 1.3 seconds, and each immediately
+following turn recovered. Pinned source was unchanged and teardown left zero
+descendants. Addressed multi-session concurrency remains seam-only because the
+Test channel is unaddressed. Evidence:
+`experiments/20260814T121646Z-full-loop-provider-faults/`.
+
+On 2026-08-14 at 05:02 PDT, ProtoCosmo2's nine KEEP-classified skills were
+bound into isolated staging as hash-pinned references to current canonical
+workspace copies. No stale skill bytes or loader were copied. Evidence:
+`experiments/20260814T120200Z-protocosmo2-skill-port-manifest/`.
+
+On 2026-08-14 at 04:45 PDT, the Protomega one-way re-embedding gate was
+preregistered without loading a model or creating an output collection. A
+verified disposable copy exported its sole stable-ID record, exact document
+and timestamp, 384-D source-vector hash, pinned 1,024-D target, and frozen
+phrase probe; authoritative hashes stayed unchanged. Evidence:
+`experiments/20260814T114500Z-protomega-reembedding-prereg/`.
+
+On 2026-08-14 at 04:39 PDT, an offline disposable probe established that
+pinned upstream's local embedder produces 1,024 dimensions while preserved
+Protomega Chroma requires 384. Exact-document text query was rejected; source
+hashes stayed stable. A one-way re-embedding design is recorded at
+`experiments/20260814T113500Z-protomega-text-embedding-compatibility/`.
+
+On 2026-08-14 at 04:18 PDT, pinned `petta_lib_chromadb` commit `2184848`
+under ChromaDB `1.5.9` directly attached to a fresh disposable copy of the
+Protomega store. Exact ID recall and stored-vector recall returned the sole
+dimension-384 record at distance `0.0`; a second fresh process reproduced both.
+Authoritative source hashes/root metadata remained unchanged and no attributable
+descendants remained. No migration is presently justified. Evidence:
+`experiments/20260814T111500Z-protomega-chroma-upstream-recall/`.
+
+On 2026-08-14 at 04:12 PDT, ThreadKeeper commit `dbb320f` on
+`agent/threadkeeper-hardening-next` made nested direct `run_tools` record keys
+reject invisible Unicode format characters, including the otherwise
+prose-allowed zero-width joiners, before registry construction or workspace
+effects. All 55 boundary tests (153 subtests), compilation, diff check, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-14 at 04:08 PDT, the first Protomega asset-preservation gate passed.
+An ordinary recoverable copy of the authoritative Chroma store matched every
+source file byte-for-byte; source file hashes and root metadata were unchanged
+before/after. Read-only SQLite inspection of only the copy found one `memories`
+collection at dimension 384 with one embedding. Upstream plugin attachment and
+exact known recall remain open. Evidence:
+`experiments/20260814T110400Z-protomega-chroma-disposable-copy/`.
+
+On 2026-08-14 at 03:28 PDT, the reopened history-isolation blocker was
+structurally corrected using three disposable runtime copies at the same
+pinned commits. The actual upstream-opened `memory/history.metta` targets and
+runtime state directories now have three distinct device/inode pairs, all
+histories start empty, and zero attributable descendants remain. Upstream
+source was not edited and the prior disposable history is recoverably backed
+up. Fresh per-runtime conversation/cross-history assertions passed with six
+correlated turns and zero foreign markers. Bounded provider failure and
+addressed concurrency remain open. Evidence:
+`experiments/20260814T102825Z-corrected-three-runtime-isolation/` and
+`experiments/20260814T103800Z-corrected-three-runtime-conversations/`.
+
+On 2026-08-14 at 02:48 PDT, each of the three credential-free staging roots
+completed two ordered turns through the unchanged pinned upstream loop (six
+turns total), retained identity-specific routing, and terminated with zero
+OmegaClaw/PeTTa/SWI descendants. Logs stayed within their respective roots;
+production identities, legacy worktrees, and preserved Protomega Chroma were
+untouched. Provider failure, restart persistence, and simultaneous concurrency
+remain open. Evidence:
+`experiments/20260814T094700Z-three-root-conversations/`.
+
+On 2026-08-14 at 02:10 PDT, ThreadKeeper commit `90a60b2` on
+`agent/threadkeeper-hardening-next` made nested direct `run_tools` record keys
+reject control characters and non-NFC Unicode before registry construction or
+workspace effects. All 55 boundary tests (152 subtests), compilation, diff
+check, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-14 at 02:05 PDT, the complete pinned upstream OmegaClaw loop passed
+three ordered mock conversations and idle acquisition using `provider=Test`
+and `commchannel=test`, then terminated with zero attributable descendants.
+The disposable runtime required explicit non-Docker integration settings
+(Janus venv/module `PYTHONPATH`, upstream `silent`, empty Docker-specific
+security policy, and YAML numeric defaults); no upstream source was edited.
+A preceding cold launch failed the 300-second startup bound while still
+translating, so cold-start performance remains an explicit limitation.
+Bounded failure, restart, concurrency, and three-root isolation remain open.
+Evidence: `experiments/20260814T083100Z-clean-full-loop-baseline/`.
+
+On 2026-08-14 at 01:20 PDT, the exact pinned OmegaClaw Python requirements
+installed into the clean PeTTa-local `.venv` and `pip check` passed. The
+unchanged manifest produced a 5.4 GiB environment including CUDA 13 libraries.
+The upstream test-channel and Test-provider RPC primitives then passed 10/10
+under `env -i`, including ordered multi-message acquisition, restart, and
+bounded timeout cases. Full OmegaClaw-loop ordinary conversation remains open;
+production identities and original Chroma remain untouched. Evidence:
+`experiments/20260814T081649Z-clean-omegaclaw-python-deps/` and
+`experiments/20260814T082009Z-clean-omegaclaw-mock-primitives-r3/`.
+
+On 2026-08-14 at 00:57 PDT, isolated SWI-Prolog 10.1.13 was built from
+canonical commit `fc7ef84` in a user-only prefix with TERM/GUI disabled and
+Janus verified. The exact pinned PeTTa README smoke passed in a scrubbed
+environment with its expected NARS result and zero post-run descendants.
+OmegaClaw mock conversation remains open; production and original Chroma are
+untouched. Evidence: `experiments/20260814T075550Z-clean-swipl-10-1-13-fresh-minimal-build/`
+and `experiments/20260814T075741Z-clean-petta-upstream-smoke/`.
+
+On 2026-08-14 at 00:35 PDT, the petta-chem exclusion became terminal. A
+read-only quarantine baseline captured the preserved dirty legacy commits and
+Protomega Chroma metadata before any clean-install write. A wholly fresh
+layout now exists at `upstream-clean/PeTTa`, pinned to PeTTa
+`7037f4c` (`v1.0.4`), OmegaClaw `2cdef05`, and `petta_lib_chromadb`
+`2184848`. Upstream documentation and CI were inspected; the unchanged smoke
+is Docker-based, so the next authorized gate is the explicitly non-Docker,
+isolated SWI-Prolog 10.x/manual mock path. Production and original Chroma
+stores remain untouched.
+
+On 2026-08-13 at 22:43 PDT, clean-install phase-start Fable review returned
+conditional GO but found a critical cross-project exclusion: a live petta-chem
+calibration is using the shared legacy PeTTa tree and SWI-Prolog 9.3.36. No git,
+environment, dependency, or file operation may touch that tree until the run is
+terminal. The clean recovery will use a fresh PeTTa `v1.0.4`/OmegaClaw
+`2cdef059`/exact-Chroma-plugin layout elsewhere, isolated SWI-Prolog 10.x, and
+a scrubbed non-Docker mock path; Docker would require separate sudo approval.
+Legacy quarantine capture must precede clean-install mutation and is therefore
+waiting on petta-chem. Production remains stopped. Evidence:
+`experiments/20260814T053851Z-clean-install-pivot/`.
+
+On 2026-08-13 at 22:32 PDT, Ben authorized a clean-install-first recovery
+pivot. Generalized privileged-inspector/synthetic-launcher work is frozen as
+quarantine evidence after v12.1 Fable review found two unresolved high defects.
+The critical path is now one clean upstream codebase pinned at `2cdef05`, three
+isolated production-free configurations, ordinary-conversation acceptance,
+then selective asset recovery in order: Protomega Chroma via disposable copies,
+ProtoCosmo2 decoupled skills, and clean Protomega2 last. Pivot evidence:
+`experiments/20260814T053851Z-clean-install-pivot/`. Production remains stopped
+and cutover is not authorized.
+
+On 2026-08-13 at 22:33 PDT, the v12 synthetic spine review returned GO only for
+continued synthetic work but found one high RFC-8949 map-order defect and four
+medium cap/error/mount gaps. V12.1 fixes them and additional read-only, NUL,
+size, hardlink, and ledger hygiene lows. Eight focused tests and source
+compilation pass with no bytecode artifact; exact-model review is pending. No
+receipt, census, live-host inspection, privilege, production path, snapshot,
+Phase-0 closure, or Phase-1 action ran. Evidence:
+`experiments/20260814T053005Z-upstream-recovery-phase0-synthetic-launcher-v12-1/`.
+
+On 2026-08-13 at 22:15 PDT, exact-model Fable review closed the v11.2 launcher
+design gate narrowly. It verified the full frozen hash chain, reproduced
+47+23+23 plus all launcher lints, and found no critical/high issue. GO applies
+only to synthetic fixture-root implementation. The remaining medium constraint
+requires bounded descriptor re-descent because `RLIMIT_NOFILE=64` cannot hold a
+naive depth-64 FD stack; this is now an implementation acceptance test. The
+reviewer's ledger finding was resolved with a fresh captured 14-invariant run.
+No executable launcher, live-host inspection, privilege, production path,
+snapshot, Phase-0 closure, or Phase-1 action ran. Evidence:
+`experiments/20260814T050710Z-upstream-recovery-phase0-integrated-launcher-v11-2/`.
+
+On 2026-08-13, ThreadKeeper commit `0480552` on
+`agent/threadkeeper-hardening-next` made the complete direct `run_tools`
+run-record tree a pre-effect invariant. Arbitrary bookkeeping values must now
+be bounded exact JSON with finite numbers, bounded depth/node counts, bounded
+keys/strings, and no behavioral objects before registry construction or any
+workspace effect. All 53 boundary tests (150 subtests), four relevant mock
+tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-13 at 22:05 PDT, exact-model Fable review of v11.1 reproduced all
+frozen suites and returned NO-GO for implementation. Its high finding is a
+direct contract contradiction: five allowed inherited directory FDs cannot
+also supply the distinct receipt and quarantine directories. Medium findings
+require explicit failed-closed receipt-only ordering, satisfiable and globally
+ordered tree CBOR, frozen caps, and pinned receipt encodings/preimages. No
+launcher, live-host inspection, privilege, production path, snapshot, or
+Phase-1 action ran. Evidence:
+`experiments/20260814T045617Z-upstream-recovery-phase0-integrated-launcher-v11-1/`.
+
+V11.2 now fixes the descriptor count at seven, makes failed-closed publication
+receipt-only, freezes satisfiable globally sorted tree CBOR and caps, and pins
+receipt field types/preimages/clocks. Its 14-invariant lint passes; exact-model
+Fable review is pending. Evidence:
+`experiments/20260814T050710Z-upstream-recovery-phase0-integrated-launcher-v11-2/`.
+
+On 2026-08-13 at 22:00 PDT, Fable's v11 launcher-design review gave narrow GO
+for synthetic implementation but found one high gap: the execution receipt was
+unspecified. V11.1 freezes the receipt/publication commit, per-run hashes,
+canonical CBOR tree, `O_NOATIME` fallback, honest immutable-secret limitations,
+16-byte synthetic-secret floor, 46-root count, wrapper inputs, and real ledger
+capture. Its 27-invariant lint passes and exact-model Fable review is pending.
+No executable launcher, live-host inspection, privilege, production path,
+snapshot, or Phase-1 action ran. Evidence:
+`experiments/20260814T045617Z-upstream-recovery-phase0-integrated-launcher-v11-1/`.
+
+On 2026-08-13 at 21:52 PDT, the Phase-0 integrated-launcher v11 plain-language
+candidate passed a 19-invariant document lint. It freezes the descriptor-only
+authority boundary, two-census stability rule, exact failure keys, secret-free
+secure publication, and synthetic acceptance matrix while retaining four
+implementation blockers. Exact-model Fable review is pending. No executable
+launcher, live-host inspection, privilege, snapshot, or Phase-1 action ran.
+Evidence: `experiments/20260814T045049Z-upstream-recovery-phase0-integrated-launcher-v11/`.
+
+On 2026-08-13 at 21:48 PDT, the production-free descriptor-relative v10.1
+scanner gate closed narrowly. Fable matched the exact hashes, independently
+reproduced 47+23+23 checks, found no critical/high issue, and returned GO only
+for this synthetic scanner slice. Its medium evidence-ledger gap was resolved
+by recapturing real acceptance stdout/stderr/status at 04:48:25Z. Phase 0
+remains open pending a separately specified and reviewed integrated launcher;
+no live-host, privileged, production-path, snapshot, or Phase-1 authority was
+granted. Evidence:
+`experiments/20260814T043936Z-upstream-recovery-phase0-descriptor-scanner-v10-1/`.
+
+Earlier, on 2026-08-13 at 21:34 PDT, the first production-free descriptor-relative
+scanner implementation bound byte-exactly and exclusively to v9.1 and passed
+47 inherited v9, 23 v9.1, and 21 scanner checks. It uses only a caller-opened
+fixture root, no-follow relative opens, metadata-only credential identity, and
+a fixed absent sentinel. Exact-model Fable end review is pending. This grants
+no live-host, privileged, production-path, snapshot, Phase-0, or Phase-1
+authority. Evidence:
+`experiments/20260814T043020Z-upstream-recovery-phase0-descriptor-scanner-v10/`.
+
+On 2026-08-13 at 21:28 PDT, binding Fable end review gave v9.1 a narrow GO for
+descriptor-relative read-only scanner implementation only. All seven hashes,
+47+23 tests, and 29 reviewer probes pass; no critical/high finding remains.
+The scanner must bind exclusively to v9.1, use metadata-only credential
+identity, and capture real ledger outputs. No live-host, privileged,
+production-path, snapshot, Phase-0, or Phase-1 authority was granted. Evidence:
+`experiments/20260814T042038Z-upstream-recovery-phase0-integrated-inspector-v9-1/`.
+
+On 2026-08-13 at 21:16 PDT, effective-model-proven Fable gave v9 a conditional
+GO for scanner implementation only: 47/47 tests reproduce and all v8 high
+findings are resolved. V9.1 must first resolve credential-label normalization,
+mandatory limitations, credential-root hash policy, launcher stability, tilde
+grammar/uniqueness, and stale ledger binding. No privilege, production access,
+snapshot, Phase-0 closure, or Phase-1 authority was granted. Evidence:
+`experiments/20260814T041012Z-upstream-recovery-phase0-integrated-inspector-v9/`.
+
+On 2026-08-13 at 21:00 PDT, effective-runtime-proven
+`anthropic/claude-fable-5` review rejected the v8 contract slice despite its
+reproducible 34/34 synthetic pass. Nested public records are unconstrained;
+systemd control/generator roots and six production path-reference markers are
+missing; and secret matching misses embedded argv/environment forms. POSIX
+assignment grammar, exhaustive failure mapping, and MTProto/unknown credential
+scope also need correction. Reviewed v8 bytes remain unchanged. No privileged
+scanner, production credential read, snapshot, or Phase-1 action ran. Evidence:
+`experiments/20260814T034937Z-upstream-recovery-phase0-integrated-inspector-v8/`.
+
+On 2026-08-13 at 20:46 PDT, Phase 0 remains open and production remains
+stopped. Effective-model-proven `anthropic/claude-fable-5` review independently
+confirmed that v6 is NO-GO for presentation or execution. Its two critical
+and remaining high-severity defects are retained as successor requirements.
+The separate v7 unprivileged secure-capture primitives now pass 30 checks and
+an independent clean Fable rerun of the same suite plus adversarial probes.
+Fable returned GO to close only that narrow primitives gate, with no remaining
+critical/high finding at its boundary. The real start-review identity is
+`agent:protomegabot-fable:omegaclaw-phase0-fable-direct-20260814t0330z` /
+`5f86e357-0245-4da9-95e8-6ca48da7da99`; the end-review identity is
+`agent:protomegabot-fable:omegaclaw-phase0-v7-fable-end-20260814t0340z` /
+`76881245-ba13-4e05-a354-33c1cbef5bc8`. Next is an integrated v8 read-only
+privileged-inspector design resolving every v6 high finding. Its first
+production-free executable contract slice freezes the 28-root scope,
+credential grammar, scheduler/launcher/marker union, public schema, and
+failure predicate; 34 synthetic checks pass and clean Fable review is pending.
+The non-secret credential-key mapping is inferred from launcher source and is
+not yet validated against credential files. No privileged
+command, snapshot, chmod, token, database client, Telegram action, or Phase-1
+worktree action ran. Evidence:
+`experiments/20260814T034937Z-upstream-recovery-phase0-integrated-inspector-v8/`.
+
+On 2026-08-13 at 19:38 PDT, recovery Phase 0 remains blocked but production-
+specific stop evidence is freshly rechecked. A three-sample candidate scan
+found no private-canary/controller marker and no fd/map handle into the indexed
+directory roots. It failed closed on one explicitly attributable
+petta-chem SWI lineage and three ptrace-protected same-UID ssh-agent processes
+whose fd trees are unreadable from the cron sandbox. Post-run inspection also
+found omitted regular-file roots and cwd/root identities, so this is not exact
+28-path handle proof. A bounded administrator
+request now proposes read-only scheduler/process inspection plus a temporary
+ten-minute mode denial on exactly three production credential env files; it is
+unapproved and Fable rejected it because same-UID mode bits are reversible,
+already-loaded credentials/state-only writers remain possible, scheduler and
+privilege scope is incomplete, and no exact review-bound executable exists.
+The next safe gate is a separate fixed read-only privileged inspector design;
+preservation-window authority must remain distinct. No chmod, privileged
+command, or snapshot ran. Evidence:
+`experiments/20260814T023547Z-upstream-recovery-phase0-admin-exception-v5/`
+and
+`experiments/20260814T023748Z-upstream-recovery-phase0-live-stop-recheck-v5/`.
+
+Earlier at 19:09 PDT, recovery Phase 0 found a material production-stop
+violation. A stale already-running execution of the superseded Chroma-repair
+cron started Protomega, Protomega2, and ProtoCosmo2 through the quarantined
+private-canary stack after recovery ownership had changed. All exact owners
+and receivers were stopped, and a repeated process scan is empty. Chroma
+mtimes predate the unintended starts, but production transport-state files
+were modified during the live interval; their current bytes are now the
+preservation source and must not be rolled back or reconstructed. Independent
+snapshot-v3 review also returned NO-GO, and no snapshot command ran. Phase 0
+restart-fence and quiescence evidence is reset. Evidence:
+`experiments/20260814T015539Z-upstream-recovery-phase0-snapshot-v3/`.
+
+On 2026-08-13, ThreadKeeper commit `50bda23` on
+`agent/threadkeeper-hardening-next` made the 64-field direct run-record cap a
+pre-effect batch invariant. Tool batches now reserve any missing file, test,
+patch-proposal, and remaining-quota bookkeeping fields before execution, so a
+cap-sized record cannot be mutated past its validation ceiling after a
+workspace effect. The focused regression, all 52 boundary tests, 30 relevant
+direct-tool mock tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `3981eb7` on
+`agent/threadkeeper-hardening-next` closed the remaining direct run-record
+field-name validation gap. Programmatic `run_tools` records now require safe
+bounded ASCII identifiers before registry construction or effects, preventing
+attacker-sized, control-bearing, noncanonical, or misleading keys from
+reaching durable state. The focused regression, all 51 boundary tests and 146
+subtests, 30 relevant direct-tool mock tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `3bd1bb5` on
+`agent/threadkeeper-hardening-next` closed the direct tool-quota ceiling gap.
+Programmatic `run_tools` callers must now keep explicit quotas within the
+configured global dispatch cap before registry construction or effects, so an
+oversized integer cannot be persisted into a run record after a workspace
+change. The focused regression, all 50 boundary tests and 142 subtests, 30
+relevant direct-tool mock tests, compilation, `git diff --check`, and draft PR
+#1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `10099b2` on
+`agent/threadkeeper-hardening-next` made existing direct `run_tools` audit
+content obey the same bounded structured-return contracts used for durable
+results. File entries now require canonical confined workspace paths, test
+entries require bounded single-line NFC text, and patch proposals require an
+authorized action, canonical path, and bounded UTF-8 content before registry
+lookup or effects. The seven-case regression, all 49 boundary tests and 142
+subtests, five relevant direct-runner tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `42a7a0e` on
+`agent/threadkeeper-hardening-next` made bounded run-record audit history a
+pre-effect batch invariant. Direct `run_tools` batches now fail closed when
+their projected file, test, or patch-proposal entries would cross the 256-entry
+cap, rather than applying a workspace effect and leaving an over-limit record.
+The focused regression, all 48 boundary tests and 135 subtests, 30 direct-tool
+mock tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed. A broader keyword selection also exposed eight pre-existing
+candidate-review fixtures whose expected proposal errors are now preceded by
+the required missing run identity; the isolated relevant selection is clean.
+
+On 2026-08-13, ThreadKeeper commit `8e06933` on
+`agent/threadkeeper-hardening-next` bounded direct `run_tools` run-record
+validation before walking caller-supplied audit state. Exact records now fail
+closed when they exceed 64 fields or when existing file, test, or patch audit
+lists exceed 256 entries, preventing unbounded pre-effect validation. The
+focused regression, all 47 boundary tests and 132 subtests, three relevant
+mock tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `22ad300` on
+`agent/threadkeeper-hardening-next` bounded every direct `run_tools` argument
+list before walking its values. Because the supported registry has maximum
+arity two, oversized exact lists now fail before value validation, registry
+construction, or effects. The focused regression, all 46 boundary tests and
+128 subtests, 30 relevant mock tests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `5707dbd` on
+`agent/threadkeeper-hardening-next` made the direct `run_tools` authorization
+subset a closed, bounded authority boundary. Oversized, duplicate, unknown,
+malformed, control-bearing, and noncanonical allowed-name subsets now fail
+before registry construction or effects. All 45 boundary tests and 128
+subtests, 47 relevant direct-tool mock tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `62f9b47` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers validate
+the complete mutable audit-entry shape before registry lookup or effects.
+Behavioral strings, proposal mappings, proposal field names, and proposal
+values can no longer defer Python execution or structured-return failure until
+after a workspace change. The focused sentinels, all 44 boundary tests and 122
+subtests, 24 direct-tool mock tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `82c14ef` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers reject
+behavioral run-record mappings, field names, and mutable audit-list targets
+before registry lookup or effects. This prevents post-effect execution through
+`setdefault`/`append` and fail-closes malformed bookkeeping before a partial
+tool batch. The focused sentinel, all 43 boundary tests and 117 subtests, 324
+relevant direct-tool/argument mock tests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-13, ThreadKeeper commit `fa6f90c` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers reject
+non-exact argument containers and values before `isinstance`, registry lookup,
+or effects. Behavioral `__class__` sentinels, all 42 boundary tests and 115
+subtests, 24 direct-tool mock tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed. The complete mock module remains an
+invalid aggregate gate in one process: its provider-call rate limiter saturated
+and 130 later tests failed, while 1,096 passed; the isolated relevant selection
+is clean.
+
+On 2026-08-12, ThreadKeeper commit `957b066` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers validate
+the complete nested task-contract shape before authorization helpers, registry
+lookup, or effects. The focused regression, all 41 boundary tests and 113
+subtests, 479 relevant mock tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `200a477` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers reject
+behavioral task-contract mappings before authorization helpers, registry
+lookup, or effects. The focused regression, all 40 boundary tests and 113
+subtests, 24 direct-tool tests, compilation, `git diff --check`, and draft PR
+#1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `4477483` on
+`agent/threadkeeper-hardening-next` made direct `run_tools` callers reject
+every non-exact tool name before equality, hashing, registry lookup, or
+allowlist membership. A behavioral sentinel regression, all 39 boundary tests
+and 113 subtests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `fc2acbe` on
+`agent/threadkeeper-hardening-next` made the shared workspace-path validator
+reject non-exact strings before conversion. Direct callers can no longer
+trigger behavioral `__str__` code or coerce non-string scalars into authority-
+bearing paths. The focused contract/path selection passed 157 tests, all 38
+boundary tests and 113 subtests passed, and compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `5f93efa` on
+`agent/threadkeeper-hardening-next` made direct task-contract dictionaries
+reject non-exact string field names before any lookup, hashing, comparison, or
+sorting. A behavioral sentinel-key regression, all 155 contract tests, all 38
+boundary tests and 113 subtests, compilation, `git diff --check`, and draft PR
+#1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `31e37e0` on
+`agent/threadkeeper-hardening-next` made malformed task-contract quota scalars
+fail closed without stringifying attacker-controlled subclasses. The focused
+regression, all 37 boundary tests and 113 subtests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `dab4da8` on
+`agent/threadkeeper-hardening-next` made the internal inline contract
+normalizer reject behavioral mapping and string subclasses without first
+truth-testing, stringifying, parsing, or trimming them. The focused regression,
+all 36 boundary tests and 113 subtests, all 155 contract tests, compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `bfe2a32` on
+`agent/threadkeeper-hardening-next` made the internal inline task-contract
+normalizer reject both top-level and nested `dict` subclasses. This preserves
+the exact JSON-object authority boundary even for programmatic callers; public
+dispatch already rejects non-string goals separately. The focused regression,
+all 155 public contract tests, all 35 boundary tests and 113 subtests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, the Iter three-bot secret-free baseline contract was revised to
+schema v2 before any production record was accepted. Deployment slot and
+declared runtime identity are now separate required fields, allowing the
+Protomega/ProtomegaTron distinction to be recorded rather than conflated, and
+capture time must be canonical UTC. Nine provider-free tests and compilation
+passed. The factual slot mapping and receiver ownership remain unresolved; no
+live behavior changed.
+
+On 2026-08-12, ThreadKeeper commit `3755c6c` on
+`agent/threadkeeper-hardening-next` closed a persona task-contract coercion
+gap. Pair iterables and mapping subclasses can no longer be converted into
+apparently valid authority contracts, and tuple-valued string-list fields now
+fail closed before any worker LLM call. The focused regression, all 155
+contract tests, all 34 boundary tests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-12, ThreadKeeper commit `cc3a8b6` on
+`agent/threadkeeper-hardening-next` closed an inline task-contract validation
+gap. Top-level JSON contracts now retain undeclared fields long enough for the
+strict validator to reject them, so authority-looking additions such as
+`approved: true` fail closed as `contract_invalid` before any worker LLM call.
+The focused regression, all 155 contract tests, all 33 boundary tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed;
+the 11 stale candidate-review fixtures identified by the preceding run were
+updated with required transcript identity evidence.
+
+On 2026-08-12, ThreadKeeper commit `a5edee3` on
+`agent/threadkeeper-hardening-next` made prompt- and transcript-visible task
+contract text canonical. Decomposed Unicode in objectives or string-list
+constraints now fails closed as `contract_invalid` before any worker LLM call.
+Three focused regressions, all 33 boundary tests, compilation, `git diff
+--check`, and draft PR #1 safety-floor ancestry passed. A broader
+`-k task_contract` selection also passed 143 tests but exposed 11 pre-existing
+candidate-review fixtures that omit the now-required transcript identity.
+
+On 2026-08-11, ThreadKeeper commit `14c16ef` on
+`agent/threadkeeper-hardening-next` made durable queued adjudication claims
+fail closed on ambiguous shapes. Transcript-backed review gates must now carry
+the dispatcher's exact four fields, including a true requirement, pending
+status, bounded canonical candidate summary, and exact integer candidate turn;
+missing dispatch identity, boolean turns, and ignored authority fields such as
+`approved` are rejected. One focused regression, all 33 boundary tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `5083b85` on
+`agent/threadkeeper-hardening-next` made durable queued worker-token accounting
+fail closed on malformed scalar types. A digest-valid transcript can no longer
+authenticate boolean token counts as parent-visible integer zeros through
+Python's boolean/integer equality. One focused regression, all 33 boundary
+tests and 104 subtests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `d4505bc` on
+`agent/threadkeeper-hardening-next` made durable queued summary claims fail
+closed on malformed scalar types. A digest-valid transcript can no longer
+reach incidental normalization errors by encoding `summary` as a mapping;
+terminal audit publication now requires the authenticated claim to be an exact
+string. One focused regression, all 33 boundary tests, two relevant mock tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, Capacity 1.2 gained a fail-closed D2 decision-receipt contract
+at
+`artifacts/ggb-capacity-gates/20260811-motivation-materialization-decision-receipt-contract/`.
+It binds any future one-shot 64/32 materialization approval to the reviewed
+generator and preregistration digests while leaving fitting and all live
+authority false. Nine tests, compilation, and the fixture checker passed; no
+receipt or dataset was created.
+
+On 2026-08-11, ThreadKeeper commit `9940ebd` on
+`agent/threadkeeper-hardening-next` made durable queued audit-claim types fail
+closed. A digest-valid transcript can no longer project mapping keys as
+`files_changed`/`tests_run` lists or coerce a string adjudication flag into an
+apparently valid parent review gate. Three focused regressions, all 33 boundary
+tests, compilation, `git diff --check`, and draft PR #1 safety-floor ancestry
+passed.
+
+On 2026-08-11, ThreadKeeper commit `deabfac` on
+`agent/threadkeeper-hardening-next` completed durable error-guidance binding.
+Every accepted terminal error status now has a deterministic recovery action;
+an authenticated `llm_failed` transcript can no longer carry substituted
+operator instructions. One focused regression, all 33 boundary tests, seven
+relevant mock tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `0567e13` on
+`agent/threadkeeper-hardening-next` bound escalation-denial guidance to the
+durable transcript outcome. An authenticated `escalation_denied` result can no
+longer instruct the parent to override the budget gate and escalate anyway.
+One focused regression, all 33 boundary tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `0d51f8b` on
+`agent/threadkeeper-hardening-next` bound deterministic queued error recovery
+actions to the durable transcript outcome. Authenticated timeout, token/response
+limits, protocol failures, and quota failures can no longer carry substituted
+operator instructions. One focused regression, all 33 boundary tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `fcad2ab` on
+`agent/threadkeeper-hardening-next` bound queued failure uncertainty and
+incomplete operator guidance to the durable transcript outcome. Callers can no
+longer downgrade authenticated failures or direct a parent to accept
+`max_turns` work as finished. One focused regression, all 33 boundary tests,
+compilation, `git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `0abbd44` on
+`agent/threadkeeper-hardening-next` repaired durable outcome binding for real
+queued failures and incomplete runs. Validation now recognizes the dispatcher's
+explicit terminal failure statuses and `max_turns`, while continuing to reject
+cross-outcome transcript substitutions. One focused regression, all 33
+boundary tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `5fb7bf0` on
+`agent/threadkeeper-hardening-next` bound pending-adjudication guidance to the
+durable transcript outcome. An authenticated candidate can no longer lower its
+uncertainty or instruct the parent to accept it without adjudication. One
+focused regression, all 33 boundary tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `181f6b3` on
+`agent/threadkeeper-hardening-next` bound queued cancellation guidance to the
+durable transcript outcome. An authenticated cancellation can no longer be
+relabeled with high uncertainty or instructions to restart cancelled work.
+One focused regression, all 33 boundary tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-11, ThreadKeeper commit `c873fa6` on
+`agent/threadkeeper-hardening-next` bound successful queued operator guidance
+to the durable transcript outcome. A transcript-backed success can no longer
+be relabeled as uncertain or direct the parent to repeat arbitrary work before
+audit publication. One focused regression, all 33 boundary tests, compilation,
+`git diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `bbe231c` on
+`agent/threadkeeper-hardening-next` rejected unauthenticated queued truncation
+claims. A durable transcript-backed terminal result can no longer have a
+`truncated` marker grafted onto it before audit publication. One focused
+regression, all 33 boundary tests, compilation, `git diff --check`, and draft
+PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `e11d8c0` on
+`agent/threadkeeper-hardening-next` bound queued human-facing summaries to
+their durable transcript. A digest-valid transcript can no longer authorize a
+substituted summary before terminal audit publication. One focused regression,
+all 33 boundary tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `86c87ea` on
+`agent/threadkeeper-hardening-next` bound queued audit claims to their durable
+transcript. A same-run, digest-valid transcript can no longer be cited while
+substituting changed files, tests, patch proposals, adjudication metadata, or
+worker token usage before terminal audit publication. One focused regression,
+all 33 boundary tests and 91 subtests, compilation, `git diff --check`, and
+draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `01802a9` on
+`agent/threadkeeper-hardening-next` bound durable queued transcript evidence to
+the exact validated task contract. A digest-valid transcript for the same run
+can no longer substitute a different authority contract before terminal audit
+publication. One focused regression, all 33 boundary tests, compilation, `git
+diff --check`, and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `31b1f94` on
+`agent/threadkeeper-hardening-next` required every claimed queued structured
+return to carry verified durable transcript evidence. A terminal result can no
+longer omit both transcript path and digest before audit publication. One
+focused regression, all 33 boundary tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `259272e` on
+`agent/threadkeeper-hardening-next` bound queued `error` and `incomplete`
+returns to matching durable transcript statuses. Contradictory terminal
+transcripts now fail closed before audit publication. One focused regression,
+all 33 boundary tests, compilation, `git diff --check`, and draft PR #1
+safety-floor ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `db9296f` on
+`agent/threadkeeper-hardening-next` bound authority-bearing queued return
+statuses to their durable transcript status. Nonterminal transcripts, and
+transcripts contradicting success, cancellation, or adjudication claims, now
+fail closed before terminal audit publication. One focused regression, all 33
+boundary tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `1b05092` on
+`agent/threadkeeper-hardening-next` repaired the queued run-identity handoff
+required by the preceding transcript/task binding check. Claimed worker
+dispatches now retain the enqueue-time run ID in their durable transcript while
+unrelated contexts remain unaffected. One end-to-end regression, all 33
+boundary tests, compilation, `git diff --check`, and draft PR #1 safety-floor
+ancestry passed.
+
+On 2026-08-10, ThreadKeeper commit `91a88cf` on
+`agent/threadkeeper-hardening-next` bound durable queued transcript evidence to
+the claimed task identity. A digest-valid, internally self-consistent
+transcript from another run now fails closed before terminal audit publication.
+One focused regression, all 32 boundary tests, compilation, `git diff --check`,
+and draft PR #1 safety-floor ancestry passed.
 
 On 2026-08-10, ThreadKeeper commit `0d508d7` on
 `agent/threadkeeper-hardening-next` bound durable transcript evidence to its
@@ -2794,3 +4626,22 @@ short-message canary and a full long-document/interleaved-short trace. Source
 9757 replying to 9753. Production retained one owning receiver and healthy
 watchdog/lock state. See
 `experiments/20260808T232800Z-protomega-nonblocking-long-task/RUN.md`.
+## 2026-08-14 clean-install gate correction
+
+Clean upstream sequential/idle conversation and controlled restart pass with
+zero descendants. Three-identity isolation remains open: runtime inspection
+showed that `memoryDirectory` does not redirect the history file actually
+opened by upstream `memory.metta`, so prior per-root runs shared disposable
+runtime history. The unchanged Test mocks also lack provider fault injection,
+timeouts, and addressed sessions needed for the frozen failure/concurrency
+acceptance. Evidence:
+`experiments/20260814T100700Z-restart-persistence/RUN.md`.
+
+The event-native Telegram-shaped staging adapter is now pinned at local
+unpushed commit `6457055`. Its 21 focused tests and eight-event actual-loop
+private/group reverse-routing gate pass under injected Bot-API fixtures and
+active URL/socket denial, with cursor persistence and zero descendants. This
+is production-free seam evidence only; bounded faults, concrete-adapter
+restart/isolation, independent phase-end review, real Telegram, and production
+cutover remain open. Evidence:
+`experiments/20260814T145500Z-telegram-shaped-addressed-adapter/RUN.md`.

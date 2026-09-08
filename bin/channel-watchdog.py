@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
-"""Conservative read-only interaction watchdog over local OpenClaw journals."""
+"""Conservative interaction watchdog over local OpenClaw journals.
+
+Read-only over journals; keeps a small persistent alert-state file so the
+same finding cannot re-alert on every scheduled run.
+"""
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 import re
+
+DEFAULT_STATE = Path("/home/openclaw/research-agent/projects/channel-watchdog/state/alerted.json")
+REMIND_AFTER = timedelta(hours=24)
+PRUNE_AFTER = timedelta(days=7)
+PUBLICLY_SUPPRESSED_PATTERNS = {"attachment promise not fulfilled"}
 
 PROMISE = re.compile(
     r"\b(i(?:'ll| will) (?:report back|send|post|return)|working on it|on it|"
@@ -102,11 +111,66 @@ def scan(messages, now):
     deduped = []
     seen = set()
     for pattern, message in alerts:
-        key = (pattern, message["timestamp"], message["text"][:80])
+        # Coarse per-run dedup: journal duplicates or a burst of near-identical
+        # messages in the same minute collapse to one alert.
+        key = (pattern, message["timestamp"].replace(second=0, microsecond=0), message["text"][:80])
         if key not in seen:
             seen.add(key)
             deduped.append((pattern, message))
     return deduped
+
+
+def load_state(path):
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_state(path, state):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(state, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(path)
+
+
+def _state_time(value):
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def filter_fresh(groups, state, now):
+    """Suppress already-alerted groups.
+
+    A group re-alerts only when new violations appear (count grows) or the
+    last alert is older than REMIND_AFTER. Returns (fresh, updated_state).
+    """
+    fresh = []
+    for key, group in groups.items():
+        stored = state.get(key)
+        if stored is not None:
+            alerted = _state_time(stored.get("alerted"))
+            try:
+                stored_count = int(stored.get("count", 0))
+            except (TypeError, ValueError):
+                stored_count = 0
+            reminded = alerted is not None and now - alerted >= REMIND_AFTER
+            if group["count"] <= stored_count and not reminded:
+                continue
+        state[key] = {"count": group["count"], "alerted": now.isoformat()}
+        fresh.append((key, group))
+    return fresh, state
+
+
+def prune_state(state, now):
+    return {
+        key: entry
+        for key, entry in state.items()
+        if (_state_time(entry.get("alerted")) or now) >= now - PRUNE_AFTER
+    }
 
 
 def main():
@@ -114,17 +178,34 @@ def main():
     parser.add_argument("--sessions-dir", type=Path, default=Path("/home/openclaw/.openclaw/agents/main/sessions"))
     parser.add_argument("--now", help="ISO-8601 test clock; defaults to current UTC")
     parser.add_argument("--lookback-minutes", type=int, default=60)
+    parser.add_argument("--state-file", type=Path, default=DEFAULT_STATE)
     args = parser.parse_args()
     now = _timestamp(args.now) if args.now else datetime.now(timezone.utc)
     cutoff = datetime.fromtimestamp(now.timestamp() - args.lookback_minutes * 60, timezone.utc)
-    alerts = []
+    # Group by (session, pattern): one line per group, with a count, so a
+    # burst of related violations produces one channel message, not many.
+    groups = {}
     for path in sorted(args.sessions_dir.glob("*.jsonl")):
         for pattern, message in scan(read_messages(path, cutoff), now):
-            alerts.append(
-                f"WATCHDOG_ALERT {pattern} session={path.stem} time={message['timestamp'].isoformat()}"
-            )
-    if alerts:
-        print("\n".join(alerts[:8]))
+            if pattern in PUBLICLY_SUPPRESSED_PATTERNS:
+                continue
+            key = f"{path.stem}|{pattern}"
+            group = groups.setdefault(key, {"count": 0, "first": message["timestamp"], "session": path.stem, "pattern": pattern})
+            group["count"] += 1
+            group["first"] = min(group["first"], message["timestamp"])
+    state = prune_state(load_state(args.state_file), now)
+    fresh, state = filter_fresh(groups, state, now)
+    try:
+        save_state(args.state_file, state)
+    except OSError:
+        pass  # alerting must not crash on an unwritable state file
+    if fresh:
+        lines = [
+            f"WATCHDOG_ALERT {group['pattern']} session={group['session']} "
+            f"time={group['first'].isoformat()} count={group['count']}"
+            for _, group in fresh
+        ]
+        print("\n".join(lines[:8]))
     else:
         print("NO_REPLY")
 
