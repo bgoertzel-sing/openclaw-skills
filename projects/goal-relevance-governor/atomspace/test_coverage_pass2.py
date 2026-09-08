@@ -407,13 +407,11 @@ class TestRunReplay(unittest.TestCase):
         result = run_replay(verbose=False)
         self.assertIsInstance(result, bool)
 
-    def test_run_replay_most_pass(self):
-        """Base-layer replay: 5/6 pass. Episode 06 gives ESCALATE at base layer (REPLAN only at governor layer)."""
+    def test_run_replay_all_pass(self):
+        """Base-layer replay: 6/6 pass. Episode 06 uses base_expected_verdict=ESCALATE."""
         from replay_runner import run_replay
         result = run_replay(verbose=True)
-        # Episode 06 expected_verdict=REPLAN is the governor-layer verdict;
-        # base evaluator gives ESCALATE. This is by design (see commit 344a306).
-        self.assertFalse(result, "Expected 5/6 at base layer (episode 06 should differ)")
+        self.assertTrue(result, "Expected 6/6 at base layer (base_expected_verdict support)")
 
     def test_episode_06_coverage(self):
         from replay_runner import run_replay
