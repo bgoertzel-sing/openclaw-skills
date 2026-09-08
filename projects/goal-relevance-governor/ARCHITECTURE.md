@@ -137,3 +137,35 @@ The MeTTa-Python Bridge (v0.3) provides a declarative alternative:
 2. **Deeper PLN chains**: Multi-hop probabilistic reasoning
 3. **Learning**: Adjusting PLN weights from historical outcomes
 4. **WMTM ECAN**: Attention allocation for cognitive cycles
+
+## v0.2 Components (Added 2026-09-08)
+
+### PLN Multi-Hop Reasoning Chains (pln_multihop.py)
+- **ChainMiner**: DFS-based chain discovery from tasks to goals through results
+- **ChainAggregator**: Aggregates chains into per-task MultiHopResult (goal coverage, max depth, avg confidence)
+- **MultiHopEvaluator**: Wraps miner+aggregator for all active tasks
+- **Conflict Chain Detection**: Finds resource conflicts (two tasks occupying same resource), classifies as competing/shared goals
+- Tests: 18 tests, 20 subtests
+
+### Integrated Governor Pipeline v0.2 (integrated_governor.py)
+- Layers: PLN → ECAN → Verdict Bridge → Multi-hop enrichment → Conflict detection
+- Per-task enrichment: chain counts, goal coverage, max depth
+- Per-episode: total chains, max depth, conflict count, conflict details
+- Uses frozen_at as reference timestamp for staleness computation
+- Tests: 7 tests, 25 subtests
+
+### Reasoning Explanation Layer (reasoning_explainer.py)
+- Generates human-readable justifications for each verdict
+- Combines: signals, relevance scores, STI/LTI, multi-hop chains, conflict summaries
+- Output: markdown report or JSON
+- Tests: 12 tests, 15 subtests
+
+### Temporal Evolution Simulator (temporal_simulator.py)
+- Simulates multi-step state mutations (goal completion, task status, project stage)
+- Tracks verdict drift across timesteps
+- Three timeline templates: stale_task, conflict_resolution, premature_to_justified
+- Tests: 11 tests
+
+### Test Summary
+- Total: 166 tests, 132 subtests, ~1.19s
+- All passing as of 2026-09-08
