@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'evaluator'))
 from pln_propagation import PLNPropagator, TruthValue
 from ecan_attention import ECANAttentionAllocator
 from pln_verdict_bridge import PLNVerdictBridge
+from pln_multihop import MultiHopEvaluator
 
 
 @dataclass
@@ -49,6 +50,9 @@ class TaskRecommendation:
     confidence_modifier: float
     signals: list
     recommended_action: str
+    multihop_chains: int = 0
+    multihop_goal_coverage: list = field(default_factory=list)
+    multihop_max_depth: int = 0
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -73,6 +77,11 @@ class IntegratedGovernorResult:
     # Verdict layer
     verdict_counts: dict
 
+    # Multi-hop layer
+    multihop_task_count: int
+    multihop_total_chains: int
+    multihop_max_depth: int
+
     # Recommendations
     recommendations: list
     executive_summary: str
@@ -93,6 +102,11 @@ class IntegratedGovernorResult:
             },
             "verdict_layer": {
                 "verdict_counts": self.verdict_counts,
+            },
+            "multihop_layer": {
+                "task_count": self.multihop_task_count,
+                "total_chains": self.multihop_total_chains,
+                "max_depth": self.multihop_max_depth,
             },
             "recommendations": [r.to_dict() for r in self.recommendations],
             "executive_summary": self.executive_summary,
@@ -143,6 +157,9 @@ class IntegratedGovernorPipeline:
         # Layer 3: Verdict bridge
         self.bridge = PLNVerdictBridge(data, now=self.now)
 
+        # Layer 3.5: Multi-hop chain reasoning
+        self.multihop = MultiHopEvaluator(data, max_depth=4)
+
     def run(self, ecan_cycles: int = 10) -> IntegratedGovernorResult:
         """Run the full pipeline and produce unified output."""
 
@@ -152,6 +169,9 @@ class IntegratedGovernorPipeline:
 
         # Run verdict bridge
         bridge_results = self.bridge.evaluate()
+
+        # Run multi-hop chain reasoning
+        multihop_results = self.multihop.evaluate()
 
         # Build recommendations by combining all layers
         recommendations = []
@@ -166,6 +186,12 @@ class IntegratedGovernorPipeline:
 
             action = ACTION_MAP.get(r.unified_verdict, "No specific action.")
 
+            # Get multi-hop chain data for this task
+            mh = multihop_results.get(r.task_id)
+            mh_chains = len(mh.chains) if mh else 0
+            mh_goals = mh.goal_coverage if mh else []
+            mh_depth = mh.max_depth_reached if mh else 0
+
             rec = TaskRecommendation(
                 task_id=r.task_id,
                 unified_verdict=r.unified_verdict,
@@ -178,6 +204,9 @@ class IntegratedGovernorPipeline:
                 confidence_modifier=r.confidence_modifier,
                 signals=r.signals,
                 recommended_action=action,
+                multihop_chains=mh_chains,
+                multihop_goal_coverage=mh_goals,
+                multihop_max_depth=mh_depth,
             )
             recommendations.append(rec)
 
@@ -194,6 +223,10 @@ class IntegratedGovernorPipeline:
         # Top 3 priority from ECAN
         top3 = ecan_dict["priority_queue"][:3]
 
+        # Aggregate multi-hop stats
+        mh_total_chains = sum(len(r.chains) for r in multihop_results.values())
+        mh_max_depth = max((r.max_depth_reached for r in multihop_results.values()), default=0)
+
         return IntegratedGovernorResult(
             timestamp=self.now.isoformat(),
             episode_id=self.data.get("episode_id", "unknown"),
@@ -207,6 +240,9 @@ class IntegratedGovernorPipeline:
             ecan_eviction_count=ecan_dict["eviction_candidates"].__len__(),
             ecan_priority_top3=top3,
             verdict_counts=verdict_counts,
+            multihop_task_count=len(multihop_results),
+            multihop_total_chains=mh_total_chains,
+            multihop_max_depth=mh_max_depth,
             recommendations=recommendations,
             executive_summary=summary,
         )
@@ -228,6 +264,11 @@ class IntegratedGovernorPipeline:
                 f"(STI={top.sti:.1f}, {top.unified_verdict}, "
                 f"rel={top.relevance_score:.3f})"
             )
+
+        # Multi-hop chains
+        total_chains = sum(r.multihop_chains for r in recs)
+        max_d = max((r.multihop_max_depth for r in recs), default=0)
+        lines.append(f"Multi-hop: {total_chains} chains found, max depth={max_d}")
 
         # Eviction candidates
         evictions = [r for r in recs if r.eviction_candidate]
