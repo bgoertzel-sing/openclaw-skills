@@ -14,6 +14,18 @@ class RemediationStep:
     verification: str = ""
     estimated_effort: str = ""
 
+    def to_dict(self) -> dict:
+        return {
+            "step_id": self.step_id,
+            "action": self.action,
+            "target": self.target,
+            "description": self.description,
+            "priority": self.priority,
+            "depends_on": list(self.depends_on),
+            "verification": self.verification,
+            "estimated_effort": self.estimated_effort,
+        }
+
 @dataclass
 class RemediationPlan:
     """A structured remediation plan with prioritized steps."""
