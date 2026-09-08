@@ -36,6 +36,28 @@ Protomega.
 Capture raw process topology, effective non-secret configuration, cursor/log
 positions, scheduled controllers, and rollback hashes from VM2.
 
+## First live canary failure and competitor removal
+
+- Ben sent `@Protomega2bot reply exactly PROTOMEGA2_ACTIVATION_OK` in Telegram
+  4641 at 13:06 PDT. No reply appeared; acceptance failed.
+- VM2 retained one Protomega2 worker and runner, but its log showed a sustained
+  `telegram_http_409` conflict cascade. Thus process count inside VM2 did not
+  establish receiver exclusivity.
+- A read-only Pop!_OS process audit found a separate process group started at
+  12:38:35 PDT under `projects/protomegabot2/repos/PeTTa`: `timeout` -> `sh` ->
+  `swipl`. Its effective `TG_BOT_TOKEN` was verified without disclosure using
+  Telegram `getMe`: bot id `8680999952`, username `protomega2bot`. This proves
+  it was the competing receiver even though its command targeted another chat.
+- The exact competitor process group (PIDs 3703406, 3703409, 3703412; PGID
+  3703406) was terminated with SIGTERM. No unrelated PeTTa chemistry process
+  was touched. Post-stop absence was verified.
+- A subsequent bounded VM2 log window showed normal empty `telegram_poll`
+  responses at offset `491557802` and no HTTP 409 failures.
+
+Next: repeat the human-authored addressed canary, correlate ingress/provider/
+egress, then identify and disable the mechanism that launched the competitor
+before restart acceptance.
+
 ## Rollback hashes (recorded 2026-09-08T19:31Z)
 
 - Main repo HEAD: 56d3194802e7de7d5925a18e4b3274e7401d1434
