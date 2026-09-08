@@ -140,6 +140,69 @@ class ChainMiner:
         chains.sort(key=lambda c: c.path_weight, reverse=True)
         return chains
 
+    def find_conflict_chains(self, max_depth: int = 4) -> list[dict]:
+        """Find resource conflict chains: two tasks occupying the same
+        resource, each linked to different goals.
+
+        Pattern: task_A --occupies--> resource <--occupies-- task_B
+                 task_A --contributes_to--> goal_A
+                 task_B --contributes_to--> goal_B
+
+        Returns list of conflict dicts with both tasks, the resource,
+        and their respective goals.
+        """
+        from collections import defaultdict
+
+        # Find resources occupied by multiple tasks
+        resource_tasks = defaultdict(list)
+        for e in self.edges:
+            if e.get('relation') == 'occupies':
+                resource_tasks[e['to']].append(e['from'])
+
+        conflicts = []
+        for resource_id, tasks in resource_tasks.items():
+            if len(tasks) < 2:
+                continue
+
+            # For each task, find its goals via relevance chains
+            for i, task_a in enumerate(tasks):
+                chains_a = self.find_chains(task_a, max_depth=max_depth)
+                goals_a = list(set(c.target for c in chains_a))
+                tv_a = self._tvs.get(task_a, TruthValue())
+
+                for task_b in tasks[i+1:]:
+                    chains_b = self.find_chains(task_b, max_depth=max_depth)
+                    goals_b = list(set(c.target for c in chains_b))
+                    tv_b = self._tvs.get(task_b, TruthValue())
+
+                    # Compute conflict severity: how different are the goals?
+                    shared_goals = set(goals_a) & set(goals_b)
+                    competing_goals = set(goals_a) ^ set(goals_b)
+
+                    # Conflict strength: product of both tasks' truth values
+                    conflict_strength = tv_a.strength * tv_b.strength
+                    conflict_confidence = tv_a.confidence * tv_b.confidence
+
+                    conflict = {
+                        'resource_id': resource_id,
+                        'task_a': task_a,
+                        'task_b': task_b,
+                        'goals_a': goals_a,
+                        'goals_b': goals_b,
+                        'shared_goals': list(shared_goals),
+                        'competing_goals': list(competing_goals),
+                        'conflict_strength': round(conflict_strength, 4),
+                        'conflict_confidence': round(conflict_confidence, 4),
+                        'is_competing': len(competing_goals) > 0,
+                        'chain_a_count': len(chains_a),
+                        'chain_b_count': len(chains_b),
+                    }
+                    conflicts.append(conflict)
+
+        # Sort by conflict strength descending
+        conflicts.sort(key=lambda c: c['conflict_strength'], reverse=True)
+        return conflicts
+
     def find_chains_all_tasks(self, max_depth: int = 4) -> dict[str, list[ReasoningChain]]:
         """Find chains for all active tasks in the graph."""
         results = {}
@@ -223,6 +286,10 @@ class MultiHopEvaluator:
             results[task_id] = ChainAggregator.aggregate_to_result(task_id, chains)
 
         return results
+
+    def evaluate_conflicts(self) -> list[dict]:
+        """Find resource conflict chains across all tasks."""
+        return self.miner.find_conflict_chains(max_depth=self.max_depth)
 
     def evaluate_to_json(self) -> str:
         """Evaluate and return JSON string."""

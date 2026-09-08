@@ -218,3 +218,64 @@ class TestMultiHopEvaluator(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class TestConflictChains(unittest.TestCase):
+
+    def test_finds_conflict_in_chem_blocking(self):
+        """Episode 02 has two tasks occupying the same resource."""
+        data = load_episode('episode_02_chem_blocking.json')
+        miner = ChainMiner(data)
+        conflicts = miner.find_conflict_chains(max_depth=4)
+        self.assertGreater(len(conflicts), 0)
+        c = conflicts[0]
+        self.assertEqual(c['resource_id'], 'r-shared-runtime')
+        self.assertIn('t-petta-chem', [c['task_a'], c['task_b']])
+        self.assertIn('t-restore-agents', [c['task_a'], c['task_b']])
+
+    def test_conflict_has_competing_goals(self):
+        data = load_episode('episode_02_chem_blocking.json')
+        miner = ChainMiner(data)
+        conflicts = miner.find_conflict_chains(max_depth=4)
+        for c in conflicts:
+            self.assertTrue(c['is_competing'])
+            self.assertGreater(len(c['competing_goals']), 0)
+
+    def test_no_conflicts_in_control_episode(self):
+        """Episode 05 (control) should have no resource conflicts."""
+        data = load_episode('episode_05_control_justified_long_running.json')
+        miner = ChainMiner(data)
+        conflicts = miner.find_conflict_chains(max_depth=4)
+        self.assertEqual(len(conflicts), 0)
+
+    def test_conflict_sorted_by_strength(self):
+        data = load_episode('episode_02_chem_blocking.json')
+        miner = ChainMiner(data)
+        conflicts = miner.find_conflict_chains(max_depth=4)
+        for i in range(len(conflicts) - 1):
+            self.assertGreaterEqual(conflicts[i]['conflict_strength'],
+                                     conflicts[i+1]['conflict_strength'])
+
+    def test_conflict_fields_present(self):
+        data = load_episode('episode_02_chem_blocking.json')
+        miner = ChainMiner(data)
+        conflicts = miner.find_conflict_chains(max_depth=4)
+        c = conflicts[0]
+        required = {'resource_id', 'task_a', 'task_b', 'goals_a', 'goals_b',
+                    'shared_goals', 'competing_goals', 'conflict_strength',
+                    'conflict_confidence', 'is_competing',
+                    'chain_a_count', 'chain_b_count'}
+        self.assertTrue(required <= set(c.keys()))
+
+    def test_all_episodes_no_crash(self):
+        for fname in ALL_EPISODES:
+            with self.subTest(episode=fname):
+                data = load_episode(fname)
+                miner = ChainMiner(data)
+                conflicts = miner.find_conflict_chains(max_depth=4)
+                self.assertIsInstance(conflicts, list)
+
+    def test_evaluator_evaluate_conflicts(self):
+        data = load_episode('episode_02_chem_blocking.json')
+        evaluator = MultiHopEvaluator(data, max_depth=4)
+        conflicts = evaluator.evaluate_conflicts()
+        self.assertGreater(len(conflicts), 0)

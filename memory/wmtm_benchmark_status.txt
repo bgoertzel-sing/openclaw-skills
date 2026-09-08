@@ -3,29 +3,19 @@ WMTM Benchmark & Code Quality Status (2026-09-08) — UPDATED
 BENCHMARK RESULTS (unchanged):
 - Throughput: ~107 cyc/s, Best ECAN config: baseline (score=0.805)
 - Stability: 0 violations over 200 stress cycles
-- Inference: 6/6 PASS (deduction, induction, abduction, analogy, evidence, contradiction)
-- All 285 tests pass (verified 2026-09-08 01:30Z)
+- Inference: 6/6 PASS
+- All 285 WMTM tests pass
 
-TEST VERIFICATION (2026-09-08):
-- WMTM: 285/285 tests pass in 4.55s (pure Python, no SWI-Prolog needed)
-- Iter-port: 12/12 tests pass
-- Petta-memory: 14/14 tests pass
-- Conversation governor: 17/17 tests pass (E1a active egress)
-- Goal Relevance Governor: 34/34 tests pass (10 evaluator + 4 cross-val + 10 atomspace + 10 graph_to_metta)
+GOAL RELEVANCE GOVERNOR (2026-09-08 — LATEST):
+- 138 tests, 117 subtests pass (1.08s)
+- Phase 0 + Extended: Schema, evaluator, 5-episode corpus, MeTTa bridge v0.3, PLN truth mapping, PLN propagation, PLN-Verdict Bridge, ECAN attention, PLN multi-hop chains, Integrated Pipeline v0.2
+- 10+ commits this session, all committed
+- ARCHITECTURE.md written
 
-GOAL RELEVANCE GOVERNOR (2026-09-08):
-- Phase 0 COMPLETE: schema v0.1 + evaluator + 5-episode replay corpus
-- Phase 1 COMPLETE: Atomspace/MeTTa mapping (graph_to_metta.py, 10/10 tests, 5 .metta samples)
-- PLN Evidence Propagation COMPLETE: pln_propagation.py fixed + cross-validated
-  - All 5/5 replay episodes produce identical verdicts (PLN == Python evaluator)
-  - 7/7 active task verdicts match: STOP_STALE, PAUSE_RECOVERABLY, ESCALATE, DEFER, REPLAN x2, CONTINUE
-  - test_cross_validation.py: 4 tests, 20 subtests
-- Next: live enforcement (blocked on Ben approval + VM2 migration), PLN/MeTTa runtime bridge (exploratory)
+INTEGRATED PIPELINE v0.2:
+- PLN -> ECAN -> Verdict Bridge -> Multi-hop enrichment
+- All 5 episodes produce expected verdicts
+- Multi-hop: per-task chain counts, goal coverage, max depth
+- Uses frozen_at as reference timestamp
 
-REPO HYGIENE (2026-09-08):
-- 7 commits on agent/protomega-long-document-repair
-- .gitignore updated: excludes embedded git repos, ephemeral outputs, large PDFs
-- Branch: agent/protomega-long-document-repair, all committed
-- iter-port repos: 68 commits on master, 67 unpushed (separate repos)
-
-SESSION STATE: PLN evidence propagation fixed and cross-validated. All 34 GRG tests pass. Awaiting user input or next exploratory task.
+SESSION STATE: All systems healthy. 138 tests green. Send channel intermittent ChannelContractError. Awaiting user input.
