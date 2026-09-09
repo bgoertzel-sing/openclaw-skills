@@ -1,5 +1,17 @@
 # Tasks
 
+- [ ] **Restore and accept VM2 Protomega2 Telegram operation (Ben, Telegram
+  4661/4672, 2026-09-08).** Deliverable: remove the duplicate Pop!_OS
+  Protomega2 receiver, retire its relaunch authority, and validate the sole
+  VM2 receiver end to end. Acceptance: exactly one effective receiver for
+  `@Protomega2bot`; no HTTP 409 conflict; a fresh Ben-originated canary binds
+  ingress/provider/egress evidence and produces the requested visible reply;
+  restart verification preserves one receiver and no superseded controller
+  can recreate the competitor. Next command: after the stopped Pop!_OS process
+  group remains absent, observe Ben's fresh canary against VM2 and correlate
+  the VM2 trace. Evidence: Telegram incident 4672 and
+  `experiments/20260908T1613PDT-protomega2-activation/`.
+
 - [ ] **Restore VM2 Protomega Telegram and Slack operation (Ben, Telegram
   4473, 2026-09-07).** Deliverable: repair the standard-Omega Protomega route
   on VM2 without changing sibling identities. Acceptance: exactly one owned
@@ -10,6 +22,49 @@
   process/controller topology, receiver state/cursors, effective non-secret
   routing, and recent ingress/provider/egress failures. Evidence:
   `experiments/20260907T1849PDT-protomega-vm2-recovery/`.
+  **2026-09-08 diagnosis:** VM2 receiver is live and its cursor advances, but
+  effective `allowed_chat_ids` omits current Protobots chat `-5437945421`;
+  recent group updates are durably classified `unauthorized/ignored` with no
+  outbox row. Next command: preserve the config for rollback, add exactly this
+  chat ID, restart only the owning Protomega receiver, and run a fresh
+  Ben-addressed canary with correlated ingress/provider/egress evidence.
+  **2026-09-08 17:00 PDT repair staged/deployed:** added only chat
+  `-5437945421` with rollback config preserved; diagnosed DM/provider failures
+  as contention on the fixed shared gateway session `protomega-clean-gate2`.
+  Provider runner now requires a per-invocation isolated Protomega session;
+  provider-free regression 2/2 and compilation passed. Deployed hashes:
+  runner `a9697870...ee2be5`, responder `7d1d4ee8...d9f9794` with rollback at
+  `/opt/proto-hive-runtime/protomega/state/rollback-20260908T1656PDT/`.
+  Receiver restart left exactly one new receiver and zero old descendants.
+  **2026-09-08 17:34 PDT correction/hardening:** the authoritative live DB
+  showed both Ben's DM and group canary accepted but starved behind an older
+  request retried 86 times. Deployed bounded three-attempt visible failure,
+  retired five stale predecessors after an online backup, enabled any joined
+  group with mention/reply addressing, and removed answer filters that rejected
+  exact short canaries. Eight provider-free tests pass; a direct unique-session
+  raw-model diagnostic returned exact `PROTOMEGA_DIAGNOSTIC_OK`. Prior canaries
+  exhausted their retry budgets before the final filter repair; fresh DM/group
+  canaries remain the acceptance gate.
+  **2026-09-08 17:54 PDT live-route correction:** the previous diagnostic was
+  not representative: it supplied the combined gateway environment directly,
+  while the live responder passed its Telegram-only `args.env` to the model
+  runner. This made every live invocation exit `child_nonzero` before provider
+  execution. Bound the responder to the separately scoped gateway environment,
+  passed 9 provider-free tests and compilation, deployed hash
+  `4d91d4ba...25ad9c6`, restarted only Protomega's receiver (old 3451875, new
+  3456378), and reproduced the exact live adapter under UID 11003 with result
+  `PROTOMEGA_LIVE_ADAPTER_OK`. Fresh Telegram canary remains required.
+  **2026-09-08 18:31 PDT Telegram accepted:** Ben's fresh group canary was
+  update `940530185` / message `17838`, completed on attempt 1, and delivered
+  exact `PROTOMEGA_GROUP_OK`. Three subsequent Ben-originated DMs (`17836`,
+  `17840`, `17845`) also completed on attempt 1 with delivered replies; Ben
+  explicitly confirmed both group and DM operation. Raw topology agrees with
+  controller state: one Protomega worker and one receiver, with no recent
+  Protomega failure or Telegram-409 log. Telegram is closed; Slack acceptance
+  and standing-controller retirement remain open under the combined task.
+  Telegram acceptance is complete; the combined task remains open only for
+  Slack acceptance and final standing-controller review. Evidence:
+  `experiments/20260908T1647PDT-protomega-telegram-repair/`.
 
 - [ ] **ProtoCosmo2 Iter channel unstick and recurrence hardening (2026-09-04)** —
   Deliverable: recover the live ProtoCosmo2 reply path from the stale

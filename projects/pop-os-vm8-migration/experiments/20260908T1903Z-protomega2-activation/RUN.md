@@ -58,6 +58,38 @@ Next: repeat the human-authored addressed canary, correlate ingress/provider/
 egress, then identify and disable the mechanism that launched the competitor
 before restart acceptance.
 
+## Failed canaries and diagnosed routing blockers
+
+- Ben's first canary (Telegram 4641) was not acquired by VM2 because a
+  Pop!_OS PeTTa process started at 12:38 PDT was polling the exact
+  `@protomega2bot` identity, causing continuous HTTP 409 conflicts. Its bot
+  identity was verified with `getMe` without exposing the token; only that
+  three-process timeout/sh/SWI-Prolog chain was terminated. VM2 then resumed
+  conflict-free polling.
+- Ben's second canary (Telegram 4650; VM2 Telegram message ID 7926) reached
+  VM2 and was recorded in `recent_context` and `processed_message_ids`, but
+  produced no provider invocation or outbox entry.
+- Root cause: live `protomega2-outer.json` allowed chats were Ben's private
+  chat `402314199` and group `-5543435724`; current Protobots group
+  `-5437945421` was absent while `allow_all_group_chats` remained false.
+- Candidate repair adds only `-5437945421` to `allowed_chat_ids`; all other
+  policy fields remain unchanged. Candidate:
+  `protomega2-outer.candidate.json`.
+
+## Live allowlist repair
+
+- Candidate JSON parsed successfully; SHA-256
+  `50af143ad873805f4497e4d4f47f5ab61f4d5c9c431af5fef0b14a2f05c4685e`.
+- Previous live config preserved at
+  `/opt/proto-hive-runtime/protomega2/config/protomega2-outer.json.rollback-20260908T2316Z`,
+  SHA-256 `e9073df6394d04c8f4c25fd39d770e52ba5b9d2e6f57b3afeeab9b5dcf014e7c`.
+- Installed candidate retains owner `11004:10001` and mode `0600`.
+- Restarted only the Protomega2 receiver through its owning `agent_worker`:
+  old PID `3296102`, automatically replaced by PID `3432255`. ProtoCosmo and
+  Protomega were not restarted.
+- Next gate: fresh Ben-authored addressed canary, followed by complete
+  ingress/provider/outbox/receipt correlation.
+
 ## Rollback hashes (recorded 2026-09-08T19:31Z)
 
 - Main repo HEAD: 56d3194802e7de7d5925a18e4b3274e7401d1434
