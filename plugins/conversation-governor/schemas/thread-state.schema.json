@@ -1,0 +1,1 @@
+{"$id":"https://openclaw.ai/schemas/governor/thread-state.json","type":"object","required":["thread_id","state","updated_at"],"additionalProperties":true,"properties":{"schema_version":{"const":"1.0.0"},"thread_id":{"type":"string"},"state":{"enum":["OPEN","WAITING_FOR_TOOL","WAITING_FOR_HUMAN","REVIEWING","ANSWERED","CLOSED","REOPENED"]},"updated_at":{"type":"string"}}}

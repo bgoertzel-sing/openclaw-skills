@@ -1,0 +1,557 @@
+{
+  "checkpoint": "/home/openclaw/research-agent/projects/relaleap/experiments/20260718T073312Z-epc-outcome-6layer-run2/artifacts/results/checkpoints/seed3253_epc_kd",
+  "data_source": {
+    "response_sha256": "f32987b23b3a58eb7e1b92f250bdf617c34b2ed080cdd0f20a857fdfd36a4d0f",
+    "url": "https://datasets-server.huggingface.co/rows?dataset=Salesforce%2Fwikitext&config=wikitext-103-raw-v1&split=validation&offset=0&length=64"
+  },
+  "device": "cpu",
+  "optimizer_updates": 0,
+  "ordinary_kd": 125.94902038574219,
+  "rows": [
+    {
+      "accepted_step_sizes": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "backtrack_counts": [
+        0,
+        0,
+        0
+      ],
+      "energy_history": [
+        0.6297450661659241,
+        0.6297450661659241,
+        0.6297450661659241,
+        0.6297450661659241
+      ],
+      "final_stationarity_norms": [
+        0.0,
+        0.0,
+        0.0,
+        9.90934313449543e-06,
+        0.00013244040019344538,
+        0.00020089362806174904
+      ],
+      "initial_activity_gradient_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0002561724104452878
+      ],
+      "kd": 125.94902038574219,
+      "lambda_output": 0.005,
+      "local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        4.9100196131135476e-11,
+        5.023864879660778e-09
+      ],
+      "normalized_local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.997892165765745e-15,
+        2.044215897901644e-13
+      ],
+      "objective": 0.6297450661659241,
+      "parameter_gradients": {
+        "blocks": [
+          {
+            "block": 0,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 266.3166903677721
+          },
+          {
+            "block": 1,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 84.80652214199073
+          },
+          {
+            "block": 2,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 129.52451380559967
+          },
+          {
+            "block": 3,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 121.63443302192042
+          },
+          {
+            "block": 4,
+            "cosine_vs_ordinary_kd": -0.08007142173082228,
+            "epc_norm": 0.008403232306187957,
+            "ordinary_kd_norm": 102.58940930588348
+          },
+          {
+            "block": 5,
+            "cosine_vs_ordinary_kd": 0.869721356262464,
+            "epc_norm": 0.25227161044992225,
+            "ordinary_kd_norm": 223.18738164633874
+          }
+        ],
+        "overall": {
+          "cosine_vs_ordinary_kd": 0.3947214088989512,
+          "epc_norm": 0.3366417403853622,
+          "ordinary_kd_norm": 444.37644103366443
+        }
+      },
+      "relaxation_displacement_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        9.909611435432453e-06,
+        0.00010023836512118578
+      ],
+      "weighted_kd": 0.6297451019287109
+    },
+    {
+      "accepted_step_sizes": [
+        0.2,
+        0.2,
+        0.05
+      ],
+      "backtrack_counts": [
+        0,
+        0,
+        2
+      ],
+      "energy_history": [
+        6.297451019287109,
+        6.297450542449951,
+        6.297449588775635,
+        6.297449588775635
+      ],
+      "final_stationarity_norms": [
+        0.0,
+        0.0,
+        0.0,
+        6.217061309143901e-05,
+        0.0017260814784094691,
+        0.0018714367179200053
+      ],
+      "initial_activity_gradient_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0025617252103984356
+      ],
+      "kd": 125.948974609375,
+      "lambda_output": 0.05,
+      "local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.9311960919310422e-09,
+        8.80619381860015e-07
+      ],
+      "normalized_local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        7.858056788817916e-14,
+        3.58324932225873e-11
+      ],
+      "objective": 6.297449588775635,
+      "parameter_gradients": {
+        "blocks": [
+          {
+            "block": 0,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 266.3166903677721
+          },
+          {
+            "block": 1,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 84.80652214199073
+          },
+          {
+            "block": 2,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 129.52451380559967
+          },
+          {
+            "block": 3,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 121.63443302192042
+          },
+          {
+            "block": 4,
+            "cosine_vs_ordinary_kd": 0.16028714067910063,
+            "epc_norm": 0.04347299195482163,
+            "ordinary_kd_norm": 102.58940930588348
+          },
+          {
+            "block": 5,
+            "cosine_vs_ordinary_kd": 0.9258748879644809,
+            "epc_norm": 4.265768147362824,
+            "ordinary_kd_norm": 223.18738164633874
+          }
+        ],
+        "overall": {
+          "cosine_vs_ordinary_kd": 0.45998011216856427,
+          "epc_norm": 4.812512480168104,
+          "ordinary_kd_norm": 444.37644103366443
+        }
+      },
+      "relaxation_displacement_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        6.214814493432641e-05,
+        0.000978462747298181
+      ],
+      "weighted_kd": 6.2974487304687505
+    },
+    {
+      "accepted_step_sizes": [
+        0.2,
+        0.05,
+        0.025
+      ],
+      "backtrack_counts": [
+        0,
+        2,
+        3
+      ],
+      "energy_history": [
+        62.974510192871094,
+        62.97439193725586,
+        62.9743766784668,
+        62.974365234375
+      ],
+      "final_stationarity_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0002611609234008938,
+        0.010586082935333252,
+        0.01907973550260067
+      ],
+      "initial_activity_gradient_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.025617236271500587
+      ],
+      "kd": 125.94868469238281,
+      "lambda_output": 0.5,
+      "local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.407393478482845e-08,
+        2.316910286026541e-05
+      ],
+      "normalized_local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.3864719919029489e-12,
+        9.427532088324142e-10
+      ],
+      "objective": 62.974365234375,
+      "parameter_gradients": {
+        "blocks": [
+          {
+            "block": 0,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 266.3166903677721
+          },
+          {
+            "block": 1,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 84.80652214199073
+          },
+          {
+            "block": 2,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 129.52451380559967
+          },
+          {
+            "block": 3,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 121.63443302192042
+          },
+          {
+            "block": 4,
+            "cosine_vs_ordinary_kd": 0.2452913019795985,
+            "epc_norm": 0.2117444883409651,
+            "ordinary_kd_norm": 102.58940930588348
+          },
+          {
+            "block": 5,
+            "cosine_vs_ordinary_kd": 0.9950069680916521,
+            "epc_norm": 28.866448723768496,
+            "ordinary_kd_norm": 223.18738164633874
+          }
+        ],
+        "overall": {
+          "cosine_vs_ordinary_kd": 0.4586034973773785,
+          "epc_norm": 36.462001955632836,
+          "ordinary_kd_norm": 444.37644103366443
+        }
+      },
+      "relaxation_displacement_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00026105146389454603,
+        0.006629180628806353
+      ],
+      "weighted_kd": 62.974342346191406
+    },
+    {
+      "accepted_step_sizes": [
+        0.2,
+        0.2,
+        0.025
+      ],
+      "backtrack_counts": [
+        0,
+        0,
+        3
+      ],
+      "energy_history": [
+        629.7451171875,
+        629.7333374023438,
+        629.7283325195312,
+        629.724365234375
+      ],
+      "final_stationarity_norms": [
+        0.0,
+        0.0,
+        0.00026204102323390543,
+        0.011335398070514202,
+        0.12872548401355743,
+        0.17726123332977295
+      ],
+      "initial_activity_gradient_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.25617241859436035
+      ],
+      "kd": 125.9440689086914,
+      "lambda_output": 5.0,
+      "local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        3.353743949219279e-08,
+        6.491331441793591e-05,
+        0.00396388815715909
+      ],
+      "normalized_local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        1.364641906420605e-12,
+        2.6413295994842656e-09,
+        1.6129102675677132e-07
+      ],
+      "objective": 629.724365234375,
+      "parameter_gradients": {
+        "blocks": [
+          {
+            "block": 0,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 266.3166903677721
+          },
+          {
+            "block": 1,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 84.80652214199073
+          },
+          {
+            "block": 2,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 129.52451380559967
+          },
+          {
+            "block": 3,
+            "cosine_vs_ordinary_kd": 0.19298403300503017,
+            "epc_norm": 0.22640097736960005,
+            "ordinary_kd_norm": 121.63443302192042
+          },
+          {
+            "block": 4,
+            "cosine_vs_ordinary_kd": 0.8433205085276109,
+            "epc_norm": 13.15431281895911,
+            "ordinary_kd_norm": 102.58940930588348
+          },
+          {
+            "block": 5,
+            "cosine_vs_ordinary_kd": 0.9930353974016543,
+            "epc_norm": 352.6016363848288,
+            "ordinary_kd_norm": 223.18738164633874
+          }
+        ],
+        "overall": {
+          "cosine_vs_ordinary_kd": 0.4823502045710397,
+          "epc_norm": 417.2734395339533,
+          "ordinary_kd_norm": 444.37644103366443
+        }
+      },
+      "relaxation_displacement_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.00025898817693814635,
+        0.011399796232581139,
+        0.09711367636919022
+      ],
+      "weighted_kd": 629.720344543457
+    },
+    {
+      "accepted_step_sizes": [
+        0.2,
+        0.2,
+        0.025
+      ],
+      "backtrack_counts": [
+        0,
+        0,
+        3
+      ],
+      "energy_history": [
+        6297.451171875,
+        6296.26953125,
+        6295.72802734375,
+        6295.34326171875
+      ],
+      "final_stationarity_norms": [
+        0.0,
+        0.0,
+        0.004021401051431894,
+        0.11908077448606491,
+        1.8631374835968018,
+        1.709525465965271
+      ],
+      "initial_activity_gradient_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.561724901199341
+      ],
+      "kd": 125.89933776855469,
+      "lambda_output": 50.0,
+      "local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        8.075272489804775e-06,
+        0.007323333062231541,
+        0.3693011403083801
+      ],
+      "normalized_local_energy_by_layer": [
+        0.0,
+        0.0,
+        0.0,
+        3.285836880362325e-10,
+        2.9798718514939537e-07,
+        1.5026901564851869e-05
+      ],
+      "objective": 6295.34326171875,
+      "parameter_gradients": {
+        "blocks": [
+          {
+            "block": 0,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 266.3166903677721
+          },
+          {
+            "block": 1,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 84.80652214199073
+          },
+          {
+            "block": 2,
+            "cosine_vs_ordinary_kd": null,
+            "epc_norm": 0.0,
+            "ordinary_kd_norm": 129.52451380559967
+          },
+          {
+            "block": 3,
+            "cosine_vs_ordinary_kd": 0.6898560000364927,
+            "epc_norm": 3.714142087560074,
+            "ordinary_kd_norm": 121.63443302192042
+          },
+          {
+            "block": 4,
+            "cosine_vs_ordinary_kd": 0.7774703552950747,
+            "epc_norm": 170.77876831557086,
+            "ordinary_kd_norm": 102.58940930588348
+          },
+          {
+            "block": 5,
+            "cosine_vs_ordinary_kd": 0.9842827258498953,
+            "epc_norm": 4771.664770491128,
+            "ordinary_kd_norm": 223.18738164633874
+          }
+        ],
+        "overall": {
+          "cosine_vs_ordinary_kd": 0.49701367509307187,
+          "epc_norm": 5268.738149729616,
+          "ordinary_kd_norm": 444.37644103366443
+        }
+      },
+      "relaxation_displacement_norms": [
+        0.0,
+        0.0,
+        0.0,
+        0.004018773790448904,
+        0.12210064381361008,
+        0.9703544974327087
+      ],
+      "weighted_kd": 6294.966888427734
+    }
+  ],
+  "schema": "relaleap.epc_real_teacher_scale_audit.v1",
+  "teacher": {
+    "id": "openai-community/gpt2",
+    "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e"
+  },
+  "token_sha256": "a6eb5aefe05deee1da140b514ee4ce13171a83a87e7676814d6fd34f45a44c41",
+  "token_shape": [
+    1,
+    32
+  ]
+}

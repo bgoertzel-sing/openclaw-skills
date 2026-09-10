@@ -1,0 +1,2041 @@
+Joscha Bach
+
+Implementing
+Emotion and Motivation
+in AI Architectures
+
+
+Tutorial AAAI 2018
+From Computation to Emotion
+
+
+          How can a computational system
+               experience emotion?
+
+
+  What is emotion?
+  What is experience?
+  Relationship between experiencer and experience?
+
+   AAAI 2018   Emotion and Motivation Tutorial       2
+Emotional states as cognitive configurations
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   3
+Emotions as cognitive configurations
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   4
+Emotions as cognitive configurations
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   5
+Overview
+
+
+  • AGI perspective on minds
+  • Basic architectural components
+  • Modeling motivation (MicroPsi model)
+  • Models of emotion
+  • Emotion in the Psi theory
+  • Modeling personality
+  • Emotion, self and prosociality
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   6
+Basic perspective on general AI
+
+  • Mind as machine
+
+  • Machine = computational system
+  • computation = regular state change
+
+  • universal computation: set of computable
+    functions that can compute all computable
+    functions (when given unbounded resources)
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   7
+Basic perspective on general AI
+
+  • Access to universe via discernible differences
+     ® Information
+  • Meaning of information:
+    relationship to changes in other information
+  • Intelligence: ability to model
+  • Modeling is function approximation
+  • Purpose of modeling is regulation,
+    to maximize rewards
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial       8
+Basic perspective on general AI
+
+  • Classical AI:
+    direct modeling of cognitive functionality
+    ® “first order AI”
+  • Deep Learning:
+    systems that model functionality themselves;
+    compositional function approximation
+     ® “second order AI”
+  • Meta Learning:
+    systems that learn how to build learning systems
+     ® “third order AI”
+
+   AAAI 2018   Emotion and Motivation Tutorial         9
+Basic perspective on general AI: open questions
+
+  • Are humans meta learning systems?
+  • Is evolution a (slow and ineffective) search for
+    meta learners?
+
+
+  • Is there a class of universal function approximators
+    that can approximate any function that can be
+    approximated by a computer (when given
+    unbounded resources),
+    and does it contain itself and us?
+
+
+   AAAI 2018   Emotion and Motivation Tutorial             10
+AI perspective on the mind
+
+  • Constructed architectures (Minsky, Simon, Newell)
+    — classical cognitive architectures
+
+
+  • Generated architectures (Schmidhuber, Hutter, …):
+    general recursive function approximation +
+    reward system
+
+
+  • Hybrid perspective:
+    mostly generated, but with complex prerequisites
+    and biases
+   AAAI 2018   Emotion and Motivation Tutorial          11
+Layers of Cognition
+
+
+                                          Reflective
+
+
+                                       Deliberative
+
+
+                                           Reactive
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial         12
+Columns of Cognition
+
+
+
+
+                                        Cognitive
+    Perception
+                                        Processing
+                                                     Action
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                13
+Cognitive Grid
+
+     Reflexive
+                                       Meta-           Management
+    Perception
+                                     Management          Action
+
+   Deliberative                          Planning,     Deliberative
+   Perception                            Reasoning       Action
+
+     Reactive                                           Reflexive
+                                            Reflexes
+    Perception                                           Action
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                        14
+Conceptual Analysis: HCogAff (Sloman 2001)
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial   15
+Artificial General Intelligence
+
+  Methods should focus on components and performances
+    necessary for intelligence:
+  • Whole, testable architectures
+  • Universal Representations:
+     Dynamic model of environment, possible worlds, and agent
+  • (Semi-) Universal Problem Solving:
+     Learning, Planning, Reasoning, Analogies, Action Control,
+     Reflection ...
+  • Universal Motivation:
+     Polythematic, adaptive goal identification
+  • Emotion and affect
+
+    AAAI 2018   Emotion and Motivation Tutorial                  16
+Components for Cognitive AI
+ • Universal mental representations
+   (compositional + distributed à neurosymbolic)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial     17
+Components for Cognitive AI
+ • (Semi-) General problem solving: Operations over these
+   representations
+                                             Op1   Op2   Op3   Op4   ...   Opn
+
+
+
+
+   (neural learning, categorization, planning, reflection,
+   consolidation, ...)
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                   18
+Components for Cognitive AI
+ • Perceptual grounding
+
+                                              Op1   Op2   Op3   Op4   ...   Opn
+
+
+
+
+               Perception
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                   19
+Components for Cognitive AI
+ • Perceptual grounding and action
+
+                                              Op1   Op2   Op3   Op4   ...   Opn
+
+
+
+
+               Perception                                              Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                   20
+Components for Cognitive AI
+ • Perceptual grounding and action
+
+                                              Op1   Op2   Op3   Op4   ...   Opn
+
+
+
+
+               Perception                                              Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                   21
+Components for Cognitive AI
+ • Model of current situation, and protocol of past situations
+
+                                              Op1   Op2   Op3     Op4   ...   Opn
+
+
+
+
+                              Protocol memory             Situation
+                                                           model
+
+
+
+
+               Perception                                                Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                     22
+Components for Cognitive AI
+ • Model of self
+
+                                              Op1   Op2   Op3     Op4   ...   Opn
+
+
+
+                                          Self model
+
+                              Protocol memory             Situation
+                                                           model
+
+
+
+
+               Perception                                                Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                     23
+Components for Cognitive AI
+ • Abstractions of objects, episodes and types
+
+                                              Op1   Op2   Op3     Op4   ...   Opn
+
+
+
+                                          Self model
+
+                                    Declarative memory
+
+                            Procedural memory             Frame
+
+
+
+
+               Perception                                                Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                     24
+Components for Cognitive AI
+ • Anticipation of future developments
+
+                                              Op1   Op2   Op3     Op4   ...   Opn
+
+
+
+                                          Self model
+                                                                    Plans
+                                    Declarative memory
+
+                            Procedural memory             Frame     Expect.
+
+
+
+
+               Perception                                                Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                     25
+Components for Cognitive AI
+ • Action selection and executive control
+
+
+
+
+                          Longterm memory         World   Mental
+                                                  model   stage
+
+
+
+
+               Perception                                  Action
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                     26
+Components for Cognitive AI
+ • Action selection and executive control
+
+
+                          Longterm memory                            World   Mental
+                                                                     model   stage
+
+
+
+
+               Perception                         Action selection            Action
+
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                        27
+Components for Cognitive AI
+ • Universal motivation: autonomous identification of goals
+
+
+                          Longterm memory                            World   Mental
+                                                                     model   stage
+
+
+
+
+               Perception                         Action selection            Action
+
+
+
+                                            Motivational system:
+                                              Motive Selection
+                                            and Decision making
+
+   AAAI 2018    Emotion and Motivation Tutorial                                        28
+Components for Cognitive AI
+ • Emotional modulation and affect
+
+                                                       Memory
+
+
+
+  Resolution
+
+
+                 Perception                         Action selection      Action
+
+
+ Securing rate
+                                              Motivational system:
+                                                                       Selection
+                                                Motive Selection
+                                                                       threshold
+                    Arousal                   and Decision making
+
+                                                      Urges/drives
+
+    AAAI 2018     Emotion and Motivation Tutorial                                  29
+Cognitive Architectures
+
+
+
+
+                      Soar                        ACT-R
+
+
+     “Classical Cognitive Architectures” tend to focus on
+     cognition as an isolated problem solving capability.
+
+    AAAI 2018   Emotion and Motivation Tutorial             30
+Components for Cognitive AI
+
+
+                                                       Memory
+
+
+
+  Resolution
+
+
+                 Perception                         Action selection      Action
+
+
+ Securing rate
+                                              Motivational system:
+                                                                       Selection
+                                                Motive Selection
+                                                                       threshold
+                    Arousal                   and Decision making
+
+                                                      Urges/drives
+
+    AAAI 2018     Emotion and Motivation Tutorial                                  31
+MicroPsi architecture
+
+
+
+
+                                                                          PSI theory
+                                                 Principles of Synthetic Intelligence
+                                                   (Dörner 1999; Bach 2003, 2009)
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                          32
+MicroPsi Architecture–simplified
+        MicroPSI Agent
+
+                             Meta-Management
+
+
+
+
+                       Behaviour Script Space /
+                                                  Long Term Memory
+                          Execution Space
+                                                        (LTM)
+
+                                                                       Memory
+                           Internal Behaviours                        Maintenance
+
+                                                     Short Term
+                         Motivation   Execution       Memory/
+                                                   Local Perceptual
+                                                        Space
+
+
+
+
+           Sensors/                                                    External
+          Modulators     UrgeSensor                PerceptSensor      Behaviors
+
+
+
+
+                   Body Parameters                   Perception         Action
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                     33
+Agent Functionality
+
+
+  • Episodic learning
+  • Goal-directed behavior, motivational system
+  • Emotional modulation
+  • Hypothesis based perception
+  • Simple planning
+  • Execution of hierarchical plans
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial    34
+Implementation: MicroPsi (Bach 03, 05, 04, 06)
+
+                             Eclipse Environment
+
+
+                              Node Net Editor                     World Editor
+
+
+
+
+                              Net Simulator/
+                                  Agent                          World Simulator
+                               Execution
+
+
+
+
+                                                    Console
+                                Monitoring
+                                                   Application
+
+
+
+
+                                                                   3D Display
+                                                                     Server
+
+
+
+
+                                                                   3D Display
+                                                                     Client
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                                    35
+Implementation: MicroPsi (Bach 03, 05, 04, 06)
+
+                             Eclipse Environment
+
+
+                              Node Net Editor                       World Editor
+
+
+
+
+                              Net Simulator/
+                                  Agent                            World Simulator
+                               Execution
+                                                                 Low-level perception
+
+                                                    Console
+                                Monitoring
+                                                   Application
+
+
+
+
+                                                                     3D Display
+                                                                       Server
+
+
+
+
+                                                                     3D Display
+                                                                       Client
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                                         36
+Implementation: MicroPsi (Bach 03, 05, 04, 06)
+
+                             Eclipse Environment
+
+
+                              Node Net Editor                       World Editor
+
+
+
+
+                              Net Simulator/
+                                  Agent                            World Simulator
+                               Execution
+                                                                 Low-level perception
+
+                                                    Console
+                                Monitoring
+                                                   Application
+
+
+
+
+                                                                     3D Display
+                                                                       Server
+
+
+
+
+                                                                     3D Display
+                                                                       Client
+
+
+
+
+                                                                   Control and simulation
+    AAAI 2018   Emotion and Motivation Tutorial                                             37
+Implementation: MicroPsi (Bach 03, 05, 04, 06)
+
+                             Eclipse Environment
+
+
+                              Node Net Editor                       World Editor
+
+
+
+
+                              Net Simulator/
+                                  Agent                            World Simulator
+                               Execution
+                                                                 Low-level perception
+
+                                                    Console
+                                Monitoring
+                                                   Application
+
+
+
+
+                                                                     3D Display
+                                                                       Server
+
+
+
+
+                                                                     3D Display
+                                                                       Client
+
+
+
+   Multi-agent interaction                                         Control and simulation
+    AAAI 2018   Emotion and Motivation Tutorial                                             38
+Implementation: MicroPsi (Bach 03, 04, 05, 06)
+
+                             Eclipse Environment
+
+
+                              Node Net Editor                       World Editor
+
+
+
+
+                              Net Simulator/
+                                  Agent                            World Simulator
+                               Execution
+   Robot control                                                 Low-level perception
+
+                                                    Console
+                                Monitoring
+                                                   Application
+
+
+
+
+                                                                     3D Display
+                                                                       Server
+
+
+
+
+                                                                     3D Display
+                                                                       Client
+
+
+
+   Multi-agent interaction                                         Control and simulation
+    AAAI 2018   Emotion and Motivation Tutorial                                             39
+Different simulation environments
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial   40
+Implementation: MicroPsi 2 (Bach, Welland, Vuine, Herger 12, 14, …)
+
+
+
+
+     AAAI 2018   Emotion and Motivation Tutorial                      41
+Cognitive Artificial Intelligence
+
+  Methods should focus on components and performances
+    necessary for intelligence:
+  • Universal Representations:
+     Dynamic model of environment, possible worlds, and agent
+  • (Semi-) Universal Problem Solving:
+     Learning, Planning, Reasoning, Analogies, Action Control,
+     Reflection ...
+  • Universal Motivation:
+     Polythematic, adaptive goal identification
+  • Emotion and affect
+  • Whole, testable architectures
+
+    AAAI 2018   Emotion and Motivation Tutorial                  42
+              Modeling Motivation
+
+
+
+
+AAAI 2018   Emotion and Motivation Tutorial   43
+Modeling Motivation in a Cognitive Architecture
+
+
+
+  • General intelligence needs General Motivation
+  • Motivational system structures cognition
+  • Motivational dynamics: physiological, social and
+     cognitive drives
+  • Intention selection and action control
+  • Motivation vs. affect
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial        44
+Motivation vs. emotion
+
+  • Motivation:
+      – reflects needs
+      – gives rise to goals and directed behavior
+      – does not have to be associated with emotions
+
+
+
+  • Emotion:
+      – modulates perception, cognition, action
+      – receives valence from motivation
+      – receives objects from cognition
+      – leads to affective expression
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial         45
+Motivational System
+
+  • All goals attempt to satisfy a (hard-wired) demand
+    à flexible goals, but (evolutionary) suitable behavior
+
+
+                                                         Intention
+
+
+
+                                              Motive selection
+
+
+
+                                                                        Legitimacy
+                                                                                     Competence
+                                                          Affiliation
+
+
+
+
+                                                                                                              Aesthetics
+                                                                                                  Certainty
+                                             Integrity
+                                     Water
+                              Food
+
+
+
+
+                                                         Urges/drives
+   AAAI 2018   Emotion and Motivation Tutorial                                                                             46
+Motivational System
+
+  • Drives correspond to set of demands of the agent
+
+
+
+
+                                                                              General and Specific
+
+
+
+
+                                                                                                                   Abstract Aesthetics
+                                                                                                                    Evolutionary and
+                                                                                 Competence
+                                                                                                     Uncertainty
+                                                                 Legitimacy
+                                                   Affiliation
+
+
+
+
+                                                                                                     Reduction
+                                   Integrity
+
+
+
+
+                                                                  Internal
+                      Water
+          Food
+
+
+
+
+                 Physiological                               Social                                  Cognitive
+
+
+
+   AAAI 2018     Emotion and Motivation Tutorial                                                                                         47
+Physiological Drives
+
+
+  • if autonomous regulation of body processes fails
+    à actively manage physiology (seek food, water,
+    healing, shelter, rest, warmth, ...)
+    à escape perilious situations
+    à implicitly seek physical survival
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial         48
+Social Drives
+
+  • Affiliation: structure social interaction beyond
+    rational utility
+  • increased by ‘legitimacy signals’, decreased by
+    ‘anti legitimacy signals’ (and adaptively over time);
+    allows for non-material reward and punishment
+
+
+  • external legitimacy: group acceptance
+  • internal legitimacy: “honor”, conformance to
+    internalized social norms
+
+   AAAI 2018   Emotion and Motivation Tutorial              49
+Cognitive Drives
+
+  • Competence
+      – epistemic (problem specific)
+      – general (ability to satisfy demands)
+      – effect oriented
+
+  • Uncertainty reduction
+      –   novelty seeking
+  • Aesthetics
+      – evolutionary preferences (stimulus oriented)
+      – abstract (representation oriented)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial         50
+Motivational System
+
+  All possible goals correspond to (at least one) demand
+
+
+
+
+                                                                              General and Specific
+
+
+
+
+                                                                                                                   Abstract Aesthetics
+                                                                                                                    Evolutionary and
+                                                                                 Competence
+                                                                                                     Uncertainty
+                                                                 Legitimacy
+                                                   Affiliation
+
+
+
+
+                                                                                                     Reduction
+                                   Integrity
+
+
+
+
+                                                                  Internal
+                      Water
+          Food
+
+
+
+
+                 Physiological                               Social                                  Cognitive
+
+
+
+   AAAI 2018     Emotion and Motivation Tutorial                                                                                         51
+From Needs to Behavior
+
+
+
+                                                                Memory
+                                         Priming + Modulation
+
+
+
+
+                Urge
+  Needs        Signals                           Learning       Perception
+
+
+
+
+                                          Decision Making
+                                                                  Action
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                               52
+Reward signals
+
+
+
+  Pleasure and distress:
+      – Change of a demand is reflected in pleasure or distress
+        signal
+      – Strength is proportional to amount of change
+
+
+      –   Pleasure and distress signals deliver reinforcement
+          values for behavioral procedures and episodic
+          sequences and define appetitive and aversive goals.
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                    53
+Motivational System
+
+  • drive = demand + urge indicator
+
+   target
+                                           swater
+  current
+   level                               urge indicator
+                     Water
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial         54
+Motivational Learning
+
+  • motive = urge + goal situation
+
+   target
+                                           swater
+  current
+   level                               urge indicator
+                     Water
+
+
+                                                        goal
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                55
+Motivational Learning
+
+  • motive = urge + goal situation
+
+   target
+                                                        +
+                                           swater
+  current
+   level                               urge indicator
+                     Water
+
+
+                                                        –         goal situation
+
+
+
+
+                                                            aversive situation
+    AAAI 2018   Emotion and Motivation Tutorial                                    56
+Goals
+
+  • Goal: situation or action that affords to satisfy a
+    need
+  • Aversive goal: situation or action that frustrate a
+    need
+  • All behavior is directed on satisfying an appetitive
+    goal or avoiding an aversive goal
+  • Needs are predefined, goals are learned
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial             57
+Physiological needs
+
+  • Thirst
+  • Hunger
+  • Rest
+  • Warmth
+  • Libido
+  •…
+
+  à Survival as emergent property
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   58
+Social needs
+
+
+  • Affiliation (Attention from others, external
+    legitimacy)
+  • Internal legitimacy
+  • Nurturing (caring for others)
+  • Affection
+  • Dominance
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial     59
+Cognitive needs
+
+  • Competence:
+      – Skill acquisition (epistemic competence)
+      – Coping/control ability (general competence)
+      – Effect generation
+
+  • Uncertainty reduction:
+      –   Exploration
+  • Aesthetics:
+      – Stimulus oriented
+      – Structure oriented (abstract aesthetics)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial        60
+Needs and urges
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   61
+Motivational Learning
+
+  • association by learning:
+           urge
+         indicator
+                                                  w1
+demand               si                                +           goal
+                                                                situation
+          change
+         indicator                          A+
+                                V+                     –
+                Δsi
+
+                                                           w2   aversive
+                                V-           A-                 situation
+
+                            valence associator
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                             62
+Motivational Learning
+
+  • retrogradient reinforcement
+ protocol chain
+                                                             goal
+
+
+
+           urge
+         indicator
+                                                    w1
+demand               si                                  +
+
+          change
+         indicator                            A+
+                                  V+
+                  Δsi
+                              valence associator
+
+
+    AAAI 2018     Emotion and Motivation Tutorial                   63
+Motivational Learning
+
+  Motivator:
+                                      situations leading up to goal = plan
+
+
+                                                                             goal
+
+
+
+
+            urge
+                                                     w1
+                     si                                   +
+
+autonomous
+ regulation
+                                   V+          A+
+                   Δsi
+                               valence associator
+
+
+    AAAI 2018      Emotion and Motivation Tutorial                                  64
+Motivational Learning
+
+  Intention:
+
+                                                     goal 1
+
+
+
+                                                              goal 2
+            urge
+                     si
+
+autonomous                                                       goal 3
+ regulation
+                                                                  ...
+
+                                                                 goal n
+
+
+    AAAI 2018      Emotion and Motivation Tutorial                        65
+Motivational learning
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   66
+Motive selection
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   67
+Need parameters
+
+
+  • Strength: relative importance
+  • Decay: rate of replenishment
+  • Gain: effect of satisfaction
+  • Loss: effect of frustration
+
+
+
+  • different configuration of need parameters =
+    different personality traits
+
+   AAAI 2018   Emotion and Motivation Tutorial     68
+Anticipated needs
+
+  • Actual reward determines reinforcement
+    (striatum, basal ganglia)
+  • Anticipated reward determines action
+    (prefrontal dopamine)
+
+
+  • Valenced reactions are not only caused by present
+    rewards, but also by imagined/anticipated rewards
+    (expectations, memories)
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial          69
+Implementation of motivation
+                      𝑡𝑦𝑝𝑒 ∈ 𝑝ℎ𝑦𝑠𝑖𝑜𝑙𝑜𝑔𝑖𝑐𝑎𝑙, 𝑠𝑜𝑐𝑖𝑎𝑙, 𝑐𝑜𝑔𝑛𝑖𝑡𝑖𝑣𝑒 ,
+                                  𝑣𝑎𝑙𝑢𝑒 𝑡 ∈ 0, 1 ,
+                                  𝑣𝑎𝑙𝑢𝑒 𝑡0 ∈ 0, 1 ,
+                                   𝑢𝑟𝑔𝑒 𝑡 ∈ 0, 1 ,
+                                𝑢𝑟𝑔𝑒𝑛𝑐𝑦 𝑡 ∈ 0, 1 ,
+                                𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑡 ∈ 0, 1 ,
+                                   𝑝𝑎𝑖𝑛 𝑡 ∈ 0, 1 ,
+                                   𝑤𝑒𝑖𝑔ℎ𝑡 ∈ ℝ+ ,
+                               𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒 ∈ −1, 1 ,
+               𝑁𝑒𝑒𝑑 ≔               𝑔𝑎𝑖𝑛 ∈ 0, 1 ,
+                                    𝑙𝑜𝑠𝑠 ∈ 0, 1 ,
+                              𝑠𝑎𝑡𝑖𝑠𝑓𝑎𝑐𝑡𝑖𝑜𝑛𝑖𝑚𝑔 ∈ 0, 1 ,
+                              𝑓𝑟𝑢𝑠𝑡𝑟𝑎𝑡𝑖𝑜𝑛𝑖𝑚𝑔 ∈ 0, 1 ,
+                            𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 ∈ ℝ+ ,
+                              𝑝𝑎𝑖𝑛 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 ∈ ℝ+ ,
+                            𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒 ∈ ℝ+ ,
+                              𝑝𝑎𝑖𝑛 𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒 ∈ ℝ+ ,
+                          𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 𝑖𝑚𝑔 ∈ 0, 1 ,
+                            𝑝𝑎𝑖𝑛 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 𝑖𝑚𝑔 ∈ 0, 1
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                    70
+Urge strength and urgency
+
+
+
+                                                       12
+  • 𝑢𝑟𝑔𝑒 𝑡 = 𝑤𝑒𝑖𝑔ℎ𝑡                      1 − 𝑣𝑎𝑙𝑢𝑒 𝑡−1 0
+
+                                                                   1 2
+                                                 𝑘−𝑟𝑒𝑚𝑎𝑖𝑛𝑖𝑛𝑔 𝑡𝑖𝑚𝑒𝑡
+  • 𝑢𝑟𝑔𝑒𝑛𝑐𝑦 𝑡 = 𝑤𝑒𝑖𝑔ℎ𝑡                                  𝑘          0
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                           71
+Value and decay of a need
+
+                                                                              1
+                                                 decay 𝑣𝑎𝑙𝑢𝑒𝑡−1
+                                                 +𝑔𝑎𝑖𝑛 × 𝛿𝑡𝑐𝑜𝑛𝑠𝑢𝑚𝑒
+  • 𝑣𝑎𝑙𝑢𝑒𝑡 =                                     +𝑙𝑜𝑠𝑠 × 𝛿𝑡𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒
+                                                  𝑖𝑚𝑔 𝑐𝑜𝑛𝑠𝑢𝑚𝑒  𝑖𝑚𝑔
+                        +𝑔𝑎𝑖𝑛 × 𝑠𝑎𝑡𝑖𝑠𝑓𝑎𝑐𝑡𝑖𝑜𝑛    𝛿𝑡
+                                            𝑖𝑚𝑔 𝑖𝑚𝑔 𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒
+                        +𝑙𝑜𝑠𝑠 × 𝑓𝑟𝑢𝑠𝑡𝑟𝑎𝑡𝑖𝑜𝑛    𝛿𝑡             0
+
+
+
+                                                 −1          duration 𝑡,𝑡−1
+  • decay 𝑣𝑡−1 ≔ 𝜎 𝜎                                  𝑣𝑡−1 +
+                                                               𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                    72
+Pleasure and pain associated with a need
+
+                                                                               1
+                decay 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒𝑡−1 , 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒
+                                                   𝑐𝑜𝑛𝑠𝑢𝑚𝑒
+  • 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒𝑡 = +𝑔𝑎𝑖𝑛 × 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 × 𝛿𝑡
+                                               𝑖𝑚𝑔 𝑐𝑜𝑛𝑠𝑢𝑚𝑒
+                +𝑔𝑎𝑖𝑛 × 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 𝑠𝑒𝑛𝑠.𝑖𝑚𝑔 × 𝛿𝑡             0
+
+
+
+
+                                                                           1
+                      decay 𝑝𝑎𝑖𝑛𝑡−1 , 𝑝𝑎𝑖𝑛 𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒
+                     +𝑙𝑜𝑠𝑠 × 𝑝𝑎𝑖𝑛 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 × 𝛿𝑡𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒
+  • 𝑝𝑎𝑖𝑛𝑡 =                                                 𝑖𝑚𝑔 𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒
+                +𝑙𝑜𝑠𝑠 × 𝑝𝑎𝑖𝑛 𝑠𝑒𝑛𝑠𝑖𝑡𝑖𝑣𝑖𝑡𝑦 𝑖𝑚𝑔 × 𝛿𝑡
+                     +pain from depletion(value𝑡−1 )                       0
+
+
+
+                                                    𝑣𝑎𝑙𝑢𝑒    12
+  • pain from depletion 𝑣𝑎𝑙𝑢𝑒 ≔                  1−
+                                                      𝜃      0
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                     73
+Events and consumptions
+
+            𝑐𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛 ∈ 𝐶𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛𝑠,
+              𝑒𝑥𝑝𝑒𝑐𝑡𝑒𝑑 𝑟𝑒𝑤𝑎𝑟𝑑 ∈ −1, 1 ,
+  • 𝐸𝑣𝑒𝑛𝑡 ≔       𝑐𝑒𝑟𝑡𝑎𝑖𝑛𝑡𝑦 ∈ 0, 1 ,
+                    𝑠𝑘𝑖𝑙𝑙 ∈ 0, 1 ,
+                𝑟𝑒𝑚𝑎𝑖𝑛𝑖𝑛𝑔 𝑡𝑖𝑚𝑒𝑡 ∈ ℝ+
+
+
+                      𝑛𝑒𝑒𝑑 ∈ 𝑁𝑒𝑒𝑑𝑠,
+                       𝑟𝑒𝑤𝑎𝑟𝑑𝑡 ∈ ℝ,
+                    𝑡𝑜𝑡𝑎𝑙 𝑟𝑒𝑤𝑎𝑟𝑑 ∈ ℝ,
+  • 𝐶𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛 ≔
+                  𝑟𝑒𝑤𝑎𝑟𝑑 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛 ∈ ℝ+ ,
+                    𝑚𝑎𝑥 𝑟𝑒𝑤𝑎𝑟𝑑 ∈ ℝ,
+                     𝑑𝑖𝑠𝑐𝑜𝑢𝑛𝑡 ∈ 0, 1
+
+   AAAI 2018   Emotion and Motivation Tutorial   74
+Reward signal and reward summation
+                                             1
+                                          − 𝑡2
+  • 𝑠𝑖𝑔𝑛𝑎𝑙 𝑡 : = 𝑡 𝑒                         2
+
+                                                  ]
+  • 𝑡1 = 𝑡 − 𝑡𝑜𝑛𝑠𝑒𝑡                        𝑟𝑒𝑤𝑎𝑟𝑑 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛
+                                                           duration(t, t − 1)
+                                                  ]
+  • 𝑡1 = 𝑡 − 𝑡𝑜𝑛𝑠𝑒𝑡                        𝑟𝑒𝑤𝑎𝑟𝑑 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛
+                                                           duration(t, t − 1)
+
+                                                       1 2 𝑚𝑎𝑥 𝑟𝑒𝑤𝑎𝑟𝑑
+                                 ]× 𝑡𝑜𝑡𝑎𝑙 𝑟𝑒𝑤𝑎𝑟𝑑 𝑡2   − 𝑡
+  • 𝑟𝑒𝑤𝑎𝑟𝑑𝑡 =                                   ∫𝑡
+                                 𝑟𝑒𝑤𝑎𝑟𝑑 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛 1
+                                                    𝑡𝑒 2
+                                                           −𝑚𝑎𝑥 𝑟𝑒𝑤𝑎𝑟𝑑
+                                                          1            1      𝑚𝑎𝑥 𝑟𝑒𝑤𝑎𝑟𝑑
+                     ]× 𝑡𝑜𝑡𝑎𝑙 𝑟𝑒𝑤𝑎𝑟𝑑                     − 𝑡12        − 𝑡22
+               =                                     𝑒    2      −𝑒    2
+                     𝑟𝑒𝑤𝑎𝑟𝑑 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛                                          −𝑚𝑎𝑥 𝑟𝑒𝑤𝑎𝑟𝑑
+
+
+   AAAI 2018       Emotion and Motivation Tutorial                                          75
+Actualized rewards change values of needs
+
+
+                                  𝑐𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛 ∞
+  • 𝛿𝑡𝑐𝑜𝑛𝑠𝑢𝑚𝑒 =             𝑟𝑒𝑤𝑎𝑟𝑑𝑡           0
+
+
+
+                                  𝑐𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛 0
+  • 𝛿𝑡𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒 =            𝑟𝑒𝑤𝑎𝑟𝑑𝑡           −∞
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial     76
+Dealing with anticipated rewards
+
+                                                       𝑐𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛       ∞
+                                                 𝑟𝑒𝑤𝑎𝑟𝑑𝑡
+  • 𝛿𝑡𝑖𝑚𝑔 𝑐𝑜𝑛𝑠𝑢𝑚𝑒 = 𝑐𝑒𝑟𝑡𝑎𝑖𝑛𝑡𝑦 × 𝑠𝑘𝑖𝑙𝑙 × 1+𝑑 × 𝑟𝑒𝑚𝑎𝑖𝑛.𝑡𝑖𝑚𝑒
+                                                                     𝑡   0
+
+
+
+                                                       𝑐𝑜𝑛𝑠𝑢𝑚𝑝𝑡𝑖𝑜𝑛       0
+                                                 𝑟𝑒𝑤𝑎𝑟𝑑𝑡
+  • 𝛿𝑡𝑖𝑚𝑔 𝑎𝑣𝑒𝑟𝑠𝑖𝑣𝑒 = 𝑐𝑒𝑟𝑡.× (1 − 𝑠𝑘𝑖𝑙𝑙) × 1+𝑑 × 𝑟𝑒𝑚𝑎𝑖𝑛.𝑡𝑖𝑚𝑒
+                                                                     𝑡   −∞
+
+
+
+
+     (d is discount; hyperbolic discounting)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                77
+Cognitive Artificial Intelligence
+
+  Methods should focus on components and performances
+    necessary for intelligence:
+  • Universal Representations:
+     Dynamic model of environment, possible worlds, and agent
+  • (Semi-) Universal Problem Solving:
+     Learning, Planning, Reasoning, Analogies, Action Control,
+     Reflection ...
+  • Universal Motivation:
+     Polythematic, adaptive goal identification
+  • Emotion and affect
+  • Whole, testable architectures
+
+    AAAI 2018   Emotion and Motivation Tutorial                  78
+                   Modeling Emotion
+
+
+
+
+AAAI 2018   Emotion and Motivation Tutorial   79
+Emotional expression
+
+  • Paul Ekman: Facial Action Coding
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   80
+Emotional expression
+
+  • Paul Ekman: Facial Action Coding
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   81
+Emotional expression
+
+  • Paul Ekman: Facial Action Coding
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   82
+Affective computing
+
+  Recognize, process, simulate, express human affects
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial          83
+Appraisal models
+
+
+
+  • Magda Arnold, Richard Lazarus:
+      –   Emotion as cognitive appraisals of relations, motivation, cognition
+
+
+  • Klaus Scherer:
+      –   Stimulus evaluation checks
+      –   innate (sensory motor) ® learned (schemas) ® deliberate
+      –   relevance ® implication ® coping potential ® normative signific.
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                  84
+Conceptual analysis: Ortony, Clore, Collins 1988:
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial     85
+Affective dimensions in the PSI theory (Dörner 1999)
+
+                             Valence
+                (appentence/aversion)
+                                                    Selection threshold
+                                                    (motive dominance)
+
+
+
+
+                                                  Arousal
+                                                  (unspecific
+                                                  sympathicus
+                                                  syndrome)
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                           86
+Compare: Affective dimensions (Wundt 1910)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   87
+Affective dimensions in the PSI theory
+             Valence
+                                                   Selection threshold
+(appentence/aversion)
+                                                   (motive dominance)
+
+
+                                                      Arousal
+                                                      (unspecific
+                                                      sympathicus
+                                                      syndrome)
+
+                                                                  Goal directedness
+                           Resolution level
+                                    (focus)
+
+                                                                         Securing rate
+
+
+
+
+     AAAI 2018   Emotion and Motivation Tutorial                                         88
+The Psi theory about emotion
+  • Affect is seen as a configuration of a cognitive
+    system
+  • Modulators of cognition:
+      – arousal, selection threshold, securing threshold,
+        resolution level
+      – estimate of competence and certainty
+      – pleasure/distress signals ® valence
+
+
+  • Affective state is emergent property of modulation
+
+  • Directed affects (higher-level emotions) emerge by
+    association of demand with appetive or aversive
+    objects/situations
+   AAAI 2018   Emotion and Motivation Tutorial              89
+Purpose of emotional modulation
+
+
+  • Control width, depth and bias of operations on mental
+    representations of the agent
+    ® modify perception, memory, planning and action
+    selection
+
+
+  • Reduce complexity of cognitive processes
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial              90
+Modulation in PSI/MicroPsi
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial   91
+Primary modulators
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   92
+Attentional modulators
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   93
+Modulator dynamics
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   94
+Modulator parameters
+
+  • Baseline
+  • Range
+  • Volatility
+  • Duration
+
+  • Different modulator parameter configurations =
+    different temperaments
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial       95
+Emotions as directed affect + Modulation
+
+  Examples:
+
+
+  Fear: anticipation of aversive events (à neg. valence) +
+  arousal
+  Anxiety: uncertainty (à neg. valence) + low competence +
+  arousal, high securing behavior (frequent background checks)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                   96
+Emotions as directed affect + Modulation
+
+  Examples:
+
+
+  Anger: Perceived obstacle (usually agent) manifestly prevented reaching
+  of an active, motivationally relevant goal (àneg. valence), sanctioning
+  behavior tendency (à goal relevance is re-directed to sanctioning of
+  obstacle), arousal, low resolution level, high action readyness, high
+  selection threshold
+  Sadness: Manifest prevention from all conceived ways of reaching
+  active, relevant goal, without relevant obstacle (à neg. valence), support-
+  seeking behavior (by increased demand for affiliation), low arousal,
+  inhibition of active goal à decreased action readyness
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                                 97
+Emotions as directed affect + Modulation
+
+  Examples:
+
+
+  • Pride: high competence (à low securing rate), high
+    internal legitimacy, likely coincidence with high external
+    legitimacy
+  • Joy: high arousal + high perceived reward signal from
+    satisfying a demand
+  • Bliss: low arousal + high perceived reward signal from
+    satisfying a demand (since physiological demands often
+    involve high arousal, mostly related to cognitive demands,
+    such as aesthetics)
+
+   AAAI 2018   Emotion and Motivation Tutorial                   98
+Implementation of affective modulation
+
+                       𝑚𝑖𝑛 ∈ ℝ
+                      𝑚𝑎𝑥 ∈ ℝ,
+                 𝑙𝑒𝑣𝑒𝑙𝑡 ∈ [𝑚𝑖𝑛, 𝑚𝑎𝑥],
+  • 𝑀𝑜𝑑𝑢𝑙𝑎𝑡𝑜𝑟 ≔ 𝑏𝑎𝑠𝑒𝑙𝑖𝑛𝑒 ∈ [𝑚𝑖𝑛, 𝑚𝑎𝑥],
+                   𝑣𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦 ∈ ℝ+ ,
+                   𝑑𝑒𝑐𝑎𝑦 𝑡𝑖𝑚𝑒 ∈ ℝ+
+
+
+                      𝑚𝑎𝑥 − 𝑏𝑎𝑠𝑒𝑙𝑖𝑛𝑒, if 𝑙𝑒𝑣𝑒𝑙𝑡−1 > 𝑏𝑎𝑠𝑒𝑙𝑖𝑛𝑒
+  • 𝑖𝑛𝑡𝑒𝑟𝑣𝑎𝑙 = d
+                              𝑏𝑎𝑠𝑒𝑙𝑖𝑛𝑒 − 𝑚𝑖𝑛, else
+
+
+  • 𝛿𝑡 = 𝑡𝑎𝑟𝑔𝑒𝑡 × 𝑖𝑛𝑡𝑒𝑟𝑣𝑎𝑙 + 𝑏𝑎𝑠𝑒𝑙𝑖𝑛𝑒 − 𝑙𝑒𝑣𝑒𝑙𝑡−1 𝑣𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                 99
+Implementation of valence
+                                                    𝑙𝑖𝑚𝑖𝑡−𝑆𝑛−1
+  • marginal sum 𝑉, 𝑙𝑖𝑚𝑖𝑡 : = ∑|𝑉|
+                               𝑛=0 𝑆𝑛 l 𝑆𝑛 ≔           𝑙𝑖𝑚𝑖𝑡
+                                                               𝑣𝑛
+  • 𝑙𝑖𝑚𝑖𝑡 = max 𝜔|𝜔 ∈ 𝑤𝑒𝑖𝑔ℎ𝑡𝑛𝑒𝑒𝑑𝑠
+
+  • 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑝𝑎𝑖𝑛 = marginal sum weight need × 𝑝𝑎𝑖𝑛𝑛𝑒𝑒𝑑
+
+  • 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒 = marginal sum weight need × 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒𝑛𝑒𝑒𝑑
+
+
+
+
+              𝑣𝑎𝑙𝑒𝑛𝑐𝑒   𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑝𝑙𝑒𝑎𝑠𝑢𝑟𝑒−𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑝𝑎𝑖𝑛
+  •    𝑡𝑎𝑟𝑔𝑒𝑡         =
+                                      𝑙𝑖𝑚𝑖𝑡
+
+
+
+
+      AAAI 2018   Emotion and Motivation Tutorial                   100
+Implementation of arousal
+
+                               marginal sum weight need × 𝑢𝑟𝑔𝑒𝑛𝑒𝑒𝑑
+  • 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑢𝑟𝑔𝑒 =                          𝑙𝑖𝑚𝑖𝑡
+
+
+                                     marginal sum weight need × 𝑢𝑟𝑔𝑒𝑛𝑐𝑦𝑛𝑒𝑒𝑑
+  • 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑢𝑟𝑔𝑒𝑛𝑐𝑦 =                               𝑙𝑖𝑚𝑖𝑡
+
+
+
+
+  • 𝑡𝑎𝑟𝑔𝑒𝑡 𝑎𝑟𝑜𝑢𝑠𝑎𝑙 = 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑢𝑟𝑔𝑒 + 𝑐𝑜𝑚𝑏𝑖𝑛𝑒𝑑 𝑢𝑟𝑔𝑒𝑛𝑐𝑦 − 1
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                101
+Implementation of aggression/regression
+
+  • 𝑒𝑝𝑖𝑠𝑡𝑒𝑚𝑖𝑐 𝑐𝑜𝑚𝑝𝑒𝑡𝑒𝑛𝑐𝑒 = 𝑠𝑘𝑖𝑙𝑙𝑐𝑢𝑟𝑟𝑒𝑛𝑡 𝑔𝑜𝑎𝑙 𝑒𝑣𝑒𝑛𝑡
+
+
+  • 𝑔𝑒𝑛𝑒𝑟𝑎𝑙 𝑐𝑜𝑚𝑝𝑒𝑡𝑒𝑛𝑐𝑒 = valuecompetence × 𝑒𝑝𝑖𝑠𝑡𝑒𝑚𝑖𝑐 𝑐𝑜𝑚𝑝.
+
+
+
+
+  • 𝑡𝑎𝑟𝑔𝑒𝑡 𝑎𝑔𝑔𝑟𝑒𝑠𝑠𝑖𝑜𝑛 = 𝑔𝑒𝑛𝑒𝑟𝑎𝑙 𝑐𝑜𝑚𝑝. +𝑒𝑝𝑖𝑠𝑡𝑒𝑚𝑖𝑐 𝑐𝑜𝑚𝑝. −1
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial              102
+Emotion viewer
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   103
+Personality modeling
+
+
+
+
+  • Motivation parameters: Personality properties
+  • Modulation parameters: Temperament
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial      104
+Individual Variations by Parameterizing
+
+  Possible grounding of personality properties (FFM):
+  • Openness: appreciation of art and new ideas,
+    curiousity
+  • Conscientiousness: rulefollowing vs. chaotic
+  • Extraversion: tendency to seek stimulation by
+    environment and others
+  • Agreeableness: tendency for cooperativeness and
+    compassion
+  • Neuroticism: emotional stability, effect of failure
+    to self-confidence
+   AAAI 2018   Emotion and Motivation Tutorial            105
+Needs and Big Five
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   106
+Example: Mapping to FFM (Big Five)
+
+  Demand dynamics:
+
+
+
+
+                                                       Internal   Gen./Epis. Uncertainty
+Food       Water        Integrity      Affiliation
+                                                      Legitimacy Competence Reduction
+                                                                                         Aesthetics
+
+
+        Physiological                                Social                Cognitive
+
+
+
+       AAAI 2018   Emotion and Motivation Tutorial                                              107
+Example: Mapping to FFM (Big Five)
+
+  Demand dynamics:
+
+
+
+
+                                                       Internal   Gen./Epis. Uncertainty
+Food       Water        Integrity      Affiliation
+                                                      Legitimacy Competence Reduction
+                                                                                         Aesthetics
+
+
+        Physiological                                Social                Cognitive
+
+
+
+       AAAI 2018   Emotion and Motivation Tutorial                                              108
+Example: Mapping to FFM (Big Five)
+
+  Demand dynamics:
+
+
+
+
+                                          Internal   Gen./Epis. Uncertainty   Aesthetics
+                       Affiliation
+                                         Legitimacy Competence Reduction
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                                         109
+Example: Mapping to FFM (Big Five)
+
+  Valence: Pleasure/Pain signals
+
+
+
+
+               V+
+                                                   Internal   Gen./Epis. Uncertainty   Aesthe
+                                   Affiliation
+                                                  Legitimacy Competence Reduction
+
+               V-
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                         110
+Example: Mapping to FFM (Big Five)
+
+  Neuroticism: stronger experience of negative emotions, lower
+  emotional stability
+  (strong negative reward/stronger loss of competence, certainty;
+  stronger decay -> more frequent need for replenishment, possibly lower gain),
+  proneness to anxiety due to loss of certainty
+
+
+
+                V+
+                                                    Internal   Gen./Epis. Uncertainty   Aesthe
+                                    Affiliation
+                                                   Legitimacy Competence Reduction
+                V-
+
+    AAAI 2018    Emotion and Motivation Tutorial                                         111
+Example: Mapping to FFM (Big Five)
+
+  Extraversion: surgency, activity in social relations, expressivity
+  (strong gain for affiliation and competence, high decay of affiliation)
+
+
+
+
+                V+
+                                                    Internal   Gen./Epis. Uncertainty   Aesthe
+                                    Affiliation
+                                                   Legitimacy Competence Reduction
+
+                V-
+
+
+
+    AAAI 2018    Emotion and Motivation Tutorial                                         112
+Example: Mapping to FFM (Big Five)
+
+  Openness: desire for novelty, intellectual independence, non-
+  conservatism, appreciation for art and new ideas
+  (strong gain for uncertainty reduction, high epistemic competence for
+  uncertainty reduction, probably strong rewards for all demands)
+
+
+
+
+                V+
+                                                    Internal   Gen./Epis. Uncertainty   Aesthe
+                                    Affiliation
+                                                   Legitimacy Competence Reduction
+
+                V-
+
+
+
+    AAAI 2018    Emotion and Motivation Tutorial                                         113
+Example: Mapping to FFM (Big Five)
+
+  Agreeableness:
+  (strong positive and negative reward for affiliation, lower
+  gains for competence)
+
+
+
+
+               V+
+                                                   Internal   Gen./Epis. Uncertainty   Aesthe
+                                   Affiliation
+                                                  Legitimacy Competence Reduction
+
+               V-
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                         114
+Example: Mapping to FFM (Big Five)
+
+  Conscientousness, Rigidity:
+  (high loss in competence, high selection threshold,
+  possibly low effect of demands on arousal and resolution
+  level)
+
+
+               V+
+                                                   Internal   Gen./Epis. Uncertainty   Aesthe
+                                   Affiliation
+                                                  Legitimacy Competence Reduction
+
+               V-
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                         115
+Example: Mapping to FFM (Big Five)
+
+
+
+
+  • Why not one free variable per FFM dimension?
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial     116
+FFM does not tell the complete story
+
+  Shyness != Introversion
+  (high loss of affiliation, low competence)
+
+
+
+
+               V+
+                                                   Internal   Gen./Epis. Uncertainty   Aesthe
+                                   Affiliation
+                                                  Legitimacy Competence Reduction
+
+               V-
+
+
+
+   AAAI 2018    Emotion and Motivation Tutorial                                         117
+How can we evaluate a model of motivation?
+
+
+
+
+  • Games!
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   118
+Space Invaders (1978, Tomohiro Nishikado)
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial   119
+World of Warcraft (Rob Pardo, Jeff Kaplan et al. 2004)
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial          120
+Player personality types
+  Richard Bartle (1996): “Hearts, Clubs, Diamonds, Spades: Players Who suit MUDs”
+
+
+
+
+    AAAI 2018   Emotion and Motivation Tutorial                                     121
+Motivation and personality
+
+  • Personality properties can be modeled as motivational
+    variability
+
+                                            Affiliation
+
+
+
+
+     Uncertainty                                          Competence
+     reduction
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                         122
+Needs and player types (with S. Tekovsky)
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   123
+               Emotion and the Self
+
+
+
+
+AAAI 2018   Emotion and Motivation Tutorial   124
+Neocortex as a modeling system
+
+  • cortical modeling is a predictive model
+    of sensory patterns,
+    as a dynamic simulation of world and agent
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   125
+Neocortex as a modeling system
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   126
+Neocortex as a modeling system
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial   127
+Neocortex as a modeling system
+
+
+  • Primary model: environment and agent
+  • Secondary model: interaction of agent with
+    environment
+  • Tertiary model: functioning of secondary modeling
+  àSelf
+
+  • Consciousness as a model of attention
+
+
+   AAAI 2018   Emotion and Motivation Tutorial          128
+Integration of emotion and motivation
+
+  • Control and self regulation depends on learned
+    functional representations in cortical structure
+  • Attentional biases
+
+
+
+  • Attention is mechanism for directed learning
+  • Experiential access via attentional protocol
+
+  • Structure of self determines experience of emotion
+
+   AAAI 2018   Emotion and Motivation Tutorial           129
+Social emotions
+
+  • Object of emotion requires representation and
+    motivational relevance
+  • Social urges: affiliation, romantic affect, libido,
+    dominance are transactional
+  • Love: non-transactional emotion
+
+  • Love requires shared purpose, via legitimacy
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial            130
+Acknowledgements
+
+ Work on MicroPsi2 is collaborative effort:
+      -   Ronnie Vuine, Dominik Welland, Priska Herger, Jonas
+          Kemper are contributors to the current version
+      -   Architecture/concepts have been inspired by Dietrich
+          Dörner, Aaron Sloman, Marvin Minsky, Stan Franklin
+          and many others
+      -   Support from Humboldt University of Berlin, University
+          of Osnabrück (Institute for Cognitive Science), Berlin
+          School of Mind and Brain, Harvard Program of
+          Evolutionary Dynamics, MIT Media Lab
+
+
+
+
+   AAAI 2018   Emotion and Motivation Tutorial                     131
+Thank you!
+
+  Interesting questions:
+
+  • Is recursive function approximation plus
+    motivational system sufficient for general
+    intelligence?
+
+  • Could we functionally recreate human-like minds
+    with our model?
+
+  • How does a motivated/emotional system evolve
+    when it can modify itself?
+
+   AAAI 2018   Emotion and Motivation Tutorial        132
+

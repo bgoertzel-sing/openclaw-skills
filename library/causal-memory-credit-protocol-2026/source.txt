@@ -1,0 +1,1275 @@
+                      The Causal Memory and Credit Protocol
+   Exactly-Once Assimilation of Causal Innovation through Persistent Shared Memory, Sparse
+                         Credit Transport, and Information Geometry
+
+
+                                               Ben Goertzel
+
+                                        Working draft - July 2026
+
+
+Abstract. Adaptive systems must reuse stable knowledge across contexts while continuing to learn from
+new evidence. Existing approaches typically conflate three operations: reading a shared mechanism, as-
+signing credit to it, and treating an incoming signal as new evidence about it. This conflation produces two
+complementary failures. Local learners may not deliver useful credit to distant mechanisms, while global
+credit channels may rewrite many modules with correlated copies of the same causal contribution. The re-
+sult is credit starvation on one side and diffuse interference, evidence double counting, and order-dependent
+forgetting on the other.
+This paper proposes the Causal Memory and Credit Protocol (CMCP), a domain-general protocol for
+learning systems in which shared mechanisms are represented once, reused broadly, and modified only by
+causally attributable innovation. CMCP separates a representation plane, a credit plane, and an evidence-
+ledger plane. Persistent shared memory is read-many but write-gated. A sparse credit-only highway trans-
+ports mechanism-indexed learning signals without becoming an additional dependency in the forward model.
+An evidence ledger residualizes incoming signals against what has already been assimilated and distinguishes
+shared innovation, local exceptions, redundant manifestations, genuinely new mechanisms, and mechanism
+drift.
+The protocol’s core mechanism-matching problem is formulated information-geometrically. Local mecha-
+nisms are represented by natural-gradient credit vectors and tuples of Fisher, generalized Gauss-Newton,
+Hessian, or linearized-dynamics operators. Metric-aware intertwiners align these operators across contexts;
+trace-word fingerprints provide coordinate-invariant retrieval keys; commutators and holonomy diagnose
+path-dependent re-encoding. A central refinement is that directional projection alone is not a valid novelty
+test: independent repeated evidence may lie in an already known direction and should still increase pre-
+cision. CMCP therefore combines orthogonal directional novelty with a conditional-information residual,
+expressed locally by a Schur complement of score covariances. The resulting protocol aims for exactly-once
+assimilation of each causal innovation, not exactly-once use of each sample.
+We state operational contracts, give a generic algorithm, describe scalable approximations based on Hessian-
+vector products and stochastic trace estimation, and propose falsifiable experiments spanning continual learn-
+ing, reinforcement learning, world models, control, federated systems, scientific model revision, and au-
+tonomous agents.
+Keywords: causal memory; credit assignment; continual learning; information geometry; Fisher informa-
+tion; curvature; holonomy; modular learning; evidence accounting; mechanism reuse
+
+
+
+
+                                                      1
+1. Introduction
+A capable adaptive system should be able to learn a stable mechanism once, reuse it in many situations,
+and revise it when genuinely new evidence arrives. These goals sound compatible, but ordinary learning
+architectures often bind them together in a damaging way. A parameter, expert, skill, model component, or
+memory item that is broadly reusable is also exposed to broad plasticity. Every context that reads it may
+generate another update to it. Conversely, a mechanism protected from interference may become difficult to
+reach with useful learning signals.
+This tension appears in many forms. In deep local learning, credit from a high-level discrepancy may decay
+before it reaches an early mechanism. In continual learning, a global gradient can alter parameters unrelated
+to the current causal error. In modular systems, multiple experts may learn redundant versions of the same
+cause. In replay systems, correlated manifestations of one event may be treated as independent evidence.
+In agents with long-term memory, semantically similar episodes may be repeatedly consolidated even when
+they contain no new information. In scientific model revision, the same anomaly may enter through several
+data products and be counted multiple times. These are not merely optimization failures. They are failures
+to distinguish computational reuse from statistical assimilation.
+The motivating principle of this paper is therefore:
+      Shared knowledge should be broadly readable but narrowly writable; error should be
+      globally observable but locally actionable.
+The Causal Memory and Credit Protocol (CMCP) combines two architectural ideas. The first is persistent
+shared causal memory: a stable mechanism is represented once, can be queried by many contexts, and
+has explicit write permissions and provenance. The second is a causal credit-only highway: high-level
+discrepancy is factorized into mechanism-indexed credit, transported directly to responsible modules, and
+used to modify plasticity without necessarily creating a new forward or generative dependency. The highway
+addresses credit reach. The memory supplies the reference needed to decide what is already known. Their
+combination turns learning into an evidence-assimilation protocol rather than an unstructured sequence of
+parameter updates.
+The phrase causal is used here in an operational, intervention-oriented sense. A module is causally respon-
+sible for a discrepancy to the extent that controlled change to that module can change the relevant outcome.
+CMCP does not claim that second-order geometry alone solves unrestricted causal discovery from observa-
+tional data. Instead, it divides the problem into two parts:
+1. Geometry identifies and aligns candidate mechanism subspaces. It determines whether local learning
+   systems are the same up to a change of coordinates, whether their evidence directions overlap, and whether
+   their transports are path-dependent.
+2. Intervention or credible invariance evidence orients causal responsibility. It determines whether
+   changing a candidate module can actually reduce the discrepancy and therefore whether the module may
+   receive write credit.
+This division makes the difficult matching problem substantially more tractable. Around an operating point,
+a mechanism is not represented only by an activation embedding. It is represented by its local sensitivity,
+curvature, contraction, and interference structure. Natural-gradient Hessians, generalized Gauss-Newton
+matrices, empirical Fisher operators, Jacobian Gramians, and linearized transition operators are all possible
+second-order signatures. Under suitable regularity, tuples of self-adjoint operators can be matched up to
+isometry by coordinate-invariant trace data; their commutators expose the failure of simultaneous alignment
+and the curvature of the task connection [1], [2].
+
+
+                                                       2
+CMCP also sharpens what novel evidence must mean. A naive memory system might project incoming
+credit onto the complement of the stored mechanism subspace and discard the parallel component. That is
+wrong. A second independent measurement of the same mechanism lies in the same direction but should
+increase confidence. An exact duplicate or a correlated descendant of a previously assimilated observation
+should not. The correct distinction is not simply new direction versus old direction. It is:
+• directional novelty: does the evidence concern a previously unrepresented mechanism direction?
+• evidential novelty: conditional on the information already stored, does the observation carry additional
+  information within an existing mechanism direction?
+We give a local information-geometric answer using residualized score variables and a conditional Fisher
+information matrix. Exact duplicate manifestations have zero conditional information; conditionally inde-
+pendent repeated observations retain their information; partial redundancy is attenuated continuously.
+The paper makes six contributions.
+1. It defines CMCP as a three-plane architecture separating representation, credit transport, and evidence
+   accounting.
+2. It formulates mechanism identity and transport through information geometry, operator intertwiners, in-
+   variant fingerprints, commutators, and holonomy.
+3. It introduces a two-part novelty operator combining orthogonal mechanism discovery with conditional
+   information within known mechanisms.
+4. It states protocol contracts for causal idempotence, independent-evidence accumulation, modular com-
+   mutation, coordinate equivariance, path consistency, and write safety.
+5. It gives a generic algorithm and practical approximations that do not require dense Hessians.
+6. It proposes a cross-domain experimental program designed to falsify the protocol’s core claims rather
+   than merely report end-task accuracy.
+The proposal builds on a broader geometric view of continual learning in which metric anisotropy and con-
+nection curvature are distinct failure channels [3], [4], and on the idea of a causally designed error highway
+that transmits novelty-filtered residuals to modules with evidence of causal responsibility [5]. The present
+paper elevates these ideas into a general learning protocol and adds the information-geometric mechanism-
+matching and conditional-novelty machinery needed to make the combination coherent.
+
+
+2. Problem Setting
+2.1 Adaptive systems, contexts, and mechanisms
+Let an adaptive system encounter a sequence of contexts 𝑐 ∈ 𝒞. A context may be a task, environment, user,
+scientific regime, sensory condition, episode, dataset shard, control mode, or conversational situation. The
+system contains a collection of candidate mechanisms or modules 𝑚 ∈ ℳ. A module may be a parameter
+block, expert, skill, transition model, rule, program fragment, memory record, controller component, or
+causal hypothesis.
+The system produces an outcome through a context-dependent computation
+
+
+                                            𝑦 = 𝑓𝑐 (𝑥; 𝜃𝑆 , 𝜃𝐿,𝑐 ),
+
+where 𝜃𝑆 denotes parameters of persistent shared mechanisms and 𝜃𝐿,𝑐 denotes context-local or provisional
+parameters. A discrepancy signal 𝑒𝑐 may be a supervised error, temporal-difference error, prediction er-
+
+
+                                                      3
+ror, reconstruction residual, constraint violation, reward-model critique, model-checking counterexample,
+or mismatch between experimental prediction and observation.
+A conventional learner maps 𝑒𝑐 to a parameter update. CMCP inserts an explicit protocol between them.
+The protocol must answer four questions:
+1. Identity: Which stored mechanism, if any, does this signal concern?
+2. Responsibility: Which modules can causally change the relevant outcome?
+3. Novelty: What part of the signal has not already been assimilated?
+4. Destination: Should the innovation revise shared memory, remain local, create a new mechanism, or
+   trigger a branch for drift?
+These questions are logically distinct. Treating them as one gradient operation is the source of many failure
+modes.
+
+2.2 Four recurring failure modes
+Credit starvation
+When learning is implemented through local reciprocal interactions, a high-level discrepancy may reach a
+distant module only through the inverse of a local self-adjoint operator. Such inverses are localized when the
+operator is well conditioned; preserving long reach can require slow, nearly critical dynamics [3], [6], [7].
+The system then faces a reach-versus-conditioning tradeoff: either inference converges quickly and distant
+mechanisms receive little task information, or information propagates far only through slow relaxation.
+
+Diffuse credit and entanglement
+A naive solution is to broadcast the full discrepancy to many modules. This improves reach, but unrelated
+modules receive the same plasticity signal. Shared causes can be redundantly encoded through several routes,
+task updates become noncommuting, and subsequent learning depends on curriculum order. Direct feedback
+methods demonstrate that long-range learning channels can be useful, but a metric-blind broadcast does not
+by itself solve causal routing [5], [8].
+
+Evidence miscounting
+Even if all updates use the same coordinates and commute, the system may assign the wrong effective mul-
+tiplicity to evidence. Replay, duplicated records, correlated sensor products, multiple descendants of one
+event, or repeated traversal of a cached trajectory can give one innovation excessive precision. Conversely,
+aggressive protection can undercount legitimate new evidence. This is a symmetric accounting problem: the
+system uses a known direction too many or too few effective times [4].
+
+Frame mismatch and path-dependent reuse
+The same causal mechanism may be represented differently across contexts. Updating in context 𝑠 can
+change the coordinates in which context 𝑡 expresses its evidence. If the corresponding local update operators
+do not commute, the meaning of the second update depends on the first. Infinitesimally this is curvature;
+over a finite context loop it is holonomy [2], [3]. This is not simply duplicate evidence. It is a failure to
+recognize the same mechanism after transport through different representational frames.
+
+
+
+
+                                                      4
+2.3 The design objective
+CMCP aims to provide all of the following simultaneously:
+• long-range credit reach without full-error broadcast;
+• reusable shared mechanisms without repeated assimilation of the same innovation;
+• accumulation of genuinely independent evidence even when it concerns an existing direction;
+• local storage of exceptions and context-specific residuals;
+• coordinate-invariant mechanism matching across representations;
+• path-consistent transport when possible, and explicit curvature accounting when it is not;
+• auditable write decisions with provenance and reversible consolidation.
+The desired endpoint is not zero coupling. It is sparse, explicit, and interpretable coupling: strong com-
+munication through a small shared causal backbone, weak cross-talk elsewhere, and a ledger that records
+why each protected shared mechanism changed.
+
+
+3. The Three-Plane Architecture
+CMCP separates learning into a representation plane, a credit plane, and an evidence-ledger plane. The
+separation is conceptual; implementations may share data structures or hardware.
+
+
+
+
+Figure 1: The three-plane CMCP architecture. Persistent memory and local modules participate in forward compu-
+tation. High-level discrepancies are encoded, geometrically aligned, causally routed, novelty-filtered, and delivered
+through a credit-only highway. The evidence ledger decides whether to suppress, localize, provisionally store, pro-
+mote, branch, or allocate.
+
+
+
+
+                                                         5
+3.1 Representation or data plane
+The representation plane performs the task. It contains two broad classes of adaptive state.
+Persistent shared causal memory. A shared memory item represents a stable mechanism that many con-
+texts may query. It is read-heavy and write-gated. Its state includes not only model parameters but also an
+information ledger, a geometric signature, provenance, uncertainty, and lifecycle status.
+Context-local or provisional state. Local adapters, episodic slots, expert-specific parameters, cached plans,
+or temporary hypotheses absorb context-specific evidence. They are easier to modify and discard. They
+protect the shared core from premature consolidation.
+A useful memory record has the abstract form
+
+
+                                      𝑀𝑗 = (𝜃𝑗 , 𝒮𝑗 , Λ𝑗 , 𝜒𝑗 , 𝒫𝑗 , 𝑣𝑗 ),
+
+where 𝜃𝑗 is the represented mechanism, 𝒮𝑗 is its local information subspace, Λ𝑗 is an accumulated precision
+or evidence ledger, 𝜒𝑗 is a coordinate-invariant geometric fingerprint, 𝒫𝑗 is provenance, and 𝑣𝑗 is a version
+or consolidation state.
+The central architectural distinction is:
+      Reading a mechanism is a computational operation. Writing it is an evidential claim.
+Many contexts may use 𝑀𝑗 during forward computation. Only a signal that passes identity, responsibility,
+novelty, and safety tests may revise it.
+
+3.2 Credit plane
+The credit plane converts a high-level discrepancy into sparse, mechanism-indexed learning signals. Its main
+components are:
+1. Credit encoder or factorizer. It decomposes a discrepancy into candidate components
+
+                                       𝑧𝑐 = 𝐶𝜙 (𝑒𝑐 , 𝑐) = (𝑧𝑐,1 , … , 𝑧𝑐,𝐾 ),
+   intended to separate shared, local, and nuisance contributions.
+2. Geometric matcher. It compares local information operators with memory fingerprints, retrieves candi-
+   date mechanisms, and estimates metric-aware transport maps.
+3. Responsibility router. It estimates whether intervention on a candidate module can reduce a component
+   of the discrepancy.
+4. Credit-only highway. It sends the residualized innovation directly to selected modules as a plasticity
+   signal.
+The highway is credit-only when it changes learning updates, eligibility traces, precision, or consolidation
+gates without becoming a new dependency in the forward generative model. This is the safest default be-
+cause it improves credit reach while preserving the represented computation and its fixed points as much
+as possible [5]. A state-coupling highway may be justified when the long-range dependency is itself a real
+shared mechanism, but it creates a stronger burden of audit.
+For a receiving module 𝑚, a generic highway update is
+
+                                     hw
+                                   Δ𝜃𝑚  = −𝜂 𝑏𝑚,𝑐 𝑅𝑚,𝑐 𝑇𝑚←𝑐 𝒩𝑚 (𝑧𝑐 ),
+
+                                                       6
+where 𝑅𝑚,𝑐 is a responsibility gate, 𝑇𝑚←𝑐 transports the credit into the module’s coordinates and metric,
+𝒩𝑚 is the novelty operator, and 𝑏𝑚,𝑐 enforces bandwidth or write budgets.
+
+3.3 Evidence-ledger or write plane
+The evidence-ledger plane decides what the incoming signal means statistically. It performs the following
+operations:
+1. retrieve candidate memory records;
+2. align the incoming information geometry with each candidate;
+3. estimate causal responsibility;
+4. residualize against already assimilated evidence;
+5. classify the residual;
+6. stage, commit, merge, split, branch, or reject a write;
+7. update provenance and diagnostic state.
+The classification has at least five outcomes.
+
+Incoming signal                      Interpretation                      Default action
+High mechanism match,                Repeated manifestation or           Read only; no shared rewrite
+negligible conditional               already explained reuse
+information
+High mechanism match,                New evidence about an existing      Provisional shared write; update
+substantial conditional              shared mechanism                    precision
+information
+Responsible but context-specific     Exception, regime, policy, or       Write to local adapter or episodic
+residual                             local mapping                       slot
+Low match with coherent              New mechanism                       Allocate a new memory item
+responsibility
+High prior match but persistent      Mechanism change or                 Branch/version, then reconcile
+coherent geometric drift             nonstationarity
+
+
+This write plane is what allows the same highway to carry strong long-range credit without converting every
+global discrepancy into a global parameter update.
+
+3.4 Two-stage commitment
+A robust implementation should normally use a two-stage commit.
+Stage 1: provisional assimilation. New information is placed in a local adapter, shadow copy, or provisional
+memory slot. The system records its geometric signature, responsibility estimate, and provenance but does
+not yet overwrite the protected shared mechanism.
+Stage 2: promotion. The provisional innovation is promoted when it recurs across sufficiently diverse
+contexts, survives intervention tests, remains stable under coordinate transport, and improves prediction or
+control without creating broad interference.
+Promotion may merge the provisional slot into shared memory, create a new shared module, or leave it
+local. This delay limits memory poisoning, router self-confirmation, and premature treatment of a transient
+correlation as a shared cause.
+
+                                                      7
+4. Information-Geometric Formulation
+The core technical problem is to recognize a mechanism across contexts that may use different parameter-
+izations, activations, features, or local modules. Raw parameter distance and embedding cosine similarity
+are not reliable because they change under reparameterization and can ignore how the system actually learns.
+CMCP instead compares local learning geometry.
+
+4.1 Local credit and information operators
+Let Θ be a smooth parameter manifold equipped with a positive metric 𝑔. In a statistical model, 𝑔 is naturally
+the Fisher-Rao metric [9], [10], [11]. In a control system it may be a controllability or sensitivity metric. In
+a deterministic learner it may be a generalized Gauss-Newton, empirical Fisher, Jacobian Gram, or carefully
+chosen preconditioner.
+For context 𝑐 with loss or discrepancy functional 𝐿𝑐 , define the metric credit vector
+
+
+                                       𝑢𝑐 = − grad𝑔 𝐿𝑐 = −𝑔−1 𝑑𝐿𝑐 ,
+
+and the local information operator
+
+
+                                              𝐻𝑐 = ∇𝑔 grad𝑔 𝐿𝑐 .
+
+Near a local solution, 𝐻𝑐 is the natural-gradient Hessian. It is self-adjoint in 𝑔 and, for a locally fitted loss,
+is typically positive semidefinite. Training for a short duration ℎ acts on a perturbation approximately as
+exp(−ℎ𝐻𝑐 ).
+A single operator describes only one local quadratic form. Mechanism identity is better represented by a
+tuple
+
+
+                                              H𝑐 = (𝐻𝑐,𝑎 )𝑎∈𝒜 ,
+
+where 𝑎 indexes output components, controlled probes, environments, interventions, temporal phases, or
+neighboring contexts. The tuple captures how a candidate mechanism responds across a small family of
+conditions.
+
+4.2 Mechanism identity up to geometric gauge
+Suppose contexts 𝑐 and 𝑑 realize the same mechanism in local spaces 𝐸𝑐 and 𝐸𝑑 . The natural equivalence
+is not equality of parameter vectors. It is the existence of an isometry or well-conditioned partial isometry
+𝑄 ∶ 𝐸𝑐 → 𝐸𝑑 such that
+
+                                       𝐻𝑑,𝑎 ≈ 𝑄𝐻𝑐,𝑎 𝑄∗ ,          𝑎 ∈ 𝒜.
+
+This is simultaneous operator alignment. It says that the two local learning systems are the same up to their
+natural coordinate gauge.
+For finite-dimensional tuples of self-adjoint operators, all noncommutative trace words
+
+
+                                                        8
+                                       Tr 𝑤(H) = Tr(𝐻𝑎1 𝐻𝑎2 ⋯ 𝐻𝑎𝑘 )
+
+form a complete invariant for simultaneous orthogonal equivalence when taken to sufficient degree. Equiv-
+alently, curriculum characters obtained from traces of products of local flow operators determine the tuple
+up to isometry under the conditions developed in the transfer-rigidity analysis [1]. This suggests a practical,
+coordinate-invariant memory key:
+
+
+                                      𝜒𝐿 (H) = {Tr 𝑤(H) ∶ |𝑤| ≤ 𝐿} .
+
+Complete high-degree signatures are expensive, but low-degree fingerprints are already informative in
+generic settings. A coarse retrieval index can include
+• Tr(𝐻𝑎 ) and Tr(𝐻𝑎2 );
+• pairwise overlaps Tr(𝐻𝑎 𝐻𝑏 );
+• commutator energies ‖[𝐻𝑎 , 𝐻𝑏 ]‖2 ;
+• selected degree-three and degree-four trace words;
+• low-rank spectral summaries and subspace principal angles.
+The geometric key does not have to replace semantic or content-based retrieval. It can be used after a semantic
+shortlist to answer the more specific question: do these candidate records implement the same local learning
+mechanism?
+
+4.3 Metric-aware transport as approximate intertwining
+After retrieving a candidate memory item 𝑀𝑗 , the protocol estimates a transport map 𝑇𝑗←𝑐 . A generic
+objective is
+
+                                                        2                         2
+                ℒalign (𝑇 ) = ∑ ∥𝐻𝑗,𝑎 𝑇 − 𝑇 𝐻𝑐,𝑎 ∥             + 𝜆𝑔 ∥𝑇 ∗ 𝑔𝑗 𝑇 − 𝑔𝑐 ∥ + 𝜆𝑟 Ω(𝑇 ).
+                                                        𝐹 ,𝑔                      𝐹
+                              𝑎∈𝒜
+
+The first term asks 𝑇 to intertwine the operator tuples. The second makes it approximately metric preserving.
+The regularizer Ω can enforce low rank, sparsity, locality, orthogonality, or a partial-isometry constraint.
+When dimensions differ, 𝑇 maps only the matched mechanism subspace.
+This transport is the connection of the protocol. It allows an innovation expressed in context 𝑐 to be compared
+with and applied to a memory record written in another frame. Exact intertwining is a strong condition;
+approximate intertwining is enough to provide a confidence score and an error budget.
+
+4.4 Symmetric information and antisymmetric path dependence
+The self-adjoint operators 𝐻𝑐 lie in the symmetric part of the local operator algebra. Their commutators
+
+
+                                                  𝐶𝑠𝑡 = [𝐻𝑠 , 𝐻𝑡 ]
+
+are anti-self-adjoint. This is the Cartan split
+
+
+                                       𝔤𝔩(𝐸) = Sym(𝐸, 𝑔) ⊕ 𝔰𝔬(𝐸, 𝑔).
+
+                                                         9
+The split has a direct protocol interpretation.
+• The symmetric component records contraction, precision, evidence accumulation, and the strength of
+  local learning directions. It belongs in the memory ledger.
+• The antisymmetric component records rotation, order dependence, and the obstruction to using one com-
+  mon coordinate frame. It belongs in the transport and curvature audit.
+For a curriculum Γ = (𝑐1 , ℎ1 ) ⋯ (𝑐𝑁 , ℎ𝑁 ), the linearized update is
+
+
+                                        𝑀 (Γ) = 𝑒−ℎ𝑁 𝐻𝑐𝑁 ⋯ 𝑒−ℎ1 𝐻𝑐1 .
+
+Its polar decomposition
+
+
+                                            𝑀 (Γ) = Hol(Γ) 𝑃 (Γ)
+
+separates a positive symmetric factor 𝑃 , describing convergence and accumulated contraction, from an or-
+thogonal factor Hol, describing order-dependent rotation [2]. CMCP treats these as separate control channels.
+Precision and schedule methods correct the symmetric ledger. Causal modularization and transport methods
+correct the connection.
+
+
+
+
+Figure 2: Information-geometric interpretation of CMCP. Contexts form a base manifold; local credit and information
+operators live in fibers; a learned connection transports them. Route mismatch is holonomy.
+
+
+4.5 Curvature, commutators, and the interference Gram
+For a small two-context loop, the leading rotational defect is proportional to the commutator:
+
+
+                                       log Hol(𝑠, 𝑡) ≈ 21 ℎ𝑠 ℎ𝑡 [𝐻𝑠 , 𝐻𝑡 ].
+
+
+
+                                                        10
+Under a one-statistical-model, many-operating-points approximation, this commutator is the Fisher-Rao cur-
+vature contracted against the area spanned by the task displacements, up to model and higher-order defects
+[3], [4]. The commutator is therefore a local measure of whether two contexts re-express shared evidence in
+incompatible frames.
+For many contexts, define the interference Gram
+
+
+                                  𝐺(𝑖𝑗),(𝑘𝑙) = − Tr ([𝐻𝑖 , 𝐻𝑗 ][𝐻𝑘 , 𝐻𝑙 ]) .
+
+Its diagonal measures the strength of each pairwise conflict. Its off-diagonal entries measure whether differ-
+ent conflicts occupy the same rotation planes. A low-rank Gram indicates that one shared transport correction
+or module boundary may repair several conflicts; a near-diagonal Gram suggests separate interventions [2].
+The goal is not necessarily to make every commutator zero. Genuine shared mechanisms can create struc-
+tured overlap. The goal is to transform broad, incoherent interference into a small set of explicit shared
+planes and make unrelated mechanisms approximately commute.
+
+
+5. Novelty: Direction Is Not Evidence
+Mechanism matching answers where an incoming signal belongs. It does not yet answer whether the signal
+contains new evidence. This section develops the central evidence-accounting rule.
+
+5.1 Why orthogonal projection is insufficient
+Let 𝒮𝑗 be the information subspace already associated with memory item 𝑀𝑗 . After transport, a simple
+residual would be
+
+                                          ⟂               𝑔
+                                         𝜈𝑗,𝑐 = (𝐼 − Π𝒮𝑗𝑗 )𝑇𝑗←𝑐 𝜈𝑐 .
+
+This correctly detects a new mechanism direction. But it incorrectly treats all evidence parallel to 𝒮𝑗 as
+redundant. Consider two cases:
+• the incoming record is an exact copy of a previously assimilated observation;
+• the incoming record is an independent new measurement generated by the same mechanism.
+Both lie in the same local direction. The first should not increase precision. The second should. Directional
+projection cannot distinguish them.
+CMCP therefore separates directional novelty from evidential novelty.
+
+5.2 Conditional score residualization
+Let 𝑠𝑐 be a local score or sensitivity statistic for the incoming evidence after transport into the candidate
+memory frame. Let 𝑠𝑀 be a vector of score statistics or sufficient-statistic summaries already represented
+in the memory ledger. Define
+
+
+                     𝐹𝑐𝑐 = 𝔼[𝑠𝑐 𝑠∗𝑐 ],    𝐹𝑀𝑀 = 𝔼[𝑠𝑀 𝑠∗𝑀 ],            𝐹𝑐𝑀 = 𝔼[𝑠𝑐 𝑠∗𝑀 ].
+
+The best linear prediction of 𝑠𝑐 from stored evidence in the information metric is
+
+                                                     11
+                                                       †
+                                            𝑠𝑐̂ = 𝐹𝑐𝑀 𝐹𝑀𝑀 𝑠𝑀 .
+
+The residual score and its conditional information are
+
+                                                         †
+                                        𝑠𝑐∣𝑀
+                                         ̃   = 𝑠𝑐 − 𝐹𝑐𝑀 𝐹𝑀𝑀 𝑠𝑀 ,
+
+                                                        †
+                                      𝐹𝑐∣𝑀 = 𝐹𝑐𝑐 − 𝐹𝑐𝑀 𝐹𝑀𝑀 𝐹𝑀𝑐 .
+
+The second expression is the Schur complement of the stored score block. It is positive semidefinite under the
+usual covariance assumptions. It quantifies locally how much information remains after linearly conditioning
+on what memory already represents.
+This gives three important regimes.
+Exact duplicate manifestation. If 𝑠𝑐 = 𝐴𝑠𝑀 almost surely for a stored linear map 𝐴, then 𝐹𝑐∣𝑀 = 0.
+The incoming record has no residual information and should not rewrite shared memory.
+Independent repeated observation. If the new observation concerns the same mechanism but is condi-
+tionally independent of stored observations given the mechanism, then 𝐹𝑐𝑀 = 0 in the idealized score
+representation and 𝐹𝑐∣𝑀 = 𝐹𝑐𝑐 . Its full information should be added to the precision ledger.
+Partial redundancy. If the observation is correlated with stored evidence but not determined by it, then
+
+
+                                             0 ⪯ 𝐹𝑐∣𝑀 ⪯ 𝐹𝑐𝑐 .
+
+The protocol discounts only the predictable component.
+This is an 𝐿2 local residual. In non-Gaussian or strongly nonlinear settings it can be replaced or supplemented
+by conditional mutual information, kernel conditional covariance, learned density-ratio residualization, or a
+predictive coding model of stored evidence. The key requirement is the same: novelty must be conditioned
+on the evidence ledger, not inferred from direction alone.
+
+5.3 The innovation packet
+For candidate memory 𝑀𝑗 , CMCP forms an innovation packet
+
+                                          ⟂
+                                 ℐ𝑗,𝑐 = (𝜈𝑗,𝑐 , 𝑠𝑐∣𝑀
+                                                 ̃ 𝑗 , 𝐹𝑐∣𝑀𝑗 , 𝑟𝑗,𝑐 , 𝑞𝑗,𝑐 ) ,
+
+where 𝑟𝑗,𝑐 is causal responsibility and 𝑞𝑗,𝑐 summarizes transport and match quality.
+The first component opens new mechanism directions. The second and third update precision and suffi-
+cient statistics within an existing direction. The last two control whether the write is causally justified and
+geometrically reliable.
+A local quadratic or exponential-family memory can update natural parameters as
+
+
+                                    Λ+                           ∗
+                                     𝑗 = Λ𝑗 + 𝛼 𝑟𝑗,𝑐 𝑇𝑗←𝑐 𝐹𝑐∣𝑀𝑗 𝑇𝑗←𝑐 ,
+
+
+
+                                                      12
+                                       𝜂𝑗+ = 𝜂𝑗 + 𝛼 𝑟𝑗,𝑐 𝑇𝑗←𝑐 𝑞𝑐∣𝑀
+                                                               ̃ 𝑗,
+
+with 𝜃𝑗+ recovered from the memory’s natural parameterization. In a generic optimizer, the same idea be-
+comes a preconditioned proximal step using Λ𝑗 as the consolidation metric.
+The rule is deliberately asymmetric between reads and writes. A context may read the full shared mechanism
+even when 𝐹𝑐∣𝑀𝑗 = 0. It simply does not add another copy of the same evidence.
+
+
+5.4 Exactly once per causal innovation
+The phrase exactly-once assimilation can be misunderstood. It does not mean that a data point may be
+processed only once. It means:
+      Each causally distinct innovation should contribute once to the shared evidence ledger, while
+      each conditionally independent measurement may contribute its own information.
+This is closer to deduplicated sufficient-statistic accumulation than to sample suppression. It preserves sta-
+tistical efficiency while preventing a single innovation from gaining artificial confidence through many cor-
+related representations.
+
+5.5 Drift, contradiction, and branching
+A persistent discrepancy with high responsibility can mean several different things:
+• the current memory is uncertain and should gain precision;
+• a context variable is missing;
+• the environment has changed;
+• two regimes require separate mechanisms;
+• the observation is corrupted or adversarial.
+CMCP should not force all such cases into one wider or less certain shared state. The geometric and evidential
+signatures help distinguish them.
+• Stable operator signature, new conditional information: update the existing mechanism.
+• Stable shared core plus systematic local residual: create or retain a context-local adapter.
+• Coherent temporal drift of the operator tuple: branch the mechanism version and maintain a transition
+  model between versions.
+• Multimodal incompatible signatures: split or allocate separate mechanisms.
+• Low responsibility or poor provenance: quarantine or reject the write.
+This lifecycle treats memory revision as model selection under causal and geometric constraints rather than
+as unrestricted parameter motion.
+
+
+6. Causal Responsibility and Sparse Routing
+Information geometry can identify candidate mechanism equivalence classes and coordinate transforms. It
+does not, by itself, determine the causal arrow. A symmetric Hessian reveals interaction and sensitivity, not
+whether intervention on a module changes the outcome of interest. CMCP therefore requires a responsibility
+estimator.
+
+
+
+                                                     13
+6.1 Intervention-sensitive responsibility
+A conceptual responsibility score is
+
+                                                         𝜕 do(𝑦𝑗 )
+                                            𝑟𝑚,𝑐,𝑗 ≈ ∥             ∥,
+                                                         𝜕 do(ℎ𝑚 )
+
+where ℎ𝑚 is the represented variable or output of module 𝑚. Practical estimates can use:
+• controlled parameter or activation perturbations;
+• counterfactual prediction by a learned world model;
+• environment invariance and mechanism-change tests;
+• influence functions or Jacobian-vector products;
+• sparse do-influence masks learned under intervention supervision;
+• temporal precedence plus action-conditioned transition evidence;
+• randomized routing probes with held-out effect measurement.
+The score should be calibrated against an observed reduction in the relevant discrepancy, not merely against
+gradient magnitude. A module can have a large correlational gradient because it is a descendant or proxy
+while lacking the capacity to intervene on the source of error.
+
+6.2 Factorized credit
+The high-level discrepancy should be decomposed before routing:
+
+
+                                        𝑒𝑐 = 𝑒shared
+                                              𝑐      + 𝑒local
+                                                        𝑐     + 𝑒nuisance
+                                                                 𝑐        .
+
+This decomposition may be explicit in a structured model or learned through sparse latent factors. Shared
+components are candidates for persistent memory. Local components belong in adapters or episodic state.
+Nuisance components are suppressed or routed only to noise models.
+A useful training objective combines task performance with routing supervision:
+
+
+       ℒ = ℒtask + 𝜆do ℒresponsibility + 𝜆path ℒpath + 𝜆nov ℒnovelty + 𝜆shadow ℒshadow + 𝜆budget ℒsparsity .
+
+The path term penalizes disagreement between alternative transport routes. The novelty term penalizes rewrit-
+ing memory with predictable evidence. The shadow term penalizes unintended commutators outside desig-
+nated shared subspaces. The budget limits active routes and write bandwidth.
+
+6.3 Why the highway should usually be credit-only
+A long-range state connection changes the function or dynamical system being represented. That may be
+desirable, but it can also create a new causal shortcut and entangle mechanisms that the memory architecture
+was intended to separate. A credit-only highway instead modifies local plasticity, eligibility, precision, or
+inference updates while leaving the forward graph unchanged during ordinary operation.
+This distinction generalizes beyond neural networks.
+• In reinforcement learning, a highway may carry a factorized TD innovation to a dynamics module without
+  adding that module as a new policy input.
+
+                                                        14
+• In a scientific model, it may route an anomaly to the responsible submodel without adding an empirical
+  correction term to every prediction.
+• In a database-backed agent, it may change consolidation priority without injecting the retrieved memory
+  into all future prompts.
+• In control, it may update a local model or gain schedule without adding a permanent sensor-to-actuator
+  shortcut.
+A state-coupling extension should be promoted only when the new dependency has passed the same causal,
+novelty, and invariance tests as any other shared mechanism.
+
+
+7. Protocol Contracts
+A protocol is useful when it defines behavior that can be tested independently of a particular implementation.
+CMCP proposes the following contracts.
+
+7.1 Causal idempotence
+For a repeated manifestation 𝑑 whose conditional information given memory is negligible,
+
+
+                                         𝑈𝑑 (𝑈𝑑 (𝑀 )) ≈ 𝑈𝑑 (𝑀 ).
+
+The approximation allows numerical noise and bounded adaptation, but the second presentation should not
+add another full unit of shared precision.
+
+7.2 Independent-evidence accumulation
+For a conditionally independent observation 𝑑′ of an existing mechanism,
+
+
+                                     Λ(𝑈𝑑′ (𝑀 )) ≈ Λ(𝑀 ) + 𝐹𝑑′ ∣𝑀 .
+
+CMCP is not an anti-repetition heuristic. It must retain the ability to become more certain when new mea-
+surements arrive.
+
+7.3 Commutation of independent mechanisms
+If two innovations concern causally independent modules with disjoint effective supports,
+
+
+                                         𝑈𝑖 𝑈𝑗 (𝑀 ) ≈ 𝑈𝑗 𝑈𝑖 (𝑀 ).
+
+Order dependence is then confined to genuinely shared or misfactorized components. This contract is mea-
+surable through commutators, curriculum reversals, and holonomy.
+
+7.4 Coordinate equivariance
+Let Φ be a smooth reparameterization with pushforward Φ∗ . The protocol should satisfy
+
+
+                                      Φ∗ 𝑈 (𝑝, 𝑀 ) ≈ 𝑈 (Φ∗ 𝑝, Φ∗ 𝑀 ).
+
+                                                     15
+Natural gradients, metric projections, operator intertwiners, and trace-word fingerprints are used precisely
+because they support this contract better than raw Euclidean parameter comparisons.
+
+7.5 Path consistency
+For two routes 𝛾1 and 𝛾2 transporting the same innovation from context 𝑐 to memory 𝑚,
+
+                                          𝛾               𝛾
+                                      ∥𝑇𝑚←𝑐
+                                         1
+                                            𝑧 − 𝑇𝑚←𝑐
+                                                  2
+                                                     𝑧∥𝑔 ≤ 𝜖path .
+                                                                  𝑚
+
+
+When curvature is nonzero, the residual cannot be driven to zero globally. The protocol should then expose
+the holonomy budget, route through a designated shared subspace, or allocate context-specific adapters.
+
+7.6 Write safety and provenance
+Every protected write must be attributable to a context, a responsibility estimate, a novelty estimate, a geo-
+metric match, and a lifecycle decision. Read permission does not imply write permission. Shared writes
+must be reversible or versioned until consolidated.
+
+7.7 Bounded interference
+The system should maintain a budget on unintended cross-module curvature. A practical condition is
+
+
+                                       ∑            ‖[𝐻𝑖 , 𝐻𝑗 ]‖2𝐹 ,𝑔 ≤ 𝐵shadow .
+                                   (𝑖,𝑗)∉𝐸allowed
+
+
+The allowed set contains explicitly shared mechanisms. The purpose is not to eliminate all overlap but to
+localize it.
+
+
+8. A Generic CMCP Algorithm
+The following algorithm is intentionally agnostic about model class.
+Inputs: context 𝑐, observation or transition 𝑥, high-level discrepancy 𝑒𝑐 , current shared memory ℳ𝑆 , local
+memory ℳ𝐿 , write budget 𝐵.
+Outputs: task action or prediction; local and provisional updates; zero or more audited shared-memory
+commits.
+1. Run the current computation. Read relevant shared and local modules and produce the output.
+2. Encode credit. Factorize 𝑒𝑐 into candidate mechanism components 𝑧𝑐,𝑘 .
+3. Construct local geometry. Estimate 𝜈𝑐 , one or more local information operators 𝐻𝑐,𝑎 , and score or
+   sufficient-statistic features 𝑠𝑐 .
+4. Retrieve candidates. Use semantic keys and the low-degree invariant fingerprint 𝜒𝐿 (H𝑐 ) to select a
+   small candidate set of memories.
+5. Align candidates. For each candidate 𝑀𝑗 , estimate 𝑇𝑗←𝑐 and an intertwining error 𝑞𝑗,𝑐 .
+6. Estimate responsibility. Probe or predict the effect of intervening on 𝑀𝑗 ; compute 𝑟𝑗,𝑐 .
+                                                          ⟂
+7. Residualize evidence. Compute directional novelty 𝜈𝑗,𝑐    and conditional information 𝐹𝑐∣𝑀𝑗 .
+
+
+
+                                                           16
+ 8. Classify the evidence. Select read-only reuse, shared update, local update, allocation, split, or drift
+    branch.
+ 9. Route credit. Send only the approved innovation packet through the credit-only highway to selected
+    modules.
+10. Stage writes. Apply new shared evidence to a provisional buffer; update local adapters immediately
+    within their own budget.
+11. Validate. Test cross-context recurrence, intervention effects, path consistency, task benefit, and unin-
+    tended commutators.
+12. Commit or reject. Promote, merge, branch, freeze, reopen, or discard provisional state; append prove-
+    nance.
+13. Audit. Record evidence multiplicity, conditional-information gain, router precision, transport error, in-
+    terference Gram, and retention outcomes.
+ A compact pseudocode form is:
+ CMCP-UPDATE(context c, discrepancy e, memory M):
+     z              <- factorize_credit(e, c)
+     (u, H, s)      <- local_geometry(c, z)
+     candidates     <- retrieve(M, semantic_key(c), trace_fingerprint(H))
+
+      packets <- []
+      for memory item j in candidates:
+          T, align_error <- estimate_transport(H, j.operator_tuple)
+          responsibility <- intervention_score(j, c, z)
+          dir_novelty    <- (I - projector(j.subspace)) T u
+          score_resid, F_cond <- conditional_information(T s, j.ledger)
+          packets.append(classify(j, dir_novelty, score_resid, F_cond,
+                                  responsibility, align_error))
+
+      selected <- sparse_budgeted_route(packets)
+      apply_credit_only_updates(selected)
+      stage_provisional_writes(selected)
+      validate_against_interventions_paths_and_interference()
+      commit_merge_branch_or_reject()
+      update_provenance_and_audit_log()
+
+
+ 9. Scalable Approximation
+ The full formulation uses operator tuples and information metrics, but dense second-order matrices are not
+ required.
+
+ 9.1 Matrix-free operator access
+ Hessian-vector and generalized Gauss-Newton-vector products can be computed through automatic differ-
+ entiation without constructing a Hessian [12]. In other adaptive systems, equivalent products arise from
+ linearized simulation, finite-difference perturbations, adjoint methods, or system-identification probes.
+ A commutator action requires only nested products:
+
+
+
+                                                      17
+                                    [𝐻𝑖 , 𝐻𝑗 ]𝑣 = 𝐻𝑖 (𝐻𝑗 𝑣) − 𝐻𝑗 (𝐻𝑖 𝑣).
+
+This is enough to estimate commutator norms, dominant interference planes, and route mismatch.
+
+9.2 Stochastic traces and fingerprints
+For a random probe 𝑧 with 𝔼[𝑧𝑧 ∗ ] = 𝐼 ,
+
+
+                                              Tr(𝐴) = 𝔼[𝑧 ∗ 𝐴𝑧].
+
+Hutchinson estimation therefore gives trace words, curriculum characters, commutator energies, and selected
+moments using a modest number of operator rollouts [1], [2], [13]. The memory index can store noisy
+confidence intervals rather than exact invariants.
+
+9.3 Low-rank and structured metrics
+Practical metrics may use diagonal, block-diagonal, Kronecker-factored, low-rank-plus-diagonal, or module-
+local approximations. K-FAC is one established way to obtain tractable curvature blocks in neural networks
+[14]. In control, balanced truncation or empirical controllability Gramians play a similar role. In probabilistic
+models, sufficient-statistic Fisher blocks may be available analytically.
+The protocol does not require the metric to be exact. It requires the approximation error to be exposed,
+because a poor metric can create false mechanism matches or destroy path consistency.
+
+9.4 Coarse-to-fine retrieval
+A scalable system can use three stages.
+1. Semantic or structural shortlist: retrieve by content, topology, tags, or context.
+2. Low-degree geometric filter: compare trace, spectrum, overlap, and commutator sketches.
+3. Local alignment test: optimize a low-rank intertwiner only for the few surviving candidates.
+This avoids comparing every context with every memory item.
+
+9.5 Learning the transport
+Several approximations are possible:
+• orthogonal Procrustes alignment between dominant information subspaces;
+• canonical-correlation or principal-angle matching;
+• learned partial isometries regularized by operator intertwining;
+• transport predicted by a context encoder and corrected by local probes;
+• graph or bundle connections learned jointly with module boundaries;
+• sparse routing matrices constrained to preserve a local metric.
+Transport confidence should decline near degenerate or highly symmetric operator tuples, where several
+alignments are equally valid. Repeated identical modules are especially problematic because the memory
+cannot reliably determine which copy owns a write. Deliberate small heterogeneity or detuning of modules
+can break this symmetry and improve identification and portability [1].
+
+
+                                                      18
+9.6 Memory lifecycle and garbage collection
+CMCP requires explicit operations beyond gradient descent:
+• promote: provisional evidence becomes shared;
+• merge: two records have equivalent geometry and nonconflicting provenance;
+• split: one record has persistent multimodal geometry or contradictory intervention signatures;
+• branch: a mechanism changes over time;
+• freeze: information and intervention signatures stabilize;
+• reopen: new conditional information exceeds a threshold;
+• retire: a record is unused or superseded;
+• quarantine: provenance, responsibility, or novelty is suspect.
+These operations can be implemented through model selection, nonparametric allocation, expert routing,
+program synthesis, or database transactions. The protocol specifies the evidential tests, not one data structure.
+
+
+10. A Rank-One Diagnostic Example
+Consider two rank-one information operators
+
+
+                               𝐻𝑠 = 𝑎 𝑢𝑢∗ ,        𝐻𝑡 = 𝑏 𝑣𝑣∗ ,        𝜌 = 𝑢∗ 𝑣,
+
+with unit vectors 𝑢, 𝑣. Two second-order statistics are
+
+                                                  Tr(𝐻𝑠 𝐻𝑡 )
+                                         𝑂𝑠𝑡 =                    = 𝜌2 ,
+                                                 ‖𝐻𝑠 ‖𝐹 ‖𝐻𝑡 ‖𝐹
+
+and
+
+                                        ‖[𝐻𝑠 , 𝐻𝑡 ]‖2
+                                                      = |𝜌|√1 − 𝜌2 .
+                                            𝑎𝑏
+They distinguish three geometric cases.
+1. Parallel: |𝜌| = 1. The contexts use the same direction and commute. This may be a duplicate mani-
+   festation or a new independent observation. Curvature cannot decide; the conditional-information ledger
+   must.
+2. Orthogonal: 𝜌 = 0. The contexts affect independent supports and commute. With correct routing, their
+   updates should be modular.
+3. Oblique: 0 < |𝜌| < 1. The contexts share a component but encode it differently. The commutator is
+   nonzero and peaks at intermediate overlap. Transport or modular refactorization is required.
+The example makes a central point: curvature is not a universal synonym for redundancy. Exact du-
+plicate evidence in one fixed direction can be overcounted with zero commutator. Independent orthogonal
+mechanisms also have zero commutator. The protocol needs the full combination of symmetric overlap,
+conditional information, and antisymmetric path dependence [4].
+
+
+
+
+                                                      19
+Figure 3: Rank-one symmetric overlap and normalized commutator as a function of directional overlap. Curvature
+vanishes for both parallel and orthogonal cases, so it must be combined with symmetric overlap and conditional evi-
+dence accounting.
+
+
+11. Diagnostics and Audit
+CMCP should be evaluated as a protocol, not only through end-task performance. The following measure-
+ments correspond directly to its contracts.
+
+11.1 Evidence-ledger diagnostics
+• Write amplification: number of shared-memory commits per ground-truth causal innovation.
+• Duplicate idempotence error: change in memory after replaying an exact or deterministically derived
+  manifestation.
+• Independent-evidence utilization: information or performance gain from conditionally independent re-
+  peated observations.
+• Conditional-information ratio: Tr(𝐹𝑐∣𝑀 )/(Tr 𝐹𝑐𝑐 + 𝜖).
+• Overcount and undercount: deviation of effective precision from a joint or batch reference ledger.
+• Provenance coverage: fraction of protected writes with reconstructible source, responsibility, and novelty
+  records.
+
+11.2 Routing diagnostics
+• precision and recall of selected modules against known intervention structure;
+• causal effect of routed versus blocked updates;
+• bandwidth and number of active highway routes;
+• fraction of credit classified as shared, local, nuisance, new, or drift;
+• delayed harm from false-positive shared writes.
+
+11.3 Geometric diagnostics
+• operator-tuple match error and transport condition number;
+• path-consistency loss across alternative routes;
+
+                                                       20
+• pairwise commutator norms;
+• interference Gram rank and off-diagonal structure;
+• curriculum holonomy angle spectrum;
+• symmetric convergence spectra and per-module precision growth.
+Interference diagnostics have an important blind spot. A successfully modular system has commuting task
+operators and therefore little holonomy data. A near-zero shadow cannot, by itself, validate the architecture;
+it is also consistent with a broken probe or inactive learning. Convergence, information gain, intervention
+response, and per-module curvature must be measured alongside the shadow [2].
+
+11.4 System-level outcomes
+• retention after sequential learning;
+• forward transfer and negative transfer;
+• adaptation speed under genuine mechanism drift;
+• calibration of uncertainty or confidence;
+• robustness to adversarial duplicate records and memory poisoning;
+• capacity growth, module reuse, and garbage-collection quality;
+• curriculum-order sensitivity outside designated shared modules.
+
+
+12. Broad Application Patterns
+CMCP is intended as a protocol layer that can sit above many learning rules.
+
+                      Persistent causal                             Information
+Domain                memory                 Credit token           geometry              Typical local state
+Continual             Shared feature,        Loss gradient,         Fisher, GGN, task     Adapter, task head,
+supervised            expert, or             prediction residual,   Hessian               episodic buffer
+learning              mechanism              constraint signal
+                      modules
+Predictive coding     Stable generative      Local                  Energy Hessian,       Latent state, local
+and energy models     transitions            prediction-error or    Fisher,               transition
+                                             distributional         error-coordinate      parameters
+                                             residual               metric
+Reinforcement         Dynamics factors,      TD innovation,         Policy Fisher,        Episode memory,
+learning              skills, options,       advantage,             successor features, context policy,
+                      reward                 model-prediction       transition Jacobian eligibility trace
+                      mechanisms             error                  Gram
+World models and      Object dynamics,       Counterfactual                               Task controller,
+                                                                    Controllability/observability
+robotics              contact laws,          prediction error,      Gramians,             regime adapter
+                      sensor models          control residual       Gauss-Newton
+Federated and         Cross-site             Site-local gradient    Site                  Private site adapter
+multi-domain          invariant              or                     Fisher/operator       and provenance
+learning              mechanisms             sufficient-statistic   tuple                 ledger
+                                             increment
+Scientific model      Reusable laws,         Posterior score,       Fisher information,   Dataset-specific
+revision              submodels, latent      residual, failed       sensitivity Hessian   nuisance model or
+                      mechanisms             prediction                                   hypothesis branch
+
+                                                      21
+                      Persistent causal                            Information
+Domain                memory                  Credit token         geometry               Typical local state
+Autonomous            Skills, tools, rules,   Critique, failed     Jacobian/Hessian       Conversation,
+agents                semantic and            plan, tool error,    of outcome             episode, user, or
+                      episodic memory         reward signal        sensitivity            tool-local memory
+Distributed           Canonical causal        New record,          Conditional            Source-specific
+databases and         event or entity         contradiction,       covariance and         record, quarantine,
+knowledge             records                 update proposal      dependency             version branch
+systems                                                            operator
+
+
+12.1 Continual learning
+Regularization methods such as elastic weight consolidation and synaptic intelligence protect directions
+judged important to prior tasks [15], [16]. Gradient projection methods constrain new updates against
+episodic memories [17]. Progressive and modular systems isolate parameters or add new capacity [18],
+[19]. CMCP is complementary. It asks whether several tasks concern the same underlying mechanism,
+whether their evidence is new, how their coordinates should be aligned, and whether shared or local storage
+is warranted.
+
+12.2 Reinforcement learning and world models
+A scalar TD error mixes many causal sources: transition surprise, reward-model error, policy mismatch,
+state aliasing, and stochasticity [20], [21]. CMCP would factorize the innovation, route model error to the
+responsible dynamics component, route policy error to the responsible skill or option, and use conditional
+information to avoid repeatedly consolidating the same trajectory. Persistent memory can store environment
+mechanisms, while local state stores episode- or regime-specific adaptations.
+
+12.3 Control and robotics
+Controllers often reuse physical mechanisms across tasks while encountering changing payloads, contacts,
+sensors, or environments. A local sensitivity or controllability geometry can match mechanisms across robot
+configurations. A credit-only highway can update the responsible dynamics or calibration module without
+adding a permanent shortcut to the control law. Drift branching is especially important: a changed actuator
+should create a versioned mechanism rather than silently corrupt the nominal model.
+
+12.4 Federated and multi-domain systems
+Federated learning needs to distinguish globally shared structure from site-specific effects. Raw gradient
+aggregation can overcount correlated populations or erase minority regimes. CMCP can treat each site update
+as an evidence packet, use operator fingerprints to identify shared mechanisms, residualize against the global
+ledger, and keep local residuals private. Trace and operator sketches may be easier to communicate than raw
+data, although privacy leakage from second-order statistics requires separate protection.
+
+12.5 Scientific model updating
+Scientific evidence often enters through pipelines that derive many observables from the same experiment.
+Treating each derived record as independent can create false confidence. CMCP’s conditional-information
+
+
+                                                      22
+ ledger offers a local way to discount predictable descendants while retaining independent replication. Geo-
+ metric fingerprints can identify when different experimental regimes constrain the same mechanism in dif-
+ ferent coordinates. Intervention responsibility corresponds to experimental manipulation or credible natural
+ experiments.
+
+ 12.6 Autonomous agents and long-term memory
+ Memory-augmented agents frequently use semantic similarity for retrieval and heuristics for consolidation.
+ CMCP adds a distinction between semantic resemblance and evidential novelty. A retrieved rule may be
+ useful in many episodes without being rewritten after each use. A failed action can generate credit to the
+ responsible skill, tool model, or user-specific adapter. Promotion to global memory requires recurrence
+ across contexts and intervention-consistent benefit.
+
+
+ 13. Experimental Program
+ A credible evaluation should begin in synthetic environments with known causal structure, then move to
+ realistic domains.
+
+ 13.1 Synthetic causal benchmark
+ Construct a structural causal system with known mechanisms and parameter supports. Generate contexts
+ that separately instantiate:
+ 1. an exact duplicate manifestation of one innovation;
+ 2. a deterministic descendant of stored evidence;
+ 3. an independent repeated measurement of the same mechanism;
+ 4. the same mechanism expressed through a rotated representation;
+ 5. independent mechanisms on orthogonal supports;
+ 6. a context-local exception;
+ 7. a genuinely new mechanism;
+ 8. gradual mechanism drift;
+ 9. abrupt regime change;
+10. nuisance correlation with no intervention effect;
+11. adversarial attempts to trigger shared writes.
+ The benchmark should provide ground truth for mechanism identity, causal responsibility, evidence depen-
+ dence, and drift.
+
+ 13.2 Factorial ablations
+ Compare at least:
+ 1. local learning without shared memory or highways;
+ 2. shared memory with ordinary global gradients;
+ 3. a raw full-error highway without a ledger;
+ 4. a causally routed highway without persistent memory;
+ 5. persistent memory with semantic matching but no information geometry;
+ 6. CMCP without conditional information, using only subspace projection;
+ 7. CMCP without intervention-sensitive responsibility;
+
+
+                                                     23
+8. full CMCP.
+These ablations isolate the contribution of reach, memory, geometry, causal routing, and evidence account-
+ing.
+
+13.3 Core predictions
+• A full-error highway improves adaptation speed but broadens cross-task interference.
+• Memory without a highway reduces duplicate writes but leaves difficult long-range credit problems.
+• A causal highway without persistent memory lacks a stable reference for novelty and repeatedly rediscov-
+  ers what is already known.
+• Subspace projection alone suppresses legitimate independent repeated evidence.
+• Conditional-information residualization preserves independent evidence while suppressing deterministic
+  duplicates and correlated descendants.
+• Operator alignment reduces false mechanism splits under rotated representations.
+• Full CMCP yields low write amplification, high router precision, localized interference, better retention,
+  and faster adaptation to true novelty.
+• Under successful modularization, holonomy diagnostics approach zero while symmetric information gain
+  and intervention response remain nonzero.
+
+13.4 Stress tests
+The protocol should be stressed under:
+• poor curvature approximations;
+• highly symmetric interchangeable modules;
+• nonstationary metrics;
+• delayed or sparse intervention feedback;
+• conflicting provenance;
+• capacity limits;
+• long loops far from a local quadratic regime;
+• partially observed causes;
+• strategic agents that manipulate the write gate.
+A negative result should identify which contract failed. For example, high write amplification with low path
+error points to a conditional-information failure, while order sensitivity with correct multiplicity points to a
+transport or modularity failure.
+
+
+14. Relationship to Existing Approaches
+CMCP is not a replacement for standard learning algorithms. It is a protocol for deciding where and how
+their updates become persistent knowledge.
+
+14.1 Natural gradient and curvature-aware optimization
+Natural gradient makes a local update invariant to smooth reparameterization and corrects metric anisotropy
+[9]. K-FAC and related approximations make this practical [14]. CMCP uses the same geometry for mech-
+anism matching, transport, and evidence units. Natural gradient answers how to measure and scale a local
+
+
+
+                                                      24
+update. CMCP additionally asks whether the update is new, which memory owns it, and whether it should
+be shared.
+
+14.2 Regularization, replay, and projection
+EWC, synaptic intelligence, replay, GEM, and related methods preserve prior performance by penalizing or
+projecting updates [15], [16], [17], [22]. They mainly control displacement in important directions. CMCP
+adds a causal evidence ledger and a mechanism identity layer. It can use replay or projection as a local
+realization of a write decision, but it seeks to prevent redundant evidence from entering the protected state
+in the first place.
+
+14.3 Modular networks and mixture-of-experts
+Mixture-of-experts and progressive architectures allocate specialized capacity and sparse routing [18], [23],
+[24]. CMCP supplies criteria for deciding when two experts should share a mechanism, when a residual
+should remain local, when modules should merge or split, and when replicated experts are too symmetric to
+identify reliably.
+
+14.4 Causal representation learning
+Causal representation learning seeks variables and modules aligned with autonomous mechanisms [25], [26].
+CMCP assumes that such alignment may be partial and uses interventions plus geometric matching to im-
+prove it online. It is closer to a protocol for maintaining and updating causal representations than to a theorem
+that discovers them from observational data alone.
+
+14.5 Predictive coding, local learning, and feedback channels
+Predictive coding and local energy-based learning provide biologically and computationally attractive local
+discrepancy signals [27], [28]. Their long-range credit can be limited by local self-adjoint inference geometry
+[3]. Direct feedback and error highways provide reach [8]. CMCP combines direct credit reach with causal
+factorization, novelty filtering, and metric-aware transport so that the solution to credit starvation does not
+become diffuse entanglement.
+
+14.6 Bayesian filtering and sufficient-statistic accumulation
+Bayesian filtering and Kalman-style updates already separate prior state from new evidence [29]. CMCP
+generalizes the idea to modular, context-dependent systems where the main challenge is deciding whether
+an observation addresses the same mechanism, how to transport it into a common frame, and whether it
+is conditionally new. In exponential-family cases, the memory ledger can be implemented directly through
+natural parameters and sufficient statistics. In non-Bayesian systems, the same structure can govern gradients,
+constraints, or program revisions.
+
+
+15. Limitations and Open Problems
+15.1 Second-order geometry is local
+Two mechanisms can agree to second order at an operating point and differ at higher order. Strongly nonlinear
+or far-from-equilibrium learning may require third-derivative tensors, higher jets, nonlinear transport, or
+
+
+                                                      25
+direct comparison of finite update maps. A natural extension is a hierarchy of operator-and-tensor signatures
+rather than a single Hessian tuple [1].
+
+15.2 Geometry does not establish causal direction by itself
+Operator overlap and curvature identify shared sensitivity structure. They do not prove that a module is an
+upstream cause rather than a correlated proxy. Intervention, randomized perturbation, environment variation,
+or a trusted structural model remains necessary. In domains where interventions are impossible, causal
+responsibility will be uncertain and writes should remain provisional.
+
+15.3 Conditional Fisher information is an approximation
+The Schur-complement rule captures linear conditional predictability of score statistics. Nonlinear redun-
+dancy can remain. Exact conditional mutual information is more general but harder to estimate. Memory
+summaries can also lose dependence information, causing false novelty. The protocol should report the
+resolution and confidence of its ledger.
+
+15.4 Symmetry and identifiability
+Interchangeable modules produce multiple equally valid transports. This can cause write races, unstable
+ownership, and poor portability certificates. Detuning, explicit addresses, provenance, or a symmetry-aware
+quotient representation may be necessary.
+
+15.5 Memory ossification and concept drift
+A stable read-many/write-gated core can become too difficult to revise. Thresholds should depend on evi-
+dence volume, mechanism age, drift indicators, and the cost of false consolidation. Versioning and reversible
+provisional writes are essential.
+
+15.6 Router self-confirmation
+A module that already receives credit may appear increasingly responsible because it changes the output.
+Controlled randomized probes and held-out intervention tests are needed to prevent this feedback loop.
+
+15.7 Computational and privacy cost
+Second-order sketches, intervention probes, and provenance logs consume compute and storage. In feder-
+ated or privacy-sensitive settings, Fisher and gradient sketches may leak information. Secure aggregation,
+differential privacy, or local audit mechanisms must be integrated separately.
+
+15.8 The protocol may discover useful mechanisms that are not ontologically causal
+A module can be intervention-useful and stable without corresponding to a unique real-world causal vari-
+able. CMCP’s operational criterion is enough for credit and memory management, but stronger scientific
+interpretation requires external validation.
+
+
+
+
+                                                     26
+16. Conclusion
+The Causal Memory and Credit Protocol is a proposal for turning adaptive learning into disciplined evidence
+assimilation. Its central architectural idea is simple:
+      Represent a shared mechanism once, let many contexts read it, allow only causally responsible
+      and conditionally novel evidence to modify it, and transport that evidence through a sparse credit
+      channel that respects local information geometry.
+Persistent memory and a causal credit-only highway are complementary. The memory gives the highway a
+stable answer to what is already known. The highway gives the memory a selective answer to which distant
+mechanism should be allowed to change. Information geometry supplies the language for recognizing the
+same mechanism across representations, learning transport maps, and auditing path dependence. Conditional
+information supplies the missing distinction between redundant manifestations and independent repeated
+evidence.
+The protocol therefore separates four operations that ordinary learning often conflates:
+1. computational reuse of a mechanism;
+2. causal assignment of a discrepancy;
+3. geometric transport of credit;
+4. statistical assimilation of innovation.
+This separation is broader than any particular neural or Bayesian implementation. It applies wherever a
+system learns sequentially, shares mechanisms across contexts, and risks either starving distant modules of
+credit or rewriting shared state with diffuse and redundant evidence. The decisive empirical question is not
+whether CMCP can produce another accuracy gain. It is whether it can achieve the protocol contracts: idem-
+potence for duplicate manifestations, accumulation for independent evidence, commutation for independent
+mechanisms, coordinate-equivariant matching, bounded path inconsistency, sparse responsible writes, and
+robust adaptation to genuine novelty.
+
+
+References
+[1]    B. Goertzel, “Transfer rigidity of the forgetting holonomy spectrum: A second-order TransWeave
+       theorem,” Working note, 2026.
+[2]    B. Goertzel, “The shadow calculus: Which curriculum interference is observable?” Working note,
+       version 1.0, 2026.
+[3]    B. Goertzel and Claude-Fable, “The coupling dilemma: Reach versus conditioning, sharing versus
+       forgetting, and catastrophic forgetting as curvature of the task manifold,” Working draft, 2026.
+[4]    B. Goertzel, “Causal evidence accounting in continual learning: Metric anisotropy, evidence double
+       counting, and task-manifold curvature,” Working note, 2026.
+[5]    B. Goertzel, “Causally designed error highways: Long-range credit transport without diffuse task
+       entanglement,” Working note, 2026.
+[6]    S. Demko, W. F. Moss, and P. W. Smith, “Decay rates for inverses of band matrices,” Mathematics
+       of Computation, vol. 43, no. 168, pp. 491–499, 1984.
+[7]    M. Benzi and G. H. Golub, “Bounds for the entries of matrix functions with applications to precon-
+       ditioning,” BIT Numerical Mathematics, vol. 39, pp. 417–438, 1999.
+[8]    A. Nokland, “Direct feedback alignment provides learning in deep neural networks,” in Advances in
+       neural information processing systems, 2016.
+
+
+                                                     27
+[9]    S. Amari, “Natural gradient works efficiently in learning,” Neural Computation, vol. 10, no. 2, pp.
+       251–276, 1998.
+[10]   S. Amari and H. Nagaoka, Methods of information geometry. American Mathematical Society; Ox-
+       ford University Press, 2000.
+[11]   N. N. Chentsov, Statistical decision rules and optimal inference. American Mathematical Society,
+       1982.
+[12]   B. A. Pearlmutter, “Fast exact multiplication by the hessian,” Neural Computation, vol. 6, no. 1, pp.
+       147–160, 1994.
+[13]   M. F. Hutchinson, “A stochastic estimator of the trace of the influence matrix for laplacian smoothing
+       splines,” Communications in Statistics - Simulation and Computation, vol. 18, no. 3, pp. 1059–1076,
+       1989.
+[14]   J. Martens and R. Grosse, “Optimizing neural networks with kronecker-factored approximate curva-
+       ture,” in Proceedings of the 32nd international conference on machine learning, 2015, pp. 2408–
+       2417.
+[15]   J. Kirkpatrick et al., “Overcoming catastrophic forgetting in neural networks,” in Proceedings of the
+       national academy of sciences, 2017, pp. 3521–3526.
+[16]   F. Zenke, B. Poole, and S. Ganguli, “Continual learning through synaptic intelligence,” Proceedings
+       of the 34th International Conference on Machine Learning, pp. 3987–3995, 2017.
+[17]   D. Lopez-Paz and M. Ranzato, “Gradient episodic memory for continual learning,” in Advances in
+       neural information processing systems, 2017.
+[18]   A. A. Rusu et al., “Progressive neural networks,” in arXiv preprint arXiv:1606.04671, 2016.
+[19]   J. Schwarz et al., “Progress & compress: A scalable framework for continual learning,” in Proceed-
+       ings of the 35th international conference on machine learning, 2018, pp. 4528–4537.
+[20]   R. S. Sutton, “Learning to predict by the methods of temporal differences,” Machine Learning, vol.
+       3, pp. 9–44, 1988.
+[21]   R. S. Sutton and A. G. Barto, Reinforcement learning: An introduction, 2nd ed. MIT Press, 2018.
+[22]   A. Chaudhry, M. Ranzato, M. Rohrbach, and M. Elhoseiny, “Continual learning with tiny episodic
+       memories,” in Workshop on multi-task and lifelong reinforcement learning, ICML, 2019.
+[23]   R. A. Jacobs, M. I. Jordan, S. J. Nowlan, and G. E. Hinton, “Adaptive mixtures of local experts,”
+       Neural Computation, vol. 3, no. 1, pp. 79–87, 1991.
+[24]   N. Shazeer et al., “Outrageously large neural networks: The sparsely-gated mixture-of-experts layer,”
+       in International conference on learning representations, 2017.
+[25]   B. Sch”olkopf et al., “Toward causal representation learning,” Proceedings of the IEEE, vol. 109, no.
+       5, pp. 612–634, 2021.
+[26]   Y. Bengio et al., “A meta-transfer objective for learning to disentangle causal mechanisms,” arXiv
+       preprint arXiv:1901.10912, 2019.
+[27]   R. P. N. Rao and D. H. Ballard, “Predictive coding in the visual cortex: A functional interpretation of
+       some extra-classical receptive-field effects,” Nature Neuroscience, vol. 2, no. 1, pp. 79–87, 1999.
+[28]   K. Friston, “The free-energy principle: A unified brain theory?” Nature Reviews Neuroscience, vol.
+       11, no. 2, pp. 127–138, 2010.
+[29]   R. E. Kalman, “A new approach to linear filtering and prediction problems,” Journal of Basic Engi-
+       neering, vol. 82, no. 1, pp. 35–45, 1960.
+
+
+
+
+                                                     28
+

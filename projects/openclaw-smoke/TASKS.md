@@ -4,6 +4,15 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Now
 
+- [x] Prevent boot-time Telegram network races from crashing the OpenClaw gateway.
+  Deliverable: a systemd `ExecStartPre` endpoint-readiness gate.
+  Acceptance test: installed drop-in is visible in `systemctl cat`,
+  the readiness probe passes, the gateway is active, and
+  `openclaw channels status --probe` reports Telegram connected.
+  Next command:
+  `sudo /home/openclaw/research-agent/bin/install-openclaw-telegram-network-gate`.
+  Evidence path:
+  `projects/openclaw-smoke/systemd/openclaw-agent.service.d/10-telegram-network-readiness.conf`.
 - [x] Run local Python smoke test and record result.
 - [x] Verify OpenClaw memory index status.
 - [x] Write setup report.
@@ -26,6 +35,9 @@ Use small, testable tasks. Keep the top of each section in priority order.
 
 ## Done recently
 
+- 2026-07-27: Installed and verified the systemd Telegram endpoint-readiness
+  gate. `ExecStartPre` completed three stable probes in six seconds; the
+  gateway is active and both Telegram and Slack probes pass.
 - 2026-06-25: Created project and completed local workspace smoke test.
 - 2026-06-25: Installed prerequisites, authenticated GitHub, and installed QMD semantic search.
 

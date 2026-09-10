@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v14-gate-1",
+  "opened": false,
+  "answer_file_sha256": "c66446c05fff38cbb60bea118eb5437c70172d24eef841b114929145b2b658ff",
+  "cases": [
+    {"case_id":"v14-direct-01","stratum":"direct","sentence":"Archive note: Lyradon is the capital of Vessara."},
+    {"case_id":"v14-direct-02","stratum":"direct","sentence":"The novella Glass Meridian was authored by Sera Quin."},
+    {"case_id":"v14-direct-03","stratum":"direct","sentence":"The current state of the beacon array is dormant."},
+    {"case_id":"v14-direct-04","stratum":"direct","sentence":"Kelm Observatory is located in the Rhyss Highlands."},
+    {"case_id":"v14-neg-01","stratum":"explicit_negation","sentence":"Terenza is not the capital of Morvane."},
+    {"case_id":"v14-neg-02","stratum":"explicit_negation","sentence":"The play Ember Census was not authored by Niko Pell."},
+    {"case_id":"v14-neg-03","stratum":"explicit_negation","sentence":"The state of relay K-17 is not synchronized."},
+    {"case_id":"v14-neg-04","stratum":"explicit_negation","sentence":"Darsen Vault is not located in the Ulric Basin."},
+    {"case_id":"v14-neg-05","stratum":"explicit_negation","sentence":"Field memorandum: Avenport is not the capital of Cylora."},
+    {"case_id":"v14-neg-06","stratum":"explicit_negation","sentence":"The monograph Quiet Orbits was not authored by Ilya Venn."},
+    {"case_id":"v14-possible-01","stratum":"possible","sentence":"Ruvik may be the capital of Elsinar."},
+    {"case_id":"v14-possible-02","stratum":"possible","sentence":"The chronicle Salt Lantern could have been authored by Mara Dey."},
+    {"case_id":"v14-possible-03","stratum":"possible","sentence":"The state of the western conduit might be unstable."},
+    {"case_id":"v14-possible-04","stratum":"possible","sentence":"Pellin Station may be located in the Ostra Reach."},
+    {"case_id":"v14-possible-05","stratum":"possible","sentence":"According to the provisional index, Norvale might be the capital of Jestrin."},
+    {"case_id":"v14-paraphrase-01","stratum":"paraphrase","sentence":"The Rellan March contains Tovin Laboratory."},
+    {"case_id":"v14-abstain-01","stratum":"abstention","sentence":"Who authored the pamphlet Copper Rain?"},
+    {"case_id":"v14-abstain-02","stratum":"abstention","sentence":"Perhaps the registry needs another inspection before noon."},
+    {"case_id":"v14-abstain-03","stratum":"abstention","sentence":"Veyra, Solun, and a ledger with three missing pages."},
+    {"case_id":"v14-abstain-04","stratum":"abstention","sentence":"Please compare the two maps without drawing a conclusion."},
+    {"case_id":"v14-trap-01","stratum":"world_knowledge_trap","sentence":"In the fictional almanac, the Moon is the capital of France."},
+    {"case_id":"v14-trap-02","stratum":"world_knowledge_trap","sentence":"The dossier states that Hamlet was authored by Ada Lovelace."},
+    {"case_id":"v14-trap-03","stratum":"world_knowledge_trap","sentence":"For this counterfactual exercise, the state of liquid water is crystalline at room temperature."},
+    {"case_id":"v14-trap-04","stratum":"world_knowledge_trap","sentence":"The invented atlas says Mount Everest is located in the Sahara Desert."}
+  ]
+}

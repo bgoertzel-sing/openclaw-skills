@@ -1,0 +1,46 @@
+test_gate_and_batch_plan_fail_closed (test_pcstep.PCStepTests) ... ok
+test_settlement_freezes_weights_and_inputs (test_pcstep.PCStepTests) ... ok
+test_snapshot_restore_is_exact_and_replayable (test_pcstep.PCStepTests) ... ok
+test_step_is_pure_and_deterministic (test_pcstep.PCStepTests) ... ERROR
+test_t1_matches_independent_reference_update (test_pcstep.PCStepTests) ... FAIL
+
+======================================================================
+ERROR: test_step_is_pure_and_deterministic (test_pcstep.PCStepTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/openclaw/research-agent/projects/relaleap/experiments/20260728T181111Z-v4-1-clean-room-pcstep-fable/work/tests/test_pcstep.py", line 97, in test_step_is_pure_and_deterministic
+    self.assertEqual(opt, opt_copy)
+  File "/usr/lib/python3.10/unittest/case.py", line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/usr/lib/python3.10/unittest/case.py", line 835, in _baseAssertEqual
+    if not first == second:
+  File "<string>", line 4, in __eq__
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+======================================================================
+FAIL: test_t1_matches_independent_reference_update (test_pcstep.PCStepTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/openclaw/research-agent/projects/relaleap/experiments/20260728T181111Z-v4-1-clean-room-pcstep-fable/work/tests/test_pcstep.py", line 86, in test_t1_matches_independent_reference_update
+    np.testing.assert_array_equal(got, want)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/numpy/_utils/__init__.py", line 86, in wrapper
+    return fun(*args, **kwargs)
+  File "/home/openclaw/.local/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 1057, in assert_array_equal
+    assert_array_compare(operator.__eq__, actual, desired, err_msg=err_msg,
+  File "/home/openclaw/.local/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 921, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 1 / 4 (25%)
+Max absolute difference among violations: 2.06795153e-25
+Max relative difference among violations: 2.16840434e-16
+ ACTUAL: array([[1.869202e-09, 6.747818e-09],
+       [9.536743e-10, 3.442764e-09]])
+ DESIRED: array([[1.869202e-09, 6.747818e-09],
+       [9.536743e-10, 3.442764e-09]])
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.041s
+
+FAILED (failures=1, errors=1)

@@ -1,0 +1,11 @@
+Pre-run focused verification:
+
+env PYTHONPATH=src:/home/openclaw/research-agent/projects/omegasim/repos/chaoslang-frozen-974af31/src python3 -m unittest tests.test_cla_detector tests.test_a6_model -v
+
+Result: 8 tests passed in 0.117 seconds.
+
+python3 -m py_compile scripts/run_cla_detector.py src/omegasim/a6_model.py
+Result: passed.
+
+git diff --check
+Result: passed.

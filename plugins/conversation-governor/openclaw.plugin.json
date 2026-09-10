@@ -1,0 +1,19 @@
+{
+  "id": "conversation-governor",
+  "name": "Conversation Governor",
+  "description": "Records deterministic admission and egress decisions; optionally suppresses an allowlisted deterministic egress slice.",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": { "type": "boolean" },
+      "mode": { "type": "string", "enum": ["shadow", "active"] },
+      "ledgerPath": { "type": "string" },
+      "agentId": { "type": "string" },
+      "knownBotIds": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

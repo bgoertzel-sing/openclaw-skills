@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/openclaw/research-agent/projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1/scripts/run_e4_textlike_bridge.py", line 15, in <module>
+    from relaleap.hdpc.e1_homotopy import (
+ModuleNotFoundError: No module named 'relaleap'

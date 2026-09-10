@@ -1,0 +1,10 @@
+test_end_of_settle_local_update_matches_checked_oracle (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_gate_and_batch_plan_fail_closed (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_one_tick_matches_checked_oracle_fp32_tolerance (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_settlement_freezes_weights_and_adapter_is_pure (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_snapshot_restore_exact_and_replayable (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.037s
+
+OK

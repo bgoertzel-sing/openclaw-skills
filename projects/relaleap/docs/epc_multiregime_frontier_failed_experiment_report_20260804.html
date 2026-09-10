@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A Failed Multi-Regime ePC Frontier Preflight</title>
+<style>
+@page { size: Letter; margin: 0.72in; }
+body { font-family: "DejaVu Serif", serif; color: #171717; line-height: 1.35; font-size: 10.5pt; max-width: 8in; margin: auto; }
+h1, h2, h3 { font-family: "DejaVu Sans", sans-serif; color: #19324d; page-break-after: avoid; }
+h1 { font-size: 24pt; margin-bottom: 0.15em; }
+h2 { font-size: 15pt; border-bottom: 1px solid #8ca1b5; padding-bottom: 0.12em; margin-top: 1.25em; }
+h3 { font-size: 11.5pt; margin-top: 1em; }
+.subtitle { font-family: "DejaVu Sans", sans-serif; font-size: 13pt; color: #445; }
+.meta, .small { font-size: 9pt; color: #444; }
+.box { border-left: 4px solid #315f86; background: #eef4f8; padding: 0.6em 0.8em; margin: 0.8em 0; }
+.warning { border-left-color: #9a4a00; background: #fff3e8; }
+code, pre { font-family: "DejaVu Sans Mono", monospace; font-size: 8.6pt; }
+pre { background: #f5f5f5; border: 1px solid #ddd; padding: 0.7em; white-space: pre-wrap; }
+table { border-collapse: collapse; width: 100%; margin: 0.65em 0 1em; font-size: 8.8pt; page-break-inside: avoid; }
+th, td { border: 1px solid #aaa; padding: 0.32em 0.4em; text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+th { background: #e8eef3; font-family: "DejaVu Sans", sans-serif; }
+caption { text-align: left; font-weight: bold; margin-bottom: 0.3em; }
+ul, ol { margin-top: 0.3em; }
+.pagebreak { page-break-before: always; }
+</style>
+</head>
+<body>
+<h1>A Failed Multi-Regime ePC Frontier Preflight</h1>
+<div class="subtitle">Motivation, construction, debugging history, numerical results, and reproducibility record</div>
+<p class="meta">RelaLeap technical report · 4 August 2026 · Benjamin Goertzel and the RelaLeap research-agent workflow</p>
+
+<div class="box"><strong>Result in one sentence.</strong> The experiment successfully exercised deterministic T=1/T=2/T=4 training and monotone ePC activity settlement, but the matched T=1 positive control failed the predeclared learnability floor in every evaluation regime on both final seeds; therefore the task was not admitted and no claim about a diverse ePC Pareto frontier, expert specialization, or mixture-of-experts benefit was made.</div>
+
+<h2>Abstract</h2>
+<p>The motivating question was whether the previously tested ePC family contained multiple <em>diversely good</em> configurations: models that were all viable overall but had stable, complementary conditional strengths. Such a population could motivate a later mixture-of-experts router. A preceding two-context/two-mode toy experiment had found conditional differences, but they disappeared under held-out confirmation. One plausible explanation was that both the network and task were too small to provide distinct functional niches.</p>
+<p>We therefore constructed a larger semantic-free synthetic sequence preflight with four contexts, two continuation modes, two candidate caps, and four independently scored regimes: in-distribution continuation, compositional remapping, nuisance-cue perturbation, and replay-supported sequential adaptation with retention. A two-layer GPT-2-style causal transformer was trained under a matched direct endpoint (T=1) and two predictive-coding settlement depths (T=2 and T=4). The experiment was deliberately fail-closed: ePC diversity was not interpretable unless the matched T=1 control first achieved negative log-likelihood (NLL) at most 1.4 in every regime on every seed.</p>
+<p>The execution history contained useful failures. The first direct invocation had an import-path error. The first executable run revealed a PyTorch advanced-indexing bug that left the teacher logits unchanged. After correcting it, an adaptation-only schedule caused catastrophic forgetting. Adding replay and a planted mode-to-cap positive control still did not make the high-vocabulary fixture learnable. A final 64-token calibration also failed: final T=1 NLLs ranged from 6.76 to 11.92 across regimes, far above 1.4. All final arm replays were exact, all T=2/T=4 energy traces were monotone, and the full source test suite passed. Thus the failure was not numerical nondeterminism, but it also was not evidence against ePC: the benchmark itself never cleared its matched-control gate.</p>
+
+<h2>1. Motivation</h2>
+<h3>1.1 From average quality to conditional complementarity</h3>
+<p>An MoE is scientifically motivated only when candidate experts are each good enough to use and reliably win in different regimes. A conventional Pareto frontier over aggregate loss, representation rank, or diversity can be misleading: a configuration may have an important conditional advantage that disappears under averaging, while another may appear diverse merely because it fails differently.</p>
+<p>The intended admission logic was therefore:</p>
+<ol>
+  <li><strong>Viability:</strong> every candidate must meet absolute task-quality and stability floors and remain close to a matched T=1 baseline.</li>
+  <li><strong>Nondominance:</strong> conditional regime losses must be retained as separate Pareto axes.</li>
+  <li><strong>Complementarity:</strong> two candidates must exhibit bidirectional wins—A beats B in at least one regime and B beats A in at least one other regime—repeated over untouched confirmation seeds.</li>
+  <li><strong>Reproducibility:</strong> complete reruns from identical initial model, optimizer, and random-number states must match exactly; ePC activity energy must be non-increasing.</li>
+</ol>
+<p>The preceding tiny fixture had only two contexts, two modes, and four-token continuations. Its repaired frontier screen retained two exploration candidates, one selection candidate, and zero confirmation candidates. The follow-up reported here asked whether a richer task would expose stable niches that the tiny fixture could not.</p>
+
+<h3>1.2 Why a preflight rather than an immediate frontier sweep</h3>
+<p>A conditional frontier is meaningless if the benchmark is not solvable by a matched ordinary learner. Accordingly, this run was a construction preflight, not the full exploration/selection/confirmation sweep. The gate required the T=1 control to solve all regimes first. Only after that pass would ePC configurations be compared or promoted.</p>
+
+<h2>2. Experimental design</h2>
+<h3>2.1 Synthetic sequence language</h3>
+<p>Each example contains a regime token, context token, candidate-cap token, nuisance-cue token, and three blank tokens. Model logits at four continuation positions are evaluated against a planted four-token target. The final fixture has:</p>
+<ul>
+  <li>4 contexts and 2 modes;</li>
+  <li>2 candidate caps, with a transparent mode-to-cap mapping used only as a positive control;</li>
+  <li>4-token continuations;</li>
+  <li>a 64-token vocabulary;</li>
+  <li>deterministically generated target tables salted separately by regime.</li>
+</ul>
+<p>The target token at context <em>c</em>, mode <em>m</em>, continuation position <em>p</em>, and regime salt <em>s</em> is</p>
+<pre>token(c,m,p;s) = 16 + ((s + 7c + 3m + 5p) mod 48).</pre>
+<p>The regime salts are 0, 11, 23, and 37. Adaptation shifts the last mapping by a further 17 modulo 48.</p>
+
+<h3>2.2 Evaluation regimes</h3>
+<table>
+<caption>Table 1. Explicitly scored regimes.</caption>
+<tr><th>Metric</th><th style="text-align:left">Meaning</th></tr>
+<tr><td><code>id</code></td><td style="text-align:left">Ordinary context-conditioned continuation under the original map.</td></tr>
+<tr><td><code>compose</code></td><td style="text-align:left">A separately salted context/mode map, intended to require a distinct conditional mapping.</td></tr>
+<tr><td><code>perturb</code></td><td style="text-align:left">A nuisance cue changes the input but must not change the target continuation.</td></tr>
+<tr><td><code>adapt</code></td><td style="text-align:left">Performance on a shifted context/mode map after the adaptation phase.</td></tr>
+<tr><td><code>retain_id</code></td><td style="text-align:left">Performance on the original ID mapping after adaptation.</td></tr>
+</table>
+
+<h3>2.3 Model and training</h3>
+<p>The model is a dropout-free Hugging Face <code>GPT2LMHeadModel</code> with 2 residual blocks, embedding width 32, 2 attention heads, and inner width 64. The two candidate caps are evaluated from the same context/regime example. For the positive-control fixture, cap 0 receives mode-0 targets and cap 1 receives mode-1 targets. This is intentionally easier than learned routing: it tests whether the model/regime construction is learnable before routing is studied.</p>
+<p>All arms begin from identical initial weights for a given seed and use AdamW with learning rate 0.003 and zero weight decay. Final r5 uses 192 pretraining updates over ID/composition/perturbation examples followed by 96 adaptation updates mixing shifted-adaptation and original-ID replay examples. Batch size is 32; evaluation size is 192.</p>
+
+<h3>2.4 T=1 and ePC objectives</h3>
+<p>T=1 is the direct knowledge-distillation endpoint: the model is differentiated through its feed-forward logits against the constructed teacher distribution. T&gt;1 exposes the residual-stream state after each GPT-2 block and performs activity inference before differentiating the settled local energy.</p>
+<p>For block predictions <em>f</em><sub>l</sub>, settled activities <em>z</em><sub>l</sub>, input activity <em>z</em><sub>0</sub>, and teacher distribution <em>q</em>, the implemented local energy is</p>
+<pre>E(z) = 1/2 Σ_l mean || z_l - f_l(z_{l-1}) ||²
+       + λ KL(q || softmax(logits(z_L)/τ)),</pre>
+<p>with output weight λ=1, temperature τ=1, and initial relaxation step 0.2. Backtracking accepts an activity update only when the energy does not increase beyond a small floating-point tolerance. T=2 and T=4 denote the number of recorded activity-settlement evaluations, including the initial state.</p>
+
+<h3>2.5 Frozen gate and reproducibility checks</h3>
+<p>The preflight control passes only if, for every final seed:</p>
+<ul>
+  <li>T=1 replay is bit-exact and its energy trace is valid;</li>
+  <li>every one of <code>id</code>, <code>compose</code>, <code>perturb</code>, <code>adapt</code>, and <code>retain_id</code> has NLL ≤ 1.4.</li>
+</ul>
+<p>Each T=1/T=2/T=4 arm is independently trained twice from the same initial state and deterministic batches. Model-state SHA-256 digests and the complete returned records must agree. Any ePC arm must also report monotone activity energy. Failure of T=1 terminates the experiment before conditional Pareto interpretation.</p>
+
+<div class="pagebreak"></div>
+<h2>3. Execution history and failure taxonomy</h2>
+<table>
+<caption>Table 2. Run sequence. Only r5 is the final calibrated fixture.</caption>
+<tr><th>Run</th><th>UTC duration</th><th style="text-align:left">Change / observation</th><th style="text-align:left">Classification</th></tr>
+<tr><td>initial</td><td>2 s</td><td style="text-align:left"><code>ModuleNotFoundError</code>: direct invocation omitted <code>PYTHONPATH=src</code>; no model ran.</td><td style="text-align:left">Invocation failure</td></tr>
+<tr><td>r2</td><td>25 s</td><td style="text-align:left">All arms remained near uniform-176 NLL ≈5.17. Source audit found teacher assignment mutated an advanced-indexing temporary.</td><td style="text-align:left">Instrumentation failure</td></tr>
+<tr><td>r3</td><td>23 s</td><td style="text-align:left">Teacher write repaired. Adaptation learned partially, but adaptation-only fine-tuning destroyed old regimes.</td><td style="text-align:left">Construction failure</td></tr>
+<tr><td>r4</td><td>55 s</td><td style="text-align:left">Added old-task replay and planted cap ownership. High-vocabulary fixture still missed every control floor.</td><td style="text-align:left">Construction failure</td></tr>
+<tr><td>r5</td><td>85 s</td><td style="text-align:left">Reduced vocabulary to 64, increased schedule to 192+96 updates. Exact and monotone, but T=1 failed every floor.</td><td style="text-align:left">Final gate failure</td></tr>
+</table>
+
+<h3>3.1 The r2 PyTorch indexing defect</h3>
+<p>The original target-writing code selected winners using advanced indexing and then called an in-place operation on the selected object. In PyTorch, advanced indexing returns a copy rather than a view; consequently the constructed one-hot logits did not propagate back into the full teacher tensor. The student was trained against its own unchanged logits and stayed at chance. The repair clones the selected candidate rows, writes the target logits, and explicitly assigns those rows back. A unit test now verifies that exactly one candidate has maximum teacher logit 12 at every continuation position and that its argmax sequence equals the planted target.</p>
+
+<h3>3.2 Why r3 and r4 were not ePC results</h3>
+<p>R3 showed the repaired pathway could move the model: T=1 adaptation NLL fell to 3.274 and 3.055, while prior-regime NLLs were 6.425–8.327. But adaptation-only training made retention structurally unrealistic. R4 added matched ID replay and explicit mode-to-cap ownership; its T=1 adaptation NLL was 4.698 and 4.704, while other metrics remained 5.269–7.954. Because the ordinary control still failed, neither run licenses a T=1 versus ePC comparison.</p>
+
+<h2>4. Final numerical results (r5)</h2>
+<p>The final fixture used seeds 41001 and 41002. Lower NLL is better; the predeclared control floor was 1.4. Every listed value is from the preserved machine-readable result.</p>
+
+<table>
+<caption>Table 3. Seed 41001 per-regime NLL.</caption>
+<tr><th>Arm</th><th>Adapt</th><th>Compose</th><th>ID</th><th>Perturb</th><th>Retain ID</th></tr>
+<tr><td>T=1</td><td>6.758747</td><td>8.264640</td><td>7.224274</td><td>11.920233</td><td>7.010933</td></tr>
+<tr><td>T=2</td><td>6.071149</td><td>9.384363</td><td>5.225916</td><td>12.627653</td><td>5.104429</td></tr>
+<tr><td>T=4</td><td>6.501676</td><td>11.006018</td><td>6.316314</td><td>11.484475</td><td>6.244663</td></tr>
+</table>
+
+<table>
+<caption>Table 4. Seed 41002 per-regime NLL.</caption>
+<tr><th>Arm</th><th>Adapt</th><th>Compose</th><th>ID</th><th>Perturb</th><th>Retain ID</th></tr>
+<tr><td>T=1</td><td>8.321662</td><td>9.287029</td><td>6.975998</td><td>11.258194</td><td>6.837261</td></tr>
+<tr><td>T=2</td><td>4.924324</td><td>9.145920</td><td>6.233365</td><td>10.350329</td><td>6.193450</td></tr>
+<tr><td>T=4</td><td>6.617980</td><td>9.245881</td><td>6.203305</td><td>10.144760</td><td>6.220219</td></tr>
+</table>
+
+<table>
+<caption>Table 5. Mean NLL across the two final seeds (descriptive only).</caption>
+<tr><th>Arm</th><th>Adapt</th><th>Compose</th><th>ID</th><th>Perturb</th><th>Retain ID</th></tr>
+<tr><td>T=1</td><td>7.540205</td><td>8.775835</td><td>7.100136</td><td>11.589213</td><td>6.924097</td></tr>
+<tr><td>T=2</td><td>5.497736</td><td>9.265141</td><td>5.729640</td><td>11.488991</td><td>5.648940</td></tr>
+<tr><td>T=4</td><td>6.559828</td><td>10.125950</td><td>6.259809</td><td>10.814618</td><td>6.232441</td></tr>
+</table>
+
+<div class="box warning"><strong>Interpretation constraint.</strong> T=2 has lower descriptive means than T=1 on adaptation, ID, and retained ID, while T=4 has the lowest perturbation mean. These are not admitted ePC wins: there are only two opened seeds, all arms are grossly above the viability floor, and no untouched selection/confirmation split was run. They are differences among failed learners.</div>
+
+<h3>4.1 Determinism and energy invariants</h3>
+<p>All six final seed×arm records were each produced twice, yielding 12 executions in total. Every pair matched exactly, including metrics and model digest. Both ePC arms were monotone on both seeds. Final model digests were:</p>
+<table>
+<tr><th>Seed</th><th>T=1 digest</th><th>T=2 digest</th><th>T=4 digest</th></tr>
+<tr><td>41001</td><td><code>562fea11…d54fbc</code></td><td><code>823e838b…89739</code></td><td><code>8630d8b3…0a2c</code></td></tr>
+<tr><td>41002</td><td><code>30ddbdf8…577a8</code></td><td><code>f841bde1…e82a2</code></td><td><code>7c4d4806…e6434</code></td></tr>
+</table>
+
+<h2>5. What failed—and what did not</h2>
+<p><strong>Observed final failure:</strong> the T=1 control failed every absolute NLL floor on both seeds. The benchmark therefore did not establish a viable larger task.</p>
+<p><strong>Observed successes:</strong> deterministic seed handling, exact replay, model-digest capture, four-regime metric accounting, and monotone ePC settlement all operated as intended in r5. The complete RelaLeap test suite passed 208 tests after implementation.</p>
+<p><strong>Not established:</strong> the run does not show that ePC cannot sustain stable specialization. It does not compare trained viable models, does not produce a Pareto frontier, does not evaluate a router, and does not address language-scale performance. It only shows that this particular planted fixture and bounded CPU schedule failed its required ordinary-control gate.</p>
+
+<h3>5.1 Plausible explanations</h3>
+<ul>
+  <li>The fixture may remain too sparse relative to model width and update count, despite vocabulary reduction.</li>
+  <li>Simultaneously fitting distinct salted token maps may create arbitrary interference rather than meaningful compositional structure.</li>
+  <li>The positive-control cap assignment guarantees mode identity but does not itself make the multiple maps easy to learn.</li>
+  <li>The KD objective averages across all sequence positions and both candidates, while only one candidate's continuation positions receive one-hot targets, potentially diluting the effective training signal.</li>
+  <li>The adaptation/replay mixture may still be poorly balanced for joint acquisition and retention.</li>
+</ul>
+<p>These are hypotheses. Resolving them would require a prospectively specified successor using fresh seeds. Tuning further on 41001/41002 would turn the final gate into calibration data and cannot validate the current contract.</p>
+
+<h2>6. Reproduction</h2>
+<h3>6.1 Software and hardware</h3>
+<table>
+<tr><th>Component</th><th style="text-align:left">Recorded value</th></tr>
+<tr><td>OS</td><td style="text-align:left">Pop!_OS 22.04 LTS, Linux 7.0.11-76070011-generic, x86-64</td></tr>
+<tr><td>CPU</td><td style="text-align:left">11th Gen Intel Core i7-1165G7 @ 2.80 GHz, 8 logical CPUs</td></tr>
+<tr><td>Python</td><td style="text-align:left">3.10.12</td></tr>
+<tr><td>PyTorch</td><td style="text-align:left">2.12.1+cpu</td></tr>
+<tr><td>Transformers</td><td style="text-align:left">4.57.6</td></tr>
+<tr><td>NumPy</td><td style="text-align:left">2.2.6</td></tr>
+<tr><td>Source commit</td><td style="text-align:left"><code>eabae42</code> on <code>agent/epc-multiregime-frontier</code></td></tr>
+</table>
+
+<h3>6.2 Exact final command</h3>
+<pre>PYTHONPATH=src python3 scripts/run_epc_multiregime_frontier_preflight.py \
+  --config configs/epc_multiregime_frontier_preflight_v1.json \
+  --output results.json</pre>
+<p>The runner calls <code>torch.use_deterministic_algorithms(True)</code> and <code>torch.set_num_threads(1)</code>. To verify the publication bundle:</p>
+<pre>python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+PYTHONPATH=src python -m pytest -q
+PYTHONPATH=src python scripts/run_epc_multiregime_frontier_preflight.py \
+  --config configs/epc_multiregime_frontier_preflight_v1.json \
+  --output reproduced.json
+sha256sum reproduced.json</pre>
+
+<h3>6.3 Integrity identifiers</h3>
+<ul>
+  <li>Final machine-readable result SHA-256: <code>69b5b2e686c11afca296f5d16656e500f3f6bdff7dabe652e3827c9c61c2935f</code>.</li>
+  <li>R2 raw result SHA-256: <code>f772bcbbfa3a2624b0de09a86f7c26f33b65fdf7abeb9d967292cb887baccb2b</code>.</li>
+  <li>R3 raw result SHA-256: <code>57412bf2e139226099927cc9f6aa6ad07259eefedf08ca70e3b646849c922d20</code>.</li>
+  <li>R4 raw result SHA-256: <code>d5c5207ff455ba63bc08d4c4a71b7e21754f2490c5d32dabea14d655e007dc39</code>.</li>
+</ul>
+
+<h2>7. Recommended successor</h2>
+<p>A successor should first validate its measurement and training instrument on analytically simple cases, then use a task with meaningful shared structure rather than unrelated salted lookup tables. The ordinary learner should pass prospectively frozen ID/composition/perturbation/adaptation/retention gates on fresh calibration seeds before any ePC grid opens. Only then should the experiment freeze exploration, selection, and confirmation splits and test bidirectional conditional crossover. Model scaling alone is insufficient; task structure, control learnability, and a non-diluted training objective are the immediate design priorities.</p>
+
+<h2>8. Provenance</h2>
+<p>The final authoritative run record is <code>projects/relaleap/experiments/20260804T173241Z-epc-multiregime-frontier-preflight-v1-r5/</code>. The implementation contract is <code>docs/epc_multiregime_frontier_v1.md</code>. The code commit is <code>eabae42</code>. The report preserves failed intermediate attempts because they materially affect interpretation and prevent the chance-level r2 result from being mistaken for a behavioral negative result.</p>
+
+<p class="small">Epistemic summary: deterministic execution and monotone ePC energy are observed and reproduced; task non-admission is a decision under the frozen gate; explanations of poor learning are hypotheses; no general conclusion about ePC specialization is supported.</p>
+</body>
+</html>

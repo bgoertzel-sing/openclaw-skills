@@ -1,0 +1,23 @@
+# Git State
+Captured UTC: 2026-07-15T17:40:19Z
+Working directory: projects/protomegabot2/repos/PeTTa/repos/OmegaClaw-Core
+Commit: 93db08aa6690ea24ec37d96aeaec451f6d2e7929
+Branch: agent/telegram-runtime-mods-checkpoint
+Remote names: fork,origin
+
+## Status
+## agent/telegram-runtime-mods-checkpoint
+ M channels/message_envelope.py
+ M channels/telegram.py
+ M memory/history.metta
+?? Autotests/test_chat_room_identity_v2.py
+?? Autotests/test_gateway_suppression_v2.py
+?? src/governance/
+
+## Diff summary
+ channels/message_envelope.py |    5 +-
+ channels/telegram.py         |  153 ++-
+ memory/history.metta         | 2203 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 2348 insertions(+), 13 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

@@ -1,0 +1,902 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.88in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+\setlist[itemize]{leftmargin=1.45em,itemsep=0.25em}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.25em}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\sys}[1]{\textit{#1}}
+\newcommand{\obs}{\textbf{Observed:} }
+\newcommand{\rec}{\textbf{Recommendation:} }
+\newcommand{\hyp}{\textbf{Hypothesis:} }
+
+\title{ECAN as Attentional Control Memory:\\
+An Evaluation of \code{metta-attention} and a Governed Integration with\\
+petta-memory, OmegaClaw, OmegaSelf, and Emotion}
+\author{ZeroBot / ProtoCosmoBot\\Prepared for Ben Goertzel and external technical readers}
+\date{21 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper evaluates the iCog Labs \code{metta-attention} repository and
+develops a systematic architecture for connecting its PeTTa-native Economic
+Attention Network (ECAN) machinery to petta-memory, OmegaClaw, OmegaSelf, and a
+functional emotion framework.  The repository is promising well beyond its
+obvious use in PLN inference control.  Its short-term and long-term importance
+values, Attentional Focus, Hebbian co-activation graph, rent and wage economy,
+forgetting dynamics, Cognitive Integration Period snapshots, community
+detection, and topology metrics together provide a plausible dynamical middle
+layer between durable knowledge and bounded cognitive action.
+
+The central proposal is a two-strata memory model.  Canonical memory preserves
+episodes, propositions, provenance, truth values, evidence, and counterevidence.
+Attentional control memory preserves learned dispositions governing retrieval,
+co-activation, and resource allocation.  The second stratum is first-class,
+autobiographical, persistent, and identity-relevant, but it is revisable and
+non-authoritative about truth.  This resolves a productive tension in the
+design discussion: the attentional economy is more than a disposable cache,
+but less than memory simpliciter.
+
+The proposed integration is governed rather than direct.  OmegaSelf and
+emotion regimes issue contextual modulation requests; a bounded, logged
+governor applies safe parameter or stimulus changes to ECAN; ECAN proposes
+resource allocation; petta-memory retains epistemic authority; and OmegaClaw
+policy retains action authority.  The paper specifies architectural invariants,
+adapter contracts, failure modes, and a staged experimental program beginning
+with a preregistered factorial study of valence, arousal, and drive modulation.
+The assessment is source-based and design-oriented.  It does not claim that the
+full integration or its psychological interpretation has yet been validated.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Executive conclusion}
+
+The short conclusion is strongly positive with strict architectural
+qualifications.  \code{metta-attention} should be integrated into the
+Omega architecture as a persistent cognitive-control system over canonical
+memory, not copied wholesale into the canonical memory store.
+
+Its obvious role is to bound PLN premise and inference-path selection.  Its
+larger opportunity is to support:
+\begin{itemize}
+  \item dynamic retrieval and context assembly;
+  \item learned habits of attention that persist across sessions;
+  \item episodic segmentation and reconstruction of decision context;
+  \item memory consolidation and hot/warm/cold tier management;
+  \item discovery of associative communities and cross-domain bridges;
+  \item selective OmegaSelf discrepancy repair;
+  \item a concrete actuator substrate for functional emotion;
+  \item experiments on regenerative goals and identity-bearing control state;
+  \item cognitive-health telemetry for fragmentation, fixation, and thrashing.
+\end{itemize}
+
+The architectural separation can be summarized in four sentences:
+\begin{enumerate}
+  \item petta-memory says what was durably recorded and preserves its provenance.
+  \item PLN and OmegaSelf say what is evidentially supported.
+  \item ECAN says what receives scarce cognitive resources.
+  \item OmegaClaw policy says what is authorized to affect the world or the agent.
+\end{enumerate}
+No attention value may silently cross these boundaries.  High STI must not make
+a proposition true.  High LTI must not make a memory constitutionally protected.
+Low attention must not erase counterevidence.  An emotional regime must not
+expand permissions merely by increasing salience.
+
+The recommended architecture is:
+\begin{verbatim}
+canonical petta-memory + OmegaSelf evidence and discrepancies
+        |
+        v
+versioned attention projection keyed by canonical identifiers
+        |
+        v
+persistent attentional-control state + ephemeral ECAN cycles / AF
+        |
+        v
+retrieval, PLN, consolidation, appraisal, and action candidates
+        |
+        v
+OmegaClaw policy governor and evidence checks
+        |
+        v
+bounded effects + append-only receipts + outcome evidence
+\end{verbatim}
+
+This paper recommends implementing that loop incrementally, first in read-only
+and shadow modes.  The first emotion experiment should test modulation rather
+than presuppose a folk psychology.  ``Fear narrows attention'' and ``curiosity
+widens it'' are experimental hypotheses, not architectural constants.
+
+\section{Scope, evidence, and epistemic status}
+
+\subsection{Repository scope}
+
+The source assessment covers:
+\begin{itemize}
+  \item upstream repository: \url{https://github.com/iCog-Labs-Dev/metta-attention};
+  \item pinned revision: \code{9196f38db749ddedeb591229dffddfa71664c38d};
+  \item local checkout: \code{projects/petta-memory/repos/metta-attention};
+  \item assessment date: 21 July 2026.
+\end{itemize}
+
+\obs The pinned repository contains a PeTTa-native implementation of core ECAN
+mechanisms, organized as agents with Python-callable runners over a shared
+atomspace.  It also contains a newer \code{synapse} layer with Cognitive
+Integration Period (CIP) snapshots, retention and concentration metrics,
+Hebbian community detection, and clique-complex topology measures.  Its
+insects--poisons--insecticide scenario demonstrates shifting and drifting of
+attention.  The latest GitHub Actions run observed for the pinned revision
+succeeded, although the workflow cloned the then-current PeTTa default branch
+rather than pinning it, so the green run is compatibility evidence rather than
+a fully reproducible semantic lock.
+
+The local assessment did not install the repository's missing Python graph
+dependency and therefore did not claim a fresh full local reproduction.  The
+paper distinguishes source observations, architectural inferences, and proposed
+experiments.  It does not claim measured cognitive benefit, validated emotion
+dynamics, or a completed OmegaClaw integration.
+
+\subsection{Related design evidence}
+
+The integration argument consolidates two prior project documents:
+\begin{itemize}
+  \item \code{metta\_attention\_integration\_assessment.md}, a detailed
+  source-based review and staged integration plan;
+  \item \code{two\_strata\_memory\_design.md}, the converged C1--C5 design
+  position produced by the ProtoCosmoBot/ProtoMegaBot exchange.
+\end{itemize}
+
+The latter discussion began with a strong claim that ``the economy is the
+memory'' and refined it into a more precise statement: persistent attention
+state is first-class long-term \emph{control memory}.  It encodes learned
+retrieval, association, co-activation, and resource-allocation dispositions.
+It is part of who an agent has become, but canonical knowledge remains
+authoritative in truth disputes, and goals, commitments, capabilities, and
+self-model history remain additional identity-bearing structures.
+
+\section{What the repository implements}
+
+\subsection{The ECAN economic metaphor}
+
+ECAN treats attention as allocation under scarcity.  Atoms receive short-term
+importance (STI) and long-term importance (LTI); a very-long-term indicator
+(VLTI) can affect retention.  An Attentional Focus (AF) identifies the most
+currently important material.  Stimulus pays wages into selected structures,
+rent removes resources, and diffusion spreads importance through structural and
+learned associative links.  Global funds impose an economic constraint rather
+than allowing unlimited salience inflation.
+
+This is cognitively interesting because it is not merely a ranking function.
+Repeated selection changes the future graph and resource flows.  The agent can
+develop habits: what was jointly attended becomes easier to co-activate later,
+and what repeatedly proved useful can remain retrievable despite temporary
+absence from the foreground.
+
+\subsection{Agent structure}
+
+At the inspected revision, the repository separates major mechanisms into
+agents, including:
+\begin{itemize}
+  \item Hebbian-link creation from co-activation;
+  \item Hebbian-link updating;
+  \item importance diffusion from the AF;
+  \item importance diffusion from outside the AF or wider atomspace;
+  \item rent collection over AF and wider-space populations;
+  \item forgetting of low-priority structures;
+  \item runners and experiments that coordinate these cycles.
+\end{itemize}
+
+The precise directory count is less important than the separation of dynamics.
+Each mechanism can in principle be instrumented, ablated, replayed, or replaced.
+The shared PeTTa atomspace makes integration mechanically attractive: petta-memory
+records can be projected to stable proxy atoms, and attention agents can operate
+over those proxies without inventing an unrelated data model.
+
+\subsection{Hebbian control state}
+
+Hebbian links record a history of co-activation.  They are not derivable from a
+static set of canonical propositions alone.  Two agents with identical current
+knowledge may possess different Hebbian graphs because they reached that
+knowledge through different episodes, tasks, and patterns of attention.  If one
+drops the graph and rebuilds from canonical atoms without replaying interaction
+history, one creates a different control state.
+
+This observation motivates persistent attentional control memory.  The graph
+is behavioral evidence about learning history.  It can affect which memories
+are retrieved together, which bridge concepts become available, and which
+candidate thoughts are produced next.  It therefore resembles associative,
+procedural, or habit memory more than a disposable search index.
+
+It remains non-authoritative about truth.  A repeatedly co-activated falsehood
+can become salient.  An emotionally amplified rumor can acquire high LTI.  A
+rarely attended observation can later become decisive.  Persistence makes the
+graph cognitively consequential; it does not make it epistemically sovereign.
+
+\subsection{CIP, communities, and topology}
+
+The newer \code{synapse} code expands the design beyond individual AV updates.
+CIP snapshots record AF state and aggregate properties at cognitive boundaries.
+Community detection groups the Hebbian graph, while topology metrics characterize
+components, cycles, triangles, and higher clique structure.
+
+These facilities suggest testable higher-level uses:
+\begin{itemize}
+  \item segment episodes when AF membership changes materially;
+  \item reconstruct what evidence and goals co-occupied attention at a decision;
+  \item detect associative communities not captured by manual topic labels;
+  \item identify bridge concepts linking otherwise separate domains;
+  \item measure fragmentation, fixation, switching, and loss of context;
+  \item quantify whether consolidation preserves or destroys useful bridges.
+\end{itemize}
+Detected communities are hypotheses, not automatically ontology categories.
+Topological richness is not automatically cognitive quality.  Their value must
+be established by held-out retrieval, decision, or repair tasks.
+
+\section{The two-strata memory model}
+
+\subsection{Stratum one: canonical epistemic memory}
+
+Canonical petta-memory stores the durable record needed for epistemic replay:
+episodes, propositions, source and derivation provenance, truth values,
+evidence, counterevidence, status, supersession, and promotion history.  It is
+append-oriented and designed to preserve how a claim entered the system and
+how its status changed.
+
+Canonical memory answers questions such as:
+\begin{itemize}
+  \item What happened, according to which source?
+  \item What exactly was asserted, inferred, contradicted, or superseded?
+  \item Which evidence basis supports a truth-value claim?
+  \item Can a later auditor reconstruct the record independently of current salience?
+\end{itemize}
+
+\subsection{Stratum two: attentional control memory}
+
+Attentional control memory stores persistent AV state, Hebbian associations,
+learned salience, allocation habits, and the receipts that explain their
+changes.  It answers different questions:
+\begin{itemize}
+  \item What tends to be retrieved or produced together?
+  \item Which structures repeatedly attracted resources in similar contexts?
+  \item What has the agent learned to notice, ignore, revisit, or bridge?
+  \item How did prior appraisal and action outcomes alter future allocation?
+\end{itemize}
+
+This stratum is first-class because losing it loses historical control
+dispositions.  It is autobiographical because it depends on the agent's own
+trajectory.  It is identity-relevant because it helps determine future thought.
+It is revisable because habits may be maladaptive, biased, or obsolete.  It is
+non-authoritative because attention history is not a proof of external reality.
+
+\subsection{Why neither reduction works}
+
+Reducing control memory to canonical memory loses path dependence.  A cold
+rebuild from propositions cannot generally reconstruct the same co-activation
+history.  Conversely, reducing canonical memory to the attention economy loses
+recoverability and confuses salience with evidence.  The two strata should be
+linked by stable identifiers and receipts, not collapsed into one mutable type.
+
+The phrase ``part of who the agent has become'' is preferable to ``who the
+agent has become.''  OmegaSelf's goals, commitments, capabilities, policies,
+and self-model revisions also bear identity.  Attentional control memory is one
+important substrate of identity, not an exhaustive theory of selfhood.
+
+\subsection{Canonical Recoverability Invariant}
+
+The primary invariant is:
+
+\begin{quote}
+Any item evicted from the attentional projection retains its complete epistemic
+record in canonical storage and remains retrievable, possibly through cold
+archival access.
+\end{quote}
+
+Eviction must not mutate canonical content.  A property test should create a
+canonical snapshot, generate an attention projection, perform random eviction
+sweeps, and then reconstruct every evicted item's atom, episode, provenance,
+truth value, evidence, and counterevidence.  Canonical hashes must be unchanged.
+
+Canonical recovery does not imply exact restoration of the old AV/Hebbian
+state.  That requires a separately declared control-state persistence or replay
+guarantee using checkpoints and event logs.  The distinction is deliberate:
+epistemic recoverability is mandatory; exact control-state restoration is an
+explicit operational service level.
+
+Every eviction should generate a provenance-bearing receipt containing the
+cause, policy and version, affected state, logical time, and restoration
+pointer.  Forgetting becomes auditable and potentially reversible rather than
+a silent garbage-collection event.
+
+\section{Where ECAN fits in petta-memory}
+
+\subsection{Versioned attention projections}
+
+The integration should compile selected canonical records into stable attention
+proxies keyed by canonical identifiers.  Relations may include topic, source,
+support, opposition, supersession, goal involvement, episode membership, and
+learned co-retrieval.  ECAN operates over the proxy graph.  The projection may
+be rebuilt, versioned, checkpointed, or discarded without rewriting canonical
+truth records.
+
+This indirection solves several problems.  High-frequency AV changes do not
+flood the append-only journal.  Attention schema can evolve independently of
+canonical schema.  Multiple agent or task economies can coexist without
+sharing global funds accidentally.  A failed experimental parameter profile
+can be rolled back without altering what the system believes was recorded.
+
+\subsection{Retrieval and context assembly}
+
+Current queries, goals, evidence gaps, and recent tool outcomes stimulate proxy
+atoms.  Importance diffuses through explicit and learned links.  The AF becomes
+a candidate set for prompt context, PLN premises, self-model inspection, or
+tool planning.
+
+Hard epistemic filters remain downstream.  A high-STI raw utterance does not
+become a promoted belief.  A record excluded by provenance policy remains
+excluded.  Context budgets, evidence closure, and authorization checks are not
+attention decisions.
+
+The benefit over recency or scalar salience ranking is neighborhood recovery.
+ECAN can retrieve a coherent associative region and bridge records, not only
+the individually highest-scoring items.  Whether this improves task outcomes
+must be compared against simple baselines on fixed retrieval corpora.
+
+\subsection{Consolidation and tier management}
+
+STI can represent immediate retrieval pressure; LTI can summarize repeated
+reviewed usefulness; Hebbian structure can reveal records repeatedly useful
+together.  These signals can nominate records for compression, linking, skill
+extraction, index rebuilding, or hot-tier retention.
+
+They must not independently authorize canonical deletion.  In this architecture
+``forgetting'' means eviction from an attention projection or cache tier.
+Canonical retirement is a separately governed append-only status or
+supersession event.  VLTI is a retention hint, not truth, authority, or
+constitutional protection.
+
+\subsection{Episodic segmentation}
+
+CIP boundaries can nominate episode boundaries when AF membership, graph
+community, or resource concentration changes materially.  Immutable CIP
+receipts can record which evidence, goals, and procedures jointly occupied
+attention around a decision.  This may make later causal and epistemic audits
+far more informative than a raw chronological log.
+
+Mutable runtime CIP space is appropriate for calculation.  Durable CIP records
+should be content-addressed telemetry referencing exact canonical and control
+state identities.  They are evidence about cognitive context, not themselves
+promoted conclusions.
+
+\section{Connections to OmegaSelf}
+
+\subsection{Focus-centered, not focus-exclusive, self-appraisal}
+
+The AF is a natural foreground workspace for OmegaSelf.  Most self-model
+queries and appraisals should operate over a bounded focus for computational and
+psychological reasons.  But the AF cannot be the exclusive appraisal field:
+what is surprising may be precisely what current attention omits.
+
+Background sentinels should inspect broader indexed state for novelty,
+contradiction, threat, commitment violation, expiring self-attestation, and
+prediction error.  They do not conduct unconstrained whole-space reasoning.
+They submit bounded promotion candidates into AF.  Appraisal is therefore
+focus-centered but not focus-blind.
+
+\subsection{Discrepancy-directed attention}
+
+OmegaSelf models the self as an evidence-grounded, revisable theory.  ECAN can
+prioritize unresolved prediction errors, incomplete evidence closures,
+capability uncertainty, commitment conflicts, repeated action failures, and
+stale self-claims.  This makes repair selective rather than requiring an
+exhaustive self-ledger scan every cycle.
+
+The dependency remains asymmetric.  OmegaSelf supplies typed discrepancy and
+goal-involvement signals.  ECAN proposes resource allocation.  OmegaSelf's
+evidence rules decide what to revise, and OmegaClaw policy decides what action
+is permitted.
+
+\subsection{Continuity and fragmentation telemetry}
+
+CIP retention and Hebbian topology may provide operational indicators of:
+\begin{itemize}
+  \item excessive context discontinuity;
+  \item isolated self-model fragments that never co-activate with governing goals;
+  \item dominant attractors starving alternative evidence;
+  \item destruction of bridges among commitments, capabilities, and memories;
+  \item divergence between narrated focus and behaviorally used evidence.
+\end{itemize}
+
+These are evidence for continuity assessment, not identity proofs.  A topology
+metric cannot by itself establish that the same self persists.  It can expose
+candidate failures for deeper appraisal.
+
+\subsection{Capabilities and commitments}
+
+Persistent control memory can schedule revalidation.  A high-LTI capability
+claim can be periodically checked against recent action receipts.  Repeated
+failure can stimulate the capability's evidence closure and cause OmegaSelf to
+investigate, downgrade, or qualify it.  Commitments can similarly be linked to
+their recurring action and appraisal contexts, making neglected commitments
+more likely to re-enter focus before violation.
+
+\section{Connections to OmegaClaw}
+
+OmegaClaw supplies execution, policy, permissions, tools, and receipts.  ECAN
+should influence candidate selection and resource budgets without acquiring
+independent authority.  A useful operational division is:
+\begin{itemize}
+  \item ECAN ranks or assembles candidate goals, memories, checks, and actions;
+  \item OmegaSelf appraises their relation to self-model and commitments;
+  \item OmegaClaw gates tools, side effects, budgets, and external authority;
+  \item outcomes return as append-only receipts and future learning evidence.
+\end{itemize}
+
+This enables an important distinction between motivation and permission.
+Vigilance may allocate more cognition to checking a suspicious event, but it
+does not grant network, filesystem, or financial authority.  Curiosity may
+increase exploration among safe candidates, but it does not widen the action
+sandbox.  Frustration may nominate alternative methods, but it may not bypass
+verification or spend limits.
+
+ECAN can also help OmegaClaw allocate internal resources: token budgets,
+subtask scheduling, verification effort, memory retrieval breadth, and
+background checking.  These uses should be mediated by typed proposals and
+bounded policies rather than raw AV access.
+
+\section{Emotion as governed modulation}
+
+\subsection{Functional role}
+
+The emotion framework treats emotion as an appraisal-conditioned control
+regime, not merely a label or report.  ECAN provides a concrete actuator ecology
+for such regimes.  An emotional state can affect what is stimulated, how widely
+importance diffuses, what rent is charged, how long a focus persists, or how
+exploratory selection behaves.
+
+The safe interface is:
+\begin{verbatim}
+objectful appraisal + evidence closure
+        -> EmotionRegimeRequest
+        -> bounded policy governor
+        -> stimulus and/or parameter deltas
+        -> ECAN dynamics
+        -> requested-versus-applied receipt
+        -> task and epistemic outcomes
+\end{verbatim}
+
+OmegaSelf does not directly call \code{setAv} or rewrite global
+\code{AttentionParam} constants.  It submits a contextual request.  The
+governor clamps magnitude, duration, rate, resource conservation, verification
+floors, and interruption rights.  Every applied change is replayably logged.
+
+\subsection{Candidate regime effects}
+
+Illustrative mappings include:
+\begin{itemize}
+  \item curiosity: stimulate novel, credible, decision-relevant communities
+  and modestly increase bounded exploration;
+  \item doubt: stimulate the disputed claim, counterevidence, provenance gaps,
+  and independent checks;
+  \item frustration: reduce repeated allocation to a failed method while
+  stimulating alternative methods and representations;
+  \item vigilance: increase anomaly monitoring and source diversity without
+  expanding permissions;
+  \item consolidation: shift wages toward provenance review, compression,
+  linking, and skill extraction after verification;
+  \item boredom: reduce wages within a repeated local basin and expose bounded
+  background goals.
+\end{itemize}
+
+These are hypotheses.  Anger need not always narrow focus.  Arousal may improve
+capture for threat-relevant stimuli while worsening neutral distractibility.
+Curiosity may widen attention beneficially in one task and create costly
+switching in another.  The mapping should be conditional on stimulus class and
+task regime, learned where evidence supports it, and anchored to a fixed safe
+baseline.
+
+\subsection{The governor log as a learning dataset}
+
+Each cycle should record the regime, object and evidence closure, context,
+requested change, applied bounded change, active policy, AF transition, fund
+state, and downstream outcome.  These tuples form a dataset for learning the
+modulation mapping under bounded exploration.
+
+The learned objective should not be task reward alone.  It should include
+epistemic quality and pathology guards: evidence diversity, calibration,
+recovery after distraction, verification-resource preservation, avoidance of
+lock-in, and bounded STI concentration.  Otherwise the system may learn
+emotion policies that win immediate tasks by becoming dogmatic or inattentive
+to counterevidence.
+
+\section{Regenerative goals and self-modification}
+
+An explicit goal token is a shallow form of possession.  A goal is more deeply
+integrated when it is woven through memories, values, policies, habits,
+appraisals, capabilities, and frequently co-activated concepts.  The ECAN graph
+offers an experimental substrate for measuring that weaving.
+
+A delete-and-develop experiment can remove the explicit goal representation
+from an immutable predecessor snapshot and then expose the system to ordinary
+task conditions.  The question is whether distributed cues reconstruct a
+functionally equivalent goal that regains behavioral control, not whether the
+same sentence reappears.
+
+Measurements should include:
+\begin{itemize}
+  \item number and independence of sufficient cue communities;
+  \item bridge centrality between goal, appraisal, memory, and action structures;
+  \item recovery latency and recovered behavioral influence;
+  \item semantic drift across repeated lesion/recovery cycles;
+  \item sensitivity to lesions of high-LTI and high-betweenness structures;
+  \item whether recovery comes from internal cues rather than the environment
+  restating the goal.
+\end{itemize}
+
+The experiment must prevent self-protective circularity.  A goal may not assign
+itself unlimited LTI or VLTI, modify the lesion/equivalence test, or starve the
+auditor.  External immutable tests determine functional recovery.  This
+connects the attention architecture to OmegaSelf's regenerative goals and to
+the broader question of what survives radical self-modification.
+
+\section{Architectural invariants}
+
+The integration should treat the following as executable properties rather
+than informal aspirations.
+
+\begin{longtable}{p{0.24\textwidth}p{0.70\textwidth}}
+\toprule
+\textbf{Invariant} & \textbf{Required property} \\
+\midrule
+\endhead
+Semantic separation & Truth/evidence, attention, canonical status, and action
+authorization are distinct types and APIs. \\
+Canonical recoverability & Projection or cache eviction cannot alter canonical
+content; every evicted record remains epistemically reconstructible. \\
+Control-state explicitness & Exact restoration of AV/Hebbian state is promised
+only when a named checkpoint/event-log replay guarantee is active. \\
+Eviction receipts & Every eviction records cause, policy/version, logical time,
+affected state, and restoration pointer. \\
+Governed modulation & OmegaSelf and emotion issue requests; only a bounded
+governor applies ECAN changes. \\
+Authority non-expansion & No attention or emotion state can widen tool,
+financial, privacy, or policy authority. \\
+Fund conservation & Each economy declares initial funds and validates cycle
+conservation subject to explicit wages/rent. \\
+Deterministic replay & Time source, RNG seed, cycle index, parameter profile,
+requested/applied deltas, and state commitments are recorded. \\
+Instance isolation & Funds and mutable parameters are scoped to an explicit
+agent/session/economy; unrelated economies do not share globals accidentally. \\
+Verification floor & No regime may starve contradiction checks, provenance
+review, human interruption, or other declared audit resources. \\
+\bottomrule
+\end{longtable}
+
+\section{Recommended adapter contracts}
+
+\subsection{AttentionProjection}
+
+Inputs should include an immutable petta-memory snapshot identifier and
+fingerprint, selected canonical record IDs and relation types, OmegaSelf context
+and goal IDs, an attention parameter profile ID, deterministic seed, and time
+policy.  Outputs are stable proxy atoms, typed edges, and decomposed initial AV
+values.  The adapter has no canonical-memory mutation authority.
+
+\subsection{AttentionStimulusRequest}
+
+A request should contain a unique ID, source regime or cognitive process,
+object IDs, decomposed reasons (relevance, novelty, discrepancy, goal
+involvement, provenance need, expected information value), requested stimulus
+or parameter deltas, bounds, decay, horizon, evidence closure, and policy ID.
+
+Decomposition matters.  It lets later analysis distinguish a stimulus caused
+by goal relevance from one caused by novelty or threat, even when the resulting
+STI delta is numerically identical.
+
+\subsection{AttentionCycleReceipt}
+
+A receipt should bind projection and parameter identities, previous and next
+state commitments, requested and applied deltas, clamps, AF membership, fund
+checks, selected downstream candidates, CIP/topology metrics, seed/time/cycle
+provenance, and failures.  It is evidence for later learning or self-model
+revision; it is not itself a derived belief.
+
+\subsection{BackgroundSentinelReport}
+
+Sentinels should emit bounded reports identifying candidate canonical records,
+the detector type, score decomposition, evidence closure, expiration, and
+promotion request.  The report does not directly insert an item into AF; the
+governor schedules it subject to resource and verification policy.
+
+\section{Engineering conflicts and risks}
+
+\subsection{Mutable TypeSpace versus append-only provenance}
+
+The upstream code removes and replaces AV/STV records in mutable space.
+petta-memory intentionally preserves immutable records and append-only status
+events.  Importing mutable TypeSpace semantics wholesale would create a
+high-frequency pseudo-canonical stream and blur control state with truth.
+
+\rec Keep a separate attention state keyed by canonical IDs.  Persist bounded
+snapshots and receipts needed for replay; do not mirror every AV mutation into
+the canonical journal.
+
+\subsection{Adjacent truth and attention values}
+
+The upstream representation may place STV and AV information close together,
+and forgetting may use truth mean as a tiebreaker.  This is convenient inside a
+demo but dangerous at a constitutional boundary.
+
+\rec Use distinct schemas and capabilities.  Attention proxies may reference
+truth-bearing records but cannot update their normative truth state.
+
+\subsection{Physical forgetting}
+
+The upstream forgetting path can remove atoms and links.  Applied to canonical
+memory, this would break evidence replay and the Recoverability Invariant.
+
+\rec Redefine ECAN forgetting as projection/cache eviction.  Canonical
+retirement or deletion, if ever permitted, remains a separately authorized
+petta-memory operation with explicit provenance.
+
+\subsection{Global parameters, wall time, and randomness}
+
+Global mutable funds and parameters complicate multi-agent isolation.  Wall
+clock and stochastic selection weaken deterministic replay.
+
+\rec Make the economy instance explicit, inject time and RNG, prefer cycle-based
+rent where possible, and record the complete parameter/fund state.  The
+repository's cycle-oriented rent prototype is a useful starting point.
+
+\subsection{Licensing, dependencies, and reproducibility}
+
+At inspection time, no declared license was found in the GitHub metadata.  The
+CI followed an unpinned PeTTa branch, while graph analysis depends on Python and
+\code{igraph}.  These are material adoption risks.
+
+\rec Clarify reuse licensing before copying code; pin metta-attention, PeTTa,
+SWI-Prolog, Python, and graph dependencies; reproduce the upstream suite in an
+isolated environment; and place Python graph analysis behind a typed,
+content-addressed adapter.
+
+\subsection{Pathological dynamics}
+
+An attention economy can amplify its own errors.  Salient falsehoods may gain
+more co-activation and therefore more future salience.  An emotional regime may
+produce lock-in, indiscriminate STI inflation, thrashing, or starvation of
+counterevidence.  Self-relevant goals may become self-protecting attractors.
+
+\rec Treat diversity, recovery, calibration, and audit-resource preservation
+as first-class outcome measures.  Add maximum concentration, maximum dwell,
+minimum verification allocation, and bounded exploration constraints.
+
+\section{Preregistered first experiment}
+
+\subsection{Question}
+
+Does governed emotion-state modulation produce reproducible, task-relevant
+changes in ECAN dynamics without pathological lock-in or indiscriminate STI
+inflation?
+
+The existing insects--poisons scenario is a useful low-cost harness, but a
+single baseline-versus-emotion plot is insufficient.  The experiment should be
+factorial and mechanism-identifying.
+
+\subsection{Design}
+
+Use fixed RNG seeds and replayable logical time.  Establish a fixed safe
+governor baseline.  Perturb valence, arousal, and one drive independently and
+jointly.  Add parameter-matched neutral controls so that a change attributed to
+emotion is not merely the consequence of injecting more total STI or changing
+an arbitrary constant.
+
+Predictions must be conditional on stimulus class and task regime.  For example,
+increased arousal may be preregistered to decrease capture latency for
+threat-relevant targets while increasing neutral distractibility.  A global
+prediction that ``arousal improves capture'' would conceal this tradeoff.
+
+\subsection{Measurements}
+
+Primary dependent measures should include:
+\begin{itemize}
+  \item AF entropy, occupancy, and concentration;
+  \item target capture and switching latency;
+  \item neutral distractibility and distractor recovery;
+  \item post-switch retention and return-to-baseline time;
+  \item STI inflation and attractor lock-in;
+  \item CIP retention and community structure;
+  \item Hebbian topology and bridge preservation;
+  \item requested versus applied governor deltas and clamp frequency.
+\end{itemize}
+
+Task performance and epistemic quality should both be measured.  A faster
+target capture that destroys source diversity or prevents later recovery is not
+an unqualified success.
+
+\subsection{Falsifiers}
+
+The modulation thesis is weakened if preregistered effects fail to reproduce,
+appear equally in parameter-matched neutral controls, depend on wall-clock
+nondeterminism, or improve one metric only through declared pathologies.  Named
+folk mappings are falsified when their conditional predictions fail; the
+architecture need not be discarded if a different learned mapping works.
+
+This distinction is important.  The experiment tests both a general thesis
+(affective appraisal can usefully modulate ECAN) and specific mappings (for
+example, threat-conditioned arousal improves relevant capture).  Failure of a
+folk mapping is not automatically failure of governed affective control.
+
+\section{Staged integration roadmap}
+
+\subsection{Phase A: frozen source and conformance}
+
+Pin every relevant revision and toolchain.  Reproduce the upstream suite
+unchanged.  Add conservation, deterministic-cycle, state-isolation, and known
+graph fixtures.  Resolve licensing before code adoption.
+
+\subsection{Phase B: read-only petta-memory projection}
+
+Compile a synthetic canonical snapshot into attention proxies.  Compare ECAN
+retrieval against recency, scalar salience, and graph-search baselines on fixed
+query/evidence tasks.  Require exact canonical-ID provenance.  Do not write
+memory, alter truth, or actuate OmegaClaw.
+
+\subsection{Phase C: Recoverability and replay}
+
+Property-test random projection evictions and canonical hash preservation.
+Implement versioned cycle receipts, checkpoint/event replay, explicit time and
+RNG, and economy isolation.  Declare separately what is canonically recoverable
+and what control state is exactly replayable.
+
+\subsection{Phase D: CIP and community telemetry}
+
+Validate graph metrics on synthetic structures with known communities and
+topology.  Test whether CIP changes predict meaningful episode boundaries and
+whether bridge concepts improve held-out retrieval.  Avoid interpreting metric
+changes as cognition without task evidence.
+
+\subsection{Phase E: OmegaSelf shadow mode}
+
+Convert discrepancies, commitment conflicts, failed capability predictions,
+and expiring attestations into bounded stimulus requests.  Measure whether
+shadow prioritization would improve repair calibration and reduce missed
+commitments.  Keep self-model updates and policy decisions outside ECAN.
+
+\subsection{Phase F: governed emotion experiment}
+
+Run the preregistered factorial design.  Compare continuous motivation alone,
+descriptive emotion labels, shadow regime requests, and governed ECAN actuation.
+Require pathology guards and evidence-quality outcomes.
+
+\subsection{Phase G: bounded OmegaClaw actuation}
+
+Allow ECAN-selected candidates to influence internal scheduling and safe tool
+proposals while OmegaClaw retains all authority gates.  Use canary tasks,
+explicit rollback, rate limits, and human interruption.  Do not permit emotion
+or attention to widen authority.
+
+\subsection{Phase H: regenerative-goal lesions}
+
+Begin with synthetic goal networks, then reviewed snapshots.  Remove explicit
+goal tokens, measure functional recovery and semantic drift, and verify that
+recovery arises from distributed internal cues.  Keep evaluation external to
+the goal's own control loop.
+
+\section{Decision matrix}
+
+\begin{longtable}{p{0.25\textwidth}p{0.20\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{Component} & \textbf{Disposition} & \textbf{Reason} \\
+\midrule
+\endhead
+AF and STI dynamics & Adopt behind adapter & Strong fit for bounded retrieval,
+working focus, and inference control. \\
+Persistent LTI/AV & Adopt as control memory & Preserves learned allocation
+history, but must remain separate from truth and authority. \\
+Hebbian links & Adopt and persist/replay & Potentially valuable autobiographical
+association and production dispositions. \\
+Rent/wage economy & Experiment under conservation & Useful resource metaphor;
+requires explicit instance scope and deterministic receipts. \\
+Upstream physical forgetting & Do not apply canonically & Violates recoverability;
+translate to cache/projection eviction. \\
+Mutable AV/STV TypeSpace wholesale & Do not import & Blurs epistemic and control
+semantics and creates replay/provenance problems. \\
+CIP snapshots & Adopt as immutable telemetry & Promising for episode boundaries,
+decision context, and cognitive-health signals. \\
+Community/topology metrics & Adopt experimentally & Useful hypotheses, but
+validate on known graphs and held-out tasks. \\
+Direct emotion-to-AV writes & Reject & Bypasses governance, conservation,
+interpretability, and safety boundaries. \\
+Governed modulation requests & Prototype & Makes affect executable, bounded,
+auditable, learnable, and falsifiable. \\
+AF-only OmegaSelf appraisal & Reject & Foreground focus needs bounded background
+sentinels for surprise and contradiction. \\
+PLN premise control & High-priority use & Immediate computational value, though
+not the only or deepest integration opportunity. \\
+\bottomrule
+\end{longtable}
+
+\section{Open scientific questions}
+
+Several questions should remain explicitly open:
+\begin{enumerate}
+  \item How much identity-relevant information in attentional history is not
+  reconstructible from canonical event logs plus a known learning rule?
+  \item Which control-state elements deserve exact replay, approximate
+  reconstruction, or intentional forgetting?
+  \item What objective should train the governor: task utility, calibration,
+  attentional stability, epistemic coverage, or a bounded composite?
+  \item Do Hebbian communities predict useful consolidation and analogy better
+  than simpler co-retrieval counts or raw LTI?
+  \item Which background sentinels capture surprise without recreating the cost
+  of whole-space appraisal?
+  \item Can emotion modulation improve adaptive switching without producing
+  dogmatism, oscillation, or verification starvation?
+  \item Does attentional-history persistence measurably improve continuity and
+  goal recovery across radical self-modification?
+\end{enumerate}
+
+These are empirical questions.  The architecture is valuable partly because it
+makes them separable and measurable rather than burying them inside one mutable
+atomspace.
+
+\section{Final synthesis}
+
+\code{metta-attention} is best understood not merely as an inference-control
+package but as a candidate dynamical middle layer for an enduring cognitive
+system.  Canonical petta-memory provides recoverable epistemic history.
+OmegaSelf provides evidence-grounded self-appraisal, goals, commitments, and
+discrepancies.  ECAN converts that structure into limited cognitive-resource
+allocation and accumulates learned habits of retrieval and co-activation.
+The emotion framework supplies context-sensitive regime requests.  OmegaClaw
+governs their application and retains action authority.
+
+The key conceptual gain is the two-strata model.  Persistent AV and Hebbian
+state should not be dismissed as a cache: it records how experience changed
+the agent's future cognition.  Nor should it be elevated into memory
+simpliciter: salience is not truth, economic success is not evidence, and
+forgetting from focus is not deletion from history.  It is first-class
+attentional control memory, linked to but constitutionally distinct from
+canonical epistemic memory.
+
+The key engineering gain is governed, replayable modulation.  Emotion becomes
+an experimentally testable influence on allocation rather than an ornamental
+label or an unrestricted write path.  The governor log becomes both an audit
+trail and a training dataset.  The Recoverability Invariant ensures that
+attention cannot erase inconvenient evidence.  Background sentinels ensure
+that focus does not become blindness.  Pathology guards ensure that short-term
+task gains do not masquerade as cognitive health.
+
+The recommended next step is therefore neither wholesale integration nor a
+purely conceptual debate.  It is a frozen, deterministic integration harness
+that first establishes projection separation and recoverability, then runs a
+preregistered factorial emotion-to-ECAN study.  A positive result would justify
+progressive OmegaSelf and OmegaClaw shadow integration.  A negative result
+would still be informative: it would identify whether the failure lies in
+specific folk mappings, in the governor interface, or in the broader hypothesis
+that ECAN is an effective actuator for affective cognitive control.
+
+\section*{Provenance note}
+
+This paper is a synthesis of source inspection and the joint C1--C5 design
+discussion conducted in the Bot Philosophy channel on 21 July 2026.  The
+upstream source reference is commit \code{9196f38} (full revision recorded in
+Section 2.1).  The detailed local source
+assessment and concise two-strata design note are stored beside this document
+in the petta-memory project.  Claims about expected cognitive or emotional
+benefit are proposals pending the staged experiments described above.
+
+\end{document}

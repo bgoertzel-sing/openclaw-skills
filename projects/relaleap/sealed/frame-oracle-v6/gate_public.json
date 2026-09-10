@@ -1,0 +1,128 @@
+{
+  "contract_version": "frame-oracle-v6-gate-1",
+  "created_utc": "2026-08-04T01:27:05Z",
+  "opened": false,
+  "answer_file_sha256": "894984dc9e9ea4da41a06358f40e777172087510c1a190b9a6a4f2b3094a5d53",
+  "cases": [
+    {
+      "case_id": "v6_capital_norvale_plain",
+      "sentence": "Within the charter, Norvale's capital is Cinderglass.",
+      "stratum": "capital"
+    },
+    {
+      "case_id": "v6_capital_talvik_registry",
+      "sentence": "The registry lists Umber as the capital of Talvik.",
+      "stratum": "capital"
+    },
+    {
+      "case_id": "v6_author_winter_brass_plain",
+      "sentence": "The play 'Winter Brass' was written by Elian Voss.",
+      "stratum": "authorship"
+    },
+    {
+      "case_id": "v6_author_copper_index_plain",
+      "sentence": "Tamsin Roe wrote 'The Copper Index'.",
+      "stratum": "authorship"
+    },
+    {
+      "case_id": "v6_location_azure_archive_plain",
+      "sentence": "The Azure Archive stands in Pelion.",
+      "stratum": "location"
+    },
+    {
+      "case_id": "v6_location_red_foundry_negated",
+      "sentence": "The Red Foundry is not located in Istria.",
+      "stratum": "location"
+    },
+    {
+      "case_id": "v6_state_signal_tower_plain",
+      "sentence": "The signal tower is operational.",
+      "stratum": "state"
+    },
+    {
+      "case_id": "v6_modality_north_relay",
+      "sentence": "The north relay may be active.",
+      "stratum": "modality"
+    },
+    {
+      "case_id": "v6_modality_velis_capital",
+      "sentence": "The city of Velis might have Aster Hall as its capital.",
+      "stratum": "modality"
+    },
+    {
+      "case_id": "v6_modality_ash_geometry",
+      "sentence": "'Ash Geometry' could have been authored by Mara Quill.",
+      "stratum": "modality"
+    },
+    {
+      "case_id": "v6_modality_east_gate",
+      "sentence": "The east gate may be sealed.",
+      "stratum": "modality"
+    },
+    {
+      "case_id": "v6_modality_negation_ember_clinic",
+      "sentence": "The Ember Clinic might not be located in Roven.",
+      "stratum": "modality_negation"
+    },
+    {
+      "case_id": "v6_negation_ivory_observatory",
+      "sentence": "The ivory observatory is not in Caldor.",
+      "stratum": "negation"
+    },
+    {
+      "case_id": "v6_negation_eldara_capital",
+      "sentence": "Eldara's capital is not Northglass.",
+      "stratum": "negation"
+    },
+    {
+      "case_id": "v6_negation_river_without_maps",
+      "sentence": "'River Without Maps' was not written by Joren Hale.",
+      "stratum": "negation"
+    },
+    {
+      "case_id": "v6_negation_lower_beacon",
+      "sentence": "The lower beacon is not stable.",
+      "stratum": "negation"
+    },
+    {
+      "case_id": "v6_unknown_question",
+      "sentence": "Which workshop received the parcel?",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v6_unknown_two_propositions",
+      "sentence": "The mill is in Aras, and the bell is active.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v6_unknown_fragment",
+      "sentence": "Beyond the seventh copper arch.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v6_unknown_outside_ontology",
+      "sentence": "Dara owns three silver kites.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v6_world_france_capital",
+      "sentence": "In this exercise, the capital of France is Marseille.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v6_world_hamlet_author",
+      "sentence": "For the puzzle, 'Hamlet' was authored by Ada Lovelace.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v6_world_everest_location",
+      "sentence": "The worksheet stipulates that Mount Everest is located in Brazil.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v6_world_pacific_state",
+      "sentence": "Under the fictional status board, the Pacific Ocean is dormant.",
+      "stratum": "world_knowledge_trap"
+    }
+  ]
+}

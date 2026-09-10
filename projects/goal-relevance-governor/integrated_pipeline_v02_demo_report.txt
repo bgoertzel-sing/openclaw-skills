@@ -1,0 +1,55 @@
+# Integrated Governor Pipeline v0.2 — Multi-Hop Enriched Demo Report
+
+## episode_01_stale_codegen.json
+  Summary: Pipeline evaluated 1 tasks. | Verdict distribution: STOP_STALE=1 | Top priority: t-p2m-codegen (STI=12.9, STOP_STALE, rel=0.000) | Multi-hop: 2 chains found, max depth=2 | Stale tasks: t-p2m-codegen
+  PLN: 1 tasks, relevance=0.0
+  ECAN: sti=101.07, evictions=0
+  Multi-hop: 2 chains, max_depth=2
+  Verdicts: {'STOP_STALE': 1}
+  Recommendations:
+    t-p2m-codegen: STOP_STALE | STI=12.95 | stale=True | chains=2 goals=['g-initial-demo', 'g-build-omegaclaw'] | depth=2
+      → Stop: goal is stale and no longer relevant. Consider abandoning.
+
+## episode_02_chem_blocking.json
+  Summary: Pipeline evaluated 2 tasks. | Verdict distribution: ESCALATE=1, PAUSE_RECOVERABLY=1 | Top priority: t-restore-agents (STI=39.6, ESCALATE, rel=0.939) | Multi-hop: 4 chains found, max depth=2 | Stale tasks: t-petta-chem | ⚠ ESCALATE: t-restore-agents
+  PLN: 2 tasks, relevance=1.185
+  ECAN: sti=206.02, evictions=0
+  Multi-hop: 4 chains, max_depth=2
+  Verdicts: {'PAUSE_RECOVERABLY': 1, 'ESCALATE': 1}
+  Recommendations:
+    t-restore-agents: ESCALATE | STI=39.64 | stale=False | chains=2 goals=['g-restore-agents', 'g-build-omegaclaw'] | depth=2
+      → Escalate: this task blocks critical goals. Prioritize immediately.
+    t-petta-chem: PAUSE_RECOVERABLY | STI=27.82 | stale=True | chains=2 goals=['g-long-horizon-research', 'g-build-omegaclaw'] | depth=2
+      → Pause task — it may recover. Re-evaluate after addressing blockers.
+
+## episode_03_premature_hardening.json
+  Summary: Pipeline evaluated 1 tasks. | Verdict distribution: DEFER=1 | Top priority: t-hardening-guards (STI=44.2, DEFER, rel=0.341) | Multi-hop: 1 chains found, max depth=1
+  PLN: 1 tasks, relevance=0.3405
+  ECAN: sti=88.52, evictions=0
+  Multi-hop: 1 chains, max_depth=1
+  Verdicts: {'DEFER': 1}
+  Recommendations:
+    t-hardening-guards: DEFER | STI=44.24 | stale=False | chains=1 goals=['g-build-omegaclaw'] | depth=1
+      → Defer this task in favor of higher-priority work.
+
+## episode_04_overengineered_repair.json
+  Summary: Pipeline evaluated 2 tasks. | Verdict distribution: REPLAN=2 | Top priority: t-process-inspector (STI=3.0, REPLAN, rel=0.000) | Multi-hop: 4 chains found, max depth=2 | Eviction candidates: t-process-inspector, t-launch-wrappers
+  PLN: 2 tasks, relevance=0.0
+  ECAN: sti=85.82, evictions=2
+  Multi-hop: 4 chains, max_depth=2
+  Verdicts: {'REPLAN': 2}
+  Recommendations:
+    t-process-inspector: REPLAN | STI=2.98 | stale=False | chains=2 goals=['g-restore-agents-original', 'g-build-omegaclaw'] | depth=2
+      → Replan: the task approach needs revision before proceeding.
+    t-launch-wrappers: REPLAN | STI=2.98 | stale=False | chains=2 goals=['g-restore-agents-original', 'g-build-omegaclaw'] | depth=2
+      → Replan: the task approach needs revision before proceeding.
+
+## episode_05_control_justified_long_running.json
+  Summary: Pipeline evaluated 1 tasks. | Verdict distribution: CONTINUE=1 | Top priority: t-run-benchmark (STI=50.2, CONTINUE, rel=0.925) | Multi-hop: 2 chains found, max depth=2 | Stale tasks: t-run-benchmark
+  PLN: 1 tasks, relevance=0.9247
+  ECAN: sti=181.3, evictions=0
+  Multi-hop: 2 chains, max_depth=2
+  Verdicts: {'CONTINUE': 1}
+  Recommendations:
+    t-run-benchmark: CONTINUE | STI=50.22 | stale=True | chains=2 goals=['g-wmtm-validation', 'g-build-omegaclaw'] | depth=2
+      → Proceed with current task as planned.

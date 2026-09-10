@@ -1,0 +1,144 @@
+{
+  "config": {
+    "continuity_control": "frozen-cla-indexed-json-v1",
+    "discard": 1536,
+    "external_controls": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2",
+      "lz78-canonical-v1"
+    ],
+    "lag_bins": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 18071851
+    },
+    "lorenz96": {
+      "F": 8.0,
+      "dimension": 8,
+      "dt": 0.01,
+      "initial": [
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        8.025
+      ],
+      "observed_coordinate": 7
+    },
+    "mackey_glass": {
+      "beta": 0.2,
+      "dt": 0.1,
+      "gamma": 0.1,
+      "initial": 1.3,
+      "n": 10.0,
+      "tau": 17.0
+    },
+    "max_lag": 64,
+    "prefix_length": 1024,
+    "primary": "frozen-cla-compact-indexed-v1",
+    "radius_adjacent_increment_quantile": 0.1,
+    "suffix_length": 4096
+  },
+  "fixtures": [
+    {
+      "kind": "positive",
+      "name": "mackey-glass-initial-1.3-positive",
+      "prefix_samples": 1024,
+      "prefix_sha256": "390edd323be2ddd754dbca8cd3c7040a3332f897a1391710c99cd7e51620bbc0",
+      "samples": 5120,
+      "shuffle_seed": null,
+      "suffix_samples": 4096,
+      "suffix_sha256": "9c5aa9b3f3ea5e3d3804647d4ffd4470fdfa53ab64798c6e31b2261974633f9f",
+      "symbol_stream_sha256": "f379b47478d327306580ee77cf8afd9a5e7901f4ee57b4fab8c67c8c5b6f748a",
+      "symbolization": {
+        "lag_bins": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64
+        ],
+        "max_lag": 64,
+        "method": "causal-recurrence-lag",
+        "radius": 0.0003063303381569682,
+        "radius_index": 102,
+        "radius_rule": "prefix adjacent-increment nearest-rank q0.10"
+      },
+      "trajectory_sha256": "7dc1049409d8a6d74fddfab7c75ed4b6d6a8c8145bb4a90646529ea9449d1aba"
+    },
+    {
+      "kind": "shuffled",
+      "name": "mackey-glass-initial-1.3-shuffled",
+      "prefix_samples": 1024,
+      "prefix_sha256": "83141fa0d2596190ad26cbb4870f4220149c56e62b44c08937aa6e03b65a6154",
+      "samples": 5120,
+      "shuffle_seed": 18071852,
+      "source_symbol_stream_sha256": "f379b47478d327306580ee77cf8afd9a5e7901f4ee57b4fab8c67c8c5b6f748a",
+      "suffix_samples": 4096,
+      "suffix_sha256": "bc6b092153f581464ba8ca327120762dcfecf8da4f346c191ed7a16e37e6ccad",
+      "symbol_stream_sha256": "fb34b40cfeabc1390ede58c5d695fb1eef02fb4b4dffaceba758b71933e1e841"
+    },
+    {
+      "kind": "positive",
+      "name": "lorenz96-x7-perturb-x7-positive",
+      "prefix_samples": 1024,
+      "prefix_sha256": "4c1c896f8cc38a1c057671666601c5251b1e274779994a8f01456cadc253c5ea",
+      "samples": 5120,
+      "shuffle_seed": null,
+      "suffix_samples": 4096,
+      "suffix_sha256": "6257d1e99b0e60bdec18345fb4b028421371e47201bbed5ab0665907abb188a8",
+      "symbol_stream_sha256": "6260f679137b4ecc3658cd2b81cedbaaa850190236cce9cfa3bdc6bf2be27c1f",
+      "symbolization": {
+        "lag_bins": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64
+        ],
+        "max_lag": 64,
+        "method": "causal-recurrence-lag",
+        "radius": 0.015269583053019176,
+        "radius_index": 102,
+        "radius_rule": "prefix adjacent-increment nearest-rank q0.10"
+      },
+      "trajectory_sha256": "8c99b20491c3d58747ff07037a0e80b615a79f19c3782c429010df1d7baba4bd"
+    },
+    {
+      "kind": "shuffled",
+      "name": "lorenz96-x7-perturb-x7-shuffled",
+      "prefix_samples": 1024,
+      "prefix_sha256": "5d3dac60e90c2a3ce96a7fee57377362e197b38d46809853a36bc1785bfdae21",
+      "samples": 5120,
+      "shuffle_seed": 18071853,
+      "source_symbol_stream_sha256": "6260f679137b4ecc3658cd2b81cedbaaa850190236cce9cfa3bdc6bf2be27c1f",
+      "suffix_samples": 4096,
+      "suffix_sha256": "126803bd85bcccbfd6c0d15ba7eaeb4d6f921b69b4371d92d9bbc3dc9088dac4",
+      "symbol_stream_sha256": "e18da3ee3bc7b5abe3c11fa508362f8aab46d9b1045154758eb67140e442aefb"
+    }
+  ],
+  "protocol": "recurrence-attractor-preregistration-v1",
+  "schema": "chaoslang.recurrence-attractor",
+  "version": 1
+}

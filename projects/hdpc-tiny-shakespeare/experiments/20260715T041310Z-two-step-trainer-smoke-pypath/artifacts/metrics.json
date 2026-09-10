@@ -1,0 +1,92 @@
+{
+  "config": {
+    "batch_size": 2,
+    "lr": 0.0001,
+    "output": "/home/openclaw/research-agent/scratch/hdpc-two-step-metrics.json",
+    "seq_len": 64,
+    "steps": 2
+  },
+  "final_eval": {
+    "delta_ppl": 3.1171875,
+    "loss": 10.826415061950684,
+    "ppl": 50332.94140625,
+    "teacher_loss": 10.826353073120117
+  },
+  "initial_eval": {
+    "delta_ppl": 0.0,
+    "loss": 10.826353073120117,
+    "ppl": 50329.82421875,
+    "teacher_loss": 10.826353073120117
+  },
+  "steps": [
+    {
+      "T": 1,
+      "all_finite": true,
+      "energy_nonincreasing": true,
+      "energy_trace": [
+        0.0,
+        8.191127743031513e-22
+      ],
+      "eval_after_update": {
+        "delta_ppl": -0.09765625,
+        "loss": 10.826351165771484,
+        "ppl": 50329.7265625,
+        "teacher_loss": 10.826353073120117
+      },
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 1.0000000596046448,
+          "mean_norm_ratio": 1.0,
+          "parameter_tensors": 4
+        },
+        "transformer.h.0": {
+          "mean_cosine": 1.0000000248352687,
+          "mean_norm_ratio": 1.0,
+          "parameter_tensors": 12
+        },
+        "transformer.h.1": {
+          "mean_cosine": 1.0000000099341075,
+          "mean_norm_ratio": 1.0,
+          "parameter_tensors": 12
+        }
+      },
+      "step": 0,
+      "train_ppl_before_update": 50109.65625
+    },
+    {
+      "T": 2,
+      "all_finite": true,
+      "energy_nonincreasing": true,
+      "energy_trace": [
+        1.09244169266276e-07,
+        1.7143729280633124e-07,
+        1.4319221008918248e-07
+      ],
+      "eval_after_update": {
+        "delta_ppl": 3.1171875,
+        "loss": 10.826415061950684,
+        "ppl": 50332.94140625,
+        "teacher_loss": 10.826353073120117
+      },
+      "gradient_by_layer": {
+        "other": {
+          "mean_cosine": 0.9999302625656128,
+          "mean_norm_ratio": 0.9619696587324142,
+          "parameter_tensors": 4
+        },
+        "transformer.h.0": {
+          "mean_cosine": 0.9999998360872269,
+          "mean_norm_ratio": 0.9589907427628835,
+          "parameter_tensors": 12
+        },
+        "transformer.h.1": {
+          "mean_cosine": 0.9999888290961584,
+          "mean_norm_ratio": 0.9601412564516068,
+          "parameter_tensors": 12
+        }
+      },
+      "step": 1,
+      "train_ppl_before_update": 50189.86328125
+    }
+  ]
+}

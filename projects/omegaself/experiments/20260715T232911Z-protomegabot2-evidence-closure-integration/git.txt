@@ -1,0 +1,18 @@
+# Git State
+Captured UTC: 2026-07-15T23:29:11Z
+Working directory: projects/omegaself/repos/protomegabot2-omegaclaw-record-only
+Commit: 2bfa244b99b08f96e11e0e7ba40c5ed71159857a
+Branch: agent/omegaself-record-only
+Remote names: fork,origin
+
+## Status
+## agent/omegaself-record-only
+ M Autotests/test_omegaself_bridge.py
+ M src/omegaself_bridge.py
+
+## Diff summary
+ Autotests/test_omegaself_bridge.py | 45 +++++++++++++++++++++++
+ src/omegaself_bridge.py            | 75 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 119 insertions(+), 1 deletion(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

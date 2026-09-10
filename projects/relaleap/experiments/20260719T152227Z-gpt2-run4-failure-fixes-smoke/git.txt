@@ -1,0 +1,25 @@
+# Git State
+Captured UTC: 2026-07-19T15:22:27Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/worktrees/tinyshakespeare-hdpc
+Commit: 7d4d4dc9ee0f141bef1e6da48249f92bb4021b7e
+Branch: agent/epc-outcome-probes
+Remote names: 
+
+## Status
+## agent/epc-outcome-probes
+ M scripts/run_gpt2_outcome_gpu.py
+ M scripts/run_gpt2_pilot_gpu.py
+ M tests/test_gpt2_outcome_gpu.py
+ M tests/test_gpt2_pilot_gpu_runner.py
+?? configs/epc_outcome_probe_local_substantive.json
+?? scripts/run_gpt2_full_pipeline.sh
+?? tests/test_gpt2_full_pipeline.py
+
+## Diff summary
+ scripts/run_gpt2_outcome_gpu.py     |  8 ++++++--
+ scripts/run_gpt2_pilot_gpu.py       | 12 ++++++++++++
+ tests/test_gpt2_outcome_gpu.py      |  8 ++++++++
+ tests/test_gpt2_pilot_gpu_runner.py | 33 +++++++++++++++++++++++++++++++++
+ 4 files changed, 59 insertions(+), 2 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

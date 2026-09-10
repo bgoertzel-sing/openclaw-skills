@@ -1,0 +1,10 @@
+# Git state
+
+- OmegaSim HEAD: `18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d`, branch
+  `agent/cla-detector-prereg`, clean.
+- OmegaSim detector implementation: parent commit
+  `5a6002bd134ffb60e4f20b6c506a1ff6795e7afa`.
+- chaoslang HEAD: detached
+  `974af31efaf6e3cc239252f78367d20e657ac45c`, clean.
+- Both identities and clean states were asserted by `command.sh` before
+  measurement.

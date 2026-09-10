@@ -1,0 +1,7 @@
+{
+  "maximal_raf_size": 15,
+  "minimal_core_size": 2,
+  "minimal_core_is_raf": true,
+  "events": 56,
+  "no_catalysis_maximal_raf_size": 0
+}

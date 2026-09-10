@@ -1,0 +1,1519 @@
+          Linguistic Universals as Quantale-Enriched
+            Cognition–Language Correspondences:
+        Causal Coding, TUG, and Weakest Explanations
+                                         Ben Goertzel
+
+                                          May 4, 2026
+
+
+                                            Abstract
+    The paper previously formulated a structural correspondence between two bodies of work: a
+TyLAA/TUG account of real-world linguistic universals and a causal-coding account of continual
+learning. The present version strengthens that correspondence by giving it a category-theoretic
+and quantale-weakness formulation. The central claim is this:
+
+                  linguistic universals are direct images of cognitive invariants
+               along a weakest, quantale-enriched externalization correspondence
+
+and conversely
+                     cognitive universals are weakest pullback explanations
+                                  of stable linguistic subobjects.
+
+For the non-specialist, the first sentence says that robust cross-linguistic patterns are not merely
+correlations among surface features: they are the observable shadows of stable cognitive patterns,
+transported through the machinery that turns cognition into language. The second sentence says
+that, when we start from the typological record, the best explanation of a linguistic universal is
+the weakest cognitive structure that has to be posited in order to make that linguistic pattern
+stable.
+    We make this precise by introducing three quantale-enriched categories: a category CogQ
+of causally factorized cognitive learners, a category FrameQ of semantic frames, and a category
+LangQ of TUG trace quotients under typological interfaces. The cognition-to-language map is
+represented by a lax symmetric monoidal enriched functor
+
+                                  Λ = E ◦ K : CogQ −→ LangQ ,
+
+where K extracts semantic-frame structure from a cognitive substrate and E externalizes seman-
+tic frames into linguistic cores. In the more general, non-deterministic case the same relation
+is a Q-enriched profunctor P : Cogop  Q × LangQ → Q. Linguistic universals become subobjects
+or predicates in LangQ ; cognitive explanations become pullbacks of those subobjects along Λ,
+selected by a quantale-valued weakness criterion that penalizes unnecessary cost, confusion, and
+double-counting.
+    This categorical formulation turns the earlier five correspondences into theorem-shaped
+claims. The strongest is a monoidal transport theorem: if cognitive context-updates act on
+disjoint causal factors, then their linguistic images are swap-equivalent in the TUG trace quo-
+tient; if they nearly commute, the linguistic swap defect is bounded by the image of the cog-
+nitive commutator defect. Hence the TUG factorization theorem and the causal-continual-
+learning commutator theorem are two instances of one enriched monoidal fact. The other four
+
+
+                                                 1
+     correspondences become closure transport, sparse-energy pushforward, stability-rate transport,
+     and context-indexed gluing theorems. Quantale weakness then supplies the selection principle:
+     causal explanations beat redundant correlation-only explanations because they introduce the
+     weakest mediator and avoid double-counting the same dependency through multiple paths.
+
+
+Contents
+1 Introduction                                                                                         2
+  1.1 The new main message . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+  1.2 Why category theory is the right language here . . . . . . . . . . . . . . . . . . . . .         3
+  1.3 The three-layer correspondence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       3
+  1.4 The empirical motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       4
+  1.5 What is new in this version . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      4
+
+2 Background: TUG, causal coding, and quantale weakness                                                5
+  2.1 TUG as the weakest typological grammar core . . . . . . . . . . . . . . . . . . . . .            5
+  2.2 The five TUG universals conclusions . . . . . . . . . . . . . . . . . . . . . . . . . . .        5
+  2.3 Causal coding and the General Causal-Continual-Learning theorem . . . . . . . . . .              6
+  2.4 HBCML and kernel-shell stability . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       6
+  2.5 Quantale weakness . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      6
+  2.6 The independence/dependency Pareto frontier . . . . . . . . . . . . . . . . . . . . . .          7
+
+3 The three enriched categories                                                                    7
+  3.1 A note on enriched and weighted categories . . . . . . . . . . . . . . . . . . . . . . . 7
+  3.2 The cognitive category CogQ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+  3.3 The semantic-frame category FrameQ . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  3.4 The linguistic category LangQ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  3.5 Pattern categories and subobjects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+4 The cognition–language correspondence                                                               10
+  4.1 The representable case: a functor . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     10
+  4.2 The non-representable case: a profunctor . . . . . . . . . . . . . . . . . . . . . . . .        11
+  4.3 Production and comprehension as an adjunction . . . . . . . . . . . . . . . . . . . .           11
+  4.4 Direct images and pullbacks of universals . . . . . . . . . . . . . . . . . . . . . . . .       12
+  4.5 Invariants transport to universals . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    12
+
+5 Weakest explanations and quantale selection                                                         13
+  5.1 The explanation category . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      13
+  5.2 Relation to TyLAA weakness . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        14
+  5.3 Why causal explanations beat double-counting explanations . . . . . . . . . . . . . .           14
+
+6 Main theorem: monoidal transport of causal modularity                                               15
+  6.1 Commutators and swap defects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        15
+  6.2 The transport theorem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     15
+  6.3 The core commutative diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        16
+
+
+
+
+                                                   2
+7 Mediators as residuals                                                                                16
+  7.1 Why broad universals need mediators . . . . . . . . . . . . . . . . . . . . . . . . . .           16
+  7.2 Residuals in a behavior quantale . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        17
+  7.3 A mediator diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        17
+
+8 The five correspondences as categorical transport results                                             18
+  8.1 Correspondence 1: hierarchical universals as closure transport . . . . . . . . . . . . .          18
+  8.2 Correspondence 2: cross-module universals and factorization . . . . . . . . . . . . . .           19
+  8.3 Correspondence 3: narrow word order as sparse-energy pushforward . . . . . . . . .                19
+  8.4 Correspondence 4: graded stability as rate transport . . . . . . . . . . . . . . . . . .          20
+  8.5 Correspondence 5: context-indexed laws as gluing . . . . . . . . . . . . . . . . . . . .          20
+
+9 Semantic frames and GTGI-style cognitive mappings                                                     21
+  9.1 Why the frame layer is essential . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      21
+  9.2 Frame morphisms . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       21
+  9.3 Natural transformations among cognitive modalities . . . . . . . . . . . . . . . . . .            22
+  9.4 Sapir–Whorf and its dual . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        22
+  9.5 Three-tier classification of semantic frames . . . . . . . . . . . . . . . . . . . . . . . .      22
+
+10 Statistical and computational research programme                                                     23
+   10.1 Recover the linguistic subobjects . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     23
+   10.2 Infer cognitive pullbacks . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   23
+   10.3 Estimate the confusion graph . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      23
+   10.4 Test closure transport . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    24
+   10.5 Test sparse-energy pushforward . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      24
+   10.6 Test stability-rate transport . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   24
+   10.7 Use multilingual neural models as an intermediate probe . . . . . . . . . . . . . . . .         24
+
+11 Implications for Universal Grammar and AGI                                                           25
+   11.1 Principles and parameters revisited . . . . . . . . . . . . . . . . . . . . . . . . . . . .     25
+   11.2 A constraint on AGI architectures . . . . . . . . . . . . . . . . . . . . . . . . . . . .       25
+   11.3 Why the typological record matters for cognitive architecture . . . . . . . . . . . . .         25
+
+12 Limitations and open questions                                                                       26
+   12.1 Which correspondences are already theorems? . . . . . . . . . . . . . . . . . . . . . .         26
+   12.2 How unique is the functor Λ? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      26
+   12.3 Functional and historical explanations . . . . . . . . . . . . . . . . . . . . . . . . . .      26
+   12.4 Substrate neutrality . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    26
+   12.5 Open mathematical questions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       26
+
+13 Conclusion                                                                                           27
+
+
+1     Introduction
+1.1   The new main message
+The original version of this paper argued that the five main conclusions of the TUG-based paper
+on linguistic universals [1] line up closely with the five main architectural features of causal-coding
+continual learning [4, 5]. This version keeps that thesis but changes the mathematical frame. The
+
+
+                                                    3
+correspondence is no longer treated as a list of analogies. It is formulated as a structured map
+between categories:
+
+         cognitive causal systems    −→     semantic frames     −→     linguistic TUG cores.
+
+The result is a more compact and more powerful statement:
+
+                   linguistic universals are direct images of cognitive invariants
+                 along a weakest, quantale-enriched externalization correspondence
+
+and conversely
+                       cognitive universals are weakest pullback explanations
+                                    of stable linguistic subobjects.
+
+These are deliberately strong sentences, but they should not remain Delphic. Let us unpack them
+before giving the math.
+    A cognitive invariant is a pattern in the cognitive substrate that remains stable across con-
+texts. Examples, at the level of abstraction relevant here, include person-role frames, number
+frames, argument-role frames, causal-event frames, and the modular decomposition that prevents
+one context of learning from destroying another. A linguistic universal is an observable regularity
+in the TUG core of human languages: for example, a person hierarchy, a number hierarchy, a case
+hierarchy, a word-order coherence tendency, or a context-local grammatical law.
+    A direct image is the mathematical version of pushing a pattern forward through a structure-
+preserving map. If a cognitive pattern is stable inside the mind, and if the language-production
+system preserves the relevant structure, then the image of that cognitive pattern becomes a linguistic
+regularity. A pullback is the mathematical version of taking a linguistic pattern and asking what
+structure must have existed upstream in order for this pattern to be observed downstream. A
+weakest pullback explanation is the least overcommitted such upstream explanation: the one that
+explains the linguistic pattern while positing the fewest unnecessary distinctions, couplings, hidden
+variables, or double-counted correlations.
+    The word quantale supplies the quantitative Occam principle. A quantale is an algebraic struc-
+ture that lets us combine and compare values such as weakness, cost, confidence, confusion, and
+double-counting. It lets us say, not just informally but algebraically, that one explanation is weaker
+than another because it preserves more indistinction while using less cost and fewer redundant
+dependencies. This is the version of weakness developed in [8]; it extends the TyLAA/TUG idea of
+choosing the weakest red operational system consistent with a blue type interface [7, 2] and com-
+poses it with causal-coding weakness and with the independence-versus-dependency Pareto frontier
+of [6].
+
+1.2   Why category theory is the right language here
+The core problem is not merely to compare two sets of features. Linguistic universals live in a space
+of derivations, interfaces, quotients, symmetries, context restrictions, and diachronic transitions.
+Cognitive universals live in a space of causal modules, update endomorphisms, semantic frames,
+context supports, and stability gradients. The map between them is not a function from one list
+to another; it must preserve composition, modularity, locality, and weakness. Category theory is
+designed for exactly this kind of situation.
+    Conceptually:
+
+
+                                                   4
+  • A category is a world of objects and structure-preserving arrows between them.
+
+  • A functor is a map between such worlds that preserves arrows and their composition.
+
+  • A monoidal category is a category in which objects can be composed side by side; here,
+    tensor product represents modular factorization.
+
+  • A lax monoidal functor preserves this side-by-side composition up to controlled slack.
+    This matters because cognition-to-language externalization preserves modularity only approx-
+    imately.
+
+  • An enriched category replaces yes/no arrows by arrows valued in a structure such as a
+    quantale. This lets morphisms carry weakness, cost, confidence, and error.
+
+  • A pullback is the categorical preimage of a pattern. It tells us what upstream structure is
+    required for a downstream pattern.
+
+  • A direct image pushes an upstream pattern forward into the downstream world.
+
+  • An adjunction formalizes a pair of translations that are two sides of one process; here, pro-
+    duction and comprehension are modeled as adjoint operations between semantic frames and
+    linguistic forms.
+
+These notions are not decorative. They let us state the central thesis as a precise transport theorem
+rather than as a suggestive comparison.
+
+1.3   The three-layer correspondence
+The basic diagram of the paper is:
+
+                                       K                  E
+                             CogQ            FrameQ             LangQ .
+
+Here CogQ is the category of causal-coding cognitive systems; FrameQ is the category of semantic
+frames; and LangQ is the category of TUG linguistic cores. The functor K extracts from a cognitive
+system the frames it supports, while E externalizes those frames into linguistic structure. Their
+composite
+                                   Λ := E ◦ K : CogQ → LangQ
+is the cognition-to-language correspondence.
+    The semantic-frame layer is important. It is too rigid to map directly from neural or cognitive
+modules to surface linguistic features. Between them lie semantic frames: event frames, force-
+dynamic frames, argument-role frames, person/number frames, possession frames, attention frames,
+and other frame-like cognitive schemas. The general theory of general intelligence in [9] treats mind
+as a network of patterns and emphasizes cognitive synergy among different kinds of cognitive process.
+The frame category used here is a formal bridge between that patternist/cognitive-synergy picture
+and the TUG machinery of grammar space.
+
+
+
+
+                                                 5
+1.4   The empirical motivation
+The empirical motivation remains the same as in the original draft. The formal TUG paper [1]
+joins a TyLAA-based account of grammar cores with large-scale statistical evidence about proposed
+implicational universals. The empirical pattern is striking: hierarchical universals survive correc-
+tion best; narrow word-order universals survive moderately; broad cross-module universals survive
+poorly unless mediated; universalhood is graded rather than binary; and many genuine universals
+are context-indexed local laws rather than sweeping global laws.
+    The causal-coding papers derive, from continual-learning considerations, the same kind of ar-
+chitecture: protected stable substrate, modular factorization, sparse coupling, graded kernel-shell
+stability, and context-conditioned routing [4, 5]. The claim of this paper is that the match is not
+accidental. If language is carried by a cognitive architecture that has to learn many contexts with-
+out catastrophic forgetting, then its typological footprint should look exactly like the corrected
+linguistic-universals record.
+
+1.5   What is new in this version
+The paper now contributes the following category-theoretic refinements.
+
+ 1. It defines Q-enriched categories CogQ , FrameQ , and LangQ , together with a lax monoidal
+    correspondence Λ = E ◦ K.
+
+ 2. It treats linguistic universals as subobjects in LangQ , cognitive invariants as subobjects in
+    CogQ , and the cognition-language relation as direct image and pullback between subobject
+    lattices.
+
+ 3. It defines a category Exp(U ) of explanations of a linguistic universal U , and selects the weakest
+    explanation using quantale weakness.
+
+ 4. It proves a monoidal transport theorem showing that causal modularity maps to TUG modu-
+    larity and that commutator defects map to swap defects.
+
+ 5. It formulates mediators as residuals, i.e. weakest contexts making a cross-module implication
+    true.
+
+ 6. It reformulates the five earlier correspondences as closure transport, factorization, sparse-
+    energy pushforward, stability-rate transport, and context gluing.
+
+
+2     Background: TUG, causal coding, and quantale weakness
+2.1   TUG as the weakest typological grammar core
+The TUG formalism begins with an operational grammar G` for a language `. Its derivations
+form a space Deriv(G` ). One then specifies an observation interface, an independence relation,
+and a symmetry group. For typology the observation interface must record at least logical form,
+phonological/externalization information, and morphosyntactic information:
+
+                                    Otyp = (ΣLF , ΣPF , ΣMorph ).
+
+The typological TUG core is the quotient
+
+                           C` := TUGOtyp (G` ) := Deriv(G` )/≡⊥,Γ,Otyp ,
+
+                                                  6
+where ≡⊥,Γ,Otyp is the maximal sound congruence generated by swapping adjacent independent
+actions, applying symmetries, and identifying derivations that the interface cannot distinguish.
+    For non-specialists, the quotient says: if two derivations are indistinguishable by the typological
+interface, then the grammar core should not keep them apart. The core is the weakest operational
+system that still preserves what typology can observe. This is the natural-language analogue of the
+TyLAA principle that, given a blue type/proof interface, one chooses the weakest red operational
+explanation consistent with it [7, 2].
+
+2.2   The five TUG universals conclusions
+The TUG-based linguistic-universals paper [1] extracts five mathematical conclusions from the
+empirical pattern of which proposed universals survive correction.
+
+C1. Hierarchical universals are closure systems. A hierarchy of implications generates a clo-
+    sure operator clR on a feature set. Admissible paradigms are fixed points of that operator,
+    equivalently order ideals after quotienting mutual implication.
+
+C2. Cross-module universals require mediation. If two grammatical modules are indepen-
+    dent in the TUG sense, the trace quotient factors; no nontrivial implication can cross from one
+    factor to another unless a mediator breaks the factorization.
+
+C3. Narrow word-order universals are low-frustration externalization laws. Word-order
+    regularities are modeled not by one global head-direction bit but by a sparse signed graph of
+    local externalization choices.
+
+C4. Universalhood is graded by dynamical stability. A proposed universal should be as-
+    signed a stability coefficient derived from transition rates rather than a binary supported/unsupported
+    label.
+
+C5. Many genuine universals are context-indexed local laws. Broad unconditional claims
+    often fail because they pool over distinct grammatical contexts in which real local laws hold.
+
+    These conclusions already have a categorical flavor. Closure systems are algebraic subobject
+structures; factorization is a monoidal statement; low-frustration word order is an energy pushfor-
+ward problem; stability is a functorial comparison of dynamics; context-indexed laws are sheaf-like
+gluing problems. The rest of the paper makes this explicit.
+
+2.3   Causal coding and the General Causal-Continual-Learning theorem
+Causal coding begins from a continual-learning problem. A learner encounters a stream of contexts
+c ∈ C. Each context induces an update operator Uc on the learner’s internal state. If all contexts
+rewrite the same entangled parameters, catastrophic forgetting is unavoidable. If the internal state
+factors into causal modules and each context updates mostly the modules it actually needs, then
+the updates approximately commute, and sequential learning approximates joint learning.
+    In its categorical form, the Causal-Continual-Learning theorem considers a monoidal object
+
+                                         A∼
+                                          = A1 ⊗ · · · ⊗ An
+
+and update endomorphisms
+                                             Uc : A → A
+
+
+                                                  7
+with supports Sc ⊆ {1, . . . , n}. If Uc acts as the identity outside Sc , then updates with disjoint
+supports commute up to the canonical monoidal symmetry:
+
+                               Sc ∩ Sd = ∅     =⇒       Uc ◦ Ud ∼
+                                                                = Ud ◦ Uc .
+
+The approximate version measures deviations by a metric or a quantale-valued defect; the total
+path-dependence is bounded by a sum over genuinely confusing context pairs [4]. This is the
+cognitive-learning counterpart of the TUG trace-factorization theorem.
+
+2.4   HBCML and kernel-shell stability
+HBCML and ColBaC make the CCL theorem constructive [5]. They propose a two-level architec-
+ture:
+  • a sparse top-level controller selecting a subset of modules or columns for each context;
+
+  • internal probabilistic structure within each column, distinguishing protected hard-kernel ma-
+    terial, reusable inner-shell structure, semi-general middle-shell structure, and task-local outer-
+    shell residue.
+The hard kernel is non-prunable; inner shells are difficult to perturb; middle shells are adaptable;
+outer shells are disposable. This is a natural architectural correlate of the graded stability coefficient
+proposed for universals in [1].
+
+2.5   Quantale weakness
+The weakness framework [8] generalizes Occam’s razor from syntactic shortness to semantic under-
+commitment. In its simplest form, a hypothesis is weak if it identifies many pairs that do not needWto
+be distinguished. In the quantale formulation, one chooses a commutative quantale (Q, ≤, ⊗, e, ),
+a set X, and a valuation µ : X → Q. For a relation H ⊆ X × X interpreted as indistinction, define
+                                              _
+                                   w(H) :=         µ(x) ⊗ µ(y).
+                                               (x,y)∈H
+
+Larger w(H) means that the relation treats more important pairs as indistinct and therefore makes
+fewer unnecessary distinctions. This formula recovers Bennett-style set weakness, probabilistic
+weakness, logical-entropy/graphtropy-style weakness, and other variants by changing the quantale
+and valuation.
+   For the present paper we need a product quantale that tracks several desiderata at once.
+Definition 2.1 (Explanatory weakness quantale). Let
+
+                                Q = Qind × Qfit × Qop      op      op
+                                                   cost × Qconf × Qdc ,
+
+where Qind measures indistinction/generalization, Qfit measures empirical fit or confidence, Qcost
+measures computational or description cost, Qconf measures commutator/confusion cost, and Qdc
+measures double-counting. The superscript op reverses the order in the cost-like components, so
+that lower cost, lower confusion, and lower double-counting are better. The product is ordered
+componentwise and has componentwise monoidal product and joins.
+   The interpretation is simple: an explanation is better, hence weaker in the generalized Occam
+sense, if it preserves more admissible indistinction, fits the data at least as well, uses less cost,
+causes less context confusion, and double-counts fewer dependencies.
+
+                                                    8
+2.6      The independence/dependency Pareto frontier
+The tradeoff paper [6] argues that practical intelligence lives on a Pareto frontier between two
+routes:
+
+Route A: transform the representation so that channels become more independent;
+
+Route B: explicitly model dependencies among channels.
+
+Causal explanations are favored in this framework because they often identify a small number of
+genuine mediators instead of simulating the same dependence through many overlapping corre-
+lations. In the quantale above, the latter incurs a larger DC component and often a larger Conf
+component. Thus the weakness principle does not merely say “prefer simpler explanations” in prose;
+it supplies an algebraic order in which causal explanations can dominate redundant correlation-only
+explanations.
+
+
+3     The three enriched categories
+We now define the categorical setting. The definitions are intentionally somewhat abstract. They
+are meant to isolate the structure needed for the theorems rather than to encode every implemen-
+tation detail of every possible cognitive or linguistic system.
+
+3.1      A note on enriched and weighted categories
+For technical convenience, we use a lightweight version of enrichment. A Q-weighted category is
+an ordinary category whose arrows carry grades in Q, with composition respecting those grades.
+When Q is viewed as a one-object monoidal category, this is a familiar form of enrichment; when
+the arrows are ordinary maps plus explicit defect bounds, it is often more readable to call the result
+a weighted category.
+
+Definition 3.1 (Q-weighted category). A Q-weighted category C consists of an ordinary category,
+together with a grade function
+                                    ωX,Y : C(X, Y ) → Q
+such that
+                                 e ≤ ω(idX ),       ω(g) ⊗ ω(f ) ≤ ω(g ◦ f )
+whenever f : X → Y and g : Y → Z. We read ω(f ) as the weakness/quality grade of the morphism
+f . The product quantale order is chosen so that larger grades are better.
+
+    For readers unfamiliar with this language: the grade says how good a structure-preserving map
+is. In a strict category an arrow either exists or not. Here an arrow can exist with a quantitative
+quality profile: how much structure it preserves, how much error it introduces, how much cost it
+incurs, and so on.
+
+3.2      The cognitive category CogQ
+Definition 3.2 (Causal-coding cognitive object). An object A ∈ CogQ is a tuple
+
+         A = (ΘA ∼
+                 = ΘA,1 ⊗ · · · ⊗ ΘA,nA , CA , {Uc : A → A}c∈CA , {Sc ⊆ {1, . . . , nA }}c∈CA , µA ) ,
+
+where:
+
+                                                      9
+  • ΘA is the internal state or parameter object;
+  • ΘA,i are causal modules;
+  • CA is a set or category of contexts;
+  • Uc is the update endomorphism induced by context c;
+  • Sc is the support of context c, i.e. the set of modules it is allowed to touch nontrivially;
+  • µA is a valuation assigning weakness/cost/importance grades to states, modules, frames, or
+    update traces.
+   A morphism in CogQ is a causal simulation: it maps one causal learner into another while
+preserving context-conditioned updates up to controlled defect.
+Definition 3.3 (Causal simulation morphism). A morphism
+                                                f :A→B
+in CogQ consists of a map of state objects fΘ : ΘA → ΘB and a map of contexts fC : CA → CB ,
+such that for each c ∈ CA the square
+                                                   Uc
+                                            ΘA              ΘA
+                                           fΘ                fΘ
+
+                                            ΘB U            ΘB
+                                                   fC (c)
+
+
+commutes up to a quantale-valued defect
+                                                                     
+                                 δc (f ) := dB fΘ ◦ Uc , UfC (c) ◦ fΘ .
+The grade ω(f ) ∈ Q is obtained by aggregating the indistinction preserved by f , empirical fit, cost,
+confusion defects δc (f ), and double-counting costs.
+   Conceptually, a morphism A → B says: the second cognitive system can simulate the first
+while preserving its causal update structure. The square says that it should not matter whether
+one first updates in context c and then maps forward, or first maps forward and then updates in
+the corresponding context. The defect measures the failure of this equality.
+
+3.3   The semantic-frame category FrameQ
+Definition 3.4 (Semantic-frame category). The category FrameQ has as objects semantic frames,
+including event frames, argument-role frames, force-dynamic frames, person and number frames,
+possession frames, spatial frames, attention frames, and other cognitive schemas relevant to linguis-
+tic expression. A morphism
+                                             r : F → F0
+is a frame refinement, abstraction, embedding, or transformation, graded by how much semantic
+structure it preserves, how much it abstracts away, and how costly it is to represent.
+    A semantic frame is the bridge between cognition and language. A person hierarchy is not
+merely a syntactic pattern; it is an externalized trace of a frame distinguishing speech-act partici-
+pants and third parties. A case hierarchy is not merely a list of morphological markings; it is an
+externalized trace of an argument-role frame. The frame category is where these cognitive patterns
+are represented before they become linguistic observations.
+
+                                                   10
+3.4     The linguistic category LangQ
+Definition 3.5 (TUG linguistic object). An object L ∈ LangQ is a typological TUG core
+
+                                 L = (ML , LabL , ⊥L , ΓL , Otyp,L , µL ) ,
+
+where
+                                        ML = Lab∗L / ≡⊥,Γ,Otyp
+is the trace quotient of visible grammatical actions by the maximal sound typological congruence.
+The interface
+                                    Otyp,L = (ΣLF , ΣPF , ΣMorph )
+records the information needed for typological features. The valuation µL grades derivations, fea-
+tures, universals, or trace pairs.
+
+Definition 3.6 (Linguistic morphism). A morphism
+
+                                                h : L → L0
+
+in LangQ is an interface-preserving trace functor. It maps labels, traces, symmetries, independence
+relations, and typological predicates from L to L0 , preserving observations up to defect:
+
+                                                    h
+                                           ML              ML0
+                                         OL                   O L0
+
+                                          ObsL            ObsL0 .
+                                                 Obs(h)
+
+
+The grade ω(h) ∈ Q records how much typological information, independence structure, symmetry
+structure, and weakness are preserved.
+
+3.5     Pattern categories and subobjects
+Universals are not usually whole languages or whole cognitive systems. They are patterns inside
+them. Categorically, patterns are represented by subobjects.
+
+Definition 3.7 (Pattern as subobject). For an object X in one of the categories above, a pattern
+in X is a subobject
+                                           P ,→ X.
+The poset of subobjects of X is denoted Sub(X). A linguistic universal in a language core L is a
+subobject of Obs(L), or equivalently a predicate on L’s typological core. A cognitive invariant in
+A is a subobject I ,→ A stable under the relevant update endomorphisms.
+
+   For less mathematical readers: a subobject is the categorical version of a subset, property, or
+predicate. The universal “if a language has a dual, it has a plural” is not a language; it is a constraint
+on possible feature states. That constraint is represented as a subobject of the feature-state space.
+
+
+
+
+                                                    11
+4     The cognition–language correspondence
+4.1   The representable case: a functor
+In the most direct case, the cognition-language correspondence is a functor
+
+                                        Λ : CogQ → LangQ
+
+factoring through frames:
+
+                                       K                  E
+                             CogQ            FrameQ             LangQ .
+
+                                                Λ
+
+Here K extracts from a cognitive system the semantic frames supported by its causal modules,
+and E externalizes frames into TUG trace structure. The composite Λ = E ◦ K maps a cognitive
+substrate to its linguistic externalization core.
+
+Definition 4.1 (Cognition–language functor). A cognition–language functor is a Q-weighted lax
+symmetric monoidal functor
+                                     Λ : CogQ → LangQ
+factoring as E ◦ K, together with structural morphisms
+
+                   λA,B : Λ(A) ⊗ Λ(B)oΛ(A ⊗ B),          λ0 : ILangQ → Λ(ICogQ ),
+
+whose grades record the degree to which linguistic externalization preserves cognitive factorization.
+
+    The adjective lax matters. Cognitive modules do not always externalize into perfectly inde-
+pendent linguistic modules. Sometimes externalization introduces couplings; sometimes it forgets
+distinctions; sometimes it pushes several cognitive factors through the same phonological or mor-
+phological channel. Lax monoidality expresses “preserves modular composition, but possibly with
+slack.”
+
+4.2   The non-representable case: a profunctor
+A single cognitive system may support multiple linguistic externalizations, and a single linguistic
+pattern may be supported by multiple cognitive substrates. In that case a functor may be too
+deterministic. The more general object is a profunctor.
+
+Definition 4.2 (Cognition–language profunctor). A general cognition–language correspondence is
+a Q-enriched profunctor
+                                  P : Cogop
+                                         Q × LangQ → Q.
+
+The value P(A, L) ∈ Q grades how well cognitive system A explains or realizes linguistic core L.
+The functorial case is recovered when
+
+                                     P(A, L) = LangQ (ΛA, L).
+
+    Conceptually, the profunctor says: instead of assigning one language core to one cognitive
+system, we assign a graded space of possible correspondences. This is often more realistic. Human
+cognition, typological data, and semantic frames are underdetermined in both directions.
+
+
+                                                 12
+4.3   Production and comprehension as an adjunction
+The factorization Λ = E ◦ K separates frame extraction from linguistic externalization. The exter-
+nalization functor E : FrameQ → LangQ should have an interpretation or comprehension partner
+
+                                        S : LangQ → FrameQ .
+
+The natural formal relation is an adjunction:
+
+                                                E a S.
+
+Definition 4.3 (Externalization–interpretation adjunction). An externalization–interpretation ad-
+junction consists of functors
+
+                          E : FrameQ → LangQ ,        S : LangQ → FrameQ
+
+and a natural isomorphism of hom-objects
+
+                                  LangQ (EF, L) ∼
+                                                = FrameQ (F, SL).
+
+The unit and counit are
+                                 ηF : F → SEF,        L : ESL → L.
+
+   The adjunction means: producing a linguistic object from a semantic frame is equivalent, in
+the appropriate categorical sense, to interpreting that linguistic object as a semantic frame. The
+unit and counit express the two round-trips:
+                                   ηF                            L
+                             F            SEF            ESL             L.
+
+For readers with a linguistics background: this is a formal version of the production/comprehension
+duality. It does not say that production and comprehension are identical processes. It says their
+correctness conditions are paired by a universal relation.
+
+4.4   Direct images and pullbacks of universals
+Now we can state the core thesis precisely. Assume that the subobject fibrations over CogQ and
+LangQ admit pullback along Λ, and, on the relevant sublattices, direct image ΣΛ left adjoint to
+pullback:
+                                            ΣΛ a Λ ∗ .
+Thus for subobjects I ,→ A and U ,→ ΛA,
+
+                                  ΣΛ (I) ≤ U     ⇐⇒       I ≤ Λ∗ (U ).
+
+Definition 4.4 (Direct image of a cognitive invariant). Let I ,→ A be a cognitive invariant. Its
+linguistic direct image is
+                                        ΣΛ (I) ,→ ΛA.
+When ΣΛ (I) is stable under the relevant linguistic dynamics, it is a linguistic universal induced by
+the cognitive invariant I.
+
+
+
+
+                                                 13
+Definition 4.5 (Pullback explanation of a linguistic universal). Let U ,→ L be a linguistic universal
+and let η : ΛA → L be a realization map. The cognitive pullback explanation of U along η ◦ Λ is
+the subobject PA ,→ A given by the pullback square
+
+                                            PA            U
+
+
+                                             A   η◦Λ
+                                                          L.
+
+A weakest pullback explanation is a maximal-weakness subobject among the pullback explanations
+compatible with the evidence.
+
+   This diagram is the precise form of the second boxed sentence from the abstract. A linguistic
+universal is a subobject U of the linguistic world. Pulling it back gives the cognitive structure
+required to produce it. Weakness then chooses the least overcommitted such structure.
+
+4.5   Invariants transport to universals
+Definition 4.6 (Invariant subobject). Let A ∈ CogQ . A subobject I ,→ A is invariant under a
+family of updates {Uc }c∈C if for every c there exists an endomorphism Uc |I : I → I making the
+square commute:
+                                                 U c |I
+                                             I            I
+
+
+                                             A    Uc
+                                                          A.
+
+In the approximate/enriched case the square commutes up to a defect bounded in Q.
+
+Theorem 4.7 (Direct image of invariants). Let Λ : CogQ → LangQ be a Q-weighted functor that
+maps cognitive updates Uc to linguistic actions Λ(Uc ) non-expansively with respect to invariance
+defects. If I ,→ A is invariant under {Uc }, then ΣΛ (I) ,→ ΛA, when it exists, is invariant under
+{Λ(Uc )}. In the approximate case, the linguistic invariance defect is bounded by the image under
+Λ’s defect map of the cognitive invariance defect.
+
+Proof. In the strict case, invariance of I gives a commuting square for each Uc . Functoriality maps
+that square to a commuting square in LangQ . Direct image along Λ preserves the corresponding
+subobject inclusion by the adjunction ΣΛ a Λ∗ . Thus ΣΛ (I) is stable under Λ(Uc ). In the enriched
+case, each square has a defect grade; non-expansiveness of Λ maps the defect to a no-larger linguistic
+defect, giving the stated bound.
+
+   This theorem is the precise form of the claim that linguistic universals are direct images of
+cognitive invariants.
+
+
+5     Weakest explanations and quantale selection
+5.1   The explanation category
+A linguistic universal generally has many possible explanations. Some are causal and sparse; others
+are correlation-based and redundant. We represent these possibilities categorically.
+
+
+
+                                                  14
+Definition 5.1 (Explanation category). Let U ,→ L be a linguistic universal. The category Exp(U )
+has as objects tuples
+                                     E = (A, F, LE , η, ρ),
+where
+
+  • A ∈ CogQ is a cognitive causal substrate;
+
+  • F = K(A) ∈ FrameQ is its extracted semantic-frame structure;
+
+  • LE = E(F ) ∈ LangQ is its linguistic externalization;
+
+  • η : LE → L is an interface-respecting realization map;
+
+  • ρ : U ,→ L is witnessed by the image of LE under η.
+
+A morphism E → E 0 is a structure-preserving transformation of explanations commuting with the
+realization maps up to Q-defect.
+
+   For each explanation E choose a universe XE of relevant states, frames, traces, or feature
+configurations. Let
+                                     HE ⊆ XE × XE
+be the indistinction relation induced by E: (x, y) ∈ HE means that explanation E does not distin-
+guish x and y. Its base weakness is
+                                             _
+                                 w(HE ) =          µE (x) ⊗ µE (y).
+                                           (x,y)∈HE
+
+Definition 5.2 (Explanation weakness). The full weakness grade of an explanation E is the
+product-quantale value
+
+    W (E) = w(HE ), Fit(E), Cost(E), Conf(E), DC(E) ∈ Qind × Qfit × Qop      op      op
+                                                   
+                                                                     cost × Qconf × Qdc .
+
+A weakest explanation of U is any
+
+                                    E ∗ ∈ arg maxE∈Exp(U ) W (E).
+
+   Because the cost, confusion, and double-counting components are ordered oppositely, maxi-
+mizing W means maximizing indistinction and fit while minimizing cost, confusion, and double-
+counting.
+
+5.2     Relation to TyLAA weakness
+TyLAA selects the weakest red operational explanation consistent with a blue type/proof interface.
+Here we select the weakest cognitive causal explanation consistent with a linguistic universal. These
+are not two unrelated Occam principles. They are two layers of the same quantale-enriched selection
+process.
+
+Definition 5.3 (Weakness-preserving correspondence). Let WC be a cognitive weakness mea-
+sure and WL a linguistic/TUG weakness measure. A cognition-language functor Λ is weakness-
+preserving if there exists a quantale homomorphism
+
+                                           ϕ : QC → QL
+
+                                                 15
+such that for every cognitive indistinction relation H,
+
+                                        WL (ΛH) ≥ ϕ(WC (H)),
+
+with equality in the strict case.
+
+Theorem 5.4 (Composition of TyLAA and cognitive weakness). Assume Λ is weakness-preserving.
+Let HC∗ be a maximally weak sound cognitive congruence compatible with the semantic-frame inter-
+face. Then Λ(HC∗ ) is maximally weak among linguistic congruences in the image of Λ. If Λ is
+essentially surjective on sound linguistic congruences, then the TyLAA weakest-red congruence and
+the image of the weakest cognitive congruence coincide.
+
+Proof. Let K be any sound linguistic congruence in the image of Λ, say K = Λ(H). Since HC∗
+is maximally weak among compatible cognitive congruences, WC (H) ≤ WC (HC∗ ). Applying the
+quantale homomorphism and weakness preservation gives
+
+                                    WL (K) = WL (ΛH) ≤ WL (ΛHC∗ )
+
+within the image. If Λ is essentially surjective on sound linguistic congruences, every sound linguistic
+congruence is isomorphic to one in the image, so the same maximality holds globally.
+
+   This theorem is the formal version of the intuition that TyLAA weakness should compose with
+causal-coding weakness rather than sit beside it as a separate principle.
+
+5.3    Why causal explanations beat double-counting explanations
+The quantale order makes precise why causal explanations are preferred over redundant correlation
+stories.
+
+Proposition 5.5 (Causal explanations dominate redundant explanations). Let Ecausal and Ecorr
+be two explanations of the same linguistic universal U . Suppose they have equal or comparable fit
+and that
+                                    w(HEcausal ) ≥ w(HEcorr ),
+   Cost(Ecausal ) ≤ Cost(Ecorr ),     Conf(Ecausal ) ≤ Conf(Ecorr ),     DC(Ecausal ) < DC(Ecorr ).
+Then
+                                        W (Ecausal ) > W (Ecorr )
+in the product quantale order, provided at least one of the displayed inequalities is strict in a non-
+ignored component.
+
+Proof. This is immediate from the componentwise product order and the use of opposite order
+in the cost-like components. Equal or better fit, greater or equal indistinction, lower or equal
+cost/confusion, and strictly lower double-counting imply strict dominance.
+
+    The proposition is simple, but it is important. A causal explanation wins not because “causal”
+is a magic word, but because a genuine mediator lets the theory represent one dependency once. A
+correlation-only explanation often has to represent the same dependency through many overlapping
+pairwise links, increasing double-counting and confusion.
+
+
+
+
+                                                   16
+6     Main theorem: monoidal transport of causal modularity
+6.1   Commutators and swap defects
+Let A ∈ CogQ have context updates Uc , Ud : A → A. Define their cognitive commutator defect by
+
+                                CommC (c, d) := dC (Uc ◦ Ud , Ud ◦ Uc ).
+
+Let L = ΛA. The images Λ(Uc ), Λ(Ud ) are linguistic actions or trace transformations. Their
+linguistic swap defect is
+
+                         CommL (c, d) := dL (Λ(Uc ) ◦ Λ(Ud ), Λ(Ud ) ◦ Λ(Uc )).
+
+The functor Λ is non-expansive with respect to commutator defects if there is a quantale homomor-
+phism ϕ : QC → QL such that
+
+                                  CommL (c, d) ≤ ϕ(CommC (c, d)).
+
+The inequality is written in the defect order; equivalently, in the weakness order it says that the
+linguistic commutativity grade is at least the image of the cognitive commutativity grade.
+
+6.2   The transport theorem
+Theorem 6.1 (Enriched monoidal transport of causal modularity into TUG modularity). Let
+
+                                          Λ : CogQ → LangQ
+
+be a Q-weighted lax symmetric monoidal functor, non-expansive with respect to commutator defects.
+Let
+                                      A∼ = A1 ⊗ · · · ⊗ An
+be a factored cognitive object with context-local update endomorphisms Uc supported on Sc ⊆
+{1, . . . , n}. Then:
+
+ 1. If Sc ∩ Sd = ∅, then Uc and Ud commute up to the canonical monoidal symmetry, and their
+    linguistic images are swap-equivalent in the TUG trace quotient.
+
+ 2. If CommC (c, d) ≤ ε, then
+                                           CommL (c, d) ≤ ϕ(ε).
+
+ 3. If A = AI ⊗ AJ and Λ is strong monoidal on this split, then
+
+                                         Λ(A) ∼
+                                              = Λ(AI ) ⊗ Λ(AJ ).
+
+ 4. Consequently, any nontrivial universal implication between predicates living purely on Λ(AI )
+    and Λ(AJ ) requires either failure of strong monoidality on the split or a mediator object con-
+    necting the two factors.
+
+Proof. For (1), context-locality says that Uc acts as the identity outside Sc , and Ud acts as the iden-
+tity outside Sd . If the supports are disjoint, the two endomorphisms act on different tensor factors.
+In a symmetric monoidal category, endomorphisms on disjoint tensor factors commute up to the
+canonical braiding and coherence isomorphisms. Applying Λ, functoriality sends this commutation
+
+                                                  17
+to a commutation of linguistic trace actions. In the TUG quotient, adjacent independent actions
+are identified by the independence congruence, so the linguistic images are swap-equivalent.
+    For (2), non-expansiveness is exactly the displayed inequality.
+    For (3), strong monoidality on the split gives an isomorphism Λ(AI ⊗ AJ ) ∼= Λ(AI ) ⊗ Λ(AJ ).
+    For (4), predicates on separate factors vary independently in a product. If an implication
+α(x) ⇒ β(y) holds for all (x, y) ∈ X × Y , then either no x satisfies α, making the implication
+vacuous, or every y satisfies β, making it trivial. A nontrivial cross-factor implication therefore
+requires some structure beyond the product: either monoidality fails to be strong, or a mediator
+introduces a coupling.
+
+    The theorem says that the TUG factorization theorem and the causal-continual-learning com-
+mutator theorem are the same theorem transported through Λ. The TUG theorem is the linguistic
+side of modularity; the CCL theorem is the cognitive-learning side.
+
+6.3   The core commutative diagram
+The theorem can be summarized by the following diagram, where the upper square is cognitive and
+the lower square is linguistic:
+                                                 Uc Ud
+                                          A                  A
+                                         Λ                    Λ
+
+                                         ΛA                  ≤
+                                                             ΛAε
+                                              Λ(Uc )Λ(Ud )
+                                         Λ                    Λ
+
+                                                 Ud Uc
+                                          A                  A
+
+
+
+                                         ΛA                  ΛA
+                                              Λ(Ud )Λ(Uc )
+
+The diagram is schematic rather than a literal square in one category, but it captures the logical
+relation: if the two cognitive paths are close, then their two linguistic images are close; if the
+cognitive paths are equal because the supports are disjoint, then the linguistic paths are identified
+by the TUG swap congruence.
+
+
+7     Mediators as residuals
+7.1   Why broad universals need mediators
+Broad universals try to connect features from different modules: for example, a syntactic feature
+to a morphological feature, or a phonological externalization choice to a semantic-role feature. If
+the modules factor, Theorem 6.1 says no nontrivial implication can cross the boundary. Therefore
+a genuine broad universal must involve a mediator.
+    A mediator is not just an informal third variable. Categorically, it is the weakest context that
+makes a cross-module implication true.
+
+
+
+
+                                                  18
+7.2   Residuals in a behavior quantale
+Let M be a monoid of traces or behaviors, and let P(M ) be its powerset quantale. Sequential
+composition of behaviors is
+                               A · B := {ab : a ∈ A, b ∈ B}.
+The right residual is
+                                   A ⇒ C := {m ∈ M : A · {m} ⊆ C}.
+It satisfies the residuation law
+                                   A·B ⊆C      ⇐⇒     B ⊆ (A ⇒ C).
+Thus A ⇒ C is the largest, hence weakest, behavior B such that A · B ⊆ C.
+Theorem 7.1 (Mediator as weakest residual context). Let PA and PB be behavior predicates as-
+sociated with two factored modules. A mediator M makes the cross-module implication from PA to
+PB valid precisely when
+                                         PA · M ⊆ PB .
+The weakest such mediator is the residual
+                                           M ∗ = PA ⇒ PB .
+Proof. By the residuation law,
+                               PA · M ⊆ PB     ⇐⇒     M ⊆ PA ⇒ PB .
+Therefore PA ⇒ PB is the largest behavior set satisfying the condition. Since larger behavior sets
+are weaker, it is the weakest mediator.
+
+    Linguistically, this is the formal version of saying that case marking, argument-structure res-
+olution, agreement morphology, or information-structure marking can mediate between modules.
+The mediator is not an arbitrary extra assumption; it is the weakest context needed to make the
+cross-module implication nontrivial.
+
+7.3   A mediator diagram
+The mediator breaks the product by introducing a span or cospan:
+
+                             M                           A                        B
+                                                 or
+                 A                         B                         M
+The first diagram reads M as a shared source or resource; the second reads M as a shared target
+or interface. Case marking is often closer to the second: syntactic and semantic-role information
+both feed into a morphological/externalization mediator.
+
+
+8     The five correspondences as categorical transport results
+We now reformulate the five correspondences from the original paper in the new categorical language.
+The result is not that all five are already fully proven identities. The factorization correspondence
+is an identity theorem. The others are conditional transport results: given explicit assumptions,
+cognitive structure maps to the corresponding linguistic structure.
+
+                                                 19
+8.1    Correspondence 1: hierarchical universals as closure transport
+Conceptual version
+A hierarchy such as person, number, case, or accessibility says: if a system has a more marked
+feature, it must have the less marked features below it. Mathematically, this is a closure system.
+Cognitively, the hypothesis is that the relevant hierarchy is carried by stable semantic-frame sub-
+strate: a hard-kernel or inner-shell frame whose structure is defended across contexts. Linguistically,
+the hierarchy is the direct image of that cognitive closure structure.
+
+Mathematical formulation
+Let PC be a finite poset of cognitive-frame features and let
+
+                                        clC : P(PC ) → P(PC )
+
+be a closure operator generated by cognitive implications. Let PL be the corresponding linguistic
+feature poset. Suppose the cognition-language correspondence induces a Galois connection
+
+                                 ΣΛ : mathcalP (PC )  P(PL ) : Λ∗ .
+
+Theorem 8.1 (Closure transport). Assume that, on the relevant feature sublattice,
+
+                                              ΣΛ Λ∗ = id
+
+and that Λ∗ ΣΛ sends clC -closed sets to clC -closed sets. Define
+
+                                      clL (S) := ΣΛ clC (Λ∗ S) .
+                                                               
+
+Then clL is a closure operator on P(PL ). Its fixed points are precisely the linguistic feature states
+whose cognitive pullbacks are clC -closed.
+Proof. Extensivity follows from the unit of the Galois connection and the extensivity of clC :
+
+                                     S = ΣΛ Λ∗ S ⊆ ΣΛ clC Λ∗ S.
+
+Monotonicity follows from monotonicity of Λ∗ , clC , and ΣΛ . For idempotence,
+
+                                clL (clL (S)) = ΣΛ clC Λ∗ ΣΛ clC Λ∗ S.
+
+By assumption, Λ∗ ΣΛ clC Λ∗ S is clC -closed and contains clC Λ∗ S, hence applying clC does not
+change it on the relevant sublattice. Applying ΣΛ gives clL (clL (S)) = clL (S).
+
+   This theorem turns hierarchical linguistic universals into the direct image of cognitive closure.
+The hard-kernel story is a proposed source of clC ; the TUG hierarchy is its externalized clL .
+
+8.2    Correspondence 2: cross-module universals and factorization
+This is Theorem 6.1 and Theorem 7.1. If the cognitive substrate factors and Λ is strong monoidal
+on the split, the linguistic core factors. A broad cross-module universal is then impossible except
+in vacuous/trivial cases. Therefore any surviving broad universal points to a mediator, and the
+weakest mediator is a residual.
+    The conceptual message is strong: broad universals are rare not because linguists failed to
+formulate them cleverly, but because a modular continual learner should not produce many global
+cross-module laws. Where broad universals survive, they are evidence for genuine bridge structure.
+
+                                                  20
+8.3   Correspondence 3: narrow word order as sparse-energy pushforward
+Conceptual version
+Word order is not one global parameter. It is a network of local externalization choices with
+coherence pressures among them. Cognitively, these pressures arise from sparse routing among
+semantic and production modules. Linguistically, they appear as a sparse signed interaction graph
+among word-order features.
+
+Mathematical formulation
+Let SC be a finite or compact cognitive controller state space, and let
+
+                                            π : SC → XL
+
+map controller states to linguistic word-order configurations. Suppose the cognitive controller has
+a sparse signed energy
+                                            1X
+                                   EC (s) =      aij (1 − tij si sj ),
+                                            2
+                                               i<j
+
+where aij ≥ 0 and tij ∈ {±1}. Define the linguistic pushforward energy by Gibbs marginalization:
+                                                 X
+                                   e−βEL (x) :=       e−βEC (s) .
+                                                  π(s)=x
+
+Proposition 8.2 (Sparse-energy pushforward). Assume π is local in the sense that each linguistic
+coordinate depends on a bounded number of cognitive coordinates, and assume the higher-order
+cumulants induced by marginalizing over fibers of π are bounded by ε. Then EL is approximated by
+a sparse signed pairwise energy
+                                1X
+                     EL (x) =      wij (1 − sij xi xj ) + R(x),   kRk ≤ O(ε).
+                                2
+                                  i<j
+
+Proof sketch. Gibbs pushforward expresses EL as the negative logarithm of a marginal partition
+sum. The logarithm admits a cumulant expansion over the linguistic coordinates. Locality of π and
+sparsity of EC ensure that low-order terms dominate and that induced interactions have bounded
+neighborhood size. The assumption on higher-order cumulants bounds the residual R. The pairwise
+coefficients wij and signs sij are the second-order cumulants of the pushed-forward energy.
+
+   Thus narrow word-order universals are the externalization-side pushforward of sparse controller
+coherence.
+
+8.4   Correspondence 4: graded stability as rate transport
+Conceptual version
+Universals are not simply true or false. Some are hard-kernel stable; some are middle-shell tenden-
+cies; some are outer-shell residue; some are spurious. The linguistic stability coefficient proposed
+in [1] should be the image of a cognitive stability coefficient under Λ.
+
+
+
+
+                                                  21
+Mathematical formulation
+Let a cognitive feature p have two-state transition rates
+                                           αC                β C
+                                        0 −−→ 1,           1 −−→ 0.
+
+Let U = Λ(p) be the corresponding linguistic feature or universal, with rates αL , βL . Define
+                                               αC                          αL
+                               σC (p) = log       ,        σL (U ) = log      .
+                                               βC                          βL
+Theorem 8.3 (Stability-rate transport). Assume Λ distorts transition rates by at most a multi-
+plicative factor e±ε :
+                                   αL                    βL
+                            e−ε ≤      ≤ eε ,     e−ε ≤     ≤ eε .
+                                   αC                    βC
+Then
+                                   |σL (U ) − σC (p)| ≤ 2ε.
+Proof. Write αL = αC erα and βL = βC erβ , with |rα |, |rβ | ≤ ε. Then
+                                                   αC erα        αC
+                          σL (U ) − σC (p) = log        r  − log    = rα − rβ ,
+                                                   βC e  β       βC
+so the absolute value is at most 2ε.
+
+    This theorem links linguistic stability to cognitive stability. A hard-kernel cognitive invariant,
+for which βC is extremely small, maps to a high-stability linguistic universal unless Λ dramatically
+distorts rates.
+
+8.5   Correspondence 5: context-indexed laws as gluing
+Conceptual version
+Many universals are local: they hold in subordinate clauses, or in definite object contexts, or in
+animate-object contexts, or inside a particular phrase type. The cognitive analogue is controller
+selection: different contexts activate different module supports. The mathematical structure is an
+indexed family of local closure systems glued over context overlaps.
+
+Mathematical formulation
+Let Ctx be a category of contexts. A context-indexed grammar/cognition system is a functor
+
+                                          F : Ctxop → Poset
+
+assigning to each context c a feature poset Pc , and to each context refinement r : d → c a restriction
+map r∗ : Pc → Pd . Suppose each context has a local closure operator
+
+                                        clc : P(Pc ) → P(Pc ).
+
+Theorem 8.4 (Exact gluing of local closure laws). Assume that for every overlap/refinement
+r : d → c, local closure commutes with restriction:
+
+                                        r∗ clc (S) = cld (r∗ S).
+
+Then the family {clc } glues to a global closure operator on compatible sections of F.
+
+                                                      22
+Proof. A compatible section is a family (Sc )c satisfying r∗ Sc = Sd for every refinement r : d → c.
+Define
+                                     cl((Sc )c ) := (clc (Sc ))c .
+The commutation assumption ensures compatibility of the resulting family. Extensivity, monotonic-
+ity, and idempotence hold componentwise because each clc is a closure operator.
+
+Proposition 8.5 (Approximate gluing defect). If the commutation equation fails by defects δr ,
+then the global closure defect is bounded by the join or sum of the overlap defects, depending on the
+chosen quantale:                                     _
+                                         δglue ≤           δr .
+                                               r∈Mor(Ctx)
+
+When the defects are induced by cognitive context-update commutators, this is bounded by the cor-
+responding confusion-pair costs from the approximate CCL theorem.
+
+   This theorem formalizes why broad aggregation can fail. A local law may be perfectly valid in
+every context, yet disappear when the context index is forgotten. Forgetting context is a functor
+that may fail to preserve closure.
+
+
+9     Semantic frames and GTGI-style cognitive mappings
+9.1     Why the frame layer is essential
+The functor Λ : CogQ → LangQ factors through FrameQ because cognitive modules do not usually
+map directly to typological features. A causal module may support a cluster of person, agency,
+attention, event, or action schemas. A linguistic feature externalizes only part of that schema,
+often through an interface that mixes semantics, phonology, and morphology.
+    The patternist perspective in [9] treats mind as a system of patterns, including patterns in
+perception, action, memory, inference, attention, and self-modeling. In this paper, semantic frames
+are the category-theoretic carriers of those patterns insofar as they are relevant to language. They
+are the objects that make mappings from cognition to language compositional.
+
+9.2     Frame morphisms
+A frame morphism
+                                            r : F → F0
+can represent:
+
+    • abstraction: a detailed event frame maps to a coarser event frame;
+
+    • refinement: a general argument-role frame maps to a more specific case frame;
+
+    • embedding: a person frame embeds into a speech-act frame;
+
+    • metaphor or transfer: a spatial frame maps to an abstract relational frame;
+
+    • externalization preparation: a semantic frame maps to a frame enriched with morphosyntactic
+      slots.
+
+The grade ω(r) records how much frame structure is preserved and how much cost or ambiguity is
+introduced.
+
+                                                 23
+9.3   Natural transformations among cognitive modalities
+The GTGI-style view emphasizes that language is not isolated. It interacts with perception, action,
+memory, inference, and attention. Categorically, these can be represented as functors into the frame
+category:
+                           Perception                             Action
+
+                                          P                     A
+
+                                                  FrameQ
+                                         M                      S
+
+
+                              Memory                                LangQ
+Natural transformations between these functors express cognitive synergies: ways in which perception-
+guided frames, action-guided frames, memory-guided frames, and language-guided frames system-
+atically correspond. The language-to-cognition direction is S : LangQ → FrameQ ; the cognition-to-
+language direction is E : FrameQ → LangQ . Their adjunction formalizes the production/comprehension
+pairing.
+
+9.4   Sapir–Whorf and its dual
+The Sapir–Whorf question asks how language shapes cognition. In this framework that is a question
+about the composite
+                                        S           K
+                                 LangQ −→ FrameQ ←  − CogQ .
+The dual question, central here, asks how cognition shapes language:
+                                              K          E
+                                      CogQ −
+                                           → FrameQ −
+                                                    → LangQ .
+The typological universals record is evidence about the second direction. If a linguistic universal is
+stable across languages after genealogical and areal correction, then its pullback along Λ is evidence
+for a stable cognitive frame or invariant. The weakness principle says we should infer the weakest
+such invariant.
+
+9.5   Three-tier classification of semantic frames
+The stability coefficient σ suggests a three-tier classification:
+Kernel frames. Frames whose linguistic images have very high stability. Candidate examples
+   include basic person distinctions, basic number distinctions, argument-role accessibility, and
+   elementary event/agent/patient structures.
+Consolidated shell frames. Frames whose linguistic images are robust but exceptionful. Candi-
+   date examples include many narrow word-order coherence tendencies and moderately stable
+   externalization preferences.
+Outer-shell residue. Frames or feature couplings whose apparent universality disappears under
+   correction or holds only in narrow contexts. These are culturally, historically, or locally learned
+   regularities rather than protected substrate.
+    This classification is not merely linguistic. It is a hypothesis about cognitive architecture,
+inferred through linguistic direct images and pullbacks.
+
+                                                   24
+10     Statistical and computational research programme
+10.1    Recover the linguistic subobjects
+The first empirical task is to represent each candidate universal as a subobject U ,→ L in the
+typological TUG core. This requires estimating:
+
+  • the feature lattice or poset in which the universal lives;
+
+  • whether the universal is closure-like, energy-like, mediated, stability-like, or context-indexed;
+
+  • its empirical stability coefficient σ(U ), corrected for genealogy and geography;
+
+  • its local context restrictions.
+
+10.2    Infer cognitive pullbacks
+For each stable linguistic subobject U , infer candidate cognitive pullbacks Λ∗ (U ). Since Λ is
+not directly observed, this is an inverse problem. The weakness criterion selects the cognitive
+explanation E ∈ Exp(U ) maximizing W (E).
+    Empirically, this means comparing models with different cognitive mediators, different frame
+structures, and different modular decompositions, and penalizing double-counted dependencies.
+A broad universal should not be accepted as cognitively real merely because multiple correlated
+features point in the same direction; it should be accepted when a weak mediator explains the
+dependency better than redundant correlations.
+
+10.3    Estimate the confusion graph
+The approximate CCL theorem bounds forgetting and path-dependence by a graph of confusing
+context pairs. The linguistic analogue is a graph of contexts or feature domains whose interactions
+produce violations of factorization. The research task is to estimate this graph from typological
+data:
+                                      Gconf = (Ctx, Econf , δ).
+Edges should correspond to mediators or context overlaps. Sparse confusion is predicted by causal
+coding; dense confusion would undermine the modularity hypothesis.
+
+10.4    Test closure transport
+For hierarchical universals, estimate the cognitive-frame closure relation RC and the linguistic
+closure relation RL . The categorical prediction is that
+
+                                          clL ≈ ΣΛ clC Λ∗ .
+
+This can be tested by checking whether linguistic closure defects correspond to plausible cognitive-
+frame defects and whether the closure direction matches non-linguistic cognitive accessibility data.
+
+10.5    Test sparse-energy pushforward
+For word-order universals, infer a signed interaction graph over linguistic choices and ask whether it
+can be represented as a sparse pushforward of a controller-side routing graph. The key predictions
+are:
+
+
+                                                 25
+  • the linguistic graph should be sparse;
+
+  • strong hubs should correspond to high-traffic externalization choices;
+
+  • diachronic transitions should favor lower energy;
+
+  • higher-order residuals should be small but not zero.
+
+10.6    Test stability-rate transport
+Estimate σL (U ) for linguistic universals and compare with candidate cognitive stability measures.
+In neural or cognitive models, analogues include:
+
+  • resistance to fine-tuning perturbation;
+
+  • low commutator defects across contexts;
+
+  • low demotion rates from kernel or inner-shell compartments;
+
+  • high reuse utility across tasks.
+
+The prediction is that linguistic high-stability universals correspond to high cognitive stability under
+these measures.
+
+10.7    Use multilingual neural models as an intermediate probe
+Large multilingual neural models provide an intermediate system between human typology and
+implemented cognitive architectures. They can be probed for:
+
+  • modular supports for typological features;
+
+  • context-conditioned activation routing;
+
+  • commutator defects under sequential fine-tuning;
+
+  • stability gradients across parameters or circuits;
+
+  • sparse mediators for broad cross-module regularities.
+
+The question is not whether current transformers are human brains. The question is whether sys-
+tems trained on multilingual data develop internal structures that mirror the categorical transport
+patterns predicted here.
+
+
+11     Implications for Universal Grammar and AGI
+11.1    Principles and parameters revisited
+The old principles-versus-parameters distinction becomes sharper in this framework.
+
+Principles are high-stability closure laws: direct images of cognitive hard-kernel invariants.
+
+Parameters are externalization choices: linguistic images of controller-side routing and sparse
+   coherence pressures.
+
+
+                                                  26
+Mediated broad universals are residual bridge structures: weakest contexts linking modules
+   that would otherwise factor.
+
+Failed universals are often outer-shell residue or context-indexed laws whose context index has
+    been forgotten.
+
+This preserves the useful insight of the generative tradition that some constraints are deep, while
+incorporating the empirical fact that most typological regularities are graded, context-sensitive,
+and historically filtered.
+
+11.2    A constraint on AGI architectures
+If the correspondences are correct, then a human-level language-capable AGI should not merely
+learn language statistics. It should instantiate, at some level, the categorical structure that makes
+linguistic universals stable:
+
+  • a causally factorized cognitive substrate;
+
+  • context-local updates with small commutators;
+
+  • semantic frames mediating cognition and language;
+
+  • sparse externalization routing;
+
+  • graded kernel-shell stability;
+
+  • residual mediators for genuine cross-module laws;
+
+  • context-indexed local closure and gluing.
+
+An architecture lacking these structures may still imitate language for many purposes, but it should
+struggle with lifelong language learning, robust transfer, and systematic generalization across con-
+texts unless it recreates the same structure indirectly.
+
+11.3    Why the typological record matters for cognitive architecture
+The typological record has been shaped by many languages, cultures, diachronic changes, and
+communicative contexts. Once corrected for genealogy and area, stable patterns in that record are
+not just facts about grammar; they are aggregated evidence about the cognitive machinery that
+can generate and maintain grammar under continual learning. This makes linguistic universals a
+potentially powerful indirect probe of cognitive architecture.
+
+
+12     Limitations and open questions
+12.1    Which correspondences are already theorems?
+The factorization correspondence is the strongest result: the TUG trace-factorization theorem
+and the categorical CCL commutator theorem are instances of one monoidal fact. The other
+correspondences are conditional theorems under explicit assumptions. The main technical work
+ahead is to determine whether those assumptions can be derived from a common, deeper model of
+cognition-language externalization.
+
+
+                                                 27
+12.2    How unique is the functor Λ?
+The functor Λ is not directly observable. In many cases the more general profunctor P is more
+realistic. Different cognitive substrates may support the same linguistic universal, and the same
+cognitive substrate may externalize differently across languages. Weakness helps choose among
+explanations, but it does not make the inverse problem trivial.
+
+12.3    Functional and historical explanations
+The framework does not deny functional pressures, processing constraints, diachronic drift, or
+historical contact. Instead, it asks how such pressures interact with the categorical structure of
+cognition-language externalization. A functional pressure may be the reason a particular energy
+term exists; a historical process may explain why a language occupies a particular local minimum.
+The categorical claim is about the shape of the space and the transport of invariants through that
+space.
+
+12.4    Substrate neutrality
+The categories defined here are substrate-neutral. They can describe biological cortical columns,
+artificial modular neural systems, symbolic or neural-symbolic systems, or other cognitive architec-
+tures. The human-brain interpretation is a hypothesis about one realization of the structure, not
+a requirement of the formalism.
+
+12.5    Open mathematical questions
+ 1. Can the frame category FrameQ be constructed explicitly from a typed metagraph or distinction-
+    metagraph representation, rather than postulated abstractly?
+
+ 2. Can the externalization functor E be learned from multilingual corpora and typological databases?
+
+ 3. Can the adjunction E a S be validated empirically by production/comprehension asymmetries?
+
+ 4. Can the closure transport theorem be strengthened without the reflectivity assumptions used
+    in Theorem 8.1?
+
+ 5. Can the sparse-energy pushforward proposition be derived from a concrete HBCML controller
+    rather than assumed as a bounded-cumulant approximation?
+
+ 6. Can the residual mediator theorem be turned into a practical statistical test for broad univer-
+    sals?
+
+ 7. Can quantale weakness be estimated robustly from noisy typological and neural data?
+
+
+13     Conclusion
+The category-theoretic formulation changes the flavor of the paper. The central relation between
+linguistic universals and causal-coding cognition is no longer merely a suggestive five-part analogy.
+It is a quantale-enriched correspondence between cognitive causal modules, semantic frames, and
+linguistic TUG cores.
+
+
+
+
+                                                 28
+   The main conclusion is:
+
+                   linguistic universals are direct images of cognitive invariants
+                 along a weakest, quantale-enriched externalization correspondence
+
+and conversely
+                      cognitive universals are weakest pullback explanations
+                                   of stable linguistic subobjects.
+
+The first statement says that stable cognitive structure becomes typological structure when trans-
+ported through semantic frames and externalized into language. The second says that a stable
+linguistic universal is evidence for upstream cognitive structure, but only for the weakest such
+structure needed to explain the data. The weakness clause matters: it is what prevents the theory
+from multiplying hidden modules, hidden parameters, and redundant correlations beyond necessity.
+    The strongest theorem is the monoidal transport theorem. Disjoint cognitive supports yield
+commuting cognitive updates; the cognition-language functor maps this into swap equivalence in
+the TUG trace quotient; factored cognitive substrates yield factored linguistic cores; and nontrivial
+broad universals require mediators. This unifies the TUG factorization theorem with the causal-
+continual-learning commutator theorem.
+    The other four correspondences take theorem-shaped forms as well. Hierarchical universals
+arise by closure transport from cognitive-frame closure. Narrow word-order universals arise by
+sparse-energy pushforward from controller coherence. Graded universalhood arises by stability-
+rate transport from kernel-shell cognitive dynamics. Context-indexed local laws arise by gluing
+local closure systems over a context category, with defects bounded by confusion costs.
+    Quantale weakness supplies the selection principle binding all of this together. TyLAA weakness,
+causal-coding weakness, and dependence-frontier weakness are not separate metaphors. They are
+composable layers of one generalized Occam principle: preserve as much admissible indistinction
+as possible while fitting the data and avoiding unnecessary cost, confusion, and double-counting.
+This is why causal explanations beat redundant correlation explanations in the framework: they
+identify the weakest mediator that makes a dependency real.
+    The resulting research programme is clear. Represent universals as linguistic subobjects. Infer
+their weakest cognitive pullbacks. Test whether closure, factorization, sparse energy, stability, and
+context-gluing structures align across typology, cognitive experiments, neural models, and AGI
+architectures. If they do, the typological record becomes more than a catalog of language facts. It
+becomes an indirect map of the cognitive architecture that makes human language possible.
+
+
+References
+ [1] Goertzel, B. Formalizing real-world linguistic universals. Manuscript, 2026.
+
+ [2] Goertzel, B. Weakness-based universal grammar from TyLAA and NGF/OSLF. Manuscript,
+     2026.
+
+ [3] Goertzel, B. Making sense of universal grammar. Blog manuscript, 2026.
+
+ [4] Goertzel, B. Causal coding and the general causal-continual-learning theorem. Manuscript,
+     2025.
+
+
+
+                                                 29
+ [5] Goertzel, B., Derr, C., and Taye, Y. Hierarchical Bayesian causal modular learning: a two-level
+     columnar architecture for continual learning. Manuscript, 2026.
+
+ [6] Goertzel, B. Practical intelligence lives on the Pareto frontier between independence enhance-
+     ment and dependency modeling. Manuscript, 2025.
+
+ [7] Goertzel, B. TyLAA: Type–Language Adjunction Archeology, from hypercube modalities to
+     a weakest operational algebra. Draft manuscript, 2025.
+
+ [8] Goertzel, B. Weakness is all you need: notes on quantale weakness as a unifying generalized-
+     Occam principle for cognitive science and AGI. Early rough version, 2026.
+
+ [9] Goertzel, B. The general theory of general intelligence: a pragmatic patternist perspective.
+     Manuscript, 2024.
+
+[10] Verkerk, A. et al. Large-scale Bayesian testing of proposed linguistic universals with spatio-
+     phylogenetic and co-evolutionary correction. Manuscript cited in [1], 2026.
+
+[11] Greenberg, J. H. Some universals of grammar with particular reference to the order of mean-
+     ingful elements. In Universals of Language, 1963.
+
+[12] Keenan, E. L., and Comrie, B. Noun phrase accessibility and universal grammar. Linguistic
+     Inquiry, 8(1), 63–99, 1977.
+
+[13] Chomsky, N. Lectures on Government and Binding. Foris, 1981.
+
+[14] Chomsky, N. The Minimalist Program. MIT Press, 1995.
+
+[15] Lambek, J. The mathematics of sentence structure. American Mathematical Monthly, 65(3),
+     154–170, 1958.
+
+[16] Mazurkiewicz, A. Trace theory. In Petri Nets: Applications and Relationships to Other Models
+     of Concurrency, 1986.
+
+[17] Lawvere, F. W. Adjointness in foundations. Dialectica, 23, 281–296, 1969.
+
+[18] Kelly, G. M. Basic Elements of Enriched Category Theory. Cambridge University Press, 1982.
+
+[19] Mac Lane, S. Categories for the Working Mathematician. Second edition. Springer, 1998.
+
+[20] Resende, P. Lectures on etale groupoids, inverse semigroups and quantales. Lecture notes,
+     2007.
+
+
+
+
+                                                30
+

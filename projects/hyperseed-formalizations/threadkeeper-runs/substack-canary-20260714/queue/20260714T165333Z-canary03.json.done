@@ -1,0 +1,39 @@
+{
+  "run_id": "20260714T165333Z-canary03",
+  "status": "queued",
+  "queued_at": 1784048013.9143736,
+  "persona_key": "hyperseed-formalizer",
+  "goal": "Formalize Substack article \"Tag, You're Not It\" (2026-06-26) into Hyperseed definitions. Read the existing claims.md in substack/2026-06-26-tag-youre-not-it/claims.md. For each of the 17 significant intellectual points listed, draft: (1) an informal Hyperseed-oriented mapping in formalization.tex connecting each point to Hyperseed categories (pattern, process, system, coherence, emergence, reflection); (2) where a crisp mathematical structure is suggested, write formal Hyperseed definitions, conjectures, or proof sketches in LaTeX; (3) write import-friendly MeTTa seed atoms in atoms.metta for each formalized concept. Preserve all existing material \u2014 append or revise, do not replace. Do not push.",
+  "tool_subset": [
+    "read-file",
+    "write-file",
+    "append-file",
+    "shell"
+  ],
+  "max_turns": 8,
+  "max_chars": 2000,
+  "task_contract": {
+    "objective": "Formalize the 17 claims from claims.md into Hyperseed definitions, LaTeX formalizations, and MeTTa seed atoms. Read substack/2026-06-26-tag-youre-not-it/claims.md. Update substack/2026-06-26-tag-youre-not-it/formalization.tex and substack/2026-06-26-tag-youre-not-it/atoms.metta. Preserve existing content. Do not push.",
+    "allowed_paths": [
+      "substack/2026-06-26-tag-youre-not-it"
+    ],
+    "forbidden_actions": [
+      "push",
+      "reset",
+      "clean",
+      "stash",
+      "remote-write",
+      "secret-access"
+    ],
+    "done_criteria": [
+      "All 17 claims from claims.md have corresponding entries in formalization.tex",
+      "Each formalized claim has a corresponding MeTTa atom in atoms.metta",
+      "Existing content preserved",
+      "No files outside substack/2026-06-26-tag-youre-not-it/ modified",
+      "No push or remote operations"
+    ],
+    "max_tool_calls": 20,
+    "patch_proposal_only": false,
+    "requires_adjudication": false
+  }
+}

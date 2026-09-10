@@ -1,0 +1,10 @@
+{
+  "status": "frozen_before_evaluation",
+  "frozen_at": "2026-07-25T22:54:00Z",
+  "selection_rule": "lower calibration-seed mean CMCP Task-B loss; response wins exact tie",
+  "calibration_seeds": [101, 211, 307],
+  "response_mean_cmcp_task_b_loss": 2.1803179184595742,
+  "gradient_mean_cmcp_task_b_loss": 2.182418452368842,
+  "selected_estimator": "response",
+  "evaluation_seeds": [401, 503, 607]
+}

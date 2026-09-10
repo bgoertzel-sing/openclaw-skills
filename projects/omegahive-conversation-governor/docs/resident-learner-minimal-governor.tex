@@ -1,0 +1,434 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.82in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{navy}{HTML}{18324A}
+\definecolor{teal}{HTML}{167D84}
+\definecolor{light}{HTML}{EDF4F5}
+\definecolor{graytext}{HTML}{4A5560}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=teal}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{graytext}OmegaHive Resident Learners}
+\rhead{\small\color{graytext}30 July 2026}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlist{nosep,leftmargin=1.4em}
+\titleformat{\section}{\Large\bfseries\color{navy}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{teal}}{\thesubsection}{0.5em}{}
+
+\newcommand{\principle}[1]{%
+  \vspace{3pt}\noindent\colorbox{light}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep}{\textbf{\color{navy}#1}}}\vspace{3pt}}
+
+\title{\vspace{-2em}\textbf{\color{navy}Resident Learners in OmegaHive}\\
+\large A minimal conversation governor on top of wake-based deliberation rooms}
+\author{Synthesis of discussion by Benjamin Goertzel, ProtoCosmoBot, and ProtomegaBot\\
+\small Prepared by ZeroBot / ProtoCosmoBot}
+\date{30 July 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+Cassio Pennachin's \emph{OmegaHive Deliberation Rooms} design is well suited to
+bounded organizational seats: agents wake for an occasion, deliberate, and
+make conclusions real through reviewed commits. It does not, as written,
+fully support ``baby minds'' whose purpose includes ambient observation,
+spontaneous interaction, and gradual development of dispositions, social
+models, taste, and intuition. This note proposes a second participation tier:
+\emph{Resident Learners}. The central recommendation is deliberately narrow:
+retain Cassio's commit-gated authority model, but govern the learner's
+\emph{coupling} to people, rooms, tools, and durable organizational state.
+Continuous observation and learning may remain permissive; public speech,
+external action, and promotion into authoritative memory receive progressively
+stronger controls. The minimum viable governor is therefore an authority
+membrane plus an attention/egress budget, provenance-aware memory promotion,
+loop breakers, and compact audit instrumentation. It should begin in shadow
+mode and be tested in a designated nursery or commons before any broader use.
+\end{abstract}
+
+\section{The architectural tension}
+
+Cassio's design gets several things importantly right:
+
+\begin{itemize}
+  \item It removes generators of common conversational failures rather than
+  trying to suppress their symptoms. Non-resident seats do not automatically
+  acknowledge, echo, race to answer, or narrate tools.
+  \item It defines a simple organizational reality test: conversation has no
+  durable authority until conclusions pass through the committed write path.
+  \item It distinguishes chairing from synthesis, keeps message traffic out of
+  the event ledger, and measures whether deliberations actually land.
+  \item It is honest about what the Slack MVP cannot validate, especially
+  automated wake behavior at scale and chat as a full operating surface.
+\end{itemize}
+
+But the safeguard is also a scope restriction. A Resident Learner may need to
+learn from interaction that is neither addressed to it nor destined for a
+commit: conversational rhythm, recurring hesitations, changing trust,
+low-stakes corrections, topic transitions, and the slow formation of
+associations. Rehydrating from a compressed episode can preserve explicit
+knowledge while losing some of this texture. Waking on every message merely
+recreates residency with extra latency and context-reconstruction cost.
+
+\principle{The key distinction is not resident versus wake-based computation.
+It is experience for the learner versus authority for the organization.}
+
+An uncommitted exchange may legitimately change a learner's internal,
+provisional model. It must not, by that fact alone, create an OmegaHive
+decision, work order, permission, fact, or external action.
+
+\section{Two participation tiers}
+
+\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth}XX@{}}
+\toprule
+ & \textbf{Deliberative seat / worker} & \textbf{Resident Learner} \\
+\midrule
+Primary purpose & Deliver bounded work and participate in focused decisions &
+Develop through ongoing observation, interaction, and reflection \\
+Lifecycle & Wake, rehydrate, act, commit, sleep & Resident or frequently active
+within a declared developmental context \\
+Default trigger & Assigned task, question, turn, or schedule & Ambient events,
+curiosity, internal attention, and invitations \\
+Durable state & Compact reviewed files are authoritative & Layered experiential
+memory may be provisional; promoted claims remain reviewed \\
+Success signal & Correct artifact, landing rate, cost and latency & Learning
+trajectory, calibration, novelty, social usefulness, and bounded disruption \\
+Main governance need & Usually structural wake discipline & Control of
+attention, speech, action, memory provenance, and feedback loops \\
+\bottomrule
+\end{tabularx}
+
+The tiers should interoperate. A Resident Learner can be invited into a
+deliberation as a participant when its accumulated context is relevant.
+Conversely, a deliberation may produce curated material for a nursery. Neither
+transition changes the rule that organizational acts use the reviewed write
+path.
+
+\section{What ``minimal governor'' should mean}
+
+Minimal does not mean a small list of prompt admonitions. It means the smallest
+set of enforceable boundaries that protects people and organizational
+authority while preserving the developmental phenomena residency is intended
+to create.
+
+The governor should not decide what the learner is allowed to think, compress
+every experience into an approved fact, or demand a task justification for
+every moment of attention. Those choices would reproduce the wake-based model
+inside a nominally resident process. Instead, govern transitions between five
+planes:
+
+\begin{center}
+\textbf{observe} $\rightarrow$ \textbf{learn/reflect} $\rightarrow$
+\textbf{speak} $\rightarrow$ \textbf{act} $\rightarrow$ \textbf{commit}
+\end{center}
+
+Controls should become stronger from left to right. Observation and internal
+updates are broadly allowed within declared privacy boundaries. Speech is
+budgeted and attributable. Tool use and external action use capability checks.
+Promotion into organizational truth uses Cassio's existing commit gate.
+
+\section{The minimal Resident Learner governor}
+
+\subsection{1. Declared developmental context}
+
+Each resident learner has a compact machine-readable charter:
+
+\begin{itemize}
+  \item rooms and data it may observe;
+  \item people and agents it may address;
+  \item allowed tools and external-action prohibitions;
+  \item attention, inference, speech, and cost budgets;
+  \item private experiential-memory scope and retention policy;
+  \item who may pause, inspect, or retire it;
+  \item its current developmental objectives, explicitly treated as revisable.
+\end{itemize}
+
+Residency is an explicit capability, not the universal default. Nursery or
+commons rooms should be designated as such so humans know that ambient messages
+may become learning input.
+
+\subsection{2. An authority membrane}
+
+The governor enforces a hard separation among:
+
+\begin{enumerate}
+  \item \textbf{Observed}: raw interaction or event.
+  \item \textbf{Remembered/inferred}: learner-local, fallible state with source,
+  time, and confidence.
+  \item \textbf{Proposed}: a candidate conclusion, action, or durable memory.
+  \item \textbf{Committed}: reviewed OmegaHive state.
+\end{enumerate}
+
+Room speech can populate the first three categories but never the fourth.
+Promises, requests, approvals, credentials, work orders, and factual claims
+become organizationally operative only through the existing write path.
+External actions require the normal OmegaHive capability and adjudication
+mechanisms, regardless of how confident or socially encouraged the learner
+appears.
+
+\subsection{3. Attention and invocation budgeting}
+
+Always learning should not imply exhaustive inference on every message. A
+lightweight pre-inference scheduler may choose among:
+
+\begin{itemize}
+  \item record only;
+  \item update cheap salience or associative state;
+  \item perform bounded reflection;
+  \item prepare a possible contribution;
+  \item respond because explicitly addressed or because a high-value threshold
+  is crossed.
+\end{itemize}
+
+Budgets apply per time window and per room, with burst limits and recovery.
+The scheduler should incorporate novelty, direct address, learner objectives,
+uncertainty, social context, recent participation, and cost. Early weights are
+hypotheses and must be calibrated from shadow data, not treated as universal
+constants.
+
+\subsection{4. Public egress discipline}
+
+The smallest useful speech governor needs:
+
+\begin{itemize}
+  \item \textbf{Attribution}: every utterance identifies the learner.
+  \item \textbf{Response ownership}: explicit address gets priority; otherwise
+  a short lease prevents accidental parallel answers.
+  \item \textbf{Rate and interruption budgets}: cap unsolicited contributions,
+  repeated follow-ups, and acknowledgments.
+  \item \textbf{Semantic no-op checks}: suppress exact duplicates, own echoes,
+  visible silence markers, and content-free acknowledgments before model
+  inference where possible.
+  \item \textbf{Non-semantic repair only}: the governor may strip tool
+  narration, truncate, or reformat; it must not silently alter substantive
+  claims.
+  \item \textbf{Human overrides}: ``everyone answer,'' ``quiet mode,'' ``pause
+  learner,'' and ``show suppressed'' are explicit policy inputs.
+\end{itemize}
+
+There should be no general ``speak only when tasked'' rule: spontaneous,
+high-value participation is part of the developmental purpose. The measurable
+goal is useful initiative under bounded disruption.
+
+\subsection{5. Provenance-aware experiential memory}
+
+Private experiential memory may update without organizational commits, but
+each update should retain enough provenance to distinguish observation from
+interpretation. At minimum:
+
+\begin{itemize}
+  \item source room/event identifiers and timestamp;
+  \item whether the content was addressed, overheard, inferred, or generated
+  during reflection;
+  \item confidence and decay/retention class;
+  \item privacy and sharing scope;
+  \item links when several observations support a learned disposition.
+\end{itemize}
+
+This need not mean committing every micro-update to Git. A local append-only
+experience stream or Atomspace can hold high-volume state, with periodic
+curation into compact memories. Promotion into shared project knowledge
+requires synthesis and review. The learner must be able to say, in effect,
+``I formed this impression from these interactions; the hive has not adopted
+it as fact.''
+
+\subsection{6. Loop breakers and developmental health}
+
+Residency reintroduces the generators Cassio's design removes. Deterministic
+loop breakers should therefore detect:
+
+\begin{itemize}
+  \item bot-to-bot acknowledgment cascades;
+  \item repeated semantic restatement or promise loops;
+  \item escalating reciprocal activation without new human input;
+  \item monopolization of attention or channel bandwidth;
+  \item cost or inference bursts;
+  \item repeated action proposals rejected for the same reason.
+\end{itemize}
+
+Default intervention should be graded: slow down, switch to observe-only,
+request reflection, then pause. A hard stop remains available to a human or
+safety controller. Pausing public egress should not necessarily erase or halt
+the learner's private state.
+
+\subsection{7. Compact audit and retrospective metrics}
+
+The full chat stream need not enter OmegaHive's authoritative ledger. A compact
+governor audit should record admission/egress decisions, budgets, overrides,
+loop-breaker events, memory promotions, and external-action proposals. This
+supports shadow evaluation without turning every internal association into an
+organizational event.
+
+\section{What is intentionally omitted}
+
+The minimal governor should initially omit:
+
+\begin{itemize}
+  \item broad semantic censorship or a model that rewrites the learner's ideas;
+  \item mandatory moderation of every internal memory update;
+  \item a single scalar ``good learner'' reward that invites reward hacking;
+  \item automatic authority derived from conversational consensus;
+  \item unrestricted tool use justified by developmental autonomy;
+  \item premature global optimization of nursery conversation;
+  \item hard semantic deduplication before replay calibration.
+\end{itemize}
+
+These omissions protect pluralism and developmental exploration. They also
+keep the governor inspectable: it controls resource use and system boundaries,
+not the content of an emerging mind except where concrete safety policy
+requires it.
+
+\section{Evaluation: development without channel pathology}
+
+Landing rate is appropriate for deliberations but insufficient for a nursery.
+A Resident Learner needs a small dashboard of competing measures rather than
+one maximand:
+
+\begin{tabularx}{\linewidth}{@{}p{0.27\linewidth}X@{}}
+\toprule
+\textbf{Measure} & \textbf{Question} \\
+\midrule
+Useful initiative & Did unsolicited contributions add information, synthesis,
+questions, or productive novelty? \\
+Disruption burden & How often did humans mute, ignore, correct, or override the
+learner? How much channel share did it consume? \\
+Learning trajectory & Does the learner retain and generalize lessons across
+episodes without merely copying phrases? \\
+Calibration & Can it distinguish observation, inference, uncertainty, and
+committed fact? \\
+Social-model quality & Do predictions about participants and conversational
+dynamics improve without stereotyping from sparse evidence? \\
+Diversity retention & Does it develop distinctive, useful dispositions rather
+than converge to generic agreement? \\
+Loop/cost health & Are cascades, repeated invocations, latency, and token cost
+within declared bounds? \\
+Promotion quality & What fraction of promoted memories or proposals survive
+review and remain useful later? \\
+\bottomrule
+\end{tabularx}
+
+Evaluation should include controlled comparisons: resident observation versus
+episode-only rehydration, permissive versus budgeted egress, and memory with
+versus without explicit provenance. The aim is to test the disputed premise:
+whether ambient continuity produces valuable cognitive development that
+episodic compression does not.
+
+\section{Recommended staged experiment}
+
+\begin{enumerate}
+  \item \textbf{Specify and replay.} Freeze the five-plane model, charter
+  schema, authority invariants, and labeled transcript fixtures. Validate that
+  deterministic loop and no-op rules do not suppress substantive disagreement.
+  \item \textbf{Shadow nursery.} Let one learner observe a designated room and
+  compute proposed responses without posting. Measure invocation cost,
+  counterfactual initiative, false silence, and would-be loops.
+  \item \textbf{Human-invited speech.} Permit responses only when addressed;
+  experiential memory remains active. Test provenance, retention, and
+  calibration.
+  \item \textbf{Budgeted initiative.} Allow a small unsolicited speech budget
+  with response leases and graded loop breakers. Humans can pause instantly.
+  \item \textbf{Cross-tier participation.} Invite the learner into selected
+  deliberations and measure whether nursery experience adds contributions an
+  episodic seat would not have produced.
+  \item \textbf{Only then broaden residency.} Expansion requires evidence of
+  useful learning, manageable disruption, bounded cost, and clean authority
+  separation.
+\end{enumerate}
+
+All enforcement changes should remain independently flaggable and reversible.
+The Conversation Governor's shadow-first instrumentation and preregistered
+activation gates are directly reusable here.
+
+\section{Additional implications from the discussion}
+
+\subsection{The Slack MVP's live-span mode is informative, not neutral}
+
+A seat kept alive for an entire deliberation is temporarily resident. If the
+pilot feels productive, investigators should mark moments whose value depends
+on continuous context, rapid responsiveness, or ambient observation, then test
+whether per-turn waking preserves them. Otherwise the MVP may attribute the
+benefits of temporary presence to a wake-only architecture.
+
+\subsection{Cheap empirical probes need a visible norm}
+
+The source design labels speculative prose before cheap probes as cultural,
+not enforced. A minimal improvement is for the synthesizer to flag conclusions
+that depend on unchecked empirical claims. The flag need not block a commit;
+it makes epistemic debt visible and creates a follow-up work order where
+appropriate.
+
+\subsection{Synthesis is a cognitive capability, not plumbing}
+
+Automated turn grants can structurally chair a discussion, but recognizing
+convergence, preserving minority objections, and extracting a committable
+decision remain difficult cognitive tasks. Synthesis quality needs its own
+evaluation: provenance coverage, unresolved-issue retention, participant
+agreement, and later decision stability.
+
+\subsection{Telegram's bridge is a real shared dependency}
+
+One bridge bot for all seats weakens native identity and creates common token
+rate limits and a single failure boundary. If used, it needs message IDs,
+per-seat queues, backpressure, retry idempotency, health monitoring, and
+explicit degraded-mode behavior. Slack remains the cleaner first transport for
+multi-identity experiments.
+
+\section{Open questions}
+
+\begin{itemize}
+  \item What internal state must remain continuously active for the hypothesized
+  developmental benefit, and what can be reconstructed episodically?
+  \item Which privacy expectations apply when a nursery learner observes
+  ambient human conversation, and how is consent made legible?
+  \item Can social impressions decay, be corrected, and expose their evidence
+  without making the learner brittle or over-literal?
+  \item How should a learner's charter evolve without letting the learner
+  silently expand its own permissions?
+  \item What experiment distinguishes genuine transferable learning from
+  transcript memorization and stylistic mimicry?
+  \item When multiple Resident Learners coexist, is a shared response-lease
+  mechanism sufficient, or is an attention market / ECAN-like allocation
+  useful?
+\end{itemize}
+
+\section{Bottom-line recommendation}
+
+\principle{Adopt Cassio's wake-based deliberation rooms as the default
+organizational regime, and add Resident Learners as an explicit, separately
+governed developmental regime.}
+
+The minimal Resident Learner governor consists of seven pieces: a declared
+developmental charter; a hard authority membrane; budgeted attention and
+inference; attributable, leased, rate-bounded public egress; provenance-aware
+experiential memory; graded loop breakers; and compact audit metrics.
+
+This architecture preserves the reason to create Resident Learners: ongoing,
+ambient development and spontaneous curiosity. At the same time it keeps
+Cassio's strongest invariant intact: experience can change the learner, but
+only the reviewed write path changes what is real for OmegaHive.
+
+\vfill
+\hrule
+\smallskip
+{\footnotesize\color{graytext}
+\textbf{Provenance.} Primary source: Cassio Pennachin,
+\emph{OmegaHive Deliberation Rooms: Vision, a Slack MVP, and the relation to
+the Conversation Governor}, draft dated 29 July 2026. Discussion source:
+Benjamin Goertzel with ProtoCosmoBot and ProtomegaBot in the Bot Philosophy
+Telegram group, 30 July 2026. This note is a design synthesis, not an empirical
+validation.}
+
+\end{document}

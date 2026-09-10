@@ -1,0 +1,21 @@
+# Repository state
+
+Captured for the completed local experiment.
+
+## OmegaSim
+
+- Path: `/home/openclaw/research-agent/projects/omegasim/repos/omegasim`
+- Branch: `agent/cla-detector-prereg`
+- Commit: `18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d`
+- Status before and after measurement: clean
+- Remote: none
+
+## chaoslang
+
+- Measurement source: isolated detached worktree
+  `/home/openclaw/research-agent/scratch/chaoslang-974af31-cla-dynamics`
+- Requested source branch: `agent/hd-embedding-cla`
+- Commit: `974af31efaf6e3cc239252f78367d20e657ac45c`
+- Status before and after measurement: clean
+- The shared branch checkout was not modified; it was at later descendant
+  `457d5bcd7d576fcd6b17f891c2e7169c081d3bf4` during preflight.

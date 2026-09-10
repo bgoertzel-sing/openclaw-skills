@@ -1,0 +1,130 @@
+================================================================================
+    CHAOS LANGUAGE ALGORITHM (CLA) -- TESTING SUMMARY -- 2026-07-10
+================================================================================
+
+PROJECT: chaos-language-algorithm
+REPO:    bgoertzel-sing/chaos-language-algorithm (public)
+LOCAL:   projects/chaos-language-algorithm/repos/chaoslang
+HEAD:    b344aa3 (main, 2 ahead of origin/main)
+PROTOTYPE: pure-Python "chaoslang" library, backend-neutral, Hyperon-ready seam
+
+--------------------------------------------------------------------------------
+1. SYSTEMS TESTED
+--------------------------------------------------------------------------------
+
+  System        Dim  Integration
+  -----------   ---  -----------------------------------------------
+  Logistic map   1   Discrete iteration (r=4.0, x0=0.123)
+  Lorenz-63      3   RK4 (sigma=10, rho=28, beta=8/3, dt=0.01)
+  Rossler        3   RK4 (a=0.2, b=0.2, c=5.7, dt=0.05)
+  Mackey-Glass   1   Euler with 17-step delay (dt=0.1)
+  Lorenz-96     5-24  RK4 (F=8.0, dt=0.01)
+
+--------------------------------------------------------------------------------
+2. 256-SYMBOL BASELINE SUITE
+--------------------------------------------------------------------------------
+
+  All runs: 256 symbols, 64 discarded, 4 bins/axis, 8 iterations, seed 0
+
+  System        Dim  Unique  Rules  Score   Exact?
+  -----------   ---  ------  -----  ------  ------
+  Mackey-Glass   1       4      6    44.4   yes
+  Logistic       1       4      8   113.2   yes
+  Lorenz-63      3      21      8   187.2   yes
+  Rossler        3      24      8   189.2   yes
+  Lorenz-96      5      56      8   234.2   yes
+  Lorenz-96      8      78      8   229.2   yes
+  Lorenz-96     12     107      6   241.4   yes
+  Lorenz-96     16     121      3   248.7   yes
+  Lorenz-96     20     127      6   251.4   yes
+  Lorenz-96     24     148      5   251.5   yes
+
+  Score = approximate MDL proxy units (not calibrated bits)
+
+--------------------------------------------------------------------------------
+3. 1024-SYMBOL OmegaSim-SCALE SMOKE
+--------------------------------------------------------------------------------
+
+  System:           Lorenz-96
+  Dimension:        20
+  Steps:            1024 (256 discarded)
+  Bins:             4
+  Iterations:       8
+  Miner:            suffix_trie
+  Category method:  JS (threshold 0.1)
+  Seed:             0
+  Commit:           b344aa3 (+ dirty CLI mod)
+
+  RESULTS:
+  Unique symbols:       510
+  Rules learned:         8
+  Score:                 1021.2
+  Fit wall time:         2.55 s
+  Exact reconstruction:  yes
+  Category edits:        0 (JS path exercised but no category accepted)
+
+--------------------------------------------------------------------------------
+4. UNIT TEST GROWTH
+--------------------------------------------------------------------------------
+
+  Date        Milestone                              Tests
+  ---------   -----------------------------------   -----
+  2026-07-03  Sprint 1: symbolic-string MVP           19
+  2026-07-04  M1 controls + JS seam                   26
+  2026-07-09  Suffix-trie miner + JS integration       69
+
+  Coverage: exact expansion, chunk/category identity, M[v] retention,
+  frame generalization, MDL rejection, rule pruning, determinism,
+  compound-symbol mining equivalence, bounded trie nodes, M1 round-trip.
+
+--------------------------------------------------------------------------------
+5. KEY FINDINGS
+--------------------------------------------------------------------------------
+
+  [1] Exact reconstruction holds in ALL 11 recorded experiments.
+
+  [2] Compression degrades with dimension:
+      dim 1-3:  0.17-0.74 units/symbol (good compression)
+      dim 16-24: 0.97-0.98 units/symbol (near-incompressible)
+      Cause: 4^D compound-symbol explosion under direct M1 binning,
+      NOT proven absence of dynamical structure.
+
+  [3] Mackey-Glass most compressible: 4 unique symbols, score 44.4.
+
+  [4] OmegaSim-scale smoke (1024 x 20D) completed in 2.55 s with exact
+      reconstruction. Suffix-trie miner handled high-cardinality stream.
+
+  [5] No category edit was accepted in the 1024x20D run; JS clustering
+      benefit remains unvalidated.
+
+--------------------------------------------------------------------------------
+6. LIMITATIONS
+--------------------------------------------------------------------------------
+
+  - No non-chaotic controls, shuffled surrogates, or periodic baselines
+  - No held-out evaluation (M1 bounds inferred from full trajectory)
+  - Score is a heuristic proxy, not calibrated information code
+  - Single run per parameter setting (no confidence intervals)
+  - Peak memory not recorded
+  - No matched brute-force vs trie benchmark
+  - 256-symbol records lack raw stdout, env captures, commit IDs
+  - No actual OmegaSim trace tested ("OmegaSim-scale" = dimension only)
+  - JS category benefit unvalidated (no category edit accepted in smoke run)
+
+--------------------------------------------------------------------------------
+7. NEXT STEPS
+--------------------------------------------------------------------------------
+
+  1. Matched brute-force vs suffix-trie benchmark with peak RSS
+  2. Non-chaotic and surrogate controls for classification validation
+  3. Held-out and multi-seed evaluation protocol
+  4. Dimension-reduction symbolization beyond direct 4-bin compound M1
+  5. McBride-derivative pre-ranking (M-MD1) and joint proposals (M-MD2)
+  6. Per-iteration MDL trajectory logging (M-MD3)
+  7. Run on actual OmegaSim traces after export schema fixed
+
+================================================================================
+  Files: docs/cla_testing_summary.tex  (LaTeX source)
+         docs/cla_testing_summary.pdf  (compiled PDF)
+         docs/cla_testing_summary.txt  (this ASCII summary)
+================================================================================

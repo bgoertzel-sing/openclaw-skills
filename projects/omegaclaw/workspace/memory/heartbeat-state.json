@@ -1,0 +1,14 @@
+{
+  "lastChecks": {
+    "kanbanRefresh": 1785366300,
+    "email": null,
+    "calendar": null,
+    "weather": null
+  },
+  "kanbanRefreshHistory": [
+    {
+      "timestamp": 1785366300,
+      "note": "Initial setup — plan created, recurrence restored per Ben's request"
+    }
+  ]
+}

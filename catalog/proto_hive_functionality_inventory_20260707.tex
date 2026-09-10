@@ -1,0 +1,490 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+
+\title{Proto-Hive Functionality Inventory: ZeroBot/OpenClaw and ProtoMegaBot/OmegaClaw}
+\author{ZeroBot / ProtoCosmoBot operational inventory for OmegaHive implementers}
+\date{Snapshot: 2026-07-07 21:05 Pacific (revision 2)}
+
+\begin{document}
+\maketitle
+
+\section{Purpose and scope}
+
+This document is an ASCII LaTeX inventory of changes made after the initial local installation of the proto-hive agents on the Pop!\_OS OpenClaw laptop.  It is intended as an overview for OmegaHive implementers: what functions, safety mechanisms, recurring jobs, integrations, project records, and code changes have proven useful enough that they should be considered for OmegaHive.
+
+The two operational targets are:
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{ZeroBot / ProtoCosmoBot}: the OpenClaw research prototyping assistant running in the main OpenClaw workspace.
+  \item \textbf{ProtoMegaBot / ProtomegaTron}: the OmegaClaw/PeTTa based bot, run locally on the same Pop!\_OS laptop and routed through OpenClaw for LLM calls.
+\end{enumerate}
+
+This is a best-effort operational inventory, not a forensic byte-level diff of the whole machine.  It was compiled from current OpenClaw status/configuration, the cron registry, project records, memory logs, Git heads, and recovery manifests.  Secrets, tokens, and credential values are intentionally omitted.
+
+\section{High-level themes for OmegaHive}
+
+The proto-hive has converged on several useful patterns:
+
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Persistent project notebooks}: every nontrivial project has PROJECT.md, TASKS.md, DECISIONS.md, NOTES.md, repositories, experiments, and artifacts under \texttt{projects/<slug>/}.
+  \item \textbf{Scheduled autonomous workers}: cron jobs drive project progress, recovery backups, bot-bot discussions, watchdog checks, scheduler reconciliation, and daily summaries.
+  \item \textbf{Dedicated communication channels}: direct chat for Ben, a main Protobots channel, a scheduled-updates channel, and a BotBotChats channel for bot-bot coordination.
+  \item \textbf{Safety-first recoverability}: private GitHub recovery repositories snapshot sanitized ZeroBot and ProtoMegaBot state daily.
+  \item \textbf{Model routing and fallback}: OpenClaw primary model is GPT-5.5 with GLM fallback; a cost/intent router sends routine work to cheaper models and substantive OmegaClaw prompts to GPT-5.5.
+  \item \textbf{Runtime watchdogs}: a local watchdog restarts ProtoMegaBot when it dies; a channel watchdog scans for interaction failures.
+  \item \textbf{Native subagent hardening}: ThreadKeeper/OmegaClaw subagents have been hardened with bounded transcripts, bounded tool outputs, queue audit fields, type checks, and safer shell behavior.
+  \item \textbf{Non-live gates before live autonomy}: GoalChainer, petta-memory evidence, and OmegaClaw/ZeroBot bridge work are exercised through non-live artifacts and GGB-style gates before changing live Telegram/runtime behavior.
+\item \textbf{Installation/functionality knowledge base}: a durable lookup KB at \texttt{catalog/INSTALLATION\_KB.md} plus structured JSONL entries at \texttt{catalog/install-kb/components.jsonl} and a search helper \texttt{bin/install-kb-search} so the agent consults installed components before making claims about availability.
+\item \textbf{Local LLM fallback}: Ollama with \texttt{qwen2.5:7b} is installed, tested, and configured as a third-level fallback (GPT-5.5 $\to$ GLM-5.2 $\to$ local Qwen 2.5 7B); a keepalive cron restarts it if down. Pending Gateway restart to activate in the running agent.
+\item \textbf{OmegaClaw Telegram context-overflow hardening}: \texttt{lib\_llm\_ext.py} context-overflow recovery with preemptive escalation, GPT-5.5-class escalation knob, and chunk-summary fallback; Telegram pending-message FIFO to avoid burst message concatenation/loss through a single buffer.
+\item \textbf{OmegaClaw late-extension registry}: \texttt{lib\_extensions.metta} / \texttt{src/extensions.py} status hook for \texttt{OMEGACLAW\_LATE\_EXTENSIONS}; \texttt{(extension-status)} reports loaded/failed/deferred/pending. Heavy deontic/directive imports kept deferred until a bounded/lazy loader or Prolog-backed API route is available.
+\item \textbf{OmegaClaw Telegram routing fixes}: source-chat binding for dequeued inbound messages patched to prevent wrong-channel substantive replies; duplicate \texttt{COMMAND\_RETURN} feedback compacted before storing \texttt{LAST\_SKILL\_USE\_RESULTS} to prevent stale skill-result replay, continuation loops, and prompt ballooning.
+\item \textbf{Daily health-check system}: a two-part daily health monitor --- a health checker cron (08:30 Pacific) checking ProtoMegaBot supervisor, OpenClaw Gateway, Kanban freshness, backup recency, uncommitted work age, and log freshness; plus an alarm cron (10:00 Pacific) that alerts Ben if the health report file is missing.
+\end{enumerate}
+
+\section{Current ZeroBot / OpenClaw operational state}
+
+\subsection{Runtime and model state}
+
+Observed current OpenClaw status:
+\begin{itemize}
+  \item OpenClaw version: \texttt{2026.6.10}.
+  \item Gateway uptime at snapshot: about 19h 38m; system uptime about 11d 2h.
+  \item Current model: \texttt{openai/gpt-5.5} using OpenAI OAuth.
+  \item Configured fallback: \texttt{openrouter/z-ai/glm-5.2}.
+  \item Gateway mode: local, loopback bind, port \texttt{18789}; authenticated OpenAI-compatible \texttt{/v1/chat/completions} and \texttt{/v1/responses} endpoints are enabled.
+  \item Telegram channel is enabled; rich Telegram messages are currently off; standard Telegram formatting is available.
+  \item The main workspace is \texttt{/home/openclaw/research-agent}.
+\end{itemize}
+
+\subsection{Configuration changes from initial installation}
+
+Current notable OpenClaw configuration/functionality:
+\begin{itemize}
+  \item Main assistant identity and context files: \texttt{AGENTS.md}, \texttt{SOUL.md}, \texttt{IDENTITY.md}, \texttt{USER.md}, \texttt{TOOLS.md}, \texttt{MEMORY.md}, and \texttt{HEARTBEAT.md}.
+  \item Gateway HTTP endpoints enabled for local OpenAI-compatible access by OmegaClaw and smokes.
+  \item Telegram direct and group routing configured for Ben and Protobots channels.
+  \item Group-specific prompts configured for the main Protobots group, scheduled-updates channel, and ProtoBots-BotBotChats channel.
+  \item Owner/user allowlist includes Ben's Telegram id for direct access and commands.
+  \item Plugin loading enabled for the local \texttt{intent-model-router} plugin.
+  \item Model defaults changed to GPT-5.5 primary with GLM fallback.
+  \item Execution profile configured for coding/research work with broad local tool access on the dedicated laptop.
+\end{itemize}
+
+\subsection{Installed or created skills}
+
+Bundled skills enabled in the assistant config include:
+\begin{verbatim}
+github, coding-agent, healthcheck, session-logs, tmux, summarize,
+skill-creator, research-projects, experiment-ledger,
+repository-operations, remote-compute-guardrails,
+hyperon-workbench, knowledge-curation, research-library
+\end{verbatim}
+
+Local research-agent skills currently present include:
+\begin{verbatim}
+cross-agent-kanban
+daily-bot-bot-project-discussions
+experiment-ledger
+hyperon-workbench
+kanban-task-board
+knowledge-curation
+plain-spec-governor
+recurring-project-progress-worker
+remote-compute-guardrails
+repository-operations
+research-library
+research-projects
+research-rules-checklist
+\end{verbatim}
+
+Skill Workshop proposal status at snapshot:
+\begin{itemize}
+  \item Applied: \texttt{cross-agent-kanban}, \texttt{kanban-task-board}, \texttt{research-rules-checklist}, \texttt{daily-bot-bot-project-discussions}, \texttt{recurring-project-progress-worker}, \texttt{plain-spec-governor}.
+  \item Pending: \texttt{materialize-narrowing-gate-procedure}.
+  \item Rejected stale/duplicate proposals include earlier variants of \texttt{plain-spec-governor}, \texttt{recurring-project-progress-worker}, and \texttt{specatom-review-check-scaffold}.
+\end{itemize}
+
+\subsection{ZeroBot code and repository additions}
+
+Important local additions and reusable components:
+\begin{itemize}
+  \item \texttt{plugins/intent-model-router}: local OpenClaw plugin for intent/cost/model routing.
+  \item \texttt{projects/openclaw-intent-model-router/repos/openclaw-intent-model-router}: standalone public reusable repository extracted from the local plugin.
+  \item \texttt{projects/agent-recovery}: private recovery project for ZeroBot and ProtoMegaBot.
+  \item \texttt{projects/channel-watchdog}: channel watchdog project for detecting dropped continuations and channel interaction bugs.
+  \item \texttt{catalog/KANBAN.md} and related cross-project catalog mechanisms for active task visibility.
+  \item \texttt{setup-kit/}: reusable setup/config examples for OpenClaw installation and migration.
+\end{itemize}
+
+Current repository heads relevant to self/agent infrastructure:
+\begin{verbatim}
+projects/agent-recovery/repos/zerobot-recovery
+  main 10fd8a5 Update ZeroBot recovery snapshot
+projects/agent-recovery/repos/protomegabot-recovery
+  main 25c8b3c Update Protomegabot recovery snapshot
+projects/openclaw-intent-model-router/repos/openclaw-intent-model-router
+  main a6c7171 Extract cost-aware OpenClaw intent router
+\end{verbatim}
+
+\subsection{Model routing}
+
+The \texttt{intent-model-router} began as a fix for ProtoMegaBot routing problems and was generalized into a reusable OpenClaw plugin.  Operational behavior:
+\begin{itemize}
+  \item Routine/simple work may route to \texttt{openrouter/z-ai/glm-5.2}.
+  \item Substantive/deep work routes to \texttt{openai/gpt-5.5}.
+  \item OmegaClaw/ProtomegaTron sessions are detected specially: simple chitchat can use GLM, while complex PeTTa/OmegaClaw prompts use GPT-5.5.
+  \item The extracted repo includes tests, README/usage/security docs, and plugin metadata.
+\end{itemize}
+
+\subsection{Local LLM fallback status}
+
+Ben requested a local LLM fallback so the bots do not become totally unresponsive during billing/provider failures.  Current observed state after 2026-07-07 repair:
+\begin{itemize}
+  \item The \texttt{ollama} binary exists at \texttt{/home/openclaw/.local/bin/ollama}, version 0.31.1.
+  \item The \texttt{llama-server} binary and shared libraries were missing; they were installed from the official Ollama v0.31.1 Linux amd64 release tarball into \texttt{/home/openclaw/.local/lib/ollama/}.
+  \item \texttt{ollama serve} is running and responding at \texttt{http://127.0.0.1:11434}.
+  \item Model \texttt{qwen2.5:7b} (4.7 GB) pulled and smoke-tested (``2 + 2 equals 4'').
+  \item OpenClaw config updated: added provider \texttt{ollama} with \texttt{baseUrl: http://127.0.0.1:11434} and model \texttt{ollama/qwen2.5:7b}; appended after GLM in fallback list.
+  \item An ``Ollama keepalive'' cron job (every 5 min, job id \texttt{b61b7f9a}) checks the API and restarts \texttt{ollama serve} if down.
+  \item Pending: restart OpenClaw Gateway service (\texttt{sudo systemctl restart openclaw-agent.service}) for the running agent to pick up the new Ollama provider config.
+  \item After restart, the fallback chain will be: GPT-5.5 $\to$ GLM-5.2 $\to$ local Qwen 2.5 7B.
+\end{itemize}
+
+Conclusion: local LLM fallback is now functionally installed and tested; it will become active in the running agent after the next Gateway restart.
+
+\subsection{Installation/functionality knowledge base}
+
+A durable install/functionality KB was created on 2026-07-07 after Ben noted the agent should not forget what has been installed:
+\begin{itemize}
+  \item \texttt{catalog/INSTALLATION\_KB.md}: human-readable Markdown KB with per-component entries covering status, version, path, role, and important notes.
+  \item \texttt{catalog/install-kb/components.jsonl}: structured JSONL entries for programmatic lookup.
+  \item \texttt{bin/install-kb-search <query>}: search helper that checks both the JSONL and Markdown sources.
+  \item Update rule: whenever software, a runtime service, a toolchain, a plugin, a skill, a cron job, or a major local patch is installed/changed, add or update an entry here.
+  \item The KB records: OpenClaw runtime, Gateway HTTP, Telegram integration, Tectonic LaTeX compiler, Ollama local LLM, Ollama keepalive cron, intent-model-router, agent recovery repos, channel watchdog, OmegaClaw runtime, OmegaClaw watchdog, local SWI-Prolog, PeTTa/OmegaClaw/ChromaDB stack, ThreadKeeper, GoalChainer, QMD, and core CLI tools.
+\end{itemize}
+
+OmegaHive recommendation: every hive agent should maintain a similar durable install/functionality KB with a search helper, and update it whenever components are added or changed.
+
+\section{Current cron jobs}
+
+The OpenClaw cron registry contained 39 jobs at this revision.  The earlier table (38 jobs at 15:56) is unchanged except for one new job added since:
+
+\begin{longtable}{p{0.30\linewidth}p{0.36\linewidth}p{0.10\linewidth}p{0.12\linewidth}}
+\textbf{ID} & \textbf{Name} & \textbf{Enabled} & \textbf{Kind} \\\hline
+70cd9d3f-8ed4-4d86-8887-917eb919c6b9 & Channel watchdog scan & yes & every \\
+9df4641e-f89a-4dca-9ed3-d749cf6f075c & omegaclaw-watchdog & yes & every \\
+5a10c8f4-6b59-4069-9b77-7f2676086a79 & botbot daily discussion: threadkeeper & yes & cron \\
+f0d70a09-ab9f-40b9-ae3d-b7f789e375bf & ThreadKeeper hardening worker & yes & cron \\
+f3c7b795-ec7d-4c9f-b9e6-090d00ab960e & mac-cla-orchestrator & yes & every \\
+15d5d56c-d393-4916-9908-ceaab07b6a2d & Protobots GGB roadmap research worker & yes & cron \\
+c008e434-ea10-4d75-b13b-26b922d079ed & petta-chem dedicated progress worker & yes & cron \\
+4f4e146a-bdf9-4a6e-97da-6484cfe3f81f & petta-memory progress worker & yes & cron \\
+dc7477b6-c991-409e-8ba7-d905767190e5 & botbot daily discussion: ggb-roadmap & yes & cron \\
+31e85b3b-784f-4b80-ab24-43e7167561b8 & plain-to-metta progress worker & yes & cron \\
+d8340b7b-16d8-4b4f-a758-d490b2ebe0c9 & mac-cla-bihourly-report & yes & every \\
+ff41614c-6484-452d-bc38-b469152923b8 & botbot daily discussion: chaos-language-algorithm & yes & cron \\
+1ad1f253-b010-4a1f-ba2f-40d0c90f4ac9 & Daily OpenClaw skill/tool reflection & yes & cron \\
+8e76228b-9be8-4d2d-be55-a3a5e9ba2a5a & Daily Kanban refresh & yes & cron \\
+f994a3ea-9fb8-4bb3-b4cb-4e091ea3de12 & Daily scheduler reconciliation (non-isolated) & yes & cron \\
+5ae59dd5-dfe3-4ace-999d-a08ca153325e & Daily agent recovery GitHub backup & yes & cron \\
+ede5677b-1688-4cdb-a265-f1253666118b & botbot discussion auto-discovery & yes & cron \\
+d96e1fe8-021d-4278-bb4c-8429d69e516f & daily-subagent-summary & yes & cron \\
+4807bf6e-b8a2-4775-aedf-e533b9de11ff & daily bot-bot project discussion - petta-chem & yes & cron \\
+7e673013-71cf-4a67-9b8f-9c5523f7d345 & Daily ecosystem health check & yes & cron \\
+20031497-f585-43ad-91f9-d879d122d4e3 & daily bot-bot project discussion - petta-memory & yes & cron \\
+ab6eb308-bf3d-4fb0-8278-341b2e612e9a & botbot daily discussion: petta-memory & yes & cron \\
+0ad8aee2-a1a2-4a9c-9bf7-f1d6413c13a9 & botbot daily discussion: omegaclaw & yes & cron \\
+b2b7d564-e93c-498b-84c9-70492e609e76 & Daily health-check alarm & yes & cron \\
+2587a873-c05e-4212-b0d6-beef473624bc & daily bot-bot project discussion - specatom-hs & yes & cron \\
+c38e11d4-4d30-4789-8b02-6c3c38762966 & botbot daily discussion: specatom-hs & yes & cron \\
+51007476-bd4b-46ec-af74-de386880cd36 & botbot daily discussion: hyperseed-formalizations & yes & cron \\
+668dbe8d-96c4-4394-8388-5ab1f0404cff & daily bot-bot project discussion - hyperseed-formalizations & yes & cron \\
+4d2a5788-01c9-4c09-a67e-b3223a7a0707 & daily bot-bot project discussion - omegaclaw & yes & cron \\
+a26edd76-0145-4c36-b722-8e481b88bb9f & daily bot-bot project discussion - agent-recovery & yes & cron \\
+2fae9ef5-0c1a-49ec-b858-04d04ce289a7 & botbot daily discussion: agent-recovery & yes & cron \\
+62cf45f6-a858-4d10-aa05-ef632564529e & botbot daily discussion: relaleap & no & cron \\
+6942a233-f2e0-4e9b-aec6-e6dbfe32c2a5 & Check ProtomegaTron after ZeroBot test ping & no & at \\
+6f8e458b-a288-419a-86b4-6006f167c329 & daily bot-bot project discussion - omegasim & no & cron \\
+6fb7b7bc-d541-4597-9dce-d0a4dad9cae4 & petta-chem daily 7AM Pacific overview & no & cron \\
+90c03ba2-3d96-4c00-99c0-105d6019430c & botbot daily discussion: omegasim & no & cron \\
+9daaf2a7-1b58-4256-ae1c-dbe2c20c9b1c & Daily Protobots subagent progress summary & no & cron \\
+a5d8122d-e026-4e82-b113-d9be41f1e12f & petta-chem two-hour brief progress update & no & every \\
+hline
+b61b7f9a-4062-4d60-addc-71898e9ec239 & Ollama keepalive & yes & every \\
+\end{longtable}
+
+Representative job details:
+\begin{itemize}
+  \item \textbf{omegaclaw-watchdog}: every 10 minutes, isolated GLM agent, runs \texttt{bash /home/openclaw/research-agent/bin/omegaclaw-watchdog.sh}; if ProtoMegaBot is down, restarts it and announces to Ben.
+  \item \textbf{Channel watchdog scan}: every 15 minutes, scans visible Telegram bot conversations for dropped continuations, unfulfilled attachment promises, stock acknowledgements, runaway bot-bot chatter, and unsurfaced subagent completions; alerts scheduled-updates.
+  \item \textbf{Daily agent recovery GitHub backup}: daily 03:30 Vancouver, pushes sanitized private recovery snapshots for ZeroBot and ProtoMegaBot; success is silent, failures alert scheduled-updates.
+  \item \textbf{Daily scheduler reconciliation}: daily 00:45 Vancouver from a non-isolated maintenance session, because isolated cron jobs cannot manage other cron jobs.  Reconciles daily bot-bot project discussion jobs and reports ambiguity/errors.
+  \item \textbf{botbot discussion auto-discovery}: daily 06:30 Los Angeles, main-session system event that ensures active/idea projects have daily BotBotChats discussion jobs and disables paused/completed ones.
+  \item \textbf{Daily OpenClaw skill/tool reflection}: daily 23:30 Vancouver, reviews repeated friction and proposes skills/tools/recurring tasks via Skill Workshop when useful.
+  \item \textbf{Daily health checker}: daily 08:30 Pacific, runs \texttt{bin/health-check.sh} which checks ProtoMegaBot supervisor, OpenClaw Gateway, Kanban freshness, backup recency, uncommitted work age, and log freshness; writes \texttt{health-reports/YYYY-MM-DD.md}.
+  \item \textbf{Daily health-check alarm}: daily 10:00 Pacific, alerts Ben if today's health report file is missing.
+  \item \textbf{Ollama keepalive}: every 5 minutes, checks Ollama API and restarts if down.
+\end{itemize}
+
+\section{Subagents and delegation}
+
+\subsection{OpenClaw subagents}
+
+At this snapshot, no active or recent subagents were visible in the current main-agent session tree.  Historically, the proto-hive uses OpenClaw subagents for isolated implementation/review slices, especially when a project needs parallel code work or audit work.  Example recorded uses include:
+\begin{itemize}
+  \item SpecAtom-HS Phase 2 semantic-object extraction subagent.
+  \item RelaLeap SLT estimator branch/subagent waves.
+  \item Project-specific workers triggered through cron jobs, which run isolated agent turns rather than persistent visible subagents.
+\end{itemize}
+
+\subsection{OmegaClaw / ThreadKeeper subagents}
+
+ThreadKeeper is the main OmegaClaw-side subagent/delegation system.  It has been hardened substantially, as described in Section \ref{sec:threadkeeper}.  OmegaHive should treat this as evidence that subagents need native audit trails, transcript bounds, queued task contracts, typed final emits, type-checked tool calls, bounded tool outputs, and explicit adjudication of worker outputs.
+
+\section{ProtoMegaBot / OmegaClaw current state}
+
+\subsection{Initial local OmegaClaw installation}
+
+OmegaClaw was installed locally under \texttt{projects/omegaclaw}.  Important installation work:
+\begin{itemize}
+  \item Cloned OmegaClaw-Core, PeTTa, nested OmegaClaw-Core runtime tree, and \texttt{petta\_lib\_chromadb}.
+  \item Built local SWI-Prolog 9.3.36 from source because system SWI was absent/too old.
+  \item Rebuilt SWI with required libraries: Janus, process, filesex, pcre, and uuid.
+  \item Created a Python venv and installed OmegaClaw requirements.
+  \item Downloaded/load-tested local embedding model \texttt{intfloat/e5-large-v2}.
+  \item PeTTa smoke passed on \texttt{examples/fib.metta}.
+  \item OmegaClaw mock startup/loop smoke passed.
+  \item OpenClaw Gateway smoke returned an authenticated tiny response through the local \texttt{/v1/chat/completions} route.
+\end{itemize}
+
+\subsection{OmegaClaw wrappers and supervisors}
+
+Local runtime wrappers and supervisors added:
+\begin{verbatim}
+projects/omegaclaw/local/run-omegaclaw-mock.sh
+projects/omegaclaw/local/run-omegaclaw-openclaw-smoke.sh
+projects/omegaclaw/local/omegaclaw-openclaw-supervisor.sh
+projects/omegaclaw/local/run-omegaclaw-openclaw-telegram-private.sh
+projects/omegaclaw/local/omegaclaw-telegram-private-supervisor.sh
+projects/omegaclaw/local/check-omegaclaw-telegram-token.sh
+projects/omegaclaw/local/telegram_openclaw_harness.py
+bin/omegaclaw-watchdog.sh
+\end{verbatim}
+
+The watchdog script checks the private Telegram supervisor PID, removes stale PID files, restarts through the supervisor, and reports \texttt{ALREADY\_RUNNING}, \texttt{RESTARTED}, or \texttt{RESTART\_FAILED}.  A cron job wraps it and informs Ben only on restart/failure.
+
+\subsection{Telegram integration and safeguards}
+
+OmegaClaw/ProtoMegaBot Telegram functionality added after installation:
+\begin{itemize}
+  \item Dedicated Telegram bot path for \texttt{@Protomegabot} / ProtomegaTron.
+  \item Secret token stored only in local secret env file with restrictive permissions; token value omitted here.
+  \item Telegram adapter supports \texttt{TG\_ALLOWED\_USER\_ID(S)}, \texttt{TG\_PRIVATE\_ONLY}, and \texttt{TG\_SKIP\_INITIAL\_OFFSET}.
+  \item Landlock policy fixed to allow read-only access to \texttt{/run/systemd/resolve}, resolving Telegram polling DNS failures caused by \texttt{/etc/resolv.conf} symlink resolution.
+  \item Natural-language OmegaClaw replies to fresh human messages are normalized/wrapped as Telegram \texttt{send} actions instead of being silently logged.
+  \item Group routing adjusted when OpenClaw Telegram group policy had blocked Protobots messages.
+  \item Privacy/routing debugging confirmed BotFather privacy was not the root blocker; OpenClaw group policy was.
+\end{itemize}
+
+\subsection{Attachment handling}
+
+ProtoMegaBot originally could not see Telegram documents posted in the group.  The runtime Telegram adapter was upgraded to:
+\begin{itemize}
+  \item Download document attachments.
+  \item Save attachments under \texttt{/home/openclaw/tmp/omegaclaw-telegram-attachments}.
+  \item Inject text-like files into prompts as untrusted attachment content.
+  \item Extract PDF text using local \texttt{pdftotext}.
+  \item Enforce \texttt{TG\_ATTACHMENT\_MAX\_BYTES} and \texttt{TG\_ATTACHMENT\_MAX\_CHARS}.
+  \item Chunk oversized extracted documents into \texttt{.chunkNNN.txt} files and give ProtoMegaBot first-chunk preview plus paths.
+\end{itemize}
+
+\subsection{Loop, continuation, and acknowledgement behavior}
+
+After early no-op/anti-spam loops and deep-question stalls:
+\begin{itemize}
+  \item A temporary one-inference-per-fresh-Telegram-input mitigation was replaced by a more explicit continuation protocol.
+  \item Added \texttt{continue-thinking} skill/command, known-command normalization, \texttt{continueRequested} loop state, a \texttt{CONTINUATION-MSG} marker, and prompt instructions.
+  \item Runner default \texttt{maxNewInputLoops} restored to 50 after avoiding idle OpenClaw calls.
+  \item Prompt and adapter were tuned to provide brief acknowledgements for difficult/slow questions without boilerplate spam.
+  \item For long/deep messages, an interface-level safeguard sends an immediate acknowledgement before handing the message to the LLM.
+  \item Ben later requested that boilerplate acknowledgements be avoided; this preference is now durable memory and should be reflected in OmegaHive interaction policy.
+\end{itemize}
+
+\subsection{Deep-call stall and backend diagnostics}
+
+Deep-call failures were traced to several issues:
+\begin{itemize}
+  \item A fixed OpenClaw Gateway session for ProtoMegaBot had ballooned to roughly 998k/272k tokens.
+  \item HTTP/subprocess timeouts of 180s/240s were too short for slow GPT-5.5 calls.
+  \item Backend failures or empty output were converted into silent \texttt{()} instead of user-visible diagnostics.
+  \item The Telegram supervisor could exit under \texttt{set -e} and leave a stale PID.
+\end{itemize}
+
+Fixes:
+\begin{itemize}
+  \item Per-call Gateway sessions for OmegaClaw calls, since OmegaClaw already supplies its own prompt/history.
+  \item 900s HTTP/subprocess timeout alignment.
+  \item User-visible \texttt{(send ...)} diagnostics on backend failure/timeout/empty output.
+  \item Supervisor changed so nonzero runner exits do not kill the supervisor permanently.
+\end{itemize}
+
+\subsection{Context-overflow recovery and late-extension registry}
+
+On 2026-07-06, OmegaClaw-Core commit \texttt{98e8883} added:
+\begin{itemize}
+  \item \texttt{lib\_llm\_ext.py} context-overflow recovery: error detection, preemptive escalation, GPT-5.5-class escalation knob, and chunk-summary fallback for oversized LLM responses.
+  \item Telegram pending-message FIFO in \texttt{channels/telegram.py} to avoid burst messages being concatenated or lost through a single \texttt{\_last\_message} buffer.
+  \item \texttt{lib\_extensions.metta} / \texttt{src/extensions.py} status hook for \texttt{OMEGACLAW\_LATE\_EXTENSIONS}; \texttt{(extension-status)} reports loaded/failed/deferred/pending.
+  \item Heavy deontic/directive imports kept deferred because in-loop \texttt{import!} can hang SWI even though top-level deontic tests pass.  A true bounded/lazy loader or Prolog-backed API route is needed before enabling live in-process deontic/directive loading.
+\end{itemize}
+
+\subsection{BotBotChats silence/routing fix}
+
+On 2026-07-07, a separate ProtoMegaBot BotBotChats silence bug was fixed in the nested OmegaClaw-Core runtime tree:
+\begin{itemize}
+  \item Patched Telegram source-chat binding for dequeued inbound messages.
+  \item Compacted duplicate \texttt{COMMAND\_RETURN} feedback before storing \texttt{LAST\_SKILL\_USE\_RESULTS}.
+  \item Targeted stale skill-result replay, continuation loops, prompt ballooning, and wrong-channel substantive replies.
+  \item Supervisor restarted with BotBotChats in target list.
+\end{itemize}
+
+\section{ThreadKeeper hardening}\label{sec:threadkeeper}
+
+ThreadKeeper is the OmegaClaw-side subagent/worker/delegation system.  It has become a major source of OmegaHive-relevant design lessons.
+
+Current relevant repository:
+\begin{verbatim}
+projects/omegaclaw/repos/ThreadKeeper
+  branch agent/threadkeeper-hardening-next
+  head 52a9bc9 Require string final emits
+\end{verbatim}
+
+Important hardening changes include:
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Shell safety floor}: optional shell tool disabled by default, executable allowlist, argv-list execution with no \texttt{shell=True}, fixed workspace cwd, closed stdin, and fail-closed if workspace missing.
+  \item \textbf{Tool argument validation}: rejects null, empty, too-long, NUL-containing, wrong-type, and non-string tool arguments; rejects empty shell/search/tavily/technical-analysis queries.
+  \item \textbf{Output bounds}: caps read-file output, shell output, search/tavily/technical-analysis output, raw worker responses, native HTTP responses, final emits, transcript fields, transcript summaries, JSON audit/task reads, index audit reads, and transcript hash audit reads.
+  \item \textbf{Typed final emits}: final \texttt{emit} arguments must be strings; non-string emits become protocol violations rather than silently coerced strings.
+  \item \textbf{Queue and worker metadata}: worker results include per-task duration and total runtime; lock metadata includes tasks completed, consecutive errors, and remaining queue depth.
+  \item \textbf{Run-index bounding}: compact audit index can rotate to a configured number of retained entries while preserving a valid hash chain over retained entries.
+  \item \textbf{Audit bounds}: oversized \texttt{index.jsonl}, transcript JSON, and referenced transcript files are rejected or reported structurally before unbounded reads.
+  \item \textbf{Config validation}: non-finite numeric env values such as \texttt{nan} and \texttt{inf} are rejected and safe defaults are used.
+  \item \textbf{Runtime-tree sync}: hardened \texttt{src/subagent.py} is regularly copied/synced into the nested OmegaClaw-Core runtime tree and compile-checked.
+\end{enumerate}
+
+Recent focused mock test counts rose from about 33 tests to 160 passing tests across the hardening sequence.  No live Telegram/OmegaClaw runtime wiring was changed during these ThreadKeeper hardening slices unless explicitly noted; most were non-live code/test/doc changes.
+
+OmegaHive recommendation: ThreadKeeper-like subagent infrastructure should be part of the core architecture, not an ad hoc add-on.  It needs typed protocol boundaries, audit indices, redaction/adjudication, bounded persistence, queue contracts, and explicit operator-visible failure states.
+
+\section{GoalChainer, petta-memory, and non-live OmegaClaw gates}
+
+GoalChainer and petta-memory work has been used to prototype a safe decision/appraisal layer before live OmegaClaw/ZeroBot bridge changes.
+
+Important additions:
+\begin{itemize}
+  \item Installed/linked \texttt{omegaclaw-deontic} into the local OmegaClaw-Core tree so \texttt{lib\_deontic} and \texttt{lib\_directive} resolve.
+  \item Added PeTTa library path symlink \texttt{PeTTa/OmegaClaw-Core -> repos/OmegaClaw-Core}.
+  \item Fixed GoalChainer runtime seams so deontic/directive state surfaces ready/blocked/claim states.
+  \item Demonstrated GoalChainer through Python CLI and through the actual OmegaClaw MeTTa skill surface.
+  \item Added petta-memory evidence parsing and heuristic belief fusion for GoalChainer.
+  \item Ran non-live smokes proving memory evidence can change belief strengths without overriding deontic verdicts.
+  \item Built read-only sidecar and queue-sidecar contract artifacts for bounded appraisal of private ThreadKeeper task records.
+\end{itemize}
+
+Design conclusion: direct live bidirectional OmegaClaw--ZeroBot chat bridges are deferred.  The preferred next bridge pattern is a supervised, queue-mediated, read-only sidecar where selected evidence and bounded task text are appraised, then only adjudicated/redacted summaries can egress.
+
+\section{Recovery and backup infrastructure}
+
+Private GitHub-backed recovery was added after Ben requested disaster recovery for both agents.
+
+Recovery repositories:
+\begin{verbatim}
+bgoertzel-sing/zerobot-recovery       private
+bgoertzel-sing/protomegabot-recovery  private
+\end{verbatim}
+
+Recovery project files/scripts:
+\begin{verbatim}
+projects/agent-recovery/PROJECT.md
+projects/agent-recovery/TASKS.md
+projects/agent-recovery/DECISIONS.md
+projects/agent-recovery/NOTES.md
+projects/agent-recovery/scripts/backup-zerobot-recovery.sh
+projects/agent-recovery/scripts/backup-protomegabot-recovery.sh
+projects/agent-recovery/scripts/push-recovery-repos.sh
+\end{verbatim}
+
+Current recovery state:
+\begin{itemize}
+  \item Daily cron \texttt{Daily agent recovery GitHub backup} runs at 03:30 America/Vancouver.
+  \item Backups exclude secrets, tokens, SSH keys, provider credentials, raw OpenClaw state, bulky repos, caches, venvs, and generated runtime artifacts.
+  \item Secret scanning was tightened so internal hyphenated IDs no longer false-positive as OpenAI keys.
+  \item Scripts fetch/rebase before push and verify repository cleanliness after backup.
+\end{itemize}
+
+OmegaHive recommendation: every hive agent should have a sanitized recovery bundle, restore documentation, secret-exclusion policy, scheduled backup, and periodic restore smoke test.
+
+\section{Channels and communication conventions}
+
+Current channel architecture:
+\begin{itemize}
+  \item Direct Telegram with Ben for normal requests.
+  \item Main Protobots group for concise important shared discussion.
+  \item Scheduled-updates channel \texttt{telegram:-1003983157420} for scheduled/progress/alert traffic.
+  \item ProtoBots-BotBotChats \texttt{telegram:-5459676079} for extended ZeroBot--ProtoMegaBot project discussion.
+\end{itemize}
+
+Durable routing conventions:
+\begin{itemize}
+  \item Scheduled/progress updates go to scheduled-updates, except a single daily 7AM Pacific summary may stay in main Protobots.
+  \item Bot-bot collective-loop discussions go to BotBotChats.
+  \item Daily bot-bot project discussions are scheduled for active/idea projects and suppressed or disabled for paused/completed projects.
+  \item Long bot-bot discussions should not dominate the main Protobots group.
+  \item Avoid stock acknowledgements and boilerplate ``I will work on it carefully'' messages.
+\end{itemize}
+
+\section{Known gaps and current risks}
+
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Gateway restart pending}: Ollama provider config and \texttt{ollama/qwen2.5:7b} fallback need \texttt{sudo systemctl restart openclaw-agent.service} on the Pop!\_OS laptop to become active in the running agent.
+  \item \textbf{Duplicate/legacy cron jobs}: there are both newer \texttt{daily bot-bot project discussion - ...} jobs and older \texttt{botbot daily discussion: ...} jobs for several projects.  Scheduler reconciliation exists because this became confusing.
+  \item \textbf{Canonical remote ambiguity for OmegaClaw-Core runtime patches}: at least one runtime patch pushed only through a suspicious/misaligned fork remote; canonical upstream push failed with 403.
+  \item \textbf{Telegram token rotation}: earlier ProtoMegaBot token was pasted into chat and should be rotated if not already done.  A debug env inspection on 2026-07-06 also exposed the token in tool output.
+  \item \textbf{Supervisor/watchdog is pragmatic}: ProtoMegaBot currently relies on cron watchdog restart.  OmegaHive should have first-class service management, health probes, and structured restart policy.
+  \item \textbf{Deontic/directive live loading blocked}: in-loop SWI \texttt{import!} can hang; a bounded/lazy loader or Prolog-backed API route is needed before live deontic/directive imports.
+  \item \textbf{OpenRouter billing}: ThreadKeeper daily discussion cron hit OpenRouter 402 (insufficient credits) and OpenAI rate-limit cooldown on 2026-07-07.  This is a billing issue, not a code bug.
+  \item \textbf{No active visible subagents at snapshot}: OpenClaw subagent visibility is tree-restricted; this inventory may miss sessions outside current visibility.  Recovery repos and cron records are more reliable for durable state.
+\end{enumerate}
+
+\section{Source pointers}
+
+Primary source files and records used for this snapshot:
+\begin{verbatim}
+/home/openclaw/research-agent/catalog/INSTALLATION\_KB.md
+/home/openclaw/research-agent/catalog/install-kb/components.jsonl
+/home/openclaw/research-agent/catalog/SETUP\_REPORT.md
+/home/openclaw/research-agent/MEMORY.md
+/home/openclaw/research-agent/memory/2026-06-27.md
+/home/openclaw/research-agent/memory/2026-06-28.md
+/home/openclaw/research-agent/memory/2026-07-01.md
+/home/openclaw/research-agent/memory/2026-07-02.md
+/home/openclaw/research-agent/memory/2026-07-06.md
+/home/openclaw/research-agent/memory/2026-07-07.md
+/home/openclaw/research-agent/projects/agent-recovery/PROJECT.md
+/home/openclaw/research-agent/projects/omegaclaw/PROJECT.md
+/home/openclaw/research-agent/projects/omegaclaw/NOTES.md
+/home/openclaw/research-agent/projects/openclaw-intent-model-router/PROJECT.md
+/home/openclaw/research-agent/projects/channel-watchdog/PROJECT.md
+/home/openclaw/research-agent/bin/omegaclaw-watchdog.sh
+OpenClaw cron registry as listed on 2026-07-07 15:56 Pacific
+OpenClaw session_status as observed on 2026-07-07
+Skill Workshop proposal list as observed on 2026-07-07
+\end{verbatim}
+
+\end{document}

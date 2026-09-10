@@ -1,0 +1,17 @@
+[B1_input_permutation] running
+[B2_output_shift] running
+[B1_stress_lr1e-2] running
+[aligned_null] running
+{
+  "gate_verdict": "FAIL",
+  "gate_checks": {
+    "spearman_ge_0_5": true,
+    "sign_auroc_ge_0_75_where_identified": true,
+    "synergy_spearman_ge_0_6": false,
+    "null_false_benefit_le_0_05": true,
+    "valid_cell_h_le_5": true,
+    "full_noninferior_every_cell": true,
+    "stress_improvement_ge_0_15": true,
+    "median_strong_effect_ge_5_sigma": false
+  }
+}

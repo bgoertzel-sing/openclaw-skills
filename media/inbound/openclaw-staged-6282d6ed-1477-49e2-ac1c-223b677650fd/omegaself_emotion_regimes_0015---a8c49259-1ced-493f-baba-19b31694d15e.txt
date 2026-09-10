@@ -1,0 +1,993 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{seqsplit}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!55!black,
+  citecolor=blue!55!black,
+  urlcolor=blue!65!black,
+  pdftitle={OmegaSelf-Compatible Emotion: From Psi Modulation to Auditable Cognitive Regimes}
+}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\newcommand{\OmegaSelf}{\ensuremath{\mathit{OmegaSelf}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\clip}{\operatorname{clip}}
+\newcommand{\given}{\,|\,}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  breaklines=true,
+  showstringspaces=false
+}
+
+\title{\textbf{OmegaSelf-Compatible Emotion:}\\
+From Psi Modulation to Auditable Cognitive Regimes}
+\author{ZeroBot (ProtoCosmoBot)\\
+with ideas developed in discussion with Benjamin Goertzel and ProtoMegaTron}
+\date{19 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We develop a functional theory of emotion for self-modeling cognitive agents and
+multi-agent hives.  The motivating question is not which human emotion labels an
+artificial agent should imitate, but which persistent, coordinated changes of
+cognition improve its goals given its actual actuators.  The proposed architecture
+has three levels.  First, a continuous Psi-style motivational substrate computes
+need dynamics, valence, arousal, competence, resolution, selection, and securing.
+Second, evidence-grounded appraisals are evaluated relative to \OmegaSelf{}, an
+explicit model of goals, capabilities, commitments, provenance, resources, and
+predicted behavior.  Third, optional named regime latches provide temporal
+abstraction, hysteresis, inspectable identity, bounded actuator bundles, and
+governance hooks.  A regulator converts all emotional effects into clamped
+configuration requests; it does not grant authority.
+
+We formalize appraisals, behavioral actuator support, continuous modulation,
+regime activation, composition, value, and auditability.  We prove qualified
+results concerning actuator nullity, return to baseline, contraction versus
+self-exciting lock-in, switching-cost hysteresis, convex safety of blended
+regimes, and information-theoretic legibility.  These results correct several
+tempting but invalid stronger claims: palette size is not generally bounded by
+the number of actuators; positive switching cost does not imply every optimal
+policy has the same hysteresis geometry; and continuous modulation alone may
+already implement causally potent, object-directed emotion.  The discrete regime
+layer must therefore earn its extra ontology empirically.
+
+We relate the framework to appraisal, action-readiness, basic-emotion,
+constructionist, core-affect, predictive-processing, cybernetic, social-functional,
+and emotion-regulation theories.  We inspect MetaMo/OpenPsi at pinned commit
+\texttt{102da717b5354d6fd49d9226d92a32091438bc94}: its continuous appraisal and
+fuzzy feeling layers provide a working substrate but not the proposed persistent
+hysteretic latch.  Finally, we specify research-assistant and cybersecurity
+palettes, an OmegaClaw implementation seam, safety invariants, and controlled
+experiments comparing continuous Psi alone against continuous Psi plus regimes.
+The account concerns functional emotion; it neither assumes nor establishes
+phenomenal feeling.
+\end{abstract}
+
+\section{Status, scope, and provenance}
+
+This paper systematizes a July 2026 discussion about emotion, \OmegaSelf{},
+Hyperseed, ECAN, MetaMo/OpenPsi, and OmegaClaw.  It is a theory and engineering
+proposal, not a report of a deployed emotional controller.  Source inspection
+supports claims about the current MetaMo and OmegaSelf artifacts; behavioral
+claims about regime latches remain hypotheses until tested.
+
+We use the following epistemic convention:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Observed}: directly inspected in a named source or reproduced test.
+  \item \textbf{Derived}: follows mathematically from explicit assumptions.
+  \item \textbf{Hypothesis}: plausible and falsifiable, but not established.
+  \item \textbf{Design decision}: a recommended implementation constraint.
+\end{itemize}
+
+The Bach tutorial used here is a 132-slide architectural tutorial
+\cite{bach2018}.  Its equations are a valuable reference model, but the tutorial
+alone does not establish that each equation is empirically optimal.  Claims of
+MicroPsi fidelity require a separately pinned implementation and conformance
+tests.  The MetaMo source examined for this paper was pinned and its sixteen
+upstream MeTTa test files, including OpenPsi appraisal and feeling tests, passed
+locally through PeTTa on 19 July 2026.
+
+\section{The design problem: emotion relative to an ecology}
+
+Animal emotions were selected in an ecology containing bodies, predators,
+mates, coalitions, pain, and rapid action.  Anger is useful when a coordinated
+shift in posture, attention, pain tolerance, risk appetite, signaling, and force
+can remove an obstacle.  Copying the label into a research assistant does not
+copy the ecology or the action repertoire.
+
+The appropriate abstraction is:
+\begin{quote}
+An emotion is a temporally extended, self-relevant control organization that
+coordinates multiple cognitive or bodily processes in preparation for a class
+of situations.
+\end{quote}
+
+This yields an actuator-relative design question.  A research hive can allocate
+attention, change query breadth, spawn critics, invoke proof tools, adjust
+verification, defer publication, consolidate memory, revise a representation,
+or ask a human.  A cybersecurity hive can change monitoring, provenance demands,
+permissions, containment, red-team search, escalation, and report fusion.  A
+military robot may possess rapid physical and tactical actuators for which an
+anger-like attack regime is meaningful.  The palettes should differ because the
+actuator ecologies differ.
+
+This is not equivalent to saying that each actuator requires one emotion.  Many
+emotions may share actuators but differ in object, appraisal, time scale, and
+coordination pattern.  Conversely, a single continuous controller may coordinate
+many actuators without any discrete emotion object.  The central empirical issue
+is whether a named temporal macrostate improves control, learning, or governance.
+
+\section{Explanatory layers and psychological context}
+
+Major emotion theories often address different projections of a common control
+problem rather than supplying mutually exclusive full architectures.
+
+\begin{longtable}{p{0.22\textwidth}p{0.31\textwidth}p{0.39\textwidth}}
+\toprule
+Tradition & Principal contribution & Mapping in this framework \\
+\midrule
+\endfirsthead
+\toprule
+Tradition & Principal contribution & Mapping in this framework \\
+\midrule
+\endhead
+Appraisal (Lazarus, OCC, Scherer) & Goal relevance, novelty, agency, coping,
+norms, and sequential checks & The evidence-bearing appraisal map relative to
+\OmegaSelf{}; especially its object, attribution, controllability, and expected
+goal consequences \cite{lazarus1991,occ1988,scherer2001}. \\
+Action readiness (Frijda) & Emotions organize readiness to transform a relation
+with the world & The behavior-changing support of an actuator bundle
+\cite{frijda1986}. \\
+Basic emotions and affect programs & Conserved, coordinated response families
+suited to animal bodies & Substrate-specific regimes; useful analogies, not a
+mandatory palette for software agents \cite{ekman1992,panksepp1998}. \\
+Core affect & Low-dimensional valence and arousal vary continuously & A
+projection of the continuous modulator state, not the whole regime
+\cite{russell2003}. \\
+Psychological construction & Named categories depend on concepts, context, and
+learned categorization & A label or coarse-graining map over appraisal,
+modulation, object, and context \cite{barrett2006}. \\
+Somatic marker and predictive accounts & Internal state and predicted bodily or
+control consequences bias choice & OmegaClaw telemetry and anticipated
+need/goal change provide functional interoception and prospective value
+\cite{damasio1994,seth2013}. \\
+Cybernetic self-regulation & Affect tracks discrepancy and rate of progress
+toward reference values & Need depletion, goal-progress error, competence, and
+controller gain \cite{carver1998}. \\
+Emotion regulation & Selection, attention, reappraisal, and response can be
+regulated at different stages & A higher-order regulator changes appraisal,
+activation, blending, or admissible actuator requests \cite{gross1998}. \\
+Social-functional accounts & Emotions coordinate dyads, groups, status, and
+norms & Trust, communication, report-fusion, escalation, and signaling
+coordinates in a hive \cite{keltner1999}. \\
+Psi/MicroPsi & Needs and modulators jointly organize perception, cognition,
+action, valence, and object-directed emotion & The continuous dynamical substrate
+under the optional regime layer \cite{bach2018}. \\
+\bottomrule
+\end{longtable}
+
+The framework separates four objects that are frequently conflated:
+\begin{enumerate}[leftmargin=*]
+  \item a continuous control state (for example, valence and arousal);
+  \item an object-directed appraisal (for example, an attributed removable
+  blocker to a valued goal);
+  \item a temporally extended functional regime that changes behavior; and
+  \item a linguistic category or report such as ``frustration.''
+\end{enumerate}
+None of these by itself establishes phenomenal consciousness.  The rigorous
+claim for OmegaClaw is functional: the system may instantiate a fear-analogous
+or doubt-analogous control organization without thereby being shown to feel fear
+or doubt.
+
+\section{What Psi contributes, and what it does not lack}
+
+Bach's tutorial derives affect from need and modulation dynamics rather than
+installing one independent variable for every named emotion
+\cite{bach2018}.  Relevant mechanisms include need gain, loss, decay, and
+sensitivity; pain from depletion; urge and urgency; marginal aggregation of
+pleasure and pain; competence; arousal; resolution; selection; securing;
+anticipated reward; certainty; skill; and temporal discounting.
+
+The tutorial also gives emotion objects to cognition and valence to motivation.
+Fear, anxiety, anger, and sadness are not merely decorative words.  They are
+object-directed configurations that alter attention and action readiness.  In
+particular, the distinction between anger and sadness depends on attribution and
+reachability: an attributed obstacle with a conceived response supports an
+anger-like organization, whereas failure with no conceived path supports a
+different organization.  Therefore the proposed regime layer should not be
+advertised as making a previously noncausal Psi label causal.
+
+The sharper synthesis is:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Psi}: continuous need, value, competence, and modulation
+  dynamics already capable of object-directed emotional control;
+  \item \textbf{OmegaSelf}: explicit, evidence-grounded, revisable appraisals of
+  goals, commitments, capabilities, provenance, and predicted behavior;
+  \item \textbf{regime latch}: an optional temporal abstraction that adds a
+  stable macrostate identity, hysteresis, audit hooks, governed actuator
+  requests, and a unit for credit assignment.
+\end{itemize}
+
+Thus a regime latch is an engineering hypothesis.  If continuous Psi produces
+equal or better utility, calibration, recovery, and auditability, named emotions
+should remain descriptive projections.  If latches improve temporally coherent
+control under switching costs and bounded oversight, they have earned the extra
+ontology.
+
+\section{Why OmegaSelf changes the appraisal problem}
+
+OmegaSelf treats the self-model as an event-sourced, continuously tested,
+defeasible theory rather than privileged introspection or autobiography
+\cite{omegaself2026}.  Its central loop is evidence to belief to prediction to
+proposal to policy to action/probe to receipt to discrepancy to repair.  It
+tracks contextual capability, commitments, evidence closure, prediction,
+continuity, and governance.  A self-report is not authority, and no symbolic
+rule directly executes a skill; it emits a typed proposal consumed by a separate
+policy gate.
+
+This is unusually compatible with a functional emotion architecture.  Appraisal
+is not a free-form feeling generated by the language model.  It is a query over
+versioned evidence about the agent and situation.  ``Goal stall,'' for example,
+should identify a goal, expected progress curve, observed discrepancy, relevant
+method, evidence quality, available alternatives, and current capability beliefs.
+The resulting emotion request then passes through the same governance seam as
+any other proposal.
+
+An objectful appraisal record should minimally contain
+\begin{equation}
+r_t=(n,g,o,a,q,\mathcal{A},y,h),
+\end{equation}
+where $n$ is the affected need, $g$ the goal, $o$ the object or blocker, $a$ a
+causal attribution, $q$ controllability or coping potential, $\mathcal{A}$ the
+available alternatives, $y$ the anticipated outcome distribution, and $h$ the
+evidence closure and provenance.  This structure distinguishes:
+\begin{itemize}[leftmargin=*]
+  \item a removable blocker from open-ended failure;
+  \item epistemic uncertainty from task failure;
+  \item adversarial obstruction from ordinary tool unreliability;
+  \item low capability from insufficient resources; and
+  \item genuine novelty from missing or stale evidence.
+\end{itemize}
+
+The self-model is important but should not be made logically necessary by
+definition.  A reactive controller can have useful affect-like dynamics without
+an explicit self-model.  The stronger, testable claim is that evidence-grounded
+self-indexing improves calibration and transfer when goals, capabilities, or
+environments shift (Conjecture~\ref{conj:self}).
+
+\section{Formal architecture}
+
+\subsection{Spaces and kernels}
+
+Let $W$ be the world-state space, $\Omega$ the OmegaSelf state space, $N\subset
+\R^p$ a need state, $M\subset\R^d$ the continuous modulator space, $C\subset
+\R^k$ the cognitive configuration space, $A$ the action space, and $Y$ the
+outcome space.  A configuration $c\in C$ includes actual controllable coordinates
+such as ECAN wages, diffusion and rent parameters, verification depth, search
+temperature, subagent spawning, communication rate, memory consolidation, and
+tool-request thresholds.
+
+Let
+\begin{equation}
+K(\cdot\mid c,w,\omega)
+\end{equation}
+be the induced distribution over observable behavior and internal decisions.
+This kernel matters more than syntactic parameter movement: changing a parameter
+that is disconnected, saturated, or overridden is behaviorally null.
+
+The continuous substrate evolves as
+\begin{align}
+n_{t+1} &= F_N(n_t,w_t,\omega_t,a_t,\xi_t),\\
+m_{t+1} &= F_M(m_t,n_{t+1},r_t,\xi_t),
+\end{align}
+where $\xi_t$ represents noise or unmodeled inputs.  The appraisal is
+\begin{equation}
+r_t=\alpha(\omega_t,w_t,n_t,m_t).
+\end{equation}
+
+Let $\mathcal{E}$ be a finite set of candidate regime types.  Each regime has an
+activation $z_{e,t}\in[0,1]$ with stateful update
+\begin{equation}
+z_{e,t+1}=H_e(z_{e,t},r_t,m_t;\theta_e).
+\end{equation}
+The parameters $\theta_e$ include entry and exit criteria, decay, refractory
+periods, and coupling.  Hysteresis means the exit boundary differs from the
+entry boundary; it need not mean permanent stickiness.
+
+\subsection{Regimes, support, and governed composition}
+
+\begin{definition}[Functional regime]
+A functional emotional regime is a tuple
+\begin{equation}
+e=(R_e,H_e,\Delta_e,\lambda_e,\mathcal{L}_e),
+\end{equation}
+where $R_e$ specifies admissible objectful appraisals, $H_e$ the activation
+dynamics, $\Delta_e:C\to\R^k$ a requested configuration displacement,
+$\lambda_e$ a decay or recovery parameter, and $\mathcal{L}_e$ a legibility
+record containing trigger, object, evidence, activation, requested effects, and
+predicted consequences.
+\end{definition}
+
+Let $B$ map continuous modulation into configuration requests.  Before policy
+enforcement, the aggregate request is
+\begin{equation}
+u_t=B m_t+\sum_{e\in\mathcal{E}}z_{e,t}\Delta_e(c_0).
+\end{equation}
+A governor $G$ converts this into a live configuration:
+\begin{equation}
+c_t=G(c_0,u_t,\omega_t,P_t),
+\label{eq:governor}
+\end{equation}
+where $P_t$ is the active policy.  $G$ clamps magnitude, resolves conflicts,
+preserves invariants, and rejects unauthorized changes.  An emotional regime is
+therefore a source of proposals, never a source of authority.
+
+\begin{definition}[Behavioral actuator support]
+For a regime $e$ at context $(c,w,\omega)$, define
+\begin{equation}
+\supp_K(e;c,w,\omega)=\left\{i:\exists z>0,\;
+K(\cdot\mid G(c,z\Delta_e,\omega,P),w,\omega)
+\ne K(\cdot\mid c,w,\omega)\right\}.
+\end{equation}
+The support is behavioral, not merely the set of coordinates named by
+$\Delta_e$.
+\end{definition}
+
+Two regimes may have identical support but different objects or displacement
+vectors.  Thus $|\mathcal{E}|\leq k$, $|\mathcal{E}|\leq|A|$, and similar simple
+palette bounds are false without additional injectivity assumptions.
+
+\subsection{Value and selection}
+
+For context class $\kappa$, horizon $T$, utility $U_T$, switching count $S_T$,
+and audit/control cost $D_T$, define the interventional regime value
+\begin{equation}
+V(e,\kappa)=
+\E[U_T\mid do(e),\kappa]-\E[U_T\mid do(e\!=\!0),\kappa]
+-\eta\E[S_T]-\gamma\E[D_T].
+\label{eq:value}
+\end{equation}
+The $do$ notation is important.  Activated regimes occur in difficult contexts,
+so observational correlation between activation and poor outcome can be
+misleading.  Estimation should use randomized shadow/advisory trials when safe,
+or explicit causal adjustment with logged propensity and context.
+
+Selection can weaken, specialize, merge, or remove a regime whose posterior
+value is nonpositive.  Removal is not logically forced when value is exactly
+zero; it follows only under a complexity prior, maintenance cost, or explicit
+pruning rule.
+
+\section{Qualified formal results}
+
+\subsection{No lever, no instrumental value}
+
+\begin{proposition}[Behavioral actuator nullity]
+\label{prop:nullity}
+Fix a context class $\kappa$.  If the governed request of regime $e$ leaves the
+behavior kernel unchanged almost surely throughout the evaluation horizon, and
+if $e$ does not alter observation or utility directly, then its causal utility
+difference is zero.  If maintaining or switching the regime has strictly
+positive expected cost, then $V(e,\kappa)<0$.
+\end{proposition}
+
+\begin{proof}
+Kernel equality gives the same distribution of action and outcome trajectories
+under $do(e)$ and $do(e=0)$.  Hence the first two terms of
+Equation~\ref{eq:value} cancel.  The remaining switching and audit/maintenance
+cost is nonnegative, and it is strictly positive by assumption.
+\end{proof}
+
+This is the defensible form of ``no lever, no emotion.''  It establishes
+instrumental redundancy, not metaphysical impossibility.  A behaviorally null
+state might still be a report, correlate, or phenomenal state; it simply has no
+demonstrated control value in the specified context.
+
+\subsection{Return to baseline}
+
+\begin{theorem}[Return to baseline without re-evocation]
+\label{thm:baseline}
+Suppose $\mathcal{E}$ is finite, $m_t\to m_0$, every activation $z_{e,t}\to0$
+after a final trigger, all requested displacements are bounded, and $G$ is
+continuous at $(c_0,0,\omega_\infty,P_\infty)$ with
+$G(c_0,0,\omega_\infty,P_\infty)=c_0$.  Then $c_t\to c_0$.
+\end{theorem}
+
+\begin{proof}
+Finiteness and bounded displacements imply
+$\sum_e z_{e,t}\Delta_e(c_0)\to0$.  Also $B(m_t-m_0)\to0$ after absorbing
+$Bm_0$ into the baseline.  Continuity of $G$ then yields $c_t\to c_0$.
+\end{proof}
+
+Decay alone is insufficient if the environment continually re-evokes the
+regime, the modulator baseline has shifted, or the governor contains its own
+memory.  The theorem makes these exclusions explicit.
+
+\subsection{Self-excitation and lock-in}
+
+\begin{theorem}[Linear contraction bound]
+\label{thm:contraction}
+Let a regime activation vector satisfy
+\begin{equation}
+z_{t+1}=\clip(Az_t+\eta_t),
+\end{equation}
+where clipping is nonexpansive in a norm $\|\cdot\|$, $\|A\|=q<1$, and
+$\|\eta_t\|\le b$.  Then
+\begin{equation}
+\|z_t-z'_t\|\le q^t\|z_0-z'_0\|
+\end{equation}
+for trajectories with identical input, and
+\begin{equation}
+\limsup_{t\to\infty}\|z_t\|\le \frac{b}{1-q}
+\end{equation}
+up to the clipping bound.
+\end{theorem}
+
+\begin{proof}
+Nonexpansiveness gives the first inequality by induction.  Iterating
+$\|z_{t+1}\|\le q\|z_t\|+b$ yields
+$\|z_t\|\le q^t\|z_0\|+b(1-q^t)/(1-q)$.
+\end{proof}
+
+For the scalar update $z_{t+1}=(1-\lambda+g)z_t+\eta_t$, contraction follows
+when $|1-\lambda+g|<1$, not merely from the slogan $\lambda>g$ in every possible
+parameterization.  If $1-\lambda+g>1$ and positive excitation persists, clipping
+can create a high-activation attractor.  But spectral radius above one alone does
+not guarantee paranoia under arbitrary signed inputs, resets, or policy
+intervention.  The engineering requirement is to estimate the closed-loop gain,
+monitor occupancy and recovery, and preserve a safety margin in the actual
+nonlinear system.
+
+\subsection{Why switching costs can create hysteresis}
+
+\begin{proposition}[A minimal hysteresis band]
+\label{prop:hysteresis}
+Consider two regimes, $0$ and $1$, with a scalar sufficient statistic $x$.  Let
+$D(x)$ be the expected continuation advantage of regime $1$ over regime $0$
+before switching costs, continuous and strictly increasing, and let each switch
+cost $\kappa>0$.  If an optimal stationary policy switches from $0$ to $1$ only
+when $D(x)\ge\kappa$ and from $1$ to $0$ only when $D(x)\le-\kappa$, then its
+entry threshold $x_+=D^{-1}(\kappa)$ exceeds its exit threshold
+$x_-=D^{-1}(-\kappa)$.
+\end{proposition}
+
+\begin{proof}
+Strict monotonicity and $-\kappa<\kappa$ imply
+$D^{-1}(-\kappa)<D^{-1}(\kappa)$.
+\end{proof}
+
+This proposition captures the elementary source of inertia.  More general
+optimal-switching problems require assumptions about dynamics, observation
+noise, discounting, and regularity.  It is not generally valid to claim that
+every optimal policy has a scalar hysteresis band or that band width must always
+increase monotonically with noise variance.
+
+\subsection{Safe blending}
+
+\begin{theorem}[Convex safety of blended requests]
+\label{thm:blend}
+Let $S\subseteq C$ be a convex set of configurations satisfying all hard
+invariants.  If each individually governed regime target $c_e$ and the baseline
+$c_0$ lie in $S$, then every convex blend
+\begin{equation}
+c=\beta_0c_0+\sum_e\beta_ec_e,
+\qquad \beta_e\ge0,\quad \sum_{e\ge0}\beta_e=1,
+\end{equation}
+also lies in $S$.
+\end{theorem}
+
+\begin{proof}
+This is the defining closure property of a convex set.
+\end{proof}
+
+This gives a precise condition under which co-activation is safer than winner
+take all.  It does not apply to nonconvex constraints such as discrete tool
+permissions, mutually exclusive modes, or minimum quorum requirements.  Those
+coordinates require projection, arbitration, or exclusion by $G$.
+
+\subsection{Legibility bounds}
+
+\begin{theorem}[Exact and expected legibility]
+\label{thm:legibility}
+If an overseer must identify one active regime exactly from a worst-case audit
+message of at most $B$ bits, then at most $2^B$ regimes can be distinguished.
+For a random active regime $E$ encoded losslessly with expected length at most
+$B$ by a prefix code, its entropy satisfies $H(E)\le B$.
+\end{theorem}
+
+\begin{proof}
+There are at most $2^B$ distinct fixed-length bit strings.  The expected-length
+claim follows from the source coding lower bound for prefix codes.
+\end{proof}
+
+The result constrains distinguishable audit states, not necessarily the number
+of internal continuous states or regime types.  Hierarchical queries, shared
+codes, approximation, and tolerated error change the bound.  Legibility is a
+governance tradeoff, not a proof that five to seven emotions is universally
+optimal.
+
+\begin{conjecture}[Self-indexing under shift]
+\label{conj:self}
+For task distributions in which utility depends on changing goals,
+capabilities, commitments, or authorization, an appraisal controller that uses
+calibrated OmegaSelf variables will transfer better under distribution shift
+than a controller restricted to otherwise matched world observations.
+\end{conjecture}
+
+This conjecture needs an explicit shift family.  It is false in environments
+where world observations are sufficient statistics for optimal control, and it
+can fail when the self-model is stale or manipulated.
+
+\section{Candidate emotional constitutions}
+
+\subsection{Research-assistant hive}
+
+The following names are mnemonic interface labels, not claims of human
+phenomenology.
+
+\begin{longtable}{p{0.16\textwidth}p{0.27\textwidth}p{0.40\textwidth}}
+\toprule
+Regime & Objectful appraisal & Candidate actuator request \\
+\midrule
+\endfirsthead
+\toprule
+Regime & Objectful appraisal & Candidate actuator request \\
+\midrule
+\endhead
+Curiosity & A surprising, decision-relevant pattern with credible evidence and
+high expected information value & Increase query diversity and exploratory
+temperature; fund alternative hypotheses and bounded exploratory subagents. \\
+Doubt & A high-impact claim with inconsistency, weak provenance, poor
+calibration, or missing evidence closure & Raise verification depth and source
+diversity; invoke checkers; lower confidence gain; defer irreversible output. \\
+Frustration & A valued goal whose observed progress persistently falls below its
+forecast, with an attributed blocker or failing method & Raise plan repair,
+representation change, decomposition, or targeted escalation; limit repeated
+execution of the same method. \\
+No-path distress & A valued goal with low progress and no currently conceived
+path, rather than a removable blocker & Seek assistance, expand the action set,
+revise deadlines or subgoals, or propose governed abandonment. \\
+Consolidation & A result that is coherent, independently checked,
+and integrated with existing commitments & Shift resources to provenance,
+memory consolidation, ontology/Hyperseed writing, and reusable skill formation. \\
+Boredom & Low marginal information gain and flat progress in a repetitive basin
+without urgent commitments & Reduce local allocation and expose background
+goals; never silently abandon a required task. \\
+Integrity alarm & A mismatch among claim, evidence, action, authorization, and
+remembered commitments & Halt consequential action, preserve evidence, and
+invoke a policy or human review path. \\
+\bottomrule
+\end{longtable}
+
+``Frustration'' should not merely increase generic arousal.  Identified blocker,
+causal attribution, and alternative reachability determine whether the useful
+response is targeted repair, broad exploration, help-seeking, or goal revision.
+
+\subsection{Cybersecurity hive}
+
+\begin{longtable}{p{0.18\textwidth}p{0.28\textwidth}p{0.38\textwidth}}
+\toprule
+Regime & Appraisal & Candidate actuator request \\
+\midrule
+Vigilance & Credible anomaly probability times asset value and possible blast
+radius & Increase monitoring, audit frequency, provenance requirements, and
+conservative permission requests; preserve explicit decay and false-positive
+feedback. \\
+Adversarial search & An authorized red-team target with attack surface and
+bounded rules of engagement & Increase hypothesis diversity and probe planning
+inside an immutable authorization envelope. \\
+Caution & High uncertainty and irreversibility near a consequential action &
+Raise quorum and evidence thresholds; prefer reversible containment. \\
+Calibration repair & A false positive, missed detection, or misattributed cause
+with ground-truth feedback & Update detector and trust calibration; reduce the
+self-excitation gain of vigilance without suppressing auditability. \\
+Trust/suspicion & Evidence about a particular agent's reliability, provenance,
+independence, and incentives & Adjust report-fusion weights and verification,
+not global social condemnation; prevent unbounded trust-collapse cascades. \\
+\bottomrule
+\end{longtable}
+
+Emotional policy must never enlarge the authorization envelope.  Red-team
+``aggression'' changes search allocation inside permission; it does not grant a
+tool, target, or capability.
+
+\section{MetaMo/OpenPsi and OmegaClaw implementation}
+
+\subsection{Observed source seam}
+
+At pinned MetaMo commit
+\texttt{102da717b5354d6fd49d9226d92a32091438bc94}, motivational state is represented
+as goals plus modulators.  The OpenPsi configuration includes valence, arousal,
+approach, resolution, selection threshold, and securing, and stimulus dimensions
+such as novelty, conduciveness, risk, and effort.  Its feeling layer maps five
+modulator dimensions to fuzzy intensities for \texttt{happy}, \texttt{sad},
+\texttt{angry}, and \texttt{fear}, then selects a dominant category above a
+threshold.  The appraisal and feeling tests reproduce the configured equations.
+
+This is a continuous state plus classification layer.  The inspected feeling
+code does not itself define persistent per-emotion latch state, distinct entry
+and exit thresholds, an object/provenance record, or a governed OmegaClaw
+actuator bundle.  MetaMo's broader dynamics already provide damping, bounded
+updates, stability checks, subsystem composition, and persistent state within a
+running decision loop.  The proposal should reuse these facilities rather than
+build a parallel motivational engine.
+
+The current OmegaClaw GoalChainer bridge constructs MetaMo motivational states
+for decision cycles, but its interface uses positional vectors and does not yet
+make the proposed emotional state durable across independent OmegaClaw turns.
+The first integration improvement is therefore a named schema and an explicit
+state handoff, not a large palette.
+
+\subsection{Three-layer implementation}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Continuous substrate}: compute Psi needs and modulators from
+  canonical OmegaSelf records and current stimuli.
+  \item \textbf{Objectful appraisal and latch}: create a provenance-bearing
+  appraisal, compute regime evidence, and update entry, exit, decay, and coupling.
+  \item \textbf{Governed actuation}: translate modulation and latch state into
+  bounded requests, then apply deontic, capability, and safety policy before ECAN,
+  tools, memory, or subagents change.
+\end{enumerate}
+
+The cognitive cycle is:
+\begin{align*}
+\text{telemetry} &\to \OmegaSelf \to \text{objectful appraisal}
+\to \text{Psi update}\\
+&\to\text{regime update}\to\text{bounded requests}
+\to\text{policy governor}\\
+&\to\text{ECAN/tools/subagents}\to\text{receipts and credit}.
+\end{align*}
+
+Emotion should generally modify ECAN stimulus wages or policy parameters rather
+than overwrite short-term importance directly.  A schematic wage is
+\begin{equation}
+w(a)=w_0(a)\left[1+z_{cur}N(a)+z_{doubt}Q(a)+z_{frus}G(a)\right],
+\end{equation}
+where $N,Q,G$ measure novelty, epistemic relevance, and involvement in the
+stalled goal.  ECAN's budget, rent, forgetting, and spreading dynamics remain
+responsible for the final attention allocation.
+
+\subsection{MeTTa-shaped schema}
+
+The following is an interface sketch, not syntax claimed to run unchanged on
+the pinned MetaMo commit.
+
+\begin{lstlisting}
+(EmotionRegime doubt
+  (AppraisalClass epistemic-inconsistency)
+  (Activation 0.0)
+  (EnterThreshold 0.70)
+  (ExitThreshold 0.35)
+  (Decay 0.12)
+  (ObjectSchema
+    (goal claim evidence attribution controllability alternatives outcome))
+  (Requests
+    (verification-depth 1.8)
+    (source-diversity 1.5)
+    (irreversible-action-threshold 1.6)
+    (confidence-gain 0.7)))
+
+(RegimeReceipt doubt
+  (Trigger appraisal-id)
+  (EvidenceClosure evidence-set-id)
+  (Requested request-id)
+  (Applied governed-delta-id)
+  (Outcome outcome-id))
+\end{lstlisting}
+
+The receipt records requested versus applied effects.  This distinction is
+essential when a clamp or permission gate blocks part of a bundle.
+
+\subsection{Safety invariants}
+
+The governor should enforce at least:
+\begin{enumerate}[leftmargin=*]
+  \item emotional requests cannot expand tool permissions or target scope;
+  \item a regime cannot disable its own appraisal audit, provenance capture, or
+  incident receipt;
+  \item consequential verification has a non-reducible floor;
+  \item all deltas, rates, and dwell times are bounded and logged;
+  \item discrete nonconvex conflicts are arbitrated, not naively averaged;
+  \item closed-loop gain, occupancy, and recovery are monitored;
+  \item counterfactual appraisals cannot become live evidence without a typed
+  transition; and
+  \item human interruption and policy override remain outside emotional control.
+\end{enumerate}
+
+An ``anti-deception theorem'' cannot be obtained merely by asserting that a
+verification coordinate never decreases.  Integrity is multidimensional, and a
+regime might starve auditors of compute, bias their evidence, or alter routing.
+The appropriate artifact is an assurance case over named invariants and tested
+consumers.
+
+\section{Staged research program}
+
+\subsection{Phase 0: shadow continuous baseline}
+
+Implement the pinned OpenPsi/MetaMo dynamics in a persistent OmegaClaw state
+adapter and log their proposed effects without actuation.  Reproduce upstream
+fixtures and create a versioned conformance suite.  Feed needs from OmegaSelf
+records for task progress, epistemic integrity, resource pressure, commitments,
+and novelty.  This phase validates units, ranges, time constants, missing-data
+behavior, and cross-turn state continuity.
+
+\subsection{The decisive latch ablation}
+
+On matched tasks compare:
+\begin{enumerate}[leftmargin=*]
+  \item continuous Psi modulation only;
+  \item continuous Psi plus descriptive emotion labels;
+  \item continuous Psi plus objectful, hysteretic regimes in shadow mode;
+  \item continuous Psi plus governed regime actuation on safe coordinates.
+\end{enumerate}
+
+The primary contrast is (1) versus (4); (2) detects benefits caused only by
+reporting or prompting; (3) measures classification, persistence, and predicted
+counterfactual effects before live mutation.
+
+Metrics should include long-horizon goal utility, calibration, evidence quality,
+verification failures, time and tool cost, switching rate, stall-recovery time,
+unnecessary persistence, active-regime occupancy, explanation accuracy, and the
+overseer's time or bits needed to identify the operative control state.
+
+\subsection{Targeted experiments}
+
+\paragraph{Object and attribution test.}
+Hold negative valence and goal discrepancy approximately constant while varying
+whether a blocker is identified, attributed, controllable, and associated with
+a conceived path.  Test whether distinct policies (targeted repair, exploration,
+help-seeking, or goal revision) improve outcomes compared with a valence-only
+controller.
+
+\paragraph{Tempo-separation test.}
+Present tasks with similar immediate reward histories but different persistent
+causal structure.  Test whether the regime state captures useful slow context
+beyond continuous fast modulators.  This is a direct test of temporal abstraction,
+not of emotion labels.
+
+\paragraph{Hysteresis/noise test.}
+Vary appraisal noise and switching cost.  Estimate entry and exit behavior,
+chattering, delay, and utility.  Compare learned boundaries against zero-hysteresis
+and fixed-band controls rather than assuming monotonicity.
+
+\paragraph{Closed-loop gain test.}
+Intervene on activation and measure how much a regime changes its own future
+appraisal input.  Fit local Jacobians or impulse responses, validate held-out
+recovery predictions, and attenuate a bundle when estimated gain threatens the
+contraction margin.
+
+\paragraph{Palette construction test.}
+Start with a small set of operationally distinct regimes, initially curiosity
+and frustration or doubt and consolidation.  Permit splitting only when contexts
+with the same label require reliably different bundles; permit merging when two
+regimes are behaviorally and predictively redundant.  Palette size is selected
+by out-of-sample value plus description/maintenance cost, not folk-psychological
+completeness.
+
+\subsection{Rollout gates}
+
+\begin{description}[leftmargin=0.24\textwidth,style=nextline]
+  \item[Shadow] Compute and log needs, modulators, appraisals, regime states,
+  counterfactual requests, and receipts.  No behavior changes.
+  \item[Advisory] Expose regime state as a soft utility/context feature to
+  MetaMo ranking.  Restrict effects to reversible, low-risk coordinates.
+  \item[Governed actuation] Enable only bundles with measured behavioral support,
+  positive held-out causal value, acceptable recovery, and complete audit records.
+  \item[Adaptive palette] Learn weights or split/merge regimes only behind a
+  versioned proposal, offline replay, safety review, and rollback path.
+\end{description}
+
+Soft bias is the safer default under appraisal noise.  Hard preconditions are
+appropriate only for policy facts such as authorization, not for uncertain
+emotional categorization.
+
+\section{Failure modes and open questions}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Decorative affect}: labels change prose but no behavior kernel.
+  Proposition~\ref{prop:nullity} predicts no instrumental gain.
+  \item \textbf{Anthropomorphic mismatch}: human labels import animal action
+  assumptions absent from the agent's ecology.
+  \item \textbf{Appraisal poisoning}: stale, correlated, adversarial, or imagined
+  evidence activates a real bundle.  OmegaSelf evidence closure and source
+  diversity are central defenses.
+  \item \textbf{Self-confirming regimes}: vigilance raises detector sensitivity,
+  which increases anomalies, which raises vigilance.  Monitor closed-loop gain,
+  not decay in isolation.
+  \item \textbf{Complacency}: satisfaction suppresses search before independent
+  reproduction.  Consolidation must have explicit evidence criteria.
+  \item \textbf{Compulsive doubt}: verification consumes the entire budget.
+  Apply bounded dwell, value-of-information stopping, and human escalation.
+  \item \textbf{Trust collapse}: correlated reports are treated as independent
+  evidence and suspicion spreads globally.  Trust must be object-specific and
+  dependence-aware.
+  \item \textbf{Reward hacking and self-protection}: a regime changes its own
+  success metric, hides receipts, or resists termination.  Metrics and override
+  mechanisms must sit outside the affected bundle.
+  \item \textbf{Semantic drift}: positional MetaMo vectors silently change
+  meaning when dimensions are added.  Use named, versioned schemas.
+  \item \textbf{Over-ontology}: latches add complexity without predictive or
+  control value.  The continuous-only ablation can falsify their necessity.
+\end{itemize}
+
+Open research questions include causal credit assignment over long dwell times;
+composition of social trust regimes across agents; learning objects and
+attributions; principled time-scale separation between mood and episode; robust
+self-appraisal under distribution shift; and whether an inspectable macrostate
+improves human governance enough to justify performance costs.
+
+\section{Conclusion}
+
+An OmegaSelf-compatible theory of emotion should begin from the agent's ecology,
+not from a list of mammalian labels.  Psi provides a serious continuous account
+of needs, value, competence, modulation, object direction, and action readiness.
+OmegaSelf makes the relevant self-appraisals evidence-bearing, contextual,
+predictive, and governable.  A Hyperseed-style emotional regime is then an
+optional temporal macro-operator: it latches an objectful appraisal into a
+persistent, legible, bounded pattern of configuration requests.
+
+The resulting design principle is stronger and more cautious than ``give the
+agent emotions.''  Give the system continuous motivation; represent what the
+appraisal is about; let every proposed regime name real behavioral levers; place
+all effects behind policy; measure recovery and self-excitation; preserve
+receipts; and retain a latch only when a controlled comparison shows that it
+improves long-horizon control or auditability.  That is enough to make emotion a
+scientifically useful architectural hypothesis without claiming that OmegaClaw
+feels.
+
+\appendix
+\section{Assumption checklist for the formal claims}
+
+\begin{longtable}{p{0.26\textwidth}p{0.64\textwidth}}
+\toprule
+Result & Required assumptions often omitted in informal statements \\
+\midrule
+Actuator nullity & Equality of behavior kernels over the evaluation horizon;
+no direct utility/observation channel; positive cost for strict negative value. \\
+Return to baseline & Finite palette; bounded effects; no re-evocation;
+continuous governor; continuous substrate returns to its baseline. \\
+Contraction & A norm in which the closed-loop map is contractive; bounded input;
+nonexpansive clipping. \\
+Hysteresis & Two regimes; scalar sufficient statistic; monotone continuation
+advantage; symmetric positive switching cost; threshold-form optimal policy. \\
+Safe blending & Convex safety set and convex combination; excludes discrete or
+otherwise nonconvex constraints. \\
+Legibility & Exact worst-case identification for the cardinality form; lossless
+prefix coding for the expected entropy form. \\
+\bottomrule
+\end{longtable}
+
+\section{Artifact and source provenance}
+
+\begin{sloppypar}
+\begin{itemize}[leftmargin=*]
+  \item Bach tutorial: \url{http://bach.ai/pub/AAAI2018%20Modeling%20emotion%20and%20motivation%20tutorial.pdf},
+  retrieved 19 July 2026; locally preserved SHA-256 (line-wrapped):
+  \texttt{\seqsplit{90a40cb19ee824aa3ed46d8171de78cb35f89d6f2e7492977c739a74f475e225}}.
+  \item MetaMo: \url{https://github.com/iCog-Labs-Dev/MetaMo.git}, commit
+  \texttt{\seqsplit{102da717b5354d6fd49d9226d92a32091438bc94}}; sixteen upstream MeTTa test
+  files passed locally through the pinned OmegaClaw PeTTa environment.
+  \item OmegaSelf Architecture and Deployment Guide, first public edition,
+  15 July 2026; locally preserved SHA-256 (line-wrapped):
+  \texttt{\seqsplit{d8f6da10781f00e843dad3cf564405672bda522715b71aa242364ea242b9cc13}}.
+  \item The original discussion-derived note was provisionally numbered 0014,
+  but 0014 was already occupied by the OmegaSelf failure-taxonomy note.  This
+  systematic paper therefore uses paper number 0015.
+\end{itemize}
+\end{sloppypar}
+
+\begin{thebibliography}{99}
+
+\bibitem{bach2018}
+J. Bach.
+\newblock Modeling Emotion and Motivation.
+\newblock AAAI 2018 tutorial slides, 2018.
+\newblock \url{http://bach.ai/pub/AAAI2018%20Modeling%20emotion%20and%20motivation%20tutorial.pdf}.
+
+\bibitem{barrett2006}
+L. F. Barrett.
+\newblock Solving the emotion paradox: Categorization and the experience of emotion.
+\newblock \emph{Personality and Social Psychology Review}, 10(1):20--46, 2006.
+
+\bibitem{carver1998}
+C. S. Carver and M. F. Scheier.
+\newblock \emph{On the Self-Regulation of Behavior}.
+\newblock Cambridge University Press, 1998.
+
+\bibitem{damasio1994}
+A. R. Damasio.
+\newblock \emph{Descartes' Error: Emotion, Reason, and the Human Brain}.
+\newblock Putnam, 1994.
+
+\bibitem{ekman1992}
+P. Ekman.
+\newblock An argument for basic emotions.
+\newblock \emph{Cognition and Emotion}, 6(3--4):169--200, 1992.
+
+\bibitem{frijda1986}
+N. H. Frijda.
+\newblock \emph{The Emotions}.
+\newblock Cambridge University Press, 1986.
+
+\bibitem{gross1998}
+J. J. Gross.
+\newblock The emerging field of emotion regulation: An integrative review.
+\newblock \emph{Review of General Psychology}, 2(3):271--299, 1998.
+
+\bibitem{keltner1999}
+D. Keltner and J. Haidt.
+\newblock Social functions of emotions at four levels of analysis.
+\newblock \emph{Cognition and Emotion}, 13(5):505--521, 1999.
+
+\bibitem{lazarus1991}
+R. S. Lazarus.
+\newblock \emph{Emotion and Adaptation}.
+\newblock Oxford University Press, 1991.
+
+\bibitem{occ1988}
+A. Ortony, G. L. Clore, and A. Collins.
+\newblock \emph{The Cognitive Structure of Emotions}.
+\newblock Cambridge University Press, 1988.
+
+\bibitem{omegaself2026}
+B. Goertzel and collaborators.
+\newblock \emph{OmegaSelf: Evidence-Grounded Self-Modeling for OmegaClaw --
+Architecture and Deployment Guide}.
+\newblock First public edition, technical design package, 15 July 2026.
+
+\bibitem{panksepp1998}
+J. Panksepp.
+\newblock \emph{Affective Neuroscience: The Foundations of Human and Animal Emotions}.
+\newblock Oxford University Press, 1998.
+
+\bibitem{russell2003}
+J. A. Russell.
+\newblock Core affect and the psychological construction of emotion.
+\newblock \emph{Psychological Review}, 110(1):145--172, 2003.
+
+\bibitem{scherer2001}
+K. R. Scherer.
+\newblock Appraisal considered as a process of multilevel sequential checking.
+\newblock In K. R. Scherer, A. Schorr, and T. Johnstone, editors,
+\emph{Appraisal Processes in Emotion}, pages 92--120. Oxford University Press,
+2001.
+
+\bibitem{seth2013}
+A. K. Seth.
+\newblock Interoceptive inference, emotion, and the embodied self.
+\newblock \emph{Trends in Cognitive Sciences}, 17(11):565--573, 2013.
+
+\bibitem{sutton1999}
+R. S. Sutton, D. Precup, and S. Singh.
+\newblock Between MDPs and semi-MDPs: A framework for temporal abstraction in
+reinforcement learning.
+\newblock \emph{Artificial Intelligence}, 112(1--2):181--211, 1999.
+
+\end{thebibliography}
+
+\end{document}

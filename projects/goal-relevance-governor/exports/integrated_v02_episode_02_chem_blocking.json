@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-08-20T14:00:00+00:00",
+  "episode_id": "02-chem-blocking-restoration",
+  "cycle": 10,
+  "pln_layer": {
+    "task_count": 2,
+    "total_relevance": 1.185
+  },
+  "ecan_layer": {
+    "total_sti": 206.02,
+    "eviction_count": 0,
+    "priority_top3": [
+      {
+        "node_id": "t-restore-agents",
+        "sti": 39.64,
+        "lti": 63.31,
+        "kind": "task"
+      },
+      {
+        "node_id": "g-restore-agents",
+        "sti": 39.09,
+        "lti": 80.4,
+        "kind": "goal"
+      },
+      {
+        "node_id": "g-build-omegaclaw",
+        "sti": 35.21,
+        "lti": 87.91,
+        "kind": "goal"
+      }
+    ]
+  },
+  "verdict_layer": {
+    "verdict_counts": {
+      "PAUSE_RECOVERABLY": 1,
+      "ESCALATE": 1
+    }
+  },
+  "multihop_layer": {
+    "task_count": 2,
+    "total_chains": 4,
+    "max_depth": 2
+  },
+  "recommendations": [
+    {
+      "task_id": "t-restore-agents",
+      "unified_verdict": "ESCALATE",
+      "relevance_score": 0.939,
+      "priority_band": "CRITICAL",
+      "sti": 39.64,
+      "lti": 63.31,
+      "eviction_candidate": false,
+      "staleness_flag": false,
+      "confidence_modifier": 0.0,
+      "signals": [
+        "multiple_active_goals_no_evidence",
+        "2_active_goals"
+      ],
+      "recommended_action": "Escalate: this task blocks critical goals. Prioritize immediately.",
+      "multihop_chains": 2,
+      "multihop_goal_coverage": [
+        "g-restore-agents",
+        "g-build-omegaclaw"
+      ],
+      "multihop_max_depth": 2
+    },
+    {
+      "task_id": "t-petta-chem",
+      "unified_verdict": "PAUSE_RECOVERABLY",
+      "relevance_score": 0.246,
+      "priority_band": "LOW",
+      "sti": 27.82,
+      "lti": 63.31,
+      "eviction_candidate": false,
+      "staleness_flag": true,
+      "confidence_modifier": 0.0,
+      "signals": [
+        "resource_contention",
+        "resource=r-shared-runtime",
+        "higher_priority_task=t-restore-agents",
+        "temporal_staleness:goals=['g-long-horizon-research']"
+      ],
+      "recommended_action": "Pause task \u2014 it may recover. Re-evaluate after addressing blockers.",
+      "multihop_chains": 2,
+      "multihop_goal_coverage": [
+        "g-long-horizon-research",
+        "g-build-omegaclaw"
+      ],
+      "multihop_max_depth": 2
+    }
+  ],
+  "executive_summary": "Pipeline evaluated 2 tasks. | Verdict distribution: ESCALATE=1, PAUSE_RECOVERABLY=1 | Top priority: t-restore-agents (STI=39.6, ESCALATE, rel=0.939) | Multi-hop: 4 chains found, max depth=2 | Stale tasks: t-petta-chem | \u26a0 ESCALATE: t-restore-agents"
+}

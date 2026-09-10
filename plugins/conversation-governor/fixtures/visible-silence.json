@@ -1,0 +1,1 @@
+{"candidate":{"schema_version":"1.0.0","event_id":"evt_111111111111111111111","agent_id":"zero","text":"NO_REPLY","send_intent":false,"timestamp":"2026-07-27T22:00:00.000Z","egress_decision":"SUPPRESS"},"expected":{"decision":"SUPPRESS","reason":"STRUCTURED_SILENCE"}}

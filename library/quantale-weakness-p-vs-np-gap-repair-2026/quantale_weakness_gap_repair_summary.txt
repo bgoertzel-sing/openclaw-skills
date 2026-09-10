@@ -1,0 +1,565 @@
+    Repairing the Main Gap in the Quantale-Weakness Route to
+                           P ̸= N P :
+     A Detailed ASCII LaTeX Summary of the Present State
+                                  Prepared from the thread record
+
+                                              April 14, 2026
+
+
+                                                 Abstract
+        This note summarizes, in a single place, the main technical work carried out in the long
+    discussion about repairing the central gap in the earlier quantale-weakness proof attempt of
+    P ̸= N P . The note is intentionally candid. It records what was successfully reduced, what was
+    actually proved, what was shown false on specific ensemble designs, what new theorem shapes
+    were identified, and where the final unresolved burden now lies.
+        The main conceptual shift is from the original vague slogan
+
+                                    “short decoder ⇒ local predictor”
+
+    to a much sharper package of midpoint theorems. The current best formulations are:
+      (i) a latent parity-bundle route through synopsis sufficiency, i.e. SSST / M 2Σ
+                                                                                    nc ;
+     (ii) a same-route shared-basis comparator theorem on an explicit visible surface;
+     (iii) a TyLA / TyLAA recasting in which the switched semantics should descend to a weakest-
+           red quotient and then into the weakness quantale.
+        A major positive outcome of the thread is that the proof has been narrowed to a very small
+    number of explicit remaining theorems. A major negative outcome is that several stronger
+    statements one might have hoped for are actually false on the bundled ensemble variants we
+    tested. In particular, raw residual-static factorization on a tiny zf eat-surface fails on the bundled
+    redesign. The cleanest theorem package currently obtained is a restricted-class comparator
+    theorem for a compiled orbit family built from a finite-state contracting broadcast core, together
+    with a hidden-phase latch and a public CNF realization of the comparator experiment.
+        This note is not a claim that the proof of P ̸= N P is finished. It is a detailed map of what
+    has genuinely been accomplished and what exact gap remains.
+
+
+Contents
+1 Purpose and current status                                                                                 1
+
+2 The original gap and why it is real                                                                        2
+
+3 First successful narrowing: SSST and M 2Σ
+                                          nc                                                                 2
+
+4 Conditional route through CEHP                                                                             3
+
+5 Why the direct shared-basis theorem failed on the bundled redesign                                         3
+
+
+                                                      1
+6 Weaker shared-basis comparator theorem                                                         4
+
+7 Bounded-observer linearization in a linear latent-bundle toy model                             4
+
+8 Global sparse-row budget theorem as the right quantitative target                              5
+
+9 Kernel tokens and why some budget formulations failed                                          5
+
+10 TyLA/TyLAA recasting: process quantale and weakest-red quotient                               6
+
+11 A concrete finite-state locally mixing pivot-comparator core                                  6
+
+12 Count-preserving CNF and 3-CNF gadgetization                                                  7
+
+13 The hidden latch and the first incompatibility theorem                                        7
+
+14 Orbit family redesign and nonconstructive landing theorem                                     8
+
+15 Final composed midpoint theorem for the orbit family                                          8
+
+16 What has genuinely been repaired                                                              9
+
+17 What still remains open                                                                       9
+
+18 Recommended next steps                                                                       10
+
+19 Conclusion                                                                                   10
+
+
+1    Purpose and current status
+The earlier attempted proof route can now be summarized as
+
+short decoder =⇒ switched midpoint theorem =⇒ small per-block success =⇒ 2−Ω(t) =⇒ Kpoly -lower bound =⇒ c
+
+    The entire discussion revolved around the middle arrow. The original manuscript-style switching
+theorem tried to derive a small local class from decoder shortness. The thread systematically
+dismantled the naive version of that move and replaced it by a sequence of sharper midpoint
+candidates.
+    At the end of the thread, the back half of the route is understood well enough that the only
+serious unresolved burden is a carefully isolated structural theorem about the switched predictor
+class. The theorem is still open in the actual target setting, but the search space of plausible
+theorem shapes is now much smaller than at the beginning.
+
+
+2    The original gap and why it is real
+The first major finding was that the informal implication
+
+      “switched predictor is local” =⇒ “switched predictor belongs to a tiny explicit class”
+
+is false in the form originally hoped for.
+    Several distinct obstructions were identified.
+
+                                                     2
+    1. Log-radius neighborhoods are already polynomial-sized. If the visible neighborhood
+       radius is Θ(log m) in a bounded-degree factor graph, then the visible neighborhood can already
+       contain mΩ(1) nodes, not polylog(m) nodes. So locality at logarithmic radius alone does not
+       imply a tiny hypothesis class.
+
+    2. The full local rule class is enormous. If one exposes n local bits, then the unconstrained
+                                                        n
+       class of Boolean rules on those bits has size 22 . So any theorem that wants a small code
+       family must prove an explicit structural restriction beyond locality.
+
+    3. Sign-invariant / involution-invariant summaries can collapse all margin. In the
+       symmetry-based arguments, if one conditions only on an invariant view, then every fiber can
+       have exact half-half target balance. So many plausible attempts to prove direct calibration
+       or domination from symmetrization alone fail.
+
+    4. On bundled redesigns, arbitrary static bits can survive orbit symmetrization.
+       This is the key reason the direct residual-static factorization theorem failed on the bundled
+       family. The selector dependence collapses, but the residual static coefficient can still depend
+       on arbitrary published static bits.
+
+    These obstructions were not merely philosophical. They gave concrete counterexamples to
+stronger midpoint claims. The practical lesson is that any viable repair must prove a genuinely
+new structural theorem about the switched class, not just push harder on locality.
+
+
+3     First successful narrowing: SSST and M 2Σ
+                                              nc
+
+A major simplification came from isolating the latent-route midpoint theorem in the form of Syn-
+opsis Sufficiency for Switched Tests (SSST).
+Definition 1 (SSST). Fix one switched block j, history state Fℓ−1 , pivot summary value Zj = z,
+and synopsis value Σj = σ. For a switched one-block test
+
+                                                m,δ (j, Fℓ−1 , z, σ),
+                                           A ∈ Asw
+
+define the phase gap
+                            1
+gap(A; j, Fℓ−1 , z, σ) :=     Pr[A(Ej⊥ ) = 1 | Zj = z, Σj = σ, Λj = 1, Fℓ−1 ] − Pr[A(Ej⊥ ) = 1 | Zj = z, Σj = σ, Λj = 0, F
+                            2
+The SSST property with slack ξm is the statement that
+
+                                         gap(A; j, Fℓ−1 , z, σ) ≤ ξm
+
+for every switched test in the class.
+    The thread then proved the clean Bayes reduction
+
+                                         SSST (ξm ) =⇒ M 2Σ
+                                                          nc (ξm ),
+
+where M 2Σ
+         nc is the pivot/synopsis-local domination theorem:
+
+                  Pr[(P ◦ W )(Φ)j = Λj | Fℓ−1 ] ≤ Pr[hP,j (Zj , Σj ) = Λj | Fℓ−1 ] + ξm .
+
+    This was one of the most important reductions in the thread, because it showed that once SSST
+is available, the rest of the manuscript’s backbone is essentially formal.
+
+                                                       3
+4    Conditional route through CEHP
+The next clean step was to identify a conditional hypothesis package under which SSST follows
+automatically. This package was called CEHP (Conditional Exterior Hard-Core Parity).
+   In words, CEHP says:
+
+(H1) conditioned on the retained visible surface, the hidden bundle Rj is close to uniform;
+
+(H2) the latent target bit Λj is affine parity of Rj ;
+
+(H3) every switched one-block test pulls back to a pure AC 0 circuit on Rj .
+
+    Under these three assumptions, the thread proved:
+                                                               0
+                                    CEHP =⇒ SSST (εAC
+                                                   m  + τm ),
+
+and hence, by the Bayes reduction above,
+
+                                           CEHP =⇒ M 2Σ
+                                                      nc .
+
+   This was a real theorem. It cleanly separated the actual unresolved burden from the already-
+understood back half.
+
+
+5    Why the direct shared-basis theorem failed on the bundled re-
+     design
+The thread then attacked the same-route visible-surface route. The natural candidate visible surface
+was
+                      ψi (Φ) = (zf eati (Φ), θi (Φ)),  θi (Φ) = ⟨ai (Φ), b(Φ)⟩.
+    The strong theorem one would have liked was:
+
+                              (P ◦ W0 )(Φ)j,i = gj,i (zf eati (Φj )) ⊕ θi (Φj )
+
+with some tiny uniformly encoded family for the residual static rules gj,i .
+    The thread found that this strong form is false on the bundled redesign. The selector dependence
+does collapse to the single affine label bit θi , but arbitrary static block bits can survive orbit
+symmetrization. So the residual coefficient need not factor through any fixed O(log m) extractor
+zf eat.
+    This was a major negative result, but also a useful one: it ruled out the wrong theorem shape.
+
+
+6    Weaker shared-basis comparator theorem
+After the failure of raw residual-static factorization, the thread replaced it by a weaker and more
+plausible theorem: an existence-of-comparator theorem in a fixed shared-basis encoded family.
+   The explicit family chosen was a fixed-order sparse chart decision-list class on the visible surface
+
+                                      ψi (Φ) = (zf eati (Φ), θi (Φ)).
+
+    The theorem proved in this conditional form was:
+
+
+                                                     4
+Proposition 2 (Shared-basis compression under sparse chart support). Assume that for each
+switched coordinate (j, i) the actual switched rule has the form
+
+                               (P ◦ W0 )(Φ)j,i = gj,i (Zi (Φj )) ⊕ θi (Φj ),
+
+where gj,i is non-default on at most L chart values. Then there exists an explicit decision-list code
+c⋆j,i such that
+                                 (P ◦ W0 )(Φ)j,i = DLc⋆j,i (ψi (Φj )).
+Moreover, if every support chart has mass at least δ⋆ > 0, then every bad code has agreement at
+most
+                                       q ⋆ ≤ 1 − δ⋆ < 1.
+   This was a genuine theorem. It showed that once one can prove sparse chart support on the
+actual switched family, the rest of the same-route ERM / recovery machinery is already available.
+
+
+7     Bounded-observer linearization in a linear latent-bundle toy
+      model
+The next major success was a linearized toy model of the latent route.
+   The ingredients were:
+    • a hidden free core of unbiased bits,
+
+    • a target parity row supported on that free core,
+
+    • legal probes given by sparse affine rows,
+
+    • switched one-block tests normalized to bounded request trees.
+    In this setting, the thread proved a strong linearization theorem:
+Theorem 3 (Bounded-observer linearization). Every bounded request-tree observer factors through
+a finite affine observation map built from the sparse probe rows it uses. If the target parity row is
+outside the row span of the queried rows, the observer has exact success 1/2. If the target parity
+row lies in the observed span, then the support of the target row is bounded by the total queried
+sparse-row support.
+  This was very important. It turned the midpoint from a vague switching theorem into two
+much clearer requirements:
+    1. a landing theorem: actual switched predictors normalize to bounded sparse-row observers;
+
+    2. a sparse-row budget theorem: only few blocks can afford enough queried sparse rows to become
+       informative.
+
+
+8     Global sparse-row budget theorem as the right quantitative tar-
+      get
+The thread then identified the correct global quantity to budget: not kernel dimension, but the
+total number of queried sparse rows.
+    The key linearized theorem was:
+
+                                                    5
+Theorem 4 (Global sparse-row budget implies most switched blocks are good). Suppose that on
+a switched set S,
+                            qj ≤ Cbud |P | + |W | + log m + log t ,
+                         X                                       
+
+                              j∈S
+
+where qj is the number of sparse rows queried on block j. Assume also that every bad block must
+query at least Fmin /κ sparse rows, where Fmin is the minimum support size of the target parity row
+and κ is the probe sparsity bound. Then
+
+                                        κ Cbud |P | + |W | + log m + log t
+                                                                          
+                           |B(P, W )| ≤                                    .
+                                                       Fmin
+In particular, if Fmin = Ω(mα ) and |P | + |W | = O(t) = O(m), then |B(P, W )| = o(t).
+
+    This was a very sharp result. It showed that the toy midpoint theorem would follow immediately
+from a real sparse-row budget theorem. The remaining issue was that this budget was not proved
+for the actual switched class.
+
+
+9     Kernel tokens and why some budget formulations failed
+The thread explored several token definitions to try to derive the sparse-row budget from the
+weakness quantale. This yielded useful negative information.
+
+    1. Address-set token: easy to reconstruct, but carries no hidden entropy.
+
+    2. Full transcript token: sometimes has entropy, but not robustly and not with the right
+       upper bound.
+
+    3. Fresh pivot-bit token: good lower bound, bad reconstruction properties.
+
+    4. Kernel-coordinate token: excellent entropy theorem, but wrong monotonicity for counting
+       bad blocks.
+
+    5. Adaptive rank-answer token: best candidate among the token family; lower bound
+       worked, but the strongest needed upper bound turned out to be too strong and effectively
+       restated the missing midpoint.
+
+   The conclusion was that a direct quantale-token proof of the sparse-row budget is much subtler
+than hoped, and that the strong synopsis-relative recoverability assumption essentially repackaged
+the midpoint theorem rather than proving it.
+
+
+10      TyLA/TyLAA recasting: process quantale and weakest-red
+        quotient
+At this point the discussion shifted to a more categorical formulation.
+   The idea was:
+
+    1. use TyLA to specify the blue observation interface first;
+
+    2. use TyLAA to define the weakest red as the maximal sound congruence below observational
+       equivalence;
+
+                                                  6
+  3. form the process quantale on the powerset of quotient traces;
+
+  4. map that process quantale into the weakness quantale via a lax monoidal cost functor.
+
+     This led to an explicit theorem package:
+
+  • exact or approximate generator invariance implies descent through the weakest-red quotient;
+
+  • a cost functor from the process quantale to the weakness quantale translates quotient-level
+    behavior into the main proof’s cost semantics;
+
+  • the remaining real theorem becomes a generator-by-generator invariance statement for the
+    actual switched class.
+
+   This package did not solve the midpoint automatically, but it clarified the structure of the final
+gap and made the available proof strategies much sharper.
+
+
+11      A concrete finite-state locally mixing pivot-comparator core
+The thread then successfully built a fully concrete midpoint-only semantic core.
+   The core consists of:
+
+  • a hidden phase bit Λ ∈ {0, 1};
+
+  • K independent binary-symmetric channels of depth L;
+
+  • pivot summary
+                                    ZL = (X1,L , . . . , XK,L ) ∈ {0, 1}K ;
+
+  • a phase-blind completion kernel from ZL to a finite nuisance/output alphabet;
+
+  • a one-hot shared-basis encoding of the pivot summary.
+
+     For this semantic core, the thread proved the comparator theorem exactly:
+
+Theorem 5 (Comparator theorem for the concrete broadcast core). For every predictor a on the
+full visible signal Y = (ZL , U ), there exists a predictor h on the pivot summary ZL such that
+
+                                                                  1 K L
+                            Pr[a(Y ) = Λ] ≤ Pr[h(ZL ) = Λ] ≤        + ρ ,
+                                                                  2  2
+where ρ ∈ (0, 1) is the one-step contraction factor of the binary symmetric channel.
+
+     This showed that the midpoint theorem shape is non-vacuous and mathematically coherent.
+
+
+12      Count-preserving CNF and 3-CNF gadgetization
+Next, the abstract finite-state semantic core was compiled into a satisfiable CNF / 3-CNF family
+by a count-preserving gadget construction.
+   The key local gadgets were:
+
+  1. a step gadget Gstep with exactly u satisfying selector extensions when the output bit equals
+     the input bit, and exactly v when it flips;
+
+                                                   7
+  2. a summary decoder gadget Gsum producing a one-hot encoding of the raw pivot summary
+     with exactly one satisfying extension;
+
+  3. a completion gadget Gcomp with exactly wcomp (z, o) satisfying extensions for summary
+     atom z and output atom o.
+
+    Assembling these gadget families along the channel bundle yielded an exact CNF realization
+theorem: the uniform satisfying-assignment measure on the compiled family reproduces exactly
+the intended finite-state comparator experiment. A parsimonious CNF-to-3CNF conversion then
+yielded a 3-CNF family with the same extension counts.
+    This was a genuine construction, and one of the most concrete accomplishments in the thread.
+
+
+13    The hidden latch and the first incompatibility theorem
+The next step added a hidden phase latch to the compiled 3-CNF comparator core and packaged
+the result into a single public block family.
+   This worked as a construction: public blocks were now satisfiable 3-CNF formulas carrying
+the visible signal in pinned summary/output atoms, together with a hidden phase latch variable
+readable from a witness.
+   But here the thread found a crucial incompatibility.
+   If one asks simultaneously for:
+
+  1. an unrestricted comparator theorem against all predictors on the public block family, and
+
+  2. phase rigidity, i.e. all satisfying witnesses of the same public block agree on the hidden phase,
+
+then one gets a contradiction: phase rigidity gives a perfect predictor on public blocks (solve SAT
+and read the phase), but the comparator theorem bounds every such predictor by 1/2 + O(ρL ) < 1.
+   This was a major conceptual clarification. It showed that the midpoint theorem must be
+formulated for a restricted predictor class, not for all predictors on the public block family.
+
+
+14    Orbit family redesign and nonconstructive landing theorem
+The fix was to change the compiled block family from a one-red-per-blue family to a many-red-to-
+one-blue orbit family.
+   For each visible observation y = (z, o), instead of one public block By , the thread introduced
+many blocks
+                                        By,σ ,     σ ∈ Σy ,
+where Σy is the finite orbit of all selector permutations, clause-order permutations, and private-
+variable renamings of the canonical compiled block for y.
+    A finite symmetry group Gy acts transitively on Σy .
+    The thread then proved the key landing theorem.
+
+Theorem 6 (Orbit-symmetrization landing). Assume:
+
+ (a) the blue observation map forgets the red presentation: vis(By,σ ) = y;
+
+ (b) the conditional law inside each blue fiber is invariant under the Gy -action;
+
+ (c) the group action transports satisfying witnesses bijectively and preserves phase readout.
+
+                                                 8
+Then for every predictor a on the full public block family, there exists a predictor ā on the blue
+visible signal y such that
+                                Pr[ā(Y ) = Λ] ≥ Pr[a(B) = Λ].
+
+   So the actual predictor class is dominated by the blue-measurable class. This is stronger than
+the earlier goal of inclusion into the weakest-red class, and it avoids the previous contradiction
+because the perfect phase-reading predictor is not required to lie in the restricted observer class.
+
+
+15      Final composed midpoint theorem for the orbit family
+Combining orbit landing with the concrete broadcast-core comparator theorem gave the clean final
+midpoint theorem for the redesigned orbit family.
+
+Theorem 7 (Final composed midpoint theorem). For the orbit family built from the compiled
+broadcast comparator core, for every predictor
+
+                                         a : {By,σ } → {0, 1},
+
+there exists a pivot-summary predictor
+
+                                         ha : {0, 1}K → {0, 1}
+
+such that
+                                                                 1 K L
+                            Pr[a(B) = Λ] ≤ Pr[ha (ZL ) = Λ] ≤      + ρ .
+                                                                 2  2
+If L = ⌈c log m⌉, then the right-hand side is 1/2 + m−Ω(1) .
+
+     This is the strongest actual midpoint theorem obtained in the entire discussion.
+     It solves the midpoint for the nonconstructive comparator version of the redesigned orbit family.
+
+
+16      What has genuinely been repaired
+The thread did not finish an unconditional proof of P ̸= N P , but it made substantial real progress.
+   The following points were genuinely achieved.
+
+  1. The original vague switching theorem was replaced by explicit midpoint candidates.
+
+  2. The latent-route backbone was clarified:
+
+                                CEHP =⇒ SSST =⇒ M 2Σ
+                                                   nc =⇒ back half.
+
+
+  3. Strong direct static factorization was shown false on the bundled redesign.
+
+  4. A workable weaker shared-basis compression theorem was isolated.
+
+  5. A bounded-observer linearization theorem was proved in a realistic toy linearized setting.
+
+  6. The right quantitative object was identified as a sparse-row budget, not a kernel-dimension
+     budget.
+
+  7. A concrete finite-state locally mixing comparator core was built and proved correct.
+
+                                                   9
+  8. That core was compiled into a count-preserving satisfiable 3-CNF family.
+
+  9. The incompatibility between unrestricted block comparators and phase-rigid witness readout
+     was discovered and resolved by moving to a restricted / orbit-based comparator theorem.
+
+ 10. A final composed midpoint theorem was proved for the orbit family.
+
+     That is a lot of genuine repair.
+
+
+17      What still remains open
+Even after all of this, one serious issue remains if the goal is an actual proof of P ̸= N P .
+    The current orbit-family midpoint theorem is nonconstructive. It proves that every predictor is
+dominated by a blue-measurable predictor after exact orbit averaging. What remains is to connect
+that to the original quantale-weakness route in a way compatible with short decoders and the final
+self-reduction clash.
+    The two sharp remaining problems are:
+
+  1. Constructive/short averaging: replace full orbit averaging by a short explicit wrapper
+     (or show this is unnecessary in the final endgame).
+
+  2. Final proof-family integration: integrate the orbit-family comparator core, hidden-phase
+     latch, and witness-readout semantics into one proof ensemble satisfying the exact promise
+     architecture needed for the later compression clash.
+
+    So the discussion did not end with “proof complete.” It ended with the major structural gap
+greatly narrowed and re-engineered.
+
+
+18      Recommended next steps
+Based on the thread, the best next technical steps are:
+
+  1. Prove a short orbit-averaging approximation theorem: sample a small generating subset or
+     pseudorandom orbit sample whose averaging loss is at most m−A .
+
+  2. Embed the orbit-family comparator core into the full promise architecture needed for the
+     later P = N P self-reduction clash.
+
+  3. Decide whether the proof route should remain on the latent comparator side or be reconnected
+     to the explicit shared-basis ERM route using the same blue visible surface.
+
+  The crucial fact is that these next tasks are now sharply formulated. We are no longer wandering
+among many vaguely specified midpoint theorems.
+
+
+19      Conclusion
+The thread began with a proof attempt whose central switching step was too vague to support the
+weight placed on it. It ended with:
+
+  • a clear diagnosis of why the original midpoint failed,
+
+                                                10
+  • several strong negative results ruling out the wrong theorem shapes,
+
+  • a successful reduction of the midpoint to a few very explicit alternatives,
+
+  • a concrete finite-state comparator core,
+
+  • a count-preserving 3-CNF realization of that core,
+
+  • and a final nonconstructive midpoint theorem for an orbit-family redesign.
+
+   So while the unconditional proof of P ̸= N P is still not complete, the main gap in the earlier
+proof attempt has been repaired to the point where the remaining frontier is precise, structured,
+and much smaller than before.
+
+Primary source strata used in the thread.
+
+  • 2026-04-02 analysis notes on the repaired midpoint route, latent phase design, and pivot-only
+    comparator save.
+
+  • 2026-03-31 grassroots notes on explicit encoded families, shared-basis decision-list routes, and
+    recovery interfaces.
+
+  • 2025-12-02 TyLA notes on deriving operational languages from blue/native type environ-
+    ments.
+
+  • 2025-12-10 TyLAA notes on weakest-red reconstruction via sound congruence optimization
+    and swap/symmetry quotients.
+
+
+
+
+                                                11
+

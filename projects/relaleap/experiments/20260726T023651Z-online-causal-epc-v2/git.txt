@@ -1,0 +1,20 @@
+# Git State
+Captured UTC: 2026-07-26T02:36:51Z
+Working directory: projects/relaleap/repos/relaleap/projects/causal-fibres-ladder/repos/relaleap-e1-causal-coding
+Commit: 83abac86772314c7092e5f213ed00f6401ecfbaa
+Branch: agent/online-causal-epc-v2
+Remote names: 
+
+## Status
+## agent/online-causal-epc-v2
+ M scripts/run_online_causal_epc.py
+ M src/relaleap/hdpc/planted_modular.py
+ M tests/test_online_support.py
+
+## Diff summary
+ scripts/run_online_causal_epc.py     | 37 ++++++++++++++++++------
+ src/relaleap/hdpc/planted_modular.py | 56 +++++++++++++++++++++++++-----------
+ tests/test_online_support.py         | 10 +++++++
+ 3 files changed, 79 insertions(+), 24 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

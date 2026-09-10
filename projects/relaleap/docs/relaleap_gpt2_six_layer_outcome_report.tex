@@ -1,0 +1,122 @@
+% ASCII-only source. Compile with: tectonic relaleap_gpt2_six_layer_outcome_report.tex
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=black}
+\title{RelaLeap Six-Layer GPT-2 ePC Experiment:\\Distillation and Network-Outcome Battery}
+\author{RelaLeap project record}
+\date{2026-07-19}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report documents a three-seed comparison of backpropagation with cross-entropy (BP+CE), backpropagation with knowledge distillation (BP+KD), and ePC with knowledge distillation (ePC+KD) in a six-layer GPT-2-width student. It separates the source-domain distillation gate from the independently completed WikiText-103 to TinyStories outcome battery. The primary outcome is negative: ePC+KD has worse target-loss AUC than both controls under an identical frozen-backbone low-rank adaptation rule. ePC nevertheless yields markedly different representations and lower source forgetting. This report supplies artifact hashes, commands, frozen data identifiers, configuration, results, and limitations for reproduction and reanalysis.
+\end{abstract}
+
+\section{Question and interpretation}
+The question was whether ePC+KD produces a network with a better adaptation/forgetting tradeoff under the same downstream learning rule, rather than merely a different source validation loss. The primary endpoint was target validation-loss area under the adaptation curve (AUC; lower is better). Promotion required ePC+KD to beat both BP controls without material pre-adaptation regression and with bounded source forgetting. Layerwise linear CKA, effective rank, residual-block skip sensitivity, and fixed token-corruption sensitivity are secondary diagnostics. A structural difference without functional benefit is descriptive, not promotion evidence.
+
+\section{Execution timeline and provenance}
+\begin{longtable}{p{0.19\linewidth}p{0.20\linewidth}p{0.50\linewidth}}
+\toprule
+Run & Status & Role and evidence \\
+\midrule
+\endhead
+Local preflight & passed & Commit \texttt{7d4d4dc}; 138 tests, compilation, and diff check. It froze the outcome configuration and validated runner interfaces. \\
+Run 2 distillation & complete & 20260718T073312Z; three seeds and four training arms; nine safetensors checkpoints retrieved with strict file hashes. Source commit \texttt{7d4d4dc9ee0f141bef1e6da48249f92bb4021b7e}. \\
+Outcome battery & complete & 20260718T223300Z; RunPod pod \texttt{bksws9jhc7e8xp}; normal runner exit. It evaluates the nine Run-2 checkpoints and is the authoritative Stage-2 result. \\
+r5 rerun & distillation only & 2026-07-19 pod \texttt{oo20lk2075y0dx}. It did not execute the requested Stage-2 runner and is not outcome evidence. \\
+\bottomrule
+\end{longtable}
+
+The authoritative result JSON is \url{experiments/20260718T223300Z-epc-outcome-6layer-battery/artifacts/gpt2_epc_outcome_6layer.json}. Its SHA-256 is {\scriptsize\texttt{647ed0dc7681e29f}\allowbreak\texttt{89ef0963c58a7fe7}\allowbreak\texttt{210a71bdc2439e3c}\allowbreak\texttt{f5871d30e208f1af}}. The frozen configuration SHA-256 is {\scriptsize\texttt{4a572da67cffce1f}\allowbreak\texttt{f9a32110e00e60c9}\allowbreak\texttt{4413f3a974998b86}\allowbreak\texttt{575f2f1894288ab2}}.
+
+\section{Experimental setup}
+\subsection{Training and checkpoints}
+The student has six GPT-2-width transformer layers. Outcome arms are BP+CE, BP+KD, and ePC+KD, with seeds 1729, 3253, and 6421. The battery uses nine checkpoints, three seeds by three arms, each 327,657,928 bytes, saved from Run 2. The source-domain gate also included a wall-clock-matched BP+KD control. Its summary SHA-256 is {\scriptsize\texttt{49d8fc375ac770a0}\allowbreak\texttt{6c7aa1e931a1402c}\allowbreak\texttt{8127d69a4214d82e}\allowbreak\texttt{2c0e61833acccf7d}}.
+
+\subsection{Data and evaluation}
+Source data are \texttt{Salesforce/wikitext}, subset \texttt{wikitext-103-raw-v1}, revision {\scriptsize\texttt{b08601e04326c79d}\allowbreak\texttt{fdd32d625aee71d2}\allowbreak\texttt{32d685c3}}; target data are \texttt{roneneldan/TinyStories}, revision {\scriptsize\texttt{f54c09fd23315a6f}\allowbreak\texttt{9c86f9dc80f725de}\allowbreak\texttt{7d8f9c64}}. Context length is 256. The battery uses 4,096 source validation documents, 4,096 target training documents, 1,024 target validation documents, 64 deterministic evaluation segments, and 16 hidden-state probe segments. Selected indices and hashes are present in each raw result row.
+
+For every checkpoint, the backbone is frozen and rank-8 low-rank parametrizations (alpha 16) are attached to all \texttt{attn.c\_attn} and \texttt{mlp.c\_fc} modules. Adaptation uses learning rate 0.0002, weight decay zero, batch size 2, gradient accumulation 4, and 100 updates. Evaluation occurs at updates 0, 10, 25, 50, and 100. Corruption replaces tokens with probability 0.1. AUC contrasts use a paired two-level bootstrap over seeds and target segments with 2,000 deterministic replicates.
+
+\subsection{Reproduction command}
+In a clean checkout at \texttt{7d4d4dc}, with the nine checkpoint directories and pinned Hugging Face artifacts cached locally:
+\begin{verbatim}
+PYTHONPATH=src python3 scripts/run_gpt2_outcome_gpu.py \
+  --config configs/gpt2_epc_outcome_6layer.json \
+  --checkpoints /workspace/checkpoints \
+  --output /workspace/results/gpt2_epc_outcome_6layer.json \
+  --device cuda --offline
+\end{verbatim}
+The original execution used one A100 PCIe 80 GB on RunPod Secure Cloud, Python 3.12.3, PyTorch 2.8.0+cu128, Transformers 5.14.1, and Datasets 5.0.0. Before success, two implementation-only pod-side changes were made: placement of low-rank parameters on the module device and moving CKA/SVD work to GPU. The patched runner SHA-256 was {\scriptsize\texttt{a3a82402b6a0720d}\allowbreak\texttt{d06a6a109e7a9b58}\allowbreak\texttt{c06d6f2a20bfd76b}\allowbreak\texttt{4df698594e57b189}}.
+
+\section{Source-domain distillation gate}
+The distillation promotion gate failed, but this did not invalidate the outcome battery. Relative to update-matched BP+KD, mean ePC+KD validation-loss gain was -0.5209 nats; relative to wall-clock-matched BP+KD it was -1.4946 nats. The largest per-seed regression versus update-matched BP+KD was 0.5690 nats. Finite-metric, record-completeness, and monotone activity-energy checks passed; the all-block nonzero credit condition did not. This is a negative result for the frozen ePC distillation condition, not an answer to the downstream outcome question.
+
+\section{Outcome-battery results}
+\subsection{Adaptation and forgetting}
+Table~\ref{tab:adapt} gives raw per-seed means. Target adaptation gain is pre-adaptation target loss minus loss after the fixed budget; larger is better. Target AUC summarizes the entire target-loss curve; lower is better. Source forgetting is final source loss minus initial source loss.
+\begin{table}[ht]
+\centering
+\small
+\caption{Adaptation and forgetting measurements.}
+\label{tab:adapt}
+\begin{tabular}{rrrrrrr}
+\toprule
+Seed & Arm & Pre-src & Pre-tgt & Forget & Tgt gain & Tgt AUC \\
+\midrule
+1729 & BP+CE  & 5.294 & 7.895 & 0.257 & 2.198 & 6.351 \\
+1729 & BP+KD  & 5.940 & 5.835 & 0.197 & 0.962 & 5.169 \\
+1729 & ePC+KD & 6.448 & 6.908 & 0.114 & 0.645 & 6.442 \\
+3253 & BP+CE  & 5.333 & 7.735 & 0.331 & 2.075 & 6.286 \\
+3253 & BP+KD  & 5.989 & 5.828 & 0.149 & 0.961 & 5.162 \\
+3253 & ePC+KD & 6.551 & 6.994 & 0.064 & 0.714 & 6.476 \\
+6421 & BP+CE  & 5.315 & 7.786 & 0.239 & 2.132 & 6.283 \\
+6421 & BP+KD  & 5.933 & 5.887 & 0.134 & 1.023 & 5.168 \\
+6421 & ePC+KD & 6.577 & 7.086 & -0.040 & 0.773 & 6.497 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The bootstrap contrast is control AUC minus ePC AUC, so positive values favor ePC. Both 95 percent intervals are entirely negative:
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Control & Mean AUC gain & 95 percent lower & 95 percent upper \\
+\midrule
+BP+CE & -0.1645 & -0.2212 & -0.0949 \\
+BP+KD & -1.3043 & -1.3336 & -1.2697 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Mean ePC source forgetting is 0.0461 nats, above the frozen maximum 0.02; the maximum ePC pre-adaptation target-loss regression is 1.1994 nats, versus a frozen maximum 0.01. The promotion rule fails all relevant functional criteria.
+
+\subsection{Representation and secondary probes}
+ePC+KD is not numerically close to the BP solutions. Mean layerwise linear CKA between BP controls is 0.777--0.783 across seeds, with per-layer ranges 0.716--0.946. BP+CE versus ePC+KD has means 0.207--0.421 (ranges 0.078--0.550), and BP+KD versus ePC+KD has means 0.193--0.387 (ranges 0.064--0.454). Thus ePC reaches materially different internal geometry.
+
+Across seeds, mean effective rank over six probed layers is about 55--57 for BP+CE, 39--40 for BP+KD, and 4.0--4.8 for ePC+KD. Mean residual-block-skip loss delta is about 0.46--0.49 for BP controls but 3.93--6.29 for ePC+KD. Fixed 10 percent corruption deltas are about 1.14--1.20 for BP+CE, 1.26--1.31 for BP+KD, and 0.87--0.90 for ePC+KD. These are descriptive probes, not promotion endpoints: low rank, strong block-skip sensitivity, or lower corruption delta does not compensate for negative adaptation.
+
+\section{Scientific interpretation and alternatives}
+\paragraph{Observed.} Under the frozen common adaptation rule, ePC+KD adapts more slowly and has higher target AUC than either BP control in every seed. It also has different representations, low effective rank, and lower source forgetting.
+
+\paragraph{Inference.} This six-layer ePC+KD configuration does not provide an adaptation/plasticity advantage. The result does not establish that predictive coding in general is ineffective, nor that all ePC parameterizations must yield low rank. It is a negative result for this protocol, initialization family, data split, and adaptation rule.
+
+\paragraph{Plausible explanations.} Very large distillation KD gaps (about 880--893 nats), source-domain regression, and low ePC effective ranks are consistent with under-effective teacher transfer, an overly restrictive representation, a credit-assignment scale or optimization mismatch, or an interaction with the fixed adapter rule. These data do not distinguish these explanations. A useful next diagnostic would hold the checkpoint and downstream probe fixed while measuring layerwise teacher-logit/hidden-state matching and gradient/activity scales across preregistered ePC hyperparameters.
+
+\section{Limitations and audit notes}
+There are only three training seeds; the bootstrap quantifies variation across these seeds and fixed evaluation segments, not broad population generalization. The target shift is one pinned WikiText-to-TinyStories pairing. The complete runner used a pod-side implementation-only patch whose hash is recorded above; the exact patched source file is not separately archived in this experiment directory. That is a reproducibility limitation, although the output JSON, frozen config, checkpoint provenance, and runner exit are preserved. The later r5 run must not be pooled with these data because it did not execute the outcome battery.
+
+\section{Artifact map}
+\begin{itemize}
+\item Outcome result: \url{experiments/20260718T223300Z-epc-outcome-6layer-battery/artifacts/gpt2_epc_outcome_6layer.json}
+\item Outcome log and ledger: \texttt{experiments/20260718T223300Z-epc-outcome-6layer-battery/}
+\item Run-2 ledger and checkpoint manifest: \texttt{experiments/20260718T073312Z-epc-outcome-6layer-run2/}
+\item Frozen config: \url{worktrees/tinyshakespeare-hdpc/configs/gpt2_epc_outcome_6layer.json}
+\item Runner: \url{worktrees/tinyshakespeare-hdpc/scripts/run_gpt2_outcome_gpu.py}
+\end{itemize}
+\end{document}

@@ -1,0 +1,25 @@
+# Git State
+Captured UTC: 2026-07-16T02:21:54Z
+Working directory: /home/openclaw/research-agent/projects/petta-chem/repos/petta-chem
+Commit: 7061403ea183859ed2c7fdaef58dbe59432ca9c4
+Branch: agent/exp07-stochastic-doob-pilot
+Remote names: origin
+
+## Status
+## agent/exp07-stochastic-doob-pilot
+ M experiments/exp04/run_rich_raf.py
+ M experiments/exp04/smoke.metta
+ M src/chem_exp04.metta
+?? docs/first_class_catalysis.md
+?? experiments/exp04/test_first_class_catalysis.py
+?? experiments/scratch_cat.metta
+?? scripts/run_exp04_first_class_catalysis.sh
+?? src/chem_catalysis.metta
+
+## Diff summary
+ experiments/exp04/run_rich_raf.py | 73 +++++++++++++++++++++++++-------
+ experiments/exp04/smoke.metta     | 26 ++++++++++++
+ src/chem_exp04.metta              | 88 ++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 162 insertions(+), 25 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

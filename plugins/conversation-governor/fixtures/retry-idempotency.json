@@ -1,0 +1,1 @@
+{"event":{"schema_version":"1.0.0","event_id":"evt_111111111111111111111","event_type":"human_message","timestamp":"2026-07-27T22:00:00.000Z","source":{"channel_id":"telegram:group","sender_id":"ben","sender_kind":"human","message_id":"1"},"content":{"text":"question"},"causality":{"origin_chain":["human:ben"]}},"expected":{"decision":"DROP","reason":"DUPLICATE_MESSAGE_ID"}}

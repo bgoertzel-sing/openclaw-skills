@@ -1,0 +1,148 @@
+# ECAN Parameter Tuning Analysis
+## Petta-Memory ECAN System — 2025-09-04
+
+## Executive Summary
+
+Conducted systematic parameter sweeps of the ECAN attention allocation system using
+the ecan_game simulation harness. Identified three critical issues with default
+parameters and three candidate parameter sets for production tuning.
+
+---
+
+## 1. Critical Findings
+
+### Finding A: FORGET_THRESHOLD is an absolute value, not a fraction
+**Default: FORGET_THRESHOLD = 0.05** — this means atoms only become forget candidates
+when STI drops below 0.05 (essentially zero). In practice, atoms are never forgotten
+under default parameters. This should be raised to a meaningful STI level.
+
+### Finding B: Equilibrium multiplier amplifies stimulation ~20x
+With default params (TARGET_STI=10000, STI_FUNDS_BUFFER=90000, STI_ATOM_WAGE=10):
+- Wage multiplier = 1 + (funds-target)/buffer = 1 + 90000/90000 = 2.0
+- Actual wage = base_wage * multiplier = 10 * 2.0 = 20.0
+- stim=2000 → STI gain = 2000 * 20 = 40,000
+
+This means even small stimulations produce very high STI. The effective rent rate
+is also modulated by the equilibrium (rent multiplier ~0.44 when funds are below target).
+
+### Finding C: NON_AF_DECAY_RATE has no effect on AF atoms
+NON_AF_DECAY_RATE (default 0.15) only applies to atoms NOT in the attentional focus.
+Stimulated atoms stay in AF (STI >> MIN_AF_STI) and are only drained by STI_RENT_RATE.
+With default rent=0.01 and equilibrium-adjusted rate ~0.0044, it takes 200+ cycles
+for a stimulated belief to exit AF.
+
+### Finding D: Evidence presence does not affect STI dynamics
+Adding/removing evidence affects the diffusion graph structure and belief
+strength/confidence, but does not directly influence STI. All AF atoms drain at
+the same rate regardless of evidence support. Only explicit stimulation changes STI.
+
+### Finding E: Diffusion only flows along evidence links
+Importance diffusion spreads STI between evidence sources and beliefs they support.
+Beliefs with independent evidence sources never share STI. Cross-belief priming
+requires shared evidence sources in the graph.
+
+---
+
+## 2. Default Parameter Values
+
+```
+TARGET_STI           = 10000.0
+STI_FUNDS_BUFFER     = 90000.0
+STI_ATOM_WAGE        = 10.0
+STI_RENT_RATE        = 0.01
+MIN_AF_STI           = 100.0
+AF_MAX_SIZE          = 100
+MAX_SPREAD_PERCENTAGE = 0.05
+NON_AF_DECAY_RATE    = 0.15
+FORGET_THRESHOLD     = 0.05
+TARGET_LTI           = 10000.0
+LTI_FUNDS_BUFFER     = 90000.0
+LTI_ATOM_WAGE        = 10.0
+LTI_RENT_RATE        = 0.01
+```
+
+---
+
+## 3. Forget Curve Analysis (stim=2000, evidence removed)
+
+| Config                        | Init STI | AF Exit | Forget Candidate |
+|-------------------------------|----------|---------|------------------|
+| DEFAULT (rent=0.01)           | 36,636   | 200+    | 200+             |
+| rent=0.05, MIN_AF=500, forget=100 | 35,982 | 200+  | 200+             |
+| rent=0.10, MIN_AF=500, forget=100 | 35,164 | 200+  | 200+             |
+| rent=0.15, MIN_AF=1000, forget=500 | 34,347 | 135   | 137              |
+| rent=0.20, MIN_AF=2000, forget=1000 | 33,529 | 47   | 49               |
+| rent=0.30, MIN_AF=2000, forget=1000 | 31,893 | 31   | 33               |
+| rent=0.50, MIN_AF=5000, forget=2000 | 28,720 | 4    | 6                |
+
+---
+
+## 4. Candidate Parameter Sets
+
+### MODERATE (slow burn)
+```
+STI_RENT_RATE     = 0.15
+MIN_AF_STI        = 1000.0
+FORGET_THRESHOLD  = 500.0
+```
+- AF exit: ~135 cycles, forget: ~137 cycles
+- Good for long conversations (beliefs stay relevant for extended periods)
+- Risk: old beliefs linger too long, AF may fill up
+
+### BALANCED (recommended starting point)
+```
+STI_RENT_RATE     = 0.20
+MIN_AF_STI        = 2000.0
+FORGET_THRESHOLD  = 1000.0
+```
+- AF exit: ~47 cycles, forget: ~49 cycles
+- Beliefs stay in attention for ~50 cycles after stimulation
+- Clean forget within ~50 cycles of AF exit
+- Best balance between relevance retention and cleanup
+
+### AGGRESSIVE (fast turnover)
+```
+STI_RENT_RATE     = 0.30
+MIN_AF_STI        = 2000.0
+FORGET_THRESHOLD  = 1000.0
+```
+- AF exit: ~31 cycles, forget: ~33 cycles
+- Quick attention shifts, rapid cleanup
+- Risk: beliefs forgotten too quickly, may lose important context
+
+---
+
+## 5. Competitive Scenario Results
+
+Tested 5 beliefs with 2 stimulated. After 10 cycles, removed evidence from belief-0.
+All configs show both beliefs draining at similar rates (evidence presence doesn't
+affect STI decay). The BALANCED config:
+- c=10: Both beliefs in AF (STI ~6600/5200)
+- c=20: Both in AF (STI ~4000/3100)
+- c=30: Both exit AF (STI ~2100/640)
+- c=50: Both forgotten (STI ~3/1)
+
+---
+
+## 6. Recommendations
+
+1. **Adopt BALANCED as starting point**: rent=0.20, MIN_AF=2000, FORGET=1000
+2. **Increase FORGET_THRESHOLD** from 0.05 to 1000.0 (the current value is effectively
+   a no-op)
+3. **Consider adding evidence-based STI boost**: atoms with active evidence should
+   receive a small STI top-up per cycle to prevent rapid forgetting of supported beliefs
+4. **Test with real conversation data**: the ecan_game harness is synthetic; real
+   conversation patterns may require different tuning
+5. **Consider STI_FUNDS_BUFFER reduction**: lowering from 90000 to 30000-50000
+   would reduce the wage multiplier from 20x to ~4-7x, making stimulation amounts
+   more predictable
+
+---
+
+## 7. Next Steps
+
+- [ ] Implement evidence-based STI boost (atoms with evidence get small per-cycle top-up)
+- [ ] Test BALANCED config with full test suite (927+215 subtests)
+- [ ] Tune STI_FUNDS_BUFFER for more predictable wage multiplier
+- [ ] Test with multi-turn conversation scenarios
+- [ ] Evaluate diffusion effectiveness with shared evidence sources

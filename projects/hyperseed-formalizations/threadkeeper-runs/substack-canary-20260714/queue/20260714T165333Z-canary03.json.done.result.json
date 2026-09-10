@@ -1,0 +1,25 @@
+{
+  "claimed_path": "/home/openclaw/research-agent/projects/hyperseed-formalizations/threadkeeper-runs/substack-canary-20260714/queue/20260714T165333Z-canary03.json.claimed",
+  "finished_at": 1784048345.9082558,
+  "queue_path": "/home/openclaw/research-agent/projects/hyperseed-formalizations/threadkeeper-runs/substack-canary-20260714/queue/20260714T165333Z-canary03.json",
+  "result": {
+    "files_changed": [],
+    "next_action": "retry with a well-formed final emit or inspect transcript_path",
+    "patch_proposals": [],
+    "status": "error",
+    "summary": "EMIT_PROTOCOL_VIOLATION: emit response must not contain unparsed text or additional records",
+    "tests_run": [],
+    "transcript_path": "/home/openclaw/research-agent/projects/hyperseed-formalizations/threadkeeper-runs/substack-canary-20260714/20260714T165334Z-920119c341-hyperseed-formalizer.json",
+    "transcript_sha256": "69ad4c4b6bd5c9f52808041c2cf608471f697fd089aac578913776cc4678f13e",
+    "uncertainty": "high",
+    "worker_token_usage": {
+      "input_tokens": 30051,
+      "output_tokens": 271,
+      "total_tokens": 30322
+    }
+  },
+  "status": "error",
+  "task_done_path": "/home/openclaw/research-agent/projects/hyperseed-formalizations/threadkeeper-runs/substack-canary-20260714/queue/20260714T165333Z-canary03.json.done",
+  "task_sha256": "4e74cbac3b53f92cb766e80b1a67eda0d7b7ed200329f91bb87bbe42807da344",
+  "task_sha256_path": "/home/openclaw/research-agent/projects/hyperseed-formalizations/threadkeeper-runs/substack-canary-20260714/queue/20260714T165333Z-canary03.json.done.sha256"
+}

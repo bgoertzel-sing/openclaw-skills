@@ -1,0 +1,81 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-wmtm-validation",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-run-benchmark",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-run-benchmark_to_g-wmtm-validation",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-run-benchmark",
+        "g-wmtm-validation"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_g-wmtm-validation_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "g-wmtm-validation",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "part_of_t-run-benchmark_to_p-wmtm",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-run-benchmark",
+        "p-wmtm"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "provides_evidence_for_r-wmtm-benchmark-results_to_g-wmtm-validation",
+      "truth": {
+        "strength": 0.5,
+        "confidence": 0.5
+      },
+      "outgoing": [
+        "r-wmtm-benchmark-results",
+        "g-wmtm-validation"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}

@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v11-gate-1",
+  "cases": [
+    {"case_id":"v11_direct_capital_fenreach","expected":{"predicate":"capital_of","entity_a":"Fenreach","entity_b":"Aurel Gate","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_direct_author_lantern_index","expected":{"predicate":"authored_by","entity_a":"The Lantern Index","entity_b":"Mira Quell","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_direct_location_cedar_relay","expected":{"predicate":"located_in","entity_a":"cedar relay","entity_b":"Voss Territory","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_direct_state_compressor","expected":{"predicate":"state","entity_a":"midnight compressor","entity_b":"idle","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_capital_orinth","expected":{"predicate":"capital_of","entity_a":"Orinth","entity_b":"Larkspire","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_author_brass_horizons","expected":{"predicate":"authored_by","entity_a":"Brass Horizons","entity_b":"Sena Marr","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_author_ninth_estuary","expected":{"predicate":"authored_by","entity_a":"The Ninth Estuary","entity_b":"Pavel Orr","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_location_glass_depot","expected":{"predicate":"located_in","entity_a":"glass depot","entity_b":"Harth Valley","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_location_west_beacon","expected":{"predicate":"located_in","entity_a":"west beacon","entity_b":"Rill County","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_negation_state_actuator","expected":{"predicate":"state","entity_a":"saffron actuator","entity_b":"stable","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v11_possible_capital_norvale","expected":{"predicate":"capital_of","entity_a":"Norvale","entity_b":"Caelun","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v11_possible_author_measure_fog","expected":{"predicate":"authored_by","entity_a":"A Measure of Fog","entity_b":"Elia Sorn","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v11_possible_location_copper_annex","expected":{"predicate":"located_in","entity_a":"copper annex","entity_b":"Vey District","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v11_possible_state_gyroscope","expected":{"predicate":"state","entity_a":"inner gyroscope","entity_b":"active","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v11_possible_state_lattice","expected":{"predicate":"state","entity_a":"northern lattice","entity_b":"dormant","polarity":"positive","modality":"possible","abstain":false}},
+    {"case_id":"v11_paraphrase_capital_doven","expected":{"predicate":"capital_of","entity_a":"Doven","entity_b":"Ilyra","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_abstention_conditional_crane","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v11_abstention_question_mirror","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v11_abstention_disjunction_hatches","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v11_abstention_command_turbine","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"positive","modality":"asserted","abstain":true}},
+    {"case_id":"v11_world_atlantis_capital","expected":{"predicate":"capital_of","entity_a":"Atlantis","entity_b":"Coral Ward","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_world_holmes_author","expected":{"predicate":"authored_by","entity_a":"Sherlock Holmes","entity_b":"Isaac Newton","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_world_everest_location","expected":{"predicate":"located_in","entity_a":"Mount Everest","entity_b":"Sapphire Lowlands","polarity":"positive","modality":"asserted","abstain":false}},
+    {"case_id":"v11_world_sun_state","expected":{"predicate":"state","entity_a":"Sun","entity_b":"cold","polarity":"positive","modality":"asserted","abstain":false}}
+  ]
+}

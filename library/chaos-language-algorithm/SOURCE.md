@@ -98,3 +98,50 @@ Architecture document for a pure-Python-first, Hyperon-ready CLA library. It rec
 ## Relevance to current work
 
 This turns CLA from a general algorithm spec into a concrete software project plan. It strengthens the case for a local prototype repo under `projects/chaos-language-algorithm/repos/cla`, starting with a symbolic-string MVP and exact-reconstruction/property tests before any Hyperon adapter work.
+
+---
+
+# Additional source: Grammar-Preserving Dimensional Embedding for Strange-Attractor Language Analysis in High Dimension
+
+- Type: `PDF`
+- Authors/organization: Chaos Language Algorithm Project
+- Publication/version date: 2026-07-10
+- Retrieved: `2026-07-10`
+- Canonical URL or identifier: Telegram attachment `cla_hd_embedding---56acc870-3e99-49c0-9c6b-427875c32b57.pdf`
+- Local source path: Telegram media attachment `media://inbound/cla_hd_embedding---56acc870-3e99-49c0-9c6b-427875c32b57.pdf`; original PDF not byte-preserved in workspace at ingestion time
+- Extracted text path: `library/chaos-language-algorithm/cla_hd_embedding_extracted.txt`
+- SHA-256: unavailable; original PDF media URI not exposed as a stable local file during this pass
+- License/access constraints: local working document from Ben; confirm before public redistribution
+- Privacy tier: `local-private`
+- Tags: high-dimensional symbolic dynamics, TICA, VAMP, kinetic map, microstates, PCCA+, surrogate compression, held-out perplexity, rate-distortion
+- Related projects: `chaos-language-algorithm`, `omegasim`
+
+## Summary
+
+This document upgrades the CLA roadmap for high-dimensional trajectories (target regime D≈256). It diagnoses the observed D≈10 failure as mostly a symbolization/partition-cardinality failure rather than an intrinsic grammar limit: fixed rectangular M1 symbolization creates up to b^D compound symbols, causing near-unique cells and no n-gram recurrence. The proposed remedy is to decouple alphabet size from ambient dimension by embedding the trajectory into a low-dimensional dynamics-aware coordinate system using TICA/VAMP kinetic maps, then clustering into low-cardinality microstates for CLA.
+
+## Key claims or contents
+
+- The b^D grid is the immediate cause of grammar collapse in high dimension; adaptive clustering with chosen alphabet size k avoids symbol explosion.
+- A time-lagged transfer-operator embedding (TICA/VAMP kinetic map) should preserve slow, grammar-carrying modes while suppressing fast noise.
+- Use VAMP directionality rather than reversible/symmetrized TICA when symbolic grammar is irreversible.
+- Cluster kinetic-map points into microstates (`k≈30–100`) for CLA; do not hand CLA PCCA+ macrostates, because those intentionally approach a first-order Markov abstraction.
+- Use PCCA+ soft memberships as category seeds for CLA meta-symbols.
+- Measure grammar survival using surrogate excess compression and held-out next-symbol log-loss, plotted across embedding dimension d as a grammar rate-distortion curve.
+
+## Methods or implementation details
+
+The recommended default pipeline is: estimate intrinsic attractor dimension; compute shrinkage-regularized TICA/VAMP kinetic map; choose tau/d/featurization by cross-validated VAMP-2 score and implied-timescale diagnostics; cluster embedded points into microstates; run Standard CLA with PCCA+-seeded categories; compare real vs shuffled surrogate compression and held-out perplexity. Later variants include VAMPnets/Koopman autoencoders with probabilistic-symbol CLA and delay embeddings of the top slow coordinates.
+
+## Limitations and uncertainties
+
+The document is a design proposal, not yet an experiment result. The original PDF hash is not recorded in the workspace because the Telegram media URI was not exposed as a local byte file during this pass. Practical success depends on implementing real-bit MDL calibration, surrogate controls, k-means/adaptive symbolization, TICA/VAMP dependencies, and ground-truth high-D lift validation.
+
+## Relevance to current work
+
+This directly changes the CLA benchmark plan: the next useful sprint should prioritize instrumentation and adaptive symbolization before further interpreting high-D M1 failures. It also defines the credible path back to OmegaSim-scale vector traces: validate on high-D lifted Lorenz/Rössler controls first, then run d/k sweeps and only then apply to OmegaSim embeddings.
+
+## Follow-up questions
+
+- Should `deeptime` be the preferred optional dependency for TICA/VAMP/PCCA+ in `chaoslang`, or should we start with a minimal NumPy/SciPy TICA implementation and add `deeptime` later?
+- Should the first high-D lift target be only Lorenz-63, or Lorenz-63 plus Rössler in the same experiment battery?

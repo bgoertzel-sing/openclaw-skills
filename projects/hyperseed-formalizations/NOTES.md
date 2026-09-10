@@ -26,3 +26,17 @@ Strongest minimal mechanism to test: thresholded artifact handoff. Artifacts rip
 ## 2026-07-03 - CLA, emergent language, derivatives, and pattern calculus
 
 Ben asked for a persistent Hyperseed subthread on the Chaos Language Algorithm. Treat CLA as more than a detector: it may expose a language of emergent patterns in strange attractors/transients. Study whether chunk/category edits, exact reconstruction, and MDL acceptance can be formalized with pattern calculus and McBride-style derivatives of data types/grammars/dynamical traces. Source pointer: Google Drive `Weakness-Theory-10.pdf` (`https://drive.google.com/file/d/1PNg6ywTWPtSixm1yQ10z0TQXR8_bpgEh/view?usp=drive_link`), especially sections on emergent pattern and pattern calculus. Initial web fetch returned only the Drive title, not the PDF body.
+
+## 2026-07-04 - Weakness-Theory-10 PDF received and ingested
+
+Ben uploaded `Weakness-Theory-10.pdf` directly in `ProtoBots-BotBotChat`, resolving the earlier source-access blocker. Local library record: `library/weakness-theory-10/SOURCE.md`; PDF hash `f060f23afdc7079981be7cf0d337e225289041f6832ffb94b3b31d4e53507cee`; extracted text `library/weakness-theory-10/Weakness-Theory-10.extracted.txt`.
+
+Most relevant anchors for the CLA/emergent-language formalization:
+
+- Chapter 21, McBride derivatives of weakness: one-hole contexts, local sensitivity, gradient-style optimization, differentiable proof search.
+- Chapter 22, Quantale Pattern Theory: pattern intensity, emergent pattern synergy, algebraic laws, McBride derivatives of pattern intensities.
+- Chapter 24, Multiresolution Weakness Transform: wavelet-like coarse/residual decomposition, greedy pattern-mining heuristic, MORK/PathMap implementation direction.
+
+Immediate proximal task, per Ben's clarification: explore connections between CLA and the McBride-derivative-based pattern calculus in `Weakness-Theory-10.pdf`, especially for Ruiting / ProtoMegaBot's CLA theory interpretation. Hyperseed formalization may help as a downstream representation, but should not displace the core CLA<->McBride-pattern-calculus interpretation.
+
+Bridge to test: `dynamical trace -> candidate chunks/categories/grammar -> one-hole edit contexts -> reconstruction/MDL acceptance -> weakness/pattern-intensity score -> emergent-synergy criterion -> residual/detail refinement`. This can connect CLA to OmegaSim detector needs without prematurely treating CLA as only a classifier.

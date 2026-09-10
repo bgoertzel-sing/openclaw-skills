@@ -1,0 +1,25 @@
+{
+  "containerDiskInGb": 40,
+  "costPerHr": 1.19,
+  "createdAt": "2026-07-17 00:32:37.872 +0000 UTC",
+  "desiredStatus": "RUNNING",
+  "env": {
+    "PUBLIC_KEY": "SHA256:p9FGWecqdQgTN/Ck2oA61JzsLigCCOh18yQV+9IewRo\n\nssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC18SffzZvNdNGf32fwGonQR6PnUB7TuTrab/r56hl76YKWt4kiGBHNF9bitOAS/GFW0WcLGVi/zgaOIH5Iqkg0I7tDjaYZaB06SHOLYJmr7CdkAncZr0osNE2gGb3IIFIKuVdchenlbM6awXtNxMg58u+bbTG+wymhQj2ndoB+MOW/3JHk4aOV0cigvmI+gwAGay16I2Vu5Po7hUiHXeORkpEYddZFzMq7aXsI11bEPAFL8wOLxNwWFTiPDJSuQgOYzJPXerWYYqlvFj0id4biIJ3FSFh7rguqnd3z5j4/6YF+Ukd5XkX9XVywpMZ8mkRozTyfeoe4koDmmmBNGeLt runpodctl-ssh-key"
+  },
+  "gpuCount": 1,
+  "id": "mgfmu5y0a4ycek",
+  "imageName": "pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime",
+  "lastStatusChange": "Rented by User: Fri Jul 17 2026 00:32:37 GMT+0000 (Coordinated Universal Time)",
+  "memoryInGb": 125,
+  "name": "relaleap-gpt2-small-epc-pilot-20260716",
+  "ssh": {
+    "error": "pod not ready",
+    "id": "mgfmu5y0a4ycek",
+    "name": "relaleap-gpt2-small-epc-pilot-20260716",
+    "status": "RUNNING"
+  },
+  "uptimeSeconds": 0,
+  "vcpuCount": 8,
+  "volumeInGb": 80,
+  "volumeMountPath": "/workspace"
+}

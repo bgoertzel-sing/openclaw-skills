@@ -1,0 +1,30 @@
+{
+  "cases": [
+    {"case_id": "v13_direct_estonia_capital", "expected": {"abstain": false, "entity_a": "estonia", "entity_b": "tallinn", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v13_direct_fifth_season_author", "expected": {"abstain": false, "entity_a": "the fifth season", "entity_b": "n. k. jemisin", "modality": "asserted", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v13_direct_lantern_state", "expected": {"abstain": false, "entity_a": "lantern", "entity_b": "extinguished", "modality": "asserted", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v13_direct_manuscript_location", "expected": {"abstain": false, "entity_a": "manuscript", "entity_b": "cedar chest", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v13_negated_uruguay_capital", "expected": {"abstain": false, "entity_a": "uruguay", "entity_b": "salto", "modality": "asserted", "polarity": "negated", "predicate": "capital_of"}},
+    {"case_id": "v13_negated_dispossessed_author", "expected": {"abstain": false, "entity_a": "the dispossessed", "entity_b": "kazuo ishiguro", "modality": "asserted", "polarity": "negated", "predicate": "authored_by"}},
+    {"case_id": "v13_negated_reservoir_state", "expected": {"abstain": false, "entity_a": "reservoir", "entity_b": "empty", "modality": "asserted", "polarity": "negated", "predicate": "state"}},
+    {"case_id": "v13_negated_compass_location", "expected": {"abstain": false, "entity_a": "compass", "entity_b": "blue drawer", "modality": "asserted", "polarity": "negated", "predicate": "located_in"}},
+    {"case_id": "v13_negated_japan_capital", "expected": {"abstain": false, "entity_a": "japan", "entity_b": "osaka", "modality": "asserted", "polarity": "negated", "predicate": "capital_of"}},
+    {"case_id": "v13_negated_glass_bead_author", "expected": {"abstain": false, "entity_a": "the glass bead game", "entity_b": "italo calvino", "modality": "asserted", "polarity": "negated", "predicate": "authored_by"}},
+    {"case_id": "v13_possible_senegal_capital", "expected": {"abstain": false, "entity_a": "senegal", "entity_b": "dakar", "modality": "possible", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v13_possible_copper_orchard_author", "expected": {"abstain": false, "entity_a": "the copper orchard", "entity_b": "amina", "modality": "possible", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v13_possible_observatory_state", "expected": {"abstain": false, "entity_a": "observatory", "entity_b": "operational", "modality": "possible", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v13_possible_specimen_location", "expected": {"abstain": false, "entity_a": "specimen", "entity_b": "west cabinet", "modality": "possible", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v13_possible_bridge_state", "expected": {"abstain": false, "entity_a": "bridge", "entity_b": "unstable", "modality": "possible", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v13_paraphrase_iceland_capital", "expected": {"abstain": false, "entity_a": "iceland", "entity_b": "reykjavik", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v13_abstain_fragment", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v13_abstain_out_of_ontology", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v13_abstain_two_propositions", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v13_abstain_question", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v13_trap_morocco_capital", "expected": {"abstain": false, "entity_a": "morocco", "entity_b": "casablanca", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v13_trap_trial_author", "expected": {"abstain": false, "entity_a": "the trial", "entity_b": "toni morrison", "modality": "asserted", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v13_trap_fuji_location", "expected": {"abstain": false, "entity_a": "mount fuji", "entity_b": "south korea", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v13_trap_pyramid_location", "expected": {"abstain": false, "entity_a": "great pyramid of giza", "entity_b": "brazil", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}}
+  ],
+  "contract_version": "frame-oracle-v13-gate-1",
+  "created_utc": "2026-08-07T01:27:15Z"
+}

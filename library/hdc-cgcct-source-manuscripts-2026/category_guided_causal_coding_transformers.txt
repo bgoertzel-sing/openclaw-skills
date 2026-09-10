@@ -1,0 +1,1257 @@
+      Category-Guided Causal-Coding Transformers:
+      Using Linguistic–Cognitive Universal Mappings
+for Learning, Routing, Pruning, and Continual Adaptation
+                                          Ben Goertzel
+
+                                       Draft, May 20, 2026
+
+
+                                             Abstract
+    This paper develops an architectural and training framework for causal-coding Transformer
+neural networks based on a categorical mapping from linguistic universals to cognitive universals.
+The guiding idea is that robust linguistic universals are weak but highly informative observable
+traces of stable cognitive invariants. If one can learn an approximate cognition–frame–language
+correspondence inside a Transformer, then linguistic universals can be used as training signals
+for latent causal modules: they can help decide which heads and channels should be stable,
+which dependencies should route through mediators, which context updates should commute,
+which couplings are likely to be double-counting, and which parts of the model should be pruned
+or protected.
+    Formally, we model a causal-coding Transformer as an object of a quantale-enriched cate-
+gory CTQ . Its modules are attention heads, value channels, feed-forward channels, adapters,
+predictive-coding state nodes, or column-like blocks; its context-conditioned training steps are
+endomorphisms Uc : Z → Z; and its causal gates are based on interventional influence. We then
+introduce learned maps
+
+                K
+                b θ : CTQ → FrameQ ,      Ebθ : FrameQ → LangQ ,     b θ = Ebθ ◦ K
+                                                                     Λ           bθ ,
+
+where FrameQ is a category of semantic frames and LangQ is a category of TUG-style linguistic
+cores. A linguistic universal is represented as a subobject U ,→ L in LangQ ; its cognitive
+explanation is the pullback of U along Λ b θ , selected by a quantale-valued weakness criterion
+that rewards fit and retention while penalizing cost, commutator defect, mediator leakage, and
+double-counting.
+   The main engineering thesis is this:
+
+                       b θ = Ebθ ◦ K
+                   Use Λ           b θ to regularize hidden Transformer updates
+            so that causal modules, semantic frames, and linguistic externalizations
+                           form approximately commuting diagrams.
+
+Equivalently:
+
+          Tune gates, pruning, routing, mediator heads, stability, and anti-forgetting
+            using quantale weakness over fit, cost, commutators, mediator leakage,
+                                        and double-counting.
+
+The proposed losses include naturality losses, closure losses for hierarchy universals, mediator
+residual losses for cross-module dependencies, commutator losses weighted by semantic-frame
+
+
+                                                 1
+      overlap, low-frustration externalization losses for word order, stability losses mapping high-
+      stability universals into hard-kernel modules, and anti-double-counting losses over interventional
+      footprints. The resulting framework turns category theory into a concrete recipe for causal-
+      coding Transformer design.
+
+
+Contents
+1 Introduction                                                                                             3
+  1.1 Why linguistic universals should help neural network design . . . . . . . . . . . . . .              3
+  1.2 From a philosophical correspondence to a neural objective . . . . . . . . . . . . . . .              4
+  1.3 What this paper contributes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          4
+  1.4 The intended reader . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          5
+
+2 Background                                                                                               5
+  2.1 Causal coding in Transformers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            5
+  2.2 The Causal-Continual-Learning principle . . . . . . . . . . . . . . . . . . . . . . . . .            6
+  2.3 Linguistic universals as structural probes . . . . . . . . . . . . . . . . . . . . . . . . .         6
+  2.4 Quantale weakness as a unifying tuning principle . . . . . . . . . . . . . . . . . . . .             7
+
+3 The learned cognition–frame–language diagram                                                              7
+  3.1 The three categories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          7
+  3.2 The learned correspondence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            8
+  3.3 Naturality as the core training principle . . . . . . . . . . . . . . . . . . . . . . . . .           9
+  3.4 Universals as subobjects and pullbacks . . . . . . . . . . . . . . . . . . . . . . . . . .            9
+
+4 How each type of linguistic universal becomes a Transformer design constraint 10
+  4.1 Hierarchy universals become closure losses and hard-kernel structure . . . . . . . . . 10
+  4.2 Broad cross-module universals become mediator-head constraints . . . . . . . . . . . 10
+  4.3 Narrow word-order universals become low-frustration externalization losses . . . . . 11
+  4.4 Graded universalhood becomes module stability scheduling . . . . . . . . . . . . . . 11
+  4.5 Context-indexed local laws become support-router constraints . . . . . . . . . . . . . 12
+
+5 Architecture: the Category-Guided Causal-Coding Transformer                                              12
+  5.1 High-level architecture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        12
+  5.2 Module families . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        12
+  5.3 Causal gates with frame and linguistic influence . . . . . . . . . . . . . . . . . . . . .           13
+  5.4 Frame and universal probes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           13
+  5.5 Adjunction between interpretation and externalization . . . . . . . . . . . . . . . . .              13
+
+6 Losses and training objectives                                                                           14
+  6.1 The composite objective . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          14
+  6.2 Predictive-coding and causal-coding losses . . . . . . . . . . . . . . . . . . . . . . . .           14
+  6.3 Naturality loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        14
+  6.4 Closure loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       15
+  6.5 Mediator loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        15
+  6.6 Commutator loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          15
+  6.7 Double-counting loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         16
+  6.8 Stability loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       16
+  6.9 Quantale weakness objective . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          16
+
+                                                      2
+7 Theorems and design consequences                                                                     16
+  7.1 Naturality transports commutators . . . . . . . . . . . . . . . . . . . . . . . . . . . .        16
+  7.2 Closure regularization yields closed direct images . . . . . . . . . . . . . . . . . . . .       17
+  7.3 Mediator residuals justify pruning direct couplings . . . . . . . . . . . . . . . . . . .        17
+  7.4 Category-guided commutator control implies bounded forgetting . . . . . . . . . . .              18
+  7.5 Weakness selects causal mediators over double-counting . . . . . . . . . . . . . . . .           18
+
+8 Training procedure                                                                                   19
+  8.1 Data sources . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     19
+  8.2 A staged training recipe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     19
+  8.3 Algorithmic sketch . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     20
+
+9 Experimental program                                                                               20
+  9.1 A minimal experiment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+  9.2 Metrics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+  9.3 Intervention tests . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+
+10 Implementation choices and variants                                                                 21
+   10.1 Which modules should be used? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      21
+   10.2 How symbolic must the frame layer be? . . . . . . . . . . . . . . . . . . . . . . . . .        22
+   10.3 When typological labels are missing . . . . . . . . . . . . . . . . . . . . . . . . . . .      22
+   10.4 Quantale tuning in practice . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    22
+
+11 Risks, limitations, and non-goals                                                                   22
+   11.1 Do not over-impose universals . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    22
+   11.2 Do not confuse probes with causes . . . . . . . . . . . . . . . . . . . . . . . . . . . .      23
+   11.3 Do not make the frame bottleneck too narrow . . . . . . . . . . . . . . . . . . . . . .        23
+   11.4 The category theory is a design language, not magic . . . . . . . . . . . . . . . . . .        23
+
+12 Conclusion                                                                                          23
+
+
+1     Introduction
+1.1    Why linguistic universals should help neural network design
+A large Transformer trained only by next-token prediction is under strong pressure to discover many
+useful linguistic regularities, but it is not explicitly told which internal structures should be reusable,
+which should be protected, which should be mediated, and which should be pruned as redundant. A
+causal-coding Transformer adds one important ingredient: it tries to identify which internal units,
+heads, channels, or modules have genuine interventional influence, and it gates learning accordingly.
+However, even causal coding needs guidance about the appropriate grain of modularity.
+    Linguistic universals can provide exactly this kind of guidance. A robust linguistic universal is
+not merely a surface regularity. In the perspective developed in the companion paper on linguistic
+and cognitive universals, it is the observable shadow of a cognitive invariant transported through
+semantic frames and linguistic externalization. That is, we have a correspondence of the schematic
+form
+
+    cognitive causal modules −→ semantic frames −→ linguistic forms and typological patterns.
+
+
+
+                                                    3
+If this correspondence can be learned or approximated inside a Transformer, then the linguistic
+side gives a weak observable probe of the cognitive side. The model need not be forced to obey
+a hand-coded grammar. Instead, linguistic universals become soft constraints on latent causal
+organization.
+    The central engineering idea of this paper is:
+
+              Use linguistic and semantic-frame structure as weak observable probes
+                  of the latent causal modularity we want a Transformer to learn.
+
+This gives a principled way to structure and tune causal-coding Transformers.
+
+1.2   From a philosophical correspondence to a neural objective
+The earlier category-theoretic formulation of the linguistic–cognitive correspondence can be sum-
+marized as
+
+                    linguistic universals are direct images of cognitive invariants
+                 along a weakest, quantale-enriched externalization correspondence,
+
+and conversely
+                       cognitive universals are weakest pullback explanations
+                                   of stable linguistic subobjects.
+
+For a neural network designer, this says the following.
+    First, if the network contains a stable latent causal pattern, and if that pattern is relevant
+to language, then some image of it should be visible through semantic-frame probes or linguistic
+probes. For example, a stable person-role representation should help explain person hierarchy
+regularities; a stable event-role representation should help explain argument-structure regularities;
+a stable context router should help explain context-indexed local laws.
+    Second, if a linguistic universal is robust across languages and contexts, then the weakest ade-
+quate explanation of that universal should correspond to some latent causal structure. If the model
+explains a robust hierarchy by scattering many redundant correlations across unrelated heads, that
+explanation is not weak: it is expensive, brittle, and double-counted. A better model should place
+the relevant structure in a stable module or small family of modules.
+    Third, if a broad linguistic dependency crosses two modules, the model should not couple those
+modules densely unless necessary. It should try to find a mediator. This is the neural version of
+the linguistic theorem that nontrivial cross-module universals require mediation.
+
+1.3   What this paper contributes
+This paper turns those conceptual points into a concrete causal-coding Transformer design. The
+main contributions are:
+
+ 1. A quantale-enriched category CTQ of causal-coding Transformers, whose objects contain mod-
+    ular latent state, context update endomorphisms, do-influence gates, probes, and stability
+    assignments.
+
+
+
+
+                                                  4
+ 2. A learned cognition–frame–language map
+                                       b θ = Ebθ ◦ K
+                                       Λ           b θ : CTQ → LangQ ,
+
+      where Kb θ reads semantic frames from Transformer modules and Ebθ predicts linguistic external-
+      izations from frames.
+
+ 3. A set of training losses derived from categorical structure: naturality, pullback, closure, me-
+    diator residual, commutator, double-counting, stability, low-frustration externalization, and
+    context gluing.
+
+ 4. A theorem package showing, under explicit assumptions, that these losses push the model
+    toward small context commutators, mediated cross-module dependencies, closed hierarchy rep-
+    resentations, and lower double-counting.
+
+ 5. A practical training and evaluation protocol for testing whether category-guided causal cod-
+    ing improves continual learning, multilingual transfer, pruning, head specialization, and inter-
+    pretability.
+
+1.4    The intended reader
+The paper is written for two audiences. Readers interested in architecture can treat the category
+theory as a precise design language for heads, gates, probes, routers, and regularizers. Readers
+interested in mathematics can view the architecture as an approximate neural realization of a lax
+monoidal, quantale-enriched correspondence between cognitive causal systems, semantic frames,
+and TUG-style linguistic cores.
+    Every formal definition is accompanied by a plain-language explanation. The goal is not to make
+a Transformer into a symbolic grammar engine. The goal is to use the stable parts of linguistic
+structure as weak constraints on the model’s latent causal organization.
+
+
+2     Background
+2.1    Causal coding in Transformers
+A standard Transformer contains a rich supply of potential modules: attention heads, value chan-
+nels, key-query subspaces, feed-forward neurons, low-rank adapters, MoE experts, residual stream
+subspaces, and layer-wise prediction-error nodes in predictive-coding variants. Causal coding treats
+these as candidate causal factors and asks which ones have interventional influence on predictions,
+frames, or downstream internal states.
+    Let zm denote the activation of module m. A do-influence score from m to an output or internal
+target r can be written schematically as
+                                         ∂                         
+                          Cm→r (x) =       r do(zm ← zm + αvm ); x       ,
+                                        ∂α                           α=0
+
+where vm is a perturbation direction. In practice this may be approximated by Jacobian-vector
+products, causal scrubbing, ablation, activation patching, natural-gradient surrogates, predictive-
+coding Hessian blocks, or randomized interventions.
+   Causal coding uses these influence estimates to gate updates:
+                                                                        
+                        ∆θm = −η gm,c ∇θm Lc ,      gm,c ≈ σ a Cm,c − b ,
+
+                                                   5
+where c is a context and Cm,c is the estimated causal relevance of module m in context c. The goal
+is to avoid updating modules that do not causally matter for the present context. This supports
+continual learning because context updates that act on mostly disjoint modules approximately
+commute.
+
+2.2   The Causal-Continual-Learning principle
+Let Θ be parameter space and let each context c define a loss Lc and an update vector field
+
+                                          Xc (θ) = −∇Lc (θ).
+
+The commutator of two update fields is
+
+                                    [Xc , Xd ] = DXd Xc − DXc Xd .
+
+If [Xc , Xd ] is small, then training on c and then d is close to training on d and then c, and also
+close to a joint update on the mixture. If all relevant commutators are small, sequential learning
+has bounded path-dependence and bounded forgetting.
+    The categorical version replaces vector fields by endomorphisms. A context update is a mor-
+phism
+                                              Uc : Z → Z
+on a modular state object
+                                          Z∼
+                                           = Z1 ⊗ · · · ⊗ ZM .
+If Uc acts nontrivially only on factors in Sc ⊆ {1, . . . , M }, and Ud acts only on disjoint factors Sd ,
+then
+                                          Uc ◦ Ud ∼
+                                                  = Ud ◦ Uc .
+The approximate version measures the failure of this equality by a metric or quantale-valued defect.
+
+2.3   Linguistic universals as structural probes
+The TUG account of linguistic universals distinguishes five robust structural types.
+
+ 1. Hierarchy universals behave like closure systems.
+
+ 2. Broad cross-module universals require mediators.
+
+ 3. Narrow word-order universals behave like low-frustration externalization systems.
+
+ 4. Universalhood is graded by stability rather than binary.
+
+ 5. Many genuine universals are context-indexed local laws.
+
+   These are not merely linguistic facts. In the correspondence view, they are signatures of the
+cognitive architecture that produces and understands language. A causal-coding Transformer can
+therefore use them as weak labels for how its latent modules should be arranged.
+
+
+
+
+                                                    6
+2.4      Quantale weakness as a unifying tuning principle
+A commutative quantale is a complete lattice (Q, ≤) with a monoidal product ⊗ distributing
+over arbitrary joins. Quantales let us combine heterogeneous notions of cost, evidence, weakness,
+confidence, and error.
+   For a relation H ⊆ X × X interpreted as indistinction and a valuation µ : X → Q, define
+                                             _
+                                   W(H) =         µ(x) ⊗ µ(y).
+                                                (x,y)∈H
+
+Large W(H) means the hypothesis leaves many valued distinctions unmade. In ordinary Occam
+terms, it commits to less. In neural-network terms, it avoids encoding unnecessary couplings.
+   For Transformer tuning we use a product quantale such as
+                                                         op       op     op
+                    Qmtotal = Qmf it × Qmret × Qop
+                                                mcomm × Qmleak × Qmdc × Qmcost ,
+
+where fit and retention should be high, while commutator defect, mediator leakage, double-counting,
+and cost should be low. The superscript op reverses the order on cost-like coordinates. A good
+model is a maximal element of this product order, or an approximate Pareto point selected by a
+scalarization or epsilon-constraint rule.
+
+
+3      The learned cognition–frame–language diagram
+3.1      The three categories
+We now define the categorical objects used by the architecture. The definitions are intentionally
+flexible: different implementations may instantiate heads, channels, adapters, or columns as mod-
+ules.
+
+Definition 3.1 (The category of causal-coding Transformers). A causal-coding Transformer object
+is a tuple
+                      Th eta = (Z, {Zm }M
+                                        m=1 , {Uc }c∈C , {Sc }c∈C , G, Π, ρ, µ),
+
+where:
+
+    • Z∼
+       = Z1 ⊗ · · · ⊗ ZM is a modular latent state object;
+
+    • each Zm is a module, such as a head, channel group, adapter, expert, predictive-coding node,
+      or column;
+
+    • each Uc : Z → Z is a context-conditioned update endomorphism;
+
+    • Sc ⊆ {1, . . . , M } is the intended support of context c;
+
+    • G = (gm,c ) is a causal-gate system derived from do-influence estimates;
+
+    • Π is a family of probes and readouts;
+
+    • ρm ∈ [0, 1] is a stability or rigidity assignment for module m;
+
+    • µ is a quantale-valued valuation on modules, traces, or behaviors.
+
+
+
+
+                                                     7
+A morphism F : Th eta → Tθ0 is a simulation, distillation, refinement, pruning map, or architectural
+embedding that preserves the modular/update structure up to a quantale-valued defect. The
+resulting quantale-enriched category is denoted CTQ .
+
+    Plainly: objects are not just trained networks, but trained networks equipped with a modular
+causal interpretation. Morphisms are transformations of such networks that preserve their causal
+learning behavior sufficiently well.
+
+Definition 3.2 (Semantic-frame category). An object of FrameQ is a structured semantic frame
+system
+                                 F = (R, A, E, C, ΓF , µF ),
+where R is a role set, A is an argument or participant structure, E is an event or force-dynamic
+structure, C is a context index set, ΓF is a symmetry or equivalence structure, and µF is a quantale
+valuation. Morphisms are frame embeddings, refinements, role maps, event decompositions, and
+context restrictions, again enriched by defects in Q.
+
+    A semantic frame is a cognitive structure such as “agent acts on patient”, “speaker addresses
+hearer”, “object is possessed by possessor”, “event has cause and effect”, or “clause is subordinate
+in this discourse context.”
+
+Definition 3.3 (Linguistic TUG category). An object of LangQ is a TUG-style linguistic core
+
+                                      L = (C` , Otyp , ⊥` , Γ` , µL ),
+
+where
+                              C` = TUGOtyp (G` ) = Deriv(G` )/≡⊥,Γ,Otyp
+for a typological observation interface
+
+                                     Otyp = (ΣLF , ΣPF , ΣMorph ).
+
+Morphisms in LangQ are interface-preserving maps between linguistic cores, including language-
+to-language alignments, quotient maps, typological-feature maps, and translation-like maps that
+preserve observations up to Q-defect.
+
+    This category does not treat language merely as strings. It treats language as equivalence classes
+of derivations under an observation interface.
+
+3.2     The learned correspondence
+The ideal correspondence is
+
+                                          K
+                                          bθ                   Ebθ
+                               CTQ               FrameQ              LangQ .
+
+The composite is
+                                               b θ := Ebθ ◦ K
+                                               Λ            bθ .
+
+    Here K
+         b θ is a learned frame extractor. It maps hidden module states to semantic-frame predic-
+tions:
+                                            Kb θ (z) = Fbz .
+
+
+
+                                                      8
+The externalization map Ebθ maps semantic-frame predictions to linguistic-core predictions:
+
+                                                Ebθ (Fbz ) = L
+                                                             bz .
+
+Thus
+                                                Λ
+                                                b θ (z) = L
+                                                          bz .
+
+    In practice these maps may be implemented as auxiliary heads, linear probes, sparse adapters,
+contrastive encoders, structured decoders, or neural-symbolic readouts. They need not form a
+hard bottleneck. Their job is to make the hidden causal modules partially legible in semantic and
+linguistic terms.
+
+3.3    Naturality as the core training principle
+Suppose context c acts on hidden state by Uc : Z → Z. Suppose the corresponding semantic or
+linguistic transformation is Vc . The key square is
+
+                                                       Uc
+                                            Z                  Z
+
+                                           Λ
+                                           bθ                       Λ
+                                                                    bθ
+
+
+                                            L
+                                            b
+                                                       Vc
+                                                               L.
+                                                               b
+
+The square commutes exactly if
+                                        Λ
+                                        b θ (Uc z) = Vc Λ
+                                                        b θ (z).
+
+In real networks it should commute approximately. Define the naturality loss
+                                    X                                 
+                             Lnat =   Ez∼Dc dQ Λb θ (Uc z), Vc Λ
+                                                               b θ (z) .
+                                     c∈C
+
+    Plainly: changing the hidden state according to context c and then reading out its linguis-
+tic/frame structure should approximately equal first reading out the linguistic/frame structure and
+then applying the corresponding linguistic/frame change.
+    This is the simplest way to make category theory operational in training.
+
+3.4    Universals as subobjects and pullbacks
+A linguistic universal is represented as a subobject
+
+                                                iU : U ,→ L
+
+in LangQ . For example, U may be the subspace of cores satisfying a number hierarchy, a person
+hierarchy, a case implication, a word-order coherence law, or a context-indexed local rule.
+    The neural preimage of U is the pullback
+
+                                       b −1 (U )
+                                       Λ                            U
+                                         θ
+
+                                                                         iU
+
+
+                                            Z                       L.
+                                                        Λ
+                                                        bθ
+
+
+
+                                                       9
+This says: the hidden states that explain or instantiate the linguistic universal are exactly those
+whose linguistic readout lands in U .
+   If the universal is robust, the pullback should not be a scattered accidental region of hidden
+space. It should align with a stable module, support set, mediator, or context-local route. This is
+the core diagnostic use of the mapping.
+
+
+4     How each type of linguistic universal becomes a Transformer
+      design constraint
+4.1   Hierarchy universals become closure losses and hard-kernel structure
+Let P be a set of typological or frame features and let R ⊆ P × P encode hierarchy implications.
+If aRb, then feature a implies feature b. Let R∗ be the reflexive-transitive closure and define
+
+                                  clR (S) = {b ∈ P : ∃a ∈ S aR∗ b}.
+
+A state is closed if clR (S) = S.
+    In a Transformer, let pa (z) ∈ [0, 1] be a probe’s estimated probability that hidden state z carries
+feature a. A differentiable closure penalty is
+                                              X X                    2
+                                  Lclosure =           pa (z) − pb (z) + .
+                                              z    aRb
+
+This says: if the model detects a marked or higher feature, it should also detect the less marked or
+lower feature implied by the hierarchy.
+   The architecture should also map high-stability closure structures into protected modules. Let
+σ(a) be the empirical or modeled stability coefficient of feature a, and let rm be the rigidity of
+module m. If Aam is an attribution weight saying feature a is represented in module m, define
+                                            X                   2
+                                  Lkernel =    Aam σ(a) − rm .
+                                             a,m
+
+High-stability universals are thereby encouraged to live in high-rigidity modules: hard kernels or
+inner shells rather than disposable outer-shell residue.
+
+4.2   Broad cross-module universals become mediator-head constraints
+Suppose a proposed dependency links module family A and module family B. The TUG factoriza-
+tion theorem says that if A and B are genuinely independent, no nontrivial cross-module universal
+should hold without a mediator. The neural design rule is:
+
+          Do not allow broad dependencies to be implemented as diffuse dense coupling.
+                   Allocate explicit mediator heads or mediator channels instead.
+
+   Let zA , zB , zM be latent states for the two endpoint modules and a mediator. The desired
+condition is
+                                           zA ⊥ zB | zM .
+A direct information-theoretic penalty is
+                                              X
+                                   Lmed =              MI(zA ; zB | zM ).
+                                            (A,B,M )
+
+
+                                                    10
+If conditional mutual information is too expensive, one may use a surrogate based on conditional
+HSIC, CKA residuals, sparse regression residuals, or contrastive leakage predictors.
+    The categorical version uses a residual. If A ⊗ M ≤ B is the desired implication in a quantale
+of behaviors, then the weakest mediator is
+
+                                            M ∗ = A ⇒Q B,
+
+where ⇒Q is the right residual:
+
+                               A⊗M ≤B            ⇐⇒      M ≤ A ⇒Q B.
+
+In neural terms, the model should search for the smallest mediator capacity that explains the
+dependency. Direct A ↔ B edges are pruned unless they produce evidence gain that cannot be
+routed through M .
+
+4.3   Narrow word-order universals become low-frustration externalization losses
+Narrow word-order universals are neither arbitrary nor absolute. They look like local coherence
+pressures among externalization choices. Let xi ∈ {−1, +1} encode a word-order or externalization
+choice, and let sij ∈ {−1, +1} encode whether choices i and j prefer to align or anti-align. A sparse
+signed graph energy is
+                                             1X
+                                  Eext (x) =     wij (1 − sij xi xj ).
+                                             2
+                                                 i<j
+
+A low-frustration loss is                                        X
+                                  Lext = Ex Eext (x) + λsparse         |wij |.
+                                                                 i<j
+
+In a Transformer, the variables xi may be read from linearization decisions, positional attention
+patterns, dependency-direction probes, or multilingual typological heads. The loss encourages
+the model to represent externalization choices as a sparse coupled system rather than as a dense
+entangled mass.
+   This also gives a design pattern: allocate specialized externalization heads whose couplings are
+sparse and low-frustration, and do not confuse them with high-stability semantic-frame heads.
+
+4.4   Graded universalhood becomes module stability scheduling
+A universal with high stability should be mapped to modules with slow learning rates, high consol-
+idation, and strong protection. A low-stability local tendency can live in plastic adapters.
+    Let σu ∈ R be a stability coefficient for universal u, for instance
+                                                         αu
+                                              σu = log      ,
+                                                         βu
+where αu is the transition rate from violation to satisfaction and βu is the transition rate from
+satisfaction to violation. Let ηm be the learning rate or plasticity of module m. A simple scheduling
+rule is                                                       X
+                              ηm = η0 exp(−γsm ),       sm =       Aum σu ,
+                                                                   u
+where Aum measures how much universal u is attributed to module m.
+    High-stability universals therefore reduce plasticity in the modules that represent them. This
+is the Transformer analogue of the HBCML hard-kernel/inner-shell distinction.
+
+                                                   11
+4.5   Context-indexed local laws become support-router constraints
+A context-indexed universal has the form
+
+                                      X⇒Y        inside context c.
+
+The neural counterpart is that the support router should activate the modules relevant to c, and
+the closure or implication loss should apply only on that support.
+   Let qc (z) be the router probability for context c, and let pX (z), pY (z) be probes. A context-local
+implication loss is                      X                           2
+                               Llocal =      Ez qc (z) pX (z) − pY (z) + .
+                                          c
+
+The router should also maintain support locality:
+                                        X X
+                             Lsupport =           qc (z) gm,c k∆θm k2 .
+                                              c m∈S
+                                                 / c
+
+Plainly: if a linguistic law holds only for subordinate clauses, object NPs, animate objects, or
+discourse-marked contexts, then the model should not smear that law across all contexts. The law
+should be attached to the router support that implements the relevant frame.
+
+
+5     Architecture: the Category-Guided Causal-Coding Transformer
+5.1   High-level architecture
+The architecture can be described as follows:
+                                        Input tokens
+                                             ↓
+                    Predictive-coding / causal-coding Transformer stack
+                                             ↓
+        LM head frame probes universal probes context router causal-gate estimator
+
+Internally the Transformer stack is decomposed into modules:
+
+                         Z∼
+                          = Zmkernel ⊗ Zmmed ⊗ Zmext ⊗ Zmshell ⊗ Zmtask .
+
+This decomposition is conceptual; implementation may realize it through heads, adapters, experts,
+low-rank subspaces, or columnar blocks.
+
+5.2   Module families
+The following module families are useful.
+
+Hard-kernel modules. These carry high-stability frame structures: person, number, basic argu-
+   ment role, event role, quantification, core reference, and other closure-like invariants. They
+   have low plasticity, strong retention regularization, and high pruning resistance.
+
+Mediator modules. These implement bridges between otherwise factorized domains: syntax–
+   morphology, semantics–syntax, discourse–reference, perception–language, action–language, and
+   memory–language. They should be sparse, explicit, and monitored for leakage.
+
+                                                   12
+Externalization modules. These implement PF and linearization choices: word order, morphol-
+   ogy packaging, positional conventions, local surface constraints, and low-frustration coherence.
+
+Shell/adaptation modules. These carry medium- and low-stability patterns, including language-
+    specific, domain-specific, speaker-specific, and task-specific residue.
+
+Router modules. These select supports Sc for contexts, phrase types, discourse regimes, lan-
+   guages, domains, or tasks.
+
+5.3      Causal gates with frame and linguistic influence
+Ordinary causal coding might gate module m in context c by task influence alone:
+                                              task     task p
+                                             gm,c  ∝ |Cm,c | .
+
+The category-guided version uses three kinds of influence:
+                                    task          frame           lang
+                                   Cm,c  ,       Cm,c   ,        Cm,c  .
+
+Define                                                                       
+                                    task p1      frame p2      lang p3
+                 gm,c = σ b0 + b1 |Cm,c | + b2 |Cm,c  | + b3 |Cm,c | − b4 Rm,c ,
+
+where Rm,c is a redundancy or double-counting score. This gate updates a module strongly only if
+it causally matters for the task and for the frame/language structure it is supposed to carry.
+
+5.4      Frame and universal probes
+The model contains probes
+                                ΠF : Z → Fb,         ΠU : Z → [0, 1]U ,
+where ΠF predicts semantic frames and ΠU predicts the satisfaction of a set of linguistic universals
+or universal-like constraints. These probes are not merely diagnostic. They participate in training
+through the losses described in Section 6.
+    The probes may be trained from:
+
+  • explicit semantic-role and frame annotations;
+
+  • dependency parses and morphological tags;
+
+  • multilingual typological labels;
+
+  • synthetic counterfactual interventions;
+
+  • self-supervised consistency across paraphrase, translation, and context restriction.
+
+5.5      Adjunction between interpretation and externalization
+Language understanding and language generation should be coupled. Let
+
+                                       Sbθ : LangQ → FrameQ
+
+be an interpretation map and
+                                       Ebθ : FrameQ → LangQ
+
+
+                                                    13
+be an externalization map. The categorical ideal is an adjunction
+
+                                                  Ebθ a Sbθ .
+
+This means, roughly, that producing a linguistic form from a frame and interpreting that form back
+into a frame are two sides of the same structured correspondence.
+    A practical cycle loss is
+                                                                            
+                           Ladj = dF Sbθ Ebθ (F ), F + dL Ebθ Sbθ (L), L/≡obs .
+
+The quotient L/≡obs matters: the regenerated sentence need not be textually identical, only obser-
+vationally equivalent under the selected linguistic interface.
+
+
+6     Losses and training objectives
+6.1   The composite objective
+A category-guided causal-coding Transformer can be trained with
+
+                    L = LLM + λPC LPC + λdo Ldo + λnat Lnat + λadj Ladj
+                         + λclosure Lclosure + λmed Lmed + λcomm Lcomm + λdc Ldc
+                         + λext Lext + λstab Lstab + λlocal Llocal + λcost Lcost .
+
+The coefficients should not be tuned blindly. They should be treated as Pareto or quantale-weight
+parameters, adjusted to maintain a useful balance among fit, retention, modularity, cost, and
+weakness.
+
+6.2   Predictive-coding and causal-coding losses
+For a predictive-coding Transformer, the free-energy or prediction-error loss has the generic form
+                                   X
+                            LPC =      kz` − f` (z`+1 ; θ` )k2Λ` + priors.
+                                         `
+
+Causal coding adds do-influence matching and sparsity. If C bij is an estimated do-influence and Aij
+is an active edge or gate, use
+
+                                                bij ) 2 + λsp
+                                     X                       X
+                               Ldo =   Aij − τ (C                  |Aij |,
+                                       i,j                           i,j
+
+where τ is a thresholding or soft-gating function.
+
+6.3   Naturality loss
+As above,                              X                                    
+                              Lnat =         Ez∼Dc dQ Λ
+                                                      b θ (Uc z), Vc Λ
+                                                                     b θ (z) .
+                                         c
+
+This is the core categorical loss. It encourages hidden updates and linguistic/frame updates to
+agree.
+
+
+
+                                                     14
+6.4    Closure loss
+For hierarchy implications aRb,
+                                               X X               2
+                                  Lclosure =       pa (z) − pb (z) + .
+                                                z   aRb
+
+A stronger multi-step version uses the closure operator:
+                                            X X
+                                L∗closure =           (1 − pb (z))2 ,
+                                                z b∈clR (Sz )
+
+
+where Sz = {a : pa (z) > τ }.
+
+6.5    Mediator loss
+The direct form is conditional mutual information:
+                                           X
+                                 Lmed =         MI(zA ; zB | zM ).
+                                             (A,B,M )
+
+A residual-prediction surrogate is
+
+                                         rA = zA − hA (zM ),
+                                         rB = zB − hB (zM ),
+                                                X
+                                       Lresid
+                                        med =        HSIC(rA , rB ).
+                                                (A,B,M )
+
+This penalizes remaining dependence between A and B after the mediator has been accounted for.
+
+6.6    Commutator loss
+For context updates Uc , Ud , define
+                                                                    
+                                       δcd (θ) = dZ Ud Uc θ, Uc Ud θ .
+
+Weight this by semantic-frame and linguistic overlap:
+
+                                ωcd = OverlapF (c, d) · OverlapL (c, d).
+
+Then                                                X
+                                         Lcomm =           ωcd δcd (θ).
+                                                     c<d
+
+This avoids wasting computation on contexts that are genuinely unrelated while focusing anti-
+forgetting pressure on confusing pairs.
+
+
+
+
+                                                     15
+6.7   Double-counting loss
+Define the interventional footprint of module m as
+                                                                
+                             Footm = Cm→y , Cm→F , Cm→L , Cm→Ctx .
+
+A double-counting penalty is
+                                        X
+                             Ldc =            sim(Footm , Footn ) dep(zm , zn ),
+                                       m<n
+
+where dep may be mutual information, HSIC, CKA, correlation, or a sparse-regression predictability
+score.
+    Plainly: two heads may both be useful, but if they have the same causal footprint and mutually
+predictable activations, one is probably redundantly encoding the same dependency.
+
+6.8   Stability loss
+Let σu be a stability coefficient for universal or frame feature u, and let sm be module stability. If
+Aum is an attribution matrix, use
+                              X                            X
+                     Lstab =      Aum (sm − σu )2 + λdrift    sm kθm − θmanchor 2
+                                                                               k .
+                             u,m                                        m
+
+High-stability modules are anchored more strongly. Low-stability modules remain plastic.
+
+6.9   Quantale weakness objective
+The loss terms can be summarized by a product-quantale score
+                                                                                
+                      Q(Tθ ) = Fit(Tθ ), Ret(Tθ ), Conf(Tθ ), DC(Tθ ), Cost(Tθ )
+
+with order
+                                       (f, r, c, d, k)  (f 0 , r0 , c0 , d0 , k 0 )
+iff
+                            f ≤ f 0,      r ≤ r0 ,      c ≥ c0 ,      d ≥ d0 ,         k ≥ k0 .
+Thus better fit and retention are larger, while lower confusion, double-counting, and cost are larger
+in the opposite order. Training should seek approximate maximal elements of this order. Weighted
+sums are one practical approximation, but epsilon-constraint or Pareto-frontier methods are often
+more faithful.
+
+
+7     Theorems and design consequences
+7.1   Naturality transports commutators
+                                                                   b θ : Z → L is non-
+Assumption 7.1 (Non-expansive readout). The learned correspondence Λ
+expansive up to a quantale homomorphism ϕ : QZ → QL :
+                                        b 0 ) ≤ ϕ dZ (z, z 0 ) .
+                                                              
+                                dL (Λz,
+                                    b Λz
+
+
+
+                                                           16
+Theorem 7.2 (Commutator transport). Let Uc , Ud : Z → Z be context updates and let Vc , Vd :
+L → L be their linguistic-frame images. Suppose the naturality defect for each context is at most
+εnat :
+                                                  b ≤ εnat .
+                                        b c z, Vc Λz)
+                                    dL (ΛU
+Then the linguistic commutator defect is bounded by
+                                                  
+                             dL Vd Vc Λz,
+                                       b Vc Vd Λz
+                                               b
+                                                               
+                                      ≤ ϕ dZ (Ud Uc z, Uc Ud z) + 4εnat ,
+
+up to the triangle-inequality constants of the chosen enrichment.
+
+Proof. Insert and subtract the two latent-readout terms ΛU
+                                                        b d Uc z and ΛU
+                                                                     b c Ud z. The middle distance
+is bounded by non-expansiveness. The four outer terms are naturality defects for c and d. The
+result follows by the enriched triangle inequality.
+
+Design consequence. If the model learns a good Λ,     b then reducing hidden commutators also
+reduces linguistic/frame-level path-dependence. Conversely, observed linguistic/frame noncommu-
+tation can be used to locate hidden context interference.
+
+7.2   Closure regularization yields closed direct images
+Theorem 7.3 (Approximate closure preservation). Let R be a hierarchy relation on features P .
+Suppose probes pa (z) are δ-calibrated for the corresponding linguistic predicates and the closure loss
+satisfies                                        
+                                   pa (z) − pb (z) + ≤ ε for all aRb.
+Then for every chain aR∗ b of length at most k,
+
+                                        pa (z) ≤ pb (z) + kε + 2δ.
+
+In particular, the direct image of the hidden representation under Λ
+                                                                   b is approximately closed under
+R, with defect bounded linearly by path length.
+
+Proof. Apply the one-step inequality along the chain from a to b and sum the errors. Calibration
+adds at most δ at the source and target predicates.
+
+Design consequence. Hierarchy universals can be trained as Horn-style losses on probes. If
+calibration is good, closure at the probe level implies closure in linguistic readout.
+
+7.3   Mediator residuals justify pruning direct couplings
+Assumption 7.4 (Mediated decoder). For module families A, B and mediator M , the relevant
+downstream prediction Y factors as
+
+                      p(Y | zA , zB , zM ) ≈ p(Y | hA (zA , zM ), hB (zB , zM ), zM ),
+
+and the residuals rA = zA − hA (zM ), rB = zB − hB (zM ) have small dependence.
+
+Theorem 7.5 (Mediated pruning bound). If MI(rA ; rB ) ≤ ε and the decoder is L-Lipschitz in the
+residual dependence channel, then pruning a direct A ↔ B coupling while preserving the mediator
+M changes the downstream loss by at most O(Lε) plus approximation error in the factorization.
+
+
+                                                    17
+Proof. The factorized decoder depends on the endpoint modules through mediator-conditioned
+summaries. The only information lost by pruning the direct edge is the residual dependence between
+rA and rB . By the Lipschitz assumption and the information bound, the loss perturbation is
+controlled by O(Lε), with an additional term for decoder-factorization error.
+
+Design consequence. Direct broad couplings should survive pruning only when they carry resid-
+ual information not explained by an explicit mediator. This operationalizes the TUG theorem that
+nontrivial broad universals require mediation.
+
+7.4    Category-guided commutator control implies bounded forgetting
+Let δcd be the hidden commutator defect and let ωcd be the frame/linguistic overlap weight. Suppose
+training makes                           X
+                                              ωcd δcd ≤ ε.
+                                           c<d
+
+The Causal-Continual-Learning theorem then gives a bound of the form
+                                                   X
+                             d(Θseq , Θjoint ) ≤ K   δcd + O(h3 ).
+                                                      c<d
+
+The category-guided version refines which δcd matter: those with high ωcd , i.e. contexts that overlap
+semantically or linguistically.
+Proposition 7.6 (Overlap-targeted anti-forgetting). If context pairs with ωcd = 0 have disjoint
+supports and pairs with ωcd > 0 satisfy δcd ≤ εcd , then sequential-vs-joint deviation is bounded by
+                                                     X
+                             d(Θseq , Θjoint ) ≤ K          εcd + O(h3 ).
+                                                 c<d: ωcd >0
+
+Design consequence. Linguistic/frame overlap can be used to construct the sparse confusion
+graph for continual learning. This is more informative than estimating interference only from raw
+gradient dot products.
+
+7.5    Weakness selects causal mediators over double-counting
+Definition 7.7 (Explanation score). An explanation E of a prediction or universal has score
+                                                                       
+                     W(E) = Fit(E), Ret(E), Cost(E), Conf(E), DC(E)
+
+in the product order with cost, confusion, and double-counting reversed.
+Theorem 7.8 (Causal mediator beats redundant correlation). Let Emed and Ecorr explain the same
+observed linguistic/frame dependency with equal fit and retention. Suppose
+
+      Cost(Emed ) ≤ Cost(Ecorr ),     Conf(Emed ) ≤ Conf(Ecorr ),      DC(Emed ) < DC(Ecorr ).
+
+Then Emed strictly dominates Ecorr in the product-quantale order.
+Proof. All coordinates are at least as good for Emed , and the double-counting coordinate is strictly
+better. Hence Ecorr is not Pareto maximal.
+
+Design consequence. A model that explains a dependency by one explicit mediator is preferred to
+a model that explains the same dependency by many overlapping heads with redundant footprints.
+
+                                                 18
+8     Training procedure
+8.1   Data sources
+A practical system can use several kinds of signal.
+
+ 1. Ordinary language-modeling data for LLM .
+
+ 2. Multilingual corpora, translation pairs, and paraphrase pairs for observational equivalence and
+    adjunction/cycle losses.
+
+ 3. Parsed corpora with dependency, role, morphology, or discourse labels for frame probes.
+
+ 4. Typological databases or hand-curated universals for closure, stability, and low-frustration
+    losses.
+
+ 5. Synthetic counterfactuals and interventions for do-influence estimation.
+
+ 6. Continual-learning streams over language, domain, genre, task, or user context for commutator
+    and retention evaluation.
+
+8.2   A staged training recipe
+One possible staged procedure is:
+
+Stage 0: Pretrain. Train an ordinary Transformer or predictive-coding Transformer on language
+    modeling.
+
+Stage 1: Instrument. Choose a modular decomposition into heads, channels, adapters, experts,
+    or columns. Add frame probes, universal probes, context routers, and causal-gate estimators.
+
+Stage 2: Calibrate probes. Train K  b θ , Ebθ , and Λ
+                                                    b θ using frame labels, parses, multilingual align-
+    ments, paraphrases, and typological supervision.
+
+Stage 3: Estimate do-footprints. Use interventions, patching, ablation, Jacobian-vector prod-
+    ucts, or predictive-coding Hessian approximations to estimate Footm for modules.
+
+Stage 4: Train category-guided causal gates. Update modules using task, frame, and lan-
+    guage influence. Penalize double-counting and prune redundant paths.
+
+Stage 5: Add commutator training. Train across context streams while penalizing frame-weighted
+    commutator defects.
+
+Stage 6: Consolidate. Move high-stability structures into hard-kernel or inner-shell modules.
+    Move task-local residue to outer-shell adapters. Prune mediator leakage and redundant foot-
+    prints.
+
+
+
+
+                                                  19
+8.3     Algorithmic sketch
+For each minibatch with context c:
+           1.   Run the Transformer and collect module activations zm .
+           2.   Read frames Fb = K                                  b = Ebθ (Fb).
+                                   b θ (z) and linguistic structure L
+           3.   Estimate or update do-footprints Footm .
+           4.   Compute gates gm,c from task, frame, and language influence.
+           5.   Compute LLM , Lnat , Lclosure , Lmed , Ldc , . . .
+           6.   Update only gated modules, with stability-scaled learning rates.
+           7.   Periodically test context-pair commutators and prune dominated couplings.
+
+9     Experimental program
+9.1     A minimal experiment
+A first experiment need not be huge. Train four models on a multilingual or multi-domain corpus:
+
+ 1. baseline Transformer;
+
+ 2. causal-coding Transformer;
+
+ 3. causal-coding Transformer with frame and universal probes;
+
+ 4. full category-guided causal-coding Transformer with naturality, closure, mediator, commutator,
+    and double-counting losses.
+
+     Use a small set of robust structures:
+                       number hierarchy,     person hierarchy,    argument roles,
+                          case/agreement,    clause type,   word-order relation.
+
+9.2     Metrics
+Evaluate:
+    • language-modeling loss;
+
+    • frame/probe accuracy;
+
+    • closure violation rate;
+
+    • forgetting under sequential adaptation;
+
+    • hidden commutator defect;
+
+    • linguistic/frame commutator defect;
+
+    • do-footprint redundancy;
+
+    • mediator leakage;
+
+    • pruning efficiency;
+
+    • transfer across languages and domains.
+
+                                                   20
+     The sharp prediction is not merely lower perplexity. It is:
+
+               At comparable validation loss, the category-guided model should have
+             lower commutator defect, lower double-counting, better pruning efficiency,
+                               and lower continual-learning forgetting.
+
+9.3    Intervention tests
+The strongest evidence would come from interventions.
+
+Closure intervention. Perturb a module representing a high hierarchy feature and test whether
+    lower hierarchy features remain coherently represented.
+
+Mediator intervention. Ablate the mediator and test whether the cross-module dependency
+   collapses; ablate a direct endpoint coupling and test whether the mediator preserves behavior.
+
+Commutator intervention. Train contexts in reversed order and test whether final performance
+   changes less than in the baseline.
+
+Double-counting intervention. Remove one of two heads with similar do-footprints and test
+   whether loss changes little; remove a unique-footprint head and test whether loss changes
+   more.
+
+Stability intervention. Fine-tune on a domain shift and test whether high-stability modules drift
+    less while low-stability modules adapt.
+
+
+10      Implementation choices and variants
+10.1     Which modules should be used?
+The framework does not require one specific modularization. Reasonable module choices include:
+
+  • attention heads;
+
+  • value-channel groups;
+
+  • FFN neuron groups;
+
+  • low-rank adapters;
+
+  • MoE experts;
+
+  • residual-stream subspaces;
+
+  • predictive-coding state nodes;
+
+  • HBCML-style columns or microcolumns.
+
+    A practical approach is to begin with coarse modules such as heads or adapters, then split
+modules whose do-footprints show internal heterogeneity and merge modules whose do-footprints
+are redundant.
+
+
+
+                                                  21
+10.2    How symbolic must the frame layer be?
+The frame layer need not be fully symbolic. It may be:
+  • discrete and symbolic, using explicit roles and feature predicates;
+  • continuous, using learned frame embeddings;
+  • hybrid, using symbolic roles with vector-valued fillers;
+  • neural-symbolic, using a metagraph or typed graph as the interface.
+   The categorical equations require only that frame transformations and linguistic transformations
+be comparable through a loss. They do not require exact symbolic parsing at every step.
+
+10.3    When typological labels are missing
+If typological labels are unavailable, the system can still use proxy universals derived from data:
+  • cross-lingual consistency constraints;
+  • paraphrase equivalence classes;
+  • dependency parse implications;
+  • morphology co-occurrence hierarchies;
+  • learned low-frustration graphs over externalization decisions;
+  • context-local implication mining.
+The framework is not limited to hand-coded universals. It can mine candidate universals and then
+use weakness selection to decide which ones are worth turning into architectural constraints.
+
+10.4    Quantale tuning in practice
+In practice, the product-quantale objective may be implemented by a controller that adjusts λ-
+weights. Let
+                                             Mi (t)
+be monitored metrics such as fit, retention, commutator defect, double-counting, and cost. The
+controller updates λi so that marginal gains per unit cost are roughly equal:
+                                         
+                                    ∂ Fit ∂ Cost
+                                                   ≈ constant
+                                     ∂λi     ∂λi
+for active constraints. When smoothness fails, use an epsilon-constraint policy: fix acceptable
+thresholds for critical quantities such as perplexity and forgetting, then minimize cost and double-
+counting subject to those thresholds.
+
+
+11     Risks, limitations, and non-goals
+11.1    Do not over-impose universals
+The framework treats linguistic universals as weak constraints, not as hard-coded laws. Many
+proposed universals are false, context-indexed, or statistical. The model should learn graded sta-
+bility and context scope. Hard constraints should be reserved only for very high-confidence closure
+structures.
+
+                                                 22
+11.2    Do not confuse probes with causes
+A probe may detect a feature without the probed module causing that feature. This is why do-
+footprints matter. A module should be considered a carrier of a universal only if it has interventional
+influence on the relevant frame or linguistic readout.
+
+11.3    Do not make the frame bottleneck too narrow
+If K
+   b θ is forced to capture all cognition in a small symbolic bottleneck, performance may suffer. The
+frame layer should be an auxiliary organizing structure, not necessarily the only channel through
+which language modeling proceeds.
+
+11.4    The category theory is a design language, not magic
+The categorical formulation clarifies what should commute, factor, pull back, or be mediated. It
+does not by itself solve optimization. The empirical question is whether the corresponding losses
+and architectures improve learning. The proposed experimental program is essential.
+
+
+12     Conclusion
+The linguistic–cognitive correspondence can be made operational for causal-coding Transformer
+design. The core idea is that linguistic universals are weak observable traces of cognitive invariants.
+If a Transformer learns an approximate map
+                                            b θ = Ebθ ◦ K
+                                            Λ           bθ
+
+from hidden causal modules to semantic frames and linguistic externalizations, then linguistic
+universals can be pulled back into hidden space as architectural and training constraints.
+   The practical recipe is:
+
+             Use Λ
+                 b θ to regularize hidden Transformer updates so that causal modules,
+                semantic frames, and linguistic externalizations form approximately
+                                        commuting diagrams.
+
+And:
+            Tune gates, pruning, routing, mediator heads, stability, and anti-forgetting
+              using quantale weakness over fit, cost, commutators, mediator leakage,
+                                        and double-counting.
+Hierarchy universals become closure losses and hard-kernel assignments. Broad cross-module uni-
+versals become mediator-head constraints. Narrow word-order universals become low-frustration ex-
+ternalization losses. Graded universalhood becomes module-stability scheduling. Context-indexed
+laws become router-local constraints. Quantale weakness then chooses the weakest adequate expla-
+nation: prefer causal mediators over redundant correlations, sparse support over diffuse entangle-
+ment, and reusable kernels over brittle context-local residue.
+    The resulting system is not a symbolic grammar bolted onto a Transformer. It is a causal-
+coding Transformer whose latent modularity is shaped by the most stable observable traces of
+human language. If the theory is right, such models should not merely be more interpretable. They
+should forget less, prune better, transfer more cleanly across languages and domains, and discover
+more reusable internal structure.
+
+                                                  23
+References
+ [1] A. Vaswani et al. Attention is All You Need. 2017.
+
+ [2] J. Pearl. Causality: Models, Reasoning, and Inference. Cambridge University Press, 2009.
+
+ [3] B. Goertzel. Causal Coding and the General Causal-Continual-Learning Theorem. Draft, 2025.
+
+ [4] B. Goertzel, C. Derr, and Y. Taye. Hierarchical Bayesian Causal Modular Learning: A Two-
+     Level Columnar Architecture for Continual Learning. Draft, 2025.
+
+ [5] B. Goertzel. Formalizing Real-World Linguistic Universals. Draft, 2026.
+
+ [6] B. Goertzel. Linguistic Universals as Quantale-Enriched Cognition–Language Correspondences:
+     Causal Coding, TUG, and Weakest Explanations. Draft, 2026.
+
+ [7] B. Goertzel. Type-theoretic Universal Grammar and TUG. Draft.
+
+ [8] B. Goertzel. TyLAA: Type–Language Adjunction Archeology. Draft, 2025.
+
+ [9] B. Goertzel. Weakness is All You Need: Notes on Quantale Weakness as a Unifying Generalized-
+     Occam Principle for Cognitive Science and AGI. Draft.
+
+[10] B. Goertzel. Practical Intelligence Lives on the Pareto Frontier Between Independence En-
+     hancement and Dependency Modeling. Draft, 2025.
+
+[11] B. Goertzel. The General Theory of General Intelligence: A Pragmatic Patternist Perspective.
+     2024.
+
+[12] K. Friston. The free-energy principle: a unified brain theory? Nature Reviews Neuroscience,
+     2010.
+
+[13] J. H. Greenberg. Some universals of grammar with particular reference to the order of mean-
+     ingful elements. In Universals of Language, 1963.
+
+[14] E. Keenan and B. Comrie. Noun phrase accessibility and universal grammar. Linguistic Inquiry,
+     1977.
+
+[15] N. Chomsky. Aspects of the Theory of Syntax. MIT Press, 1965.
+
+
+
+
+                                               24
+

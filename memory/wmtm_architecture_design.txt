@@ -1,0 +1,400 @@
+# Working Medium-Term Memory (WMTM) — Architecture Design
+
+**For: Ben Goertzel | Protocosmo2 / petta-memory | 2026-09-06**
+
+---
+
+## 1. Problem Statement
+
+From Ben's message (#9809):
+
+> Is this just a fixed memory of all the working-memory contents in the system's history? It sort of looks like it. It feels like we also need something more mutable, which contains some dynamically chosen subset of stuff from prior working-memory instances, but also things derived from this via inference... and which can forget derived knowledge if it's not useful, and can push out memory items drawn from prior working-memory instances if they are not useful. So more of a "working medium-term memory"?
+
+**Answer**: Yes — the current system is a comprehensive growing archive with attention weighting (ECAN). The dynamic working memory layer Ben describes was identified as missing and has been **implemented but not yet activated** in the live agent loop. This document presents the full architecture.
+
+---
+
+## 2. Current System (Pre-WMTM)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  LTM — MediumMemoryStore (append-only .metta journal)   │
+│                                                         │
+│  ~420 clusters: Episodes, Facts, Promotions            │
+│  EvidenceFor, Contradicts, Supersedes, PromotesFrom   │
+│  ~3131 edges, never forgets — only grows               │
+│  ECAN attention weighting (STI/LTI/VLTI) on top        │
+│  Stimulus injector: bounded event → STI stimulation   │
+│  Patham9 PLN inference machinery (present, unused)    │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Gap**: No dynamic selection, no derivation loop, no forgetting, no writeback. ECAN decay deprioritizes but never removes.
+
+---
+
+## 3. WMTM Architecture
+
+### 3.1 Three-Layer Memory Model
+
+```
+  ┌─────────────────────────────────────────────┐
+  │         Agent Context Window (LLM)          │  ← immediate, ephemeral
+  └────────────────────┬────────────────────────┘
+                       │ inject active context
+  ┌────────────────────▼────────────────────────┐
+  │              WMTM (≤60 items)               │  ← medium-term, MUTABLE
+  │                                             │
+  │  recalled items        derived items        │
+  │  (from LTM)           (from inference)      │
+  │  ┌──────┐            ┌──────────┐          │
+  │  │ item │            │ deriv-N  │          │
+  │  │ sti  │            │ from [A,B]│         │
+  │  │ age  │            │ sti ×0.8 │          │
+  │  │ util │            │ age      │          │
+  │  └──────┘            └──────────┘          │
+  │                                             │
+  │  decay: STI ×0.85/tick                       │
+  │  forget: STI<5 or age>50 or at capacity    │
+  │  writeback: utility≥5 → persist to LTM     │
+  └────────────────────┬────────────────────────┘
+                       │ recall / writeback
+  ┌────────────────────▼────────────────────────┐
+  │           LTM Archive (grows)               │  ← long-term, append-only
+  │  MediumMemoryStore (.metta journal)        │
+  │  ECAN attention bank (STI/LTI/VLTI)        │
+  │  EvidenceFor graph (~3131 edges)           │
+  └─────────────────────────────────────────────┘
+```
+
+### 3.2 The WMTM Cycle (6 Steps Per Turn)
+
+```
+User message
+    │
+    ▼
+1. RECALL ─── RecallBridge: keyword match + LTI boost + spreading activation
+    │           → Top-K (15) items admitted to WMTM
+    ▼
+2. INFER ──── WMTMInferenceEngine: deduction/induction/abduction patterns
+    │           → Derived beliefs enter WMTM (STI = parent_avg × 0.8)
+    ▼
+3. USE ────── Active set injected into agent prompt
+    │           → UtilityTracker records which items were actually used
+    ▼
+4. DECAY ──── ECAN tick: STI × 0.85, used items boosted, unused decay faster
+    │
+    ▼
+5. FORGET ─── ForgettingPolicy: evict STI<5, age>50, or at capacity
+    │           → Derived items: 1.5× eviction penalty (easier to forget)
+    │           → Recalled items: simply leave WMTM (still in LTM)
+    │           → Forgotten derived items: GONE (not in LTM unless written back)
+    ▼
+6. WRITEBACK  WMTMUtility: utility≥5 → persist enriched item + new edges to LTM
+    │           → ECAN stimulation on writeback (STI boost = 3.0)
+    ▼
+Next turn
+```
+
+### 3.3 Component Inventory (All Implemented, 70 Tests Pass)
+
+| Module | File | Lines | Role |
+|--------|------|-------|------|
+| WMTMStore | `wmtm.py` | 196 | Bounded buffer, tick-driven decay, eviction |
+| RecallBridge | `wmtm_recall.py` | 233 | LTM→WMTM selection: keyword + LTI + spreading activation |
+| WMTMInferenceEngine | `wmtm_inference.py` | 117 | Derive new beliefs from active set |
+| WMTMUtility | `wmtm_utility.py` | 141 | Utility scoring + LTM writeback |
+| WMTMCoordinator | `wmtm_coordinator.py` | 136 | Orchestrates full cycle |
+| **Total** | | **823** | |
+
+Test files: `test_wmtm.py` (22), `test_wmtm_recall.py` (15), `test_wmtm_inf_util.py` (17), `test_wmtm_integration.py` (6), `test_wmtm_coordinator.py` (10) = **70 tests, all pass in 0.23s**
+
+Commits: `6e25aa9` → `05a4e3b` on petta-memory main.
+
+---
+
+## 4. How Forgetting Works (Ben's Key Question)
+
+Forgetting is **multi-criteria** and **source-type asymmetric**:
+
+### 4.1 Decay
+Every tick (cycle), all items' STI is multiplied by 0.85. Items that aren't used decay toward zero. Used items get a utility increment (reinforcement). This creates a natural "use it or lose it" dynamic.
+
+### 4.2 Eviction Triggers
+
+| Condition | Action | Notes |
+|-----------|--------|-------|
+| STI < 5.0 | Evict | Most common: item hasn't been used recently |
+| Age ≥ 50 cycles | Evict | Forced retirement — even useful items eventually leave |
+| At capacity (60) | Evict lowest-utility | When new item arrives and buffer is full |
+| Derived + low utility | Evict (1.5× penalty) | Derived items forget faster than recalled |
+
+### 4.3 Source-Type Asymmetry
+
+- **Recalled items**: When evicted, they simply leave the WMTM buffer. They remain safely in LTM. No information is lost. They can be recalled again later if relevant.
+- **Derived items**: When evicted, they are **gone** — they exist only in WMTM, not in LTM. Unless they were written back (utility ≥ 5.0) before eviction, the derived knowledge is truly forgotten. The 1.5× eviction penalty means derived items must prove their usefulness faster than recalled items.
+
+This asymmetry is intentional: recalled items are backed by LTM (safe to forget, can re-recall), while derived items are ephemeral by default (must earn their way into LTM through demonstrated utility).
+
+### 4.4 Writeback (The Reverse Flow)
+
+High-utility items flow back to LTM:
+1. Utility ≥ 5.0 triggers writeback evaluation
+2. For derived items: construct a valid MemoryCluster with `DerivedBelief`, `ClaimState`, `DerivedFrom`, `EvidenceFor` assertions
+3. For recalled items: persist any new EvidenceFor links discovered during their WMTM stay (enrichment)
+4. Call `store.append_cluster(text)` — atomically written to the .metta journal
+5. ECAN stimulation (STI boost = 3.0) to mark the item as important in the attention bank
+
+---
+
+## 5. RecallBridge — How Selection Works
+
+Three-stage pipeline combining text relevance, attention signals, and graph structure:
+
+### Stage 1: Keyword Match
+```python
+# Tokenize query, match against LTM cluster About tags + EventNote text
+candidates = store.query_about(keyword, limit=20)
+```
+
+### Stage 2: LTI Boost
+```python
+# Items with high long-term importance get priority
+sti_scores = ecan_bridge.get_prioritized_beliefs()  # {id: STI}
+# Final score = keyword_relevance + 0.5 × normalized_LTI
+```
+
+### Stage 3: Spreading Activation
+```python
+# BFS over EvidenceFor/PromotesFrom edges from seed items
+# Activation decays: 0.7^depth (depth=2 hops)
+# Collects items connected to what's already active — even without keyword overlap
+evidence_map = ecan_bridge.get_evidence_map()  # adjacency
+# For each seed, follow edges → neighbors get activation × 0.7^hop
+# Items above 0.1 threshold admitted as candidates
+```
+
+**Key insight**: Recall is not just keyword search. It uses the graph structure (EvidenceFor, PromotesFrom, Supersedes) to find items connected to what's already active, even if they share no keywords with the query.
+
+---
+
+## 6. Inference Engine — How Derivation Works
+
+### Current Implementation (117L)
+- **Conjunction**: `A AND B` → new derived item with combined text
+- **Implication**: `A → B` → new derived implication
+- **General derivation**: agent calls `on_derive(text, source_ids)` with any conclusion
+- **Provenance**: full derivation chain traceable via `get_provenance(item_id, depth=5)`
+- **STI**: parent_avg_sti × 0.8 (discount for inference uncertainty)
+
+### Patham9 PLN Integration (Designed, Not Yet Wired)
+The integration map shows how to feed the active set into the existing PLN machinery:
+
+```
+WMTM active set
+    → construct handoff-like dict (analogous to pettachainer_handoff_cache)
+    → patham9_pln_derivation_smoke_program(handoff, item_index)
+    → run_patham9_pln_derivation_smoke(...)
+    → parse results for new derived beliefs
+    → ec_projected_stv(...) for EC-based truth values
+    → admit to WMTM with PLN confidence-weighted STI
+```
+
+This would enable real PLN inference (deduction, induction) rather than just string-based conjunction/implication. The handoff dict format is already used by the existing goalchainer/live_bridge pipeline, so WMTM can reuse the same infrastructure.
+
+---
+
+## 7. Integration with Live Agent Loop
+
+### 7.1 Current Live Bridge
+`live_bridge.py` runs `run_petta_memory_goalchainer_live_bridge()` per turn:
+1. Reads journal → builds pettachainer handoff cache
+2. Extracts PLN handoff sentences
+3. Runs ranked inference control plan
+4. Optional Patham9 runtime execution
+
+**WMTM wraps around this**: before the bridge runs, WMTM recalls context; after it runs, WMTM ticks and writes back.
+
+### 7.2 Integration Points in iter.py
+
+```python
+# Initialization (once per session):
+from petta_memory.wmtm_coordinator import WMTMCoordinator
+
+wmtm_coord = WMTMCoordinator(
+    store=medium_memory_store,
+    ecan_bridge=ecan_bridge,
+    capacity=60,
+    decay_rate=0.85,
+    recall_top_k=15,
+    spread_depth=2,
+    writeback_threshold=5.0,
+    auto_writeback=True,
+)
+
+# On new user message:
+recalled_ids = wmtm_coord.on_context(user_message)
+active_context = wmtm_coord.get_active_context(limit=20)
+# → Inject active_context into agent prompt as memory context
+
+# During processing (when agent uses a memory item):
+wmtm_coord.on_touch(item_id)
+
+# On agent derivation:
+deriv_id = wmtm_coord.on_derive(
+    text="ECAN tuning reduced STI variance by 40%",
+    source_ids=["bel-ecan-tuning", "bel-sti-variance"],
+)
+
+# Periodic maintenance:
+evicted = wmtm_coord.on_tick()
+
+# End of turn:
+written = wmtm_coord.on_turn_end()
+# → High-utility items auto-written back to LTM
+```
+
+### 7.3 Activation Gating
+All WMTM operations are gated behind environment variable `ITER_PETTA_ECAN=1` (same gate as the stimulus injector). When unset, WMTM is inert — no recall, no derivation, no writeback. This allows safe rollout: the code is present but dormant until explicitly enabled.
+
+---
+
+## 8. ECAN Integration
+
+WMTM uses ECAN for:
+
+| ECAN Method | WMTM Usage |
+|-------------|-----------|
+| `get_prioritized_beliefs()` | STI scores for recall ranking (Stage 2 of RecallBridge) |
+| `get_evidence_map()` | Adjacency graph for spreading activation (Stage 3) |
+| `stimulate_beliefs()` | STI boost on writeback (mark item as important) |
+| `get_forget_candidates()` | Base eviction list — WMTM ForgettingPolicy extends with stricter thresholds |
+| `get_claim_states()` | Contradiction resolution during eviction decisions |
+| `run_cycle()` | ECAN attention dynamics (diffusion, rent, decay) per turn |
+
+**No changes needed to ECANBridge** — all required methods already exist.
+
+---
+
+## 9. Configuration Parameters
+
+| Parameter | Default | Purpose | Tuning Notes |
+|-----------|---------|---------|--------------|
+| capacity | 60 | Max items in WMTM | Larger = more context but slower recall |
+| decay_rate | 0.85 | STI multiplier per tick | Lower = faster forgetting |
+| recall_top_k | 15 | Max items recalled per context | Higher = more diverse context |
+| spread_depth | 2 | BFS hops for spreading activation | Deeper = broader recall, slower |
+| writeback_threshold | 5.0 | Min utility for LTM writeback | Higher = stricter promotion |
+| sti_threshold | 5.0 | Eviction STI floor | Higher = more aggressive forgetting |
+| max_age | 50 | Max cycles before forced review | Lower = faster turnover |
+| derived_eviction_mult | 1.5 | Derived items forget 1.5× faster | Higher = stricter on derived |
+| auto_writeback | True | Auto-persist on turn_end | Disable for manual control |
+| sti_writeback_boost | 3.0 | STI boost on LTM writeback | Promotes item in ECAN attention |
+
+---
+
+## 10. Data Flow Summary
+
+```
+LTM Journal                    WMTM Buffer                    Agent
+(.metta, grows)               (≤60 items, mutable)           (context window)
+
+  EvidenceFor ─────recall──────→ recalled item (sti=10)
+  PromotesFrom    (keyword+         │
+  Supersedes       LTI+spread)       │ decay 0.85/tick
+                                   │
+  DerivedBelief ←──writeback──── derived item (sti=parent×0.8)
+  EvidenceFor     (utility≥5)        │
+  ClaimState                        │ decay 0.85/tick (1.5× penalty)
+                                    │
+                                    │ STI<5 or age>50 → evict
+                                    │
+                               active set ────inject────→  prompt
+                               (top-K by STI)             │
+                                                          │
+                               on_touch(item) ←──use─────┘
+                               utility++
+```
+
+---
+
+## 11. What's Done vs What's Left
+
+### ✅ Done (Committed on main)
+- WMTMStore, WMTMItem, ForgettingPolicy (wmtm.py, 196L)
+- RecallBridge with keyword + LTI + spreading activation (wmtm_recall.py, 233L)
+- WMTMInferenceEngine with conjunction/implication/provenance (wmtm_inference.py, 117L)
+- WMTMUtility with scoring + writeback (wmtm_utility.py, 141L)
+- WMTMCoordinator orchestrating full cycle (wmtm_coordinator.py, 136L)
+- 70 tests across 5 files, all pass (0.23s)
+- README documentation updated
+- Package exports (`__init__.py`)
+- Writeback produces valid s-expression clusters
+- Integration guide written (`wmtm_live_integration_guide.txt`)
+
+### 🔲 Not Yet Done (Activation Required)
+1. **Wire WMTMCoordinator into iter.py agent loop** — the integration points are documented in the live integration guide but not yet connected to the actual agent runtime
+2. **Patham9 PLN integration** — the current inference engine uses conjunction/implication string operations; the integration map shows how to feed the active set into `patham9_pln_derivation_smoke_program()` for real PLN-based derivation, but this is not yet wired
+3. **Set ITER_PETTA_ECAN=1 in production** — the environment gate that activates the entire subsystem
+4. **Tune parameters** — the defaults (capacity=60, decay=0.85, etc.) are reasonable starting points but need empirical tuning against real agent workloads
+5. **Monitor writeback quality** — verify that derived items written back to LTM are actually useful and not noise
+
+---
+
+## 12. Addressing Ben's Specific Requirements
+
+| Ben's Requirement | How WMTM Addresses It |
+|-------------------|----------------------|
+| "Dynamically chosen subset from prior working memories" | RecallBridge selects top-15 from LTM via keyword + LTI + spreading activation, bounded at 60 items |
+| "Things derived via inference" | WMTMInferenceEngine derives new beliefs from active set (conjunction, implication, PLN integration designed) |
+| "Forget derived knowledge if not useful" | ForgettingPolicy: derived items evicted when STI<5, age>50, or at capacity — with 1.5× penalty vs recalled items. Forgotten derived items are truly gone (not in LTM unless written back) |
+| "Push out memory items from prior working memories if not useful" | Recalled items decay (STI ×0.85/tick), evicted when STI<5 or age>50. They leave WMTM but remain in LTM (can re-recall) |
+| "Working medium-term memory" | Exactly this — sits between context window (immediate) and LTM archive (permanent), bounded, mutable, with its own lifecycle |
+
+---
+
+## 13. Design Philosophy
+
+1. **WMTM is lossy by design** — derived items that don't prove useful are forgotten. This is a feature, not a bug. The system should not accumulate every inference it ever makes.
+
+2. **Recalled items are safe to forget** — they're backed by LTM. Forgetting from WMTM just means "not currently active," not "deleted from the system."
+
+3. **Writeback is earned, not automatic** — only items with utility ≥ 5.0 get persisted to LTM. This prevents the archive from filling up with low-value derivations.
+
+4. **Derived items have a harder life** — 1.5× eviction penalty, STI discounted at admission. They must demonstrate value quickly or be forgotten. This mirrors how human working memory treats speculative inferences.
+
+5. **The cycle is the unit of time** — each agent turn is one WMTM cycle (recall → infer → use → decay → forget → writeback). Items age by 1 per cycle. A capacity-60 buffer with max_age=50 means items survive at most ~50 turns unless actively used.
+
+---
+
+## Appendix: File Inventory
+
+```
+src/petta_memory/
+  wmtm.py             196L  ← WMTMStore, WMTMItem, ForgettingPolicy
+  wmtm_recall.py      233L  ← RecallBridge (keyword + LTI + spreading activation)
+  wmtm_inference.py   117L  ← WMTMInferenceEngine (derive, provenance)
+  wmtm_utility.py     141L  ← WMTMUtility (scoring, writeback)
+  wmtm_coordinator.py 136L  ← WMTMCoordinator (full cycle orchestration)
+                           ─────
+                           823L total
+
+tests/
+  test_wmtm.py            22 tests  ← foundational structures
+  test_wmtm_recall.py     15 tests  ← recall, spreading activation
+  test_wmtm_inf_util.py   17 tests  ← derivation, utility, writeback
+  test_wmtm_integration.py 6 tests  ← end-to-end cycle
+  test_wmtm_coordinator.py 10 tests  ← coordinator lifecycle
+                           ─────
+                           70 tests, all pass (0.23s)
+
+docs/
+  wmtm_design_doc.txt           ← full design specification
+  wmtm_integration_map.txt      ← how each component wraps existing infrastructure
+  wmtm_live_integration_guide.txt ← step-by-step wiring into iter.py
+```
+
+---
+
+*Architecture design by Protocosmo2 for Ben Goertzel, 2026-09-06.*
+*Implementation status: code complete, 70 tests pass, activation gated on Ben's go.*

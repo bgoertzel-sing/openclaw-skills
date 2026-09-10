@@ -1,0 +1,145 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\title{Why Tiny Shakespeare Is Too Small for GPT-2-Small--Scale SLT Work}
+\author{RelaLeap project notes}
+\date{2026-07-15}
+
+\begin{document}
+\maketitle
+
+\begin{quote}
+\textbf{Prepared for sharing with colleagues using Tiny Shakespeare for learning-dynamics experiments.}
+
+\emph{Epistemic note: Claims marked \textbf{Observed} come from our RelaLeap project run logs and code. Claims marked \textbf{Inferred} are reasoned conclusions from that evidence. Claims marked \textbf{Principled} are general theoretical arguments that hold regardless of our specific setup.}
+\end{quote}
+
+\section{The raw numbers}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{p{0.18\textwidth}p{0.28\textwidth}p{0.24\textwidth}p{0.24\textwidth}}
+\toprule
+Property & Tiny Shakespeare (our setup) & GPT-2-small on Tiny Shakespeare & GPT-2-small on proper data \\
+\midrule
+Corpus size & $\sim$1.1 MB, $\sim$1.0M characters & $\sim$1.1 MB, $\sim$1.0M characters & WebText $\sim$40 GB, $\sim$8B tokens \\
+Tokenization & Character-level, \textbf{65-token vocabulary} & BPE, 50,257-token vocabulary & BPE, 50,257-token vocabulary \\
+Token count & $\sim$1.0M tokens & $\sim$300K tokens (BPE) & $\sim$8B tokens (or $10^8$--$10^9$ for OpenWebText slice) \\
+Model parameters & $\sim$82K (2-layer char transformer) & 124M & 124M \\
+Parameters-per-token & $\sim$0.08 (near boundary) & $\sim$413 (deep memorization) & $\sim$0.015 (generalization regime) \\
+Training data domains & 1 (Shakespeare) & 1 (Shakespeare) & Thousands (web crawl) \\
+Register / style & Single author, archaic English, iambic meter & Same & Multi-domain, multi-author, multi-register \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observed} (from \texttt{src/relaleap/slt/tinyshakespeare.py}): Our SLT validation runs used a character-level \texttt{TinyCharTransformer} with \texttt{vocab\_size=65} (the sorted set of ASCII characters in the corpus), \texttt{d\_model=64}, \texttt{nhead=2}, \texttt{num\_layers=2}, \texttt{d\_ff=256}, \texttt{seq\_len=128}. Total parameters: $\sim$82K. The corpus was the standard Karpathy Tiny Shakespeare (\texttt{input.txt}), tokenized as individual characters.
+
+\textbf{Principled}: The corpus-to-model ratio is the critical bottleneck. When the corpus is smaller than or comparable to the model's memorization capacity, the model memorizes rather than generalizes. For a 124M-parameter GPT-2-small, Tiny Shakespeare's $\sim$1M tokens are roughly \textbf{100 parameters per token} --- deep in the memorization regime. Even our smaller 82K model on 1M tokens ($\sim$12 parameters per token) sits near the boundary.
+
+\section{The corpus is smaller than the model's capacity}
+
+\textbf{Observed} (from SLT run reports, \texttt{experiments/slt\_validation\_run1/} and \texttt{slt\_validation\_large\_run1/}):
+
+\begin{itemize}[leftmargin=*]
+\item The WBIC/SGLD estimator produced \textbf{Rhat values of 1.3--3.3} across transformer blocks (target: $<1.2$). This means the SGLD chains didn't mix --- the loss landscape is dominated by sharp memorization wells rather than broader generalization basins.
+\item \textbf{6--9 of 37 parameter blocks} were marked \texttt{diagnostic\_only} (negative $\hat\lambda$ estimates) in each run. A true RLCT cannot be negative; these blocks are flat or unused under the sampler, consistent with parameters that contribute to memorization rather than structured learning.
+\item The \textbf{calibration benchmark} (product singularity, target $\lambda=0.5$) passed at $\hat\lambda=0.472\pm0.026$ in the large run --- so the estimator itself is sound. The problem is that the \emph{object being measured} (a memorization solution) has a different and less interpretable geometry than a generalization solution.
+\end{itemize}
+
+\textbf{Inferred}: The SLT measurements we obtained are real measurements of the wrong phenomenon. They characterize the singular structure of a memorization basin, not a generalization basin. Moving to GPT-2-small--scale data would shift the learned solution into a different loss landscape basin where the $\hat\lambda$ values probe the geometry we actually care about.
+
+\section{The corpus is stylistically and distributionally degenerate}
+
+\textbf{Principled}: Tiny Shakespeare is one author, one register, archaic English, with heavy structural repetition (speaker tags, act/scene scaffolding, iambic meter). The effective entropy is low and the vocabulary is tiny (65 characters at char-level; $\sim$20K word types at word-level). This means:
+
+\begin{itemize}[leftmargin=*]
+\item Measured ``capabilities'' reflect \textbf{surface n-gram statistics}, not compositional or semantic structure.
+\item Findings \textbf{don't transfer} --- a phase transition or circuit found on Shakespeare may be an artifact of its idiosyncratic bigram/character-level statistics, not a general property of transformers.
+\item The \textbf{diversity of learning phenomena} (induction heads, in-context learning, factual recall, code execution) is absent because the corpus doesn't exercise them.
+\end{itemize}
+
+\section{The ePC distillation experiments confirm the bottleneck empirically}
+
+\textbf{Observed} (from \texttt{experiments/20260715T153035Z-epc-distillation-gate-local-r2/RUN.md}):
+
+We ran a matched-state ePC (energy-based predictive coding) distillation gate on Tiny Shakespeare with a tiny student transformer (d\_model=16, 2 layers, 2 heads, seq\_len=32, batch\_size=4, 6 training steps). Results:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrl}
+\toprule
+Method & Mean held-out perplexity & Notes \\
+\midrule
+BP (backprop) & 76.21 & Baseline \\
+KD ($\lambda=0.05$) & 76.18 & Ordinary knowledge distillation \\
+ePC T=8, $\lambda=0.05$ & 76.19 & Best nontrivial ePC depth \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{ePC failed to beat matched KD in all three seeds.} The gate failed closed.
+
+\textbf{Observed} (from the normalization fix run, \texttt{20260715T154840Z-epc-local-credit-normalization/RUN.md}): A subsequent fix corrected a batch-normalization bug that had suppressed hidden local credit by \texttt{seq\_len*d\_model}. Even after the fix, the corrected ePC still lost to matched KD on held-out perplexity.
+
+\textbf{Inferred}: This null result is honest, but it is also \textbf{underpowered}. With seq\_len=32, batch\_size=4, and 6 training steps on a 65-vocabulary corpus, the model is barely learning anything at all --- perplexity $\sim$76 on a 65-character vocabulary is close to trivial (random would be 65). You cannot distinguish ``ePC doesn't work'' from ``Tiny Shakespeare doesn't exercise the learning dynamics ePC targets'' because the corpus is too small to produce those dynamics.
+
+\section{Diagnostics that confirm Tiny Shakespeare is bottlenecking your run}
+
+Check these in your own experiment logs:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Train/val gap opens early and wide} $\to$ memorization, not learning.
+\item \textbf{Val loss floors quickly} and is insensitive to model size or more training steps $\to$ you've saturated the corpus's information content.
+\item \textbf{SGLD/SLT sampler diagnostics degrade} (Rhat $\gg 1.2$, low ESS) $\to$ the loss landscape is dominated by sharp memorization wells rather than smooth generalization basins.
+\item \textbf{Many parameter blocks return negative or near-zero $\hat\lambda$} $\to$ parameters are flat or unused, consistent with a memorization solution rather than a structured one.
+\item \textbf{Results don't survive a held-out-domain probe} $\to$ learned statistics are corpus-specific.
+\item \textbf{Perplexity remains near the random baseline} for small models / short training $\to$ the corpus doesn't provide enough signal to drive meaningful learning.
+\end{enumerate}
+
+\section{Why GPT-2-small--scale data specifically}
+
+The goal is not ``biggest possible'' --- it's \textbf{crossing the threshold where generalization is cheaper than memorization} for a 100M-scale model.
+
+\textbf{Principled}:
+\begin{itemize}[leftmargin=*]
+\item A 124M-parameter model needs roughly \textbf{Chinchilla-scale data} ($\sim$2B tokens for compute-optimal training, but at minimum $10^8$--$10^9$ tokens) so that memorization is not the cheapest solution.
+\item \textbf{Multi-domain, higher-entropy text} (WebText/OpenWebText-style) ensures measured capabilities reflect compositional and semantic structure, not one author's idiosyncrasies.
+\item For SLT specifically: the RLCT $\lambda$ is a property of the loss landscape geometry near the learned solution. That geometry is fundamentally different when the model memorizes versus when it generalizes. You need enough data to push the model into the generalization regime for the measurement to be meaningful.
+\end{itemize}
+
+\section{The deeper principle: corpus-swap invariance}
+
+The phenomena we \emph{want} to study (grokking, phase transitions, circuit formation, learning-coefficient trajectories) should be properties of the \textbf{learning dynamics of the architecture}, invariant across corpora of sufficient scale and entropy. What Tiny Shakespeare gives you instead is phenomena that are properties of \emph{that specific corpus's} bigram statistics.
+
+The clean test: \textbf{does the phenomenon survive a corpus swap?} If your phase transition, circuit, or $\lambda$ trajectory reproduces on OpenWebText, WikiText, and code --- same qualitative structure, shifted only in timing/scale --- it's a dynamics property. If it dissolves or reshapes when you change the corpus, it was an idiosyncrasy you mistook for dynamics.
+
+This is the deeper reason to move to GPT-2-small scale, beyond just ``bigger'': you need a corpus rich enough that its idiosyncrasies are \emph{washed out}, so what remains and is measurable is the architecture's learning behavior. Single-author, low-entropy text has idiosyncrasies with enough signal strength to \emph{dominate} the measurement --- you can't cleanly separate the two layers. Multi-domain, high-entropy data pushes the corpus-specific component below the noise floor, leaving the invariant dynamics as the thing you actually observe.
+
+\textbf{The principle for colleagues: a finding on Tiny Shakespeare is a hypothesis about learning dynamics; a finding that survives corpus-swap is evidence.}
+
+\section{One-line summary}
+
+\begin{quote}
+\emph{Tiny Shakespeare is fine as a plumbing and overfitting sanity check, but it's smaller than the model, single-domain, and low-entropy --- so any 100M-scale transformer memorizes it before it generalizes. Studies of learning dynamics, capability emergence, or interpretability run on it measure memorization artifacts, not transformer behavior. Move to an OpenWebText/GPT-2-small--scale corpus ($\geq\sim10^8$--$10^9$ tokens, multi-domain) so generalization is the cheaper solution and the phenomena you observe are properties of the learning dynamics, not the corpus's idiosyncrasies.}
+\end{quote}
+
+\section*{Provenance}
+
+\begin{itemize}[leftmargin=*]
+\item RelaLeap SLT runs: \texttt{projects/relaleap/experiments/slt\_validation\_run1/}, \texttt{slt\_validation\_large\_run1/} (2026-07-10, Runpod A100)
+\item RelaLeap ePC distillation gates: \texttt{projects/relaleap/experiments/20260715T153035Z-epc-distillation-gate-local-r2/}, \texttt{20260715T154840Z-epc-local-credit-normalization/} (2026-07-15, local CPU)
+\item SLT interpretation report: \texttt{projects/relaleap/docs/slt\_tiny\_shakespeare\_transformer\_analysis.tex} / \texttt{.pdf} (2026-07-10)
+\item Model definition: \texttt{projects/relaleap/worktrees/slt-integration/src/relaleap/slt/tinyshakespeare.py}
+\item Project record: \texttt{projects/relaleap/PROJECT.md}
+\end{itemize}
+
+\end{document}

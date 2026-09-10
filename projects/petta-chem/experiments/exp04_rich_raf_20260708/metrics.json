@@ -1,0 +1,367 @@
+{
+  "config": {
+    "catalysis": "specificity-filtered deterministic template matching",
+    "food": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "food_floor": 3,
+    "rule_count": 20,
+    "rule_mix": {
+      "cleavage": 6,
+      "ligation": 8,
+      "modification": 6
+    },
+    "ticks": 56
+  },
+  "maximal_raf_rule_ids": [
+    "lAB",
+    "lBC",
+    "lCD",
+    "lABC1",
+    "lABC2",
+    "lBCD1",
+    "lBCD2",
+    "cAB",
+    "cBC",
+    "cCD",
+    "cABC1",
+    "cBCD",
+    "mAB",
+    "mBC",
+    "mCD"
+  ],
+  "maximal_raf_size": 15,
+  "minimal_core_is_raf": true,
+  "minimal_core_rule_ids": [
+    "lCD",
+    "lBCD2"
+  ],
+  "minimal_core_size": 2,
+  "no_catalysis_maximal_raf_size": 0,
+  "prune_trace": [
+    {
+      "closure_size": 16,
+      "removed": [
+        {
+          "food_generated": true,
+          "reflexively_autocatalytic": false,
+          "rule": "lAC"
+        },
+        {
+          "food_generated": true,
+          "reflexively_autocatalytic": false,
+          "rule": "mABC"
+        },
+        {
+          "food_generated": true,
+          "reflexively_autocatalytic": false,
+          "rule": "mBCD"
+        }
+      ],
+      "size": 20,
+      "step": 0
+    },
+    {
+      "closure_size": 12,
+      "removed": [
+        {
+          "food_generated": true,
+          "reflexively_autocatalytic": false,
+          "rule": "cABC2"
+        },
+        {
+          "food_generated": false,
+          "reflexively_autocatalytic": false,
+          "rule": "mAC"
+        }
+      ],
+      "size": 17,
+      "step": 1
+    },
+    {
+      "closure_size": 12,
+      "removed": [],
+      "size": 15,
+      "step": 2
+    }
+  ],
+  "rules": [
+    {
+      "a": "A",
+      "b": "B",
+      "catalyst": "ABC",
+      "kind": "ligation",
+      "product": "AB",
+      "rid": "lAB",
+      "secondary": null
+    },
+    {
+      "a": "B",
+      "b": "C",
+      "catalyst": "ABC",
+      "kind": "ligation",
+      "product": "BC",
+      "rid": "lBC",
+      "secondary": null
+    },
+    {
+      "a": "C",
+      "b": "D",
+      "catalyst": "BCD",
+      "kind": "ligation",
+      "product": "CD",
+      "rid": "lCD",
+      "secondary": null
+    },
+    {
+      "a": "A",
+      "b": "C",
+      "catalyst": "ACD",
+      "kind": "ligation",
+      "product": "AC",
+      "rid": "lAC",
+      "secondary": null
+    },
+    {
+      "a": "AB",
+      "b": "C",
+      "catalyst": "AB",
+      "kind": "ligation",
+      "product": "ABC",
+      "rid": "lABC1",
+      "secondary": null
+    },
+    {
+      "a": "A",
+      "b": "BC",
+      "catalyst": "BC",
+      "kind": "ligation",
+      "product": "ABC",
+      "rid": "lABC2",
+      "secondary": null
+    },
+    {
+      "a": "BC",
+      "b": "D",
+      "catalyst": "BC",
+      "kind": "ligation",
+      "product": "BCD",
+      "rid": "lBCD1",
+      "secondary": null
+    },
+    {
+      "a": "B",
+      "b": "CD",
+      "catalyst": "CD",
+      "kind": "ligation",
+      "product": "BCD",
+      "rid": "lBCD2",
+      "secondary": null
+    },
+    {
+      "a": "AB",
+      "b": null,
+      "catalyst": "ABC",
+      "kind": "cleavage",
+      "product": "A",
+      "rid": "cAB",
+      "secondary": "B"
+    },
+    {
+      "a": "BC",
+      "b": null,
+      "catalyst": "ABC",
+      "kind": "cleavage",
+      "product": "B",
+      "rid": "cBC",
+      "secondary": "C"
+    },
+    {
+      "a": "CD",
+      "b": null,
+      "catalyst": "BCD",
+      "kind": "cleavage",
+      "product": "C",
+      "rid": "cCD",
+      "secondary": "D"
+    },
+    {
+      "a": "ABC",
+      "b": null,
+      "catalyst": "ABC",
+      "kind": "cleavage",
+      "product": "AB",
+      "rid": "cABC1",
+      "secondary": "C"
+    },
+    {
+      "a": "ABC",
+      "b": null,
+      "catalyst": "ABCstar",
+      "kind": "cleavage",
+      "product": "A",
+      "rid": "cABC2",
+      "secondary": "BC"
+    },
+    {
+      "a": "BCD",
+      "b": null,
+      "catalyst": "BCD",
+      "kind": "cleavage",
+      "product": "BC",
+      "rid": "cBCD",
+      "secondary": "D"
+    },
+    {
+      "a": "AB",
+      "b": null,
+      "catalyst": "ABC",
+      "kind": "modification",
+      "product": "ABstar",
+      "rid": "mAB",
+      "secondary": null
+    },
+    {
+      "a": "BC",
+      "b": null,
+      "catalyst": "ABC",
+      "kind": "modification",
+      "product": "BCstar",
+      "rid": "mBC",
+      "secondary": null
+    },
+    {
+      "a": "ABC",
+      "b": null,
+      "catalyst": "AB",
+      "kind": "modification",
+      "product": "ABCstar",
+      "rid": "mABC",
+      "secondary": null
+    },
+    {
+      "a": "BCD",
+      "b": null,
+      "catalyst": "BC",
+      "kind": "modification",
+      "product": "BCDstar",
+      "rid": "mBCD",
+      "secondary": null
+    },
+    {
+      "a": "AC",
+      "b": null,
+      "catalyst": "AC",
+      "kind": "modification",
+      "product": "ACstar",
+      "rid": "mAC",
+      "secondary": null
+    },
+    {
+      "a": "CD",
+      "b": null,
+      "catalyst": "CD",
+      "kind": "modification",
+      "product": "CDstar",
+      "rid": "mCD",
+      "secondary": null
+    }
+  ],
+  "simulation": {
+    "event_count": 56,
+    "final_abundance": {
+      "A": 6,
+      "AB": 2,
+      "ABC": 2,
+      "ABCstar": 3,
+      "AC": 4,
+      "ACstar": 2,
+      "B": 6,
+      "BC": 2,
+      "BCD": 0,
+      "BCstar": 2,
+      "C": 9,
+      "CD": 1,
+      "CDstar": 2,
+      "D": 5
+    },
+    "first_12_events": [
+      {
+        "kind": "ligation",
+        "mode": "basal",
+        "rule": "lAB",
+        "tick": 0
+      },
+      {
+        "kind": "ligation",
+        "mode": "catalyzed",
+        "rule": "lABC1",
+        "tick": 1
+      },
+      {
+        "kind": "ligation",
+        "mode": "catalyzed",
+        "rule": "lAB",
+        "tick": 2
+      },
+      {
+        "kind": "cleavage",
+        "mode": "catalyzed",
+        "rule": "cABC1",
+        "tick": 3
+      },
+      {
+        "kind": "ligation",
+        "mode": "basal",
+        "rule": "lBC",
+        "tick": 4
+      },
+      {
+        "kind": "ligation",
+        "mode": "catalyzed",
+        "rule": "lABC1",
+        "tick": 5
+      },
+      {
+        "kind": "cleavage",
+        "mode": "catalyzed",
+        "rule": "cABC1",
+        "tick": 6
+      },
+      {
+        "kind": "ligation",
+        "mode": "catalyzed",
+        "rule": "lBCD1",
+        "tick": 7
+      },
+      {
+        "kind": "ligation",
+        "mode": "basal",
+        "rule": "lAC",
+        "tick": 8
+      },
+      {
+        "kind": "ligation",
+        "mode": "catalyzed",
+        "rule": "lCD",
+        "tick": 9
+      },
+      {
+        "kind": "modification",
+        "mode": "catalyzed",
+        "rule": "mCD",
+        "tick": 10
+      },
+      {
+        "kind": "cleavage",
+        "mode": "catalyzed",
+        "rule": "cBCD",
+        "tick": 11
+      }
+    ],
+    "food_floor_ok": true
+  }
+}

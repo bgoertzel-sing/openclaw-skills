@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-24T19:19:59Z
+Working directory: /home/openclaw/research-agent/projects/morkql/repos/MORK
+Commit: 5464713539c1c1cb491397f4c7bb1d9cdc8b74a0
+Branch: main
+Remote names: origin
+
+## Status
+## main...origin/main
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

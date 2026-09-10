@@ -1,0 +1,111 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-restore-agents-original",
+      "truth": {
+        "strength": 0.0,
+        "confidence": 0.8
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-restore-agents-v2",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-process-inspector",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-launch-wrappers",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-process-inspector_to_g-restore-agents-original",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-process-inspector",
+        "g-restore-agents-original"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-launch-wrappers_to_g-restore-agents-original",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-launch-wrappers",
+        "g-restore-agents-original"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_g-restore-agents-original_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "g-restore-agents-original",
+        "g-build-omegaclaw"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "supersedes_g-restore-agents-v2_to_g-restore-agents-original",
+      "truth": {
+        "strength": 0.0,
+        "confidence": 0.8
+      },
+      "outgoing": [
+        "g-restore-agents-v2",
+        "g-restore-agents-original"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_g-restore-agents-v2_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "g-restore-agents-v2",
+        "g-build-omegaclaw"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}

@@ -1,0 +1,252 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\setlist{nosep}
+\sloppy
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\title{petta-memory: Project Status, Implemented Work, and Proposed Directions}
+\author{Prepared for Benjamin Goertzel}
+\date{10 August 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Executive summary}
+
+\texttt{petta-memory} is a local-first Python/MeTTa prototype for a bounded,
+symbolic intermediate memory layer between volatile agent context and broad
+vector/Markdown long-term memory.  Its original core is an append-only journal
+of complete \texttt{MemoryCluster} records with deterministic retrieval and
+separate audit, prompt, index, and PLN-safe views.  The project subsequently
+expanded into provenance-preserving evidence packets, reversible pi-PLN
+projections, patham9/PLN compilation and replay, PeTTaChainer diagnosis and
+bounded repaired-runtime experiments, GoalChainer handoff gates, and
+provider-free usability/shadow-consumer evidence.
+
+\textbf{Observed baseline.}  The prepared takeover worktree is at commit
+\texttt{5b842f4d8e203d86c0d14f42eb91a03535376c0a} on branch
+\texttt{agent/protocosmo2-handoff}.  The source project recorded a clean
+698-test run at this baseline.  A fresh run for this report collected all 698
+tests but finished with one failure, one error, and eight skips because the
+isolated worktree's relative dependency paths do not resolve to the existing
+PeTTaChainer/patham9 sibling repositories.  This is a reproducibility defect in
+the handoff layout, not evidence that the affected semantics regressed.  The
+branch contains 352 commits not present in
+its configured upstream branch.  Consequently, most recent implementation is
+local and must not be described as published to GitHub until it is pushed.
+
+\textbf{Overall assessment.}  A substantial, heavily tested research prototype
+exists.  It is not yet a production agent-memory service.  The safest next
+step is to freeze the present boundary, publish the accumulated history on a
+review branch, run one reproducible end-to-end takeover canary, and then choose
+one narrow frontier rather than continuing unbounded defensive hardening.
+
+\section{Purpose and design principles}
+
+The intended role is a medium-duration symbolic store for ProtomegaTron,
+OmegaClaw, or related agents.  The main design principles discussed and adopted
+are:
+
+\begin{itemize}
+\item append complete, delimited records and preserve provenance;
+\item distinguish observations, quoted claims, derived beliefs, hypotheses,
+decisions, commitments, boundaries, status changes, and artifacts;
+\item keep raw utterances and unpromoted claims out of factual PLN premises;
+\item make indexes, prompt context, attention, and PLN projections rebuildable
+views rather than canonical truth stores;
+\item attach explicit evidence counts and truth-value provenance rather than
+reconstructing evidence from an STV;
+\item make inference and live-agent integration bounded, reviewable,
+fail-closed, and non-promoting by default;
+\item preserve modular seams so patham9/PLN, PeTTaChainer, ECAN, GoalChainer, or
+future Hyperon substrates can be replaced independently.
+\end{itemize}
+
+\section{What has actually been implemented}
+
+\subsection{Core journal and views}
+
+\begin{itemize}
+\item A Python package, \texttt{petta\_memory}, with a
+\texttt{MediumMemoryStore} append-only \texttt{.metta} journal.
+\item Complete \texttt{MemoryCluster} envelopes, schema/version checks,
+S-expression parsing, size and identifier bounds, locking, duplicate-ID
+rejection, provenance requirements, and caller-supplied PeTTa parse checking.
+\item Query by cluster/id, type, \texttt{About}, status, and epistemic role;
+status is reconstructed from append-only status and supersession events.
+\item Bounded canonical audit, index, prompt, PLN-safe, PeTTaChainer statement,
+EvidencePacket, patham9 handoff, and GoalChainer handoff views.
+\item A CLI covering append, query, tail, views, handoff caches, smoke gates,
+profiles, and bridge operations.
+\end{itemize}
+
+\subsection{OmegaClaw and GoalChainer boundaries}
+
+\begin{itemize}
+\item An inert OmegaClaw bridge policy: reads require explicit feature flags and
+autonomous writes are rejected.
+\item Non-live GoalChainer subprocess smoke gates and a read-only live bridge
+that validates promoted evidence and copied decision metadata.
+\item Extensive rejection of directive/task-claim sidecars, malformed semantic
+markers, count drift, and schema confusion before a bridge artifact is admitted.
+\item No general live autonomous write path has been enabled.
+\end{itemize}
+
+\subsection{pi-PLN evidence and replay substrate}
+
+\begin{itemize}
+\item Immutable typed evidence tokens, evidence bases, EvidencePackets,
+snapshots, contexts, chart policies, pi-charts, compiler inputs, results,
+captures, and manifests.
+\item Exact union-by-basis packet algebra, conflict checks, content-derived
+fingerprints, beta projection/prior cycling, and compatibility-labelled legacy
+EC projection.
+\item Deterministic patham9 query-program construction, bounded shell-free
+subprocess capture, executable and input limits, exact result admission,
+create-once artifacts, clean-room reload, and semantic replay comparison.
+\item Filesystem and subprocess hardening for symlinks, permissions, artifact
+identity, bounded streams, process groups, timeouts, cleanup failures, and
+malformed reconstructed objects.
+\end{itemize}
+
+\subsection{PeTTaChainer work}
+
+\begin{itemize}
+\item Typed checked-add/query contracts adapted from compiler output while
+retaining stamps and evidence bases as audit sidecars.
+\item Profilers that localized severe fact compilation fan-out in pinned
+PeTTaChainer source: duplicate imports and overlapping dispatch/conversion
+paths were measured under exact source gates.
+\item An isolated duplicate-import candidate reduced a 128-copy direct
+dispatch to one normalized-equivalent clause.  Bounded experiments then
+completed \texttt{mm2compile}, exact \texttt{compileadd}, stored-fact retrieval,
+and a one-rule derivation.
+\item The admitted one-rule experiment derived \texttt{(T a)} from
+\texttt{(S a)} and \texttt{S -> T}; its STV matched the pinned
+\texttt{TotalMpFormula} result \texttt{(STV 0.7600000000000001 0.52)}.
+\item Typed, non-promoting derived-result captures and PeTTaChainer-specific
+episode manifests were persisted with content and provenance commitments.
+\end{itemize}
+
+\subsection{Evidence and verification}
+
+The repository contains 12 Python package files and 11 test files.  Project
+records report 698 passing tests at the handoff baseline; the fresh isolated
+worktree run described above did not reproduce a clean pass because two tests
+used unresolved relative dependency paths.  The two largest
+test areas are patham9/PLN and PeTTaChainer profiling, followed by pi-PLN models.
+Stored experiment ledgers cover provider-free usability round trips and
+ProtoMegaBot2 shadow-source/consumer bundles.  Checked-in artifacts include
+GoalChainer bridge probes and bounded PeTTaChainer derivation captures.
+
+\section{Plans and ideas discussed or proposed}
+
+The following items are architectural proposals, partial roadmaps, or future
+gates.  They must not be confused with deployed capabilities.
+
+\begin{enumerate}
+\item \textbf{Production agent integration.}  Connect the store to
+ProtoCosmo2/OmegaClaw for routine prompt retrieval and eventually reviewed
+writes, with exactly one writer and explicit authority boundaries.
+\item \textbf{Atlas-indexed reversible pi-PLN.}  Treat evidence as immutable
+packets, project it into local charts, compile bounded episodes, preserve
+complete provenance, and allow replay/retraction without confusing chart priors
+with empirical evidence.  Much substrate exists, but unrestricted production
+inference and belief promotion remain closed.
+\item \textbf{PeTTaChainer repair/adoption.}  Decide whether to upstream the
+duplicate-import repair, maintain a pinned local patch/profile, or use patham9
+as the primary backend.  The experiments establish a narrow repaired path, not
+general semantic correctness across PeTTaChainer workloads.
+\item \textbf{ECAN attention projection.}  Use metta-attention/ECAN as a
+derived, disposable salience view over canonical memory and OmegaSelf, never as
+the truth store or authority mechanism.
+\item \textbf{GoalChainer/OmegaClaw task appraisal.}  Supply promoted evidence
+as read-only appraisal context, later considering tightly bounded task claims
+only after separate review.  Current code intentionally rejects task/directive
+artifacts.
+\item \textbf{Two-strata memory.}  Combine an append-only epistemic record with
+compact operational/index layers, preserving the former while permitting the
+latter to be rebuilt or optimized.
+\item \textbf{Provider-free portability.}  Package source, journals, views,
+inference summaries, and read-only canaries so a different agent can validate
+usefulness without privileged provider access.
+\item \textbf{Further inference control.}  Ranked branch plans, estimator and
+continuation-predicate wrappers, controller-as-chainer composition, bounded
+derive gates, and eventually meta-learning of inference control.
+\item \textbf{General runtime attribution.}  Extend beyond exact stored-fact
+and one-rule cases to trustworthy rule/trace attribution, broader corpus
+coverage, and semantic-failure classification.
+\end{enumerate}
+
+\section{Explicitly not implemented or not authorized}
+
+\begin{itemize}
+\item No production-quality multi-agent memory service or daemon.
+\item No unrestricted autonomous journal writer for ProtoCosmo2/OmegaClaw.
+\item No general inferred-belief promotion from a runtime answer into canonical
+memory.
+\item No claim that all PeTTaChainer compilation/query semantics are repaired.
+\item No upstream PeTTaChainer patch publication recorded by this project.
+\item No general proof-trace identity for arbitrary patham9 or PeTTaChainer
+episodes.
+\item No paid compute, external authority expansion, or credential material in
+the project files.
+\end{itemize}
+
+\section{Current risks and technical debt}
+
+\begin{itemize}
+\item \textbf{Publication gap:} 352 local commits are ahead of the configured
+remote tracking branch.  Loss of the laptop or repository would lose work not
+present remotely.
+\item \textbf{Scope accretion:} core store, inference research, runtime repair,
+bridge security, and artifact hardening coexist in large modules.  In
+particular, \texttt{patham9\_pln.py}, \texttt{pettachainer\_profile.py}, and
+\texttt{pipln\_models.py} are each large and merit modular decomposition.
+\item \textbf{Recorded-state drift:} project Markdown accumulated long
+chronological checklists, including duplicated status material.  Code, tests,
+commit history, and experiment records should outrank prose when they conflict.
+\item \textbf{Dependency pinning:} runtime results depend on exact local
+patham9, PeTTa, PeTTaChainer, SWI-Prolog, and GoalChainer trees.  A takeover must
+record their commits before repeating runtime claims.
+\item \textbf{Over-hardening risk:} recent work concentrated on increasingly
+narrow malformed-object and cleanup cases.  The July 22 decision already
+recommended freezing generic hardening and moving to a bounded semantic
+capture/reload gate.
+\end{itemize}
+
+\section{Recommended takeover sequence}
+
+\begin{enumerate}
+\item Preserve the frozen \texttt{5b842f4} worktree and rerun the 698-test suite.
+\item Record exact dependency commits and execute the provider-free usability
+gate as the first independent canary.
+\item Review the 352-commit publication gap, scan for secrets and oversized
+artifacts, then push \texttt{agent/protocosmo2-handoff} (not the default branch)
+and open a draft PR or review branch.
+\item Produce a small architecture split proposal for the three oversized
+modules without changing semantics.
+\item Choose one frontier: (a) production read-only retrieval canary,
+(b) broader repaired PeTTaChainer semantic corpus, or (c) patham9-backed
+bounded inference/replay.  State the acceptance test before coding.
+\item Keep journal writes and inferred-belief promotion disabled until a
+separate reviewed experiment demonstrates provenance, idempotence, rollback,
+and single-writer behavior.
+\end{enumerate}
+
+\section*{Provenance of this report}
+
+This summary was checked against the local project records
+\texttt{PROJECT.md}, \texttt{TASKS.md}, \texttt{DECISIONS.md},
+\texttt{NOTES.md}; repository README, source tree, tests, Git history and
+remote configuration; and recorded experiment runs.  It distinguishes local
+implementation from remote publication and bounded experiment evidence from
+general deployment claims.  No credential values were read into or written to
+this document.
+
+\end{document}

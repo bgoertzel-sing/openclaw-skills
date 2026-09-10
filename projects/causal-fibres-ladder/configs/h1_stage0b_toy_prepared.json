@@ -1,0 +1,44 @@
+{
+  "status": "prepared_not_run",
+  "prerequisite": "H0 toy/smoke gate passed; target GPT-2-small H0 remains open",
+  "seed": 1729,
+  "interface": {
+    "base": "same frozen six-layer synthetic-grammar student as h0_cpu_smoke.json",
+    "read_site": "blocks_0_2_4_5",
+    "write_site": "final_logits"
+  },
+  "budget_matching": {
+    "primary_coordinate": "parameters_ever_trained",
+    "tolerance_fraction": 0.1,
+    "also_report": [
+      "parameters_deployed",
+      "mean_active_features",
+      "code_width",
+      "group_count",
+      "training_seconds",
+      "deployment_seconds",
+      "residual_output_rank"
+    ]
+  },
+  "arms": [
+    {"name": "dense", "class": "DenseResidualRepresentation"},
+    {"name": "lora", "class": "LoRA final-logit residual control"},
+    {"name": "sae_steering", "class": "SparseAutoencoder plus steering"},
+    {"name": "grouped_sae_steering", "class": "GroupedSparseDictionary plus steering"},
+    {"name": "orthogonal_fibres", "class": "OrthogonalFibreRepresentation"},
+    {"name": "contextual_bundle", "class": "ContextualFibreBundle"}
+  ],
+  "metrics": [
+    "task loss and accuracy",
+    "Gamma_L and Gamma_A with paired-bootstrap CI",
+    "factor Gamma_j and spill",
+    "held-out factor combinations",
+    "reconstruction loss",
+    "all budget coordinates"
+  ],
+  "compute_check": {
+    "h0_reference": "50 probe conditions completed locally on 4 CPU threads",
+    "toy_expectation": "CPU feasible after exact parameter matching is implemented",
+    "gpt2_small_expectation": "requires separate activation-memory/runtime benchmark; no paid GPU authorized"
+  }
+}

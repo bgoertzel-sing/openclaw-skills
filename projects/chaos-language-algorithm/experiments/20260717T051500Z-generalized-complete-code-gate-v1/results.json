@@ -1,0 +1,38 @@
+{
+  "classification": "complete_code_rejects_joint",
+  "configuration": {
+    "min_uses": 2,
+    "n_max": 3,
+    "n_min": 3
+  },
+  "delta_bits": 64.0,
+  "environment": {
+    "platform": "Linux-7.0.11-76070011-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "fixture": {
+    "frame_count": 19,
+    "sha256": "c828bafa0955f0e30ee947865a944e03ac3081203e6bc9e5d34578951310af89",
+    "token_count": 76
+  },
+  "initial": {
+    "data_bits": 33496.0,
+    "model_bits": 856.0,
+    "sha256": "5137a5c64ee0644b58f5beddb50453f4b158cf44fe727d5cf301671fa7e0edb4",
+    "total_bits": 34352.0
+  },
+  "integrity": {
+    "canonical_round_trip": true,
+    "deterministic_proposals": true,
+    "exact_reconstruction": true
+  },
+  "joint": {
+    "data_bits": 27264.0,
+    "model_bits": 7152.0,
+    "sha256": "4388ea9ef0698fab6a112e2b54ee63221827581a28d4715d7f953548816e5257",
+    "total_bits": 34416.0
+  },
+  "proposal_count": 2,
+  "schema": "chaoslang.generalized-complete-code-gate.v1",
+  "status": "synthetic_decision_gate_not_chaos_or_predictive_evidence"
+}

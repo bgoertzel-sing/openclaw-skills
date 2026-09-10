@@ -1,0 +1,590 @@
+<h1>CAROM Experiments 2 and 3: Detailed Experiment and Results Summary</h1>
+<p><strong>Date:</strong> 2026-07-21<br />
+<strong>Project:</strong> CAROM Execution Semantics<br />
+<strong>Scope:</strong> One-seed TinyLM mechanism screens; Exp2 compiled-channel execution and Exp3 teach-loop operator acquisition</p>
+<h2>Executive summary</h2>
+<p>Experiments 2 and 3 each validate one local component of the broader CAROM
+proposal, but neither validates the end-to-end ambitious claim.</p>
+<p>Experiment 2 shows that a language-conditioned pairwise scorer can learn
+substantial information about a program's dependency graph and drive a CAROM
+core to moderate endpoint accuracy on program lengths seen during training.
+Its final logged L=2--4 task accuracy was 0.695 and edge accuracy was 0.865.
+However, held-out L=5 task accuracy was only 0.306, and itinerary Kendall tau
+declined from an early peak of 0.990 to 0.492 while endpoint accuracy improved.
+Thus it does not yet demonstrate length-generalizing compilation or that the
+intended ordered heteroclinic itinerary is the mechanism producing the answer.</p>
+<p>Experiment 3 shows that two fresh operator slots can be trained from synthetic
+input/output examples while the old operator library remains frozen. Both new
+skills reached 0.632 mixed-program accuracy when invoked using their taught
+names, close to the 0.659 old-only baseline. Transfer to description variants
+not used by the registration loss was weaker and skill-dependent: 0.410 for
+<code>shl</code> and 0.275 for <code>sq</code>. Held-out command representations also produced a
+measurable novelty signal before teaching. The observed old-task change from
+0.702 to 0.627 is not a valid causal interference estimate because the two
+evaluations used different random examples.</p>
+<p>The combined result is a credible toy-scale proof of principle for supervised
+graph extraction and slot-level operator acquisition. The unresolved parts are
+the central scientific ones: robust semantic routing, causal ordered execution,
+structural extrapolation, and behavior-preserving library extension.</p>
+<h2>Evidence, provenance, and epistemic status</h2>
+<p>This report distinguishes four evidence levels:</p>
+<ul>
+<li><strong>Observed:</strong> present in the retrieved raw logs or inspected source.</li>
+<li><strong>Supplied:</strong> reported in Ben's accompanying sandbox report but not produced
+  by the independently retrieved run.</li>
+<li><strong>Inferred:</strong> a reasoned interpretation of observed measurements.</li>
+<li><strong>Not established:</strong> a claim that the current design cannot support.</li>
+</ul>
+<p>The runs used seed 0 and a three-layer, width-96 TinyLM. Although Exp2 ran on a
+GPU-equipped RunPod host, its completed artifact is explicitly the TinyLM arm,
+not GPT-2. A separate GPT-2 arm had been started earlier, but no completed
+GPT-2 result artifact was recovered. Exp3 likewise used TinyLM and a synthetic
+teacher, not an external LLM.</p>
+<p>The exact launch commands and a complete remote environment manifest were not
+captured. Effective configurations below are reconstructed from source defaults
+and log output. This is sufficient to interpret the measurements but not a
+gold-standard independent reproduction package.</p>
+<h2>Experiment 2: compiled heteroclinic channel</h2>
+<h3>Scientific question</h3>
+<p>Can dependency language be converted into a per-instance heteroclinic control
+topology that executes a scrambled sequence of compositional operations in the
+correct order, including at a program length not seen during training?</p>
+<p>The conceptual decomposition is:</p>
+<ol>
+<li>encode each natural-language command span with a frozen language model;</li>
+<li>infer the directed predecessor/successor graph between spans;</li>
+<li>compile that graph into a generalized Lotka--Volterra inhibition matrix;</li>
+<li>use the resulting activity itinerary to mix reusable neural operators;</li>
+<li>execute the program over a six-symbol workspace.</li>
+</ol>
+<h3>Synthetic task</h3>
+<p>Each example contains a vector of six values in Z8 and a program of distinct
+primitive transformations drawn from <code>inc</code>, <code>dbl</code>, <code>neg</code>, <code>rev</code>, <code>shr</code>, <code>swp</code>,
+and <code>cms</code>. Each primitive has three English paraphrases. Programs are presented
+in scrambled order rather than execution order. The first command says “to
+begin”; each later command contains an “after you ...” clause referring to its
+predecessor. Distinct primitives make references unambiguous.</p>
+<p>Training samples program lengths L=2--4. Evaluation includes fresh L=2--4
+examples and a structural holdout at L=5. Chance per-output-symbol accuracy is
+1/8 = 0.125.</p>
+<h3>Model</h3>
+<p>The completed run used:</p>
+<ul>
+<li>TinyLM: three causal-transformer layers, hidden size 96, four attention heads;</li>
+<li>1,500 steps of next-token pretraining on the same procedurally generated
+  command language, after which TinyLM was frozen;</li>
+<li>mean-pooled frozen span representations for each command;</li>
+<li>a pairwise MLP edge scorer over <code>[h_i, h_j, h_i * h_j]</code>;</li>
+<li>a learned entry scorer selecting the initial active command;</li>
+<li>a compiler mapping predicted edges to fixed GLV inhibition constants;</li>
+<li>eight shared neural operators over a 48-dimensional, six-slot workspace;</li>
+<li>72 GLV/update integration steps per example.</li>
+</ul>
+<p>The graph compiler assigns low successor inhibition and high reverse-direction
+suppression for a predicted edge. Command activity weights are then used to mix
+the shared operator bank at every integration step.</p>
+<h3>Training protocol</h3>
+<p>The effective configuration was seed 0, 4,000 optimizer updates, batch size
+128, and edge-supervision weight 1.0. Training combined:</p>
+<ul>
+<li>endpoint cross-entropy on the transformed six-symbol output;</li>
+<li>binary cross-entropy on direct predecessor edges; and</li>
+<li>a lightly weighted supervised entry-command loss.</li>
+</ul>
+<p>The run therefore tests the compiler-supervised regime only. It does not
+contain the task-only (<code>edges=0</code>), oracle-topology, null-topology, shuffled-edge,
+or non-heteroclinic controls needed to isolate causal contributions.</p>
+<p>At each 200-step logging point, evaluation generated new random examples using
+the same RNG object as training. Consequently, checkpoints are not evaluated
+on a fixed paired corpus, and evaluation calls alter the subsequent training
+sample stream.</p>
+<h3>Metrics</h3>
+<ul>
+<li><strong>Task accuracy:</strong> fraction of the six output symbols predicted correctly.</li>
+<li><strong>Edge accuracy:</strong> thresholded accuracy over all live off-diagonal command
+  pairs. This is class-imbalanced; only L-1 of L(L-1) directed pairs are
+  positive for a length-L chain. Under the approximately uniform L=2--4 mix,
+  an all-negative classifier is expected to score about 0.70.</li>
+<li><strong>Itinerary Kendall tau:</strong> Kendall ordering of the sequence obtained from the
+  argmax active command across 72 integration steps, after collapsing adjacent
+  repeats.</li>
+</ul>
+<p>The tau implementation does not penalize omitted commands: an ordered subset
+can receive a high score. It also lacks phase-coverage, transition-recall,
+dwell-time, and exact-itinerary checks. Tau should therefore be treated as a
+screening diagnostic rather than a validated itinerary measure.</p>
+<h3>Results</h3>
+<p>TinyLM next-token loss fell from 4.748 at step 0 to 0.363 at step 1,200. The
+compiled CAROM learning curve was:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Update</th>
+<th style="text-align: right;">L=2--4 task acc.</th>
+<th style="text-align: right;">Edge acc.</th>
+<th style="text-align: right;">L=2--4 tau</th>
+<th style="text-align: right;">L=5 task acc.</th>
+<th style="text-align: right;">L=5 tau</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.116</td>
+<td style="text-align: right;">0.626</td>
+<td style="text-align: right;">-0.195</td>
+<td style="text-align: right;">0.095</td>
+<td style="text-align: right;">-0.146</td>
+</tr>
+<tr>
+<td style="text-align: right;">400</td>
+<td style="text-align: right;">0.237</td>
+<td style="text-align: right;">0.755</td>
+<td style="text-align: right;">0.990</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.964</td>
+</tr>
+<tr>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">0.437</td>
+<td style="text-align: right;">0.797</td>
+<td style="text-align: right;">0.839</td>
+<td style="text-align: right;">0.197</td>
+<td style="text-align: right;">0.842</td>
+</tr>
+<tr>
+<td style="text-align: right;">2,000</td>
+<td style="text-align: right;">0.607</td>
+<td style="text-align: right;">0.822</td>
+<td style="text-align: right;">0.537</td>
+<td style="text-align: right;">0.232</td>
+<td style="text-align: right;">0.410</td>
+</tr>
+<tr>
+<td style="text-align: right;">2,600</td>
+<td style="text-align: right;">0.675</td>
+<td style="text-align: right;">0.850</td>
+<td style="text-align: right;">0.567</td>
+<td style="text-align: right;">0.331</td>
+<td style="text-align: right;">0.412</td>
+</tr>
+<tr>
+<td style="text-align: right;">3,000</td>
+<td style="text-align: right;">0.706</td>
+<td style="text-align: right;">0.860</td>
+<td style="text-align: right;">0.474</td>
+<td style="text-align: right;">0.346</td>
+<td style="text-align: right;">0.341</td>
+</tr>
+<tr>
+<td style="text-align: right;">3,600</td>
+<td style="text-align: right;"><strong>0.741</strong></td>
+<td style="text-align: right;">0.866</td>
+<td style="text-align: right;">0.531</td>
+<td style="text-align: right;"><strong>0.350</strong></td>
+<td style="text-align: right;">0.367</td>
+</tr>
+<tr>
+<td style="text-align: right;">3,800</td>
+<td style="text-align: right;">0.695</td>
+<td style="text-align: right;">0.865</td>
+<td style="text-align: right;">0.492</td>
+<td style="text-align: right;">0.306</td>
+<td style="text-align: right;">0.387</td>
+</tr>
+</tbody>
+</table>
+<p>The checkpoint was saved at update 3,999, but no evaluation was logged after
+3,800. Because every row uses a new random evaluation set, small reversals
+should not be interpreted as precise within-run regressions.</p>
+<h3>Interpretation</h3>
+<p><strong>Observed:</strong> edge accuracy improved by 0.239 absolute, from 0.626 to 0.865.
+Relative to the approximate 0.70 all-negative baseline, this is nontrivial but
+less dramatic than the raw number suggests. The run does show that frozen
+span representations contain information usable by the supervised edge scorer.</p>
+<p><strong>Observed:</strong> in-distribution task accuracy rose far above chance, reaching
+0.695 at the final logged point and 0.741 at its best logged point. The compiled
+system therefore learned useful short-program computation.</p>
+<p><strong>Observed:</strong> L=5 accuracy was consistently much lower, ending at 0.306 versus
+0.695 for L=2--4. It exceeded chance but did not preserve the trained-length
+performance level. This is partial transfer, not structural generalization.</p>
+<p><strong>Observed:</strong> tau became almost perfect early, then declined as endpoint task
+accuracy continued to increase. One possible interpretation is mechanistic
+drift: the model increasingly solves endpoints through distributed operator
+mixing or workspace dynamics rather than a clean one-command-at-a-time channel.
+An equally important alternative is metric failure: early near-perfect tau may
+reflect an ordered subset without complete itinerary coverage.</p>
+<p><strong>Not established:</strong> that language compiled the graph in a pretrained semantic
+sense. TinyLM learned the same small synthetic vocabulary and template family
+used by the task. No lexical, syntactic, or semantic out-of-distribution split
+was used.</p>
+<p><strong>Not established:</strong> that the graph compiler caused endpoint performance. Edge
+supervision, entry supervision, task training, fixed GLV constants, and the
+operator core changed together, without causal ablations.</p>
+<h3>Exp2 conclusion</h3>
+<p>Exp2 is a positive mechanism screen for learnable dependency-edge extraction
+and a negative result for the stronger length-generalizing, causally itinerant
+claim. Its most scientifically useful signal is the divergence between edge
+accuracy, endpoint accuracy, and itinerary tau: these are different properties
+and cannot be substituted for one another.</p>
+<h2>Experiment 3: teach-loop operator acquisition</h2>
+<h3>Scientific question</h3>
+<p>Can a frozen language representation anchor a newly registered neural operator
+that is learned from teacher-generated examples, while preserving the existing
+operator library and permitting invocation through alternative descriptions?</p>
+<h3>Synthetic task and holdout structure</h3>
+<p>Exp3 extends the Z8 six-slot task to nine primitives. Seven old primitives are
+used to train the original CAROM cap. Two are held out from cap training:</p>
+<ul>
+<li><code>shl</code>: rotate the vector left by one position;</li>
+<li><code>sq</code>: square every value modulo 8.</li>
+</ul>
+<p>Each primitive has three paraphrases. TinyLM pretraining includes all nine
+skills, all paraphrase variants, and sequences containing the input and output
+of composed programs. Thus <code>shl</code> and <code>sq</code> are held out from the operator cap,
+but not from the representation model's language or functional pretraining.</p>
+<h3>Model and teaching mechanism</h3>
+<p>The frozen base is again a three-layer, width-96 TinyLM. The original cap has
+eight shared operators and a language-conditioned routing hypernetwork. A new
+skill adds:</p>
+<ul>
+<li>a fresh single-operator neural core;</li>
+<li>a frozen 96-dimensional description anchor;</li>
+<li>a trainable cosine-routing scale and bias.</li>
+</ul>
+<p>The anchor is the average TinyLM span representation of paraphrase variant 0
+in several program contexts. For each new skill, the synthetic teacher supplies
+1,024 exact input/output pairs with zero label noise. Teaching runs 400 updates.
+Only the new operator and its routing scale/bias are trained; the base LM,
+existing operator bank, old router, embeddings, and output head remain frozen.</p>
+<p>The loss combines forced-new-slot operator fitting with full-softmax routing
+calibration. Positive examples require the taught-name representation to select
+the new slot; fresh old-command negatives are penalized for selecting it.</p>
+<h3>Stages and effective protocol</h3>
+<p>All stages used seed 0:</p>
+<ol>
+<li><strong>LM:</strong> 800 updates over programs containing all nine skills and all three
+   paraphrase variants.</li>
+<li><strong>Cap:</strong> 800 updates on programs using only the seven old skills and
+   paraphrase variants 0 and 1.</li>
+<li><strong>Teach:</strong> sequential registration of <code>shl</code> and <code>sq</code>, 1,024 noiseless pairs
+   and 400 updates per skill, using variant 0 as the anchor/taught name.</li>
+<li><strong>Evaluate:</strong> 384 fresh mixed programs per call. The new skill is forced
+   into the first program position; remaining positions use old skills.</li>
+</ol>
+<p>No sample-efficiency or teacher-noise sweep was executed, despite M3 being part
+of the experiment concept.</p>
+<h3>Metrics</h3>
+<ul>
+<li><strong>M1 acquisition:</strong> mixed-program output accuracy when the first operation is
+  a new skill, invoked either through its taught name (variant 0) or variants 1
+  and 2.</li>
+<li><strong>M2 interference:</strong> old-only program accuracy before and after registration.
+  In this implementation these calls draw different random batches, so M2 is
+  not paired and does not identify a causal change.</li>
+<li><strong>M3 sample efficiency:</strong> intended accuracy-versus-example-count/noise study;
+  not run.</li>
+<li><strong>M4 novelty:</strong> before registration, the old router's mean maximum routing
+  probability and entropy for old versus held-out command representations.</li>
+</ul>
+<h3>Training dynamics</h3>
+<p>TinyLM next-token loss decreased from 4.822 to 1.091 by update 600. Old-cap
+mixed-program accuracy rose from 0.139 at cap update 0 to 0.738 at update 600
+and was 0.707 at update 750. The saved cap completed update 799.</p>
+<p>Direct new-operator pair losses were:</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th style="text-align: right;">update 0</th>
+<th style="text-align: right;">update 100</th>
+<th style="text-align: right;">update 200</th>
+<th style="text-align: right;">update 300</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shl</code></td>
+<td style="text-align: right;">7.398</td>
+<td style="text-align: right;">2.072</td>
+<td style="text-align: right;">0.055</td>
+<td style="text-align: right;">0.014</td>
+</tr>
+<tr>
+<td><code>sq</code></td>
+<td style="text-align: right;">5.022</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+</tbody>
+</table>
+<p>This shows successful fitting of the two deterministic operators under forced
+routing. It does not by itself test whether language routes to those operators.</p>
+<h3>Evaluation results</h3>
+<table>
+<thead>
+<tr>
+<th>Evaluation</th>
+<th style="text-align: right;"><code>shl</code></th>
+<th style="text-align: right;"><code>sq</code></th>
+<th style="text-align: right;">Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Taught name, mixed programs</td>
+<td style="text-align: right;">0.632</td>
+<td style="text-align: right;">0.632</td>
+<td style="text-align: right;">old-only baseline 0.659</td>
+</tr>
+<tr>
+<td>Alternative paraphrases, mixed programs</td>
+<td style="text-align: right;">0.410</td>
+<td style="text-align: right;">0.275</td>
+<td style="text-align: right;">chance 0.125</td>
+</tr>
+</tbody>
+</table>
+<p>Pre-teaching novelty measurements were:</p>
+<table>
+<thead>
+<tr>
+<th>Command class</th>
+<th style="text-align: right;">mean max old-router probability</th>
+<th style="text-align: right;">mean routing entropy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>old skills</td>
+<td style="text-align: right;">0.942</td>
+<td style="text-align: right;">0.224</td>
+</tr>
+<tr>
+<td>held-out <code>shl</code>/<code>sq</code></td>
+<td style="text-align: right;">0.835</td>
+<td style="text-align: right;">0.438</td>
+</tr>
+</tbody>
+</table>
+<p>Old-only accuracy was 0.702 on the pre-registration sample and 0.627 on the
+post-registration sample. These samples were independently generated and were
+separated by all teaching RNG consumption. The 0.075 difference is therefore
+a warning signal, not a measured interference effect.</p>
+<h3>Comparison with the supplied sandbox report</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">supplied sandbox</th>
+<th style="text-align: right;">retrieved run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shl</code>, taught name</td>
+<td style="text-align: right;">0.601</td>
+<td style="text-align: right;">0.632</td>
+</tr>
+<tr>
+<td><code>sq</code>, taught name</td>
+<td style="text-align: right;">0.584</td>
+<td style="text-align: right;">0.632</td>
+</tr>
+<tr>
+<td><code>shl</code>, alternative paraphrases</td>
+<td style="text-align: right;">0.408</td>
+<td style="text-align: right;">0.410</td>
+</tr>
+<tr>
+<td><code>sq</code>, alternative paraphrases</td>
+<td style="text-align: right;">0.438</td>
+<td style="text-align: right;">0.275</td>
+</tr>
+<tr>
+<td>old-only baseline</td>
+<td style="text-align: right;">0.691</td>
+<td style="text-align: right;">0.659</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>shl</code> paraphrase score reproduced closely, while <code>sq</code> differed by 0.163.
+Because both results are single-seed and use fresh finite evaluation samples,
+this disagreement demonstrates that the paraphrase-transfer conclusion is not
+yet stable. The novelty direction replicated qualitatively: held-out commands
+had lower maximum routing confidence and higher entropy than old commands.</p>
+<h3>Interpretation</h3>
+<p><strong>Observed:</strong> fresh neural slots can acquire the two deterministic operators
+without modifying the old operator parameters. Both operators also function in
+multi-step programs when invoked by the exact registered phrase.</p>
+<p><strong>Observed:</strong> alternative-description transfer is above chance but markedly
+below exact-name invocation, especially for <code>sq</code>. Registration therefore has
+some representation-level generalization but not robust semantic routing.</p>
+<p><strong>Observed:</strong> the old router is less confident and more entropic on held-out
+command representations. This supports novelty detection as a promising signal,
+but no ROC curve, held-out threshold, or false-positive calibration was run.</p>
+<p><strong>Inferred:</strong> adding logits to a shared softmax can alter old behavior even when
+old weights are frozen. This is the correct mechanism to investigate for
+interference. The current unpaired M2 values do not quantify that effect.</p>
+<p><strong>Not established:</strong> LLM teaching. TinyLM was trained directly on all new-skill
+descriptions and functional examples; the “teacher” was an exact Python
+function generating noiseless pairs. There was no prompted model, natural
+instruction, ambiguous specification, program synthesis, or teacher error.</p>
+<p><strong>Not established:</strong> arbitrary compositional insertion. Evaluation always puts
+the new skill first, so it does not test new-skill routing at middle or final
+positions, repeated use, or interaction between multiple newly taught skills.</p>
+<h3>Exp3 conclusion</h3>
+<p>Exp3 validates extensible operator fitting plus an anchor-based routing
+interface at toy scale. Its strongest result is exact-name acquisition near the
+old-task baseline. Its main negative result is weak and unstable paraphrase
+transfer. Its most important methodological lesson is that frozen weights are
+not equivalent to frozen behavior when a shared routing action space expands.</p>
+<h2>Combined scientific interpretation</h2>
+<p>The two experiments address complementary halves of a prospective CAROM
+learning system:</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Exp2</th>
+<th>Exp3</th>
+<th>Current status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>extract control structure from descriptions</td>
+<td>supervised pairwise edges</td>
+<td>novelty/anchor routing</td>
+<td>promising toy signal</td>
+</tr>
+<tr>
+<td>execute known operators</td>
+<td>compiled GLV mixing</td>
+<td>scheduled old cap</td>
+<td>works on trained distributions</td>
+</tr>
+<tr>
+<td>acquire a new operator</td>
+<td>not tested</td>
+<td>new slot from I/O pairs</td>
+<td>demonstrated with exact teacher</td>
+</tr>
+<tr>
+<td>semantic description transfer</td>
+<td>template-bound TinyLM</td>
+<td>paraphrase test</td>
+<td>weak/unstable</td>
+</tr>
+<tr>
+<td>structural extrapolation</td>
+<td>L=5 holdout</td>
+<td>not tested</td>
+<td>poor in Exp2</td>
+</tr>
+<tr>
+<td>causal heteroclinic execution</td>
+<td>tau diagnostic only</td>
+<td>scheduled, not GLV-compiled</td>
+<td>not established</td>
+</tr>
+<tr>
+<td>noninterfering extension</td>
+<td>not tested</td>
+<td>unpaired warning signal</td>
+<td>not established</td>
+</tr>
+</tbody>
+</table>
+<p>The natural synthesis is not yet “language compiles and teaches a modular
+heteroclinic computer.” A defensible statement is narrower:</p>
+<blockquote>
+<p>In a small synthetic domain, frozen learned text representations support
+supervised dependency prediction and anchor-based registration of newly
+fitted neural operators. Current implementations do not yet generalize
+reliably across program length or paraphrase, and their causal execution and
+noninterference properties remain unvalidated.</p>
+</blockquote>
+<h2>Recommended next experiments</h2>
+<h3>Priority 0: repair the instruments</h3>
+<ol>
+<li>Freeze deterministic train, validation, and test corpora with independent
+   RNG streams and shared example IDs across all arms.</li>
+<li>Validate itinerary measurements on constructed positive and negative
+   trajectories. Add station coverage, correct-transition precision/recall,
+   exact-order rate, dwell distributions, revisitation count, and endpoint
+   sensitivity to trajectory swapping.</li>
+<li>Replace threshold edge accuracy with AUROC, AUPRC, positive recall,
+   exact-graph accuracy, and calibration curves.</li>
+<li>Make Exp3 M2 paired: evaluate identical old programs before and after each
+   slot registration and decompose errors into routing changes versus operator
+   changes.</li>
+</ol>
+<h3>Priority 1: isolate causal components</h3>
+<p>For Exp2, compare at least five seeds across compiler-supervised, task-only,
+oracle graph, null graph, shuffled graph, and a non-heteroclinic scheduled
+executor. Evaluate both update-matched and wall-clock-matched views.</p>
+<p>For Exp3, use forced-oracle routing to separate operator acquisition from
+description routing. Compare shared-softmax registration with a gated novelty
+router and with a KL/no-regression penalty on frozen old examples.</p>
+<h3>Priority 2: test the intended generalizations</h3>
+<p>For Exp2, use a genuinely frozen GPT-2 adapter, held-out paraphrase families,
+dependency syntax changes, lexical substitutions, and lengths beyond L=5.</p>
+<p>For Exp3, sweep teacher examples and label-noise rates, register skills in
+multiple orders, evaluate the new skill in every program position, teach
+several skills sequentially, and test descriptions not seen during base
+pretraining. Only after these controls should the synthetic teacher be replaced
+by prompted LLM-generated specifications.</p>
+<h2>Artifact manifest</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exp2 local run-source copy</td>
+<td><code>9171bcd065226d3f5ca96d7bb8f9f20d9f144a11f251923382cbefb7be112223</code></td>
+</tr>
+<tr>
+<td>Exp2 originally supplied source</td>
+<td><code>e8acb6a3dd9fb761c76487bfcd1eb49a4c93ebd2540f438a50e73550285d52b8</code></td>
+</tr>
+<tr>
+<td>Exp2 raw log</td>
+<td><code>89020404fbde00deab6aa9f0ff0f52a94cc927df4b83abbecafc14ba2dbae9bd</code></td>
+</tr>
+<tr>
+<td>Exp3 source</td>
+<td><code>e8babc238d6835256aa224e381285485d9146d984e6ae660e76ccb849918a6ff</code></td>
+</tr>
+<tr>
+<td>Exp3 supplied report</td>
+<td><code>b29d26ebdaefa334a5e103d63a03911ded9cc662cd92cdabdc02ca165d59dbf6</code></td>
+</tr>
+<tr>
+<td>Exp3 LM log</td>
+<td><code>58340b51d48c4810692956464ba3a07eb9ce6fa448d338a81adae0fe4aa9af9a</code></td>
+</tr>
+<tr>
+<td>Exp3 cap log</td>
+<td><code>9806614fdfd8c0c8646a1390348feeffb1849c3a104c26e10472ecfe4f656a63</code></td>
+</tr>
+<tr>
+<td>Exp3 teaching log</td>
+<td><code>041b1edab7043ab5b15c0343087723fe04e1065ebe52db7cb0a08e3f26b0e96c</code></td>
+</tr>
+<tr>
+<td>Exp3 evaluation log</td>
+<td><code>68c429668730a3a430eedeac89c6602bf6b0e62587b206688ea8a6293d521f26</code></td>
+</tr>
+</tbody>
+</table>
+<p>Source ledgers:</p>
+<ul>
+<li><code>experiments/20260721T055900Z-exp2-compiled-channel-tinylm/RUN.md</code></li>
+<li><code>experiments/20260720T134700Z-exp3-teach-loop/RUN.md</code></li>
+</ul>

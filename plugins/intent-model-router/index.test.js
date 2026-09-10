@@ -8,13 +8,18 @@ import {
   classifyPrompt,
   computeBudgetSummary,
   estimateUsd,
+  preserveCallerSelectedFable,
+  preserveFixedAgentSelection,
   resolveFableMode,
   resolveRoutingDecision,
+  shouldSuppressIntentionalRoutingFallbackNotice,
 } from "./router-core.js";
 
-test("classifies routine, deep, explicit Fable, and auto Fable prompts", () => {
+test("classifies routine, semi-routine, deep, explicit Fable, and auto Fable prompts", () => {
   assert.equal(classifyPrompt("thanks").tier, "routine");
   assert.equal(classifyPrompt("use glm for this").tier, "routine");
+  assert.equal(classifyPrompt("explain why Terra is useful here").tier, "semi-routine");
+  assert.equal(classifyPrompt("compare the routing choices").tier, "semi-routine");
   assert.deepEqual(classifyPrompt("write a Python script to parse logs").tier, "deep");
   assert.deepEqual(classifyPrompt("inspect this repository and fix the failing pytest").tier, "deep");
   assert.deepEqual(classifyPrompt("use Claude Fable for this proof").tier, "fable");
@@ -27,6 +32,13 @@ test("Fable mode gates routing and preserves legacy enableAnthropic behavior", (
   assert.equal(resolveFableMode({}), "off");
   assert.equal(resolveFableMode({ enableAnthropic: true }), "explicit");
   assert.equal(resolveFableMode({ fableMode: "auto", enableAnthropic: true }), "auto");
+
+  const semi = resolveRoutingDecision({
+    prompt: "explain why this routing setup makes sense",
+    config: { semiRoutineModel: "openai/gpt-5.6-terra" },
+  });
+  assert.equal(semi.tier, "semi-routine");
+  assert.equal(semi.targetModel, "openai/gpt-5.6-terra");
 
   const prompt = "use Claude Fable for this proof";
   assert.equal(resolveRoutingDecision({ prompt, config: { fableMode: "off" } }).tier, "deep");
@@ -159,9 +171,49 @@ test("OmegaClaw conservative routing remains intact", () => {
   assert.equal(classifyOmegaClawPrompt("HUMAN_MESSAGE: use Claude Fable for this proof", { fableMode: "explicit" }).tier, "fable");
 });
 
+test("caller-selected Fable detection distinguishes explicit model pins", () => {
+  assert.equal(preserveCallerSelectedFable({
+    modelProviderId: "anthropic",
+    modelId: "claude-fable-5",
+  }), true);
+  assert.equal(preserveCallerSelectedFable({
+    modelProviderId: "openai",
+    modelId: "gpt-5.6-sol",
+  }), false);
+  assert.equal(preserveCallerSelectedFable({}), false);
+});
+
+test("fixed agent selections bypass generic prompt routing", () => {
+  const config = { fixedAgentIds: ["protomegabot-simple", "protomegabot-opus", "protomegabot-fable"] };
+  assert.equal(preserveFixedAgentSelection({ agentId: "protomegabot-opus" }, config), true);
+  assert.equal(preserveFixedAgentSelection({ agentId: "main" }, config), false);
+  assert.equal(preserveFixedAgentSelection({ agentId: "protomegabot-opus" }, {}), false);
+});
+
+test("suppresses only false fallback notices caused by intentional routing", () => {
+  const decision = { targetModel: "openai/gpt-5.6-sol" };
+  assert.equal(shouldSuppressIntentionalRoutingFallbackNotice({
+    payload: { text: "↪️ Model Fallback: openai/gpt-5.6-sol (selected openai/gpt-5.5; selected model unavailable)" },
+    decision,
+  }), true);
+
+  assert.equal(shouldSuppressIntentionalRoutingFallbackNotice({
+    payload: { text: "↪️ Model Fallback: openai/gpt-5.5 (selected openai/gpt-5.6-sol; rate limit)" },
+    decision,
+  }), false);
+  assert.equal(shouldSuppressIntentionalRoutingFallbackNotice({
+    payload: { text: "↪️ Model Fallback: openai/gpt-5.5 (selected openai/gpt-5.6-sol; selected model unavailable)" },
+    decision,
+  }), false);
+  assert.equal(shouldSuppressIntentionalRoutingFallbackNotice({
+    payload: { text: "ordinary assistant reply" },
+    decision,
+  }), false);
+});
+
 test("plugin config schema parses and includes daily budget config keys", () => {
   const schema = JSON.parse(fs.readFileSync(new URL("./openclaw.plugin.json", import.meta.url), "utf8")).configSchema;
-  for (const key of ["fableModel", "fableMode", "fableDailyBudgetUsd", "fableDailyBudgetTz", "fableDailyBudgetOverride", "costLogPath", "logAllUsage", "pricingPerMTok", "enableAnthropic"]) {
+  for (const key of ["routineModel", "semiRoutineModel", "deepModel", "fixedAgentIds", "fableModel", "fableMode", "fableDailyBudgetUsd", "fableDailyBudgetTz", "fableDailyBudgetOverride", "costLogPath", "logAllUsage", "pricingPerMTok", "enableAnthropic", "suppressFalseFallbackNotices"]) {
     assert.ok(schema.properties[key], `missing schema key ${key}`);
   }
   // Override schema requires human-approvedBy pattern

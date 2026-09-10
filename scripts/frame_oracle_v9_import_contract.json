@@ -1,0 +1,41 @@
+{
+  "contract_version": "frame-oracle-v9-import-provenance-1",
+  "modules": {
+    "relaleap": {
+      "path": "relaleap/__init__.py",
+      "sha256": "2acf6fd2b03db9a8d254e1aee32308724dcd4f7c98b273c8efe820f312e48807"
+    },
+    "relaleap.hdpc.frame_oracle_v2": {
+      "path": "relaleap/hdpc/frame_oracle_v2.py",
+      "sha256": "a496dbeb4ee34d02ffa4f015656d4bfdf9257d73791705be58fa552a3d5e5143"
+    },
+    "relaleap.hdpc.frame_oracle_v3": {
+      "path": "relaleap/hdpc/frame_oracle_v3.py",
+      "sha256": "182dbfbb50a3f8f4ef4d2f9a9efb5987b65c1e06c63031acf313d227d99c5fba"
+    },
+    "relaleap.hdpc.frame_oracle_v4": {
+      "path": "relaleap/hdpc/frame_oracle_v4.py",
+      "sha256": "8ce8b16f3ca8faeabf4ba1097b9896d2f173a518b32e8365246dfdce4b89347d"
+    },
+    "relaleap.hdpc.frame_oracle_v5": {
+      "path": "relaleap/hdpc/frame_oracle_v5.py",
+      "sha256": "b444072bf92d808b1fec40b27af8b62f39fb8cc09d5cdb4e385c54ab68b47150"
+    },
+    "relaleap.hdpc.frame_oracle_v6": {
+      "path": "relaleap/hdpc/frame_oracle_v6.py",
+      "sha256": "8fd783fb78239a2d4b7db1672d3c478d1af39999ecb11550ffab08eb9a870bd1"
+    },
+    "relaleap.hdpc.frame_oracle_v7": {
+      "path": "relaleap/hdpc/frame_oracle_v7.py",
+      "sha256": "4a69e1c7917c5e77a831d60acd650b7e13ddfe457c4283f7c4b3dba81e561737"
+    },
+    "relaleap.hdpc.frame_oracle_v8": {
+      "path": "relaleap/hdpc/frame_oracle_v8.py",
+      "sha256": "ee53626caf5d88f82dd1c029ede462b82ceebd67f31348125265d375ccbbb02d"
+    },
+    "relaleap.hdpc.frame_oracle_v9": {
+      "path": "relaleap/hdpc/frame_oracle_v9.py",
+      "sha256": "37c087923accccf84cebfc0f2c12fc1c58e17bd7726c60956deea61ce6466877"
+    }
+  }
+}

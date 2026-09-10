@@ -1,0 +1,289 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\title{CMCP-Guided ePC Distillation\\\large Matched-Budget Calibration: Setup, Results, and Weighting Diagnostics}
+\author{RelaLeap experiment record 20260725T161000Z}
+\date{25 July 2026}
+\begin{document}
+\maketitle
+
+\section*{Executive summary}
+
+This was a small, local, three-seed calibration of typed CMCP evidence
+accounting inside a predictive-coding (ePC) distillation objective. It was
+designed to answer a narrow question: can CMCP prevent a burst of
+duplicate/derived teacher messages from being counted as four independent
+pieces of evidence, while retaining a deliberately independent teacher view?
+
+\textbf{Observed.} CMCP did the duplicate-protection part cleanly: its mean
+effective precision was $1.354$ instead of naive accumulation's $4.0$. It
+also improved final Task-B loss relative to naive accumulation in all three
+paired seeds (mean difference $-0.0190$ nats). However, CMCP gave the
+constructed independent view only about $0.354$ additional credit, whereas
+the constructed oracle credited it fully and therefore had total precision
+$2.0$. CMCP was worse than ordinary one-view KD/ePC on Task-B loss in all
+three seeds (mean $+0.00341$ nats), while its Task-A retention was only
+slightly better (mean $-0.00144$ nats).
+
+\textbf{Conclusion.} The run supports CMCP as a guard against duplicate
+precision inflation. It does not support a claim that the present response
+score or raw weighting improves transformer-to-ePC distillation. The most
+important issue is a confound: CMCP changes both \emph{which} packet is
+trusted and the \emph{total KD objective mass}. The next test should hold the
+total non-duplicate KD mass fixed while comparing novelty estimators.
+
+\section*{Question and scope}
+
+Under equal optimizer-update and teacher-call budgets, does typed CMCP
+accounting prevent duplicate/derived teacher packets from inflating credit,
+retain an independent view, and improve calibration or sequential-curriculum
+retention for an ePC student?
+
+This is a synthetic, reduced calibration---not a transformer-scale result and
+not a confirmation experiment. It uses a two-layer causal character
+transformer with vocabulary 12, width 16, two attention heads, feed-forward
+width 32, sequence length 16, and dropout 0. The teacher and student are
+different models with a shared fixed architecture. The teacher is trained for
+32 AdamW updates on the forward synthetic sequence task and then frozen. Each
+student starts from the same copied initialization within a seed.
+
+\section*{Exact protocol}
+
+\subsection*{Curriculum and budgets}
+
+Each seed runs 160 AdamW student updates: 80 Task-A updates followed by 80
+Task-B updates. A batch contains 6 sequences; evaluations use 6 batches of 8
+sequences. Task-A is a stochastic forward modular-increment sequence task.
+Task-B uses another generated stream but its targets are shifted by half the
+vocabulary: $y_B=(y+6)\bmod 12$. Thus Task B contradicts the Task-A target
+mapping rather than merely continuing it.
+
+The seeds are 101, 211, and 307. Every arm receives exactly 160 optimizer
+updates, 160 teacher forward calls, and 640 packet presentations (four per
+update). The ePC distillation objective uses two settlement steps,
+temperature 2.0, relaxation learning rate 0.1, and the overall objective
+
+\[
+  L = 0.8 L_{CE}(y, f_\theta(x)) + 0.02 \sum_p w_p L_{ePC}(f_\theta(x),z_p).
+\]
+
+Gradients are clipped at norm 1.0. All recorded ePC energy traces were
+monotone in every arm and seed.
+
+\subsection*{Teacher packet burst}
+
+For each student batch, the frozen teacher emits base logits $z$. Four typed
+packets, all for the same cohort/batch, are presented:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lYYY}
+\toprule
+Packet & Payload & Typed innovation/provenance relation & Constructed oracle credit \\
+\midrule
+Base & $z$ & canonical innovation; teacher/base & 1 \\
+Exact duplicate & $z$ copied & same innovation as base; teacher/cache-copy & 0 \\
+Descendant & $z/2$ & same innovation as base; teacher/temp-transform & 0 \\
+Seeded view & $z+0.35\epsilon$ & distinct innovation; teacher/seeded-view & 1 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Here $\epsilon$ is a deterministic seed-and-update-specific Gaussian tensor.
+The oracle designation is a fixture assumption: base and seeded view are
+counted as two independent pieces of evidence even though the latter is an
+additive perturbation of the former. That assumption is useful for diagnosing
+under-credit, but it is not a claim that noisy logits are generally
+independent teacher knowledge.
+
+\subsection*{Arms and exact weights}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lYYY}
+\toprule
+Arm & Packet weights in burst order & Total effective precision & Purpose \\
+\midrule
+Ordinary & $(1,0,0,0)$ & 1 & one canonical teacher target \\
+Naive & $(1,1,1,1)$ & 4 & unprotected multi-view accumulation \\
+Oracle & $(1,0,0,1)$ & 2 & fixture-known deduplication target \\
+CMCP & $(1,0,0,r)$ & $1+r$ & typed guards plus estimated novelty \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+CMCP first rejects later packets with an already seen innovation identity.
+For a new innovation, it converts logits to a flattened standardized response
+score: softmax, flatten batch and position, subtract each vocabulary-column
+mean, divide by its population standard deviation (floor $10^{-5}$). It then
+uses the existing ridge-regularized conditional-information-ratio routine
+against stored canonical scores, clamps the ratio to $[0,1]$, and assigns that
+ratio as the packet weight. Hence base has weight 1 and the seeded view has
+weight $r$; duplicate and descendant have weight 0 by typed identity.
+
+\section*{Measurements}
+
+Task-A retention is the final Task-A loss minus the Task-A loss immediately
+after update 80; lower is better. Task-B metrics are evaluated after update
+160. Expected calibration error (ECE) uses ten fixed bins $[0,0.1),\ldots,
+[0.9,1.0)$. Effective precision is the update-average sum of packet weights.
+
+\subsection*{Aggregate results (mean across three paired seeds)}
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Arm & Precision & A retention $\Delta$ loss & B loss & B accuracy & B ECE \\
+\midrule
+Ordinary & 1.0000 & 0.16394 & 2.30898 & 0.14887 & 0.01092 \\
+Naive & 4.0000 & 0.15676 & 2.33139 & 0.14931 & 0.00962 \\
+CMCP & 1.35412 & 0.16250 & 2.31240 & 0.15148 & 0.00934 \\
+Oracle & 2.0000 & 0.16003 & 2.31836 & 0.14714 & 0.00468 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The CMCP seeded-view novelty weights were 0.32867, 0.39223, and 0.34146 for
+seeds 101, 211, and 307 respectively (mean 0.35412). Thus it eliminated the
+two typed redundancies, but recovered only 35.4\% of the fixture's additional
+independent-view credit.
+
+\subsection*{Per-seed paired outcomes}
+
+\begin{center}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{rrrrrrrr}
+\toprule
+Seed & CMCP precision & $L_B^{CMCP}-L_B^{naive}$ & $L_B^{CMCP}-L_B^{ordinary}$ & $\Delta A^{CMCP}-\Delta A^{naive}$ & $\Delta A^{CMCP}-\Delta A^{ordinary}$ & CMCP B acc. & CMCP B ECE \\
+\midrule
+101 & 1.32867 & -0.01771 & +0.00332 & +0.01904 & -0.00357 & .14714 & .00633 \\
+211 & 1.39223 & -0.01561 & +0.00284 & +0.00002 & -0.00066 & .15104 & .01264 \\
+307 & 1.34146 & -0.02366 & +0.00408 & -0.00185 & -0.00010 & .15625 & .00904 \\
+Mean & 1.35412 & -0.01899 & +0.00341 & +0.00574 & -0.00144 & .15148 & .00934 \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+Negative loss differences favor CMCP. CMCP beats naive Task-B loss in all
+three seeds, but loses to ordinary Task-B loss in all three. Its retention is
+slightly better than ordinary in all three, but the magnitude is tiny on this
+toy scale. With only three calibration seeds and no frozen confirmation
+threshold, these are directions for diagnosis, not confidence-qualified
+efficacy claims.
+
+\section*{Interpretation and alternative explanations}
+
+\textbf{What is directly supported.} Typed innovation identities prevent both
+the byte-identical packet and the declared descendant from being counted
+again. This reduces the pathological four-fold KD accumulation. CMCP's lower
+Task-B loss versus naive is consistent with avoiding that overcount.
+
+\textbf{What is not supported.} Neither the response-score novelty estimator
+nor raw CMCP weighting demonstrated a benefit over ordinary one-view KD/ePC.
+The oracle did not dominate ordinary either, so the fixture is not yet a
+validated setting in which ``more genuinely independent teacher evidence''
+should improve this student outcome.
+
+\textbf{Primary confound.} Raw CMCP has total KD weight about 1.354, while
+the oracle has 2 and naive has 4. It therefore jointly changes novelty
+selection and global distillation strength. Its result can arise from less KD,
+from better selection, or their interaction. The CE term is unchanged, but the
+relative CE/KD balance is not.
+
+\textbf{Why the independent view was underweighted.} The view is defined as
+$z+0.35\epsilon$, so its score remains strongly conditionally predictable
+from $z$. The current estimator measures residual response variation, not the
+fixture's declared causal independence. This may be exactly the desired answer
+for a noisy re-expression of one teacher, but disagrees with this fixture's
+oracle label. It should be resolved by a testable definition of independent
+teacher information, not by simply increasing the weight.
+
+\textbf{Other limitations.} The descendant $z/2$ is declared redundant by
+identity without testing whether temperature-scaled logits have a distinct
+optimization effect. The same frozen teacher generates base and seeded view;
+there is no independent teacher checkpoint, data shard, augmentation pipeline,
+or causal intervention. Task B's supervised labels contradict the forward
+teacher's task, so it is deliberately a stress test of plasticity, not a
+natural multi-teacher distillation problem. Accuracy is close to the 1/12
+chance regime; loss and ECE are more informative here, but also small and
+variable.
+
+\section*{Weighting improvements worth testing}
+
+\begin{enumerate}
+\item \textbf{Factor identity, novelty, and total mass.} Keep hard typed
+deduplication as a zero/one guard. Separately estimate novelty only for
+distinct innovations, then normalize the accepted weights to a predeclared
+total KD mass (for example 2 in this fixture). Compare raw CMCP, normalized
+CMCP, and an equal-mass ordinary control. This makes the causal question
+``which evidence'' rather than ``how much KD.''
+
+\item \textbf{Estimate incremental \emph{training signal}, not raw-logit
+residual.} For each candidate packet, residualize its distillation gradient or
+ePC parameter-credit vector against the accepted packets and weight its
+positive residual norm. A temperature transform or noisy logit view can be
+redundant in probability space but non-redundant in parameter-update space,
+which is the quantity relevant to assimilation.
+
+\item \textbf{Calibrate novelty on a fixture family with known fractions.}
+Vary the independent-view mixture continuously, e.g. $z'=\sqrt{1-\rho^2}z+
+\rho u$ for a separately trained teacher $u$, and test whether estimated
+weight tracks the known incremental source fraction. Include exact copies,
+temperature transforms, paraphrase/augmentation views, independent
+checkpoints, and adversarially correlated views. Select the estimator before
+running a student outcome test.
+
+\item \textbf{Treat descendant semantics explicitly.} Keep a provenance
+rule for deterministic cache copies, but make temperature, truncation, and
+augmentation descendants eligible for a conditional incremental test. Compare
+``always zero descendants'' with ``gradient-novel descendants'' under equal
+total KD mass.
+
+\item \textbf{Use a gated assimilation/maintenance split.} A packet with
+low novelty need not be discarded: send it to replay/maintenance credit while
+using only a novelty-normalized fraction for current parameter assimilation.
+Evaluate both separately; otherwise repeated packets can look useless even if
+they stabilize a learned representation.
+\end{enumerate}
+
+\section*{Recommended next experiment}
+
+Before any large transformer run, use a 5--10 seed synthetic calibration with
+frozen primary metrics: (i) calibration error of estimated incremental credit
+against a known mixture fraction; (ii) paired final Task-B loss; (iii) Task-A
+retention; and (iv) energy monotonicity. Hold optimizer updates, teacher calls,
+and total KD mass constant. Compare ordinary-one-view, naive, oracle,
+raw-CMCP, mass-normalized CMCP-response, and mass-normalized
+CMCP-gradient-novelty. Promote to a real teacher/student only if the estimator
+first tracks known incremental credit and then improves a preregistered paired
+student metric over equal-mass ordinary KD/ePC.
+
+\section*{Reproducibility and provenance}
+
+Implementation commit: \texttt{1afb6e1} on branch
+\texttt{agent/cmcp-epc-kd-bridge}. Principal implementation:
+\path{src/relaleap/hdpc/cmcp_distillation.py}. Runner:
+\path{scripts/run_cmcp_epc_kd_bridge.py}. Focused tests:
+\path{tests/test_cmcp_distillation.py}. Recorded command: \path{command.sh}.
+Final calibration JSON artifacts:
+\path{artifacts/calibration-seed{101,211,307}-u160-contradictory-v4.json}.
+
+The focused compatibility suite recorded for the implementation was 37 passed;
+the full repository suite subsequently passed 416 tests with 1 skip in the
+project virtual environment. This report is derived directly from the three
+final v4 JSON artifacts and the experiment RUN record; earlier 40-update
+revisions remain retained but are not pooled into the results above.
+
+\end{document}

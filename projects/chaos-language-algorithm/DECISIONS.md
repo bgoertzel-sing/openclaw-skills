@@ -1,5 +1,27 @@
 # Decisions
 
+## 2026-07-26: Add an E0-only adaptive Markov-3 control
+
+**Decision:** Ben authorized `adaptive-markov-3` for the E0 order-3 Markov
+source. It uses order 3, the fixture's declared vocabulary, and KT
+`alpha=0.5`; it is the matching-order and CTW reference coder for that source.
+
+**Rationale:** The frozen E0 source list includes an order-3 Markov process,
+but its registry had controls only through order 2, leaving the matching-order
+and CTW comparison undefined.
+
+**Boundary:** The arm is E0-only. It does not alter learner defaults, the E1--E8
+base coder, or any measured outcome. Implementation: strict-replay commit
+`b1c501f`; no E0 fixture, seed, runner, ledger, or score existed at this
+decision.
+
+## 2026-07-24: Multi-depth beam ancestry is explicit
+
+Beam retention is not final scientific acceptance. Nodes carry canonical
+state, parent, proposal, and depth identities; public integration must accept
+only the selected final path and label all other generated valid proposals
+`beam_pruned`. Greedy remains the default and E0--E8 remain unauthorized.
+
 No implementation decisions yet.
 
 
@@ -18,3 +40,21 @@ No implementation decisions yet.
 **Rationale:** Ben observed that OmegaSim cannot proceed sensibly if we cannot detect whether a simulated OmegaHive has complex strange-attractor structure.
 
 **Next implication:** CLA should test on a range of strange attractors first, including dimensionalities comparable to initial OmegaSim vector traces; high-dimensional cases are deferred until a dimension-reduction step is designed.
+
+## 2026-07-24 — Composite acceptance is one durable transaction
+
+For M-D, ordered category/chunk sub-proposals are applied to immutable
+intermediate states but a successful composite exposes exactly one durable
+`Composite` edit. Nested composites are rejected in v1. Any failing sub-edit
+discards the intermediate value, leaving the input state and edit log
+unchanged. This matches the frozen atomicity and one-ledger-record invariants;
+exact official-score acceptance remains the next separate wiring slice.
+
+## 2026-07-24 — Mixed evidence fails closed for dependent components
+
+Composite ranking estimates never authorize acceptance. The exact official
+score and exact reconstruction are the only acceptance authority. Four-state
+mixed-second-difference evidence is recorded only when both component edits
+also apply independently to the same base state; dependent or invalid
+components retain an exact atomic composite delta but use null mixed totals and
+residuals rather than a fabricated counterfactual.

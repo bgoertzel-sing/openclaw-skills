@@ -1,0 +1,709 @@
+       Hypervector Frames for Category-Guided Causal Coding:
+       Merging HDC Capacity Theory with Universals-Guided Transformer Training,
+                     with a Staged Small-Scale Measurement Programme
+
+                                             Ben Goertzel
+
+                                             July 26, 2026
+
+
+                                                Abstract
+         Two recently developed frameworks approach the internal organization of transformer net-
+     works from opposite directions. Category-Guided Causal-Coding Transformers (CGCCT) treat
+     a trained network as a quantale-enriched category of modular latent states and context updates,
+     connect it to language through learned cognition-to-frame and frame-to-language maps, and use
+     typological universals—implicational hierarchies, closure laws, naturality squares—as training
+     signals that shape latent causal modules. The theory of resonator-factored hierarchical hyper-
+     vector codes (HDC) supplies a concrete algebra of role-bound factor representations together
+     with a quantitative capacity theory: coherence-aware cleanup bounds, basin-conditional res-
+     onator decoding, admissibility diagnostics, and losses that push a host learner toward low-load,
+     high-margin, role-stable factorizations. This note argues that the two frameworks compose:
+     hypervector frame codes give CGCCT’s frame category a computable object language in which
+     naturality, closure, mediator structure, do-footprints, and double-counting become differentiable
+     algebraic quantities, while CGCCT gives the HDC admissibility losses a principled organizing
+     grammar and a source of linguistically grounded supervision. The composition also transfers
+     guarantees: CGCCT’s probe-calibration assumption is discharged by the HDC coherence-aware
+     capacity law, and we conjecture that implicational hierarchies sit precisely in the law’s high-
+     coherence (near-duplicate) regime, making the corrected k 3/2 –k 2 dimension scaling operative
+     rather than optional. We lay out which quantities of the merged framework are measurable
+     at small scale—synthetic grammars, GPT-2 small, Pythia-160M checkpoints, small multilin-
+     gual models—and which are not, and we provide, as an appendix, a detailed staged testing
+     programme at GPT-2-small scale written for autonomous coding agents, with validation gates,
+     known-answer checks (including rediscovery of the indirect-object-identification circuit), frozen
+     design choices, compute budgets, and stop conditions.
+     AI Acknowledgement Drafted with help from Claude Fable 5.
+     Citation caution External citations in this note were recalled from model memory during
+     drafting and must be verified against the literature before being relied upon or propagated.
+
+
+Contents
+1 Introduction                                                                                           2
+
+2 The two frameworks in brief                                                                            3
+  2.1 CGCCT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        3
+  2.2 The HDC capacity framework . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           4
+
+
+
+                                                    1
+3 Hypervector frames as the object language of FrameQ                                                  4
+  3.1 Frame codes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    4
+  3.2 What Kb and E b become . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       5
+  3.3 Probes as algebra, and calibration as capacity . . . . . . . . . . . . . . . . . . . . . .       5
+
+4 Naturality as computable algebra                                                                     6
+  4.1 Implementing Vc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      6
+  4.2 Naturality defect, decomposed . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        6
+  4.3 Where supervision comes from . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         7
+
+5 Footprints, mediators, and double-counting in hypervector space                                      7
+  5.1 Footprint codes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+  5.2 Commutator weights and the confusion graph . . . . . . . . . . . . . . . . . . . . . .           7
+
+6 The weakness quantale gets a cost coordinate                                                         8
+
+7 What is measurable at small scale                                                                    8
+
+8 Discussion                                                                                           9
+
+A Agent testing programme at GPT-2-small scale                                                          9
+  A.1 Mission and non-goals . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       9
+  A.2 Environment and substrates . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       10
+  A.3 Stage P0: infrastructure and self-tests . . . . . . . . . . . . . . . . . . . . . . . . . .      10
+  A.4 Stage P1: capacity-law validation on synthetic grammar (instrument validation) . .               10
+  A.5 Stage P2: frozen-model naturality on GPT-2 small . . . . . . . . . . . . . . . . . . .           11
+  A.6 Stage P3: footprints, double-counting, and the IOI known-answer check . . . . . . .              12
+  A.7 Stage P4: closure probes on natural text . . . . . . . . . . . . . . . . . . . . . . . . .       12
+  A.8 Stage P5: the four-model comparison in miniature . . . . . . . . . . . . . . . . . . .           13
+  A.9 Stage P6 (optional): stability coefficients on Pythia . . . . . . . . . . . . . . . . . . .      13
+  A.10 Frozen choices and allowed knobs . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      13
+  A.11 Report format . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   13
+  A.12 Global stop conditions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    14
+
+
+1    Introduction
+CGCCT and the HDC capacity framework were developed for different proximate purposes. CGCCT
+asks how the latent organization of a transformer can be shaped : it equips the network’s modu-
+lar latent states and context updates with a quantale-enriched categorical structure CTQ , posits
+learned maps
+                                K
+                                b            E
+                                             b
+                          CTQ −−→ FrameQ −−→ LangQ ,        Λ
+                                                            b=E  b ◦ K,
+                                                                     b                       (1)
+and turns typological universals—implicational hierarchies, closure under composition, cross-context
+naturality—into training losses on modules, mediators, and update commutators. The HDC frame-
+work asks how factorized latent structure can be stored, queried, and protected : it provides a fixed
+vector-symbolic algebra of role-bound factor codes, a coherence-aware capacity theory saying when
+cleanup and resonator decoding are reliable, and a family of admissibility diagnostics and losses—
+effective load, cleanup margin, confusable-set size, dictionary coherence, role stability, product
+
+
+
+                                                   2
+recomposability, residual synergy, intervention locality—that press an upstream learner toward
+representations the algebra can serve.
+    The claim of this note is that each framework supplies exactly what the other leaves underde-
+termined.
+    On the CGCCT side, three load-bearing components are specified abstractly but not concretely.
+The frame category FrameQ needs an object language: something that is structured enough to
+support role maps, refinements, and restrictions as morphisms, yet continuous enough to train
+against and to measure with. The naturality loss needs a metric d on frame and linguistic objects
+and an executable implementation of the linguistic-side transforms Vc . And the closure-preservation
+guarantee leans on δ-calibrated probes whose calibration is, in the original presentation, an empirical
+assumption. Hypervector frame codes answer all three: typed role-filler hypervectors are the object
+language; algebraic rebinding, substitution, and masking implement the morphisms and the Vc ;
+similarity is the metric; and probe calibration is not assumed but bounded by the coherence-aware
+capacity law, with an explicit dimension prescription.
+    On the HDC side, the admissibility losses are individually motivated but collectively ad hoc:
+nothing in the capacity theory says which role inventories, which factor types, or which invariances
+a language system should be pressed toward. CGCCT supplies that grammar. Universals fix
+which probes must exist and which implications must close; alternation phenomena fix a family of
+naturality squares with known algebraic right-hand sides; the mediator and double-counting rules
+fix how cross-module structure must be routed and audited. The HDC role-consistency loss turns
+out to be a single naturality square; CGCCT is the functorial family it belongs to.
+    The two frameworks also share their principal risk, and it is worth stating at the outset rather
+than discovering later: both presuppose that a low-defect frame-level factorization of transformer
+language states exists for the query families of interest. Neither the categorical machinery nor the
+hypervector algebra manufactures such a factorization; both can only detect, measure, and exploit
+it. What the merger adds is that the risk becomes a set of numbers with predicted parameter
+dependence—naturality defect, probe margin, closure-violation rate, factorization defect—rather
+than a philosophical worry. The measurement programme of Section 7 and Appendix A is organized
+around measuring those numbers cheaply before committing to expensive training.
+
+
+2     The two frameworks in brief
+2.1   CGCCT
+CGCCT models a trained transformer as a quantale-enriched category CTQ : objects are (typically
+modular) latent states Z ∼   = Z1 ⊗ · · · ⊗ ZM over a module inventory (heads, channels, adapters,
+columns), and morphisms are context updates Uc with sparse supports Sc and causal gates esti-
+mated from do-influence. A frame category FrameQ holds semantic frames—typed role structures
+with morphisms for role mappings, refinements, and context restrictions—and a linguistic category
+LangQ holds externalized forms. The learned functors of Eq. (1) are trained with: a naturality
+             b c z) ≈ Vc Λ(z)
+loss asking Λ(U            b     for corresponding linguistic transforms Vc ; closure losses enforcing
+implicational hierarchies (if the language/state realizes feature a it must realize b); mediator losses
+forbidding dense direct coupling between modules that should communicate through a sparse medi-
+ator; commutator losses weighted by frame and linguistic overlap between contexts; double-counting
+penalties on pairs of modules with redundant causal footprints; and stability scheduling that maps
+the stability of a universal over training to the plasticity of the modules realizing it. Universals are
+subobjects U ,→ L of linguistic objects, and a cognitive explanation of a universal is a pullback: the
+preimage Λ b −1 (U ) should align with a stable module structure rather than a scattered accidental
+
+                                                   3
+region. Module and mediator selection is governed by a multi-objective weakness order valued in
+a product quantale over fit, retention, commutator defect, leakage, double-counting, and cost.
+
+2.2    The HDC capacity framework
+The HDC framework fixes a vector-symbolic algebra (binding ⊗, bundling ⊕, permutation, cleanup
+against explicit dictionaries) and proves query-limited capacity results for hierarchical role-bound
+codes. The components used in this note are: the coherence-aware cleanup law, by which a single
+cleanup against a dictionary of size M with coherence ν under crosstalk load k succeeds except
+with probability ∼ M e−cD(1−ν)/k , so that
+                                                     k        M
+                                         D ≳               log ;                                         (2)
+                                                 c (1 − ν)    ε
+
+the near-duplicate analysis, by which structurally adjacent dictionary entries (differing in one of k
+role-bound constituents) force D ≳ k 3/2 log M for sign-quantized codes and D ≳ k 2 log M for linear
+or phasor codes; basin-conditional resonator decoding of unknown factor products, with warm starts
+as the practical basin-entry mechanism; the admissibility diagnostics (δQ , k eff , M conf , ν, ∆, RKI, ηbind )
+and the capacity proxy
+
+                                          kteff 
+                                                  log Mtconf + log(qmax ℓmax /ε) ;
+                                                                                
+                          CHDC = max                                                                     (3)
+                                     t   1 − νt
+the Hierarchical Modular Hypervector (HMH) representation of typed role-filler structures with
+ordered argument roles, in which directed relations are kept oriented by applying a permutation
+(or dedicated source/target roles) to exactly one argument; and the factorization-defect discipline,
+by which the gap between full-state readouts and factor-graph readouts is measured per query
+family and treated as an irreducible floor that no coding dimension can remove.
+
+
+3     Hypervector frames as the object language of FrameQ
+3.1    Frame codes
+Let a frame instance consist of a frame type σ, a set of typed roles {ρ1 , . . . , ρm } drawn from a fixed
+inventory, fillers f1 , . . . , fm , and typed directed relations among role positions. Its hypervector code
+is the HMH form
+                                 m
+                                  M             M                                
+       F = Normalize rtype ⊗ hσ ⊕   rρi ⊗ hfi ⊕   rλ ⊗ (rρi ⊗ hfi ) ⊗ π rρj ⊗ hfj ,                      (4)
+                                          i=1               (i,j,λ)
+
+with π a fixed permutation marking the target argument. Three properties make this the right
+object language for FrameQ .
+    First, morphisms are executable. A role mapping ρi 7→ ρ′i is the rebinding F 7→ F with rρi ⊗ hfi
+replaced by rρ′i ⊗ hfi (implemented by subtract-and-add in real-sum systems, or by rebuilding the
+bundle from the frame record in sign or phasor systems). A refinement adds bound terms; a context
+restriction is a role mask followed by renormalization; a filler substitution is a slot swap. Each
+categorical arrow of FrameQ becomes a concrete, differentiable-or- piecewise-constant operation on
+codes, so functoriality claims can be tested, not merely asserted.
+
+
+
+                                                     4
+     Second, enrichment comes for free. FrameQ is quantale-enriched; the hom-values need a truth-
+degree structure. Normalized similarity ⟨F, F ′ ⟩/D, or margin-calibrated cleanup confidence, sup-
+plies hom-values in [0, 1] with the right compositional behavior (composition can only lose similar-
+ity, matching the quantale multiplication’s monotonicity), and the capacity theory says when those
+values are trustworthy.
+     Third, orientation is preserved, and its absence is detectable. Under a commutative binding, the
+symmetric encoding of a two-argument frame is invariant under exchanging agent and patient: “dog
+bites man” and “man bites dog” would receive the same code, exactly as an unordered episodic
+encoding conflates causes(a, b) with causes(b, a). The permutation in Eq. (4) is therefore not a
+convention but a correctness condition, and it comes with an experimental signature: with the
+permutation ablated, the codes of argument-exchanged frames have similarity exactly 1; with it,
+their similarity drops to the unrelated-pair baseline. This signature has been verified directly in the
+HDC framework’s numerical studies (synthetic relation encodings, and time-reversal of real speech
+token sequences, where the role-free control produced cosine +1.000 exactly); the appendix reuses
+it as a wiring self-test.
+
+3.2   What K
+           b and E
+                 b become
+With frame codes fixed, K   b is a readout from transformer latents to HD : a linear or shallow map
+from selected residual-stream or head-output subspaces to a frame hypervector, trained by the
+losses of Section 4. Eb maps frame codes to linguistic-side codes; in the simplest useful instantia-
+tion, linguistic objects are also hypervectors (bags of typed morphosyntactic features, construction
+types, and linearization cues, bundled with their own roles), and E   b is again a small map. The
+composite Λ is then measurable end to end. Nothing prevents richer instantiations—E
+            b                                                                               b into a
+symbolic MeTTa/Atomspace layer, with hypervectors as the associative regime between—but the
+all-hypervector version is the one that makes every CGCCT loss a vector computation, and it is
+the version the small-scale programme tests first.
+
+3.3   Probes as algebra, and calibration as capacity
+A feature probe in this object language is not a trained classifier but an algebraic readout: the
+presence of feature a in a frame or linguistic code F is scored by ⟨F, rfeat ⊗ ha ⟩/D against a margin.
+This has two consequences.
+                            become linear inequalities on similarities: an implication a ⇒ b is the
+    First, the closure losses
+penalty ⟨F, pa ⟩ − ⟨F, pb ⟩ + on codes asserted to satisfy a, with px = rfeat ⊗ hx . No probe training,
+no probe drift, no probe overfitting to the network being audited.
+    Second—and this is the principal guarantee transfer—the δ-calibration that CGCCT’s closure-
+preservation argument assumes is now a theorem schema rather than an assumption. Probe re-
+liability is a cleanup-margin condition, and Eq. (2) prescribes the dimension at which it holds:
+for feature inventory size M , effective bundle load k (how many terms are superposed in the
+codes being probed), and feature-dictionary coherence ν, calibration to tolerance ε needs D ≳
+k(1 − ν)−1 log(M/ε) up to constants. The appendix’s first stage measures exactly this curve on
+codes with planted ground truth.
+
+Conjecture 1 (Hierarchies live in the high-coherence regime). Implicational hierarchies are, by
+construction, chains of features whose realizations differ minimally: adjacent hierarchy positions
+share most of their conditioning structure. When such features are encoded as role-bound codes over
+shared constituents, adjacent positions are near-duplicate dictionary entries in the sense of the HDC
+
+
+                                                  5
+coherence analysis, with 1 − ν = Θ(1/k). Consequently the dimension needed to probe hierarchy-
+adjacent features reliably scales as k 3/2 log M (sign codes) to k 2 log M (linear/phasor codes), not
+k log M , and closure-loss gradients computed below that dimension are dominated by probe confusion
+rather than by genuine violations.
+
+    If the conjecture holds, it has a practical edge: it predicts a specific, testable failure mode of
+naively implemented closure training (spurious closure “violations” that vanish as D grows on the
+predicted schedule), and it says that hierarchy probes should be the first place to spend dimension
+or separation (summary channels, margin losses) rather than the last. Stage P1 of the appendix
+tests it directly.
+
+
+4     Naturality as computable algebra
+4.1   Implementing Vc
+The naturality loss compares Λ(U
+                              b c z) with Vc Λ(z).
+                                              b     Its practical obstacle has been the right-hand
+side: Vc must be an executable transform on linguistic objects, and d must be a meaningful metric.
+With hypervector frames and linguistic codes, a useful family of Vc is available immediately:
+
+     Identity (Vc = id): paraphrase, register change, and translation pairs assert that the frame
+      code is preserved while the linguistic code varies (paraphrase) or that designated linguistic
+      features vary while frame content is fixed (translation). These are contrastive constraints
+      requiring no annotation beyond the pairing.
+
+     Known rebind: argument alternations—active/passive, dative shift, causative/inchoative,
+      symmetric-predicate exchange—correspond to specific role remappings. The transformed
+      sentence’s frame code should equal the original’s with an algebraic slot swap applied; its
+      linguistic code should differ by known feature substitutions (voice, case-frame). The right-
+      hand side of the naturality square is computed, not learned.
+
+     Closure addition: contexts that add material (a temporal adjunct, a further conjunct)
+      correspond to adding bound terms; naturality asserts the old content survives unbinding
+      after the addition, which is precisely the HDC crosstalk discipline with the addition counted
+      in k.
+
+    The HDC framework’s role-consistency loss—for content c appearing under roles ra and rb ,
+penalize ∥ra† ⊗ za − rb† ⊗ zb ∥—is exactly the naturality square for the known-rebind Vc with a one-
+slot remap. CGCCT names the functorial family; hypervectors make each member differentiable
+and cheap.
+
+4.2   Naturality defect, decomposed
+Because both sides of the square are vectors, the naturality defect d(Λ(U  b c z), Vc Λ(z))
+                                                                                      b     decomposes
+along the pipeline: a frame-level defect d(K(Uc z), vc K(z)) (with vc the frame-side transform) and
+                                             b          b
+an externalization defect contributed by E. b This mirrors the factorization-defect discipline of the
+HDC framework—and inherits its warning. A small naturality defect on an alternation battery
+certifies the batteries’ query family, nothing more; it is not a certificate for open-ended generation,
+and the appendix’s report format requires the query family to be stated next to every defect number.
+
+
+
+                                                  6
+4.3    Where supervision comes from
+The economically important observation is that the supervision for the frame layer largely already
+exists in unannotated or lightly annotated form: paraphrase corpora and backtranslation give
+identity squares; templated alternation batteries (generated programmatically over verb frames)
+give known-rebind squares with exact right-hand sides; morphological analyzers give linguistic-side
+feature codes for closure probes in richly inflected languages. None of this requires full semantic
+parsing, which is what makes a GPT-2-small-scale programme feasible at all.
+
+
+5     Footprints, mediators, and double-counting in hypervector space
+5.1    Footprint codes
+CGCCT audits modules by their do-footprints: for module m, the tuple of its causal influences on
+the output, on frame content, on linguistic features, and on context routing. Bundle these into a
+footprint hypervector
+
+             Zm = ry ⊗ zy,m ⊕ rF ⊗ zF,m ⊕ rL ⊗ zL,m ⊕ rctx ⊗ zctx,m ⊕ rsig ⊗ Hm ,                 (5)
+
+where each z·,m encodes the corresponding influence profile (e.g. a bundle of feature atoms weighted
+or thresholded by patched-ablation effect sizes) and Hm is the module’s content signature. Then:
+
+     Double-counting is coherence. Two modules with redundant causal roles have high
+      ⟨Zm , Zn ⟩/D; the double-counting penalty is a coherence penalty on the footprint dictionary
+      {Zm }, i.e. exactly the quantity ν that the HDC framework already measures and regularizes,
+      computed over module space instead of state space. The split/merge recipe (merge mod-
+      ules with redundant footprints, split modules whose footprint is a mixture) becomes cleanup
+      clustering over {Zm }, and it scales: with hundreds of modules, redundancy detection is an
+      approximate-nearest-neighbor query, not a quadratic audit.
+
+     Mediator structure is the bridge budget. The CGCCT mediator rule—no dense A ↔ B
+      coupling; route through a sparse M —is the HDC bridge-microcolumn rule: cross-module
+      content must pass through typed directed relation terms rrel ⊗ rsrc ⊗ rtgt ⊗ c, whose count kB
+      is measured and budgeted like any local load. The residual quantale value M ∗ = A ⇒ B (the
+      weakest mediator sufficing for the observed dependency) acquires a concrete estimator: the
+      smallest typed relation load whose removal severs the measured do-dependency. Mediator
+      leakage likewise becomes addressable: content flowing through the mediator channel that
+      fails to decode as typed relations is, by construction, leakage, and it is enumerable by cleanup
+      rather than inferred by probing.
+
+5.2    Commutator weights and the confusion graph
+The commutator loss weights context pairs by frame and linguistic overlap ω   L                 d) ·
+                                                                               cd = OverlapF (c,
+OverlapL (c, d). Encode each context by a support code HSc = Normalize               r
+                                                                                 m∈Sc m  ⊗ H m to-
+gether with its frame and linguistic codes; the overlaps are similarities, and the sparse confusion
+graph over contexts—which pairs are worth regularizing at all—is an approximate-nearest-neighbor
+graph over these codes, built incrementally. The HDC framework’s episodic support memory (task,
+support, certificates, outcome, audit) is precisely the store this graph wants to be built from,
+which means the continual-learning side of CGCCT can reuse ColBaC-style memory infrastructure
+unchanged.
+
+                                                  7
+6    The weakness quantale gets a cost coordinate
+CGCCT’s selection principle is multi-objective: among structures matching the data, prefer the
+weakest, where weakness is valued in a product quantale over fit, retention, commutator defect,
+leakage, double-counting, and cost. The HDC capacity proxy CHDC of Eq. (3) is a natural occupant
+of the cost-and-confusion coordinates: it is a single measurable scalar that increases with effective
+load, confusable alternatives, and dictionary coherence, and decreases with margin—exactly the
+resource profile that “prefer one sparse mediator over redundant correlation” implicitly prices.
+Read this way, the HDC-guided training objective of the capacity framework is a scalarization of
+the CGCCT weakness order restricted to its representational coordinates, and the two selection
+procedures can share bookkeeping: the same measured (k eff , M conf , ν, ∆) tuple feeds both.
+    Two practical corollaries. First, weakness comparisons between candidate module structures be-
+come cheap enough to run inside a training loop, because every coordinate is a vector computation
+over codes already being maintained. Second, the quantale’s monotonicity requirements (composi-
+tion cannot improve hom-values) are respected by construction, since similarity under composition
+of algebraic operations can only degrade—a small point, but one that keeps the enriched-category
+story honest rather than decorative.
+
+
+7    What is measurable at small scale
+The merged framework’s quantities separate cleanly by the cheapest substrate adequate to measure
+them. The ladder below is the design basis of the appendix; the general principle is that instrument
+validation precedes hypothesis testing: before any comparison of trained models, the probes, natu-
+rality squares, and footprint machinery must be shown to behave as the capacity theory predicts
+on systems where ground truth is available.
+
+    Quantity                         Cheapest substrate       How
+    Probe calibration δ vs D;        synthetic-grammar        plant implicational hierarchies by con-
+    closure-violation floor; co-     transformer (6 layers)   struction; measure calibration and
+    herence regime of hierarchy                               spurious-violation curves against Eq. (2)
+    probes (Conjecture 1)
+    Naturality defect of a frozen    GPT-2 small (frozen)     templated alternation batteries; K    b
+    model; alternation squares                                trained as a readout only; known-rebind
+                                                              right-hand sides
+    Do-footprints;         double-   GPT-2 small (frozen)     patched ablations over 144 heads;
+    counting     as     coherence;                            footprint codes; the indirect-object-
+    mediator budgets; known-                                  identification circuit as a planted answer
+    answer circuit rediscovery
+    Commutator defect; forget-       GPT-2      small   +     sequential   context    streams      with
+    ting; the CGCCT four-model       adapter       context    reversed-order controls
+    comparison in miniature          streams
+    Stability coefficients σu over   Pythia-160M     check-   universal-satisfaction probes evaluated
+    training                         point series             across public checkpoints; GPT-2 cannot
+                                                              supply this
+    Cross-linguistic closure; mor-   small     multilingual   English is morphologically poor; per-
+    phological hierarchies           model                    son/case hierarchies are barely observ-
+                                                              able in it regardless of method
+
+
+                                                    8
+    Three things cannot be measured small, and the programme does not pretend otherwise:
+whether category-guided training preserves language-model quality at scale (small models are un-
+dertrained, so interference patterns do not transfer); whether the frame bottleneck’s defect stays
+low for open-ended generation (a weak model generates badly for unrelated reasons, confounding
+the defect measurement); and genuine typological breadth (a data problem, not a compute prob-
+lem). The sharp prediction that is fully testable small is CGCCT’s own: matched validation loss
+with lower commutator defect, double-counting, and forgetting for the guided models. A clean
+positive there is the evidence that justifies scaling; a clean negative, with validated instruments, is
+a real result about the approach.
+
+
+8     Discussion
+What the merger buys. Concretely: an object language for FrameQ whose morphisms exe-
+cute; naturality squares with computed right-hand sides and free supervision; closure probes whose
+calibration is a capacity theorem with a dimension prescription; footprint auditing that scales as
+similarity search; a shared cost coordinate for weakness selection; and reuse of episodic support
+memory for the confusion graph. In the other direction: a principled inventory of which HDC
+probes and invariances a language system should be trained toward, replacing an ad hoc loss menu
+with one indexed by universals and alternations.
+
+What it does not buy. The existence of a low-defect frame factorization of transformer lan-
+guage states is assumed by both frameworks and guaranteed by neither. The merger converts this
+assumption into measurable quantities with predicted parameter dependence, which is the most
+that honest methodology can do before the measurements are made. The small-scale programme is
+therefore front-loaded with instrument validation and known-answer checks, and its stop conditions
+treat a well-measured null as a deliverable rather than a failure.
+
+Relation to the broader programme. The synthesis slots into an existing lineage: the causal-
+coding and HBCML/ColBaC line supplies the modular substrate and teacher machinery; the HDC
+capacity line supplies the representational algebra and its budget; CGCCT supplies the linguistic
+supervision grammar. The appendix’s programme is deliberately written in the same staged, gated,
+agent-executable format as the causal-fibres and predictive-coding programme documents, so that
+the same operational tooling—and the same standards for what counts as a validated instrument—
+carry over.
+
+
+A     Agent testing programme at GPT-2-small scale
+This appendix is written for autonomous coding agents. Run stages in order. Each stage has a
+purpose, procedure, gates, budget, and stop conditions. A cleanly measured null is a successful
+outcome; the only failure is a corrupted positive. Fix only what blocks execution; record
+every deviation. Frozen design choices (Section A.10) may never be changed.
+
+A.1    Mission and non-goals
+The programme validates the measurement instruments of the merged CGCCT–HDC framework
+and then runs the smallest honest version of the CGCCT four-model comparison. Non-goals:
+demonstrating at-scale quality preservation; open-ended generation quality; typological breadth
+
+
+                                                  9
+beyond English plus one templated multilingual battery. Do not benchmark generation samples;
+do not report perplexity improvements as the headline (the framework predicts parity, not improve-
+ment, on validation loss).
+
+A.2    Environment and substrates
+    One GPU ≥ 16 GB. Python ≥ 3.10; torch, transformers, datasets, numpy, einops. Pin
+     versions in the report.
+
+    Substrates: (i) a 6-layer synthetic-grammar transformer trained from scratch (reuse the
+     causal-fibres E-series harness where available); (ii) gpt2 (124M) frozen, plus LoRA adapters
+     where training is called for; (iii) optionally EleutherAI/pythia-160m checkpoint series for
+     stage P6; (iv) tiny-shakespeare only as a plumbing smoke test, never as an evidential sub-
+     strate.
+
+    All hypervector machinery in float32 bipolar MAP with a fixed per-dimension tie-breaking
+     convention (deterministic encoder). Randomized tie-breaking is a known artifact source; do
+     not use it.
+
+A.3    Stage P0: infrastructure and self-tests
+Purpose. Stand up hooks, the HDC probe library, and wiring self-tests before any measurement.
+  Procedure.
+
+  1. Implement the frame-code library: Eq. (4) encode, role rebind, slot swap, role-mask restrict,
+     algebraic probes, cleanup with margins, batched resonator. Property-test each against hand-
+     computed cases.
+
+  2. Orientation self-test: encode argument-exchanged two-role frames with and without the
+     target-argument permutation. Gate: without, cosine = 1.000 exactly; with, cosine within
+     ±0.05 of the unrelated-pair baseline measured on random frame pairs.
+
+  3. Probe self-test on planted bundles: k role-bound features, probe each; reproduce the single-
+     step capacity curve (accuracy vs D at fixed k, M ) qualitatively.
+
+  4. Transformer hooks: residual-stream and per-head output capture on gpt2 at every layer;
+     verify shapes and determinism (two runs, same seed, identical captures).
+
+  5. Tiny-shakespeare smoke: end-to-end run of the P2 pipeline on a char-level model, checking
+     only that nothing crashes and artifacts are written. Its numbers are not evidence; do not
+     report them as such.
+
+   Budget. < 1 GPU-hour. Stop if any self-test gate fails after two fix attempts.
+
+A.4    Stage P1: capacity-law validation on synthetic grammar (instrument vali-
+       dation)
+Purpose. Verify that probe calibration follows Eq. (2) with ground truth available, and test
+Conjecture 1.
+   Procedure.
+
+
+
+                                               10
+  1. Generate a synthetic language from a PCFG with a planted implicational hierarchy of H ∈
+     {4, 6} features (feature j present only if j ′ < j present), realized as morpheme-like markers;
+     train the 6-layer transformer to convergence on next-token prediction.
+
+  2. Train Kb as a linear readout from the residual stream to frame codes over the planted roles
+     and features (supervision available by construction).
+
+  3. Measure probe calibration δ(D) for D ∈ {256, . . . , 16384}: probe each feature on held-out
+     states; calibration is the gap between probe scores on true positives and true negatives, and
+     the spurious-closure-violation rate is the fraction of held-out states flagged as violating a
+     planted implication.
+
+  4. Construct hierarchy-adjacent versus hierarchy-distant probe pairs and measure their dictio-
+     nary coherence ν; fit the required-D scaling for adjacent pairs.
+
+   Gates.
+
+  1. Calibration improves monotonically in D and the required D at fixed tolerance scales linearly
+     in measured k/(1 − ν) within a factor of 2.
+
+  2. Spurious violation rate falls below 1% at the D predicted by the fitted law, and adjacent-pair
+     required D exceeds distant-pair required D by a factor consistent with the k 3/2 –k 2 regime
+     (report the fitted exponent; the conjecture is falsified if it is ≈ 1).
+
+    Budget. 2–6 GPU-hours. Stop the whole programme if Gate 1 fails: closure training down-
+stream would be uninterpretable.
+
+A.5   Stage P2: frozen-model naturality on GPT-2 small
+Purpose. Measure the naturality defect of a pretrained, frozen model under known-rebind squares—
+the cheapest probe of whether frame structure is present to be found.
+   Procedure.
+
+  1. Build templated alternation batteries (≥ 2,000 items each): active/passive, dative shift, and a
+     symmetric-predicate exchange control (where the frame genuinely changes); plus a paraphrase
+     battery from backtranslation or a public paraphrase set.
+
+  2. Train Kb (linear, then 2-layer MLP as a robustness check) from frozen gpt2 states to frame
+     codes, using ONLY contrastive supervision: paraphrase pairs pull frame codes together; alter-
+     nation pairs are tied by the algebraic slot swap; random pairs push apart. No parsed frames
+     are given.
+
+  3. Measure: (a) frame-level naturality defect d(K(z
+                                                    b alt ), swap(K(z)))
+                                                                  b      per battery; (b) role de-
+     codability: unbind agent/patient roles from K(z)
+                                                  b   and cleanup against a filler dictionary built
+     from the battery’s noun inventory; (c) the symmetric-predicate control, where the swap should
+     NOT hold.
+
+  4. Controls: shuffled-pairing control (defect should rise to the random level); layer sweep (report
+     defect vs layer); untrained-transformer control (random gpt2 initialization; role decodability
+     should collapse toward chance).
+
+   Gates.
+
+
+                                                11
+  1. Role decodability on held-out items beats chance by ≥ 5× and beats the untrained-model
+     control by ≥ 2×.
+
+  2. Alternation defect is significantly below the shuffled control, and the symmetric-predicate
+     control shows the predicted absence of invariance.
+
+    Budget. 4–10 GPU-hours. If gates fail with the linear K    b but pass with the MLP, report both;
+if both fail, this is a substantive negative about extractable frame structure in gpt2—report it and
+consult the operator before proceeding to P5 (P3 remains worthwhile regardless).
+
+A.6    Stage P3: footprints, double-counting, and the IOI known-answer check
+Purpose. Validate the footprint machinery against a circuit whose answer is known.
+  Procedure.
+
+  1. Implement patched-ablation do-footprints for all 144 attention heads of gpt2 on (i) the
+     indirect-object-identification (IOI) task distribution and (ii) a neutral corpus slice; encode
+     footprints as Eq. (5) codes.
+
+  2. Cluster footprint codes by cleanup/ANN; compute the double-counting coherence matrix over
+     heads; extract the top redundancy groups.
+
+  3. Known-answer check: the head groups identified for the IOI distribution must substantially
+     recover the published IOI circuit structure (name-mover heads, S-inhibition heads, duplicate-
+     token heads), including at least one redundancy group corresponding to the known backup
+     name-mover phenomenon. Verify the reference decomposition against the literature before
+     scoring—the drafting model’s recall of the circuit membership must not be treated as ground
+     truth.
+
+  4. Mediator probe: estimate minimal typed-relation budgets kB between the recovered groups
+     and compare against direct dense-coupling estimates.
+
+    Gates. Head-group recovery overlaps the verified published circuit with Jaccard ≥ 0.4 at the
+group level; the redundancy (double-counting) detector flags the known backup heads. If recovery
+fails, debug the footprint estimator on synthetic planted circuits (two heads with forced redundant
+roles) before concluding anything.
+    Budget. 6–12 GPU-hours (ablation sweeps dominate).
+
+A.7    Stage P4: closure probes on natural text
+Purpose. Move closure measurement from planted to natural hierarchies, within English’s limits.
+    Procedure. Using K   b from P2 and morphosyntactic feature codes from an analyzer or tagger:
+measure closure-violation rates for agreement-related implications and animacy/definiteness effects
+on held-out corpus text, at the D prescribed by the P1-fitted law; include a deliberately false
+implication as a negative control (its “violation rate” must be high). Optionally repeat one battery
+on a small multilingual model with a richly inflected language to observe a hierarchy English
+cannot show. Gate. True implications violate at < 5× the P1-predicted probe-noise floor; the
+false-implication control violates at > 20× that floor. Budget. 2–4 GPU-hours.
+
+
+
+
+                                                12
+A.8    Stage P5: the four-model comparison in miniature
+Purpose. The smallest honest version of CGCCT’s central experiment: does category-guided
+training deliver matched validation loss with lower commutator defect, double-counting, and for-
+getting?
+    Procedure.
+
+  1. Define C = 6 context streams over gpt2-scale data (e.g. genre/domain slices), trained sequen-
+     tially via LoRA adapters plus a small shared trunk unfrozen; two stream orders (forward,
+     reversed).
+
+  2. Train four variants with matched budgets: (1) baseline; (2) modular routing without linguistic
+     losses; (3) causal-coding losses (mediator, double-counting, commutator with HDC overlap
+     weights) without frame supervision; (4) full: (3) plus frame-layer naturality and closure losses
+     from P2/P4 machinery.
+
+  3. Metrics per variant: validation loss per stream; commutator defect on the P3-derived confu-
+     sion graph; double-counting coherence; forgetting (loss regression on earlier streams); natu-
+     rality defect; closure-violation rate; and the weakness-quantale coordinates including CHDC .
+
+  4. Three seeds minimum; report per-seed numbers, not just means.
+
+    Gates and reading. The framework’s prediction is: validation loss within noise of baseline
+for (3) and (4), with monotone improvement (1)→(4) on commutator defect, double-counting, and
+forgetting, and with (4) beating (3) on naturality and closure specifically. Any variant that improves
+auxiliary metrics by sacrificing validation loss beyond noise has failed the parity requirement and
+must be reported as such. Budget. 1–3 GPU-days; this is the expensive stage and is gated on
+P1–P2 passing.
+
+A.9    Stage P6 (optional): stability coefficients on Pythia
+Evaluate the P2/P4 probe batteries across the public pythia-160m checkpoint series; report, per
+universal, the training step at which probe satisfaction stabilizes (the empirical σu ), and whether
+early-stabilizing universals correspond to lower-variance module footprints in P3’s sense. Budget:
+3–6 GPU-hours (inference only). This stage is descriptive; it has no pass/fail gate.
+
+A.10    Frozen choices and allowed knobs
+Never change: the deterministic tie-breaking convention; the identity of the four P5 variants
+and their matched budgets; the known-answer references of P0 and P3 (verified against literature,
+then frozen); scoring definitions (calibration, defect, violation rate) once P1 completes; the parity
+requirement in P5.
+    May change with a one-line report note: D grids; battery sizes; LoRA rank; learning
+rates (halve on divergence, clip gradients at 1.0); layer choice for K
+                                                                     b (sweep and report); number of
+streams C (4–8).
+
+A.11    Report format
+Produce RESULTS.md containing: environment and pins; per-stage gate outcomes with the mea-
+sured numbers beside their thresholds; every deviation in one line each; the P1 fitted capacity-law
+exponents; the P2 defect table with all controls; the P3 circuit-recovery Jaccard and redundancy
+
+                                                 13
+findings; the P5 four-by-metrics table per seed; and a closing paragraph answering, in order: did
+the instruments validate; does frozen GPT-2 contain extractable frame structure; did guided train-
+ing achieve parity-plus-hygiene; and what single follow-up is most informative. Attach all JSON
+artifacts.
+
+A.12    Global stop conditions
+Stop and report (partial results are a deliverable) if: P1 Gate 1 fails; P2 both-readout failure is
+confirmed and the operator directs a halt; cumulative compute exceeds 5 GPU-days; or any fix
+would touch a frozen choice.
+
+
+References
+    Goertzel, B. Resonator-Factored Hierarchical Hypervector Embeddings for Compact Struc-
+     tured Memory and Faster Factor-Aligned Computation. Manuscript, 2026.
+
+    Goertzel, B. Category-Guided Causal-Coding Transformers. Manuscript, 2026.
+
+    Goertzel, B. Columnar Bayesian Causal Coding networks; Teacher-First Columnar Control;
+     HBCML. Manuscripts, 2026.
+
+    Wang, K., Variengien, A., Conmy, A., Shlegeris, B., Steinhardt, J. Interpretability in the
+     Wild: A Circuit for Indirect Object Identification in GPT-2 Small. arXiv:2211.00593, 2022.
+     (Recalled from model memory; verify before use.)
+
+    Biderman, S., et al. Pythia: A Suite for Analyzing Large Language Models Across Training
+     and Scaling. arXiv:2304.01373, 2023. (Recalled from model memory; verify before use.)
+
+    Kanerva, P. Hyperdimensional computing. Cognitive Computation, 2009.
+
+    Frady, E.P., Kent, S.J., Olshausen, B.A., Sommer, F.T. Resonator networks. Neural Compu-
+     tation 32(12), 2020.
+
+
+
+
+                                                14
+

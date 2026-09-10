@@ -1,0 +1,23 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/openclaw/research-agent/projects/hdpc-tiny-shakespeare/repos/hdpc-tiny-shakespeare
+configfile: pyproject.toml
+plugins: anyio-4.14.1
+collecting ... collected 7 items
+
+tests/test_t1_zero_error_identity.py::test_t1_zero_error_identity PASSED [ 14%]
+tests/test_t2_anchor.py::test_t2_anchor PASSED                           [ 28%]
+tests/test_t3_energy_monotonicity.py::test_t3_energy_monotonicity PASSED [ 42%]
+tests/test_t4_bp_endpoint.py::test_t4_bp_endpoint PASSED                 [ 57%]
+tests/test_t5_pc_endpoint_distinctness.py::test_t5_pc_endpoint_distinctness PASSED [ 71%]
+tests/test_t6_crown_identity.py::test_t6_crown_identity PASSED           [ 85%]
+tests/test_t7_spc_epc_equivalence.py::test_t7_spc_epc_equivalence PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../../../../../usr/lib/python3/dist-packages/requests/__init__.py:87
+  /usr/lib/python3/dist-packages/requests/__init__.py:87: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (4.0.0) doesn't match a supported version!
+    warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 7 passed, 1 warning in 0.84s =========================

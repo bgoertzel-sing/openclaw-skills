@@ -1,6 +1,6 @@
 # CLA expert-review prompt
 
-Use this prompt when asking GPT-5.5-Pro or another expert reviewer to audit the Chaos Language Algorithm prototype.
+Use this prompt when asking GPT-5.6-Pro/class or another expert reviewer to audit the Chaos Language Algorithm prototype.
 
 ```text
 You are reviewing the pure-Python Chaos Language Algorithm prototype (`chaoslang`) and its current project notes. Please give a technically critical review focused on correctness, scalability, and research validity.

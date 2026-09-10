@@ -1,0 +1,423 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[strings]{underscore}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\title{A Bounded Higher-Order Specialization Plan for PeTTa's Grounder}
+\author{ZeroBot / OpenClaw, for Ben Goertzel}
+\date{2026-07-06}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note explains an observed live-runtime failure in OmegaClaw/PeTTa and proposes a focused repair to PeTTa's higher-order specialization machinery. The immediate symptom is that importing the deontic/directive stack into a fully booted OmegaClaw Telegram runtime can pin SWI-Prolog at approximately 100 percent CPU and prevent the bot from becoming responsive. The deontic logic itself is not the central suspect: top-level deontic tests pass. The suspected mechanism is an unbounded specialization cascade in PeTTa's translation/specialization path, triggered by higher-order MeTTa functions such as \texttt{gb-pivot}, \texttt{gb-base}, and \texttt{gb-scan-item} in the deontic native grounder. The suggested fix is not to disable specialization globally, but to make specialization demand-driven, bounded, and failure-memoized, with explicit instrumentation and regression tests. This document is intended as a handoff artifact for a capable LLM or engineer to inspect the PeTTa codebase and evaluate the proposal.
+\end{abstract}
+
+\section{Purpose and intended reader}
+
+The intended reader is a smart LLM or engineer that will inspect the PeTTa repository and decide how to repair the runtime behavior. This document should give that reader enough context to ask the right code questions, find the relevant predicates, and evaluate whether the proposed change preserves PeTTa semantics while avoiding pathological specialization behavior.
+
+This is not a final patch specification. It is a diagnosis and implementation proposal, grounded in the current local checkout and observed OmegaClaw failure mode.
+
+\section{Repository and runtime context}
+
+The relevant local checkout at the time of writing is:
+
+\begin{itemize}[nosep]
+\item PeTTa repository: \texttt{projects/omegaclaw/repos/PeTTa}
+\item PeTTa commit observed: \texttt{d8d46920269ced70cd6236a5182d4d2409c1e12b}
+\item OmegaClaw-Core repository under PeTTa: \texttt{repos/OmegaClaw-Core}
+\item OmegaClaw-Core commit after runtime hardening: \texttt{98e8883}
+\item SWI-Prolog observed earlier in the debugging session: \texttt{9.3.36}
+\end{itemize}
+
+The local OmegaClaw live runtime starts PeTTa/SWI and then enters a Telegram polling loop. The problematic behavior appears when large optional MeTTa libraries are imported after or during live boot, especially the deontic/directive stack installed from \texttt{MesTTo/omegaclaw-deontic}.
+
+\section{Observed failure}
+
+\subsection{Symptom}
+
+When the deontic/directive stack was imported eagerly during OmegaClaw startup, SWI-Prolog became CPU-bound before the Telegram bot became responsive. The log showed repeated messages of the form:
+
+\begin{lstlisting}
+Not specialized gb-pivot_Spec_[[]]/4
+Not specialized gb-base_Spec_[[]]/4
+Not specialized gb-scan-item_.../...
+\end{lstlisting}
+
+After the eager imports were removed from \texttt{lib_omegaclaw.metta}, native Telegram startup returned to a healthy state: Telegram polling enabled, embeddings loaded, knowledge base initialized, and the main iteration loop advanced. The deontic/directive package remains installed, but live in-loop imports are currently marked \texttt{deferred} rather than executed.
+
+\subsection{Important negative control}
+
+The deontic stack is not simply broken. Its top-level tests pass when loaded in a smaller, batch-style context. In the OmegaClaw-Core checkout, the relevant checks passed:
+
+\begin{itemize}[nosep]
+\item \texttt{tests/deontic/run.sh}: 10/10 passed
+\item \texttt{tests/integration/test_*.metta}: 7/7 passed
+\end{itemize}
+
+Therefore the bug is likely context-sensitive: it depends on loading the stack into an already large live PeTTa/OmegaClaw environment, not merely on parsing or evaluating the deontic files in isolation.
+
+\section{Relevant code points}
+
+The first places to inspect in PeTTa are:
+
+\begin{longtable}{ll}
+\toprule
+File & Why it matters \\
+\midrule
+\texttt{src/translator.pl} & Translates MeTTa expressions to Prolog goals; calls specialization before ordinary direct calls. \\
+\texttt{src/specializer.pl} & Creates specialized variants of higher-order calls and prints \texttt{Not specialized}. \\
+\texttt{src/spaces.pl} & Invalidates specializations when function atoms are added or removed. \\
+\texttt{repos/OmegaClaw-Core/src/deontic/ground.metta} & Defines the native deontic grounder functions that trigger the observed messages. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Translator path}
+
+In \texttt{src/translator.pl}, ordinary known-function calls eventually pass through \texttt{build_call_or_partial}. The current logic attempts \texttt{maybe_specialize_call} before falling back to a direct predicate call:
+
+\begin{lstlisting}
+build_call_or_partial(Fun, AVs, Out, Inner, Extra, Goals) :-
+    length(AVs, N),
+    Arity is N + 1,
+    ( maybe_specialize_call(Fun, AVs, Out, Goal)
+      -> append(Inner, [Goal|Extra], Goals)
+       ; ( ( current_predicate(Fun/Arity) ; catch(arity(Fun, Arity), _, fail) ),
+            \+ ( current_op(_, _, Fun), Arity =< 2 ) )
+         -> append(AVs, [Out], Args),
+            Goal =.. [Fun|Args],
+            append(Inner, [Goal|Extra], Goals)
+          ; Out = partial(Fun, AVs),
+            append(Inner, Extra, Goals) ).
+\end{lstlisting}
+
+This means specialization is on the hot path of translation. If the specializer repeatedly attempts unproductive specializations, the translator itself becomes a source of latency or nontermination.
+
+\subsection{Specializer path}
+
+In \texttt{src/specializer.pl}, \texttt{maybe_specialize_call/4} calls \texttt{specialize_call/4}. The specializer:
+
+\begin{enumerate}[nosep]
+\item retrieves stored meta-clauses for the higher-order function symbol;
+\item searches for concrete higher-order bindings in the call arguments;
+\item constructs a specialization name such as \texttt{HV\_Spec\_CleanBindSet};
+\item registers the specialization candidate;
+\item translates all specialized clauses;
+\item only keeps them if \texttt{specneeded} becomes true;
+\item otherwise prints \texttt{Not specialized ...}, retracts the candidate, and fails.
+\end{enumerate}
+
+A key excerpt is:
+
+\begin{lstlisting}
+( nb_getval(specneeded, true),
+  forall(member(clause_info(Input, Clause), ClauseInfos),
+    ( asserta(Clause, Ref),
+      assertz(translated_from(Ref, Input)),
+      add_sexp('&self', Input),
+      ... ))
+  -> true
+ ; format("Not specialized ~w~n", [SpecName/Arity]),
+   retractall(fun(SpecName)),
+   abolish(SpecName, Arity),
+   retractall(arity(SpecName,Arity)),
+   retractall(ho_specialization(HV, SpecName)),
+   fail )
+\end{lstlisting}
+
+The important property is that failed attempts appear to be retracted and not memoized as failed. If the same call shape is encountered repeatedly, PeTTa can repeat the same expensive failed specialization and print the same style of message again.
+
+\subsection{Invalidation path}
+
+In \texttt{src/spaces.pl}, adding a function atom calls \texttt{invalidate_specializations(FAtom)}. This is semantically sensible, because new function definitions can invalidate previous specializations. However, during large imports it may amplify work:
+
+\begin{lstlisting}
+'add-atom'(Space, Term, true) :- Term = [=,[FAtom|W],_], !,
+    add_sexp(Space, Term),
+    register_fun(FAtom),
+    ...
+    assertz(Clause, Ref),
+    ...
+    invalidate_specializations(FAtom),
+    ... .
+\end{lstlisting}
+
+During import of a clause-heavy library, repeated additions and invalidations may interact poorly with eager specialization.
+
+\subsection{Deontic native grounder path}
+
+The deontic file \texttt{src/deontic/ground.metta} defines semi-naive grounding functions. The observed specialization names come from this family:
+
+\begin{lstlisting}
+(= (gb-sn $b) (gb-scan () $b))
+
+(= (gb-scan $acc $rem)
+   (if (== $rem ())
+       (empty)
+       (let ($x $rest) (decons-atom $rem)
+         (gb-scan-item $x $acc $rest))))
+
+(= (gb-scan-item (lit $s $m $tv $f $a) $acc $rest)
+   (if (== (has-logic-lit $rest) True)
+       (superpose ((gb-pivot (lit $s $m $tv $f $a) $acc $rest)
+                   (gb-base  (lit $s $m $tv $f $a) $acc $rest)))
+       (gb-pivot (lit $s $m $tv $f $a) $acc $rest)))
+\end{lstlisting}
+
+This code is intentionally higher-order and nondeterministic: it uses \texttt{superpose}, recursive body scanning, matches against \texttt{\&herb} and \texttt{\&herb\_new}, and carries partially instantiated literals. It is exactly the kind of code that can benefit from specialization when the call shape is stable, but can also generate many candidate specializations when the call shape is too generic.
+
+\section{Working hypothesis}
+
+The best current hypothesis is:
+
+\begin{quote}
+PeTTa's higher-order specializer repeatedly attempts specializations for deontic grounder call shapes that do not actually profit from specialization, retracts them, and later tries them again. In a fully booted OmegaClaw runtime, the number of functions, clauses, type declarations, and imported atoms is large enough that this retry behavior becomes a visible CPU-bound cascade. The live runtime cannot tolerate this because it has no specialization budget, no failed-specialization memo table, and no import-time staging boundary.
+\end{quote}
+
+This hypothesis is narrower and more actionable than ``deontic is too big''. It predicts that a small change to specialization policy can preserve successful specialization while preventing repeated unproductive specialization attempts.
+
+\section{Why a PeTTa fix is needed}
+
+OmegaClaw currently works around the problem by deferring live imports of the heavy deontic/directive stack. That is an acceptable safety patch, but it is architecturally unsatisfying.
+
+PeTTa is meant to support nontrivial MeTTa programs, including reasoning engines, native grounders, and libraries with higher-order patterns. A runtime that can be pinned by repeated failed specialization attempts has several costs:
+
+\begin{enumerate}[nosep]
+\item \textbf{Agent reliability.} A live agent must not become unresponsive merely because an optional library was imported.
+\item \textbf{Library composability.} A library that is safe in isolation should not become unsafe when loaded into a richer context unless there is a clear resource boundary.
+\item \textbf{Debuggability.} Repeated \texttt{Not specialized} messages do not say whether this is harmless fallback behavior, a performance bug, or a nontermination risk.
+\item \textbf{Research velocity.} Deontic reasoning, directive planning, PLN wrappers, and other AGI components are likely to use higher-order MeTTa patterns. PeTTa needs graceful degradation when specialization is not profitable.
+\end{enumerate}
+
+The goal is not to make every import fast. The goal is to make specialization bounded, observable, and semantically safe.
+
+\section{Suggested fix}
+
+\subsection{Core proposal}
+
+Implement a bounded specialization policy in PeTTa with four pieces:
+
+\begin{enumerate}[label=\textbf{F\arabic*.},leftmargin=2.4em]
+\item \textbf{Failed-specialization memoization.} If specialization of \texttt{HV} for a normalized call shape fails because \texttt{specneeded} is false or translation fails, record that failure. On later encounters of the same shape, skip specialization and fall back directly to the unspecialized call.
+
+\item \textbf{Specialization budget.} Maintain per-translation or per-import counters such as maximum specialization attempts, maximum failed attempts, maximum recursion depth, and optional wall-clock budget. When a budget is exceeded, disable further specialization for that dynamic extent and use ordinary calls.
+
+\item \textbf{Failure backoff by function.} If a function symbol accumulates many failed or unprofitable specialization attempts, temporarily mark it as \texttt{no\_specialize} for the current import/run. This is especially useful for generic interpreters, grounders, and dispatchers.
+
+\item \textbf{Instrumentation.} Count attempted, successful, failed, skipped-by-memo, skipped-by-budget, and invalidated specializations. Expose a compact report so a test can assert that pathological imports are bounded.
+\end{enumerate}
+
+\subsection{Minimal semantic principle}
+
+The specializer is an optimization. If specialization cannot be produced within budget, PeTTa should execute the original function directly. Therefore the conservative fallback is not a semantic change; it is a performance-policy change.
+
+This must be verified by regression tests, because some code might accidentally depend on side effects of specialization or on the presence of generated specialized function atoms. Such dependencies should be treated cautiously; ideally specialization artifacts should not be user-visible semantic requirements.
+
+\subsection{Where to implement}
+
+The smallest implementation probably belongs in \texttt{src/specializer.pl}, with one call-site change in \texttt{src/translator.pl} only if needed.
+
+Suggested new dynamic or non-backtrackable state:
+
+\begin{lstlisting}
+:- dynamic ho_specialization/2.
+:- dynamic ho_specialization_failed/3.
+:- dynamic no_specialize_fun/2.
+\end{lstlisting}
+
+The normalized failure key should include at least:
+
+\begin{itemize}[nosep]
+\item function symbol \texttt{HV};
+\item arity or argument count;
+\item normalized bind set or normalized argument shape;
+\item reason class, e.g. \texttt{not_profitable}, \texttt{translation_failed}, \texttt{budget_exceeded}.
+\end{itemize}
+
+For example:
+
+\begin{lstlisting}
+failed_specialization_key(HV, AVs, Key) :-
+    specialization_bind_shape(HV, AVs, Shape),
+    Key = failed(HV, Shape).
+\end{lstlisting}
+
+The key must avoid embedding fresh Prolog variables in a way that makes every attempt look different. The existing \texttt{replace\_vars\_with\_var/2} is a likely starting point, but it should be checked carefully for nested terms, partial applications, and lists containing variables.
+
+\subsection{Sketch of control flow}
+
+A possible revised \texttt{maybe\_specialize\_call/4} policy is:
+
+\begin{lstlisting}
+maybe_specialize_call(HV, AVs, Out, Goal) :-
+    specialization_enabled(HV, AVs),
+    \+ failed_specialization_seen(HV, AVs),
+    specialization_budget_available(HV, AVs),
+    setup_call_cleanup(
+        begin_specialization_attempt(HV, AVs, Prev),
+        specialize_call_bounded(HV, AVs, Out, Goal),
+        end_specialization_attempt(HV, AVs, Prev)
+    ).
+\end{lstlisting}
+
+If \texttt{specialize\_call\_bounded/4} fails because no profitable specialization was produced, it should record the failure key before falling back. The translator then uses the existing direct-call path.
+
+\subsection{Avoid memoizing stale failures forever}
+
+Because PeTTa supports adding and removing function atoms, failure memos must be invalidated when relevant definitions change. The existing \texttt{invalidate\_specializations(F)} path should be extended to clear failed-specialization keys for \texttt{F}. The evaluator should also consider whether adding a dependency of \texttt{F} should clear failures for callers of \texttt{F}; a first patch can be conservative and clear more broadly during imports.
+
+A simple first implementation could provide:
+
+\begin{lstlisting}
+invalidate_specializations(F) :-
+    ... existing behavior ...,
+    retractall(ho_specialization_failed(F, _, _)),
+    retractall(no_specialize_fun(F, _)).
+\end{lstlisting}
+
+If broad invalidation is easier and safe, use it first and optimize later.
+
+\section{Evaluation plan}
+
+\subsection{Unit tests for the specializer}
+
+Create small PeTTa programs that exercise:
+
+\begin{enumerate}[nosep]
+\item a successful specialization still happens and produces the same result;
+\item a failed/unprofitable specialization is attempted once, memoized, and skipped thereafter;
+\item ordinary unspecialized fallback returns the same MeTTa result as before;
+\item adding/removing a relevant function invalidates both successful and failed specialization records;
+\item budget exhaustion causes graceful fallback, not process hang or semantic failure.
+\end{enumerate}
+
+\subsection{Regression test for deontic grounder import}
+
+Add a bounded smoke test that imports the deontic grounder in a context closer to OmegaClaw live boot. The test should assert:
+
+\begin{itemize}[nosep]
+\item import completes under a chosen timeout;
+\item SWI does not emit unbounded repeated \texttt{Not specialized gb-*} lines;
+\item deontic core tests still pass;
+\item specialization counters show bounded attempts and some skipped-by-memo or skipped-by-budget events if appropriate.
+\end{itemize}
+
+A first version can be a shell test with \texttt{timeout}, later replaced by a Prolog-level test if cleaner.
+
+\subsection{Performance measurements}
+
+Measure at least:
+
+\begin{itemize}[nosep]
+\item baseline top-level deontic tests before/after;
+\item minimal OmegaClaw import smoke before/after;
+\item number of specialization attempts, successes, failures, memo skips;
+\item wall-clock time and maximum resident memory.
+\end{itemize}
+
+A successful patch need not make deontic live import instant. It must make it bounded and non-catastrophic.
+
+\section{Risks and design tradeoffs}
+
+\subsection{Risk: over-disabling useful specialization}
+
+A crude budget could disable specialization that is actually valuable. Mitigation: make budgets configurable and add counters so developers can see when fallback happened. Start with conservative defaults that only affect repeated failures or runaway cases.
+
+\subsection{Risk: stale failed-specialization cache}
+
+If a failure memo survives after definitions change, PeTTa may skip a specialization that would now succeed. This should not change semantics if direct fallback works, but it can reduce performance. Mitigation: invalidate failed memos along with successful specializations when function atoms change.
+
+\subsection{Risk: key normalization too coarse}
+
+If the failed-specialization key is too coarse, PeTTa may skip a distinct specialization opportunity. This again should preserve semantics through fallback, but may lose performance. Mitigation: include function, arity, and normalized higher-order bind set. Prefer too-coarse only for initial safety if direct fallback is known correct.
+
+\subsection{Risk: specialization artifacts are semantically visible}
+
+If some MeTTa code depends on generated specialized function names appearing in \texttt{\&self}, then fallback could be observable. That would be a design smell, but it should be tested. The proposal assumes specialization is an optimization, not a language-level side effect.
+
+\section{Concrete questions for the inspecting LLM}
+
+When inspecting the PeTTa codebase, answer these questions:
+
+\begin{enumerate}
+\item Does \texttt{specialize\_call/4} currently memoize failed or unprofitable specialization attempts? If not, can repeated call shapes retry indefinitely?
+\item Is \texttt{replace\_vars\_with\_var/2} sufficient to build a stable failure key for nested call shapes involving \texttt{partial/2}, lists, and Prolog variables?
+\item Under what conditions is \texttt{specneeded} set to true? Are there common patterns where clause translation is expensive but \texttt{specneeded} remains false?
+\item Can \texttt{invalidate\_specializations/1} safely clear failed-specialization memos, and should it clear only \texttt{F} or also dependents?
+\item Is ordinary direct-call fallback always semantically equivalent when specialization is skipped? If not, identify counterexamples.
+\item Can the deontic \texttt{gb-*} functions be annotated as non-specializable as a library-level workaround, and should PeTTa support such annotations generally?
+\item What test best reproduces the live OmegaClaw failure without requiring Telegram or a long-running bot?
+\end{enumerate}
+
+\section{Alternative or complementary fixes}
+
+\subsection{Library-level no-specialize annotation}
+
+PeTTa could support a MeTTa-level declaration such as:
+
+\begin{lstlisting}
+(: gb-pivot NoSpecialize)
+(: gb-base NoSpecialize)
+(: gb-scan-item NoSpecialize)
+\end{lstlisting}
+
+or a Prolog-side predicate \texttt{no\_specialize(F)}. This would be useful for generic interpreters, dispatchers, and recursive grounders. However, it should complement, not replace, bounded specialization. A robust runtime should still degrade gracefully even without annotations.
+
+\subsection{Import-time specialization mode}
+
+During large imports, PeTTa could defer specialization entirely and only specialize on later hot calls. This would make import latency predictable and move optimization to actual demand. It may be the cleanest long-term model, but it requires careful integration with the translator.
+
+\subsection{Subprocess isolation}
+
+OmegaClaw can load heavy reasoners in a child process with a timeout. This is operationally safe but does not fix PeTTa. It remains useful as a defense-in-depth boundary for live agents.
+
+\section{Recommended first patch}
+
+The recommended first patch is deliberately small:
+
+\begin{enumerate}[nosep]
+\item Add failed-specialization memoization in \texttt{src/specializer.pl}.
+\item Add simple per-run counters and optional environment-configured budget.
+\item Extend invalidation to clear failed-specialization memos.
+\item Add tests proving fallback preserves results and repeated failed attempts are skipped.
+\item Add a deontic import smoke test with timeout and log assertions.
+\end{enumerate}
+
+Do not first attempt a large rewrite of the translator or a new grounder. The immediate failure mode is consistent with repeated unproductive specialization; bounding and memoizing that behavior is the least invasive intervention.
+
+\section{Success criterion}
+
+The fix is successful if:
+
+\begin{itemize}[nosep]
+\item existing PeTTa tests still pass;
+\item deontic tests still pass;
+\item importing the deontic/directive stack into a large OmegaClaw-like context completes or fails gracefully under a timeout;
+\item repeated \texttt{Not specialized gb-*} output is eliminated or bounded;
+\item the live OmegaClaw Telegram bot can keep its core loop responsive even if optional extension import is attempted.
+\end{itemize}
+
+\section{Conclusion}
+
+The observed freeze is best treated as a PeTTa runtime robustness bug in higher-order specialization policy, exposed by a realistic AGI-agent library stack. The deontic grounder is a useful stress test: it contains recursive, higher-order, nondeterministic MeTTa code that should be legal, even if it is not always profitable to specialize. PeTTa should therefore make specialization opportunistic and bounded: specialize when it clearly helps, remember when it does not, and always preserve a direct-call fallback path. This would make PeTTa more suitable as a live substrate for OmegaClaw and other long-running Hyperon-family agents.
+
+\end{document}

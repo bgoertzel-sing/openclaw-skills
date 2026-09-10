@@ -1,0 +1,359 @@
+      Homotopy Distillation of a Transformer into a
+             Predictive-Coding Network
+         Faithful re-expression of GPT-2 (124M) with local, error-based learning
+                                 Technical report, work in progress
+
+                                               Ahmad Mesto
+                      UNSW Sydney          ·    a.mesto@student.unsw.edu.au
+                                                July 23, 2026
+
+
+                                                 Abstract
+     Predictive coding (PC) is a biologically motivated alternative to backpropagation in which
+     learning is driven by local prediction errors rather than a global backward pass. A standing
+     obstacle is scale: PC is rarely demonstrated beyond small networks, and openly documented
+     PC transformers remain at the order of 105 parameters. We re-express a full-scale trans-
+     former, GPT-2 at 124M parameters, three orders of magnitude beyond that scale, as a
+     predictive-coding network by homotopy distillation: a pretrained transformer is continu-
+     ously deformed into an error-parameterised PC network along a schedule τ = η T , from a
+     backpropagation anchor at T =1 to a fully relaxed PC regime at terminal τ =6.4. Three re-
+     sults are established to date. (i) The distillation is near-lossless and reproducible: across five
+     independent runs the student’s next-token distribution tracks the teacher to a prompt KL
+     of ∼ 10−5 nats at every milestone, nearly four thousand times inside the divergence-abort
+     threshold, with held-out perplexity within 0.4%. (ii) Along the homotopy the internal rep-
+     resentation transforms substantially, the mean per-block error-norm ratio rising 0.05 → 0.98,
+     while functional equivalence to the teacher is preserved at a minimum per-block cosine above
+     0.998. (iii) At 124M the PC error field is strongly concentrated: the top 5% of error cells
+     carry ≈ 90% of the squared update mass, with a fixed-depth Hill statistic α ≈ 1.68 at the
+     top-5% tail that is stable across τ . This concentration is the lever for compressing the settle,
+     the dominant cost of PC at scale. In companion work the same transformer’s full forward
+     pass runs natively inside the MORK symbolic knowledge store, matched to the reference
+     implementation to 6 × 10−6 relative error; predictive coding is the learning mode designed
+     for that substrate, and the two results are halves of one program. We close with the repro-
+     ducibility methodology, an explicit statement of what is not yet shown, and the planned
+     experiments.
+
+
+1 Motivation and scope
+Predictive coding learns by settling a network of state and error units to a low-energy configura-
+tion and then updating weights from purely local error signals; under standard assumptions its
+updates approximate those of backpropagation on arbitrary computation graphs [1, 2, 3]. This
+locality is attractive for two reasons that backpropagation does not offer: learning can proceed
+online and in place without a global backward pass, and the resulting dynamics are a natural
+substrate for continual learning without catastrophic forgetting. The obstacle has always been
+scale. Public demonstrations of PC on transformer-shaped models remain at toy sizes (order
+105 parameters), and it is an open question whether the PC parameterisation is even expressive
+enough to hold a modern transformer at realistic width and depth.
+    This work attacks that question directly, but by a deliberately conservative route. Rather
+than training a transformer from scratch under PC, which is compute-prohibitive for reasons dis-
+cussed in §5, we ask whether an already-trained transformer can be re-expressed as a predictive-
+coding network without loss of function, at 124M parameters. A positive answer establishes
+expressivity at scale and yields the substrate on which the continual-learning properties that
+motivate PC can then be tested.
+Contribution, stated precisely. This report claims: (a) a method, homotopy distillation,
+that deforms a pretrained transformer into an error-parameterised PC network; (b) an aﬀirma-
+tive answer, at 124M, to the expressivity question: the PC parameterisation holds a modern
+transformer, near-losslessly and reproducibly, with local updates; and (c) a measurement of the
+PC error-mass distribution not previously available at this scale. It does not claim that PC
+trains a transformer from scratch, nor that PC outperforms backpropagation; those are sepa-
+rate questions, one of which (the continual-learning advantage) is a designed but not-yet-run
+experiment described in §7.
+
+2 Method
+The teacher is a frozen, pretrained GPT-2 (124M) [6]. The student is initialised from the teacher
+and trained under an error-based (ePC-style) parameterisation in which the prediction errors
+are the only free leaves and weight updates are computed locally from them [4, 5]. Distillation
+minimises a temperature-2 knowledge-distillation KL to the teacher.
+
+2.1 The energy and the two updates
+Write fℓ , ℓ = 1, . . . , L with L=12, for the transformer blocks and x0 for the embedding output.
+The student’s forward pass carries an explicit error tensor at every block output:
+
+                         xℓ = fℓ (xℓ−1 ) + εℓ ,            ẑ = head(LNf (xL )) ,                 (1)
+
+so the errors ε = (ε1 , . . . , εL ) are the only free variables of inference. At sequence length 512
+this gives 12 × 512 × 768 = 4.72M error cells per sample, the cells measured in §3.3. Inference
+relaxes the energy
+                                               XL
+
+                                                   2 ∥εℓ ∥ + L(ẑ(ε)) ,
+                                                   1      2
+                                      E(ε) =                                                       (2)
+                                               ℓ=1
+
+where L is the distillation KL to the frozen teacher, by T steps of gradient descent ε ← ε−η ∇ε E
+from ε(0) =0, with the weights frozen (asserted at runtime, not assumed). The weights then
+descend the local objective
+
+                            X
+                            L
+                                                               2
+                    EW =          1
+                                  2   fℓ (x̄ℓ−1 ; Wℓ ) − x̄ℓ       + L(head(LNf (x̄L ))) ,        (3)
+                            ℓ=1
+
+where bars denote settled states held constant. Block ℓ regresses onto its own settled target,
+with ∇Wℓ EW = − εℓ ∂fℓ /∂Wℓ at the settled point, and the output head trains from the task loss
+on a constant trunk: the update is local by construction, not by approximation. The optimiser
+is AdamW on ∇W EW .
+     The anchor at T =1 is an identity, not an analogy. At ε = 0 the forward (1) is exactly the
+vanilla network, so ∇εℓ E = ∂L/∂xℓ , the backpropagation adjoint δℓ . One relaxation step sets
+ (1)
+εℓ = −η δℓ , so the block-weight gradient of (3) equals η times the backpropagation gradient
+to first order in η, and the head gradient is the task gradient itself; this is the discrete form of
+the PC-approximates-backprop correspondence [2, 5]. Increasing T moves inference from this
+anchor toward the PC equilibrium.
+
+2.2 The homotopy schedule
+The relaxation depth T follows a geometric schedule T ∈ {1, 2, 4, . . . , 128}, and the effective
+relaxation time is τ = η T with step size η fixed within a run; the schedule runs from the
+T =1 anchor to terminal τ =6.4, a fully relaxed PC regime. A stage advances only when an
+energy-convergence hold criterion passes, and its τ step subdivides when it does not. Increasing
+T deforms the network continuously from backpropagation toward PC equilibrium, so that
+
+                                                       2
+at no point does training leave a regime in which the student is a faithful copy of the teacher.
+Monitoring uses scale-invariant and rank statistics throughout (an energy-convergence ratio and
+trailing-median baselines) rather than absolute thresholds, for reasons that §4 makes concrete.
+    Each run reported here processes 5.0 × 106 tokens at sequence length 512; a 5.0 × 107 -token
+run is in progress [running].
+
+3 Results established to date
+3.1 The re-expression is near-lossless and reproducible
+Figure 1 shows the student–teacher prompt KL across the anneal for five independent runs (the
+development run plus a four-cell replicate matrix spanning two random seeds and two micro-
+batch shapes). The worst milestone KL across all five runs is 1.3 × 10−5 nats, roughly 3.9 × 103
+times inside the divergence-abort threshold, and held-out perplexity stays within 0.4% of the
+teacher throughout. The divergence-abort guard never fired in any run, so no run was excluded
+from this set. The fidelity holds at every stage of the deformation, not only at its endpoint, and
+reproduces across seeds and batch shapes. This answers the expressivity question of §1 in the
+aﬀirmative at 124M: the PC parameterisation holds a modern transformer.
+
+                                                   Distillation stays near-lossless across the anneal (n = 5 runs)
+                                                         pilot (micro 1, seed 1729)
+                                                         err-lr 0.10 (micro 10, seed 1729)       divergence-abort threshold (KL = 0.05)
+         student–teacher prompt KL (nats)
+
+
+
+
+                                                         micro 3 (seed 1729)
+                                            10−2         seed 2 (micro 10)
+                                                         seed 3 (micro 10)
+                                                                                                     ~3,902× margin
+                                            10−3                                                     to the abort line
+
+
+                                            10−4
+
+                                            10−5
+
+
+                                                   1.0         1.5         2.0     2.5     3.0      3.5     4.0          4.5       5.0
+                                                                            training progress (million tokens)
+
+Figure 1: Distillation fidelity. Student–teacher prompt KL (log scale) across the anneal for five
+independent runs. All runs remain near 10−5 nats, about four thousand times inside the abort threshold
+(dashed). This is a re-expression of a pretrained model, not from-scratch training.
+
+
+3.2 The representation moves while the function is held
+Fidelity alone could be trivial if nothing changed internally. Figure 2 shows it does not: as
+τ increases from 0.05 to 6.4, the mean per-block error-norm ratio rises from 0.05 to 0.98, a
+substantial reorganisation of the internal representation toward the PC form, while the minimum
+per-block cosine to the teacher never falls below 0.998. The student travels a long way in
+representation space and remains functionally equivalent the whole way. This is the property
+the homotopy is designed to produce.
+
+3.3 The error field is strongly concentrated at scale
+Figure 3 reports a measurement, to our knowledge not previously available at this scale, of
+how PC update mass is distributed across the 4.72 × 106 error cells of the terminal settle. The
+
+                                                                                             3
+                                              The homotopy: representation transforms, function is held
+                                            1.0                                                          1.0000
+          mean per-block error-norm ratio
+
+
+
+
+                                                                                                              min per-block cosine to teacher
+                                            0.8                                                          0.9995
+
+                                                                                                         0.9990
+                                            0.6     error-norm ratio (representation moves to PC form)
+                                                    min block cosine (function preserved)                0.9985
+                                            0.4
+                                                                                                         0.9980
+                                            0.2                                                          0.9975
+
+                                            0.0                                                          0.9970
+                                                        10−1                      100
+                                                           homotopy parameter τ = η T (log scale)
+
+Figure 2: The homotopy path. Against the homotopy parameter τ (log scale): the error-norm
+ratio (orange, left) rises as the representation moves to PC form, while the minimum block cosine to the
+teacher (blue, right) stays above 0.998, so the function is preserved throughout the deformation.
+
+
+distribution is strongly concentrated: ranked by magnitude, the top 5% of cells carry ≈ 90%
+of the squared update mass. The concentration is rank-form, and it depends on no tail model:
+absolute magnitude thresholds do not separate a frontier, since nearly all cells sit below any fixed
+cutoff, yet ranked by magnitude the mass is extremely concentrated. The rank concentration
+has a direct engineering consequence for the settle cost discussed in §5: a settle that updates
+only the top-ranked cells could recover most of the update at a fraction of the work.
+    As a τ -comparable summary of tail weight we also record a Hill statistic at a fixed depth
+of the top 5%, k = 235,929 of the 4.72M cells: α = 1.681 at τ =6.4; the sampling standard
+error of this fixed-depth statistic, estimated model-free from the empirical dispersion of the
+log-excesses in the stored histogram, is ≈ 0.002. Across τ the statistic moves by at most 0.008
+(1.673, 1.679, 1.681 at τ = 1.0, 3.2, 6.4), a few sampling errors, so tail shape at fixed depth is
+nearly τ -invariant. We do not claim a limiting power law: sweeping the tail depth from the top
+0.5% to the top 20% moves the Hill statistic monotonically from ≈ 2.2 to ≈ 1.1 with no plateau,
+several hundred sampling errors of movement (sweep from the same histogram), so α serves as
+a fixed-depth descriptor of tail weight rather than an estimate of a tail exponent.
+
+4 Reproducibility methodology
+Acceptance is governed by a pre-registered battery of six criteria (a knowledge-distillation an-
+chor, per-milestone prompt KL, held-out perplexity delta, terminal block cosine, an error-norm-
+ratio monotonicity condition, and an energy-convergence hold count). During the replicate cam-
+paign a methodological issue surfaced that shapes how the planned comparisons are designed.
+The initial KL and cosine thresholds had been frozen from a single pilot run; the four-cell repli-
+cate matrix then showed that these thresholds sat inside the run-to-run reproducibility noise: a
+nominal-configuration replicate drifted further from the pilot than a compute-lever variant did.
+The bars were therefore recalibrated, under a rule fixed before the last replicates were seen, to
+the strict envelope over the replicate set (n ≥ 3); and configuration comparisons are henceforth
+run at matched seeds and judged on per-seed deltas, which cancels seed variance. The lesson is
+general and is carried into the experiments below: never set an absolute acceptance threshold
+from a single sample of a chaotic training signal.
+
+                                                                                        4
+                                                              Update mass is strongly concentrated at 124M (4.72M cells)
+
+          cumulative share of squared update mass (%)
+                                                        100
+
+                                                         80
+                                                                             top 5% of cells
+                                                                             carry 90% of the mass
+                                                         60
+
+                                                         40
+
+                                                         20
+                                                                                                                uniform (no concentration)
+                                                          0
+                                                              0         20               40              60              80              100
+                                                                             fraction of error cells, heaviest first (%)
+
+Figure 3: Update-mass concentration at 124M. Cumulative share of squared update mass against
+the fraction of error cells taken heaviest-first, at the terminal settle (τ =6.4, 4.72M cells). The top 5%
+of cells carry ≈ 90% of the mass; the dotted line is the no-concentration reference. Hill statistic at the
+top-5% tail: α = 1.68.
+
+
+5 Status and limitations
+Three things are established: the PC parameterisation holds a modern transformer at 124M,
+the deformation reorganises the representation while preserving function, and the error field
+carries an exploitable rank structure. This is a progress report, so the boundaries are stated
+with the same force.
+
+   • Re-expression, not from-scratch training. The teacher did the original learning;
+     the contribution is that PC can hold the result at 124M with local updates. Whether
+     PC can train a transformer of this size from random initialisation, competitively with
+     backpropagation, is open. The blocker is compute: each PC weight update requires an
+     inner relaxation of T forward/backward passes where backpropagation requires one, so
+     from-scratch PC at scale is one to two orders of magnitude more expensive per update.
+     The concentration measurement of §3.3 is a first lever on exactly this cost.
+   • Token scale. The runs here use 5 × 106 tokens; a 5 × 107 run is in progress [running].
+   • The motivating advantage is not yet demonstrated. That the PC form forgets
+     less or transfers better than a backpropagation baseline, which is the reason to prefer PC
+     at all, is a designed comparison that has not been run [planned]. Nothing in this report
+     should be read as evidence for it.
+
+6 Companion result: the same transformer inside a symbolic store
+The PC question of this report is asked because of a companion result by the author, previously
+unpublished, which supplies the substrate. The full GPT-2 (124M) forward pass runs natively
+inside MORK, the MeTTa Optimal Reduction Kernel of the OpenCog Hyperon program [7, 8]:
+weights and activations live as expressions in the kernel’s trie-backed space, and the forward pass
+executes as the kernel’s own rule application over tensor-block expressions, with dense numeric
+kernels (einsum, attention, normalisation) added by the author as sink operations. The in-store
+forward matches the reference implementation to a maximum relative logit error of 6.06 × 10−6
+
+                                                                                              5
+with argmax agreement, and a blocked tensor format brings the 12-layer forward from 124.5M
+store expressions to 7.8M, a 16× reduction, at the identical maximum relative error.
+    Decoding is incremental and exact. Causal masking means old columns never read new ones,
+and einsum is bilinear, so appending one token produces exactly a one-column delta through
+all twelve layers; this is the KV-cache identity derived as incremental view maintenance rather
+than assumed as a heuristic. A 32-token greedy decode runs in a single kernel invocation, with
+all 32 tokens equal to the reference oracle.
+    The two results are halves of one program. A store-hosted transformer makes weights,
+activations, and symbolic knowledge one queryable, incrementally maintained structure; what
+such a substrate cannot do cheaply is a global, synchronised backward pass. Predictive coding
+is the learning mode that fits it: the updates of §2 are local to each block, and by §3.3 the
+update mass concentrates on a small ranked frontier of cells, exactly the sparse incremental
+writes a trie-backed store maintains well. This report establishes the learning-side half at full
+model scale; the companion result establishes the inference-side half.
+
+7 Planned work
+Three lines follow directly. (1) A continual-learning benchmark: sequential-domain training
+measuring forgetting and transfer for the PC form against backpropagation fine-tuning at
+matched compute, with the matched-seed, envelope design of §4. (2) A coupled-objective grid
+separating whether any advantage comes from the PC parameterisation or from objective cou-
+pling. (3) Path-faithful settle compression (higher-order integrators at fixed evaluation budget
+and a rank-frontier settle informed by the measured rank concentration), the enabling technol-
+ogy for pushing toward from-scratch PC training at reduced scale. Results from (1) and (2)
+are the immediate next milestone. Longer term, the target is the substrate of §6: predictive
+coding as the learning rule of the store-native transformer, with frontier-compressed settles as
+the bridge. Figure 4 places the report in this programme.
+
+                                         The programme: two tracks, one target
+     Learning track (this report)
+        homotopy      n = 5 anneal       concentration          5×10⁷             necessity       E4/E5:         settle
+         method       near-lossless      90% in top 5%          anneal            ablation +     continual    compression
+          (§2)         (§3.1–3.2)           (§3.3)                              grad. baseline   learning    (rank frontier)
+
+
+                                                                                                                   store-native
+                                                                                                                  transformer,
+                                                                                                                     PC as its
+                                                                                                                  learning rule
+     Inference track (companion, §6)
+        forward        blocked            incremental          frontier
+        in-store        format              decode             writes as
+        6×10⁻⁶      16× fewer exprs      32/32, one call         IVM
+
+
+
+                           established           in progress          planned           target
+
+
+Figure 4: Programme roadmap. Green boxes are established results (this report and the companion
+result of §6); the orange box is the 5 × 107 run in progress; dashed boxes are planned (§7). The tracks
+converge on a store-native transformer whose learning rule is predictive coding over the measured rank
+frontier.
+
+
+
+
+                                                                     6
+References
+[1] J. Whittington and R. Bogacz. An approximation of the error backpropagation algorithm in a predictive
+    coding network with local Hebbian synaptic plasticity. Neural Computation, 2017.
+[2] B. Millidge, A. Tschantz, C. Buckley. Predictive coding approximates backprop along arbitrary computation
+    graphs. arXiv:2006.04182.
+[3] T. Salvatori et al. Learning on arbitrary graph topologies via predictive coding. arXiv:2201.13180.
+[4] A. Ororbia and D. Kifer. The neural coding framework for learning generative models. Nature Communica-
+    tions, 2022.
+[5] C. Goemaere, G. Oliviers, R. Bogacz, T. Demeester. ePC: fast and deep predictive coding in digital simulation.
+    arXiv:2505.20137.
+[6] A. Radford, J. Wu, R. Child, D. Luan, D. Amodei, I. Sutskever. Language models are unsupervised multitask
+    learners. OpenAI technical report, 2019.
+[7] B. Goertzel et al. OpenCog Hyperon: a framework for AGI at the human level and beyond. arXiv:2310.18318.
+[8] MORK: the MeTTa Optimal Reduction Kernel. github.com/trueagi-io/MORK.
+
+
+
+
+                                                       7
+

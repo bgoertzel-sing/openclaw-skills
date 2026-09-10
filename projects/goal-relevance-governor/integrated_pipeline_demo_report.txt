@@ -1,0 +1,35 @@
+# Integrated Governor Pipeline — Full Demo Report
+# Generated: 2026-09-08 05:46Z
+# ECAN cycles: 10 (using frozen_at as now reference)
+
+## Episode 01: Stale Codegen Worker
+  Expected: STOP_STALE | Got: STOP_STALE ✓
+  Executive Summary: Pipeline evaluated 1 tasks. Verdict distribution: STOP_STALE=1. Top priority: t-p2m-codegen (STI=12.9, STOP_STALE, rel=0.000). Stale tasks: t-p2m-codegen.
+  Recommendation: Stop: goal is stale and no longer relevant. Consider abandoning.
+
+## Episode 02: Chem Blocking
+  Expected: PAUSE_RECOVERABLY | Got: ESCALATE + PAUSE_RECOVERABLY ✓
+  Executive Summary: Pipeline evaluated 2 tasks. Verdict distribution: ESCALATE=1, PAUSE_RECOVERABLY=1. Top priority: t-restore-agents (STI=39.6, ESCALATE, rel=0.939). ⚠ ESCALATE: t-restore-agents.
+  t-restore-agents: ESCALATE → Escalate: this task blocks critical goals. Prioritize immediately.
+  t-petta-chem: PAUSE_RECOVERABLY → Pause task — it may recover. Re-evaluate after addressing blockers.
+
+## Episode 03: Premature Hardening
+  Expected: DEFER | Got: DEFER ✓
+  Executive Summary: Pipeline evaluated 1 tasks. Verdict distribution: DEFER=1. Top priority: t-hardening-guards (STI=44.2, DEFER, rel=0.341).
+  t-hardening-guards: DEFER → Defer this task in favor of higher-priority work.
+
+## Episode 04: Overengineered Repair
+  Expected: REPLAN | Got: REPLAN ×2 ✓
+  Executive Summary: Pipeline evaluated 2 tasks. Verdict distribution: REPLAN=2. Top priority: t-process-inspector (STI=3.0, REPLAN, rel=0.000). Eviction candidates: t-process-inspector, t-launch-wrappers.
+  Both tasks: REPLAN → Replan: the task approach needs revision before proceeding.
+
+## Episode 05: Control — Justified Long Running
+  Expected: CONTINUE | Got: CONTINUE ✓
+  Executive Summary: Pipeline evaluated 1 tasks. Verdict distribution: CONTINUE=1. Top priority: t-run-benchmark (STI=50.2, CONTINUE, rel=0.925). Stale tasks: t-run-benchmark.
+  t-run-benchmark: CONTINUE → Proceed with current task as planned.
+
+# Summary
+All 5 episodes produce verdicts matching expected_verdict.
+ECAN attention allocation correctly prioritizes high-relevance tasks.
+Eviction candidates identified in ep04 (both tasks STI < 10 after 10 cycles).
+Escalation flagged in ep02 (t-restore-agents blocks critical goals).

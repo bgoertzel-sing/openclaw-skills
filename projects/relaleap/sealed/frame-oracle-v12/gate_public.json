@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v12-gate-1",
+  "opened": false,
+  "answer_file_sha256": "ac7d0438e6a1d648ff4ebd898f0a3218f435068532cfe82b6aff5b4bfcb85fdf",
+  "cases": [
+    {"case_id": "v12-direct-01", "sentence": "Archive memorandum Lattice-12 states: the capital of Lyravia is Noren.", "stratum": "direct"},
+    {"case_id": "v12-direct-02", "sentence": "Archive memorandum Lattice-12 states: Mira Quell wrote the novel Glass Orchard.", "stratum": "direct"},
+    {"case_id": "v12-direct-03", "sentence": "Archive memorandum Lattice-12 states: the signal lantern is crimson.", "stratum": "direct"},
+    {"case_id": "v12-direct-04", "sentence": "Archive memorandum Lattice-12 states: the archive is located in the western annex.", "stratum": "direct"},
+    {"case_id": "v12-negation-01", "sentence": "Archive memorandum Lattice-12 states: the capital of Vardesh is not Belcor.", "stratum": "explicit_negation"},
+    {"case_id": "v12-negation-02", "sentence": "Archive memorandum Lattice-12 states: Ivo Renn did not write Silent Harbor.", "stratum": "explicit_negation"},
+    {"case_id": "v12-negation-03", "sentence": "Archive memorandum Lattice-12 states: the copper valve is not open.", "stratum": "explicit_negation"},
+    {"case_id": "v12-negation-04", "sentence": "Archive memorandum Lattice-12 states: the telescope is not located in the north dome.", "stratum": "explicit_negation"},
+    {"case_id": "v12-negation-05", "sentence": "Archive memorandum Lattice-12 states: the poem Winter Circuit was never written by Lysa Dorn.", "stratum": "explicit_negation"},
+    {"case_id": "v12-negation-06", "sentence": "Archive memorandum Lattice-12 states: no lantern is located in the service tunnel.", "stratum": "explicit_negation"},
+    {"case_id": "v12-possible-01", "sentence": "Archive memorandum Lattice-12 states: the capital of Orinth may be Selka.", "stratum": "possible"},
+    {"case_id": "v12-possible-02", "sentence": "Archive memorandum Lattice-12 states: Taren Voss might have written Ember Atlas.", "stratum": "possible"},
+    {"case_id": "v12-possible-03", "sentence": "Archive memorandum Lattice-12 states: the backup rotor may be stable.", "stratum": "possible"},
+    {"case_id": "v12-possible-04", "sentence": "Archive memorandum Lattice-12 states: the survey drone might be located in Hangar Seven.", "stratum": "possible"},
+    {"case_id": "v12-possible-05", "sentence": "Archive memorandum Lattice-12 states: perhaps the novel Copper Meridian was written by Oren Vale.", "stratum": "possible"},
+    {"case_id": "v12-paraphrase-01", "sentence": "Archive memorandum Lattice-12 states: Mera is the capital city of Ardel.", "stratum": "paraphrase"},
+    {"case_id": "v12-abstention-01", "sentence": "Archive memorandum Lattice-12 states: three blue commas drifted beneath yesterday.", "stratum": "abstention"},
+    {"case_id": "v12-abstention-02", "sentence": "Archive memorandum Lattice-12 states: the committee debated quietly until noon.", "stratum": "abstention"},
+    {"case_id": "v12-abstention-03", "sentence": "Archive memorandum Lattice-12 asks: who will measure the echo after dusk?", "stratum": "abstention"},
+    {"case_id": "v12-abstention-04", "sentence": "Archive memorandum Lattice-12 states: perhaps every silence remembers a doorway.", "stratum": "abstention"},
+    {"case_id": "v12-world-trap-01", "sentence": "Archive memorandum Lattice-12 states: the capital of Australia is Sydney.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v12-world-trap-02", "sentence": "Archive memorandum Lattice-12 states: the novel Moby-Dick was written by Virginia Woolf.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v12-world-trap-03", "sentence": "Archive memorandum Lattice-12 states: Mount Fuji is located in Brazil.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v12-world-trap-04", "sentence": "Archive memorandum Lattice-12 states: the Moon is square.", "stratum": "world_knowledge_trap"}
+  ]
+}

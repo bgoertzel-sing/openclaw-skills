@@ -3,7 +3,8 @@ import os from "node:os";
 import path from "node:path";
 
 export const DEFAULT_ROUTINE_MODEL = "openrouter/z-ai/glm-5.2";
-export const DEFAULT_DEEP_MODEL = "openai/gpt-5.5";
+export const DEFAULT_SEMI_ROUTINE_MODEL = "openai/gpt-5.6-terra";
+export const DEFAULT_DEEP_MODEL = "openai/gpt-5.6-sol";
 export const DEFAULT_FABLE_MODEL = "anthropic/claude-fable-5";
 export const DEFAULT_COST_LOG_PATH = "~/research-agent/plugins/intent-model-router/usage.jsonl";
 export const DEFAULT_BUDGET_TZ = "America/Los_Angeles";
@@ -14,12 +15,18 @@ export const DEFAULT_PRICING_PER_MTOK = {
 };
 
 const DEEP_PATTERNS = [
-  /\b(use\s+openai|use\s+gpt|gpt-5\.5|think\s+hard|deep\s+(technical|reasoning|analysis)|frontier\s+model)\b/i,
+  /\b(use\s+openai|use\s+gpt|gpt-5\.[56]|think\s+hard|deep\s+(technical|reasoning|analysis)|frontier\s+model)\b/i,
   /\b(debug|fix|implement|refactor|test|pytest|unit\s+test|build|compile|typecheck|lint|stack\s*trace|traceback|segfault|race\s+condition)\b/i,
   /\b(code|coding|repository|repo|git\s+(diff|commit|branch|merge|rebase)|pull\s+request|PR\b|CI\b)\b/i,
   /\b(research|paper|proof|theorem|formaliz(e|ation)|derive|algorithm|architecture|design\s+doc|benchmark|experiment|evaluate)\b/i,
   /\b(Hyperon|MeTTa|PeTTa|MORK|OmegaClaw|ThreadKeeper|Prolog|Rust|Python|AtomSpace|PLN|NARS)\b/i,
   /\b(multi[- ]?step|long[- ]?context|use\s+tools|run\s+commands?|inspect\s+files?|modify\s+files?|create\s+a\s+branch)\b/i,
+];
+
+const SEMI_ROUTINE_PATTERNS = [
+  /\b(use\s+terra|semi[- ]?routine|balanced\s+model)\b/i,
+  /\b(explain|compare|contrast|summari[sz]e|analy[sz]e|interpret|critique|brainstorm|outline)\b/i,
+  /\b(why|how|what\s+are|what\s+is|tell\s+me|do\s+you\s+think|opinion|intuition)\b/i,
 ];
 
 const EXPLICIT_FABLE_PATTERNS = [
@@ -35,6 +42,13 @@ const AUTO_FABLE_PATTERNS = [
 ];
 
 const ROUTINE_PATTERNS = [/\b(use\s+glm|use\s+openrouter|cheap\s+model|routine\s+model)\b/i];
+// SOL_ASTRA_ROUTING_V1
+// Anchored requests reduce accidental escalation from quoted task content.
+const EXPLICIT_ASTRA = /^(?:please\s+)?(?:use|switch\s+to|escalate\s+to)\s+(?:openai\/)?(?:gpt-6-)?astra\b/i;
+const EXPLICIT_SOL = /^(?:please\s+)?(?:use|switch\s+to)\s+(?:openai\/)?(?:gpt-5\.6-)?sol\b/i;
+const EXCEPTIONAL_DIFFICULTY = /^(?:this\s+(?:task|problem)\s+is\s+)?(?:very\s+very\s+(?:hard|difficult)|exceptionally\s+difficult)\b/i;
+const SIMPLE_PROMPT = /^(?:hi|hello|hey|thanks|thank\s+you|ping|are\s+you\s+there|(?:please\s+)?reply\s+with\s+(?:just\s+)?online)[.!?\s]*$/i;
+
 const OMEGACLAW_SESSION_MARKERS = [/protomegatron/i, /omegaclaw/i];
 
 export function asConfig(value) {
@@ -61,6 +75,10 @@ function extractOmegaClawUserText(prompt) {
 export function classifyPrompt(prompt, config = {}) {
   const text = String(prompt || "");
   const fableMode = resolveFableMode(config);
+  if (EXPLICIT_ASTRA.test(text.trim())) return { tier: "astra", reason: "explicit_astra" };
+  if (EXPLICIT_SOL.test(text.trim())) return { tier: "deep", reason: "explicit_sol" };
+  if (EXCEPTIONAL_DIFFICULTY.test(text.trim())) return { tier: "astra", reason: "exceptional_difficulty_cue" };
+  if (SIMPLE_PROMPT.test(text.trim())) return { tier: "routine", reason: "simple_prompt" };
   if (!text.trim()) return { tier: "routine", reason: "empty" };
   if (ROUTINE_PATTERNS.some((pattern) => pattern.test(text))) return { tier: "routine", reason: "explicit_routine" };
   if (EXPLICIT_FABLE_PATTERNS.some((pattern) => pattern.test(text))) return { tier: "fable", reason: "explicit_fable" };
@@ -68,7 +86,8 @@ export function classifyPrompt(prompt, config = {}) {
   if (DEEP_PATTERNS.some((pattern) => pattern.test(text))) return { tier: "deep", reason: "keyword" };
   if (text.length > 1800) return { tier: "deep", reason: "long_prompt" };
   if ((text.match(/```/g) || []).length >= 2) return { tier: "deep", reason: "code_block" };
-  return { tier: "routine", reason: "default" };
+  if (SEMI_ROUTINE_PATTERNS.some((pattern) => pattern.test(text))) return { tier: "semi-routine", reason: "semi_routine_keyword" };
+  return { tier: "deep", reason: "default" };
 }
 
 export function classifyOmegaClawPrompt(prompt, config = {}) {
@@ -76,6 +95,7 @@ export function classifyOmegaClawPrompt(prompt, config = {}) {
   if (!text) return { tier: "deep", reason: "omegaclaw_empty" };
   const classification = classifyPrompt(extractOmegaClawUserText(text), config);
   if (classification.tier === "routine") return { tier: "routine", reason: "omegaclaw_simple_chitchat" };
+  if (classification.tier === "astra") return classification;
   if (classification.tier === "fable") return { tier: "fable", reason: classification.reason };
   return { tier: "deep", reason: "omegaclaw_substantive" };
 }
@@ -150,6 +170,31 @@ export function sanitizeUsage(usage) {
 
 export function isFableRef(ref, fableModel) {
   return String(ref || "") === String(fableModel || DEFAULT_FABLE_MODEL);
+}
+
+export function selectedModelRef(ctx = {}) {
+  return ctx.modelProviderId && ctx.modelId
+    ? `${ctx.modelProviderId}/${ctx.modelId}`
+    : "";
+}
+
+export function preserveCallerSelectedFable(ctx, fableModel) {
+  return isFableRef(selectedModelRef(ctx), fableModel);
+}
+
+export function preserveFixedAgentSelection(ctx = {}, config = {}) {
+  const fixedAgentIds = Array.isArray(config.fixedAgentIds)
+    ? config.fixedAgentIds.filter((value) => typeof value === "string" && value.trim()).map((value) => value.trim())
+    : [];
+  return typeof ctx.agentId === "string" && fixedAgentIds.includes(ctx.agentId);
+}
+
+export function shouldSuppressIntentionalRoutingFallbackNotice({ payload, decision } = {}) {
+  const text = typeof payload?.text === "string" ? payload.text.trim() : "";
+  const targetModel = typeof decision?.targetModel === "string" ? decision.targetModel.trim() : "";
+  if (!text || !targetModel) return false;
+  if (!text.includes("; selected model unavailable)")) return false;
+  return text.startsWith(`↪️ Model Fallback: ${targetModel} (selected `);
 }
 
 function fableBudgetOverride(config, day) {
@@ -243,7 +288,9 @@ export function appendJsonl(filePath, record, logger) {
 
 export function resolveModels(config) {
   return {
+    astraModel: typeof config.astraModel === "string" && config.astraModel.trim() ? config.astraModel.trim() : "openai/gpt-6-astra",
     routineModel: typeof config.routineModel === "string" && config.routineModel.trim() ? config.routineModel.trim() : DEFAULT_ROUTINE_MODEL,
+    semiRoutineModel: typeof config.semiRoutineModel === "string" && config.semiRoutineModel.trim() ? config.semiRoutineModel.trim() : DEFAULT_SEMI_ROUTINE_MODEL,
     deepModel: typeof config.deepModel === "string" && config.deepModel.trim() ? config.deepModel.trim() : DEFAULT_DEEP_MODEL,
     fableModel: typeof config.fableModel === "string" && config.fableModel.trim() ? config.fableModel.trim() : DEFAULT_FABLE_MODEL,
   };
@@ -255,8 +302,8 @@ export function resolveRoutingDecision({ prompt, attachments, sessionKey = "", c
   const fableMode = resolveFableMode(cfg);
   const isOmegaClaw = OMEGACLAW_SESSION_MARKERS.some((m) => m.test(String(sessionKey || "")));
   let classification;
-  if (Array.isArray(attachments) && attachments.length > 0) classification = { tier: "deep", reason: "attachment" };
-  else classification = isOmegaClaw ? classifyOmegaClawPrompt(prompt, cfg) : classifyPrompt(prompt, cfg);
+  classification = isOmegaClaw ? classifyOmegaClawPrompt(prompt, cfg) : classifyPrompt(prompt, cfg);
+  if (Array.isArray(attachments) && attachments.length > 0 && classification.tier !== "astra" && classification.tier !== "fable") classification = { tier: "deep", reason: "attachment" };
 
   let targetTier = classification.tier;
   let targetModel = null;
@@ -287,7 +334,9 @@ export function resolveRoutingDecision({ prompt, attachments, sessionKey = "", c
     }
   }
 
-  if (targetTier === "routine") targetModel = models.routineModel;
+  if (targetTier === "astra") targetModel = models.astraModel;
+  else if (targetTier === "routine") targetModel = models.routineModel;
+  else if (targetTier === "semi-routine") targetModel = models.semiRoutineModel;
   else if (targetTier === "fable") targetModel = models.fableModel;
   else targetModel = models.deepModel;
 

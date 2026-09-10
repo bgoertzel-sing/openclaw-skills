@@ -1,0 +1,299 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.82in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!55!black,urlcolor=blue!55!black}
+\setlist{nosep,leftmargin=*}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\stage}[1]{\textbf{Stage #1}}
+\title{Plain2Metta: Current Architecture, Progress, and Worked Examples}
+\author{Technical status report for Benjamin Goertzel}
+\date{18 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Plain2Metta is now a source-preserving, content-addressed, fail-closed pipeline
+from constrained Plain specifications to reviewable SpecAtom-HS artifacts,
+logical IR, deterministic reference MeTTa/Python, bounded execution, and an
+evidence-bearing validation verdict.  The evaluation web vertical has been
+merged into \code{main} at commit
+\code{5ce102cb02e72f377314205b28f102e5fc39911f} and deployed on the existing
+VM2 as one localhost-only worker at \code{127.0.0.1:8081}.  This report
+summarizes what was built, the current architecture and trust boundaries, the
+G0--G6 evidence model, the three worked evaluation examples, acceptance
+evidence, and current limitations.
+\end{abstract}
+
+\section{Executive status}
+
+The implemented system is more than a text-to-code demo: it retains exact
+source bytes and hashes, creates immutable artifacts with explicit ancestry,
+requires review and approval at consequential transitions, executes only
+bounded and approved validation tasks, and returns evidence with its verdict.
+The browser no longer invents grades; it renders the server's Stage-9 evidence
+projection and complete G0--G6 vector.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+Item & Current state \\
+\midrule
+Accepted task head & \code{1755dddcb31dc02c04d7db35dec01ba1fb6b9215} \\
+Merged release & PR \#3, \code{main} commit \code{5ce102cb02e72f377314205b28f102e5fc39911f} \\
+Deployment & Existing VM2; one systemd worker; \code{127.0.0.1:8081}; not publicly bound \\
+Focused acceptance & 106/106 real-route tests passed \\
+Provider-free suite & 777/777 tests passed \\
+Lean clean build & 3,015 jobs rebuilt in the fresh-clone acceptance run \\
+Live canaries & GET, health, and all three bundled POST \code{/api/evaluate} examples passed \\
+\bottomrule
+\end{tabularx}
+
+\section{Purpose and scope}
+
+Plain2Metta translates a deliberately constrained Plain-like specification
+into inspectable, provenance-bearing representations before any generated
+program is trusted.  Its internal representation remains named
+SpecAtom-HS.  Two compatible layers coexist:
+
+\begin{itemize}
+\item an earlier \code{plain\_to\_metta} source-preserving compiler, which
+indexes sections, items, concepts, requirements, tests, provenance spans and
+conservative diagnostics; and
+\item the v2 \code{specatom\_hs} artifact pipeline, which adds immutable
+project state, exact review gates, logical IR, compilation and sandbox
+handoffs, semantic-validation artifacts, formal/runtime evidence and
+traceability.
+\end{itemize}
+
+It is not yet a general natural-language program synthesizer.  General prose
+is untrusted input.  The live behavioral examples use exact reviewed profiles;
+rewording or unsupported input fails closed rather than inheriting a result
+from a superficially similar example.
+
+\section{End-to-end architecture}
+
+The live \code{POST /api/evaluate} route accepts exactly one bounded JSON field,
+\code{text}.  It first calls the semantic-validation vertical and only then
+the compatibility/reference compiler.  Any malformed input, stale approval,
+hash mismatch, invalid evidence or backend timeout yields an error or
+conservative unknown state without partially promoting downstream artifacts.
+
+\begin{center}
+\small
+\begin{tabularx}{0.97\textwidth}{@{}cXl@{}}
+\toprule
+Stage & Function & Principal output/evidence \\
+\midrule
+1 & Preserve exact reviewed source; create strict contracts and obligations & content-addressed semantic artifacts \\
+2 & Lower to and interpret a finite typed contract calculus & deterministic interpretation and canonical MeTTa projection \\
+3 & Independently author, review and approve a bounded validation plan & plan, immutable review, approval \\
+4 & Execute approved property/example checks & Hypothesis 6.138.15 evidence \\
+5 & Execute an approved finite-state model when applicable & TLC 1.7.4 evidence or justified Unknown \\
+6 & Check an approved SMT obligation & Z3 4.15.3 proof/counterexample evidence \\
+7 & Kernel-check an approved theorem & Lean 4.33.0/Mathlib evidence \\
+8 & Compose only admitted evidence per obligation & verdict and G0--G6 vector \\
+9 & Project ancestry, reviews, evidence, holes and residual risk to API/UI & \code{plain2metta-evaluation-evidence/v1} \\
+10 & Attach immutable calibration/corpus facts & release metadata; observed mutation score 8/8 \\
+11 & Acceptance gate, not a request-time stage & clean checkout, tests, smokes, hygiene, independent audit \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+In parallel, the reference compiler constructs an exact artifact chain:
+original specification $\rightarrow$ elaborated specification $\rightarrow$
+test specification $\rightarrow$ reviewed snapshots $\rightarrow$ logical IR
+$\rightarrow$ compiler output $\rightarrow$ sandbox handoff $\rightarrow$
+test result $\rightarrow$ traceability report.  Every edge names exact artifact
+IDs and hashes.  Editing or revoking an upstream item invalidates descendants
+transitively.
+
+\subsection{Artifact and review model}
+
+Artifacts are immutable, versioned and SHA-256 content-addressed.  Review
+decisions bind to exact versions, not mutable filenames.  The logical IR holds
+typed declarations, contracts, requirement obligations, dependencies,
+provenance and explicit operational holes; it does not contain executable
+bodies.  Compilation is admitted only when the current reviewed inputs and
+logical IR are approved and critical findings are resolved or explicitly
+waived with rationale.
+
+Generated output is inert when stored.  Execution requires a separately
+constructed handoff and a bounded adapter.  Results bind to the request digest
+and adapter identity.  The traceability report reconstructs the entire chain
+and maps each specification requirement to generated locations and tests.
+
+\subsection{Runtime and formal backends}
+
+Generated MeTTa runs under pinned Hyperon CLI 0.2.10.  Generated Python runs
+with isolation flags and explicit time, memory and output bounds.  The
+semantic vertical additionally coordinates Hypothesis, TLC, Z3 and Lean, but
+only tasks named by the approved validation plan are executable.  Backend
+output is untrusted until its schema, attribution, request hash, ancestry and
+result semantics are checked.  A backend may be explicitly inapplicable; this
+is recorded as justified Unknown, never fabricated Pass.
+
+\section{Evidence grades}
+
+Grades are per obligation and form a vector; they are not a single ladder on
+which a higher-looking result silently implies all lower or different forms of
+evidence.
+
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+Grade & Meaning \\
+\midrule
+G0 & Source is preserved and identified exactly. \\
+G1 & Meaning is represented in a structured contract/obligation form. \\
+G2 & An admitted executable artifact runs under a recorded bounded runtime. \\
+G3 & Named examples with independent expected results pass. \\
+G4 & Properties or model-based obligations are exercised with recorded evidence. \\
+G5 & A formal obligation is proved/checked by the named solver or proof kernel. \\
+G6 & The relevant behavior is observed in the stated operational context. \\
+\bottomrule
+\end{tabularx}
+
+The API returns the actual vector, backend attribution, assumptions,
+counterexamples, unresolved holes and residual risk.  The Stage-9 browser reads
+this server payload; the former JavaScript grade inference and hard-coded
+G4--G6 values were removed.
+
+\section{Worked examples}
+
+The bundled examples progress from a pure transformation through stateful
+validation to temporal/data-lineage constraints.  They are exact, curated
+behavior profiles, deliberately small enough for the full evidence path to be
+inspectable.
+
+\subsection{Greeting with trace preservation}
+
+The Plain requirements say that each request receives a greeting and that the
+greeting retains its trace identifier (\code{GREET-1}, \code{GREET-2}).  The
+reference MeTTa rule constructs \code{(Greeting text trace)}; the test call
+with \code{"hello"} and \code{"trace-123"} must return exactly
+\code{(Greeting "hello" "trace-123")}.  The Python reference independently
+returns a record and prints exactly
+\code{Greeting(text=hello,trace=trace-123)}.  Assertions check both the text
+and trace, so merely returning a greeting is insufficient.
+
+\subsection{Task-list validation and owner preservation}
+
+The task example has three obligations: store a valid named task, reject a
+task with no name, and preserve the owner.  The valid case stores
+\code{"Write report"} for \code{"alice"}; the invalid case returns
+\code{missing-name}.  Both MeTTa and Python outputs are compared byte-for-byte
+with reviewed expected output.  This example exercises a stateful shape and
+demonstrates that success, rejection behavior and data preservation can be
+separate requirement-linked assertions.
+
+\subsection{Forecast split, horizon and baseline}
+
+The temporal-lineage example requires that training observations precede the
+evaluation window, exactly one forecast is emitted for a declared horizon, a
+named baseline is used, and split timestamps are reported.  The fixture uses
+times 10, 19 and 30 with evaluation start 20: 10 and 19 are admitted, while 30
+is excluded.  It emits one 24-hour forecast, compares against
+\code{seasonal-naive}, and reports the split boundary.  This is a compact
+demonstration of anti-leakage, temporal provenance and evaluation reporting;
+it is not a claim that arbitrary forecasting prose has been understood.
+
+\section{Validation and adversarial coverage}
+
+The vertical includes positive end-to-end tests and fail-closed cases for:
+
+\begin{itemize}
+\item exact source mutation and unsupported/reworded input;
+\item stale or changed plan, contract, immutable review, or revoked approval;
+\item backend request-hash mismatch, malformed/misattributed evidence and timeout;
+\item failing property, model or Lean proof result;
+\item cross-runtime disagreement and inapplicable TLC work; and
+\item transitive invalidation of evidence and verdicts after upstream change.
+\end{itemize}
+
+Stage 11 passed from a fresh single-branch clone.  The pinned Lean dependency
+rebuilt 3,015 jobs; 106 focused real-route tests and all 777 provider-free tests
+passed, followed by compilation, credential-pattern, large-file, diff and
+untracked-file hygiene checks.  A separate static audit confirmed that the
+route calls the Stage 1--8 orchestrator, Stage 9 contains Stage-10 metadata,
+and the UI reads \code{grade\_achieved.vector} without synthesizing grades.
+
+\section{Deployment}
+
+PR \#3 was merged after acceptance.  The exact merged \code{main} commit is
+\code{5ce102cb02e72f377314205b28f102e5fc39911f}.  VM2 runs one bounded systemd
+worker on \code{127.0.0.1:8081}.  The root page, health endpoint and fresh
+evaluations of all three bundled examples passed after deployment; responses
+contained Stage 1--8 ancestry, Stage-9 evidence, Stage-10 metadata and complete
+server-derived G0--G6 vectors.
+
+Two deployment trials failed safely before the final correction: Lean cache
+permissions were initially unreadable, and a canary transport step stripped a
+terminal newline from exact source bytes.  Each trial was rolled back; neither
+was promoted as successful.  The service remains localhost-only, and no paid
+resource was provisioned, resized or left running as part of this deployment.
+
+\section{What has been accomplished}
+
+\begin{enumerate}
+\item Built source-preserving parsing, exact spans, stable identities,
+conservative diagnostics, structured semantic objects and PeTTa/MeTTa export.
+\item Built immutable v2 project/artifact persistence with hash-bound review,
+approval, logical-IR admission and transitive invalidation.
+\item Added provider-neutral elaboration/compilation seams, inert generated
+output, bounded sandbox handoff/results and end-to-end traceability.
+\item Added a strict finite semantic-contract calculus and independent
+validation-plan/review protocol.
+\item Integrated Hypothesis, TLC, Z3 and Lean evidence under exact approved
+plans and conservative verdict composition.
+\item Replaced the legacy evaluation shortcut with a real Stage 1--10 route
+and replaced browser grade synthesis with server-owned evidence rendering.
+\item Closed the adversarial matrix, fresh-clone Stage-11 acceptance and
+independent code-path audit.
+\item Merged and deployed the accepted release to VM2 with passing canaries and
+a preserved rollback path.
+\end{enumerate}
+
+\section{Limitations and next directions}
+
+\begin{itemize}
+\item Semantic behavioral validation is currently exact-profile based.  New or
+rephrased specifications are not automatically generalized; they fail closed.
+\item Deterministic generation and curated oracles can share assumptions, so
+correlated-error risk remains explicit.  G3 test evidence is not proof of
+arbitrary natural-language correctness.
+\item The finite contract calculus intentionally rejects free prose, unknown
+operations, malformed types, unapproved assumptions and typed holes.
+\item External runtimes and solvers are pinned dependencies, not part of the
+trusted core.  Their identity and output must remain recorded and checked.
+\item The VM2 deployment is a localhost service, not a public production
+release.  Public exposure, authentication, operational monitoring and broader
+G6 observations would require a separate deployment/security decision.
+\end{itemize}
+
+A scientifically useful next phase is to broaden the set of independently
+authored contracts and validation plans while preserving exact provenance and
+fail-closed semantics, then measure generalization on held-out Plain
+specifications rather than relaxing admission around the three curated
+examples.
+
+\section{Evidence locations}
+
+The principal durable records are:
+
+\begin{itemize}
+\item \code{experiments/20260818T072517Z-plain2metta-evaluation-stage11-clean-checkout/}
+\item \code{experiments/20260818T075514Z-plain2metta-evaluation-stage11-independent-audit/}
+\item \code{experiments/20260818T153337Z-plain2metta-pr3-merge-vm2-deployment/}
+\item merged source commit \code{5ce102cb02e72f377314205b28f102e5fc39911f}
+\end{itemize}
+
+\end{document}

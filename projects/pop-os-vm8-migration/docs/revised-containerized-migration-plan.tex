@@ -1,0 +1,405 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\definecolor{navy}{RGB}{25,55,92}
+\definecolor{pale}{RGB}{239,244,249}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=navy}
+\setlist{nosep,leftmargin=1.35em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Proto-Hive migration plan}
+\rhead{Revision 2026-08-12}
+\cfoot{\thepage}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{pale},frame=single,
+  breaklines=true,columns=fullflexible,showstringspaces=false}
+
+\title{Revised Complete Proto-Hive Migration Plan\\
+\large Containerized deployment to ASI replacement VM1 and VM2}
+\author{ZeroBot / ProtoCosmo migration workstream}
+\date{2026-08-12}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fcolorbox{navy}{pale}{\parbox{0.91\textwidth}{
+\textbf{Decision.} Docker Compose is the primary deployment path. The runtime,
+supervision, health checks, and receiver configuration live in reproducible
+containers. Persistent state and credentials remain in narrowly scoped host
+mounts. Cutover is performed one Telegram identity at a time, with exactly one
+active receiver and the Pop!\_OS laptop retained as the immediate rollback host.
+}}
+\end{center}
+
+\section{Purpose and current evidence}
+
+The objective is to migrate four proto-hive identities from the Pop!\_OS laptop
+to two existing ASI replacement virtual machines without losing identity,
+routing, cursor state, scheduled work, or rollback capability. The target
+assignment is:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Target & Identities & Role \\
+\midrule
+VM1 & ProtoCosmo, ProtoCosmo2 & Two isolated Compose services \\
+VM2 & Protomega, Protomega2 & Two isolated Compose services \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Observed before this revision:}
+\begin{itemize}
+\item Both targets are reachable Ubuntu 22.04 hosts with 4 CPUs, about 16 GiB
+RAM, about 128 GB storage, and clean systemd state.
+\item Checksummed, credential-free source bundles have passed integrity,
+extraction, compile, and provider-free tests on both targets.
+\item Each target passed 113 provider-free tests; one laptop-specific PDF
+fixture test was deliberately excluded from remote staging.
+\item Fail-closed native staging units and immutable identity roots exist but
+remain disabled. No VM receiver has been enabled.
+\item A preliminary private ProtoCosmo2 state snapshot is staged on VM1 with
+polling disabled. The laptop remains authoritative for every receiver.
+\end{itemize}
+
+Containerization changes the packaging and supervision layer, not the safety
+contract. Existing verified source pins and state manifests are inputs to the
+image and mounted-volume design. The disabled native staging path remains a
+fallback until the containerized deployment passes acceptance.
+
+\section{Non-negotiable invariants}
+
+\begin{enumerate}
+\item \textbf{Single receiver:} for each bot token, at most one process may poll
+Telegram at any instant. A target receiver starts only after its laptop owner
+has stopped and absence is independently verified.
+\item \textbf{Per-identity isolation:} credentials, cursor/state, sessions,
+attachments, logs, and locks are never shared across identities.
+\item \textbf{No secrets in artifacts:} image layers, Compose files, Git,
+project Markdown, logs, shell arguments, PDF, and chat contain credential
+categories or references only, never values.
+\item \textbf{Fail closed:} absence of an explicit per-identity activation
+marker prevents polling. Health checks cannot enable a receiver.
+\item \textbf{Immutable runtime:} source and dependencies are pinned and built
+into a versioned image. Runtime containers do not modify their code layer.
+\item \textbf{Mutable state is durable:} every required mutable path is a
+bounded host bind mount or named volume with verified owner, mode, and backup.
+\item \textbf{Rollback before optimization:} the laptop copy is preserved and
+restartable through the soak period. No cleanup precedes acceptance.
+\item \textbf{One lane at a time:} only one identity enters the stop, final
+delta, start, canary, and adjudication sequence at once.
+\item \textbf{Evidence before claims:} a lane is complete only when receipts,
+receiver counts, fresh canaries, restart checks, and state continuity evidence
+exist in the experiment ledger.
+\end{enumerate}
+
+\section{Target architecture}
+
+\subsection{Portable container unit}
+
+Build one pinned base image containing the OpenClaw/Node runtime and common
+dependencies, plus pinned Omega, PeTTa, and per-identity runner inputs where
+needed. Select identity behavior through an explicit service command and
+read-only configuration, not through mutation of the image.
+
+Each VM runs a project-scoped Docker Compose stack. Each identity is a separate
+service with:
+\begin{itemize}
+\item its own container name, internal network identity, health check, restart
+policy, resource limits, and log policy;
+\item read-only runtime/config mounts and separate read-write state mounts;
+\item a per-identity secrets directory mounted read-only;
+\item no published port unless a verified host integration requires one;
+\item polling disabled by default and gated by a host activation marker;
+\item a non-root runtime user where repository behavior permits it.
+\end{itemize}
+
+Docker Compose provides lifecycle orchestration. Host systemd owns one
+Compose-stack unit per VM so the stack starts after Docker and mounted storage,
+survives reboot, and has a single inspectable host-level supervisor. Container
+restart policy handles process failure; systemd handles Docker/host lifecycle.
+
+\subsection{Host/container boundary}
+
+\begin{longtable}{p{0.25\textwidth}p{0.32\textwidth}p{0.34\textwidth}}
+\toprule
+Concern & In container/image & On host or mounted storage \\
+\midrule
+Runtime & Pinned Node/OpenClaw, Python/PeTTa dependencies, reviewed runners &
+Docker Engine, Compose plugin, systemd stack unit \\
+Identity config & Schema and non-secret defaults & Read-only identity-specific
+config and routing policy \\
+Credentials & Names and loading mechanism only & Mode-restricted per-identity
+secret files or Docker secrets \\
+State & State-handling code & Cursor, sessions, memory, schedules, attachment
+metadata, durable queues \\
+Logs & Structured stdout/stderr contract & Bounded Docker journal/log files and
+experiment receipts \\
+Health & Local probe executable & Compose health status and host monitoring \\
+Receiver activation & Fail-closed check & Per-identity activation marker,
+created only during cutover \\
+Backups & Restore-compatible formats & Encrypted or access-controlled snapshots
+and checksums \\
+\bottomrule
+\end{longtable}
+
+GitHub CLI authentication and unrelated local developer tooling are explicitly
+outside the migration critical path and may be re-established separately by
+the operator.
+
+\section{Credential and state categories}
+
+Only categories are listed here. No values, fragments, endpoints containing
+secrets, or private-key material belong in this document.
+
+\begin{itemize}
+\item VM SSH access and verified host-key records.
+\item Per-VM inference API authorization and matching inference user mapping.
+\item One Telegram bot token per identity.
+\item Internal OpenClaw gateway authorization.
+\item Model-provider and Codex authentication profiles.
+\item Optional connector OAuth credentials used by a particular identity.
+\item Telegram allowlists, chat routing rules, and identity policy files.
+\item Persistent state roots, ownership, filesystem modes, and backup location.
+\item Optional GitHub/gh authentication, handled outside this migration.
+\end{itemize}
+
+The migration copies existing required secrets through bounded, non-logging
+mechanisms. Operators manually re-establish only credentials that are
+host-bound, expired, unavailable for bounded transfer, or intentionally kept
+outside the copied state. Credential rotation remains post-migration cleanup by
+current owner decision and is not a cutover gate unless authentication fails or
+active misuse is observed.
+
+\section{Implementation phases}
+
+\subsection*{Phase 0: Freeze and reconcile}
+\begin{enumerate}
+\item Re-audit the four live laptop supervisors and prove exactly one receiver
+per identity.
+\item Freeze image inputs: repository commits, reviewed dirty-file hashes,
+dependency lockfiles, base image digest, and wrapper checksums.
+\item Reconcile the current identity delta manifest against every container
+mount. Classify each path as immutable image content, read-only config,
+read-write state, secret, ephemeral cache, or excluded material.
+\item Record disk requirements, identity-to-VM assignment, and rollback owner.
+\end{enumerate}
+
+\textbf{Gate 0:} no unclassified production path; no secret in the build
+context; all pins and expected hashes recorded.
+
+\subsection*{Phase 1: Build reproducible image and Compose stack}
+\begin{enumerate}
+\item Create a minimal Dockerfile with a digest-pinned supported base image.
+Install dependencies from pinned manifests, copy only allowlisted source, and
+run as a non-root user where feasible.
+\item Add an entrypoint that validates identity, required mounts, file modes,
+state schema, and activation marker before starting. It must exit nonzero on an
+unknown identity or incomplete configuration.
+\item Define four Compose services across two VM-specific overlays. Use
+read-only root filesystems where compatible, temporary filesystems for scratch,
+bounded resource/log settings, and no broad host-directory mounts.
+\item Add health checks that verify process liveness and local readiness without
+calling Telegram or consuming updates.
+\item Generate a software bill of materials or at minimum an image digest,
+package inventory, source pins, and build transcript.
+\end{enumerate}
+
+\textbf{Gate 1:} clean local build; image contains no recognizable secret
+material; provider-free test suite passes inside the image; Compose config
+renders successfully; all services remain polling-disabled.
+
+\subsection*{Phase 2: Install Docker and stage offline}
+\begin{enumerate}
+\item Verify official package provenance and install Docker Engine plus Compose
+on both existing VMs. No new paid resources are created.
+\item Create fixed host directories for images/manifests, per-identity config,
+secrets, state, backup snapshots, and receipts. Apply least-privilege modes.
+\item Transfer the image by a checksummed archive or pull it from an approved
+registry by immutable digest. Transfer Compose manifests separately.
+\item Start every service in offline/no-poll mode with placeholder or omitted
+Telegram authorization. Run compilation, dependency, state-schema, provider,
+and health checks that cannot poll Telegram.
+\end{enumerate}
+
+\textbf{Gate 2:} both VMs reproduce hashes; all services become healthy in
+offline mode; zero target pollers are observed; laptop pollers remain exactly
+one per identity.
+
+\subsection*{Phase 3: Stage private state and rehearse rollback}
+\begin{enumerate}
+\item Stop each offline service before state import. Copy preliminary state and
+required secrets into only that identity's mounts using a bounded allowlist.
+\item Verify file counts, hashes where stable, modes, owners, state schema, and
+absence of cross-identity files. Do not print content.
+\item Start again with polling disabled. Exercise provider authorization and
+local response generation without Telegram update consumption where possible.
+\item Rehearse container stop, state backup, state restore into a disposable
+location, Compose restart, and laptop supervisor restart commands.
+\end{enumerate}
+
+\textbf{Gate 3:} private mounts validate; offline provider smoke passes;
+backup/restore rehearsal passes; rollback commands and estimated time are
+recorded.
+
+\subsection*{Phase 4: Per-identity production cutover}
+
+Use the same transaction for ProtoCosmo2, ProtoCosmo, Protomega, and
+Protomega2, one at a time. ProtoCosmo2 remains the first candidate because its
+preliminary state is already staged, but the operator may reorder lanes if its
+runtime acceptance prerequisites are incomplete.
+
+\begin{enumerate}
+\item Announce the lane and create a pre-cutover laptop state snapshot plus
+receiver-count receipt.
+\item Stop the identity through its owning laptop supervisor. Verify the
+process is absent and cannot auto-restart. Leave all other identities running.
+\item Copy the final mutable delta, including cursor and pending durable work,
+to that identity's target mounts. Verify metadata and state consistency.
+\item Create only that identity's activation marker and start its Compose
+service. Confirm one target receiver and zero laptop receivers for the token.
+\item Send fresh human-authored Telegram canaries: direct/group text as
+applicable, reply routing, and a safe attachment. Confirm exactly one response,
+correct identity, correct destination, preserved state, and no stale replay.
+\item Restart the container and repeat a fresh canary. Inspect bounded logs for
+duplicate polling, authentication errors, dropped work, or cross-routing.
+\item Accept the lane, or roll it back immediately before touching the next.
+\end{enumerate}
+
+\textbf{Gate 4 per identity:} exactly one receiver; all fresh canaries and
+restart recovery pass; mutable state advances on the target; rollback remains
+available.
+
+\subsection*{Phase 5: Host restart, reboot, and soak}
+\begin{enumerate}
+\item After all four lanes pass independently, restart each Compose stack under
+systemd and verify identity isolation and receiver counts.
+\item Reboot one VM at a time. Keep the other VM and laptop rollback artifacts
+intact. Confirm Docker, systemd, mounts, and services recover in correct order.
+\item Repeat fresh text and attachment canaries after each reboot.
+\item Soak for an agreed interval while monitoring process health, restart
+counts, disk growth, scheduled work, provider failures, routing, and duplicate
+receiver symptoms.
+\end{enumerate}
+
+\textbf{Gate 5:} both VMs survive reboot; all four identities pass post-reboot
+canaries; soak shows no unresolved severity-one or severity-two defects.
+
+\subsection*{Phase 6: Closeout and deferred cleanup}
+\begin{enumerate}
+\item Freeze final image digest, Compose files, mount manifest, backup/restore
+runbook, test receipts, and identity assignment in the project record.
+\item Keep laptop services stopped but restartable until the soak owner accepts
+the migration. Archive rather than delete rollback state.
+\item Re-establish optional host tooling, including GitHub/gh, outside the
+receiver cutover path.
+\item Perform deferred credential rotation and revoke superseded access after
+migration acceptance. Update secret mounts one identity at a time and retest.
+\item Remove the persistent migration cron worker only after all acceptance
+gates and the durable record are complete.
+\end{enumerate}
+
+\section{Rollback transaction}
+
+Rollback is per identity unless a shared host failure requires reverting both
+identities assigned to that VM.
+
+\begin{enumerate}
+\item Stop the target Compose service and remove its activation marker.
+\item Verify no target receiver remains and prevent automatic restart.
+\item Preserve failed-target logs and a checksummed state snapshot for
+diagnosis. Do not overwrite the pre-cutover laptop snapshot.
+\item If safe and schema-compatible, copy only target state advances needed to
+avoid lost durable work; otherwise restore the recorded laptop pre-cutover
+state and explicitly record the possible replay window.
+\item Start the owning laptop supervisor. Confirm exactly one laptop receiver.
+\item Send a fresh canary and verify identity, routing, and state continuity.
+\item Record the failure, evidence, and the gate that must pass before retry.
+\end{enumerate}
+
+Rollback triggers include duplicate receivers, wrong-chat routing, failed fresh
+canaries, cursor regression, repeated crash/restart, mount/permission errors,
+unbounded disk growth, or inability to prove receiver exclusivity.
+
+\section{Acceptance matrix}
+
+\begin{longtable}{p{0.23\textwidth}p{0.48\textwidth}p{0.20\textwidth}}
+\toprule
+Area & Required evidence & Pass condition \\
+\midrule
+Build & Base digest, image digest, source pins, dependency inventory, clean test
+log & Rebuild/test succeeds; no secrets detected \\
+Isolation & Compose render, mount inventory, permission audit & No broad or
+cross-identity mutable mounts \\
+Offline stage & Per-VM hashes, health status, process audit & Healthy services;
+zero VM pollers \\
+Cutover & Before/after receiver counts and supervisor receipts & Exactly one
+receiver for each identity \\
+Function & Fresh text, reply-routing, and attachment canaries & Correct single
+response in correct chat \\
+State & Cursor/session/task continuity receipts & No regression, loss, or
+unexpected replay \\
+Recovery & Container restart, stack restart, VM reboot receipts & Automatic
+recovery with fresh canary pass \\
+Rollback & Rehearsal and retained laptop snapshot & Documented command path is
+usable within the cutover window \\
+Soak & Health, restart, storage, schedule, and routing observations & No open
+high-severity defect \\
+Closeout & Updated project, experiment, task, decision, and daily memory records
+& Evidence is durable and migration worker can retire \\
+\bottomrule
+\end{longtable}
+
+\section{Operational sequence and ownership}
+
+The migration worker performs one bounded, checkpointed action per cycle. It
+must finish within its execution budget, record evidence before the checkpoint
+deadline, and never turn an ambiguous state into a cutover. Human operators
+provide fresh canary messages and resolve external-account credentials when a
+bounded transfer is not appropriate. Ben and Elija have equivalent authority
+for IT and permissioning decisions, subject to identity verification and normal
+platform safety constraints.
+
+Status reports to Telegram should be short and limited to verified milestones,
+actual blockers, a cutover warning, a rollback event, or completion. They must
+never include secret values or fragments.
+
+\section{Immediate next actions}
+
+\begin{enumerate}
+\item Freeze the Docker/Compose specification and reconcile it against the
+existing identity delta manifest.
+\item Build the credential-free image locally from the already verified source
+pins; run provider-free tests inside it and scan the build context/image for
+secret material.
+\item Install Docker/Compose on VM1 and VM2 from reviewed official packages,
+then transfer the image and manifests by checksum.
+\item Pass offline Compose health and state-mount smokes on both targets.
+\item Resume the first ProtoCosmo2 lane only after its runtime, mount, and
+rollback gates pass; then proceed one identity at a time.
+\end{enumerate}
+
+\section{Decision summary}
+
+The containerized approach is adopted because it reduces host drift, makes
+runtime pins portable, gives repeatable supervision and health checks, and
+simplifies future VM moves. It does not remove the distributed-systems risks
+at the Telegram boundary. Single-receiver exclusivity, state transactionality,
+fresh external canaries, reboot validation, and laptop rollback therefore
+remain the decisive acceptance conditions.
+
+\end{document}

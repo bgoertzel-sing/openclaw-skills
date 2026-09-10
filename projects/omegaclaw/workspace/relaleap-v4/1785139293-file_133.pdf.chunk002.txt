@@ -1,0 +1,310 @@
+that load
+on large realized commutator terms” — i.e. the critic-driven router is an online enforcement
+mechanism for the CCL hypotheses, closing the loop between the theorem (modularity implies
+small forgetting) and the mechanism that maintains modularity.
+
+3.4   Pair actions: additivity at first order, synergy as cross-curvature
+For the pair action, ut ({m, n}) = ut (m) + ut (n) is linear in the single-module perturbations,
+so the first-order term is exactly additive. The V2 observation that a global architecture beat
+the additive comparator on pair amounts but not pair signs is thereby explained: at first order
+there is nothing non-additive to learn. Genuine synergy is a curvature phenomenon, and it has
+a closed form:
+
+                                               6
+Lemma 2 (Exact one-step synergy identity). With um = ut (m), un = ut (n) as in (5),
+
+τ1A ({m, n})−τ1A (m)−τ1A (n) = u⊤            3     2     2 ⊤                      3
+                                m HA un + O(η ) = η (1−α) gB Pm D HA DPn gB + O(η ).
+                                                                                (11)
+
+Proof. All first-order and drift terms in (6) are linear in u and cancel in the difference; the
+quadratic term contributes 12 [(um + un )⊤ HA (um + un ) − u⊤          ⊤            ⊤
+                                                            m HA um − un HA un ] = um HA un .
+
+    This resolves the V3 briefing’s Question 5. The “additive independent comparator” is exactly
+the backbone with cross-curvature terms deleted; the “global” model is the backbone with them
+included; and the synergy test becomes: does the measured cross-block u⊤    m HA un , computable
+with one HVP and one dot product, predict the pair-minus-singles rollout difference? That is a
+well-posed, identifiable question with a known answer in the quadratic fixture — and it dictates
+fixture design: the planted cross-curvature must be large enough that (11) exceeds the measured
+rollout noise floor by a safe factor (Appendix, Stage C1 numerics). Over horizons h > 1 the
+singles also interact through the propagator’s own curvature; the one-step identity remains the
+leading term, and the residual head (Section 5) owns the rest.
+
+3.5   Preconditioner differentiation and surrogates
+Two backbone modes are implemented and compared:
+
+  Frozen-D: treat Dk as a constant within each step’s Jacobian (7). Cheap; exact for SGD;
+   an approximation for Adam whose quality is an empirical question settled at probe states.
+
+  Exact-D: differentiate through the moment recursions (m̂, v̂) with functional-programming
+   AD (torch.func); ≈ 2× the frozen cost. Used as ground truth for validating frozen-D at
+   probe states, and as the default wherever the discrepancy gate fails.
+
+Where full HVPs are too expensive (large Transformers), Gauss–Newton / empirical-Fisher
+block surrogates replace HA in (6) and (11), and K-FAC-style Kronecker factors (recalled from
+memory, verify) supply per-head cross-blocks; each surrogate is admitted only after passing a
+cosine/magnitude agreement gate against true HVPs at probe states (Appendix, Stage C4).
+
+
+4     Why the black-box critic could not work
+Proposition 1 (Insufficient statistics). Let φ(S) be any feature map built from per-module norms
+of gA , gB , their cosines, parameter norms, activation moments, and coordinate-wise optimizer-
+moment summaries that are invariant under a simultaneous permutation π of coordinates within
+a module applied to both gradients and the corresponding moment entries. In the block-quadratic
+fixture of Section 6 with non-permutation-invariant within-module spectra, there exist state pairs
+S, S ′ with φ(S) = φ(S ′ ) and τhA (S, a) τhA (S ′ , a) < 0 for single-module actions a and horizons
+h ≥ 1. Consequently any measurable critic f (φ(S), a) satisfies
+
+                 Var E[τh | φ] ≤ Rφ2 Var(τh ) with Rφ2 < 1 bounded away from 1,
+                               
+
+
+and its achievable rank correlation with τh is bounded accordingly.
+
+
+
+
+                                                 7
+Proof sketch. Within module m, τhA depends on curvature-weighted inner products of the form
+P
+   i∈Im wi gA,i gB,i with weights wi determined by the spectra of QA , QB and the propagator
+factors (1 − ηbi )h−1 ; a within-module permutation of the gradient coordinates preserves norms,
+cosines, and moment summaries but reweights the sum, and with non-degenerate spectra one
+can choose sign patterns making the reweighted sum change sign. Both permuted configurations
+arise as genuine states of the fixture. Averaging τ over the equivalence class attenuates E[τ | φ]
+toward zero on these classes.
+
+    Stage C1 of the appendix instantiates this constructively (a “controlled autopsy”): the V2-
+style MLP on V2-style features is retrained on fixture data where the backbone attains Spearman
+≥ 0.95, and its ceiling is reported. The point is not to relitigate V2 but to convert the diagnosis
+into a regression test: any future feature set must break the permutation invariance or it is
+provably capped.
+Proposition 2 (No trajectory-invariant ordering; margin decay). In the quadratic fixture with
+LB = 21 (θ − b∗ )⊤ QB (θ − b∗ ) trained by SGD, the injected perturbation obeys ∥ut (a)∥ ≤ η(1 −
+α) ∥QB ∥ ∥θt − b∗ ∥, and ∥θt − b∗ ∥ contracts geometrically at rate (1 − η λmin (QB )). Hence ev-
+ery action’s effect, and every between-action margin, decays geometrically along the trajectory;
+and the first-order retained-side term gA (θt+h ), (I − ηQB )h−1 ut (a) changes sign whenever the
+trajectory crosses the corresponding level structure of LA . No family-level ordering declared at
+construction time can be trajectory-invariant unless the construction pins the trajectory itself.
+    The V3 audit failure is this proposition observed in the wild. The corrective is not a cleverer
+fixture whose ordering survives — the physics forbids it — but a fixture whose truth is recomputed
+at every audited state (Section 6), plus an explicit no-signal regime: when the measured between-
+action margin at a state falls below the rollout noise floor, the state is labeled signal-free and
+excluded from ordering claims rather than counted as a violation. This also answers the briefing’s
+Question 2: re-anchoring, if used at all, should be triggered by the measured counterfactual
+action margin — which the backbone supplies for free — never by retained loss or a fixed
+schedule.
+
+
+5     The grey-box critic
+5.1   Architecture
+The critic is a sum:
+                                                                                                
+               Ybh (St , a) =                  τbh (St , a)                 +     rψ ϕh (St , a) ,      (12)
+                                               | {z }                             |    {z       }
+                                measured backbone (9), incl. synergy (11)       learned residual head
+
+predicting the outcome vector (τhA , τhB ) jointly. The residual head is deliberately small (a 2 × 64
+MLP per outcome, five-member ensemble as in V2/V3) and is trained on Yhrollout − τbh , i.e. only
+on what the second-order theory misses: finite-(1 − α) effects beyond linear response, cross-
+arm trajectory divergence at long horizons, preconditioner nonstationarity under frozen-D, and
+minibatch-curvature fluctuation. Its feature vector ϕh contains the backbone terms themselves
+(first-order, drift, self- and cross-curvature, per horizon), plus phase descriptors: ∥gA ∥ , ∥gB ∥,
+the progress ratio LB (θt )/LB (θ0 ), a 10-iteration power-method estimate of λmax (DHB ), and
+the measured validity statistic of Section 5.2. Features remain decision-time observable; the
+anti-leakage rules of V2/V3 apply unchanged.
+
+                                                         8
+5.2   Validity gate: the expansion’s trust region
+At a random subset of decision states (the probe states), both the backbone prediction and the
+true CRN paired rollout are computed for the full action table, and the agreement
+
+                                                                   τh − τhrollout |
+                                                                  |b
+           ρh = Spearman τbh , τhrollout ,
+                                        
+                                              eh = median
+                                                             max(|τhrollout |, 3σnoise (h))
+
+is logged as a function of horizon, attenuation strength, and phase. The validity radius is the
+largest (h, 1 − α) region in which ρh ≥ 0.8 and eh ≤ 0.25. Inside the radius the backbone alone
+is the critic and the residual must not hurt; outside, the residual must earn its keep (gates in
+Section 5.4). The validity radius replaces the V3 notion of a trajectory audit against declared
+orderings: it is the honest version of the same instinct, measuring where the theory holds rather
+than insisting that a label does.
+
+5.3   Decision rule
+The conservative V-series policy shape is retained but re-expressed on vector outcomes: choose
+a non-ordinary action only when (i) the state’s action margin exceeds 3σnoise ; (ii) the calibrated
+probability that τhA < 0 exceeds the frozen threshold with 4/5 ensemble agreement; (iii) the
+predicted incoming harm τhB is below the frozen tolerance (0.02 nat retained from V3); and
+(iv) the state lies inside the validity radius or the residual head has passed its out-of-radius
+skill gate. Scalarization by Uh is available for reporting continuity with V1–V3 but is not the
+training target.
+
+5.4   Revised gate suite
+The estimation gates become:
+
+ 1. Backbone-validity gate. ρh ≥ 0.8, eh ≤ 0.25 inside the declared operating region, per
+    family, on untouched confirmation seeds; states with margin < 3σnoise excluded from order-
+    ing metrics and their fraction reported.
+
+ 2. Residual-skill gate. Inside the validity radius, adding the residual changes MSE by at
+    most +5% (do-no-harm); outside it, the residual improves MSE over backbone-alone by
+    ≥ 20% and over the constant and support-only baselines as before. This is strictly harder
+    and strictly fairer than V2’s “beat a constant”: the null model is now the theory.
+
+ 3. Synergy gate. The measured cross-curvature (11) predicts pair-minus-singles rollout dif-
+    ferences with relative error ≤ 10% in the fixture and Spearman ≥ 0.6 on the real learner;
+    the additive comparator is defined as cross-terms-deleted, ending the comparator ambiguity.
+
+ 4. Null gate. In the provably-aligned null family (Section 6), the first-order term is nonneg-
+    ative analytically at every state; any negative measurement exceeding 3σnoise is a fixture or
+    code defect and halts the stage. False-beneficial rate at the policy threshold ≤ 5% retained.
+
+ 5. Calibration and ESS gates retained from V3 (ten-bin ECE ≤ 0.15 on sign probabilities;
+    audit ESS ≥ 50 per action class, ≥ 20 per module/action marginal).
+
+
+
+
+                                                9
+6     The trajectory-stable positive control: a block-quadratic fix-
+      ture
+The fixture answers the briefing’s Question 1. Losses are
+
+             LA (θ) = 12 (θ − a∗ )⊤ QA (θ − a∗ ),        LB (θ) = 21 (θ − b∗ )⊤ QB (θ − b∗ ),   (13)
+
+with stochastic gradients g = ∇LB + σξ, ξ ∼ N (0, I), and everything run in float64. Because
+the dynamics are affine, the paired counterfactual τh at any state, action, and horizon has a
+closed form (a finite product of affine maps), so ground truth is recomputed per state — nothing
+is “declared,” hence nothing can be violated by the trajectory. Under Adam the dynamics are
+no longer affine, but exact paired rollouts remain cheap and the SGD closed form remains the
+analytic anchor.
+    The four families are realized structurally:
+
+  Null / harmful (provably aligned). a∗ = b∗ , QA , QB diagonal         (hence module-aligned
+   and simultaneously diagonalizable). Then ⟨gA , DPm gB ⟩ = i∈Im di qiA qiB (θi − θi∗ )2 ≥ 0 at
+                                                               P
+   every state for every module: gating can only cost. The V2 pathology (a null family qui-
+   etly emitting 1,313 positive labels) becomes analytically impossible rather than empirically
+   embarrassing.
+
+  Local-specific. a∗ and b∗ differ only on Im , with elevated QA diagonal there: conflict is
+   concentrated in one module, and the per-state truth says when (and until when) protecting
+   it helps.
+
+  Downstream chain. A symmetric off-diagonal block of QB coupling Im to In : perturbing
+   m propagates to n through the propagator (I − ηDQB )h−1 , so coordinated protection is
+   favored at moderate h — verifiable from the closed form.
+
+  Synergistic pair. A symmetric off-diagonal block C of QA between Im and In , sized so the
+   one-step synergy (11) satisfies |u⊤
+                                     m QA un | ≥ 5 σnoise (1) at typical states (numerics in Stage
+   C1).
+
+The fixture also hosts the two propositions of Section 4 as executable demonstrations: the
+insufficient-statistics construction (permuted-state pairs) and the margin decay curve.
+
+
+7     Specialization to Transformers
+7.1   Module partition and cost
+Following CCL §7 and the CGCCT module inventory, modules are attention heads and feed-
+forward channel groups; for GPT-2 small that is 144 heads plus FF blocks, and for the Phase-0
+model of Stage C4 it is 8 heads plus 2 FF groups. Per-module gradients are obtained from the
+same backward pass via parameter grouping (no extra cost); the first-order backbone term for all
+M single-module actions is then M masked inner products — essentially free. The propagator
+costs one batched JVP pass per decision state (Section 3.2); cross-curvature terms cost one
+HVP per participating module. For large models, empirical-Fisher / GGN block surrogates and
+K-FAC factors stand in for HVPs, gated by probe-state agreement.
+
+
+
+                                                    10
+7.2   Sparsifying the pair-action space with HDC footprints
+Pair actions scale quadratically in M ; at 144 heads that is untenable and also unnecessary. The
+HDC–CGCCT synthesis supplies the fix: encode each module’s do-footprint as a hypervector
+(Eq. 5 of that note), build the module-level confusion graph by approximate-nearest-neighbor
+search over footprint codes, and instantiate pair actions (and cross-curvature measurements)
+only for edges of the confusion graph. The backbone then feeds measured commutator terms
+back as edge weights, so the graph and the critic co-refine — the “sparse confusion graph” of
+the approximate categorical CCL theorem, estimated online.
+
+7.3   Retained-gradient estimation and CMCP
+On real learners gA is estimated from replay. Duplicate or derived replay packets inflate the
+effective precision of that estimate in exactly the way the CMCP calibration study characterized;
+the typed innovation/provenance guard (weight-zeroing byte-identical and declared-descendant
+packets) is therefore applied to the replay stream feeding the gA estimator, with the total-mass
+normalization recommended in that report. This is the one place the CMCP machinery enters
+the critic, and it enters as plumbing, not as a hypothesis under test.
+
+
+8     Specialization to CAROM
+CAROM (Content-Addressable Recurrent Operator Machine) separates control from data: opaque
+command tokens route computation over a small library of reusable learned operators that read,
+transform, gate, and write a slot workspace over recurrent steps, with scheduled, fixed-point
+(equilibrium), and itinerant execution semantics, and a PC/EqProp local-learning variant (PC-
+CAROM). This separation makes CAROM, if anything, a better host for the commutator critic
+than a Transformer, because the module partition is architectural rather than discovered: opera-
+tor weight blocks {Wk }, the control system, and per-slot gating parameters are natural modules,
+and a context’s support is literally the set of operators its programs invoke.
+
+  Scheduled / itinerant (BPTT-trained) semantics. The update map is an unrolled
+   program; the tangent propagator of Section 3.2 applies verbatim, with Jk the Jacobian of
+   one recurrent step. Actions attenuate a specific operator’s gradient during adaptation to a
+   new context; the backbone predicts retained-context effects per operator. Because programs
+   are short (length ∼ 6 in the sandbox series), the propagator is cheap and well-conditioned.
+
+  Fixed-point semantics. At an equilibrium z ∗ with F (z ∗ , θ) = 0, the implicit function
+                                                      −1
+   theorem gives the sensitivity ∂z ∗ /∂θ = − ∂F/∂z       ∂F/∂θ; the backbone’s linear-response
+   term is obtained by solving one linear system per action (conjugate gradients / Neumann
+   truncation, as in deep-equilibrium practice; recalled from memory, verify), validated against
+   nudged finite differences. These equilibrium intervention Jacobians are, not coincidentally,
+   the do-influence estimates that causal coding wants for its gates — the critic and the causal-
+   coding machinery share their most expensive measurement.
+
+  Non-gradient components. Where dynamics are genuinely non-gradient — Lotka–Volterra
+   mode arbitration, discrete routing — the smooth backbone
+                                                              does not apply, and the discrete
+   CCL commutator does: measure d Ui Uj (Θ), Uj Ui (Θ) directly by paired CRN rollouts from
+   snapshots, with d the max over per-context evaluation losses. The V3 runner is, unmodified,
+
+                                               11
+      a discrete-commutator estimator; Stage C5 tests whether measured commutators predict
+      realized forgetting across context pairs, which is the CAROM-native form of the critic’s
+      claim.
+
+    A natural downstream hook, out of scope here but worth one sentence: the measured module-
+level commutator/confusion graph exports directly to Atomspace as typed links, making the
+critic’s state legible to MeTTa/PLN-level meta-reasoning about what to protect — the same
+interface pattern as the causal-fibres symbolic head.
+
+
+9      Software design
+9.1     Placement and layout
+New code lives in the RelaLeap repository as a sibling of the V1–V3 worktree, reusing its paired
+snapshot/restore, propensity logging, seed discipline, and RUN-record conventions unchanged:
+
+
+ Path                                                Contents
+ src/relaleap/critic/partition.py                    ModulePartition (index sets; masked ops; no dense projec
+ src/relaleap/critic/backbone.py                     one-step expansion; tangent propagator (frozen-D / exact-D
+                                                     cross-curvature via HVP; GGN/K-FAC surrogates
+ src/relaleap/critic/fixtures/quadratic.py           family constructors; closed-form τh ; margin and noise-floor
+ src/relaleap/critic/residual.py                     feature builder; per-(family, horizon) train-only standardiza
+ src/relaleap/critic/gates.py                        validity, residual-skill, synergy, null, calibration, ESS gates
+ src/relaleap/critic/confusion.py                    footprint codes; ANN confusion graph; pair-action instantia
+ scripts/run commutator critic c{0..6}.py            stage runners (Appendix)
+ tests/test critic *.py                              the test inventory below
+
+9.2     Interfaces
+Backbone.predict(state, actions, horizons) -> {tauA hat, tauB hat, terms} returns
+the prediction and the named terms (first-order, drift, self-curvature, cross-curvature, propa-
+gated), so that gates, residual features, and reports consume the same decomposition; terms
+is the anti-black-box contract of the whole design. QuadraticFixture.exact tau(state,
+action, horizon) returns closed-form truth. PairedRunner is the V3 runner; the only ad-
+dition is a callback slot that lets the backbone ride along the baseline rollout (propagating
+tangents) without perturbing it. All stochastic components take explicit torch.Generators;
+noth

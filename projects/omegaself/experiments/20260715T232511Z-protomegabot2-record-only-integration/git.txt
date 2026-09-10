@@ -1,0 +1,20 @@
+# Git State
+Captured UTC: 2026-07-15T23:25:11Z
+Working directory: projects/omegaself/repos/protomegabot2-omegaclaw-record-only
+Commit: 9a030117e94f4069ea509f2555794f4fc251f20e
+Branch: agent/omegaself-record-only
+Remote names: fork,origin
+
+## Status
+## agent/omegaself-record-only
+ M lib_omegaclaw.metta
+ M src/loop.metta
+?? Autotests/test_omegaself_bridge.py
+?? src/omegaself_bridge.py
+
+## Diff summary
+ lib_omegaclaw.metta | 1 +
+ src/loop.metta      | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

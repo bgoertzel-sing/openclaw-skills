@@ -2,7 +2,7 @@
 
 - Name: Benjamin Goertzel
 - What to call him: Ben
-- Primary timezone: America/Los_Angeles
+- Primary timezone: America/Anchorage (Alaska time; stated 2026-08-21 — one hour behind Pacific)
 - Primary use: long-running AI and AGI research software prototyping
 - Typical languages and systems: Python, MeTTa, PeTTa, MORK, Hyperon, Prolog, Rust, and mixed experimental stacks
 - Working pattern: multiple projects with recurring themes; projects often continue for a long time and split into many subproblems

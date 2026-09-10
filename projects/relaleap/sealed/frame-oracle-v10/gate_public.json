@@ -1,0 +1,127 @@
+{
+  "contract_version": "frame-oracle-v10-gate-1",
+  "opened": false,
+  "answer_file_sha256": "a59c056c24abbfbf3a535c047b2e4cb045e3e4d882f58700d8e6d2694d99a9af",
+  "cases": [
+    {
+      "case_id": "v10_capital_direct",
+      "sentence": "Dossier ten records: within the story, the capital of Arkenfell is Mossbridge.",
+      "stratum": "direct"
+    },
+    {
+      "case_id": "v10_capital_possible_paraphrase",
+      "sentence": "Dossier ten records: Veloria may name Cinder Quay as its capital.",
+      "stratum": "possible"
+    },
+    {
+      "case_id": "v10_capital_possible_direct",
+      "sentence": "Dossier ten records: the draft charter suggests that the capital of Norwyn might be Alderport.",
+      "stratum": "possible"
+    },
+    {
+      "case_id": "v10_capital_negated",
+      "sentence": "Dossier ten records: the report says that Emberton is not the capital of Sorelia.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_capital_world_trap",
+      "sentence": "Dossier ten records: contrary to every atlas, the capital of Norway is Valencia.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v10_author_direct",
+      "sentence": "Dossier ten records: Leona Voss authored the ballad Silver Orchard.",
+      "stratum": "direct"
+    },
+    {
+      "case_id": "v10_author_negated_passive",
+      "sentence": "Dossier ten records: the play Clockwork Harbor was not written by Idris Morn.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_author_possible",
+      "sentence": "Dossier ten records: archivists think Mira Pell may have written Winter Lantern.",
+      "stratum": "possible"
+    },
+    {
+      "case_id": "v10_author_negated_active",
+      "sentence": "Dossier ten records: the preface states that Orin Vale did not write Sapphire Map.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_author_world_trap",
+      "sentence": "Dossier ten records: the exhibit label claims that Hamlet was authored by Ada Lovelace.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v10_state_negated_direct",
+      "sentence": "Dossier ten records: the amber beacon is not active.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_state_direct",
+      "sentence": "Dossier ten records: the western valve remains closed.",
+      "stratum": "direct"
+    },
+    {
+      "case_id": "v10_state_possible",
+      "sentence": "Dossier ten records: the backup conduit might be unstable.",
+      "stratum": "possible"
+    },
+    {
+      "case_id": "v10_state_negated_paraphrase",
+      "sentence": "Dossier ten records: the observatory hatch is not sealed.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_state_world_trap",
+      "sentence": "Dossier ten records: despite what chemistry says, the copper sample is transparent.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v10_location_direct",
+      "sentence": "Dossier ten records: the cedar archive is located in North Hall.",
+      "stratum": "direct"
+    },
+    {
+      "case_id": "v10_location_paraphrase",
+      "sentence": "Dossier ten records: Bluewind Station lies inside the Caldera District.",
+      "stratum": "paraphrase"
+    },
+    {
+      "case_id": "v10_location_possible",
+      "sentence": "Dossier ten records: the lost observatory may be within Frostmere Valley.",
+      "stratum": "possible"
+    },
+    {
+      "case_id": "v10_location_negated",
+      "sentence": "Dossier ten records: the weather mast is not located in Bay Sector.",
+      "stratum": "explicit_negation"
+    },
+    {
+      "case_id": "v10_location_world_trap",
+      "sentence": "Dossier ten records: the memo states that Mount Everest is located in Portugal.",
+      "stratum": "world_knowledge_trap"
+    },
+    {
+      "case_id": "v10_unknown_fragment_one",
+      "sentence": "Dossier ten records the fragment: brightly, because perhaps.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v10_unknown_fragment_two",
+      "sentence": "Dossier ten records the fragment: three questions waited beside yesterday.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v10_unknown_fragment_three",
+      "sentence": "Dossier ten records the fragment: if only the color of silence.",
+      "stratum": "abstention"
+    },
+    {
+      "case_id": "v10_unknown_fragment_four",
+      "sentence": "Dossier ten records the fragment: a possibility without any stated relation.",
+      "stratum": "abstention"
+    }
+  ]
+}

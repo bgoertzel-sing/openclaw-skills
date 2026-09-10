@@ -1,0 +1,85 @@
+{
+  "false_negatives": [
+    "mackey-glass-chaotic"
+  ],
+  "false_positives": [
+    "lorenz96-stable-full-state"
+  ],
+  "manifest": {
+    "config": {
+      "fit_start": 32,
+      "fit_stop": 256,
+      "lorenz96_dt": 0.01,
+      "mackey_glass_dt": 0.1,
+      "observations": 224,
+      "perturbation": 1e-08,
+      "slope_threshold_per_step": 0.0001,
+      "steps": 256
+    },
+    "fixtures": [
+      {
+        "kind": "positive",
+        "name": "mackey-glass-chaotic",
+        "perturbed_sha256": "8a36e2632fba846a9c036adfc03c9f0aaf0924b96230975498e6477678db9656",
+        "reference_sha256": "6c5b1adb341480fc4819e77367c799ae2200228f084fb3c8cd550cf4598d03ea"
+      },
+      {
+        "kind": "nonchaotic",
+        "name": "mackey-glass-stable",
+        "perturbed_sha256": "947487cae39d8b855660aae204a28024981c656511076f5edcf8a621be4a977a",
+        "reference_sha256": "b8af10dd545819a6d8e2ceabd92f6b2b4c1c09ebee74823c2f03a7a375802ffb"
+      },
+      {
+        "kind": "positive",
+        "name": "lorenz96-chaotic-full-state",
+        "perturbed_sha256": "4eea3a2e0e80b3c1f421cb8200f14a3c33a0da9efc2ca1d661d000b1f43ecc6c",
+        "reference_sha256": "e03a3833e8e436f60d9028d99aa8803617bb7388105a34df44e837a824cdf7cf"
+      },
+      {
+        "kind": "nonchaotic",
+        "name": "lorenz96-stable-full-state",
+        "perturbed_sha256": "618ee2b7a58756aac459b8ab70c2094c2f7d8f786a64220ccd60c44bc6c811aa",
+        "reference_sha256": "d829bfaa2fb384a9e0bc9744c9d32a62351aeb1cfc86578a5f924cee6bc610f9"
+      }
+    ],
+    "protocol": "paired-divergence-calibration-preregistration-v1",
+    "schema": "chaoslang.paired-divergence-calibration",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "both positives promoted; no stable control promoted; ties fail",
+  "results": [
+    {
+      "intercept": -19.077888335035926,
+      "kind": "positive",
+      "name": "mackey-glass-chaotic",
+      "observations": 224,
+      "promoted": false,
+      "slope_per_step": -0.006758507205999496
+    },
+    {
+      "intercept": -18.942804047852427,
+      "kind": "nonchaotic",
+      "name": "mackey-glass-stable",
+      "observations": 224,
+      "promoted": false,
+      "slope_per_step": -0.029740226548141614
+    },
+    {
+      "intercept": -15.251466893267244,
+      "kind": "positive",
+      "name": "lorenz96-chaotic-full-state",
+      "observations": 224,
+      "promoted": true,
+      "slope_per_step": 0.039179037890108764
+    },
+    {
+      "intercept": -15.772096866464384,
+      "kind": "nonchaotic",
+      "name": "lorenz96-stable-full-state",
+      "observations": 224,
+      "promoted": true,
+      "slope_per_step": 0.0106747961623756
+    }
+  ]
+}

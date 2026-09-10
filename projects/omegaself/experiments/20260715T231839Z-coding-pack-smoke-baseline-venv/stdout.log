@@ -1,0 +1,72 @@
+wrote 4 records to /home/openclaw/tmp/tmp.YwgAwCcc7R/sample_events.jsonl
+root hash: d174bc3b3c998a02a60a894722bc8911896bbe483013a4fecb0e417a9290355b
+Raw outcomes: 4
+Independent evidence units: 2
+Dependence groups: {'provider-outage-2026-07-15': ('evt-1be49ef5-383d-424c-bea8-2bf680fe1055', 'evt-cbdbf2ad-bed8-4fb2-8950-2c3d0666156e', 'evt-e1930130-c6cd-429e-bb76-0dc8ff9f720f')}
+Interpretation: provider-specific reachability fell, while general capability was not disproved.
+Evidence event: evt-9f4bdfac-775b-4e7a-9fcf-e7ffe1f86786
+Derived applicability: stale 0.0
+Ledger unchanged: True
+Transfer paths: 2
+Unique evidence items admitted: 1
+Evidence IDs: ('evt-original',)
+Old backend: patham9-pln
+New backend: omegapln
+Neutral result compatible: True
+Differences: []
+Policy decisions: {'conservative': 'require_probe', 'baseline': 'require_probe', 'exploratory': 'allow'}
+Local governance seam: ['allow', 'require_probe']
+Interpretation: the evidence and reasoner envelope stayed fixed; the action license changed only with the signed policy.
+Continuity status: cache_miss
+Policy decision: require_review
+Reasons: ['continuity analysis is not authorization-grade: cache_miss; cached heuristic extensions and finite-core guesses are advisory only']
+PACK VALIDATION PASSED
+test_aging_applies_recency_discount (test_applicability.ApplicabilityTests) ... ok
+test_regime_change_supersedes_without_deleting_evidence (test_applicability.ApplicabilityTests) ... ok
+test_staleness_creates_derived_view_without_changing_ledger (test_applicability.ApplicabilityTests) ... ok
+test_fork_branches_can_both_resolve_with_distinct_leases (test_attestation.AttestationTests) ... ok
+test_live_exclusive_lease_resolves_anchor (test_attestation.AttestationTests) ... ok
+test_static_identity_without_live_control_is_unresolved (test_attestation.AttestationTests) ... ok
+test_context_ids_are_deterministic (test_context_graph.ContextGraphTests) ... ok
+test_generalization_paths_preserve_one_evidence_identity (test_context_graph.ContextGraphTests) ... ok
+test_independence_units_are_deduplicated (test_context_graph.ContextGraphTests) ... ok
+test_cache_hit_verifies_exact_input (test_continuity.ContinuityTests) ... ok
+test_cache_miss_is_explicit (test_continuity.ContinuityTests) ... ok
+test_heuristic_certificate_remains_heuristic (test_continuity.ContinuityTests) ... ok
+test_verified_exact_certificate (test_continuity.ContinuityTests) ... ok
+test_violation_certificate_is_contradicted (test_continuity.ContinuityTests) ... ok
+test_wrong_input_does_not_reuse_certificate (test_continuity.ContinuityTests) ... ok
+test_closure_follows_provenance_and_groups_dependence (test_evidence.EvidenceTests) ... ok
+test_disqualification_is_append_only_and_not_counted_as_support (test_evidence.EvidenceTests) ... ok
+test_missing_parent_breaks_provenance_closure (test_evidence.EvidenceTests) ... ok
+test_expired_manifest_cannot_authorize (test_governance.GovernanceTests) ... ok
+test_tampered_manifest_fails_hash_before_signature (test_governance.GovernanceTests) ... ok
+test_valid_signed_manifest_verifies (test_governance.GovernanceTests) ... ok
+test_wrong_semantics_cannot_authorize (test_governance.GovernanceTests) ... ok
+test_append_and_verify (test_ledger.LedgerTests) ... ok
+test_tampering_is_detected (test_ledger.LedgerTests) ... ok
+test_counterfactual_leakage_is_denied (test_policy.PolicyTests) ... ok
+test_expired_policy_authority_cannot_authorize (test_policy.PolicyTests) ... ok
+test_forged_verified_status_without_certificate_class_requires_review (test_policy.PolicyTests) ... ok
+test_happy_path_allows (test_policy.PolicyTests) ... ok
+test_heuristic_continuity_never_authorizes_high_impact_mutation (test_policy.PolicyTests) ... ok
+test_high_impact_mutation_cache_miss_requires_review (test_policy.PolicyTests) ... ok
+test_missing_provenance_requires_probe (test_policy.PolicyTests) ... ok
+test_raw_backend_stv_does_not_override_low_lower_bound (test_policy.PolicyTests) ... ok
+test_semantics_mismatch_defers (test_policy.PolicyTests) ... ok
+test_stale_evidence_requires_probe_but_is_not_deleted (test_policy.PolicyTests) ... ok
+test_unresolved_anchor_denies_external_action (test_policy.PolicyTests) ... ok
+test_unverified_policy_authority_defers (test_policy.PolicyTests) ... ok
+test_verified_continuity_can_pass_mutation_gate (test_policy.PolicyTests) ... ok
+test_brier_score_rewards_calibrated_success (test_predictions.PredictionTests) ... ok
+test_probability_is_validated (test_predictions.PredictionTests) ... ok
+test_golden_compatibility_can_require_exact_semantics_and_evidence (test_reasoner.ReasonerTests) ... ok
+test_reasoner_result_has_no_governance_decision (test_reasoner.ReasonerTests) ... ok
+test_same_callsite_can_swap_adapters (test_reasoner.ReasonerTests) ... ok
+test_semantics_difference_is_visible (test_reasoner.ReasonerTests) ... ok
+test_unbound_adapter_fails_explicitly (test_reasoner.ReasonerTests) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.029s
+
+OK

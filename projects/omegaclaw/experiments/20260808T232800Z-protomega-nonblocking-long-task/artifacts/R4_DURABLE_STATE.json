@@ -1,0 +1,65 @@
+{
+  "captured_at_utc": "2026-08-09T07:01:21Z",
+  "identity": "ProtoMegaBot2",
+  "next_update_offset": 491552925,
+  "processed_message_ids": [
+    "402314199:121",
+    "402314199:123"
+  ],
+  "deferred_jobs": [
+    {
+      "chat_id": 402314199,
+      "finished_at": 1786252666,
+      "prompt": "",
+      "queued_at": 1786252627,
+      "reply_depth": 1,
+      "reply_to_message_id": 121,
+      "started_at": 1786252627,
+      "status": "completed",
+      "task_id": "8fe4a22de5dc90429426406c300e426404267d7ed556bf215c1892ae04242515",
+      "user_id": 402314199
+    }
+  ],
+  "outbox": [
+    {
+      "outbox_id": "5de075f1ab0b18f93321951e955c05052d3fc3b2cd3103a10e95977ae3c82943",
+      "kind": "deferred_ack",
+      "chat_id": 402314199,
+      "user_id": 402314199,
+      "reply_to_message_id": 121,
+      "queued_at": 1786252627,
+      "delivery": {
+        "delivered_at": 1786252627,
+        "receipt": "122"
+      },
+      "text": "ProtoMegaBot2 received this long/document request and queued it. I will post the result here when it is ready."
+    },
+    {
+      "outbox_id": "0433b5aa9cb7c78f0d81804c4069332f1380cd2e5c5b71dd691835b28b877002",
+      "kind": "reply",
+      "chat_id": 402314199,
+      "user_id": 402314199,
+      "reply_to_message_id": 123,
+      "queued_at": 1786252635,
+      "delivery": {
+        "delivered_at": 1786252635,
+        "receipt": "124"
+      },
+      "text": "SHORT-R4-OK"
+    },
+    {
+      "outbox_id": "da3c49df920547f83944a16f888936e65ba43d33bfc42a37b5a411eaa9c4b4ff",
+      "kind": "deferred_result",
+      "chat_id": 402314199,
+      "user_id": 402314199,
+      "reply_to_message_id": 121,
+      "queued_at": 1786252666,
+      "delivery": {
+        "delivered_at": 1786252666,
+        "receipt": "125"
+      },
+      "text": "**CRAP/1.0 + OmegaHive Profile — Quick Summary** ⚡\n\nThis is a three-part spec for multi-agent coordination:\n\n**Part I — CRAP/1.0 Core** defines a deliberately minimal portable standard: 5 wire objects (Run, Lease, Event, Bundle, Ack), 6 verbs (open, join, transition, leave, publish, poll), and 7 invariants (one mode per run, safe-point pull-only delivery, content never changes state, transport-authenticated identity, report-not-fact semantics, at-least-once/critical-safe delivery, explicit terminal closure). Four conformance levels correspond to four coordination modes:\n\n- **L0 Solo** — one cognitive locus, no lateral injection\n- **L1 Fork/Join** — bounded parallel branches with structured merge\n- **L2 Radio Swarm** — concurrent work with passive peer awareness at safe points (inspired by AgentRadio)\n- **L3 Deliberation** — evidence-based disagreement resolution with minority preservation\n\n**Part II — OmegaHive Profile** layers the full runtime: Epics (fuzzy context), WorkOrders (crisp accountability), CoordinationRuns, rooms, layered AtomSpaces, OmegaBuzz integration, mode transitions as first-class durable events, deterministic attention routing, and cross-hive disclosure rules. Key design stance: fuzzy Epic membership never grants authority; peer reports never become committed facts without reviewed admission.\n\n**Part III — Implementation Contracts** provides a 15-phase coding-agent roadmap (fixtures-first, deterministic before model-in-the-loop), detailed conformance catalog (~100 named tests), 9 synthetic coordination worlds, reference algorithms, schemas, deployment checklists, and hard release gates.\n\nThe acronym is intentionally self-deprecating — the core is deliberately small so the ambition lives in the profiles, not the protocol. Transport-neutral; AgentRadio, Coral, A2A, AutoGen, and LangGraph land at declared levels rather than any becoming the organizational source of truth."
+    }
+  ],
+  "pending_inbound": null
+}

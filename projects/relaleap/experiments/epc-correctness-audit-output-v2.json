@@ -1,0 +1,6244 @@
+{
+  "canonical_content_sha256": "11bd887b33b20df423288b74b7e31d6b920216c0882e00c67e29a6855fd8dd02",
+  "checkpoint_root": "/home/openclaw/research-agent/projects/relaleap/experiments/20260718T073312Z-epc-outcome-6layer-run2/artifacts/results/checkpoints",
+  "checkpoints": [
+    "seed1729_bp_ce",
+    "seed1729_bp_kd",
+    "seed1729_epc_kd",
+    "seed3253_bp_ce",
+    "seed3253_bp_kd",
+    "seed3253_epc_kd",
+    "seed6421_bp_ce",
+    "seed6421_bp_kd",
+    "seed6421_epc_kd"
+  ],
+  "checks": {
+    "maximum_feature_vs_gram_error": 2.3335222643083853e-12,
+    "maximum_symmetry_error": 4.440892098500626e-16,
+    "passes": true,
+    "same_tokens_per_checkpoint": true
+  },
+  "cka": {
+    "random_ood": [
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9302745876076219,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7920479241534162,
+            "feature_vs_gram_error": 4.773959005888173e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6151668812516904,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5592222277705965,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.59628535034218,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6214243130064899,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6192100765727561,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed1729_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8514518874017329,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.19981309750940304,
+            "feature_vs_gram_error": 5.828670879282072e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.3372451543032897,
+            "feature_vs_gram_error": 1.2490009027033011e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.37192427304464293,
+            "feature_vs_gram_error": 1.975641872320466e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.40588057340369926,
+            "feature_vs_gram_error": 5.341282971471628e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.42384998564579934,
+            "feature_vs_gram_error": 5.900835375882707e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.42392762953349505,
+            "feature_vs_gram_error": 1.6653345369377348e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8502182944350035,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8924645763680226,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7365844158988716,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6505444934979456,
+            "feature_vs_gram_error": 5.329070518200751e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6466163167386138,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6437150279797581,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6458547414419752,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8058432649526833,
+            "feature_vs_gram_error": 6.328271240363392e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7629981208874845,
+            "feature_vs_gram_error": 4.9960036108132044e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5988881394433755,
+            "feature_vs_gram_error": 0.0,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4766291574824143,
+            "feature_vs_gram_error": 2.1649348980190553e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5019892276835913,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5160146300004949,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5237503607142984,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.7517236263413727,
+            "feature_vs_gram_error": 3.9968028886505635e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.18594647795106137,
+            "feature_vs_gram_error": 2.498001805406602e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.08943241985047154,
+            "feature_vs_gram_error": 2.0122792321330962e-15,
+            "layer": 2,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.0467188254677896,
+            "feature_vs_gram_error": 3.573530360512223e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03676741608294343,
+            "feature_vs_gram_error": 1.1025902413308586e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.02822059547899855,
+            "feature_vs_gram_error": 1.3763296058399987e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02207222441481082,
+            "feature_vs_gram_error": 2.0816681711721685e-17,
+            "layer": 6,
+            "symmetry_error": 3.469446951953614e-18
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8459965842961825,
+            "feature_vs_gram_error": 6.328271240363392e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8948897171782197,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7538411220014822,
+            "feature_vs_gram_error": 0.0,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6742378232177064,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6665106329591602,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6731488559869385,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6807225622909184,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8072697358795488,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7561550102832953,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.5844386016272101,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4947516654265134,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.522294739485091,
+            "feature_vs_gram_error": 0.0,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5362720452314911,
+            "feature_vs_gram_error": 0.0,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5339562588198213,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.7508583139668914,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.18282337956189354,
+            "feature_vs_gram_error": 1.3877787807814457e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.2863268776712209,
+            "feature_vs_gram_error": 1.1080025785759062e-13,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3070800100834614,
+            "feature_vs_gram_error": 6.006861674734409e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3289883689110916,
+            "feature_vs_gram_error": 1.7865153800755706e-12,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3355817952498297,
+            "feature_vs_gram_error": 2.2091772855503677e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3300231844344586,
+            "feature_vs_gram_error": 1.609823385706477e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9396477048391794,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.44544206045381457,
+            "feature_vs_gram_error": 1.27675647831893e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.41895159750116084,
+            "feature_vs_gram_error": 9.603429163007604e-15,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4145536766603683,
+            "feature_vs_gram_error": 1.8596235662471372e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.40841996925008905,
+            "feature_vs_gram_error": 3.9629410863994963e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.37977164480764386,
+            "feature_vs_gram_error": 6.855627177060342e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.36235059850216,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8073225149994918,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7577589635864698,
+            "feature_vs_gram_error": 4.9960036108132044e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5818219367763036,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5231163339749246,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5547536062628126,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5821229885883272,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5850449660318406,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8730462050941314,
+            "feature_vs_gram_error": 7.105427357601002e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.900462388009503,
+            "feature_vs_gram_error": 1.0325074129013956e-14,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8265118806057079,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7855222752903013,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.778986755076975,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7665153674607625,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7525663680273025,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8432359522314216,
+            "feature_vs_gram_error": 4.6629367034256575e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3056123764906402,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.07340834031050467,
+            "feature_vs_gram_error": 1.5404344466674047e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.030297946978303826,
+            "feature_vs_gram_error": 3.101685575046531e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.021906651651909,
+            "feature_vs_gram_error": 1.0397932515004982e-14,
+            "layer": 4,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.01738537733008229,
+            "feature_vs_gram_error": 1.4009626791988694e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.015088095068608332,
+            "feature_vs_gram_error": 1.0408340855860843e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8033340783633621,
+            "feature_vs_gram_error": 5.995204332975845e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7589241133358501,
+            "feature_vs_gram_error": 6.994405055138486e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5919054959168191,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5506927663344792,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5573042792214671,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5728338322112652,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5756958333432527,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8716404805481656,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9032075436274047,
+            "feature_vs_gram_error": 7.216449660063518e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8277485244060825,
+            "feature_vs_gram_error": 4.551914400963142e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7993022979098633,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7967979140587451,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7795782035716754,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7786989211695032,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8440306612741959,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.3987750561536718,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4098256395658882,
+            "feature_vs_gram_error": 9.348077867343818e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.37814960305883466,
+            "feature_vs_gram_error": 5.81756864903582e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.36685627153133604,
+            "feature_vs_gram_error": 1.5834555888716295e-12,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3325887422381835,
+            "feature_vs_gram_error": 2.030320356283255e-12,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.308480461119218,
+            "feature_vs_gram_error": 9.43689570931383e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7435579629117935,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.16552722365217487,
+            "feature_vs_gram_error": 4.163336342344337e-16,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.25995495539688657,
+            "feature_vs_gram_error": 1.2434497875801753e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.29907455396771343,
+            "feature_vs_gram_error": 2.2554180745260055e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.34092686389560695,
+            "feature_vs_gram_error": 5.752620602095249e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3548747694634718,
+            "feature_vs_gram_error": 6.329381463388017e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3577767205599303,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8441056429906051,
+            "feature_vs_gram_error": 6.8833827526759706e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.39849638311645547,
+            "feature_vs_gram_error": 1.3877787807814457e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3865553222430252,
+            "feature_vs_gram_error": 1.1546319456101628e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.37269179154248266,
+            "feature_vs_gram_error": 1.8429702208777599e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3750510217473889,
+            "feature_vs_gram_error": 3.763100941966968e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.34066254449461963,
+            "feature_vs_gram_error": 6.799005802804459e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3216666166329267,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8955778418611302,
+            "feature_vs_gram_error": 5.218048215738236e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.40119508157026434,
+            "feature_vs_gram_error": 1.27675647831893e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.06774528278958429,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.016364945115649152,
+            "feature_vs_gram_error": 4.702141453982733e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.01586473090619812,
+            "feature_vs_gram_error": 1.174442487705818e-13,
+            "layer": 4,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.01566814918213122,
+            "feature_vs_gram_error": 2.6506227768230417e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.01690242009397004,
+            "feature_vs_gram_error": 4.163336342344337e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7382404222234195,
+            "feature_vs_gram_error": 5.329070518200751e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.18209970477855492,
+            "feature_vs_gram_error": 2.7755575615628914e-17,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.31196924520293806,
+            "feature_vs_gram_error": 1.3100631690576847e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3525775041145855,
+            "feature_vs_gram_error": 2.0439205883349132e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3826524520072459,
+            "feature_vs_gram_error": 5.37181410464882e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.393295604182155,
+            "feature_vs_gram_error": 6.058487045379479e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4019698027678025,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8394746579115262,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4130313208661972,
+            "feature_vs_gram_error": 0.0,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3829605199513102,
+            "feature_vs_gram_error": 1.099120794378905e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.38636373697551973,
+            "feature_vs_gram_error": 1.8868240303504535e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3859151145234671,
+            "feature_vs_gram_error": 4.122258090433206e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3757518427189379,
+            "feature_vs_gram_error": 6.15563156003418e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3641144444564627,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8943570648697857,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6542731087312513,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6270669214978425,
+            "feature_vs_gram_error": 1.787459069646502e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6186701329615932,
+            "feature_vs_gram_error": 1.5520917884259688e-13,
+            "layer": 3,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.6153795013182546,
+            "feature_vs_gram_error": 5.588862705963038e-13,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6136893579837293,
+            "feature_vs_gram_error": 9.54236689665322e-13,
+            "layer": 5,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.6270638681358449,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.926777527336555,
+            "feature_vs_gram_error": 8.215650382226158e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7803575243639831,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.6631113314402243,
+            "feature_vs_gram_error": 0.0,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5806733381351007,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6144178733819493,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6341649306007133,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6415221497959457,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8563064349104653,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.1981113925217646,
+            "feature_vs_gram_error": 1.6653345369377348e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.07909212109929085,
+            "feature_vs_gram_error": 1.8735013540549517e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03709423355075105,
+            "feature_vs_gram_error": 3.878841692284141e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.031045378972691325,
+            "feature_vs_gram_error": 1.1945305855576294e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.024078885770513023,
+            "feature_vs_gram_error": 1.403391292065237e-14,
+            "layer": 5,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.02064654719946155,
+            "feature_vs_gram_error": 7.28583859910259e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8523799337197079,
+            "feature_vs_gram_error": 5.88418203051333e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8617460641930181,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7460689907986392,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.66003456411266,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6555680679376458,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6572090366014767,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6659406081773791,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8079073530660101,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7427593030076342,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5969603736551616,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5094753174153396,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5330299462976535,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5529787190149666,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5608290461133147,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.7495688707513252,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.17053762267019892,
+            "feature_vs_gram_error": 2.498001805406602e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.2806974783746902,
+            "feature_vs_gram_error": 1.0552669849062113e-13,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.31616189371308806,
+            "feature_vs_gram_error": 7.081557562571561e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.340514810747986,
+            "feature_vs_gram_error": 2.0039525594484076e-12,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.35037249614545063,
+            "feature_vs_gram_error": 2.3335222643083853e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3484918721401889,
+            "feature_vs_gram_error": 5.551115123125783e-17,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9452424053976879,
+            "feature_vs_gram_error": 1.4210854715202004e-14,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.3035810394688327,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.08418215808798146,
+            "feature_vs_gram_error": 1.734723475976807e-15,
+            "layer": 2,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.03083227265679938,
+            "feature_vs_gram_error": 3.0427049768633196e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02594223891578554,
+            "feature_vs_gram_error": 1.1303458169464875e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.020799028531705302,
+            "feature_vs_gram_error": 1.3759826611448034e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.01856654219036439,
+            "feature_vs_gram_error": 1.734723475976807e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8016285474162682,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7595232559533199,
+            "feature_vs_gram_error": 7.327471962526033e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6068437907577836,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5185202826892213,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5288176206804991,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.540411845805542,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5546068694809514,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8742253786799412,
+            "feature_vs_gram_error": 9.43689570931383e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9050052611905559,
+            "feature_vs_gram_error": 7.882583474838611e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8345457936322168,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.783968707032098,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7674780597591109,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.738923867615001,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7408271485507565,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8501515091706987,
+            "feature_vs_gram_error": 7.105427357601002e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3710180518966151,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4003402818401138,
+            "feature_vs_gram_error": 9.531264666406969e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.3524098052147522,
+            "feature_vs_gram_error": 6.06070749142873e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.34772247849639887,
+            "feature_vs_gram_error": 1.7275625374679748e-12,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.31361087283906397,
+            "feature_vs_gram_error": 2.1258550475522497e-12,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.2919953965368418,
+            "feature_vs_gram_error": 9.43689570931383e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7443060219599266,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.18078027749036463,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.08461797995373913,
+            "feature_vs_gram_error": 2.192690473634684e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04465700482387025,
+            "feature_vs_gram_error": 3.9968028886505635e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03574258150263962,
+            "feature_vs_gram_error": 1.1900203045200897e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.027393879090935686,
+            "feature_vs_gram_error": 1.2299189444675562e-14,
+            "layer": 5,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.02243098977394658,
+            "feature_vs_gram_error": 6.591949208711867e-17,
+            "layer": 6,
+            "symmetry_error": 3.469446951953614e-18
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8414447097942408,
+            "feature_vs_gram_error": 7.216449660063518e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.29514601242166927,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.07022420214176231,
+            "feature_vs_gram_error": 1.6930901125533637e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03084587026019526,
+            "feature_vs_gram_error": 3.3965885659625883e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02246487395938539,
+            "feature_vs_gram_error": 1.1803058530546195e-14,
+            "layer": 4,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.019569259368591822,
+            "feature_vs_gram_error": 1.3846562785246874e-14,
+            "layer": 5,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.018597563788641178,
+            "feature_vs_gram_error": 2.0816681711721685e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8900568901535763,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3355476025149885,
+            "feature_vs_gram_error": 1.6653345369377348e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.07980296658717122,
+            "feature_vs_gram_error": 1.787459069646502e-14,
+            "layer": 2,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.027645800499698735,
+            "feature_vs_gram_error": 1.7981796607280387e-13,
+            "layer": 3,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.027470257692987575,
+            "feature_vs_gram_error": 7.165518178808838e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.027438951811462792,
+            "feature_vs_gram_error": 7.161840565039768e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02762362488229203,
+            "feature_vs_gram_error": 6.938893903907228e-17,
+            "layer": 6,
+            "symmetry_error": 3.469446951953614e-18
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9290750469145357,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7782109043520001,
+            "feature_vs_gram_error": 4.9960036108132044e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6469491142603165,
+            "feature_vs_gram_error": 0.0,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5841695531993883,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6071474119191589,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6306566732446983,
+            "feature_vs_gram_error": 4.440892098500626e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6407669440226526,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8556905329180697,
+            "feature_vs_gram_error": 6.217248937900877e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.225216968330433,
+            "feature_vs_gram_error": 9.43689570931383e-16,
+            "layer": 1,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.3323150067758977,
+            "feature_vs_gram_error": 1.1107781361374691e-13,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.3775393015802222,
+            "feature_vs_gram_error": 6.173950239940496e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4012742509052566,
+            "feature_vs_gram_error": 1.812661132305493e-12,
+            "layer": 4,
+            "symmetry_error": 1.6653345369377348e-16
+          },
+          {
+            "cka": 0.41279698741314336,
+            "feature_vs_gram_error": 1.862787701867319e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4210857335947156,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9475856642187093,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4092238622574848,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4223642767979801,
+            "feature_vs_gram_error": 9.825473767932635e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.405440242124617,
+            "feature_vs_gram_error": 5.561107130347409e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.40016806255336246,
+            "feature_vs_gram_error": 1.628752688276336e-12,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3844767671442645,
+            "feature_vs_gram_error": 1.9397261574738422e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3676555641844337,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      }
+    ],
+    "tinystories": [
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8576627256744788,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7902279926051767,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7032709528136618,
+            "feature_vs_gram_error": 3.1086244689504383e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6662373791344088,
+            "feature_vs_gram_error": 6.328271240363392e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6846902272564038,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6879760715866763,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6770249735398136,
+            "feature_vs_gram_error": 5.218048215738236e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed1729_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.7580543475011726,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.47130871707300803,
+            "feature_vs_gram_error": 3.7192471324942744e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4717962163076388,
+            "feature_vs_gram_error": 1.0658141036401503e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4683047063118007,
+            "feature_vs_gram_error": 1.0985656828665924e-13,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.49566077100064926,
+            "feature_vs_gram_error": 2.57072141351955e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.5181897041227432,
+            "feature_vs_gram_error": 4.057865155004947e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5388466419911411,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9407609132999986,
+            "feature_vs_gram_error": 5.995204332975845e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8798375720675738,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.805254086156662,
+            "feature_vs_gram_error": 6.439293542825908e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7968354384976964,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8082561461396585,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8091504880176608,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8050777520771831,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8060533717268356,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7772505564912529,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6798658308270954,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6313124541132016,
+            "feature_vs_gram_error": 3.774758283725532e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.646733566613688,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6588729866472887,
+            "feature_vs_gram_error": 3.6637359812630166e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6478493284557918,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.721549324081592,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.42778445945789867,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.14856033364679197,
+            "feature_vs_gram_error": 4.3298697960381105e-15,
+            "layer": 2,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.04117806527981361,
+            "feature_vs_gram_error": 4.350686477749832e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.04085294268105966,
+            "feature_vs_gram_error": 1.3905543383430086e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.039859930042868814,
+            "feature_vs_gram_error": 2.0358714714063808e-14,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.04010796086152932,
+            "feature_vs_gram_error": 2.42861286636753e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9387417231947778,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9033021413853468,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8442019902131637,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8276414553852517,
+            "feature_vs_gram_error": 5.440092820663267e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8283997683024531,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8280982734777493,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 5,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8249068706458913,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8118373804400755,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7703084656773252,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6835280444669156,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6465762265560259,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6741588992726001,
+            "feature_vs_gram_error": 3.774758283725532e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6799888980362452,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6768904932148248,
+            "feature_vs_gram_error": 3.774758283725532e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.738671249925948,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.3723997962027441,
+            "feature_vs_gram_error": 1.942890293094024e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.46039066982278437,
+            "feature_vs_gram_error": 5.750955267558311e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4658309423041172,
+            "feature_vs_gram_error": 3.294586825575152e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.505836937442833,
+            "feature_vs_gram_error": 1.0451639553821224e-12,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5358157656844995,
+            "feature_vs_gram_error": 1.1753931161706532e-12,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5536486115902172,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9499894623204238,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.49332157073490224,
+            "feature_vs_gram_error": 4.218847493575595e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.49524331875425,
+            "feature_vs_gram_error": 6.938893903907228e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48593618526890126,
+            "feature_vs_gram_error": 1.0269562977782698e-13,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.45674980102895235,
+            "feature_vs_gram_error": 2.4658053376924727e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4445834933925012,
+            "feature_vs_gram_error": 3.7536640462576543e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.439316930247413,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8173723252122732,
+            "feature_vs_gram_error": 8.548717289613705e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7889254347512138,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7172233709245626,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6968294484296929,
+            "feature_vs_gram_error": 4.3298697960381105e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7170933981713262,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7214772698705486,
+            "feature_vs_gram_error": 4.218847493575595e-15,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7195665491320308,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9507508461520083,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9291469218443278,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8975533346575489,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9048432825026033,
+            "feature_vs_gram_error": 6.8833827526759706e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9044774521900782,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9126985794600253,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9196889217628195,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.917363275726333,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.44177924729836787,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.14134942771716102,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03913638214221662,
+            "feature_vs_gram_error": 3.948230631323213e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03553816192463381,
+            "feature_vs_gram_error": 1.3600232051658168e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03653761795871543,
+            "feature_vs_gram_error": 1.8110513089197866e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03698767166095374,
+            "feature_vs_gram_error": 1.5265566588595902e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8170254539717936,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7954418004333065,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7131139334369363,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.6910729267657246,
+            "feature_vs_gram_error": 5.662137425588298e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7075291390733922,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7243308715464956,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7218334648590579,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9506591258814567,
+            "feature_vs_gram_error": 6.772360450213455e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.934585294676367,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9060469577149848,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9035455792967226,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9121048626626066,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9132355758764993,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 5,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9220185402848983,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9207086291483405,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3898147127729957,
+            "feature_vs_gram_error": 2.4980018054066022e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4863774164805951,
+            "feature_vs_gram_error": 4.8905324234738146e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.48972410922543363,
+            "feature_vs_gram_error": 3.065325770990057e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4745656316038898,
+            "feature_vs_gram_error": 9.505174425328278e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4707714550320507,
+            "feature_vs_gram_error": 1.2127521209492897e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4742699685295935,
+            "feature_vs_gram_error": 2.0539125955565396e-15,
+            "layer": 6,
+            "symmetry_error": 1.6653345369377348e-16
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7393017549872224,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.429011971093895,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4434229390092086,
+            "feature_vs_gram_error": 9.603429163007604e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.45529453421842603,
+            "feature_vs_gram_error": 1.177946629127291e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4932541796251585,
+            "feature_vs_gram_error": 2.806088694740083e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5162174062900984,
+            "feature_vs_gram_error": 4.550804177938517e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5286874813811403,
+            "feature_vs_gram_error": 3.9968028886505635e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9239810823630048,
+            "feature_vs_gram_error": 4.440892098500626e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.4632352061936487,
+            "feature_vs_gram_error": 4.052314039881821e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48396223913958764,
+            "feature_vs_gram_error": 4.773959005888173e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.45503770987174463,
+            "feature_vs_gram_error": 1.0208500711428314e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.41793707852841905,
+            "feature_vs_gram_error": 2.6778579353958776e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4121864783914257,
+            "feature_vs_gram_error": 4.051758928369509e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.41029037599564333,
+            "feature_vs_gram_error": 4.996003610813204e-16,
+            "layer": 6,
+            "symmetry_error": 1.6653345369377348e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9684967954028001,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7163516242549461,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.23759980388206253,
+            "feature_vs_gram_error": 4.218847493575595e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.046310379527012335,
+            "feature_vs_gram_error": 1.985217545907858e-14,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.045496794037572084,
+            "feature_vs_gram_error": 1.0725448307269403e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04534424994405346,
+            "feature_vs_gram_error": 1.849839725842628e-13,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.046248513293766655,
+            "feature_vs_gram_error": 6.938893903907228e-18,
+            "layer": 6,
+            "symmetry_error": 6.938893903907228e-18
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7352237172688025,
+            "feature_vs_gram_error": 4.551914400963142e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.44556844011975455,
+            "feature_vs_gram_error": 3.497202527569243e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.45803449549850467,
+            "feature_vs_gram_error": 9.048317650695026e-15,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.45620446532221215,
+            "feature_vs_gram_error": 1.224020884649235e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4677337144991436,
+            "feature_vs_gram_error": 2.994271497414047e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48445072958063207,
+            "feature_vs_gram_error": 4.5363712786183896e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5077794921051393,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9216254794330276,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48542043913707417,
+            "feature_vs_gram_error": 4.385380947269368e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4827069141052437,
+            "feature_vs_gram_error": 7.327471962526033e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.44450756775832806,
+            "feature_vs_gram_error": 1.099120794378905e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4236944330446288,
+            "feature_vs_gram_error": 2.6278978992877455e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4195316051317688,
+            "feature_vs_gram_error": 4.118372309847018e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4215957302904672,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9642531985494394,
+            "feature_vs_gram_error": 5.440092820663267e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7634856730107586,
+            "feature_vs_gram_error": 9.2148511043888e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8095965739213459,
+            "feature_vs_gram_error": 1.176836406102666e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8095844594826143,
+            "feature_vs_gram_error": 4.8405723873656825e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8091280491992272,
+            "feature_vs_gram_error": 1.4510614931850796e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.808725194865255,
+            "feature_vs_gram_error": 7.271960811294775e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8108319970171817,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8628607852785318,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8250964184075396,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7578517975513197,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7181803933281607,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7399123625616048,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7508448533242644,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7405369281087959,
+            "feature_vs_gram_error": 5.662137425588298e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.770421945333436,
+            "feature_vs_gram_error": 6.661338147750939e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.40878749089154015,
+            "feature_vs_gram_error": 2.3869795029440866e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.15201290783035715,
+            "feature_vs_gram_error": 4.052314039881821e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04452332308441117,
+            "feature_vs_gram_error": 4.6351811278100286e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.040476218545337186,
+            "feature_vs_gram_error": 1.469657728847551e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.038159184751093755,
+            "feature_vs_gram_error": 2.0039525594484076e-14,
+            "layer": 5,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.03691206932587133,
+            "feature_vs_gram_error": 1.8735013540549517e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9393298761632729,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 0,
+            "symmetry_error": 4.440892098500626e-16
+          },
+          {
+            "cka": 0.8857940434420343,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8323774285368735,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8020309860766481,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8101475245297103,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8273086594579316,
+            "feature_vs_gram_error": 3.6637359812630166e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8324646125296475,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8219091754109978,
+            "feature_vs_gram_error": 1.021405182655144e-14,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7854797769410113,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7325918836066743,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 2,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.6929363836573725,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7285392254226718,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7273829620217835,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7280103473822213,
+            "feature_vs_gram_error": 4.440892098500626e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.754220145590109,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3176231043131522,
+            "feature_vs_gram_error": 1.3877787807814457e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4293472107372811,
+            "feature_vs_gram_error": 6.566969190657801e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4391818123221165,
+            "feature_vs_gram_error": 3.377298440909726e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4845350836008667,
+            "feature_vs_gram_error": 1.0945688799779418e-12,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5132764358846664,
+            "feature_vs_gram_error": 1.2364553825250368e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5283905716570081,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9526185160647455,
+            "feature_vs_gram_error": 1.6653345369377348e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.42168876408803196,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.14304820113416528,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 2,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.034756875174694765,
+            "feature_vs_gram_error": 3.892719480091955e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03185567672804441,
+            "feature_vs_gram_error": 1.3281042932078435e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03237831206221731,
+            "feature_vs_gram_error": 1.8214596497756474e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03354691324672165,
+            "feature_vs_gram_error": 2.7755575615628914e-17,
+            "layer": 6,
+            "symmetry_error": 6.938893903907228e-18
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8140067478722294,
+            "feature_vs_gram_error": 5.218048215738236e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8021612704093737,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7177247017696088,
+            "feature_vs_gram_error": 3.774758283725532e-15,
+            "layer": 2,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.686661060725914,
+            "feature_vs_gram_error": 3.1086244689504383e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7010388516625549,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7244528909145259,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7155754513263217,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9508451035936945,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9411460134198653,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9085072961130772,
+            "feature_vs_gram_error": 6.439293542825908e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9131031140954861,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9093858629645972,
+            "feature_vs_gram_error": 6.661338147750939e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9119945500669612,
+            "feature_vs_gram_error": 3.774758283725532e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9159760614872424,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9261664812059396,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.37256325124631984,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.470792085599279,
+            "feature_vs_gram_error": 4.8683279629813114e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4517628313204158,
+            "feature_vs_gram_error": 3.0647706594777446e-13,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.42287574954154145,
+            "feature_vs_gram_error": 9.554579349924097e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.42771374365835546,
+            "feature_vs_gram_error": 1.2185252806773406e-12,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.43646521561414003,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.7315640595868329,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.41962783755611055,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.15389046103514326,
+            "feature_vs_gram_error": 3.7192471324942744e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04982317037172451,
+            "feature_vs_gram_error": 4.794775687599895e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04634944671666924,
+            "feature_vs_gram_error": 1.502270530195915e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04547568897854246,
+            "feature_vs_gram_error": 1.992850329202156e-14,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.045426162494780195,
+            "feature_vs_gram_error": 6.938893903907228e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9193355857516848,
+            "feature_vs_gram_error": 4.773959005888173e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.4435813542208827,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.1463811506428344,
+            "feature_vs_gram_error": 3.247402347028583e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.037719227681478826,
+            "feature_vs_gram_error": 3.9968028886505635e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03489051789310802,
+            "feature_vs_gram_error": 1.4085954624931674e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03437651397022398,
+            "feature_vs_gram_error": 1.8686441283222166e-14,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03495397152111275,
+            "feature_vs_gram_error": 9.020562075079397e-17,
+            "layer": 6,
+            "symmetry_error": 6.938893903907228e-18
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9640834585871133,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6265224072722332,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.2588684123786416,
+            "feature_vs_gram_error": 1.3711254354120683e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.05585568822005062,
+            "feature_vs_gram_error": 7.030487303438804e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.054908224666879765,
+            "feature_vs_gram_error": 3.4582753327683236e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.05475030051441432,
+            "feature_vs_gram_error": 4.1022046870509143e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.05538504877927786,
+            "feature_vs_gram_error": 1.249000902703301e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8706600686646369,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8221468903332844,
+            "feature_vs_gram_error": 2.55351295663786e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7504839507391787,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7242030851486587,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7424520829446616,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.753720932543647,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.75068627992066,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.7862431448752596,
+            "feature_vs_gram_error": 5.662137425588298e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3549402365928298,
+            "feature_vs_gram_error": 1.8318679906315083e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4660704420394685,
+            "feature_vs_gram_error": 6.050715484207103e-14,
+            "layer": 2,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.47132950686010816,
+            "feature_vs_gram_error": 3.6309844020365745e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.49620414135396207,
+            "feature_vs_gram_error": 1.1615153283628388e-12,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.5172001668557269,
+            "feature_vs_gram_error": 1.3317125180378753e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5422932728736471,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9561517073871806,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.3857461463402313,
+            "feature_vs_gram_error": 2.609024107869118e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.47733477241073585,
+            "feature_vs_gram_error": 5.21249710061511e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4615808122650357,
+            "feature_vs_gram_error": 3.1807889655510735e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4545079689747184,
+            "feature_vs_gram_error": 1.0176304243714185e-12,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.45552778443801056,
+            "feature_vs_gram_error": 1.2699841178687166e-12,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.46532010427714077,
+            "feature_vs_gram_error": 1.1657341758564144e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      }
+    ],
+    "wikitext": [
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9324739465368753,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8919852044923073,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8339516710333021,
+            "feature_vs_gram_error": 7.549516567451064e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.790217745503401,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8025329913194637,
+            "feature_vs_gram_error": 8.43769498715119e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8061402312194522,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7938121202181428,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed1729_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8612348400112586,
+            "feature_vs_gram_error": 5.551115123125783e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5115742535175125,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5545232382209513,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5229022579758587,
+            "feature_vs_gram_error": 7.283063041541027e-14,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5307044521392019,
+            "feature_vs_gram_error": 1.8662849043948881e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5365252286377922,
+            "feature_vs_gram_error": 2.2504220709151923e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5499607451092571,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9364456240800131,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9350377695136104,
+            "feature_vs_gram_error": 3.552713678800501e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8994706177812074,
+            "feature_vs_gram_error": 8.43769498715119e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8722864609582367,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8864195148570572,
+            "feature_vs_gram_error": 6.106226635438361e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8943300423081434,
+            "feature_vs_gram_error": 8.326672684688674e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9038933691576476,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.877073695981324,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8829326421955922,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 1,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8330502766984549,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7807633661261032,
+            "feature_vs_gram_error": 1.5543122344752192e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7711783338131396,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7668731562506477,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7531534973141241,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 6,
+            "symmetry_error": 2.220446049250313e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.819007284305118,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4640891098801711,
+            "feature_vs_gram_error": 1.609823385706477e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.16114856265311586,
+            "feature_vs_gram_error": 1.1657341758564144e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04491017205346508,
+            "feature_vs_gram_error": 5.509481759702339e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.038899101291809644,
+            "feature_vs_gram_error": 1.532107773982716e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03701196523568475,
+            "feature_vs_gram_error": 1.8991752614994084e-14,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.037310186555494396,
+            "feature_vs_gram_error": 1.5959455978986625e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.934241816189044,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9372334727275989,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8852538465485599,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8764700116363682,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.886725418482336,
+            "feature_vs_gram_error": 7.438494264988549e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8988125233102227,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9065949366718636,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8779707863415984,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8693223804131404,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8069941368916871,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 2,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7664627921140577,
+            "feature_vs_gram_error": 4.551914400963142e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7802894822900589,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.778695600638278,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.780597917373348,
+            "feature_vs_gram_error": 6.106226635438361e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8229688124669309,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3939758857011296,
+            "feature_vs_gram_error": 5.551115123125783e-17,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5356687511687024,
+            "feature_vs_gram_error": 3.941291737419306e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5323021304300027,
+            "feature_vs_gram_error": 2.736699755701011e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5418562141422933,
+            "feature_vs_gram_error": 7.05768776754212e-13,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5459406803778031,
+            "feature_vs_gram_error": 8.733014311701481e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5518460510490589,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9309395415230124,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.5054271922583118,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5418776953849639,
+            "feature_vs_gram_error": 3.6637359812630166e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.46876367884587195,
+            "feature_vs_gram_error": 5.5788706987414116e-14,
+            "layer": 3,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.4627228743908501,
+            "feature_vs_gram_error": 1.549316230864406e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4554750262548527,
+            "feature_vs_gram_error": 1.932343174360085e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.46189463458351554,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed1729_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.871799131304251,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8966764086440316,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8114291782363879,
+            "feature_vs_gram_error": 3.9968028886505635e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7853607515323012,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7858335916673345,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7863466180695754,
+            "feature_vs_gram_error": 6.5503158452884236e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7789996641789002,
+            "feature_vs_gram_error": 6.5503158452884236e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9399163979788714,
+            "feature_vs_gram_error": 2.4424906541753444e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9582090893162132,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9164088573484523,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9064913176786691,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 3,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9097929269624664,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9137669883121143,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9137669595427472,
+            "feature_vs_gram_error": 5.218048215738236e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8955203195793333,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.45949045082773954,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.17312278169831102,
+            "feature_vs_gram_error": 1.609823385706477e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04974243545040527,
+            "feature_vs_gram_error": 4.184153024056059e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.046641600034343596,
+            "feature_vs_gram_error": 1.2524703496552547e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.05104737154003019,
+            "feature_vs_gram_error": 1.7638668303732175e-14,
+            "layer": 5,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.058848415660960426,
+            "feature_vs_gram_error": 6.938893903907228e-17,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.870817656785967,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8666969597964292,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.790307370343614,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7689958061880855,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.767444979911507,
+            "feature_vs_gram_error": 4.3298697960381105e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7781394477562356,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7674648887731541,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9386742586809955,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 0,
+            "symmetry_error": 4.440892098500626e-16
+          },
+          {
+            "cka": 0.9614011721893172,
+            "feature_vs_gram_error": 6.661338147750939e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9226344458974135,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9098469216926112,
+            "feature_vs_gram_error": 1.887379141862766e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9263759527553211,
+            "feature_vs_gram_error": 4.218847493575595e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9316061141369922,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9366472586921964,
+            "feature_vs_gram_error": 1.199040866595169e-14,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8977609962029587,
+            "feature_vs_gram_error": 4.6629367034256575e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.38763077411300517,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5197532961741499,
+            "feature_vs_gram_error": 3.3639757646142243e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.4850049178020007,
+            "feature_vs_gram_error": 2.137734433915739e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48113940010837575,
+            "feature_vs_gram_error": 5.546674231027282e-13,
+            "layer": 4,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.47612158605124094,
+            "feature_vs_gram_error": 7.934763956995994e-13,
+            "layer": 5,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.47539131163908893,
+            "feature_vs_gram_error": 2.0539125955565396e-15,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8153995666552221,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48120028429472367,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5371095216991568,
+            "feature_vs_gram_error": 4.107825191113079e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5086349722371201,
+            "feature_vs_gram_error": 6.872280522429719e-14,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5418918391190518,
+            "feature_vs_gram_error": 1.9051427102567686e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5364434837254786,
+            "feature_vs_gram_error": 2.2182256032010628e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5506948576787858,
+            "feature_vs_gram_error": 3.885780586188048e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8911550554999764,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.49257738852933713,
+            "feature_vs_gram_error": 5.329070518200751e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5551953750054892,
+            "feature_vs_gram_error": 7.216449660063518e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4983014550757148,
+            "feature_vs_gram_error": 5.81756864903582e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4647549882127825,
+            "feature_vs_gram_error": 1.7053025658242404e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4508704112162865,
+            "feature_vs_gram_error": 2.1133095273739855e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.4574110076512242,
+            "feature_vs_gram_error": 2.0539125955565396e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9595487584847971,
+            "feature_vs_gram_error": 4.6629367034256575e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7063009630817949,
+            "feature_vs_gram_error": 7.216449660063518e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.22567695764306608,
+            "feature_vs_gram_error": 2.858824288409778e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03071398056352169,
+            "feature_vs_gram_error": 2.3526319781197458e-14,
+            "layer": 3,
+            "symmetry_error": 3.469446951953614e-18
+          },
+          {
+            "cka": 0.029012652538007826,
+            "feature_vs_gram_error": 5.481379239391515e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.02852331121850061,
+            "feature_vs_gram_error": 5.422051696513108e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03136370177170018,
+            "feature_vs_gram_error": 6.938893903907228e-18,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8147841975646203,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4669294240876556,
+            "feature_vs_gram_error": 3.497202527569243e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5045783199931011,
+            "feature_vs_gram_error": 7.771561172376096e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.501486548247019,
+            "feature_vs_gram_error": 7.127631818093505e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5252550344786736,
+            "feature_vs_gram_error": 1.9706458687096529e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5416583261703697,
+            "feature_vs_gram_error": 2.3026025530725747e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5595777795133073,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.893511650149548,
+            "feature_vs_gram_error": 5.995204332975845e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4997352996015912,
+            "feature_vs_gram_error": 4.551914400963142e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.5548871522086817,
+            "feature_vs_gram_error": 6.5503158452884236e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4480233276713017,
+            "feature_vs_gram_error": 6.189493362285248e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.45498098033054013,
+            "feature_vs_gram_error": 1.6447954109821694e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.43199529900856537,
+            "feature_vs_gram_error": 2.0683454948766666e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.44668821338213993,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed1729_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9544027679899457,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.6733396106963347,
+            "feature_vs_gram_error": 4.6629367034256575e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8845583389737536,
+            "feature_vs_gram_error": 5.440092820663267e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9099791409781032,
+            "feature_vs_gram_error": 1.354472090042691e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9119793420641541,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 4,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9127519528703163,
+            "feature_vs_gram_error": 5.81756864903582e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9082800005853279,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9300489507097096,
+            "feature_vs_gram_error": 2.220446049250313e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.914436518459343,
+            "feature_vs_gram_error": 5.662137425588298e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8558313243577883,
+            "feature_vs_gram_error": 7.771561172376096e-16,
+            "layer": 2,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8191389171128952,
+            "feature_vs_gram_error": 0.0,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8095912265254065,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8027460464747223,
+            "feature_vs_gram_error": 8.215650382226158e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7885599705999503,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed3253_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8556774360168995,
+            "feature_vs_gram_error": 3.3306690738754696e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.45239124894578975,
+            "feature_vs_gram_error": 2.6645352591003757e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.1685840737851619,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04631901399632611,
+            "feature_vs_gram_error": 5.35682609381638e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03876175290714106,
+            "feature_vs_gram_error": 1.4231671396913725e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03484993703043113,
+            "feature_vs_gram_error": 1.8235413179468196e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.03555749760643096,
+            "feature_vs_gram_error": 8.326672684688674e-17,
+            "layer": 6,
+            "symmetry_error": 6.938893903907228e-18
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9342468975889053,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9295665509453885,
+            "feature_vs_gram_error": 2.886579864025407e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8867214164082269,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8742313775652483,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.876867230576954,
+            "feature_vs_gram_error": 1.7763568394002505e-15,
+            "layer": 4,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.8847988673885183,
+            "feature_vs_gram_error": 7.993605777301127e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8923501409563477,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8746601661039907,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8932702339032477,
+            "feature_vs_gram_error": 4.440892098500626e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8031108042347274,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7735958234866583,
+            "feature_vs_gram_error": 2.9976021664879227e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7768227735287461,
+            "feature_vs_gram_error": 5.551115123125783e-16,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7740640604232575,
+            "feature_vs_gram_error": 6.661338147750939e-15,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7780439940259589,
+            "feature_vs_gram_error": 1.1435297153639112e-14,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8188712480519647,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.3700508987084125,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5243828783665014,
+            "feature_vs_gram_error": 3.941291737419306e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5149320930763779,
+            "feature_vs_gram_error": 2.6123547769429933e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5496826557279408,
+            "feature_vs_gram_error": 6.66577903984944e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5428121314466664,
+            "feature_vs_gram_error": 8.918421556813882e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5486406968713424,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 6,
+            "symmetry_error": 1.1102230246251565e-16
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9351090158315489,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.45532392314600395,
+            "feature_vs_gram_error": 2.7200464103316335e-15,
+            "layer": 1,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.18395395339068393,
+            "feature_vs_gram_error": 2.942091015256665e-15,
+            "layer": 2,
+            "symmetry_error": 2.7755575615628914e-17
+          },
+          {
+            "cka": 0.049886199810279835,
+            "feature_vs_gram_error": 4.454769886308441e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.044134102523642575,
+            "feature_vs_gram_error": 1.384309333829492e-14,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04329678647789029,
+            "feature_vs_gram_error": 1.810357419529396e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.04616925000101877,
+            "feature_vs_gram_error": 6.938893903907228e-18,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed3253_epc_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.870299684112554,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.875299075104325,
+            "feature_vs_gram_error": 2.7755575615628914e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8153696974546419,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7724670197793756,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7630761155743002,
+            "feature_vs_gram_error": 1.3322676295501878e-15,
+            "layer": 4,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.7622607717133876,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7446077907457306,
+            "feature_vs_gram_error": 8.881784197001252e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.9373669599478401,
+            "feature_vs_gram_error": 1.9984014443252818e-15,
+            "layer": 0,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.956076313269784,
+            "feature_vs_gram_error": 4.773959005888173e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9182920851332439,
+            "feature_vs_gram_error": 5.773159728050814e-15,
+            "layer": 2,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.9074233412606938,
+            "feature_vs_gram_error": 5.10702591327572e-15,
+            "layer": 3,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.9176405528395608,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9130824073456479,
+            "feature_vs_gram_error": 1.1102230246251565e-16,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.9181613547065447,
+            "feature_vs_gram_error": 1.0880185641326534e-14,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_bp_kd",
+        "layers": [
+          {
+            "cka": 0.8977096300682819,
+            "feature_vs_gram_error": 3.4416913763379853e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.3820434585958304,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5466875707534232,
+            "feature_vs_gram_error": 3.963496197911809e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5141279769492154,
+            "feature_vs_gram_error": 2.0805579481475434e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48697287919979826,
+            "feature_vs_gram_error": 5.589972928987663e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4735327069321277,
+            "feature_vs_gram_error": 8.36664071357518e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.4714964982913167,
+            "feature_vs_gram_error": 1.7208456881689926e-15,
+            "layer": 6,
+            "symmetry_error": 5.551115123125783e-17
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.8117500382631535,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.41625418091097144,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.15814465971523833,
+            "feature_vs_gram_error": 2.914335439641036e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.0468790313502193,
+            "feature_vs_gram_error": 5.710709682915649e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.041959477714458744,
+            "feature_vs_gram_error": 1.5758228055773316e-14,
+            "layer": 4,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.03970670037881668,
+            "feature_vs_gram_error": 1.842276331487369e-14,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.040715031715693926,
+            "feature_vs_gram_error": 2.498001805406602e-16,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_ce"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.896594129140602,
+            "feature_vs_gram_error": 3.219646771412954e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.45892497995052123,
+            "feature_vs_gram_error": 2.0539125955565396e-15,
+            "layer": 1,
+            "symmetry_error": 5.551115123125783e-17
+          },
+          {
+            "cka": 0.17760703028041758,
+            "feature_vs_gram_error": 2.609024107869118e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.055306301128087786,
+            "feature_vs_gram_error": 4.829470157119431e-15,
+            "layer": 3,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.04887083519508227,
+            "feature_vs_gram_error": 1.321859288694327e-14,
+            "layer": 4,
+            "symmetry_error": 1.3877787807814457e-17
+          },
+          {
+            "cka": 0.05027604004175299,
+            "feature_vs_gram_error": 1.7937040741600185e-14,
+            "layer": 5,
+            "symmetry_error": 6.938893903907228e-18
+          },
+          {
+            "cka": 0.05373641027525998,
+            "feature_vs_gram_error": 4.163336342344337e-16,
+            "layer": 6,
+            "symmetry_error": 6.938893903907228e-18
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed3253_epc_kd",
+        "layers": [
+          {
+            "cka": 0.9518624553287206,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 0,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5895829687723062,
+            "feature_vs_gram_error": 1.1102230246251565e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.21822569480650988,
+            "feature_vs_gram_error": 1.1074474670635936e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02943715661139238,
+            "feature_vs_gram_error": 8.366918269331336e-14,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02791447787108665,
+            "feature_vs_gram_error": 1.739441923831464e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.027468119986490215,
+            "feature_vs_gram_error": 2.828397238641145e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.02993077995470922,
+            "feature_vs_gram_error": 0.0,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.9327535304993203,
+            "feature_vs_gram_error": 2.1094237467877974e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.8716266490412237,
+            "feature_vs_gram_error": 1.4432899320127035e-15,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.8105243716764385,
+            "feature_vs_gram_error": 4.884981308350689e-15,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7768341248279448,
+            "feature_vs_gram_error": 4.9960036108132044e-15,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.779394053794398,
+            "feature_vs_gram_error": 2.3314683517128287e-15,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.7811317246167419,
+            "feature_vs_gram_error": 9.992007221626409e-16,
+            "layer": 5,
+            "symmetry_error": 2.220446049250313e-16
+          },
+          {
+            "cka": 0.7804671316247677,
+            "feature_vs_gram_error": 4.773959005888173e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_bp_kd"
+      },
+      {
+        "first": "seed6421_bp_ce",
+        "layers": [
+          {
+            "cka": 0.8649039485170295,
+            "feature_vs_gram_error": 3.1086244689504383e-15,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.3762438993940863,
+            "feature_vs_gram_error": 2.220446049250313e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5073715139600632,
+            "feature_vs_gram_error": 4.474198789239381e-14,
+            "layer": 2,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.5206383534499649,
+            "feature_vs_gram_error": 2.7688962234151404e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.546355760475399,
+            "feature_vs_gram_error": 7.23643367450677e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5625205955018356,
+            "feature_vs_gram_error": 8.665290707199347e-13,
+            "layer": 5,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.5719766895447732,
+            "feature_vs_gram_error": 1.2212453270876722e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      },
+      {
+        "first": "seed6421_bp_kd",
+        "layers": [
+          {
+            "cka": 0.943871447339652,
+            "feature_vs_gram_error": 3.3306690738754696e-16,
+            "layer": 0,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.3925313889309207,
+            "feature_vs_gram_error": 4.440892098500626e-16,
+            "layer": 1,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.552686348916601,
+            "feature_vs_gram_error": 3.7414515929867775e-14,
+            "layer": 2,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4697142531089737,
+            "feature_vs_gram_error": 2.3053781106341376e-13,
+            "layer": 3,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.48090050307599164,
+            "feature_vs_gram_error": 5.557776461273534e-13,
+            "layer": 4,
+            "symmetry_error": 0.0
+          },
+          {
+            "cka": 0.4601592176592794,
+            "feature_vs_gram_error": 7.489009412608993e-13,
+            "layer": 5,
+            "symmetry_error": 1.1102230246251565e-16
+          },
+          {
+            "cka": 0.46619412353647943,
+            "feature_vs_gram_error": 4.9960036108132044e-15,
+            "layer": 6,
+            "symmetry_error": 0.0
+          }
+        ],
+        "second": "seed6421_epc_kd"
+      }
+    ]
+  },
+  "probe_shape": [
+    4,
+    64
+  ],
+  "probe_token_sha256": {
+    "random_ood": "8e38d526a414a620943f87842ad37401f3f194608a8d283f2cf7482fa3d6749f",
+    "tinystories": "9b66d58700d6d3c3251da0eab45984873605614b071c5f7ad8c69e7ab777c874",
+    "wikitext": "ab03faf25f9fa3eecdfda157bd10b0550e9b3d18d8a5af922d97ff1973fe747c"
+  },
+  "ranks": {
+    "random_ood": {
+      "seed1729_bp_ce": [
+        {
+          "entropy_effective_rank": 158.8390006612768,
+          "layer": 0,
+          "participation_ratio": 111.43700562456296
+        },
+        {
+          "entropy_effective_rank": 38.37339534885099,
+          "layer": 1,
+          "participation_ratio": 10.645923099894073
+        },
+        {
+          "entropy_effective_rank": 41.74131408219713,
+          "layer": 2,
+          "participation_ratio": 17.25427729947959
+        },
+        {
+          "entropy_effective_rank": 35.79685931640298,
+          "layer": 3,
+          "participation_ratio": 14.792924144864738
+        },
+        {
+          "entropy_effective_rank": 30.752899069680808,
+          "layer": 4,
+          "participation_ratio": 13.364235374822702
+        },
+        {
+          "entropy_effective_rank": 23.975795575295994,
+          "layer": 5,
+          "participation_ratio": 10.622048799816108
+        },
+        {
+          "entropy_effective_rank": 17.475001190756362,
+          "layer": 6,
+          "participation_ratio": 7.565383423148148
+        }
+      ],
+      "seed1729_bp_kd": [
+        {
+          "entropy_effective_rank": 156.62661404893154,
+          "layer": 0,
+          "participation_ratio": 109.83868337651118
+        },
+        {
+          "entropy_effective_rank": 29.642665803424066,
+          "layer": 1,
+          "participation_ratio": 11.555913348071712
+        },
+        {
+          "entropy_effective_rank": 29.909401672746778,
+          "layer": 2,
+          "participation_ratio": 13.728479092317384
+        },
+        {
+          "entropy_effective_rank": 28.081862995020362,
+          "layer": 3,
+          "participation_ratio": 12.65078242800578
+        },
+        {
+          "entropy_effective_rank": 23.84045290148953,
+          "layer": 4,
+          "participation_ratio": 10.998968156166573
+        },
+        {
+          "entropy_effective_rank": 19.48217610488813,
+          "layer": 5,
+          "participation_ratio": 9.186246417526096
+        },
+        {
+          "entropy_effective_rank": 16.99332289875884,
+          "layer": 6,
+          "participation_ratio": 8.016614887134928
+        }
+      ],
+      "seed1729_epc_kd": [
+        {
+          "entropy_effective_rank": 145.17850968731372,
+          "layer": 0,
+          "participation_ratio": 84.52661480567802
+        },
+        {
+          "entropy_effective_rank": 6.728758944529629,
+          "layer": 1,
+          "participation_ratio": 3.4613995912069027
+        },
+        {
+          "entropy_effective_rank": 3.7045449628976184,
+          "layer": 2,
+          "participation_ratio": 2.967036804834723
+        },
+        {
+          "entropy_effective_rank": 3.6209883443731488,
+          "layer": 3,
+          "participation_ratio": 2.9111495258749196
+        },
+        {
+          "entropy_effective_rank": 3.5934356810066177,
+          "layer": 4,
+          "participation_ratio": 2.8838042880740096
+        },
+        {
+          "entropy_effective_rank": 3.581236710673908,
+          "layer": 5,
+          "participation_ratio": 2.8711232132573903
+        },
+        {
+          "entropy_effective_rank": 3.653369708187682,
+          "layer": 6,
+          "participation_ratio": 2.944758990520347
+        }
+      ],
+      "seed3253_bp_ce": [
+        {
+          "entropy_effective_rank": 159.30233154226218,
+          "layer": 0,
+          "participation_ratio": 112.28377894471089
+        },
+        {
+          "entropy_effective_rank": 37.28944711770239,
+          "layer": 1,
+          "participation_ratio": 10.302999620682721
+        },
+        {
+          "entropy_effective_rank": 43.16816488870738,
+          "layer": 2,
+          "participation_ratio": 17.07262358511032
+        },
+        {
+          "entropy_effective_rank": 40.227559359438025,
+          "layer": 3,
+          "participation_ratio": 16.952165142219183
+        },
+        {
+          "entropy_effective_rank": 34.787081859838516,
+          "layer": 4,
+          "participation_ratio": 15.266312552094897
+        },
+        {
+          "entropy_effective_rank": 25.758549598185947,
+          "layer": 5,
+          "participation_ratio": 11.122300972795514
+        },
+        {
+          "entropy_effective_rank": 19.970418486427842,
+          "layer": 6,
+          "participation_ratio": 8.754236226028073
+        }
+      ],
+      "seed3253_bp_kd": [
+        {
+          "entropy_effective_rank": 155.98985899771213,
+          "layer": 0,
+          "participation_ratio": 108.68960426601697
+        },
+        {
+          "entropy_effective_rank": 27.404881980796585,
+          "layer": 1,
+          "participation_ratio": 10.495535847749398
+        },
+        {
+          "entropy_effective_rank": 28.686279517399978,
+          "layer": 2,
+          "participation_ratio": 13.122208301480354
+        },
+        {
+          "entropy_effective_rank": 27.43910228858482,
+          "layer": 3,
+          "participation_ratio": 12.24146405644493
+        },
+        {
+          "entropy_effective_rank": 25.00980980591228,
+          "layer": 4,
+          "participation_ratio": 11.522983879144174
+        },
+        {
+          "entropy_effective_rank": 19.868101738094005,
+          "layer": 5,
+          "participation_ratio": 8.756355624929014
+        },
+        {
+          "entropy_effective_rank": 17.31426446602491,
+          "layer": 6,
+          "participation_ratio": 7.623409007128806
+        }
+      ],
+      "seed3253_epc_kd": [
+        {
+          "entropy_effective_rank": 145.67995992557874,
+          "layer": 0,
+          "participation_ratio": 86.26674697625549
+        },
+        {
+          "entropy_effective_rank": 7.133179514955041,
+          "layer": 1,
+          "participation_ratio": 3.817227173716253
+        },
+        {
+          "entropy_effective_rank": 1.6045787765609336,
+          "layer": 2,
+          "participation_ratio": 1.247704562487917
+        },
+        {
+          "entropy_effective_rank": 1.102901321524028,
+          "layer": 3,
+          "participation_ratio": 1.030779183948393
+        },
+        {
+          "entropy_effective_rank": 1.0969897260574593,
+          "layer": 4,
+          "participation_ratio": 1.028747658047479
+        },
+        {
+          "entropy_effective_rank": 1.0948494989467528,
+          "layer": 5,
+          "participation_ratio": 1.0280186099121078
+        },
+        {
+          "entropy_effective_rank": 1.1082194745818763,
+          "layer": 6,
+          "participation_ratio": 1.0326041100490813
+        }
+      ],
+      "seed6421_bp_ce": [
+        {
+          "entropy_effective_rank": 159.1954432743026,
+          "layer": 0,
+          "participation_ratio": 112.23008927163669
+        },
+        {
+          "entropy_effective_rank": 40.92670657911927,
+          "layer": 1,
+          "participation_ratio": 12.070633804815621
+        },
+        {
+          "entropy_effective_rank": 43.19358231118467,
+          "layer": 2,
+          "participation_ratio": 17.624546467715202
+        },
+        {
+          "entropy_effective_rank": 38.109626160268945,
+          "layer": 3,
+          "participation_ratio": 15.771813190327707
+        },
+        {
+          "entropy_effective_rank": 32.22992747501324,
+          "layer": 4,
+          "participation_ratio": 13.480587504240923
+        },
+        {
+          "entropy_effective_rank": 24.557272246659796,
+          "layer": 5,
+          "participation_ratio": 10.236111799951901
+        },
+        {
+          "entropy_effective_rank": 18.280076452033647,
+          "layer": 6,
+          "participation_ratio": 7.6063838021544905
+        }
+      ],
+      "seed6421_bp_kd": [
+        {
+          "entropy_effective_rank": 156.52358797881848,
+          "layer": 0,
+          "participation_ratio": 110.01639547725439
+        },
+        {
+          "entropy_effective_rank": 29.610500407981288,
+          "layer": 1,
+          "participation_ratio": 11.653353634198375
+        },
+        {
+          "entropy_effective_rank": 29.635299228789382,
+          "layer": 2,
+          "participation_ratio": 13.653760466926471
+        },
+        {
+          "entropy_effective_rank": 28.833083967216943,
+          "layer": 3,
+          "participation_ratio": 13.058660405598113
+        },
+        {
+          "entropy_effective_rank": 24.614815276918964,
+          "layer": 4,
+          "participation_ratio": 11.427480409936834
+        },
+        {
+          "entropy_effective_rank": 19.487193210111048,
+          "layer": 5,
+          "participation_ratio": 9.213061204657022
+        },
+        {
+          "entropy_effective_rank": 17.480924638931263,
+          "layer": 6,
+          "participation_ratio": 8.408928304100762
+        }
+      ],
+      "seed6421_epc_kd": [
+        {
+          "entropy_effective_rank": 146.6037604238277,
+          "layer": 0,
+          "participation_ratio": 88.21226188764209
+        },
+        {
+          "entropy_effective_rank": 5.053883542038222,
+          "layer": 1,
+          "participation_ratio": 2.7989064292633485
+        },
+        {
+          "entropy_effective_rank": 3.8005249710079068,
+          "layer": 2,
+          "participation_ratio": 3.188146796215881
+        },
+        {
+          "entropy_effective_rank": 3.627241946116196,
+          "layer": 3,
+          "participation_ratio": 3.019653912796237
+        },
+        {
+          "entropy_effective_rank": 3.595061784915762,
+          "layer": 4,
+          "participation_ratio": 2.9869539889468975
+        },
+        {
+          "entropy_effective_rank": 3.5812903212469616,
+          "layer": 5,
+          "participation_ratio": 2.973189103765875
+        },
+        {
+          "entropy_effective_rank": 3.650587733315851,
+          "layer": 6,
+          "participation_ratio": 3.034073462249411
+        }
+      ]
+    },
+    "tinystories": {
+      "seed1729_bp_ce": [
+        {
+          "entropy_effective_rank": 95.36642413954438,
+          "layer": 0,
+          "participation_ratio": 54.96370055775058
+        },
+        {
+          "entropy_effective_rank": 37.413008860891274,
+          "layer": 1,
+          "participation_ratio": 17.31600543814104
+        },
+        {
+          "entropy_effective_rank": 38.9003419541231,
+          "layer": 2,
+          "participation_ratio": 20.850190526832566
+        },
+        {
+          "entropy_effective_rank": 36.70482437706154,
+          "layer": 3,
+          "participation_ratio": 20.095403404305525
+        },
+        {
+          "entropy_effective_rank": 33.15401014500308,
+          "layer": 4,
+          "participation_ratio": 18.44048543905377
+        },
+        {
+          "entropy_effective_rank": 28.754580882266694,
+          "layer": 5,
+          "participation_ratio": 15.84283740442654
+        },
+        {
+          "entropy_effective_rank": 24.75207069974013,
+          "layer": 6,
+          "participation_ratio": 13.529564051202392
+        }
+      ],
+      "seed1729_bp_kd": [
+        {
+          "entropy_effective_rank": 92.69414247371358,
+          "layer": 0,
+          "participation_ratio": 49.63823339402614
+        },
+        {
+          "entropy_effective_rank": 29.075392441172767,
+          "layer": 1,
+          "participation_ratio": 14.270135573298218
+        },
+        {
+          "entropy_effective_rank": 33.193165344395304,
+          "layer": 2,
+          "participation_ratio": 18.2728575575559
+        },
+        {
+          "entropy_effective_rank": 31.472431834729502,
+          "layer": 3,
+          "participation_ratio": 17.421791611899593
+        },
+        {
+          "entropy_effective_rank": 27.249732222276375,
+          "layer": 4,
+          "participation_ratio": 15.310585021393322
+        },
+        {
+          "entropy_effective_rank": 23.947372367050306,
+          "layer": 5,
+          "participation_ratio": 13.844759862391227
+        },
+        {
+          "entropy_effective_rank": 22.229015042436142,
+          "layer": 6,
+          "participation_ratio": 12.815841689820171
+        }
+      ],
+      "seed1729_epc_kd": [
+        {
+          "entropy_effective_rank": 75.94715743536308,
+          "layer": 0,
+          "participation_ratio": 29.60344215709921
+        },
+        {
+          "entropy_effective_rank": 7.236643200268282,
+          "layer": 1,
+          "participation_ratio": 4.92823878312048
+        },
+        {
+          "entropy_effective_rank": 4.57636185187626,
+          "layer": 2,
+          "participation_ratio": 3.8508048253887086
+        },
+        {
+          "entropy_effective_rank": 4.189251328770217,
+          "layer": 3,
+          "participation_ratio": 3.372118275474404
+        },
+        {
+          "entropy_effective_rank": 4.117613194479753,
+          "layer": 4,
+          "participation_ratio": 3.2848908776745995
+        },
+        {
+          "entropy_effective_rank": 4.090467757264516,
+          "layer": 5,
+          "participation_ratio": 3.25194719260884
+        },
+        {
+          "entropy_effective_rank": 4.249629237897618,
+          "layer": 6,
+          "participation_ratio": 3.4485483194431223
+        }
+      ],
+      "seed3253_bp_ce": [
+        {
+          "entropy_effective_rank": 96.25453121457788,
+          "layer": 0,
+          "participation_ratio": 55.398967597669326
+        },
+        {
+          "entropy_effective_rank": 36.04993250727849,
+          "layer": 1,
+          "participation_ratio": 16.692590275995624
+        },
+        {
+          "entropy_effective_rank": 40.64855232268607,
+          "layer": 2,
+          "participation_ratio": 22.778333053740464
+        },
+        {
+          "entropy_effective_rank": 39.8548001270554,
+          "layer": 3,
+          "participation_ratio": 22.96395045304858
+        },
+        {
+          "entropy_effective_rank": 35.83695823808235,
+          "layer": 4,
+          "participation_ratio": 20.576299710994586
+        },
+        {
+          "entropy_effective_rank": 30.913618628871113,
+          "layer": 5,
+          "participation_ratio": 17.434923865187777
+        },
+        {
+          "entropy_effective_rank": 27.03325962807958,
+          "layer": 6,
+          "participation_ratio": 15.092444399494553
+        }
+      ],
+      "seed3253_bp_kd": [
+        {
+          "entropy_effective_rank": 93.74843615800877,
+          "layer": 0,
+          "participation_ratio": 50.051275250873324
+        },
+        {
+          "entropy_effective_rank": 26.905700288004862,
+          "layer": 1,
+          "participation_ratio": 12.656144378361553
+        },
+        {
+          "entropy_effective_rank": 32.51663622203039,
+          "layer": 2,
+          "participation_ratio": 18.039829706104783
+        },
+        {
+          "entropy_effective_rank": 31.80092999289131,
+          "layer": 3,
+          "participation_ratio": 17.518649115811115
+        },
+        {
+          "entropy_effective_rank": 27.72299534742784,
+          "layer": 4,
+          "participation_ratio": 15.527455901228056
+        },
+        {
+          "entropy_effective_rank": 24.92289491029346,
+          "layer": 5,
+          "participation_ratio": 14.416923208833818
+        },
+        {
+          "entropy_effective_rank": 22.697376865495816,
+          "layer": 6,
+          "participation_ratio": 13.119115294657837
+        }
+      ],
+      "seed3253_epc_kd": [
+        {
+          "entropy_effective_rank": 77.18959929461369,
+          "layer": 0,
+          "participation_ratio": 30.120661661407752
+        },
+        {
+          "entropy_effective_rank": 8.409797290368989,
+          "layer": 1,
+          "participation_ratio": 5.896219545468955
+        },
+        {
+          "entropy_effective_rank": 2.3902902304837896,
+          "layer": 2,
+          "participation_ratio": 1.6478574043298966
+        },
+        {
+          "entropy_effective_rank": 1.2404327150898695,
+          "layer": 3,
+          "participation_ratio": 1.0783348664802666
+        },
+        {
+          "entropy_effective_rank": 1.226850111699528,
+          "layer": 4,
+          "participation_ratio": 1.0732572229405029
+        },
+        {
+          "entropy_effective_rank": 1.2219028874783586,
+          "layer": 5,
+          "participation_ratio": 1.0714165386914256
+        },
+        {
+          "entropy_effective_rank": 1.2537027497722342,
+          "layer": 6,
+          "participation_ratio": 1.0833192779339098
+        }
+      ],
+      "seed6421_bp_ce": [
+        {
+          "entropy_effective_rank": 96.3723826813044,
+          "layer": 0,
+          "participation_ratio": 55.79953623112884
+        },
+        {
+          "entropy_effective_rank": 37.20074707067853,
+          "layer": 1,
+          "participation_ratio": 17.080908433435038
+        },
+        {
+          "entropy_effective_rank": 42.309745728682515,
+          "layer": 2,
+          "participation_ratio": 23.50790119468168
+        },
+        {
+          "entropy_effective_rank": 40.79586840374481,
+          "layer": 3,
+          "participation_ratio": 23.148104576300423
+        },
+        {
+          "entropy_effective_rank": 36.812968757091284,
+          "layer": 4,
+          "participation_ratio": 21.103636730044443
+        },
+        {
+          "entropy_effective_rank": 31.671064572992638,
+          "layer": 5,
+          "participation_ratio": 17.961100958731723
+        },
+        {
+          "entropy_effective_rank": 27.12943980034681,
+          "layer": 6,
+          "participation_ratio": 15.080268066095124
+        }
+      ],
+      "seed6421_bp_kd": [
+        {
+          "entropy_effective_rank": 93.26253049354776,
+          "layer": 0,
+          "participation_ratio": 49.596031755355845
+        },
+        {
+          "entropy_effective_rank": 27.32640198367949,
+          "layer": 1,
+          "participation_ratio": 13.046848078016883
+        },
+        {
+          "entropy_effective_rank": 34.216145271231255,
+          "layer": 2,
+          "participation_ratio": 19.04158385664689
+        },
+        {
+          "entropy_effective_rank": 32.95630029560176,
+          "layer": 3,
+          "participation_ratio": 18.11239698303992
+        },
+        {
+          "entropy_effective_rank": 28.929441929853514,
+          "layer": 4,
+          "participation_ratio": 16.508527905718857
+        },
+        {
+          "entropy_effective_rank": 25.12174742454544,
+          "layer": 5,
+          "participation_ratio": 14.5766554923474
+        },
+        {
+          "entropy_effective_rank": 23.58529301028804,
+          "layer": 6,
+          "participation_ratio": 13.601665691144229
+        }
+      ],
+      "seed6421_epc_kd": [
+        {
+          "entropy_effective_rank": 79.69502713929187,
+          "layer": 0,
+          "participation_ratio": 32.81881732649354
+        },
+        {
+          "entropy_effective_rank": 5.640510691271644,
+          "layer": 1,
+          "participation_ratio": 3.685867050462299
+        },
+        {
+          "entropy_effective_rank": 4.309540202652291,
+          "layer": 2,
+          "participation_ratio": 3.4879930597286553
+        },
+        {
+          "entropy_effective_rank": 3.9680306891105106,
+          "layer": 3,
+          "participation_ratio": 3.0526114756170903
+        },
+        {
+          "entropy_effective_rank": 3.9088480815271587,
+          "layer": 4,
+          "participation_ratio": 2.9854758072683683
+        },
+        {
+          "entropy_effective_rank": 3.8844866986904343,
+          "layer": 5,
+          "participation_ratio": 2.9582554413720055
+        },
+        {
+          "entropy_effective_rank": 4.016415039886477,
+          "layer": 6,
+          "participation_ratio": 3.1097610737175034
+        }
+      ]
+    },
+    "wikitext": {
+      "seed1729_bp_ce": [
+        {
+          "entropy_effective_rank": 104.05061911317674,
+          "layer": 0,
+          "participation_ratio": 60.146343650247374
+        },
+        {
+          "entropy_effective_rank": 33.407116122145545,
+          "layer": 1,
+          "participation_ratio": 14.017653864448171
+        },
+        {
+          "entropy_effective_rank": 39.48003614274945,
+          "layer": 2,
+          "participation_ratio": 19.820526724954686
+        },
+        {
+          "entropy_effective_rank": 41.96980119444818,
+          "layer": 3,
+          "participation_ratio": 23.362198807360567
+        },
+        {
+          "entropy_effective_rank": 38.237621609899904,
+          "layer": 4,
+          "participation_ratio": 20.980702345947996
+        },
+        {
+          "entropy_effective_rank": 32.554262386686474,
+          "layer": 5,
+          "participation_ratio": 17.42142459243572
+        },
+        {
+          "entropy_effective_rank": 26.877513077197666,
+          "layer": 6,
+          "participation_ratio": 14.190853002400951
+        }
+      ],
+      "seed1729_bp_kd": [
+        {
+          "entropy_effective_rank": 103.70062780174797,
+          "layer": 0,
+          "participation_ratio": 61.25884779733663
+        },
+        {
+          "entropy_effective_rank": 25.134228240666953,
+          "layer": 1,
+          "participation_ratio": 11.387654454284418
+        },
+        {
+          "entropy_effective_rank": 29.987511253069766,
+          "layer": 2,
+          "participation_ratio": 15.007326970430691
+        },
+        {
+          "entropy_effective_rank": 30.370974121093656,
+          "layer": 3,
+          "participation_ratio": 16.28307149706587
+        },
+        {
+          "entropy_effective_rank": 26.80553634725776,
+          "layer": 4,
+          "participation_ratio": 14.680487276993729
+        },
+        {
+          "entropy_effective_rank": 24.104841300056485,
+          "layer": 5,
+          "participation_ratio": 13.602806373625413
+        },
+        {
+          "entropy_effective_rank": 22.051401135726824,
+          "layer": 6,
+          "participation_ratio": 12.516516251095423
+        }
+      ],
+      "seed1729_epc_kd": [
+        {
+          "entropy_effective_rank": 86.10136533990116,
+          "layer": 0,
+          "participation_ratio": 37.18265777235688
+        },
+        {
+          "entropy_effective_rank": 7.776727322218617,
+          "layer": 1,
+          "participation_ratio": 5.721985373170296
+        },
+        {
+          "entropy_effective_rank": 4.278249980458552,
+          "layer": 2,
+          "participation_ratio": 3.4370386314650303
+        },
+        {
+          "entropy_effective_rank": 3.5678950092244435,
+          "layer": 3,
+          "participation_ratio": 2.604567228426975
+        },
+        {
+          "entropy_effective_rank": 3.478653250727613,
+          "layer": 4,
+          "participation_ratio": 2.516912291336753
+        },
+        {
+          "entropy_effective_rank": 3.445315448959571,
+          "layer": 5,
+          "participation_ratio": 2.4850372255641657
+        },
+        {
+          "entropy_effective_rank": 3.672075015332284,
+          "layer": 6,
+          "participation_ratio": 2.7130979284260017
+        }
+      ],
+      "seed3253_bp_ce": [
+        {
+          "entropy_effective_rank": 104.89509300500916,
+          "layer": 0,
+          "participation_ratio": 61.405722808194504
+        },
+        {
+          "entropy_effective_rank": 31.97289378975578,
+          "layer": 1,
+          "participation_ratio": 13.382845003026246
+        },
+        {
+          "entropy_effective_rank": 38.9713561459364,
+          "layer": 2,
+          "participation_ratio": 19.316432814914926
+        },
+        {
+          "entropy_effective_rank": 42.327175191527424,
+          "layer": 3,
+          "participation_ratio": 23.52030756101873
+        },
+        {
+          "entropy_effective_rank": 36.539430475912404,
+          "layer": 4,
+          "participation_ratio": 19.482305257618364
+        },
+        {
+          "entropy_effective_rank": 30.91294617576576,
+          "layer": 5,
+          "participation_ratio": 16.261218180435307
+        },
+        {
+          "entropy_effective_rank": 25.86760706351767,
+          "layer": 6,
+          "participation_ratio": 13.439786571536569
+        }
+      ],
+      "seed3253_bp_kd": [
+        {
+          "entropy_effective_rank": 103.83360733870356,
+          "layer": 0,
+          "participation_ratio": 61.599702430005124
+        },
+        {
+          "entropy_effective_rank": 23.960441041593118,
+          "layer": 1,
+          "participation_ratio": 10.899268650140757
+        },
+        {
+          "entropy_effective_rank": 31.377772056708714,
+          "layer": 2,
+          "participation_ratio": 16.646112805463506
+        },
+        {
+          "entropy_effective_rank": 31.00055682009542,
+          "layer": 3,
+          "participation_ratio": 16.558941010555777
+        },
+        {
+          "entropy_effective_rank": 28.701133366282463,
+          "layer": 4,
+          "participation_ratio": 15.865302464808293
+        },
+        {
+          "entropy_effective_rank": 26.18182845712952,
+          "layer": 5,
+          "participation_ratio": 14.914433052637275
+        },
+        {
+          "entropy_effective_rank": 23.47181565308244,
+          "layer": 6,
+          "participation_ratio": 13.597780360374669
+        }
+      ],
+      "seed3253_epc_kd": [
+        {
+          "entropy_effective_rank": 87.44616701389047,
+          "layer": 0,
+          "participation_ratio": 38.30808035468316
+        },
+        {
+          "entropy_effective_rank": 8.425130513251947,
+          "layer": 1,
+          "participation_ratio": 6.069639563478347
+        },
+        {
+          "entropy_effective_rank": 2.4760529124161366,
+          "layer": 2,
+          "participation_ratio": 1.7118103981248982
+        },
+        {
+          "entropy_effective_rank": 1.274051902310348,
+          "layer": 3,
+          "participation_ratio": 1.0911434623910825
+        },
+        {
+          "entropy_effective_rank": 1.2590220624144606,
+          "layer": 4,
+          "participation_ratio": 1.0853986309198396
+        },
+        {
+          "entropy_effective_rank": 1.253404264888942,
+          "layer": 5,
+          "participation_ratio": 1.0832521512869764
+        },
+        {
+          "entropy_effective_rank": 1.2891161216505176,
+          "layer": 6,
+          "participation_ratio": 1.0969647728023522
+        }
+      ],
+      "seed6421_bp_ce": [
+        {
+          "entropy_effective_rank": 105.51233880895217,
+          "layer": 0,
+          "participation_ratio": 62.12879196935814
+        },
+        {
+          "entropy_effective_rank": 32.137435758577745,
+          "layer": 1,
+          "participation_ratio": 13.167592379654169
+        },
+        {
+          "entropy_effective_rank": 40.91979296321011,
+          "layer": 2,
+          "participation_ratio": 22.10129355497201
+        },
+        {
+          "entropy_effective_rank": 42.37094062836765,
+          "layer": 3,
+          "participation_ratio": 24.086320315104945
+        },
+        {
+          "entropy_effective_rank": 39.10485760401265,
+          "layer": 4,
+          "participation_ratio": 22.164281922099303
+        },
+        {
+          "entropy_effective_rank": 32.66016950146592,
+          "layer": 5,
+          "participation_ratio": 17.86636412941998
+        },
+        {
+          "entropy_effective_rank": 26.771749541712047,
+          "layer": 6,
+          "participation_ratio": 14.28795975304456
+        }
+      ],
+      "seed6421_bp_kd": [
+        {
+          "entropy_effective_rank": 103.96296098760034,
+          "layer": 0,
+          "participation_ratio": 61.29086332303331
+        },
+        {
+          "entropy_effective_rank": 24.19263141532638,
+          "layer": 1,
+          "participation_ratio": 10.879996614003
+        },
+        {
+          "entropy_effective_rank": 32.23026968864426,
+          "layer": 2,
+          "participation_ratio": 16.93371198608128
+        },
+        {
+          "entropy_effective_rank": 32.85291329070407,
+          "layer": 3,
+          "participation_ratio": 17.844968533677356
+        },
+        {
+          "entropy_effective_rank": 28.417857474630704,
+          "layer": 4,
+          "participation_ratio": 15.539204345058096
+        },
+        {
+          "entropy_effective_rank": 24.80481046510865,
+          "layer": 5,
+          "participation_ratio": 14.014346448482746
+        },
+        {
+          "entropy_effective_rank": 22.90019750340402,
+          "layer": 6,
+          "participation_ratio": 13.082101808750693
+        }
+      ],
+      "seed6421_epc_kd": [
+        {
+          "entropy_effective_rank": 91.13533091339619,
+          "layer": 0,
+          "participation_ratio": 43.19736952122695
+        },
+        {
+          "entropy_effective_rank": 5.924760327193698,
+          "layer": 1,
+          "participation_ratio": 4.029568922622966
+        },
+        {
+          "entropy_effective_rank": 3.9577410227847993,
+          "layer": 2,
+          "participation_ratio": 3.1025095317921747
+        },
+        {
+          "entropy_effective_rank": 3.569888243994042,
+          "layer": 3,
+          "participation_ratio": 2.651206987171269
+        },
+        {
+          "entropy_effective_rank": 3.514381225127473,
+          "layer": 4,
+          "participation_ratio": 2.5940511279855194
+        },
+        {
+          "entropy_effective_rank": 3.491377271596837,
+          "layer": 5,
+          "participation_ratio": 2.570893832525542
+        },
+        {
+          "entropy_effective_rank": 3.616682345204492,
+          "layer": 6,
+          "participation_ratio": 2.6995989828472866
+        }
+      ]
+    }
+  },
+  "real_data_sources": {
+    "tinystories": {
+      "response_sha256": "baaa34e2d2d03c07914c0ca51f287d363d73f92dad68b50d6ec61e7ef009fd70",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=roneneldan%2FTinyStories&config=default&split=validation&offset=0&length=64"
+    },
+    "wikitext": {
+      "response_sha256": "f32987b23b3a58eb7e1b92f250bdf617c34b2ed080cdd0f20a857fdfd36a4d0f",
+      "url": "https://datasets-server.huggingface.co/rows?dataset=Salesforce%2Fwikitext&config=wikitext-103-raw-v1&split=validation&offset=0&length=64"
+    }
+  },
+  "schema": "relaleap.epc_representation_correctness_audit.v1",
+  "teacher_tokenizer": {
+    "id": "openai-community/gpt2",
+    "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e"
+  }
+}

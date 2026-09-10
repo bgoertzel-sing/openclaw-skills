@@ -2,6 +2,18 @@
 
 ## Now
 
+- [x] 2026-08-10: Produce the remote-host provisioning guide and staged
+  multi-agent port runbook requested by Ben. Deliverables:
+  `docs/remote-server-provisioning-guide-2026-08-10.md` and
+  `docs/multi-agent-remote-port-runbook-2026-08-10.md`. Acceptance: both
+  documents distinguish required/optional software, per-agent isolation,
+  secrets/state handling, pinned-version capture, staged Telegram canaries,
+  acceptance evidence, rollback, and old-host retirement; Markdown links and
+  shell examples pass a review scan. Next command: reconcile the v1.0.0 kit,
+  current ProtoCosmo2 migration plan, and active OmegaClaw topology. Evidence:
+  the two versioned documents plus a documentation-check transcript.
+  Completed: both documents were created; structural checks, conservative
+  secret-pattern scan, hazardous-command review, and `git diff --check` pass.
 - [ ] Have Ben review the private v1.0.0 ZIP and choose one fresh-host tester.
 
 ## Next
@@ -21,6 +33,9 @@
 
 ## Done recently
 
+- [x] Produced detailed remote-server prerequisites and a reversible,
+  one-token-at-a-time multi-agent migration runbook, retaining ZeroBot as the
+  final-cutover recovery peer — 2026-08-10.
 - [x] Created project notebook and selected Research Rules 2, 3, 5, and 7 — 2026-07-13.
 - [x] Inventoried reusable OpenClaw/OmegaClaw prompts, skills, stores, workflows, and schedules — 2026-07-13.
 - [x] Defined strict exclusions and built sanitized parameterized templates/configuration/scripts — 2026-07-13.

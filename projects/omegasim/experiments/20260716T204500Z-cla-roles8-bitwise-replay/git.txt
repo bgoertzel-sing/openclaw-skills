@@ -1,0 +1,6 @@
+# Pinned repository state before execution
+
+- OmegaSim: clean `18c7408fe48eeac9e9ec53f18eb5b2d0ed840e2d` on `agent/cla-detector-prereg`.
+- Detector implementation parent: `5a6002bd134ffb60e4f20b6c506a1ff6795e7afa`.
+- chaoslang: clean detached `974af31efaf6e3cc239252f78367d20e657ac45c`.
+- The command reasserts both identities, clean states, and implementation hashes before measurement.

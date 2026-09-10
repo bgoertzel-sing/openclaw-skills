@@ -1,0 +1,31 @@
+test_end_of_settle_local_update_matches_checked_oracle (test_pcgraph_adapter.SourceAlignmentTests) ... FAIL
+test_gate_and_batch_plan_fail_closed (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_one_tick_matches_checked_oracle_fp32_tolerance (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_settlement_freezes_weights_and_adapter_is_pure (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+test_snapshot_restore_exact_and_replayable (test_pcgraph_adapter.SourceAlignmentTests) ... ok
+
+======================================================================
+FAIL: test_end_of_settle_local_update_matches_checked_oracle (test_pcgraph_adapter.SourceAlignmentTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/openclaw/research-agent/projects/relaleap/experiments/20260728T181641Z-v4-1-pcgraph-source-alignment-fable/work/tests/test_pcgraph_adapter.py", line 74, in test_end_of_settle_local_update_matches_checked_oracle
+    np.testing.assert_allclose(
+  File "/home/openclaw/.local/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 1715, in assert_allclose
+    assert_array_compare(compare, actual, desired, err_msg=str(err_msg),
+  File "/home/openclaw/.local/lib/python3.10/site-packages/numpy/testing/_private/utils.py", line 921, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Not equal to tolerance rtol=2.4e-06, atol=6e-08
+
+Mismatched elements: 2 / 4 (50%)
+Max absolute difference among violations: 0.00054026
+Max relative difference among violations: 0.00151178
+ ACTUAL: array([[ 0.020008,  0.29547 ],
+       [-0.14121 ,  0.546584]], dtype=float32)
+ DESIRED: array([[ 0.020008,  0.295918],
+       [-0.14121 ,  0.546044]], dtype=float32)
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.077s
+
+FAILED (failures=1)

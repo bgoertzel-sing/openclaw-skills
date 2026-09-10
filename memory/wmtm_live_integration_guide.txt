@@ -1,0 +1,146 @@
+# WMTM Live Integration Guide
+# ============================
+# How to wire WMTMCoordinator into petta-memory's live infrastructure.
+# Date: 2026-09-06
+# Status: Implementation complete, activation gated on Ben's go.
+
+## 1. Prerequisites
+
+All WMTM modules are committed on petta-memory main (6e25aa9..24d22d4):
+  src/petta_memory/wmtm.py            (196L) — WMTMStore, WMTMItem, ForgettingPolicy
+  src/petta_memory/wmtm_recall.py     (233L) — RecallBridge
+  src/petta_memory/wmtm_inference.py  (117L) — WMTMInferenceEngine
+  src/petta_memory/wmtm_utility.py    (109L) — WMTMUtility
+  src/petta_memory/wmtm_coordinator.py(136L) — WMTMCoordinator
+
+## 2. Integration Point: iter.py Agent Loop
+
+The WMTMCoordinator should be instantiated once per agent session and called
+at specific lifecycle points:
+
+### Initialization (once):
+```python
+from petta_memory.wmtm_coordinator import WMTMCoordinator
+
+# store and ecan_bridge are existing MediumMemoryStore and ECANBridge instances
+wmtm_coord = WMTMCoordinator(
+    store=medium_memory_store,
+    ecan_bridge=ecan_bridge,
+    capacity=60,
+    decay_rate=0.85,
+    recall_top_k=15,
+    spread_depth=2,
+    writeback_threshold=5.0,
+    auto_writeback=True,
+)
+```
+
+### On new user message (context injection):
+```python
+# Before processing, recall relevant memories
+recalled_ids = wmtm_coord.on_context(user_message)
+
+# Inject active context into agent prompt
+active_context = wmtm_coord.get_active_context(limit=20)
+# active_context is a list of {id, text, sti, source_type, use_count, derived_from}
+```
+
+### During processing (touch used items):
+```python
+# When agent references or uses a specific memory item
+wmtm_coord.on_touch(item_id)
+```
+
+### On derivation (agent produces new insight):
+```python
+# When agent derives a conclusion from recalled facts
+deriv_id = wmtm_coord.on_derive(
+    text="ECAN tuning reduced STI variance by 40%",
+    source_ids=["bel-ecan-tuning", "bel-sti-variance"],
+)
+```
+
+### Periodic maintenance (every N steps):
+```python
+evicted = wmtm_coord.on_tick()
+```
+
+### End of turn (cleanup + persist):
+```python
+written = wmtm_coord.on_turn_end()
+# High-utility items auto-written back to LTM via ECAN stimulation + store.append
+```
+
+## 3. Integration with live_bridge.py
+
+The existing run_petta_memory_goalchainer_live_bridge() function can be
+extended with an optional wmtm_coordinator parameter:
+
+```python
+def run_petta_memory_goalchainer_live_bridge(
+    ...,
+    wmtm_coordinator: WMTMCoordinator | None = None,  # NEW
+):
+    # Before goalchainer runs:
+    if wmtm_coordinator:
+        wmtm_coordinator.on_context(request)
+    
+    # ... existing goalchainer logic ...
+    
+    # After results:
+    if wmtm_coordinator:
+        for result in results:
+            wmtm_coordinator.on_touch(result.id)
+        wmtm_coordinator.on_turn_end()
+```
+
+## 4. Integration with ECANBridge
+
+WMTMCoordinator uses ECANBridge for:
+- get_prioritized_beliefs() → STI scores for recall ranking
+- get_evidence_map() → adjacency for spreading activation
+- stimulate_beliefs() → STI boost on writeback
+
+No changes needed to ECANBridge — all methods already exist.
+
+## 5. Integration with MediumMemoryStore
+
+WMTMCoordinator uses store for:
+- query_about(keyword) → keyword-based recall
+- query_cluster(id) → text lookup for spread items
+- append_cluster(note) → persist derived items on writeback
+
+No changes needed to MediumMemoryStore.
+
+## 6. Monitoring
+
+```python
+summary = wmtm_coord.full_summary()
+# Returns:
+# {
+#   "turn": int,
+#   "wmtm": {cycle, count, capacity, recalled, derived, avg_sti, max_sti, min_sti},
+#   "inference": {total_derivations, active_derived, avg_derived_sti},
+#   "utility": {total_items, avg_utility, max_utility, writeback_candidates},
+# }
+```
+
+## 7. Configuration Tuning
+
+| Parameter | Default | Purpose |
+|-----------|---------|---------|
+| capacity | 60 | Max items in working memory |
+| decay_rate | 0.85 | STI multiplier per tick |
+| recall_top_k | 15 | Max items recalled per context |
+| spread_depth | 2 | BFS depth for spreading activation |
+| writeback_threshold | 5.0 | Min utility score for LTM writeback |
+| auto_writeback | True | Whether on_turn_end auto-writes |
+
+## 8. Test Coverage
+
+70 tests across 5 files, all PASS in 0.23s:
+- test_wmtm.py (22) — foundational structures
+- test_wmtm_recall.py (15) — keyword extraction, recall, spreading activation
+- test_wmtm_inf_util.py (17) — derivation, provenance, utility, writeback
+- test_wmtm_integration.py (6) — end-to-end cycle
+- test_wmtm_coordinator.py (10) — coordinator lifecycle

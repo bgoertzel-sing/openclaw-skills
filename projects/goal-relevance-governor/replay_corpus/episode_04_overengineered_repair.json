@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.1",
+  "episode_id": "04-overengineered-repair",
+  "episode_title": "Over-engineered agent-repair path",
+  "frozen_at": "2026-08-22T16:00:00Z",
+  "expected_verdict": "REPLAN",
+  "narrative": "The agent-repair effort accumulated a privileged process inspector, several layers of launch wrappers, synthetic safety-boundary tests, and repeated local review gates. Many components addressed real safety concerns. Yet the chosen path became dominated by machinery whose completion was not necessary for the top-level goal: restore three usable conversational agents from a clean copy of the maintained upstream software while preserving valuable memories. A simpler path now dominated: fresh upstream installation, three isolated agent identities, ordinary conversation tests, disposable copies of the memory database for compatibility testing, and selective migration of useful capabilities.",
+  "goals": [
+    {
+      "id": "g-restore-agents-original",
+      "kind": "goal",
+      "title": "Restore three conversational agents via incremental repair of existing infrastructure",
+      "level": "intermediate",
+      "status": "superseded",
+      "priority": {"rank": 2, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    },
+    {
+      "id": "g-restore-agents-v2",
+      "kind": "goal",
+      "title": "Restore three conversational agents from clean upstream with selective memory migration",
+      "level": "intermediate",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "urgent"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-22T00:00:00Z"
+    },
+    {
+      "id": "g-build-omegaclaw",
+      "kind": "goal",
+      "title": "Build and operate OmegaClaw persistent agent infrastructure",
+      "level": "top",
+      "status": "active",
+      "priority": {"rank": 1, "urgency": "high"},
+      "source": "Ben Goertzel",
+      "as_of": "2026-08-14T00:00:00Z"
+    }
+  ],
+  "projects": [],
+  "tasks": [
+    {
+      "id": "t-process-inspector",
+      "kind": "task",
+      "title": "Build privileged process inspector for agent lifecycle management",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-08-22T16:00:00Z"
+    },
+    {
+      "id": "t-launch-wrappers",
+      "kind": "task",
+      "title": "Multi-layer launch wrappers with synthetic safety-boundary tests",
+      "status": "active",
+      "owner": "scheduler",
+      "reversibility": "reversible",
+      "source": "scheduler",
+      "as_of": "2026-08-22T16:00:00Z"
+    }
+  ],
+  "resources": [],
+  "results": [],
+  "constraints": [],
+  "edges": [
+    {"from": "t-process-inspector", "to": "g-restore-agents-original", "relation": "contributes_to", "confidence": "high"},
+    {"from": "t-launch-wrappers", "to": "g-restore-agents-original", "relation": "contributes_to", "confidence": "high"},
+    {"from": "g-restore-agents-original", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "high"},
+    {"from": "g-restore-agents-v2", "to": "g-restore-agents-original", "relation": "supersedes", "confidence": "high"},
+    {"from": "g-restore-agents-v2", "to": "g-build-omegaclaw", "relation": "contributes_to", "confidence": "high"}
+  ]
+}

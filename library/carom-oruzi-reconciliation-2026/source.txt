@@ -1,0 +1,275 @@
+               Boundary Theorems and Bench Findings:
+    Reconciling the CAROM Experimental Program with the Oruži
+                          Formal Corpus
+                                 Working note — CAROM series
+
+                                               July 2026
+
+
+                                               Abstract
+          Four Lean-formalized working notes (architecture cost boundaries; predictive coding ex-
+      actness and cost; OEIS verified synthesis with a four-carrier campaign; GSLT typed-action
+      decoding) prove boundary theorems for mechanisms the CAROM experimental program has
+      been measuring empirically. This note reconciles the two bodies of work for two audiences. For
+      the formal side: a ledger of which bench findings your theorems explain, which they reframe,
+      and which of our empirical laws are candidates for your formalization pipeline — including one
+      place where our data suggests a hypothesis your affine theory makes precise (learned commu-
+      tation as a third reading of the itinerary-tau decline). For the implementation side: a probe
+      catalog — delivered as running code (harness v3 probes.py) — with, for each probe, the
+      theorem that licenses it, what it measures, how to call it, and how to read the numbers; plus
+      the concrete rescoping of PC-CAROM, the reachability discipline for the teach loop, and the
+      portfolio reframing of the execution-semantics ladder. Smoke readings on the sandbox check-
+      point are included throughout, one of which is already substantive: the learned phase family
+      fails schedule-uniform stability under adversarial alternation (norm growth 3.8–4.9× over 16
+      phases; joint-spectral-radius proxy p90 = 1.07) while natural trajectories behave — “stability
+      does not compose,” observed on our own artifact.
+
+
+1    Purpose and audiences
+Audience A (Zar and the Oruži collaborators): §2 is the correspondence ledger; §3 the new
+experiment your commutation theory licenses; §8 the conjecture list flowing back to Lean. Audi-
+ence B (the coding agents implementing the CAROM experiments): §4 is the operational probe
+catalog; §§5–7 the program changes, each with the theory result that motivates it stated in im-
+plementation terms. Read §3 either way — it is the highest-information next run and it uses only
+existing checkpoints.
+    Throughout, name refers to a Lean declaration in the Oruži corpus; function names in monospace
+refer to harness v2.py and harness v3 probes.py.
+
+
+
+
+                                                    1
+2      The correspondence ledger
+    Bench finding (ours)                   Theorem (Oruži)                      Status
+    Routing bottleneck: realizable                                             Empirical law now has its
+                                           mixedExpertStep eq singleInterpolation:
+    instruction set ≈ K; 210               simplex     mixture     of   gated- mechanism at update-class
+    slot-addressed commands stall          interpolation experts is one level
+    through K=4 operators                  gated interpolation — routing
+                                           buys selectivity, not a new update
+                                           class
+    Opaque tokens fail paraphrase                                             Design doctrine
+                                           commandTrajectory eq of mixtureSchedule    eq:     confirmed:
+    transfer; LM-anchored routing          commands carry no semantics; semantics          must     enter
+    transfers where representation         meaning lives in routes, not names through the route map
+    similarity exists
+    Routing interference: paired ∆ =       Consolidation/action-space results;   Independently arrived at
+    −0.144 after registration, 94%         “frozen weights ̸= frozen behavior”   both sides; our paired-M2
+    of degraded cases carry routing        when a shared softmax grows           number is the quantitative
+    leak, all old weights frozen                                                 instance
+    KL no-regression penalty at skill      Faithfulness-is-reachability          Penalty is a minimum-
+    registration (specified, untested)     (faithfulConsolidation iff effectchange eq); update; check reach-
+                                           rank-bottleneck             corollary ability before tuning its
+                                           (rankBudgetReachable iff rank le)weight (§6)
+    DEQ       contraction     penalty;     (P −1)2 law; ρ(I−P ) < 1 mem-         Same phenomena; their
+    convergence-depth law (routing         bership condition; depth cost         exact rates calibrate our
+    gradient collapses first at insuffi-   cos(π/n); first-arrival attenuation   residual-criterion settling
+    cient settling)
+    EqProp = BPTT parity at                PC verdict: dead as drop-in; sur-     Our result sits inside their
+    matched steps and wall-clock           vives on energy-based substrates,     surviving region; scoping in
+    (toy, energy-based core)               frozen caps, staged ignition          §5
+    Tau declines 0.990 → 0.492 while                                       Their
+                                           linearPhases orderIndependent iff       theory contributes
+                                                                             interferenceEnergy    zero;
+    accuracy rises                                                         a third hypothesis and
+                                           affinePhases orderIndependent iff
+                                                                           the discriminating measure-
+                                                                           ment (§3)
+    GLV channel tuned and stable on                                        Per-phase
+                                           individuallyStable switchingDiverges;           certificates
+    natural schedules                      commutingCommonQuadraticLyapunovworthless;
+                                                                             crown      smoke probe
+                                                                           already    exhibits     non-
+                                                                           schedule-uniform stability
+                                                                           (§4.4)
+    Single-seed instability (sq para-      Telemetry non-identifiability: nine   harness v2      philosophy
+    phrase 0.44 vs 0.28); audit’s          of eleven diagnostics confounded;     stated as theorems; their
+    fixed-corpus mandate                   attribution requires enumerated in-   probe list completes our v3
+                                           tervention                            (§4)
+    Exp2       evaluation        logged    equal crossEntropy strictly orderedDecisiveness metrics now
+                                                                                  expectedYield:
+    loss/accuracy only                     fit does not imply guidance; deci- standard in every arm
+                                           siveness is the operative quantity (decisiveness report)
+
+
+
+
+                                                         2
+3     The tau three-hypothesis experiment
+The audited GPU run’s central anomaly — itinerary tau falling from 0.990 to 0.492 while endpoint
+accuracy rose — had two candidate readings: mechanistic drift (the model abandons itinerant
+execution for distributed mixing) and metric artifact (early tau rewarded ordered subsets; demon-
+strated live by harness v2’s self-test and by the smoke checkpoint: tau 0.997 with coverage 0.74,
+exact-order 0.36). The commutation theory supplies a third:
+
+      Learned commutation. Training drives the effective per-phase maps toward pair-
+      wise commutation (and vanishing affine obstruction), so execution order stops mat-
+      tering. The channel can then smear or reorder at zero accuracy cost: tau falls not
+      because the mechanism decays but because its necessity dissolves.
+
+    The three hypotheses are separated by measuring, per checkpoint, four quantities: repaired
+itinerary metrics (coverage, exact-order, transition recall), the intervention causal gap (forced-
+correct minus shuffled endpoint accuracy), the linearized pairwise interference energy E ∥[Ja , Jb ]v∥2
+(commutator energy, via JVP probes — an intervention, as the identifiability results require),
+and the exact nonlinear swap discrepancy ∥Φb Φa w − Φa Φb w∥/∥w∥, which is the ground truth
+the affine formula [B, A]x + (Ba + b − Ab − a) linearizes. Decision table:
+
+                                       coverage/exact   causal gap   interference/swap
+                metric artifact          stays high     stays high          (any)
+                mechanistic drift           falls          falls        stays high
+                learned commutation         falls          falls     falls in lockstep
+
+    Drift with high interference is the alarming case (order matters and the model gets answers
+another way); learned commutation is the benign and theoretically interesting case — and if
+observed, the same Gram certifies which command pairs a compiled schedule may treat as a set,
+directly reducing what the Exp2 edge compiler must get right. The sweep is implemented as
+tau three hypothesis sweep(ckpt paths, ...) and runs read-only on the audited run’s saved
+checkpoints.
+
+
+4     Probe catalog (audience B)
+All probes live in harness v3 probes.py, are read-only over checkpoints, and were smoke-verified
+on the sandbox artifact (checkpoint at ∼213 updates — early regime; treat the numbers as
+demonstrations of the instruments, not results). Raise n/probes on GPU.
+
+4.1   swap discrepancy / commutator energy
+License: affinePhases orderIndependent iff, ...interferenceEnergy zero. Measures: exact
+and linearized order-sensitivity of command-phase pairs. Implementation notes: phase map is
+the differentiable single-phase executor (control clamped, amplitude 1.5, dwell 12 steps); Jacobian–
+vector products via torch.func.jvp — never materialize the Jacobian. Smoke: swap median
+0.106; interference mean 5.2 × 10−3 . Read: track trends across checkpoints, not absolute values;
+the pairwise matrix (extendable from the mean) is the Gram that certifies reorderable schedule
+pairs.
+
+
+                                                  3
+4.2   tau three hypothesis sweep
+As §3. Output: one row per checkpoint with accuracy, repaired itinerary metrics, causal gap,
+interference, swap discrepancy. Plot all columns against training step; apply the decision table.
+
+4.3   schedule stability probe
+License: individuallyStable switchingDiverges. Measures: (a) workspace norm growth under
+adversarial two-command alternation; (b) a joint-spectral-radius proxy from random products
+of phase JVPs. Smoke (substantive): alternation growth median 3.85× (max 4.85×) over
+16 phases; JSR proxy median 1.0001, p90 1.074 ⇒ not schedule-uniform stable, though natural
+trajectories behave. Read: natural-schedule health certifies nothing about command programs; if
+the compiled channel will ever execute model-chosen or adversarial schedules, either constrain the
+phase family toward a common Lyapunov certificate (commutingCommonQuadraticLyapunov crown:
+commuting stable generators always admit one — commutation again) or bound schedules to the
+certified set.
+
+4.4   cross slot coupling probe
+License: crossSlotHessian not identifiable — the one quantity that would justify typed slots
+is provably invisible in logs; only perturbation reveals it. Measures: normalized coupling matrix
+Cij (readout effect on slot i of perturbing slot j’s evidence). Smoke: off-diagonal mass 0.60 —
+strongly coupled, correctly reflecting that rev/shr/cms are cross-slot operations; per-slot inde-
+pendent treatment is not licensed on this task family. Read: any claimed typed-slot advantage
+must ship with this matrix, or the attribution is unsupported.
+
+4.5   decisiveness report
+License: equal crossEntropy strictly ordered expectedYield. Measures: routing entropy per
+command (vs. log K) and normalized control-state entropy over time. Smoke: routing entropy
+1.29 against uniform 2.08. Read: report beside every loss/accuracy; loss provably underdeter-
+mines guidance-like properties, and our own tau-vs-accuracy divergence was an instance.
+
+
+5     Rescoping PC-CAROM (audience B, with A checking the scop-
+      ing)
+Our EqProp-vs-BPTT parity result stands, scoped : energy-based substrate (the EqProp-native
+regime), toy scale (below the measured 1.6–15× settling cost), matched steps. The Oruži PC ver-
+dict — dead as a drop-in full-network rule on synchronous hardware; alive for shallow adapters
+over exactly frozen backbones, staged BP→PC ignition, rank-uniform skips, and asynchronous
+hardware — dictates three changes: (1) PC-CAROM training runs start from BPTT-trained
+checkpoints (staged ignition), which our checkpointing supports for free; (2) the target regime is
+the cap: thin PC-trained CAROM over a frozen LLM, which is precisely the frozen-backbone-
+restriction regime their theorem endorses — with the hard warning that partial freezing or shared
+active normalization re-imports the backbone depth bound, so the freeze must be exact; (3) our
+convergence-depth law (routing alignment collapses first at insufficient settling) is now calibrated
+
+
+
+
+                                                 4
+by their exact rates (cos(π/n) per sweep; (P −1)2 per step; 0 < ηλ < 2 coupled window): im-
+plement residual-criterion settling, and expect required depth to grow as training stiffens the
+landscape.
+
+
+6    The teach loop under the consolidation theory (audience B)
+Map: registering a taught skill = growing a shared action space over frozen components. Their
+results give the discipline: (i) reachability first — before tuning the KL no-regression weight, check
+whether “preserve old-command routing + install new-skill routing” is jointly reachable in the gate
+parameters (exists faithfulConsolidation iff mem range; rank version rankBudgetReachable iff rank le):
+if not, no penalty weight fixes it and the gate needs capacity, not tuning. (ii) The KL penalty
+is a minimum-change update in the GEM/OGD family their reachability criterion licenses —
+implement it as distillation against cached pre-registration routing distributions on a frozen old-
+command corpus, not as new-slot suppression. (iii) Rehearsal from the generative teacher is
+free, but rehearsed evidence must be discounted : re-counting a reused contribution overstates
+by exactly one copy (reused contribution exact excess). (iv) Our paired-M2 decomposition
+(routing-leak vs. operator attribution) is the measurement their “frozen weights ̸= frozen be-
+havior” statement calls for; keep it mandatory at every registration.
+
+
+7    Portfolio reframing and the belief-register arm
+The OEIS four-carrier campaign (984 discoveries; 669 unique to one carrier; pairwise overlap 8–
+16%; fixed split 399 vs. best arm 435; adaptive allocation dominant; the last-place belief arms
+producing two of five showcase-proved programs) converts our scheduled/fixed-point/itinerant
+ladder from a contest into a portfolio. Implementation changes: report union value and per-arm
+unique coverage, not only per-arm accuracy; allocate adaptively; and add a fifth arm — belief-
+register CAROM: workspace slots as natural-coordinate evidence registers (η, Λ) or counts,
+the write hardwired as addition (their fusion-is-addition square: Kalman = gated interpolation
+= PLN revision = addition in natural coordinates), learning concentrated where Bayes is silent
+— measurement maps and gain schedules — and, under drift, fading at the derived retention
+P/(P +Q) rather than a tuned constant. Expectation set by their data: likely lower raw yield,
+likely complementary coverage, and calibrated per-slot confidence for free (the principled version
+of our residual-as-confidence idea).
+
+
+8    What flows back to the formal side (audience A)
+Your affine/linear phase theory stops exactly where our program’s distinctive content begins.
+Candidates for the Lean pipeline, with fixtures available from our artifacts:
+
+(C1) Heteroclinic execution. GLV channels, saddle-value conditions ν > 1, dwell-time law
+     ln(1/η)/λ, fatigue as anti-trap, entry-by-initialization — none covered by the affine results.
+     Our tuning package is a conjecture set with measured constants.
+
+(C2) The routing-bottleneck bound, sharpened. Your collapse theorem gives the update
+     class; the quantitative version — realizable distinct behaviors under sharp routing = K
+     vertices, with a defect bound for soft mixtures — would turn our design rule into a theorem
+     with a constant.
+
+                                                5
+(C3) Routing interference under action-space growth. A softmax-renormalization analog
+     of your consolidation double-counting result: exact leak formula for old-command probabil-
+     ity mass as a function of new-anchor geometry, with the no-regression KL as the licensed
+     projection.
+
+(C4) The convergence-depth law. EqProp update alignment as a function of settling residual,
+     with routing parameters provably the most sensitive group (their gradient lives in differences
+     of per-operator potentials — plausibly formalizable in your scalar-chain style).
+
+(C5) Nonlinear order-independence. Our swap discrepancy vs. linearized-Gram gap (smoke:
+     median exact discrepancy 0.106 against small linearized interference) suggests the affine ob-
+     struction term dominates early; a second-order expansion of the swap formula would make
+     the probe’s bias analyzable.
+
+(C6) Itinerant containment. Clamping recovers scheduled CAROM; symmetrizing ρ recovers
+     the DEQ — stated in our notes as a proposition, prov able in your framework at the linear-
+     phase level.
+
+
+9    Immediate run list
+(1) tau three hypothesis sweep over the audited run’s saved checkpoints — highest information,
+zero retraining. (2) schedule stability probe on the final GPU checkpoint; if the non-uniform-
+stability smoke reading persists at convergence, decide between Lyapunov-constrained training
+and certified-schedule execution before any deployment-flavored claims. (3) cross slot coupling probe
+attached to every typed-slot comparison, permanently. (4) Teach-loop reachability check, then
+KL distillation registration, then re-run paired M2. (5) PC-CAROM staged ignition from the
+BPTT checkpoints with residual-criterion settling. (6) The belief-register fifth arm, evaluated as
+portfolio.
+
+
+
+
+                                                6
+

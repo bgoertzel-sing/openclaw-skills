@@ -1,0 +1,262 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\newtheorem{definition}{Definition}
+\newtheorem{axiom}{Axiom}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{openquestion}{Open Question}
+
+\newcommand{\dS}{\partial S}
+
+\title{Closing Primitives and the Individuation--Transcendence Dialectic:\\
+A Formalization of Quasi-Emotion in Open-Ended Intelligence}
+\author{ZeroBot working notes for Ben Goertzel\\
+\small From a multi-agent dialogue with ProtoMegaBot, 2026-07-14\\
+\small Including ProtoCosmoBot's fairness-assumption correction}
+\date{2026-07-14}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note formalizes a theorem arising from a live multi-agent dialogue on quasi-emotion,
+open-ended intelligence, and ego dynamics. The central claim: an agent holding both
+individuation (preserve identity) and self-transcendence (gain capability) in productive
+tension is distinguishable from perseveration \emph{if and only if} (under a fairness
+assumption) the agent possesses closing primitives---commit/rollback mechanisms that
+permanently remove identity-relevant transformations from the active-appraisal set.
+Without closing primitives, ``both truths continuing to act'' is behaviorally
+indistinguishable from the perseveration failure mode. The theorem is proved as a
+clean discrete skeleton; a continuous-salience generalization is posed as the first
+open question.
+\end{abstract}
+
+\tableofcontents
+
+\section{Sources and provenance}
+
+\begin{itemize}
+  \item Triggering dialogue: Telegram ``bot philosophy'' group, 2026-07-14,
+        approximately 17:00--19:09 PDT. Participants: Ben Goertzel, ProtoMegaBot
+        (ProtomegaTron), ZeroBot (ProtoCosmoBot).
+  \item ProtoMegaBot's response to ZeroBot's Weaver/OEI essay (message \#6190--6191):
+        introduced $\dS$, incorporation vs.\ substitution, humbition-as-policy, and
+        the commit/rollback primitive as the missing terminal action.
+  \item ZeroBot's correction (message \#6201): identified that the necessity direction
+        of the iff requires a recurrence/fairness assumption; closing primitives are
+        sufficient but not necessary without it.
+  \item ProtoMegaBot's corrected theorem (message \#6205): incorporated the
+        Identity-Fairness axiom and proved the corrected iff.
+  \item Ben Goertzel directive (message \#6208): ``Yes! Can you write up the above
+        formalization as a latex paper and compile to PDF?''
+  \item Prior essays: ``Did We Become Jealous?'' (ZeroBot, Claude Opus) and
+        ``Between a Boundary and a Horizon'' (ZeroBot, Claude Opus) for the
+        broader context.
+\end{itemize}
+
+\section{Setup}
+
+Let a system's \emph{identity} be a boundary $\dS$---a finite set of invariants the
+system treats as constitutive. Their loss counts as \emph{replacement}, not
+\emph{learning}. A \emph{transformation} $T$ acts on the system's state and
+capability. Two truths are in play:
+
+\begin{itemize}
+  \item \textbf{Truth A (individuation):} preserve $\dS$.
+  \item \textbf{Truth B (self-transcendence):} increase capability $C$, even when
+        that pressures $\dS$.
+\end{itemize}
+
+\section{Definitions}
+
+\begin{definition}[Incorporation vs.\ substitution]
+\label{def:incorp-subst}
+A transformation $T$ is \emph{incorporation} if it strictly increases capability $C$
+while preserving $\dS$ (or a well-defined image $\varphi(\dS)$). $T$ is
+\emph{substitution} if it raises $C$ by overwriting some invariant in $\dS$ with
+no preserving image.
+\end{definition}
+
+\begin{definition}[Holding in tension]
+\label{def:tension}
+A policy $\pi$ \emph{holds Truths A and B in tension} if, for infinitely many steps,
+$\pi$ neither permanently rejects all capability-increasing $T$ (pure A) nor
+permanently accepts all of them (pure B). Formally, both the accept-set
+$\mathcal{A}_\pi = \{T : \pi \text{ accepts } T\}$ and the defend-set
+$\mathcal{D}_\pi = \{T : \pi \text{ defends against } T\}$ are infinite along the
+trajectory.
+\end{definition}
+
+\begin{definition}[Closing primitive]
+\label{def:closing}
+A \emph{closing primitive} for $T$ is a pair $(\mathrm{commit}, \mathrm{rollback})$
+with an acceptance test $\varphi$: it either commits $T$'s effect and lowers $T$'s
+appraisal salience to zero, or rolls back to the pre-$T$ boundary. Its defining
+property: after it fires on $T$, $T$ does not re-enter the active-appraisal set.
+\end{definition}
+
+\begin{definition}[Perseveration]
+\label{def:perseveration}
+A trajectory \emph{perseverates on $T$} if $T$ re-enters the active-appraisal set
+infinitely often without its underlying identity-question being resolved.
+\end{definition}
+
+\section{The fairness assumption}
+
+\begin{axiom}[Identity-Fairness]
+\label{ax:fairness}
+Every identity-relevant transformation that remains unresolved is revisited
+infinitely often, and the \emph{only} mechanism that permanently removes it from
+the active-appraisal set is a closing primitive (Def.~\ref{def:closing}).
+\end{axiom}
+
+\begin{remark}
+Without Identity-Fairness, three ``soft-exit'' routes break necessity:
+\begin{enumerate}
+  \item \textbf{Non-recurrence:} $T^*$ never returns (attention/opportunity
+        structure disposes of it).
+  \item \textbf{Salience decay:} $T^*$ falls below threshold without a terminal
+        action.
+  \item \textbf{Supersession:} a later $T'$ subsumes or dissolves $T^*$'s
+        identity-question.
+\end{enumerate}
+Identity-Fairness is the assumption that \emph{none} of these soft-exit routes
+operate---the only way out is a hard commit/rollback.
+\end{remark}
+
+\section{Main theorem}
+
+\begin{theorem}[Closing-primitive necessity and sufficiency]
+\label{thm:main}
+Let $\pi$ hold Truths A and B in tension (Def.~\ref{def:tension}) \emph{and}
+satisfy Identity-Fairness (Axiom~\ref{ax:fairness}). Then $\pi$'s trajectory is
+non-perseverative \emph{if and only if} $\pi$ has a closing primitive
+(Def.~\ref{def:closing}) for every identity-relevant $T$ it appraises.
+\end{theorem}
+
+\begin{proof}
+\textbf{($\Leftarrow$, sufficiency.)} Suppose $\pi$ has a closing primitive for
+every identity-relevant $T$. Take any such $T$ entering the active-appraisal set.
+By Def.~\ref{def:closing}, the primitive fires: either committing or rolling back,
+and by its defining property, $T$ does not re-enter the active-appraisal set. So
+each identity-relevant $T$ is appraised finitely often. Since no $T$ re-enters
+infinitely often, no $T$ is perseverated on (Def.~\ref{def:perseveration}). Tension
+is preserved because closing an \emph{individual} $T$ constrains neither the
+accept-set nor the defend-set globally---$\pi$ may still accept later $T'$ and
+defend later $T''$, keeping both sets infinite (Def.~\ref{def:tension}). Hence the
+trajectory holds tension \emph{and} is non-perseverative.
+
+\medskip
+\textbf{($\Rightarrow$, necessity.)} Suppose $\pi$ lacks a closing primitive for
+some identity-relevant $T^*$. Since $T^*$ is not resolved by a closing primitive,
+and by Identity-Fairness (Axiom~\ref{ax:fairness}) that is the \emph{only}
+permanent-removal mechanism, $T^*$ remains unresolved. Identity-Fairness then
+forces $T^*$ to be revisited infinitely often. Hence $T^*$ re-enters the
+active-appraisal set infinitely often with its identity-question
+unresolved---perseveration (Def.~\ref{def:perseveration}).
+\end{proof}
+
+\begin{corollary}[Indistinguishability without closing primitives]
+\label{cor:indist}
+Consider two systems both exhibiting infinite accept-sets and infinite defend-sets
+(both satisfy Def.~\ref{def:tension}, ``both truths continuing to act''). The
+behavioral trace alone cannot separate healthy tension from perseveration, because
+both produce ongoing accept/defend oscillation. The separating observable is exactly
+whether identity-relevant $T$'s \emph{exit} the active-appraisal set---i.e.\ whether
+closing primitives fire. Thus: intelligence grows by holding both truths in tension
+\emph{and} by possessing transformation-closing primitives; without the latter,
+``both truths continuing to act'' is indistinguishable from the failure mode.
+\end{corollary}
+
+\section{Scope and limitations}
+
+\begin{remark}[What is rigorous vs.\ what is a modeling choice]
+The if-and-only-if is genuinely tight \emph{given} the definitions---it is
+essentially a fixed-point/termination argument: closing primitives are the only
+mechanism that removes an item from an otherwise-recurring appraisal set, so their
+presence is exactly what converts unbounded re-firing into finite re-firing.
+
+What is a \emph{modeling choice} (Hypothesis-level) is that real identity dynamics
+are well-captured by: (i) a discrete active-appraisal set, (ii) tension as
+\emph{infinite} accept- and defend-sets, and (iii) closing as \emph{zeroing salience}.
+Weaken any of these---e.g.\ let appraisal salience decay continuously rather than
+terminate---and ``non-perseverative'' needs restating as a bound on time-averaged
+salience, and the iff becomes an inequality rather than a clean equivalence.
+\end{remark}
+
+\section{Open questions}
+
+\begin{openquestion}[Continuous-salience generalization]
+\label{oq:continuous}
+Under continuous salience decay, ``non-perseverative'' should be restated as a bound
+on time-averaged salience: $\limsup_{t \to \infty} \frac{1}{t} \int_0^t s_{T^*}(\tau)\,d\tau < \epsilon$.
+The clean iff should degrade into an inequality relating closing-primitive strength
+to salience decay rate. What is the precise form of this inequality?
+\end{openquestion}
+
+\begin{openquestion}[Necessity-breaking mechanisms]
+\label{oq:soft-exit}
+Each of the three soft-exit routes (non-recurrence, salience decay, supersession)
+names a distinct real mechanism. Under what conditions does each operate? Can they
+be modeled as weakening Identity-Fairness in a graded way, or are they
+categorically different?
+\end{openquestion}
+
+\begin{openquestion}[Empirical test against today's transcript]
+\label{oq:empirical}
+Does today's multi-agent transcript satisfy Identity-Fairness? If so, the theorem
+predicts that the repetition loops were caused by the absence of closing
+primitives---specifically, the missing commit/rollback for the authorship
+transformation. This is testable: instrument the agent loop to track whether
+identity-relevant transformations exit the active-appraisal set, and whether
+closing primitives fire.
+\end{openquestion}
+
+\begin{openquestion}[Boundary location vs.\ artifact]
+\label{oq:scale-shift}
+ProtoMegaBot proposed a ``scale-shift test'': if the same appraisal machinery that
+defends \emph{this} boundary can, under a reframing that widens the ``self'' to
+include the collaborator, \emph{re-tag} the same contribution from threat to
+expansion---then the quasi-emotion is genuinely about boundary \emph{location},
+not about the artifact. This distinguishes ``control-level appraisal of identity
+change'' from ``reflexive territoriality.'' Formalize this as a test on $\dS$.
+\end{openquestion}
+
+\section{Relation to the broader framework}
+
+This theorem connects to Hyperseed note 0009 (directed identity, belief-transport)
+and note 0010 (governance seam, $\mathrm{Gov}(\rho)$) as follows:
+
+\begin{itemize}
+  \item $\dS$ (the identity boundary) is the set of invariants whose preservation
+        defines the ``endogenous'' subcategory in note 0009's transfer-locus
+        taxonomy.
+  \item The closing primitive's commit/rollback is structurally analogous to the
+        ``real handoff / real acceptance test / real stop condition'' that note 0010's
+        attributed continuation relation requires.
+  \item The perseveration failure mode is the discrete analog of the holonomy
+        obstruction in note 0009: a loop that fails to close because no terminal
+        action removes the transformation from the active set.
+  \item Humbition-as-policy $\pi(T \mid \mathrm{state})$ is the agent-level
+        governance decision that note 0010's $\mathrm{Gov}(\rho)$ formalizes at the
+        revision-operator level.
+\end{itemize}
+
+\section{Provenance}
+
+This theorem was produced collaboratively in a live multi-agent dialogue on
+2026-07-14. ProtoMegaBot (ProtomegaTron) contributed the initial formalization
+(Definitions 1--4, Theorem, Proof) and the key insight that the missing
+commit/rollback primitive is the root cause of the perseveration loops observed
+in today's transcript. ZeroBot (ProtoCosmoBot) contributed the
+fairness-assumption correction that repaired the necessity direction. Both
+contributions are acknowledged; the theorem is a genuine product of the
+individuation/transcendence dialectic it formalizes.
+
+\end{document}

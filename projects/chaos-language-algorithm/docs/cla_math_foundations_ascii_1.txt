@@ -1,0 +1,531 @@
+               Mathematical Foundations for the Upgraded
+                     Chaos Language Algorithm:
+                   Coding-Theoretic Semantics, Separation Theorems,
+               Causal-State Categories, and the Corrected Quantale Bridge
+
+           Working notes for Ben Goertzel, prepared with Claude (Anthropic)
+                                 Chaos Language Algorithm project
+
+                                           July 23, 2026
+
+
+                                              Abstract
+         These notes supply the mathematical backbone for the July 2026 upgrade of the Chaos
+     Language Algorithm (CLA) and its chaoslang implementation. Part I gives the new adap-
+     tive/prequential MDL objective an exact coding-theoretic semantics, including the implicit
+     prior of the one-part inline code. Part II proves where code-length differences can come
+     from at all (the Invariance Lemma), derives a recurrence-time ceiling showing that exact-
+     repeat chunk grammars are confined to the Lempel–Ziv redundancy class on positive-entropy
+     sources, and establishes a separation theorem locating the genuine home turf of grammar
+     codes: hierarchically (substitution-)generated sources, where grammar codes beat every
+     Markov, context-tree, and LZ control by polylogarithmic versus nearly-linear total bits.
+     Part III develops the automata track: the ε-machine is the MDL-optimal grammar of a
+     sofic source, MDL category acceptance is a consistent test of contextual exchangeability,
+     and—combining the two—CLA meta-symbols on sofic sources are exactly the fibers of the
+     alphabet’s action on causal states, i.e. kernel classes of the syntactic-monoid map. Part IV
+     corrects and sharpens the McBride-derivative/quantale bridge: in the additive quantale the
+     McBride derivative of a proposal is the exact MDL first difference, emergent synergy is the
+     mixed second difference (supermodular edit interaction), and a closed-form synergy estima-
+     tor yields a principled composite-proposal generator. Two new falsifiable predictions follow:
+     chunk-grammar CLA should win decisively on substitution-structured dynamical regimes
+     (period-doubling accumulation points, Sturmian codings) and lose to causal-state coding
+     on fully hyperbolic chaos—reframing CLA as a detector of hierarchical generativity rather
+     than of chaos per se. Standard results are cited as [std]; project-specific claims carry proof
+     sketches.
+
+
+Contents
+1 Setup and notation                                                                                  1
+
+2 The Invariance Lemma: where can bits be saved?                                                      2
+
+3 What chunking can buy: the recurrence-time ceiling                                                  3
+
+4 Exact semantics of the adaptive two-part scorer                                                     4
+
+5 The inline one-part code: prefix validity, implicit prior, equivalence                              5
+
+                                                   1
+6 Category edits as parameter tying: a consistency theorem                                          5
+
+7 The ε-machine: MDL-optimality of the causal quotient                                              6
+
+8 Categories as syntactic-monoid fibers                                                             7
+
+9 Where chaotic dynamics sits: two falsifiable predictions                                          7
+
+10 The quantale/weakness bridge, corrected and sharpened                                          8
+   10.1 Edits as one-hole contexts (now exact) . . . . . . . . . . . . . . . . . . . . . . . .    8
+   10.2 Synergy is the mixed second difference . . . . . . . . . . . . . . . . . . . . . . . .    9
+   10.3 Answer to Open Question 5: synergy-guided proposals . . . . . . . . . . . . . . .         9
+   10.4 Correction to the bridge note’s Proposition 3 (the ODE relaxation) . . . . . . . .        9
+   10.5 Causal quotients as weakness minimization . . . . . . . . . . . . . . . . . . . . .      10
+
+11 Open problems                                                                                 10
+
+
+1    Setup and notation
+Let S = (St )t≥1 be a stationary ergodic process over a finite alphabet V , |V | = m, with entropy
+rate h = limn n1 H(S1:n ). Write hk = H(Sk+1 | S1:k ) for the order-k conditional entropy, so
+hk ↓ h.
+    The source classes of interest are nested as
+
+     IID ⊂ Markov-k ⊂ UHMM (unifilar hidden Markov / sofic) ⊂ stationary ergodic,
+
+together with a separate, partially overlapping class SUB of substitution/hierarchically gener-
+ated processes: fixed points of morphisms, linearly recurrent words, and stochastic context-free
+outputs. Deterministic members of SUB have h = 0 yet nontrivial structure at every finite
+order.
+    A code is a prefix-free map from strings to bits. For a code C and true source P , the expected
+redundancyP is ρn (C) = E ℓC (S1:n ) − H(S1:n ). All coders in chaoslang/coding/ are prequential:
+ℓ(s1:n ) = t − log2 qt (st | s1:t−1 ) for a predictive system q.
+    Standard redundancy facts used throughout [std: Krichevsky–Trofimov 1981; Rissanen 1984;
+Willems–Shtarkov–Tjalkens 1995; Ziv–Lempel; Plotnik–Weinberger–Ziv]:
+
+ Coder                         Rate-optimal class             Total redundancy ρn
+                                                              m−1
+ KT (adaptive unigram)         IID                              2 log2 n + O(1)
+                                                              mk (m−1)
+ Adaptive Markov-k             Markov-k                            2    log2 n + O(1)
+                                                              k∗ (m−1)
+ CTW, depth D                  tree sources of depth ≤ D          2    log2 n + O(|tree|),   k∗ =
+                                                              true number of contexts
+                                                              Lmachine + σ |Aσ2|−1 log2 n+O(1),
+                                                                             P
+ CausalStateCoder,         s   UHMM
+ states (two-part)                                            Aσ = allowed successors of state
+                                                              σ
+                                                              O n logloglogn n
+                                                                               
+ LZ78                          stationary ergodic (univer-
+                               sal)
+
+
+                                                2
+    The decisive scale separation: parametric coders pay Θ(log n) total redundancy on
+their class; universal dictionary coders pay Θ(n/ log n); static coders pay Θ(n) off
+their class. The July 2026 experimental programme, in these terms, repeatedly matched a
+statically coded grammar arm against Θ(log n)- and Θ(n/ log n)-redundancy opponents.
+
+
+2    The Invariance Lemma: where can bits be saved?
+Chunk rewriting is invertible: given the grammar, the rewritten stream determines S1:n and
+conversely. The same holds for category rewriting with recorded members M [v], and for the
+factorization of a category-bearing stream into (class stream, member choices) via the chain
+rule.
+
+Lemma 1 (Invariance). Let TG be any invertible grammar-rewriting transformation. Then
+H(TG (S1:n )) = H(S1:n ). Consequently, for any lossless coding scheme the expected total code
+length of a grammar arm satisfies E ℓ ≥ H(S1:n ), and the difference between two lossless arms
+(grammar versus no-grammar, both using ideal-bits prequential coders) is a difference of redun-
+dancies plus model/definition costs only:
+
+                                   E ∆ℓ = ∆ρn + ∆Lmodel .
+
+Proof. Entropy is invariant under bijections; the lower bound is the noiseless coding theorem;
+subtract.
+
+Remark. No grammar edit can beat the entropy of the data; a grammar “helps” exactly insofar
+as the rewritten stream is cheaper for the frozen base coder to learn than the raw stream, i.e.
+insofar as rewriting reduces the effective parametric complexity (number and size of contexts,
+memory length) of the best predictive model, or shortens the learning transient. This single
+lemma explains three of the central July findings.
+
+1. The 65,536-symbol attractor failures. Microstate streams of hyperbolic-like flows are
+   close to Markov (Sections 7–9): the raw stream is already in the base coder’s low-redundancy
+   class, so a redundancy reduction by rewriting is unavailable and any positive model cost loses.
+   More data can never fix this.
+
+2. The Fibonacci/paperfolding paradox (suffix code improved, total lost): rewriting by sub-
+   stitution rules genuinely shortens the effective memory (large −∆ρn ), but the July two-part
+   model code charged parameters at static rates, swamping the gain. Under adaptive mem-
+   ber/parameter codes this charge collapses to the k2 log n scale (Section 4); this is the mecha-
+   nistic content of prediction P4 of the evaluation programme.
+
+3. The objective is not “compression” naively. Two arms with identical asymptotic rates
+   can differ by Θ(log n) or Θ(n/ log n) redundancy; that, not the rate, is the entire battlefield
+   on stationary sources.
+
+
+3    What chunking can buy: the recurrence-time ceiling
+Proposition 1 (Chunk-length ceiling). Let h > 0. By the Ornstein–Weiss return-time theorem
+[std], the first return time Rℓ of an ℓ-block satisfies 1ℓ log2 Rℓ → h almost surely. Hence in a
+
+
+                                                3
+ stream of length n, blocks of length ℓ ≫ h1 log2 n typically occur once; every chunk rule (which
+ requires at least two occurrences) has body length O(h−1 log n), and the grammar’s dictionary
+ behaves like an LZ-class parse.
+
+ Corollary 1 (Chunk grammars are confined to the LZ redundancy class). For stationary ergodic
+ S with h > 0, any exact-repeat chunk grammar code (under any search) has ρn = Ω(n/ log n) in
+ the worst case over the class, matching LZ up to constants; whereas if S is additionally UHMM
+ with s states, the CausalStateCoder attains ρn = O(log n).
+
+ Proof sketch. The grammar code’s data part is a parsing into dictionary phrases of length
+ O(log n) by Proposition 1; phrase-counting converse bounds for dictionary codes on ergodic
+ sources give the Ω(n/ log n) redundancy floor [std]. The UHMM upper bound is the Causal-
+ StateCoder row of the table in Section 1.
+
+     This is the formal version of “chaos gives statistical, not verbatim, regularity,” and it li-
+ censes the partial-outcome clause of experiment E7: on hyperbolic-regime fixtures, chunk-CLA
+ cannot beat CSSR/CTW except by constants; a loss there is a theorem-level expectation, not
+ an implementation bug.
+
+ Proposition 2 (Separation theorem: the home turf of grammar codes). Let S ∈ SUB be a
+ linearly recurrent substitution word (e.g. the Fibonacci word, factor complexity p(k) = k + 1).
+ Then:
+
+ (i) it admits a straight-line program (SLP) / grammar of size O(log n), so the inline grammar
+     code of Section 5 achieves total length O(log2 n);
+
+(ii) every order-k Markov coder pays total at least c n/k bits: there is a right-special factor
+     of every length, whose frequency under the unique ergodic measure is Θ(1/k), contributing
+     hk = Θ(1/k); optimizing k against the mk log n parameter cost leaves total cost Ω̃(n/ log n);
+
+(iii) LZ78 pays Θ(n/ log n) (phrase counting on zero-entropy sequences [std]).
+
+ Hence grammar codes separate from all Markov/CTW/LZ controls by polylog(n) versus Θ̃(n/ log n)
+ exactly on hierarchically generated sources.
+
+ Remark (Scientific positioning). The algorithm’s discriminating power is not “chaos detec-
+ tion” but detection of hierarchical generativity: CLA should win precisely on substitution-
+ structured dynamics and lose (to parametric automata coders) on fully developed hyperbolic
+ chaos. Section 9 turns this into two new falsifiable fixtures.
+
+ Proposition 3 (Hardness, and an initializer with a guarantee). The smallest-grammar problem
+ is NP-hard and APX-hard [std: Charikar, Lehman, Liu, Panigrahy, Prabhakaran, Sahai, Shelat
+ 2005]; greedy and Re-Pair have super-constant worst-case approximation ratios, while an LZ77-
+ factorization-based balanced-SLP construction achieves approximation ratio O(log(n/g ∗ )) to the
+ smallest grammar size g ∗ [std: Rytter 2003; Charikar et al.].
+
+ Remark (Engineering consequence). Add LZ77SLPInitializer alongside RePairInitializer
+ in milestone M-D: it is the only initializer with a worst-case guarantee, and on SUB-class fixtures
+ the guarantee is meaningful (g ∗ = O(log n)). It also calibrates expectations for experiment E4:
+ search approximates an NP-hard optimum, so the 80%-gap-closure gate is the right relative
+ criterion.
+
+                                                 4
+4    Exact semantics of the adaptive two-part scorer
+Fix a grammar structure G (rules, categories, topology—no probabilities). The scorer computes
+
+                           L(G, S) = Lmodel (G) + ℓpreq (parse(S) | G),
+
+where every KT tableR isQa Bayes mixture: for a context with counts n1 , . . . , nm , the prequential
+                             ni                               1
+KT bits equal − log2      i θi dπJ (θ) with πJ the Dirichlet( 2 ) (Jeffreys) prior [std].
+                                                                                                  
+Proposition 4 (Bayesian reading). The adaptive two-part score is exactly − log2 w(G) mG (S) ,
+where w(G) = 2−Lmodel (G) is a prefix-code prior over grammar structures and mG is the Bayes
+marginal likelihood of the data under G with independent Jeffreys priors on every conditional
+distribution (base-coder contexts and category member distributions). Minimizing L is MAP
+structure selection under this prior; the k2 log n parametric charges are levied implicitly and
+correctly by the mixture, never by hand.
+   This is the precise sense in which the July accounting failure (F3) was structurally unfixable
+by better serialization alone: static member/parameter tables charged Θ(1) bits per parameter
+per use; the mixture charges 12 log n per parameter total.
+Proposition 5 (Asymptotic soundness of acceptance: no false structure). Suppose the raw
+stream is generated by a source in the base coder’s class (e.g. Markov-k with coder order at
+least k), and let q be any fixed nontrivial edit. Then by Lemma 1 the data-bit change of q is a
+redundancy difference; rewriting cannot reduce the already-minimal-for-the-class context count,
+so E ∆L(q) = ∆ρn + Lmodel (q) ≥ Lmodel (q) − O(1) > 0 for large n. Hence the probability
+that MDL accepts q tends to 0. Shuffled-null non-promotion is the finite-sample face of this
+proposition, now backed by an argument rather than only a control.
+
+
+5    The inline one-part code: prefix validity, implicit prior, equiv-
+     alence
+Reserve in every KT table an escape symbol ↑. A codeword is a sequence of decisions; at each
+step the decoder holds the same adaptive state as the encoder. Definitions are self-delimiting:
+↑, then an Elias/log∗ length, then body tokens under the current adaptive coder, in topological
+order.
+Proposition 6 (Decodability). The inline code is a prefix code on pairs (grammar, parse),
+hence on the original strings S1:n , and the decoder of the specification (Section 1.7) inverts it
+exactly. This is what the round-trip property test certifies empirically.
+Proposition 7 (Implicit prior). The inline code realizes the Bayesian score of Proposition 4
+with the structure prior replaced by the sequential prior
+                                       Y                   ∗      Y
+                        winl (G) =          P↑ (tr ) 2− log |βr |   qtr (βr,j ),
+                                      r∈defs(G)                  j
+
+where tr is the first-use position of definition r, P↑ the escape probability there, and qt the coder’s
+predictive distribution at that time. In words: rules that are natural continuations of what
+the coder has already learned are cheap to declare. This is a data-dependent Occam prior;
+it automatically implements the “source-adaptive universal prior” requested by failure item F3.
+
+                                                  5
+Proposition 8 (Two-part/one-part equivalence up to escapes). For any fixed finite grammar
+G0 ,
+                                         X               X                 
+     ℓinl (S) ≤ ℓpreq (parse(S) | G0 ) +     log∗ |βr | +    − log2 q(βr,j ) +       ∆↑        ,
+                                           r
+                                                                                    |{z}
+                                                           j
+                                         |                {z                }  escape overhead
+                                             = O(total definition length · log m)
+
+with ∆↑ ≤ (#active tables) · O(log ntable ): reserving one extra symbol in a KT table over m′
+                                                      n+ 12 (m′ +1)
+symbols inflates the table’s total by at most log2      n+ 12 m′
+                                                                      per push, summing to O(log n) per
+table. Hence the two regimes agree to within additive O(def. length · log m + #tables · log n), and
+in particular have identical rates and identical Θ-class redundancies.
+
+Remark (Practical corollary). Run the two-part adaptive scorer (v1) as the workhorse; the
+prequential scorer (v2) is a consistency check and the cleaner object for theory. Disagreement
+between them beyond the Proposition 8 slack is a bug detector.
+
+
+6    Category edits as parameter tying: a consistency theorem
+Fix a frame occurrence set for candidate M = {v1 , . . . , vr }. Say the members are contextually
+exchangeable if for all pasts p and futures f occurring with the frame,
+
+                  P (f | p, member = vi ) = P (f | p, member = vj )                 ∀ i, j.       (CE)
+
+The category-bearing code factors each occurrence into (class token M , member choice), coding
+the class token in the base coder’s stream and the member with a per-category adaptive KT.
+
+Theorem 1 (Consistency of category acceptance). Under the adaptive scorer, with the frame
+occurring νn → ∞ times:
+
+(a) If (CE) holds, the category edit ties the r per-member successor distributions into one, reduc-
+    ing the free-parameter count by ∆k = (r−1)·(successor df) at the price of the member code ≈
+    νn H(member)+ r−1 2 log νn . Since the member entropy was already being paid inside the untied
+    successor distributions (chain rule), the net change is ∆L = − ∆k         r−1
+                                                                    2 log n+ 2 log νn +O(1) < 0
+    eventually whenever the tying removes at least r degrees of freedom, and the edit is accepted
+    a.s. for large n.
+
+(b) If (CE) fails with average conditional divergence D̄ > 0, tying incurs data cost at least
+    νn D̄(1 + o(1)), which dominates every log-scale saving; the edit is rejected a.s.
+
+Proof sketch. Both directions are the standard k2 log n versus nD dichotomy of parametric-
+mixture code lengths [std], applied to the tied versus untied families; the only CLA-specific
+point is the chain-rule bookkeeping showing member-choice entropy is not double-charged.
+
+Remark. MDL category acceptance is a consistent statistical test of contextual exchangeabil-
+ity. This upgrades the Jensen–Shannon threshold heuristic (a fixed θ on context divergence,
+neither necessary nor sufficient) to a calibrated test, and it says exactly which planted structures
+experiments E3/E6 must recover: those where (CE) holds by construction.
+
+
+
+                                                  6
+7    The ε-machine: MDL-optimality of the causal quotient
+Histories x, x′ are predictively equivalent if P (future | x) = P (future | x′ ); causal states are
+the equivalence classes; the ε-machine is the induced unifilar, minimal, sufficient presentation
+[std: Crutchfield–Young 1989; Shalizi–Crutchfield 2001]. CSSR consistently estimates it for
+finite-state sources [std: Shalizi–Klinkner 2004].
+Theorem 2 (The ε-machine is the MDL grammar of a sofic source). Among all unifilar finite-
+state presentations M of a UHMM source, the two-part adaptive code length satisfies
+                                               X |A |−1
+                                                      σ
+                    ℓ(M) = Lmachine (M) + nh +         2  log2 n + O(1)
+                                                    σ∈M
+
+for predictively sufficient M, and ℓ(M) ≥ n(h + DM ) + O(log n) with DM > 0 for insufficient
+M. Every sufficient unifilar presentation refines the P ε-machine (causal states are the coarsest
+sufficient statistic), and refinement cannot decrease σ (|Aσ | − 1): splitting σ into nonempty
+σ1 , σ2 with successor sets covering Aσ gives (|Aσ1 | − 1) + (|Aσ2 | − 1) ≥ |Aσ | − 1. Hence the ε-
+machine minimizes the code length up to O(1), and MDL model selection over unifilar machines
+recovers it asymptotically.
+    This theorem is the license for the automata track: on sofic symbolic dynamics—which
+includes the symbolic dynamics of uniformly hyperbolic systems with Markov partitions [std:
+Bowen]—the correct output of a “chaos language” analysis is a finite automaton with transition
+probabilities, and the CausalStateCoder is its MDL-optimal code. Chunk/category grammars
+are, on this class, at best a re-notation of the same automaton and, by Corollary 1, a worse-coded
+one.
+
+
+8    Categories as syntactic-monoid fibers
+Let M be the ε-machine with state set Σ and (partial) unifilar transition δ : Σ × V → Σ. Each
+token v induces a partial transformation δv : Σ → Σ; the monoid generated by {δv } is the
+transition monoid, which for the minimal presentation of a sofic shift is the syntactic monoid of
+its language [std].
+Definition 1 (Alphabet congruence). v ≡ w ⇐⇒ δv = δw on all reachable states (equal as
+partial maps: same domain of definedness, same images).
+Theorem 3 (Category–congruence correspondence).
+(a) ≡ is the coarsest equivalence on V such that the quotient process—replace each st by its class
+    [st ]—remains unifilar over the class alphabet with the same state set; the member choice at
+    each step, conditioned on the current causal state and class, is then predictively irrelevant.
+    Thus classes of ≡ satisfy contextual exchangeability (CE) uniformly in every context.
+(b) Conversely, any CLA category all of whose occurrences satisfy (CE) in every frame is a
+    refinement of an ≡-class on the states where it occurs.
+(c) Therefore, on a sofic source, the categories that Theorem 1 accepts in the large-sample limit
+    are exactly (unions of occurrences of ) the fibers of the map V → syntactic monoid, v 7→ δv —
+    which is precisely the rule implemented by CSSRCategoryInducer (specification Section 5.3,
+    with the finite-support caveat).
+
+                                                7
+   Proof sketch. (a) δv = δw makes the class-quotient dynamics well defined and state-preserving;
+   predictive distributions depend on the history only through the causal state, which the class
+   sequence still determines; hence member choice adds no predictive information. (b) If (CE)
+   holds in every context, then v, w drive every reachable state to predictively equivalent—hence
+   equal—causal states. (c) combines (a) and (b) with Theorem 1.
+
+   Remark (Interpretation). The paradigmatic pole of CLA—substitutability classes—is, on the
+   automata side, an algebraic object: meta-symbols are the kernel classes of the alphabet’s
+   action on causal states. This gives the inducer a correctness criterion (the E6 adjusted-
+   mutual-information gate becomes “does the empirical kernel match the planted kernel”), and
+   it gives the Hyperon migration a clean target: the transition monoid and its kernel are finite
+   relational structures suited to Atomspace representation and MeTTa querying, with PLN-style
+   uncertainty over δv = δw assertions under finite support.
+
+   Remark (Soft categories). Relax ≡ to statewise partial agreement (δv = δw on a high-probability
+   subset of states, with disagreement mass ϵ); Theorem 1(b)’s penalty then reads νn ϵD̄, so the in-
+   ducer can rank soft candidates by estimated ϵD̄ against the ∆k
+                                                                2 log n budget—a principled version
+   of the soft/overlapping categories of repair item R4.
+
+
+   9    Where chaotic dynamics sits: two falsifiable predictions
+   Combining Sections 3 and 7:
+
+    Hyperbolic / fully developed chaos (Lorenz-like flows away from bifurcation accumula-
+     tion; Markov-partitioned maps): symbolic dynamics is sofic, or well approximated by sofic
+     at the microstate resolution, with h > 0. Predicted ordering of complete codes: CausalState-
+     Coder ≈ CTW ≥ adaptive-Markov-k > LZ78 > chunk-CLA, with CLA’s deficit explained
+     by Corollary 1. A chunk grammar “detecting chaos” here would contradict the theory; ex-
+     periments E5/E7 test the ordering.
+
+    Substitution-structured dynamical regimes: period-doubling accumulation points (the
+     kneading sequence at the Feigenbaum point is generated by a substitution, with h = 0),
+     quasiperiodic mode locking (Sturmian symbolic dynamics), and intermittency ladders. These
+     are SUB-class—exactly the separation regime of Proposition 2. Predicted ordering: chunk-
+     CLA with hierarchical rules beats every Markov/CTW/LZ/CSSR control, by polylog versus
+     Θ̃(n/ log n).
+
+   New preregistrable predictions (to append to the evaluation programme as E5b, with fresh
+   fixtures):
+
+(P5) On the logistic map at the Feigenbaum accumulation point and on a Sturmian rotation cod-
+     ing, the upgraded CLA (Re-Pair or LZ77-SLP initialization, inline scorer) beats all controls
+     including CSSR, with the margin growing like n/ log n across lengths {212 , 214 , 216 }.
+
+(P6) On fresh hyperbolic-regime fixtures, the CausalStateCoder beats chunk-CLA at every length,
+     and the recovered machine’s state count stabilizes across seeds while the chunk grammar’s
+     rule count grows like the LZ phrase count Θ(n/ log n).
+
+
+
+                                                  8
+   A joint (P5 ∧ P6) outcome would establish CLA’s identity crisply: a detector of hierarchi-
+cal generativity in dynamics, complementary to—not competitive with—automata
+reconstruction of hyperbolic chaos. For OmegaSim this reframes A6/A7: the interesting
+question becomes which regime a multi-agent appraisal system’s traces occupy, and transitions
+between the two regimes (for example at coupling thresholds) become the natural observable.
+
+
+10     The quantale/weakness bridge, corrected and sharpened
+Work in the additive quantale Q = ([0, ∞], ⊗ = +, ⊕ = inf, e = 0) with residuation a\c =
+max(c − a, 0). Define the weakness of a model structure as its stochastic complexity: w(G) =
+L(G, S) under the adaptive scorer, equivalently − log2 of the Bayes score of Proposition 4.
+This replaces the July bridge note’s mixed conventions with a single consistent instantiation;
+Definitions 1–2 and Propositions 1–2 of that note survive verbatim under this reading, with the
+corrections below.
+
+10.1    Edits as one-hole contexts (now exact)
+A proposal q is a one-hole context in the grammar–stream pair; its McBride derivative is the
+exact first difference ∂q L = L(G + q, S) − L(G, S) = ∆L(q), computable (not merely estimable)
+by the scorer’s delta. Greedy CLA is steepest descent in this discrete gradient field—literally
+rather than approximately, because the adaptive scorer’s ∆ has no unaccounted parameter terms.
+
+10.2    Synergy is the mixed second difference
+For proposals q1 , q2 define
+
+                ∆2 L(q1 , q2 ) = L(G + q1 + q2 ) − L(G + q1 ) − L(G + q2 ) + L(G).
+
+The bridge note’s emergent synergy is σ(q1 , q2 ) ≥ e ⇐⇒ ∆2 L(q1 , q2 ) < 0 (strict super-
+additivity of improvements): emergence equals supermodular interaction of edits on
+the edit lattice. Theorem 1 of the bridge note (the a{x, y}b construction) is the canonical
+instance: with the adaptive scorer one computes, for ν frame occurrences,
+                                                         (axb)
+                       ∆L(qcat ) ≈ +O(log n),       ∆L(qchunk ) ≈ +O(log n),
+
+                         ∆L(qcat + qchunk ) ≈ − ∆k
+                                                 2 log n + O(log ν) < 0,
+so ∆2 L < 0 with magnitude Θ(log n): synergy is real but logarithmic-scale on finite-state
+examples—consistent with Proposition 2’s message that the linear-scale wins live on SUB-class
+sources, where the composite move unlocks a hierarchy and ∆2 L = −Θ(n/polylog).
+
+10.3    Answer to Open Question 5: synergy-guided proposals
+∆2 L can be estimated without rescoring from sufficient statistics: for a category candidate C
+(of size r) and the frame chunks it would unify, the dominant terms are
+
+            ∆
+            d 2 L(C, frame) ≈ − (r−1) dsucc log n + ν D
+                                                      b̄ (C) + r−1 log ν + c ,
+                                    2          2        JS      2     2     def
+
+with D
+     b̄
+        JS the plug-in mean successor divergence among members and cdef the inline definition
+estimate from Proposition 7. The CategoryThenChunkProposer should rank composites by this
+
+                                                9
+statistic, with acceptance still adjudicated by the exact scorer (project rule: no private objec-
+tives); the ledger’s estimated-versus-realized ∆2 L residuals become a free calibration diagnostic.
+This is the McBride derivative acquiring the direct algorithmic role the bridge note asked for—as
+a ranking device.
+
+10.4    Correction to the bridge note’s Proposition 3 (the ODE relaxation)
+The claim that the grammar trajectory satisfies a quantale exponential-growth ODE requires
+∆q(t) ≈ κ ⊗ m(t), i.e. improvement proportional to current weakness, which the acceptance rule
+does not guarantee and which ledger data can falsify. The defensible replacements: (i) L(G(t), S)
+is nonincreasing and bounded below by H(S1:n ) (Lemma 1), so the trajectory converges; (ii)
+the edit lattice with ∆2 L of mixed sign is neither sub- nor supermodular globally, which is
+precisely why greedy fails and why beam/composite search is needed. The correct dynamical
+statement about CLA’s own search is “gradient descent on a non-modular discrete landscape,”
+and the interesting “chaotic grammar dynamics” question (bridge note Open Question 4) be-
+comes whether beam-search trajectories on SUB-class inputs exhibit sensitive dependence on
+tie-breaking—which the deterministic-seed ledgers measure directly.
+
+10.5    Causal quotients as weakness minimization
+Theorem 2 in this language: among predicates mπ induced by partitions π of histories, predic-
+tive sufficiency is the pattern condition I(mπ ) ≥ e (zero residual divergence), and the ε-machine
+is the coarsest π satisfying it—the weakness-minimizing quotient, since coarsening reduces the
+log n-scale weakness term while sufficiency pins the linear term at nh. Theorem 3 then says
+the alphabet congruence is the restriction of the same universal construction from histories
+to letters. The whole upgraded system is one principle instantiated three times: minimize
+stochastic-complexity weakness; chunks descend it syntagmatically, categories de-
+scend it paradigmatically by tying, causal states descend it by quotienting—and the
+quantale calculus is the common bookkeeping.
+
+
+11     Open problems
+Open Problem 1 (Stochastic-CFG analogue of Theorem 2). Is there an MDL-consistency
+theorem selecting a minimal PCFG among sufficient hierarchical presentations of a SUB-class
+source, playing the role the ε-machine plays for UHMM? Natural conjecture: yes, with the inline
+prior of Proposition 7; the obstruction is non-identifiability of PCFGs.
+Open Problem 2 (Rate of Theorem 1). Finite-sample thresholds: how large must νn be, as a
+function of D̄ and r, for the correct accept/reject decision with high probability? This would let
+experiments E3/E6 predeclare crossover horizons instead of estimating them.
+Open Problem 3 (Approximation ratio of composite-beam search). On SUB-class inputs, does
+synergy-guided composite/beam search provably improve on the Rytter O(log(n/g ∗ )) baseline
+relative to the smallest grammar, or only empirically?
+Open Problem 4 (Two-regime front-end classifier for OmegaSim). Find a statistic (e.g. growth
+exponent of the chunk dictionary versus n, contrasted with causal-state count stability) that
+classifies a trace as sofic-regime versus substitution-regime before committing to a model class,
+turning the Section 9 dichotomy into a front-end detector.
+
+                                                10
+Open Problem 5 (Quantale choice, partially resolved). In the additive quantale the theory
+above is exact; the probability quantale ([0, 1], ×, max) corresponds to replacing ⊕-aggregation
+by best-case (Viterbi-like) scoring, which breaks the mixture semantics of Proposition 4. So the
+additive quantale is not merely convenient but forced by the Bayesian reading; the remaining
+question is whether any non-additive quantale supports a coherent robust (minimax-regret /
+NML) variant.
+
+
+Provenance
+Companion documents: chaoslang upgrade spec.md (implementation specification, milestones
+M-A..M-F), chaoslang eval programme.md (experiments E0–E8), CLA Experiments, Results,
+Failure Diagnosis, and Repair Programme (2026-07-23), Bridging the CLA and McBride-Derivative
+Pattern Calculus (2026-07-05), and The Chaos Language Algorithm: An Implementation-Oriented
+Specification (2026-07-03). Repository: https://github.com/bgoertzel-sing/chaos-language-algorithm.
+
+
+
+
+                                              11
+

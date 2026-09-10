@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-15T04:14:46Z
+Working directory: projects/hdpc-tiny-shakespeare/repos/hdpc-tiny-shakespeare
+Commit: 6a7f3446f95aa5de3f32380558d4eec7c4900fad
+Branch: agent/two-step-trainer-smoke
+Remote names: 
+
+## Status
+## agent/two-step-trainer-smoke
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

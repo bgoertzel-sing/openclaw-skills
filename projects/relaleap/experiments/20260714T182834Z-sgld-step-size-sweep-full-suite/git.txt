@@ -1,0 +1,20 @@
+# Git State
+Captured UTC: 2026-07-14T18:28:34Z
+Working directory: /home/openclaw/research-agent/projects/relaleap/repos/relaleap
+Commit: 622ede2738eea9191c7e6510210384353474bb22
+Branch: agent/train-time-causal-slice1
+Remote names: 
+
+## Status
+## agent/train-time-causal-slice1
+ M src/relaleap/slt/__init__.py
+?? docs/
+?? src/relaleap/slt/preconditioner.py
+?? src/relaleap/slt/step_size_sweep.py
+?? tests/test_step_size_sweep.py
+
+## Diff summary
+ src/relaleap/slt/__init__.py | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

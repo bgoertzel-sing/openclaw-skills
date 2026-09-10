@@ -1,0 +1,8 @@
+2026-08-09T00:01:21-07:00
+active pid 2432682 children=1
+active pid 2343127 children=1
+readiness=process-topology-ok (end-to-end Telegram delivery not proven)
+2343127       1 Sat Aug  8 15:23:18 2026 bash
+2343140 2343127 Sat Aug  8 15:23:18 2026 python3
+2432682       1 Sat Aug  8 22:15:42 2026 bash
+2432689 2432682 Sat Aug  8 22:15:42 2026 python3

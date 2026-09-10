@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Search the local installation/functionality knowledge base.
+# Usage: bin/install-kb-search <keyword-or-regex>
+set -euo pipefail
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <keyword-or-regex>" >&2
+  exit 2
+fi
+cd /home/openclaw/research-agent
+query="$*"
+if [[ -f catalog/install-kb/components.jsonl ]] && command -v jq >/dev/null 2>&1; then
+  echo "== JSONL component hits =="
+  jq -r --arg q "$query" '
+    select((tostring | test($q; "i"))) |
+    "- " + .id + " | " + .name + " | status=" + (.status // "") + " | does=" + (.does // "")
+  ' catalog/install-kb/components.jsonl || true
+  echo
+fi
+
+echo "== Markdown/context hits =="
+rg -n -i --context 2 "$query" catalog/INSTALLATION_KB.md catalog/SETUP_REPORT.md catalog/proto_hive_functionality_inventory_20260707.tex 2>/dev/null || true

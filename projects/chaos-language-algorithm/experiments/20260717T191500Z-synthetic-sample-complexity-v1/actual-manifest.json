@@ -1,0 +1,66 @@
+{
+  "config": {
+    "baselines": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2"
+    ],
+    "checkpoint_repeats": [
+      32,
+      64,
+      128,
+      256
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 260717
+    },
+    "motif": "abacabadabacabaeabacabadabacaba",
+    "motif_length": 31,
+    "prefix_repeats": 64,
+    "shuffle_seed": 260717,
+    "source": "repeated-zimin-word-order-5"
+  },
+  "fixtures": [
+    {
+      "counts": {
+        "a": 5120,
+        "b": 2560,
+        "c": 1280,
+        "d": 640,
+        "e": 320
+      },
+      "length": 9920,
+      "name": "zimin5-repeated",
+      "prefix_length": 1984,
+      "prefix_sha256": "6f7d06d2fd8b94c605e29da1743e0597895763c02f033e24fdab7d608197f660",
+      "stream_sha256": "54aa642ee6af622565f9ac9bd4c249be2504ff5f5746da434c336a2174ee0dcc",
+      "suffix_length": 7936,
+      "suffix_sha256": "a4933619a678c8251bdc992a83a1f444cd2cc4bb03835aa46a8398e1413cb469"
+    },
+    {
+      "counts": {
+        "a": 5120,
+        "b": 2560,
+        "c": 1280,
+        "d": 640,
+        "e": 320
+      },
+      "length": 9920,
+      "name": "zimin5-shuffled",
+      "prefix_length": 1984,
+      "prefix_sha256": "ef39c12ae10c6f4da39c64f9fa70b4918864b70a7aae44bd97d4b970b6caa006",
+      "stream_sha256": "1f360a84852181ec3c626c26fed1666ce01a55426f8500991524983883b06081",
+      "suffix_length": 7936,
+      "suffix_sha256": "9e8e1027ac0f56fed70b891652ce3eb199211d8e8d0634fa588f1ce9e26ca8e0"
+    }
+  ],
+  "protocol": "synthetic-sample-complexity-preregistration-v1",
+  "schema": "chaoslang.synthetic-sample-complexity",
+  "version": 1
+}

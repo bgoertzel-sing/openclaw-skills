@@ -1,0 +1,23 @@
+	Command being timed: "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python3 -m chaoslang.benchmarks.rank_conditioned_lorenz63 --output-dir ../../experiments/20260713T153839Z-lorenz63-rank-conditioned-vamp-tica/smoke --steps 256 --discard 256 --lift-dimension 256 --trajectory-seeds 101 --ranks 3,10 --dimensions 2,3 --lags 1,4,16 --microstates 8,16 --block-lengths 4,16 --surrogates 2 --iterations 2"
+	User time (seconds): 0.65
+	System time (seconds): 0.05
+	Percent of CPU this job got: 98%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.71
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 120876
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 6
+	Minor (reclaiming a frame) page faults: 20106
+	Voluntary context switches: 30
+	Involuntary context switches: 0
+	Swaps: 0
+	File system inputs: 672
+	File system outputs: 88
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

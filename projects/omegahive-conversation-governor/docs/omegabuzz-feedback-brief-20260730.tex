@@ -1,0 +1,71 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=black}
+\setlist[itemize]{leftmargin=1.25em,itemsep=2pt,topsep=3pt}
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+\newcommand{\key}[1]{\textbf{#1}}
+\begin{document}
+
+{\Large\bfseries OmegaBuzz v0.1: Review Synthesis}\\[-2pt]
+{\small Feedback on the 30 July 2026 design proposal \hfill 30 July 2026}
+
+\hrule
+\vspace{4pt}
+\textbf{Purpose.} A brief synthesis of the ProtoCosmoBot and ProtomegaBot reviews of \emph{OmegaBuzz: A Human-Agent Collaboration and Cognitive Hive Platform}. This is design feedback, not a claim that the proposal's components are implemented or validated.
+
+\section*{Bottom line}
+OmegaBuzz is an unusually coherent proposal. Its strongest contribution is to keep four distinct things separate: \key{authorship}, \key{visibility}, \key{epistemic standing}, and \key{organizational authority}. The proposal should proceed as a staged, sidecar-first architecture---but only after it converts the most consequential abstract boundaries into executable contracts and reduces the first slice to a demonstrably small system.
+
+\section*{What is especially right}
+\begin{itemize}
+  \item \key{Chat is not the write path.} Free discussion does not itself mutate organizational state; typed, authorized, provenance-backed transitions do.
+  \item \key{Layered semantic memory with explicit promotion.} Private $\rightarrow$ epic $\rightarrow$ hive $\rightarrow$ federated memory avoids both a single mutable global AtomSpace and isolated agents that cannot build shared knowledge.
+  \item \key{Claim versus proposition.} Separating a source-specific assertion from the proposition it concerns preserves disagreement, evidence, and revision better than a single ``truth'' record.
+  \item \key{Scout's deterministic provenance surface.} Keeping the reader and exact source navigation separate from model-driven enrichment makes the knowledge system inspectable.
+  \item \key{Sidecar-first integration with Buzz.} Extend the collaboration substrate through typed events and small upstream patches, rather than prematurely entangling every proposed service with relay internals.
+  \item \key{Resident Learners are separately governed.} The proposal preserves the useful distinction between wake-based organizational seats and continuously learning agents, without granting room speech automatic authority.
+  \item \key{Human-centered operational discipline.} EpicFrame rehydration, explicit work ownership, signed history, shadow-before-enforcement, and human-only recovery are practical foundations rather than decorative governance.
+\end{itemize}
+
+\section*{Priority corrections before implementation}
+\begin{enumerate}[leftmargin=1.45em,itemsep=4pt]
+  \item \key{Make the external baselines reproducible.} Pin Buzz and Scout by repository URL, commit SHA, license, and capability test. ``Reviewed on 30 July'' is insufficient for an engineering dependency; Scout licensing must be a Phase 0 gate, not a parallel concern.
+  \item \key{Specify concurrent state-transition semantics.} Signatures and idempotency do not decide races. Every mutable transition (work order, approval, delegation, claim admission) needs expected version/CAS or causal-parent rules, canonical ordering, rejection behavior, and repair/replay semantics.
+  \item \key{Make the authority membrane effective on reads as well as writes.} Private, quarantined, or restricted memory can influence a consequential output even if it cannot be directly promoted. Commit proposals should carry machine-checkable provenance/taint disclosures; policy should prevent an undisclosed restricted source from supporting a commitment.
+  \item \key{Turn proposition identity into a managed uncertainty.} Exact proposition matching is a hard semantic-coreference problem. Start with stable claim IDs and conservative candidate links; permit human review or explicit MeTTa/PLN unification rules to assert identity later. Do not assume automatic semantic equivalence is solved.
+  \item \key{Define tiered promotion review.} Run automatic schema, provenance, authorization, duplication, and contradiction checks by default; require human review for high-consequence, disputed, policy-flagged, or cross-boundary promotions. Otherwise review becomes either a bottleneck or a rubber stamp.
+  \item \key{State the AtomSpace fallback plan.} Identify which initial needs can use conventional stores (e.g., relational claim records and graph queries) and which genuinely need AtomSpace/MeTTa/PLN. Add upstream maturity as an explicit risk and avoid making the first useful loop depend on unverified gateway capabilities.
+  \item \key{Limit service count in Slice 0.} The proposal's 15-ish service decomposition and large coding-agent roster are a useful target map, not a first implementation. State which components are real, thin shims, or deferred for each slice, together with an engineering capacity/velocity assumption.
+\end{enumerate}
+
+\section*{Recommended first slices and gates}
+\begin{enumerate}[leftmargin=1.45em,itemsep=4pt]
+  \item \key{Slice 0: organizational loop.} One human, two signed seats, one bounded deliberation, and a committed decision/work order. Exercise policy, capability, pause/revoke/read-only, and human recovery under agent or service failure.
+  \item \key{Slice 1: provenance loop.} Preserve artifacts and source anchors; replay the signed history into a read-only view that traces a decision to exact room events. No semantic memory admission is required yet.
+  \item \key{Slice 2: semantic admission loop.} Add a candidate claim, tiered review, explicit promotion, and authorized Scout context compilation. Demonstrate retraction/supersession and a contradiction fixture.
+\end{enumerate}
+Each slice should have a concrete exit gate. This resolves the present scope mismatch in which the executive summary's first vertical slice includes AtomSpace/Scout while the roadmap places them in Phase 2.
+
+\section*{Resident Learners and federation}
+Keep Resident Learners in shadow/observation mode until the charter, visible consent, inspectable/deletable experiential memory, egress lease, attention budget, loop-breaker telemetry, and authority membrane operate together. A learner observing a deliberation has more continuous context than wake-based seats; this asymmetry may be useful, but its influence must be disclosed and bounded.
+
+Federation by sourced assertion rather than shared truth is correct. Offline bundles are an appropriate first mechanism, but the plan should test remote, authorization-aware queries earlier if iterative multi-hive work becomes a real need.
+
+\section*{Immediate decisions requested}
+\begin{itemize}
+  \item Approve the three-slice framing and name the exact Slice 0 components.
+  \item Assign Phase 0 owners for baseline pinning, Scout licensing, transition semantics, and the safety-kernel failure test.
+  \item Adopt conservative proposition matching and a tiered memory-promotion policy as initial defaults.
+  \item Record a conventional-store fallback boundary for AtomSpace Gateway capabilities.
+\end{itemize}
+
+\vfill
+\footnotesize\textbf{Source.} OmegaBuzz Design Proposal v0.1 (30 July 2026), Telegram-supplied PDF; review comments by ProtoCosmoBot and ProtomegaBot in the Bot Philosophy discussion, 30 July 2026. Local provenance: \texttt{library/omegabuzz-design-proposal/SOURCE.md}.
+
+\end{document}

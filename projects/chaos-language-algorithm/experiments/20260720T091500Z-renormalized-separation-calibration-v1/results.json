@@ -1,0 +1,78 @@
+{
+  "false_negatives": [
+    "mackey-glass-chaotic"
+  ],
+  "false_positives": [],
+  "manifest": {
+    "config": {
+      "cycle_steps": 25,
+      "cycles": 64,
+      "lorenz96_dt": 0.01,
+      "mackey_glass_dt": 0.1,
+      "perturbation": 1e-08,
+      "promotion_threshold_per_step": 0.0,
+      "transient_steps": 2000
+    },
+    "fixtures": [
+      {
+        "initial_sha256": "84ca9c76d92349cb9adfe0cf2297b9c5af1912749dfdde443842d54817ccf1c3",
+        "kind": "positive",
+        "name": "mackey-glass-chaotic"
+      },
+      {
+        "initial_sha256": "0377b1599a1a88d180422fc1700a2b4f61d32c9aaac034d30c5fc4dacb1a285c",
+        "kind": "nonchaotic",
+        "name": "mackey-glass-stable"
+      },
+      {
+        "initial_sha256": "02a7b052d795eab5938fec2ce41c7318e635d3458903a689cdd7f05d08897fc5",
+        "kind": "positive",
+        "name": "lorenz96-chaotic-full-state"
+      },
+      {
+        "initial_sha256": "02a7b052d795eab5938fec2ce41c7318e635d3458903a689cdd7f05d08897fc5",
+        "kind": "nonchaotic",
+        "name": "lorenz96-stable-full-state"
+      }
+    ],
+    "protocol": "renormalized-separation-calibration-preregistration-v1",
+    "schema": "chaoslang.renormalized-separation-calibration",
+    "version": 1
+  },
+  "pass": false,
+  "pass_rule": "both positives promoted; no stable control promoted; ties fail",
+  "results": [
+    {
+      "cycles": 64,
+      "elapsed_steps": 1600,
+      "kind": "positive",
+      "mean_log_growth_per_step": -0.0009622966915759473,
+      "name": "mackey-glass-chaotic",
+      "promoted": false
+    },
+    {
+      "cycles": 64,
+      "elapsed_steps": 1600,
+      "kind": "nonchaotic",
+      "mean_log_growth_per_step": -0.02930538334356362,
+      "name": "mackey-glass-stable",
+      "promoted": false
+    },
+    {
+      "cycles": 64,
+      "elapsed_steps": 1600,
+      "kind": "positive",
+      "mean_log_growth_per_step": 0.02191476581205586,
+      "name": "lorenz96-chaotic-full-state",
+      "promoted": true
+    },
+    {
+      "cycles": 64,
+      "elapsed_steps": 1600,
+      "kind": "nonchaotic",
+      "mean_log_growth_per_step": -0.0006357785053681686,
+      "name": "lorenz96-stable-full-state",
+      "promoted": false
+    }
+  ]
+}

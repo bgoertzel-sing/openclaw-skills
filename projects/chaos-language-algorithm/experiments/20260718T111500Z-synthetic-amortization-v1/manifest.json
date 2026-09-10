@@ -1,0 +1,20 @@
+{
+  "config": {
+    "checkpoint_lengths": [4096, 16384, 65536],
+    "continuity_control": "frozen-cla-indexed-json-v1",
+    "external_controls": ["literal", "unigram", "markov-1", "markov-2", "lz78-canonical-v1"],
+    "learner": {"enable_categories": false, "enable_joint_categories": false, "max_iterations": 8, "max_ngram": 5, "search_objective": "indexed", "seed": 18071821},
+    "lz78_accounting": "entire self-contained suffix byte stream at eight bits per byte",
+    "prefix_length": 1024,
+    "primary": "frozen-cla-compact-indexed-v1",
+    "shuffle_seed": 18071821,
+    "source": {"coding": {"a": "0", "b": "0", "c": "1", "d": "1", "e": "0"}, "name": "five-state-2uniform", "rule": {"a": "bc", "b": "de", "c": "ab", "d": "ca", "e": "ed"}, "seed_symbol": "a"}
+  },
+  "fixtures": [
+    {"counts": {"0": 39936, "1": 26624}, "kind": "positive", "length": 66560, "name": "five-state-2uniform-positive", "prefix_length": 1024, "prefix_sha256": "0f337b18e1abcd1152293e319e6b4eaf8a5a95b31c494583193321e5ebfd8be8", "shuffle_seed": null, "stream_sha256": "067c64176e4936dd748c1436e6d78d54d26def10b4bb3607f00af591545e22ad", "suffix_length": 65536, "suffix_sha256": "122ea203b0e8bde8cbb2260146e2967ff05a51a4397378a4f5e74036024b8584"},
+    {"counts": {"0": 39936, "1": 26624}, "kind": "shuffled", "length": 66560, "name": "five-state-2uniform-shuffled", "prefix_length": 1024, "prefix_sha256": "a4fda0105bb84328df4272456231a4392020549952842377a9fe2c71bd4ef3dc", "shuffle_seed": 18071821, "stream_sha256": "22d84dfa0ab096976d541d36b1c37859ed306057b97ddd4f7048169de133fc08", "suffix_length": 65536, "suffix_sha256": "8e50b8af436e04a1f9403ff182c5493343a8d158a46961b8e38adb19f4f1aed4"}
+  ],
+  "protocol": "synthetic-amortization-preregistration-v1",
+  "schema": "chaoslang.synthetic-amortization",
+  "version": 1
+}

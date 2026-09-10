@@ -1,0 +1,17 @@
+# Git State
+Captured UTC: 2026-07-27T23:39:14Z
+Working directory: /home/openclaw/research-agent/projects/protomegabot2/projects/protomegabot2/worktrees/petta-memory-shadow-consumer
+Commit: 32ca916d6bdc29373e5a379972cda7a5eed275e8
+Branch: agent/petta-memory-shadow-consumer
+Remote names: 
+
+## Status
+## agent/petta-memory-shadow-consumer
+?? local/run-petta-memory-shadow-consumer.py
+?? scripts/run_petta_memory_shadow_gate.sh
+?? src/petta_memory_shadow_consumer.py
+?? tests/test_petta_memory_shadow_consumer.py
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

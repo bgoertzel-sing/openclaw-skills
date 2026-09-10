@@ -1,0 +1,12 @@
+{
+  "all_fingerprints.csv": "c0c9c3c5b555dedd961a230d0dbef1eb43bed637acd9b82f753ab19fc2a9df9a",
+  "all_fingerprints.json": "0afb61ad03e41f53769236d66209772583fc457489a48da4f1bcfc415fead942",
+  "appraisal_control_deltas.csv": "6e557f0d71f65708d9652865236f3abadceab0d384e19b4c69cfca71ea78bbda",
+  "appraisal_control_deltas.json": "8df4488531a8a81734fea55e4274d2eb9102ad119a89969eaa0e8df3af5e2e6f",
+  "broad_fingerprints.csv": "c1643b452c093a9e4694c68091734deac0d41ceb7d254bb2541d5c72fde82382",
+  "broad_fingerprints.json": "bf3fe1c9a97c01e0636a21ada8655a666971233551034cb3cc1803bb61e699b6",
+  "fingerprint_aggregates.csv": "e2fb6ad01f0048002fe7a66c66253b9e689456aed7b0d7ee42a954cf0b6f211d",
+  "fingerprint_aggregates.json": "3cdc05f12771898aa7f80e03712329bbfdb3ccf1cf7d5d40f7053b6cc81fa4ca",
+  "tight_fingerprints.csv": "e2958f95806d6fda89c7827fbc758555d4587bc4c10a9a305e119ad133fece0e",
+  "tight_fingerprints.json": "fd673d41c8853afd09821b8b9d257f914b6a0ec2611066f333bf834a6d051b11"
+}

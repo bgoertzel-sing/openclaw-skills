@@ -1,0 +1,318 @@
+# Git State
+Captured UTC: 2026-07-23T18:13:07Z
+Working directory: /home/openclaw/research-agent
+Commit: cdd7ba976ed88a1deb10c1d2c05d42061eda093f
+Branch: agent/chat-room-identity-phase1
+Remote names: origin
+
+## Status
+## agent/chat-room-identity-phase1
+ M HEARTBEAT.md
+ M MEMORY.md
+ M catalog/KANBAN.md
+ M catalog/PROJECTS.md
+ M library/chaos-language-algorithm/SOURCE.md
+ M memory/2026-07-04.md
+ M memory/2026-07-05.md
+ M memory/2026-07-06.md
+ M memory/2026-07-10.md
+ M memory/2026-07-11.md
+ M memory/2026-07-12.md
+ M memory/2026-07-13.md
+ M memory/2026-07-15.md
+ M memory/2026-07-17.md
+ M memory/2026-07-18.md
+ M memory/2026-07-19.md
+ M memory/2026-07-20.md
+ M memory/2026-07-21.md
+ M memory/2026-07-23.md
+ M plugins/intent-model-router/index.js
+ M plugins/intent-model-router/index.test.js
+ M plugins/intent-model-router/openclaw.plugin.json
+ M plugins/intent-model-router/router-core.js
+ M projects/agent-recovery/PROJECT.md
+ M projects/agent-recovery/TASKS.md
+ M projects/agent-recovery/scripts/backup-protomegabot-recovery.sh
+ M projects/agent-recovery/scripts/backup-zerobot-recovery.sh
+ M projects/agent-recovery/scripts/push-recovery-repos.sh
+ M projects/chaos-language-algorithm/DECISIONS.md
+ M projects/chaos-language-algorithm/NOTES.md
+ M projects/chaos-language-algorithm/PROJECT.md
+ M projects/chaos-language-algorithm/TASKS.md
+ M projects/chaos-language-algorithm/docs/cla_expert_review_prompt.md
+ M projects/hyperseed-formalizations/DECISIONS.md
+ M projects/hyperseed-formalizations/NOTES.md
+ M projects/hyperseed-formalizations/PROJECT.md
+ M projects/hyperseed-formalizations/TASKS.md
+ M projects/omegaclaw/DECISIONS.md
+ M projects/omegaclaw/GGB_CAPACITIES_ROADMAP.md
+ M projects/omegaclaw/GGB_GATE_RUN_CONTRACT_MAPPING.md
+ M projects/omegaclaw/GOALCHAINER_INTEGRATION_MAP.md
+ M projects/omegaclaw/NOTES.md
+ M projects/omegaclaw/PROJECT.md
+ M projects/omegaclaw/TASKS.md
+ M projects/omegasim/DECISIONS.md
+ M projects/omegasim/NOTES.md
+ M projects/omegasim/PROJECT.md
+ M projects/omegasim/TASKS.md
+ M projects/petta-chem/DECISIONS.md
+ M projects/petta-memory/DECISIONS.md
+ M projects/petta-memory/NOTES.md
+ M projects/petta-memory/PROJECT.md
+ M projects/petta-memory/TASKS.md
+ M projects/relaleap/DECISIONS.md
+ M projects/relaleap/NOTES.md
+ M projects/relaleap/PROJECT.md
+ M projects/relaleap/TASKS.md
+ M projects/specatom-hs/DECISIONS.md
+ M projects/specatom-hs/NOTES.md
+ M projects/specatom-hs/PROJECT.md
+ M projects/specatom-hs/TASKS.md
+?? archive/OpenClaw-empty-tag-clone-20260715/
+?? bin/channel-watchdog.py
+?? bin/health-check.sh
+?? bin/install-kb-search
+?? bin/mac-cla-status.sh
+?? bin/runpod-heartbeat-sensor.py
+?? catalog/AGENT_TOPOLOGY.md
+?? catalog/INSTALLATION_KB.md
+?? catalog/install-kb/
+?? catalog/proto_hive_functionality_inventory_20260707.pdf
+?? catalog/proto_hive_functionality_inventory_20260707.tex
+?? channels.yaml
+?? cla-push/
+?? health-reports/
+?? library/atlas-indexed-reversible-pipln/
+?? library/atlas-reversible-evidence-geodesic-pipln-theory/
+?? library/bach-aaai2018-modeling-emotion-motivation/
+?? library/carom-exp2-exp3-audit-response-2026/
+?? library/carom-oruzi-reconciliation-2026/
+?? library/chaos-language-algorithm/cla_hd_embedding_extracted.txt
+?? library/chat-room-identity-design-v2/
+?? library/clarityomega/
+?? library/heteroclinic-cap-carom-2026/
+?? library/omegahive/
+?? library/omegaself/
+?? library/regenerative-goals-v5/
+?? library/weakness-theory-10/
+?? media/
+?? memory/2026-07-06-petta-chem-progress.md
+?? memory/2026-07-06-petta-memory-progress.md
+?? memory/2026-07-06-threadkeeper-hardening-worker-run2.md
+?? memory/2026-07-06-threadkeeper-hardening-worker-run3.md
+?? memory/2026-07-06-threadkeeper-hardening-worker-run4.md
+?? memory/2026-07-06-threadkeeper-hardening-worker-run5.md
+?? memory/2026-07-06-threadkeeper-hardening-worker.md
+?? memory/2026-07-07-petta-memory-progress.md
+?? memory/2026-07-07-threadkeeper-progress.md
+?? memory/2026-07-07.md
+?? memory/2026-07-08.md
+?? memory/2026-07-09.md
+?? memory/2026-07-14.md
+?? memory/2026-07-16.md
+?? memory/2026-07-22.md
+?? plugins/intent-model-router/usage.jsonl
+?? projects/DECISIONS.md
+?? projects/NOTES.md
+?? projects/TASKS.md
+?? projects/carom/
+?? projects/causal-fibres-ladder/
+?? projects/channel-watchdog/
+?? projects/chaos-language-algorithm/docs/cla_algorithm_version_used.pdf
+?? projects/chaos-language-algorithm/docs/cla_algorithm_version_used.tex
+?? projects/chaos-language-algorithm/docs/cla_experiments_summary.tex
+?? projects/chaos-language-algorithm/docs/cla_experiments_summary_provenance.md
+?? projects/chaos-language-algorithm/docs/cla_five_attractor_systems_summary.pdf
+?? projects/chaos-language-algorithm/docs/cla_five_attractor_systems_summary.tex
+?? projects/chaos-language-algorithm/docs/cla_standard_attractor_summary.pdf
+?? projects/chaos-language-algorithm/docs/cla_standard_attractor_summary.tex
+?? projects/chaos-language-algorithm/docs/cla_testing_summary.pdf
+?? projects/chaos-language-algorithm/docs/cla_testing_summary.tex
+?? projects/chaos-language-algorithm/docs/cla_testing_summary.txt
+?? projects/chaos-language-algorithm/docs/frozen-heldout-mdl-preregistration-v1.md
+?? projects/chaos-language-algorithm/docs/generalized-category-slot-spec-v1.md
+?? projects/chaos-language-algorithm/docs/generalized-complete-code-gate-preregistration-v1.md
+?? projects/chaos-language-algorithm/docs/indexed-complete-code-gate-preregistration-v1.md
+?? projects/chaos-language-algorithm/docs/indexed-state-code-spec-v1.md
+?? projects/chaos-language-algorithm/docs/joint-chunk-category-diagnostic-preregistration-v1.md
+?? projects/chaos-language-algorithm/docs/mcbride_cla_analysis.pdf
+?? projects/chaos-language-algorithm/docs/mcbride_cla_analysis.tex
+?? projects/chaos-language-algorithm/experiments/20260709T192728Z-lorenz96-1024-dim20-suffix-trie/
+?? projects/chaos-language-algorithm/experiments/20260712T200000Z-lorenz63-lift256-phase1/
+?? projects/chaos-language-algorithm/experiments/20260713T153839Z-lorenz63-rank-conditioned-vamp-tica/
+?? projects/chaos-language-algorithm/experiments/20260716T172310Z-frozen-heldout-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260716T191500Z-joint-chunk-category-diagnostic-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T051500Z-generalized-complete-code-gate-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T091500Z-indexed-complete-code-gate-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T151800Z-frozen-heldout-calibration-v2/
+?? projects/chaos-language-algorithm/experiments/20260717T171800Z-synthetic-detector-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T191500Z-synthetic-sample-complexity-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T211500Z-synthetic-family-generalization-v1/
+?? projects/chaos-language-algorithm/experiments/20260717T231900Z-synthetic-uniform-morphism-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T031500Z-synthetic-universal-control-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T071500Z-synthetic-compact-model-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T091500Z-synthetic-phase-robustness-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T111500Z-synthetic-amortization-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T131500Z-attractor-amortization-v1/
+?? projects/chaos-language-algorithm/experiments/20260718T171500Z-ordinal-attractor-v1/
+?? projects/chaos-language-algorithm/experiments/20260719T011500Z-recurrence-attractor-v1/
+?? projects/chaos-language-algorithm/experiments/20260719T071500Z-vector-recurrence-attractor-v1/
+?? projects/chaos-language-algorithm/experiments/20260719T171500Z-recurrence-determinism-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260719T211500Z-paired-divergence-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260720T031500Z-zero-one-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260720T091500Z-renormalized-separation-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260720T151500Z-conditional-entropy-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260720T153000Z-conditional-entropy-calibration-v2/
+?? projects/chaos-language-algorithm/experiments/20260720T211500Z-nearest-neighbor-calibration-v1/
+?? projects/chaos-language-algorithm/experiments/20260721T011500Z-nearest-neighbor-calibration-v2/
+?? projects/chaos-language-algorithm/notes/
+?? projects/hdpc-tiny-shakespeare/
+?? projects/hyperseed-formalizations/threadkeeper-runs/
+?? projects/hyperseed-formalizations/threadkeeper.config.yaml
+?? projects/morkql/
+?? projects/omegaclaw/GGB_DISPOSITION_APPRAISAL_GATE.md
+?? projects/omegaclaw/GGB_NEXT_GATES.md
+?? projects/omegaclaw/PROTOMEGABOT_REPAIR_PLAN_20260712.md
+?? projects/omegaclaw/PROTOMEGABOT_WRITEFILE_PARSER_FIX_20260714.md
+?? projects/omegaclaw/docs/
+?? projects/omegaclaw/experiments/20260715T144810Z-threadkeeper-persistent-lifecycle-v1/
+?? projects/omegaclaw/experiments/20260715T144853Z-threadkeeper-persistent-workers-regression/
+?? projects/omegaclaw/experiments/20260715T144937Z-threadkeeper-persistent-lifecycle-petta-parse/
+?? projects/omegaclaw/experiments/20260715T145130Z-threadkeeper-persistent-lifecycle-v1-fixed/
+?? projects/omegaclaw/experiments/20260715T150724Z-threadkeeper-persistent-spawn-cancel-v1/
+?? projects/omegaclaw/experiments/20260715T151639Z-threadkeeper-persistent-attempt-checkpoint-recovery-v1/
+?? projects/omegaclaw/experiments/20260715T153000Z-threadkeeper-persistent-manifests-events-v1/
+?? projects/omegaclaw/experiments/20260715T174019Z-machintel-v2-openclaw-phase1-phase2/
+?? projects/omegaclaw/experiments/20260715T174019Z-machintel-v2-protomegabot2-canary/
+?? projects/omegaclaw/experiments/20260715T190300Z-threadkeeper-persistent-enqueue-receipts-v1/
+?? projects/omegaclaw/experiments/20260715T210802Z-threadkeeper-persistent-task-budgets-v1/
+?? projects/omegaclaw/experiments/20260716T113400Z-threadkeeper-persistent-execution-accounting-v1/
+?? projects/omegaclaw/experiments/20260716T153400Z-threadkeeper-persistent-supervisor-v1/
+?? projects/omegaclaw/experiments/20260716T193800Z-threadkeeper-persistent-supervisor-subprocess-v1/
+?? projects/omegaclaw/experiments/20260716T210300Z-threadkeeper-persistent-supervisor-ownership-v1/
+?? projects/omegaclaw/experiments/20260717T154004Z-threadkeeper-formal-handoff-v1/
+?? projects/omegaclaw/experiments/20260717T171207Z-threadkeeper-handoff-requeue-resume/
+?? projects/omegaclaw/experiments/20260717T190841Z-threadkeeper-waiting-input-handoff/
+?? projects/omegaclaw/experiments/20260717T193500Z-threadkeeper-handoff-restart-stability/
+?? projects/omegaclaw/experiments/20260717T210750Z-threadkeeper-operator-dispositions/
+?? projects/omegaclaw/memory/
+?? projects/omegaclaw/notes/2026-07-19-bach-motivation-assessment.md
+?? projects/omegaclaw/workspace/
+?? projects/omegaself/DECISIONS.md
+?? projects/omegaself/PROJECT.md
+?? projects/omegaself/experiments/
+?? projects/omegasim/docs/cla_detector_provenance_audit_20260716.md
+?? projects/omegasim/docs/cla_same_path_benchmark_preregistration_20260716.md
+?? projects/omegasim/docs/experiment_series_plan.md
+?? projects/omegasim/docs/frozen_detector_identity_contract.md
+?? projects/omegasim/experiments/20260715T153049Z-cla-detector-preregistered/
+?? projects/omegasim/experiments/20260716T164500Z-cla-roles8-untouched-replication/
+?? projects/omegasim/experiments/20260716T204500Z-cla-roles8-bitwise-replay/
+?? projects/omegasim/experiments/20260716T224635Z-cla-same-path-external-calibration/
+?? projects/omegasim/experiments/20260717T000000Z-cla-dynamics-exploration/
+?? projects/omegasim/experiments/20260717T164500Z-a6-stratified-cla-resweep-01/
+?? projects/omegasim/experiments/20260717T184500Z-a6-stratified-cla-resweep-02/
+?? projects/omegasim/experiments/20260717T204500Z-a6-stratified-cla-resweep-03/
+?? projects/omegasim/experiments/20260717T224500Z-a6-stratified-cla-resweep-04/
+?? projects/omegasim/experiments/20260718T004500Z-a6-stratified-cla-resweep-05/
+?? projects/omegasim/experiments/20260718T024500Z-a6-stratified-cla-resweep-06/
+?? projects/omegasim/experiments/20260718T024700Z-a6-stratified-cla-resweep-07/
+?? projects/omegasim/experiments/20260718T044500Z-a6-stratified-cla-resweep-08/
+?? projects/omegasim/experiments/20260718T064500Z-a6-stratified-cla-resweep-09/
+?? projects/omegasim/experiments/20260718T084500Z-a6-stratified-cla-resweep-10/
+?? projects/omegasim/scripts/verify_frozen_identity.py
+?? projects/omegasim/tests/test_verify_frozen_identity.py
+?? projects/petta-chem/docs/
+?? projects/petta-chem/experiments/
+?? projects/petta-memory/docs/metta_attention_integration_assessment.md
+?? projects/petta-memory/docs/metta_attention_omegaclaw_integration.pdf
+?? projects/petta-memory/docs/metta_attention_omegaclaw_integration.tex
+?? projects/petta-memory/docs/patham9_pi_pln_extension_architecture.md
+?? projects/petta-memory/docs/pettachainer-review/
+?? projects/protomegabot2/
+?? projects/relaleap/docs/epc_r8_broad_outcome_protocol.md
+?? projects/relaleap/docs/epc_r8_r9_report.pdf
+?? projects/relaleap/docs/epc_r8_r9_report.tex
+?? projects/relaleap/docs/relaleap_gpt2_six_layer_outcome_report.aux
+?? projects/relaleap/docs/relaleap_gpt2_six_layer_outcome_report.log
+?? projects/relaleap/docs/relaleap_gpt2_six_layer_outcome_report.out
+?? projects/relaleap/docs/relaleap_gpt2_six_layer_outcome_report.pdf
+?? projects/relaleap/docs/relaleap_gpt2_six_layer_outcome_report.tex
+?? projects/relaleap/docs/relaleap_tiny_shakespeare_residual_layers_handoff_20260709.md
+?? projects/relaleap/docs/relaleap_tiny_shakespeare_residual_layers_handoff_20260709.pdf
+?? projects/relaleap/docs/reviews/
+?? projects/relaleap/docs/slt_tiny_shakespeare_transformer_analysis.pdf
+?? projects/relaleap/docs/slt_tiny_shakespeare_transformer_analysis.tex
+?? projects/relaleap/docs/why_tiny_shakespeare_is_too_small.html
+?? projects/relaleap/docs/why_tiny_shakespeare_is_too_small.md
+?? projects/relaleap/docs/why_tiny_shakespeare_is_too_small.pdf
+?? projects/relaleap/docs/why_tiny_shakespeare_is_too_small.tex
+?? projects/relaleap/experiments/
+?? relaleap-artifacts/
+?? tests/test_runpod_heartbeat_sensor.py
+
+## Diff summary
+ HEARTBEAT.md                                       |   20 +-
+ MEMORY.md                                          |   52 +-
+ catalog/KANBAN.md                                  |   79 +-
+ catalog/PROJECTS.md                                |    8 +-
+ library/chaos-language-algorithm/SOURCE.md         |   47 +
+ memory/2026-07-04.md                               |   20 +
+ memory/2026-07-05.md                               |  288 +---
+ memory/2026-07-06.md                               |  174 +++
+ memory/2026-07-10.md                               |   59 +
+ memory/2026-07-11.md                               |  313 +++++
+ memory/2026-07-12.md                               |  162 +++
+ memory/2026-07-13.md                               |  266 +++-
+ memory/2026-07-15.md                               |  264 ++++
+ memory/2026-07-17.md                               |   37 +
+ memory/2026-07-18.md                               |  213 +++
+ memory/2026-07-19.md                               |  381 +++--
+ memory/2026-07-20.md                               |  833 ++++++++++-
+ memory/2026-07-21.md                               |  275 +++-
+ memory/2026-07-23.md                               |    6 +
+ plugins/intent-model-router/index.js               |   39 +-
+ plugins/intent-model-router/index.test.js          |   56 +-
+ plugins/intent-model-router/openclaw.plugin.json   |   13 +-
+ plugins/intent-model-router/router-core.js         |   39 +-
+ projects/agent-recovery/PROJECT.md                 |   18 +-
+ projects/agent-recovery/TASKS.md                   |   19 +-
+ .../scripts/backup-protomegabot-recovery.sh        |    5 +-
+ .../scripts/backup-zerobot-recovery.sh             |    3 +-
+ .../agent-recovery/scripts/push-recovery-repos.sh  |   14 +-
+ projects/chaos-language-algorithm/DECISIONS.md     |  949 +++++++++++++
+ projects/chaos-language-algorithm/NOTES.md         | 1450 ++++++++++++++++++++
+ projects/chaos-language-algorithm/PROJECT.md       |  571 +++++++-
+ projects/chaos-language-algorithm/TASKS.md         |  515 ++++++-
+ .../docs/cla_expert_review_prompt.md               |    2 +-
+ projects/hyperseed-formalizations/DECISIONS.md     |   53 +
+ projects/hyperseed-formalizations/NOTES.md         |   14 +
+ projects/hyperseed-formalizations/PROJECT.md       |    9 +
+ projects/hyperseed-formalizations/TASKS.md         |   51 +-
+ projects/omegaclaw/DECISIONS.md                    |  240 ++++
+ projects/omegaclaw/GGB_CAPACITIES_ROADMAP.md       |  171 ++-
+ .../omegaclaw/GGB_GATE_RUN_CONTRACT_MAPPING.md     |    4 +
+ projects/omegaclaw/GOALCHAINER_INTEGRATION_MAP.md  |   56 +-
+ projects/omegaclaw/NOTES.md                        |  633 +++++++++
+ projects/omegaclaw/PROJECT.md                      |  300 ++++
+ projects/omegaclaw/TASKS.md                        |  446 ++++++
+ projects/omegasim/DECISIONS.md                     |   87 +-
+ projects/omegasim/NOTES.md                         |  286 ++++
+ projects/omegasim/PROJECT.md                       |   17 +-
+ projects/omegasim/TASKS.md                         |   81 +-
+ projects/petta-chem/DECISIONS.md                   |  166 +++
+ projects/petta-memory/DECISIONS.md                 |  497 +++++++
+ projects/petta-memory/NOTES.md                     | 1155 +++++-----------
+ projects/petta-memory/PROJECT.md                   |  223 +++
+ projects/petta-memory/TASKS.md                     |  178 +++
+ projects/relaleap/DECISIONS.md                     |  231 ++++
+ projects/relaleap/NOTES.md                         |  124 ++
+ projects/relaleap/PROJECT.md                       |  152 +-
+ projects/relaleap/TASKS.md                         |  270 +++-
+ projects/specatom-hs/DECISIONS.md                  |   37 +
+ projects/specatom-hs/NOTES.md                      |  324 +++++
+ projects/specatom-hs/PROJECT.md                    |  140 +-
+ projects/specatom-hs/TASKS.md                      |  177 +++
+ 61 files changed, 11961 insertions(+), 1351 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

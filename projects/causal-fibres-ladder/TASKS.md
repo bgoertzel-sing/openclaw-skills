@@ -1,0 +1,386 @@
+# Tasks
+
+Use small, testable tasks. Keep the top of each section in priority order.
+
+## Now
+
+- [ ] Implement typed CMCP information-geometric protocol (Stages A-G).
+  Deliverable: geometry core (alpha-divergence, Hellinger, sqrt embedding,
+  spherical log/transport, response signatures, FR-Schur residual, tangent
+  magnitude/alignment, path audit, commutator norm); staged evaluator (guard,
+  conditional accounting, dependence alarm, intervention geometry, path audit,
+  typed classification, separate actuation); TypedEvaluationRecord with 5
+  distinct quantities; batch evaluator; Phase 0--2 tests. Acceptance: all
+  tests pass; existing suite unaffected; local commit. Completed 2026-07-25:
+  56 new tests pass (305 total). Commit `f848c97`. Next command: implement
+  Phase 3 estimator comparison and Phase 4 assimilation-vs-maintenance
+  experiment from the paper's Appendix A. Evidence:
+  `src/relaleap/hdpc/e4_cmcp_geometry.py`,
+  `src/relaleap/hdpc/e4_cmcp_typed.py`,
+  `tests/test_e4_cmcp_geometry.py`.
+
+- [x] Prepare a review-oriented CMCP information-geometry note before any
+  alpha-divergence implementation. Deliverable: PDF distinguishing observed
+  ledger, replay, biased-duplicate, and Schweizer--Sklar evidence from a
+  falsifiable Fisher--Rao/Hellinger conditional-displacement proposal;
+  include mathematical definition, limitations, review questions, sources, and
+  a preregistration sequence. Completed 2026-07-25: five-page PDF compiled
+  and text-checked. It records that the Schweizer--Sklar optimum was the
+  product-limit boundary, and explicitly rejects calling the proposed ratio
+  conditional MI without a generative model. Evidence:
+  `docs/cmcp_information_geometry_review_2026-07-25.pdf`.
+
+- [x] Implement and calibrate Schweizer--Sklar quantale-weak CMCP on
+  constructed evidence fixtures. Completed 2026-07-25. A pure-Torch
+  distance-correlation novelty channel combined with the existing score ratio
+  passed 9 focused and 12 compatibility tests. On three calibration seeds,
+  the smallest grid point `p=0.05` produced mean exact/biased/independent/
+  partial ratios `0/0/0.87093/0.36302`; a distinct-innovation biased smoke
+  also gave zero weight with unchanged model weights. The result supports the
+  dependence-novelty channel, not a non-product Schweizer--Sklar geometry:
+  selection worsened monotonically with `p`, and the product limit performed
+  slightly better under the constructed objective. Next command: implement an
+  unbiased or permutation-calibrated dependence null and test noisy nonlinear,
+  provenance-distinct transformations before confirmation. Evidence:
+  `experiments/20260725T034212Z-e4-quantale-calibration/` and
+  `experiments/20260725T034222Z-e4-quantale-biased-smoke/`.
+
+- [x] Sweep CMCP replay strength and test systematic biased duplicates.
+  Completed 2026-07-25. Across the three open calibration seeds, increasing
+  replay coefficient from `0.15` to `0.30` to `0.50` moved the mean Task-B
+  CMCP/naive crossover from episode 6 to 5 to 3; episode-6 CMCP advantages
+  were `+0.031`, `+0.099`, and `+0.133`. This supports a bounded-precision
+  plasticity advantage under stronger replay, but remains exploratory and
+  naive retained lower ECE. The biased-packet smoke was mechanistically
+  negative: provenance identity suppressed the packet, while its raw
+  conditional-information ratio was `0.9461`, so the current score did not
+  detect the systematic bit flip as redundant. Confirmation seeds remain
+  sealed. Evidence:
+  `experiments/20260725T031220Z-e4-cmcp-replay-sweep-final/` and
+  `experiments/20260725T031257Z-e4-cmcp-biased-injection-smoke/`.
+  Next command: build a provenance-distinct, score-collinear constructed
+  fixture and require raw Schur residualization to pass before a campaign.
+
+- [x] Implement and calibrate the typed CMCP retention experiment. Deliverable:
+  an append-only typed store carrying cohort identity, ordered example
+  identities, packet/provenance/innovation identity, mechanism family,
+  precision, and values hash; a two-task parameter-learning protocol comparing
+  naive, CMCP, direction-only, oracle, and no-ledger controls; disjoint
+  calibration/confirmation seeds; raw accuracy, calibration, interference,
+  and forgetting metrics. Acceptance: constructed identity/provenance tests
+  fail closed on row permutation, cohort mismatch, duplicate packet IDs, and
+  conflicting innovation payloads; exact command/config is frozen before
+  calibration; model updates are explicit and equally metered across arms;
+  thresholds are frozen before confirmation; durable run records and a local
+  commit exist. Completed 2026-07-25 with a principled calibration stop:
+  20 focused tests passed and all matched-learning invariants held. CMCP
+  tracked oracle precision (`6.8364--7.9343` versus `7.5`) but naive precision
+  inflated to `21.0` without the predicted practical harm; naive retained
+  Task A better on all three seeds and usually matched Task-B learning.
+  Confirmation seeds remain sealed. Next command: only design a new stressor
+  if it introduces independently motivated systematic evidence bias or a
+  longer nonstationary curriculum. Evidence:
+  `docs/e4_cmcp_typed_retention_disposition.md` and
+  `experiments/20260725T021200Z-e4-cmcp-typed-retention-calibration/`.
+
+- [x] Implement, calibrate, and confirm the E4/CMCP persistent-ledger
+  duplicate-burst experiment. The initial fresh-batch smoke exposed invalid
+  row alignment and is non-scientific; the corrected protocol reuses a
+  hash-identified cohort with fresh extraction noise per episode. Thirteen
+  combined CMCP tests pass. On five sealed confirmation seeds, all nine frozen
+  checks passed: episode-8 precision CMCP/oracle/naive was
+  `8.89433/9.0/26.0`; CMCP versus naive accuracy was `0.83281/0.74844`, ECE
+  `0.07797/0.12309`, and Brier `0.22596/0.32489`. Model weights were unchanged.
+  Next command: design a typed cohort/example-identity store before any
+  parameter-learning retention claim. Evidence:
+  `experiments/20260725T015720Z-e4-cmcp-persistent-calibration/`,
+  `experiments/20260725T015835Z-e4-cmcp-persistent-confirmation/`, and
+  `docs/e4_cmcp_persistent_disposition.md`.
+
+- [x] Run the bounded E4/CMCP evidence-ledger experiment on the confirmed
+  text-like substrate. Deliverable: frozen protocol; exact-duplicate,
+  deterministic-descendant, independent-repeat, partial-redundancy, and
+  rotated-frame evidence streams; naive, direction-only, CMCP
+  conditional-information, and oracle-joint accounting arms; disjoint
+  calibration/confirmation; raw metrics and disposition. Acceptance:
+  constructed estimator tests pass; duplicate idempotence, independent-evidence
+  utilization, effective precision error, task loss/accuracy/calibration, and
+  presentation-order sensitivity are reported; thresholds are frozen before
+  confirmation; existing E4 model and direct-logit sink remain unchanged.
+  Completed 2026-07-25: all seven frozen confirmation checks passed. CMCP
+  made duplicate and deterministic-descendant precision exactly idempotent,
+  retained `0.997862` of independent evidence, aligned the known rotated
+  frame to `1.24e-10`, and had zero order RMS. Partial redundancy remained
+  imperfect (`0.657531` weight versus oracle `0.5`), while naive duplicate
+  counting slightly improved immediate loss. Next command: preregister a
+  persistent-ledger duplicate-burst experiment measuring calibration,
+  precision growth, retention, and curriculum reversal. Evidence:
+  `experiments/20260725T001900Z-e4-cmcp-ledger-confirmation/` and
+  `docs/e4_cmcp_ledger_disposition.md`.
+
+- [x] Run the E4 external-validity bridge on a compositional text-like
+  surface. Deliverable: token-sequence grammar with lexical aliases,
+  distractors, local word-order variation and embedding noise; an input-only
+  symbolic extractor; a 75-update six-block student; controlled extraction
+  noise; disjoint calibration/confirmation; comparison with the clean
+  substrate; tests, raw metrics, disposition, and local commit. Acceptance:
+  focused and full tests pass; at least three calibration seeds run;
+  thresholds are frozen before at least three disjoint confirmation seeds;
+  the frozen primary reports extraction accuracy, CS accuracy, and
+  `G=(SC-FF)/(TC-FF)`; the new noise floor and deployment verdict are
+  recorded. Next command: inspect the existing grammar, extractor,
+  constraints, information sink, student, and tests, then write the
+  plain-language protocol. Evidence path:
+  `experiments/20260724T234609Z-e4-textlike-calibration-channel-matched/`
+  and `experiments/20260724T234938Z-e4-textlike-confirmation/`.
+  Completed 2026-07-24: the frozen natural-surface subset primary confirmed
+  mean CS `G=0.30387`, with 5/5 seeds above `0.20`; extraction fidelity was
+  `96.09%`, and CS accuracy rose from `81.56%` to `82.50%`. Material mean G
+  persisted through 20% added errors (`77.38%` extraction) and failed at 30%
+  (`68.32%`). All provenance, cardinality, and non-ceiling checks passed;
+  full suite `212 passed`. Evidence:
+  `docs/e4_textlike_external_validity_disposition.md`.
+
+- [x] Build and confirm a deployment-time symbolic constraint extractor that
+  reads the raw synthetic-grammar input without factor-label access.
+  Deliverable: input-block decoding, controlled extraction accuracy
+  `p ∈ {1.0,0.95,0.9,0.8,0.7}`, relational parity/implication/subset
+  constraints, direct-logit CS evaluation, disjoint calibration/confirmation,
+  raw JSON, and a deployment-gate disposition. Acceptance: extractor tests
+  demonstrate input-only provenance and deterministic seeded noise; at least
+  three calibration seeds run; thresholds are frozen before at least three
+  disjoint confirmation seeds; focused/full tests pass; mean confirmation
+  `G=(SC-FF)/(TC-FF)` is compared with the `0.20` gate and prior oracle; and
+  the experiment is linked from `PROJECT.md`. Next command: inspect
+  `SyntheticGrammar`, `e4_constraints.py`, `e4_information.py`, and their
+  tests, then write the plain-language extractor protocol. Evidence path:
+  `experiments/20260724T224751Z-e4-symbolic-extractor-calibration/` and
+  `experiments/20260724T225008Z-e4-symbolic-extractor-confirmation/`.
+  Completed 2026-07-24: the frozen 90%-accuracy input-derived subset primary
+  confirmed mean defined-seed CS `G=2.32074`, with 3/3 defined seeds above
+  `0.20`; CS accuracy rose from `94.22%` to `96.09%`; all provenance checks
+  passed. The source retained `60.0%` of clean-extractor G and remained
+  material at 80%, while all tested sources were harmful at 70%. Evidence:
+  `docs/e4_symbolic_extractor_disposition.md`.
+
+- [x] Test non-label-equivalent symbolic constraint sources through the
+  confirmed E4 direct-logit sink on the frozen 75-update student.
+  Deliverable: relational/parity, 1/2/3 partial-factor, implication-rule, and
+  controlled-noise (`p=0,0.1,0.2,0.5`) calibration plus disjoint confirmation
+  with CS task accuracy and `G=(SC-FF)/(TC-FF)`, exact configs/commands/raw
+  JSON, and a plain deployment-gate disposition. Acceptance: constraint
+  information is audited as non-label-equivalent, at least three calibration
+  seeds run, thresholds are frozen before at least three disjoint confirmation
+  seeds, focused tests pass, and the run is linked from `PROJECT.md`. Next
+  command: implement the generic allowed-label constraint sink and tests
+  against `docs/e4_non_label_equivalent_protocol.md`. Evidence:
+  `experiments/20260724T220707Z-e4-non-label-equivalent-calibration/RUN.md`
+  and
+  `experiments/20260724T221117Z-e4-non-label-equivalent-confirmation/RUN.md`.
+  Completed 2026-07-24: frozen primary `partial3_123` confirmed mean defined-
+  seed CS `G=3.7433` with 4/4 defined seeds above `0.20`; parity and
+  implication sources also clear the gate. Mean CS accuracy improved from
+  `82.19%` FF to `88.91%`, but the additional frozen 95% absolute-accuracy
+  auxiliary failed. All 28 sources were non-label-equivalent. Evidence:
+  `docs/e4_non_label_equivalent_disposition.md`.
+
+- [x] Run E4 channel diagnostic calibration + confirmation on the frozen
+  75-update student. Deliverable: full-versus-capped factor information,
+  constraint weights `0.5x,1x,2x,5x`, and hidden/logit/both injection
+  channels over three calibration seeds (`12011,13121,14251`) plus three
+  disjoint confirmation seeds (`20801,21903,23017`) under five frozen
+  thresholds (C1--C5). Acceptance: all thresholds frozen before unblinding,
+  raw JSON and RUN.md records are durable, model weights unchanged, frozen
+  negative E4 gate not revised. Evidence:
+  `experiments/20260724T202915Z-e4-channel-diagnostic-summary-v2/` (cal),
+  `experiments/20260724T210500Z-e4-channel-confirmation-3seed/` (conf).
+  Completed 2026-07-24: all 5 thresholds passed on confirmation. full4/two-cap
+  ratio exactly 2.0; logit/hidden ratio 2.16-2.18; both≈logit (max diff 1.5e-5);
+  best G=4.344±0.283. Evidence: `docs/e4_channel_diagnostic.md`.
+
+- [x] Complete E3 non-ceiling calibration and confirmation from an early-stop
+  Option-1 homotopy student, then re-run E4 if E3 is informative. Deliverable:
+  a 70--90% pre-E3 task-accuracy substrate, metered V1--V3 calibration on
+  seeds `12011,13121,14251`, frozen-threshold confirmation on disjoint seeds
+  `15313,16417,17519,18637,19739`, Prediction-1/V4 evidence where feasible,
+  and a non-ceiling E4 FF/TC/OT/SC/OT+SC read. Acceptance: exact commands,
+  configs, raw JSON, hashes, RUN.md interpretation, focused tests, and local
+  coherent commits; supplied fibres remain labelled imposed structure and C2
+  atoms are not used. Next command: calibrate the early-stop update count
+  against held-out ID/CS task accuracy before running any E3 arm. Evidence:
+  `experiments/20260724T195826Z-e3-partial-student-calibration/`.
+  Completed 2026-07-24: 75 updates met the aggregate selection target;
+  disjoint 3/5 E3 ran; supplied fibre failed the DGC bar; V4 did not cleanly
+  support Prediction 1; E4 mean CS-loss G was `0.19828`, below `0.2`.
+  Aggregate evidence:
+  `experiments/20260724T201712Z-e3-nonceiling-disposition-v2/`.
+
+- [ ] Execute ePC programme v1.1 Steps 1--7 sequentially on local CPU and
+  document Step 8 scope. Deliverable: residual and transformer-like P1/M0
+  controls; shared adjoint-field artifacts; dual-substrate M0--M5; matched
+  E3 conditions with frontier-cost metering; E4 information-injection
+  comparison; and E5 scope memo. Acceptance: each step has focused tests,
+  machine-readable artifacts, a complete experiment record, and a coherent
+  local commit; M3/M4 stay blinded until Prediction 2 is frozen against the
+  selected substrate. Next command: implement and test
+  complete. Next command: if revisiting Prediction 1, preregister effective
+  displacement/step matching rather than changing the failed E3/E4 bars. C2
+  completed 2026-07-24:
+  positive dictionary structure on observable settled block 6 and all adjoint
+  blocks, but C2 atoms remain barred from post-hoc E3 selection. Evidence:
+  `experiments/20260724T185721Z-e2-c2-dictionary-5seed-v1-1-hungarian/`.
+  E3 progress: all conditions and exact meters are implemented, but the three
+  calibration seeds hit a no-update CS ceiling (`0.9974` exact), so no quality
+  comparison or confirmation claim is justified. E4 calibration is negative:
+  SC loss-headroom `G=0.062--0.098`, below `0.2`. E5 W1/W2 standalone MORK
+  linalg parity passes; in-store tensor sinks remain absent. Evidence:
+  `docs/e3_e5_reduced_disposition.md`.
+  Non-ceiling follow-up 2026-07-24: the 75-update substrate enabled disjoint
+  E3 confirmation, but supplied fibres failed the DGC bar; V4 was
+  ambiguous/negative for Prediction 1; E4 improved to mean `G=0.19828` but
+  remained below `0.2`. Evidence: `docs/e3_nonceiling_disposition.md`.
+  Progress 2026-07-24: residual paths increased
+  upstream observability but left 100% of KD/CE global top-5% mass in block 6
+  at all depths; residual self-attention/MLP token mixing produced the same
+  readout-local frontier and weaker upstream M0. Evidence:
+  `experiments/20260724T135659Z-e1-residual-p1-m0-v1-1/` and
+  `experiments/20260724T140015Z-e1-token-mixing-p1-m0-v1-1/`.
+  Adjoint/M0 progress 2026-07-24: raw CE adjoints have 83.5% of top-5% mass
+  in blocks 1--2, but settled/adjoint depth agreement is zero. Prediction 2
+  is frozen per track in `configs/e2_prediction_2_frozen_v1_1.json`.
+  Evidence: `experiments/20260724T140310Z-e2-residual-adjoint-m0-v1-1/`.
+  Dual-battery progress: 18 tests and the reduced M1--M5 run passed; all 12
+  JBD fits converged, but Prediction 2 is mixed/negative and no frozen
+  confirmatory M1--M5 envelope exists. Evidence:
+  `experiments/20260724T140951Z-e2-dual-m1-m5-v1-1-fixed/`.
+  E2 decision 2026-07-24: criteria 1.2.0 frozen from constructed fixtures;
+  disjoint 3-seed calibration and 5-seed confirmation completed; both tracks
+  classify E2-B, M0 and Prediction 2 fail, and recovered fibres are barred
+  from E3. Evidence: `docs/e2_disposition_memo.md` and experiments
+  `20260724T181654Z-e2-calibration-3seed-v1-1-frozen-rerun/`,
+  `20260724T181805Z-e2-confirmation-5seed-v1-1-frozen/`.
+
+- [ ] Reconcile and execute the v1.1 ePC programme delta supplied by Ben on
+  2026-07-23. Deliverable: preserved/hash-verified v1.1 source; immutable v1.0
+  E1 record; versioned v1.1 criteria; shared settled-error/adjoint field
+  schema; E1 post-hoc P1 depth profile and P2/M0 equivalence checks; and the
+  E2 dual-substrate fast path with Prediction 2 frozen before fingerprint
+  unblinding. Acceptance: P1 reports KD and CE top-5% mass by block; M0
+  reports per-block cosine, norm ratio, top-5% Jaccard, depth-profile
+  agreement, and random-field null; weights stay frozen during settle; fields
+  share one schema; all launched runs and guard failures are retained. Next
+  command: implement constructed M0 fixtures and a reduced terminal-student
+  P1/P2 CPU run. Evidence:
+  `../../library/revised-epc-experimental-programme-2026/v1.1/`,
+  `configs/e1_e2_acceptance_v1_1.json`, and
+  `experiments/<run-id>-e1-posthoc-m0/`.
+  Progress 2026-07-23: source preserved and criteria frozen; 12 focused tests
+  passed. The corrected reduced run preserved weights but put 100% of KD and
+  CE top-5% mass in block 6 at `T=8`; blocks 1--3 had zero settled field.
+  Next command: preregister and run a fixed-terminal-student depth sweep
+  through `T=128`, checking field convention and upstream observability before
+  any M3/M4 unblinding. Evidence:
+  `experiments/20260724T061200Z-e1-posthoc-m0-v1-1-corrected/`.
+  Depth sweep completed 2026-07-24: greater `T` propagated tiny upstream
+  fields, but KD and CE retained 100% of global top-5% mass in block 6 through
+  `T=128`; blocks 1--2 remained unobservable. Next command: audit exact field
+  definition, normalization, loss placement, and update dynamics against
+  Mesto/R8, with a constructed chain positive control. Evidence:
+  `experiments/20260724T082216Z-e1-m0-depth-sweep-v1-1/`.
+
+- [ ] Implement revised-programme Phase 1: shared E1 harness plus C1 control.
+  Deliverable: reconciled canonical R8/R9 source/config; versioned
+  plain-language and JSON protocol; geometric homotopy schedule and guards;
+  provably teacher-free evaluator; per-block frontier/rank/concentration
+  metrics; matched-seed direct-R8 contrast; artifact metering; and separate
+  calibration versus confirmatory seed sets. Acceptance: constructed tests
+  prove frozen weights during settlement, no teacher access on the
+  teacher-free path, exact matched-seed pairing, per-block/pooled metric
+  agreement, guard retention, deterministic artifact hashes, and rejection of
+  factor-schema mismatches; reduced CPU smoke exits zero; resource/storage
+  estimate is recorded before any paid run. Provenance reconciliation
+  completed: `ecf2f79` is the direct child/final crash-fix commit of
+  `9ccb151`. Next command: draft `docs/e1_homotopy_protocol.md` with distinct
+  `R8-WikiText` pathology-reproduction and `E1-synthetic-grammar` homotopy
+  identities; then add reduced frozen-weight/teacher-free invariant tests.
+  Evidence: `docs/e1_homotopy_protocol.md`,
+  `configs/e1_homotopy_acceptance_v1.json`, and
+  `experiments/<run-id>-e1-homotopy-smoke/RUN.md`.
+  Progress 2026-07-23: reduced six-block E1-SG harness implemented at
+  RelaLeap branch `agent/e1-guarded-homotopy`, commit `dd1a6e9`; 15 focused
+  and R8 regression tests pass. Final CPU smoke passed matched identities,
+  frozen settlement weights, structurally teacher-free evaluation, finite
+  outputs, constructed diagnostics, and deterministic scientific/NPZ replay.
+  Milestone JSONL, factor closure/spill, retained guard evidence, and the
+  objective-control identity test are included. Next command: freeze disjoint
+  3/5 seeds and run calibration scale. Evidence:
+  `experiments/20260724T001351Z-e1-homotopy-smoke-complete/`.
+  Superseded priority note: v1.1 moves that calibration off the critical path;
+  preserve any completed artifacts, but run P1/P2 and E2 adjoint/M0 first.
+
+- [ ] Retain target-scope H0 as standing BP-residual control C1 on every
+  teacher-free E3/E4 metric. Acceptance: multiple-seed held-out Γ,
+  factor-specific intervals, spill, and all budgets are recorded; classify
+  the interface by the paper's `>0.50` confidence gate. Next command: reuse
+  the Phase-1 frozen rig/data identity rather than launch an independent,
+  potentially mismatched H0 campaign. Evidence:
+  `experiments/<run-id>-c1-h0-gpt2-small/RUN.md`.
+
+## Next
+
+- [ ] Implement E2 dual-substrate estimator validation before emergence
+  claims: shared settled-error/adjoint schema, M0 equivalence, support
+  Jaccard, principal angles, robust JBD, factor alignment, interventional
+  fingerprints, observability floor, shuffled/random nulls, and dictionary C2
+  on identical stored errors. Acceptance: constructed factorized,
+  repeated-copy/underidentified, rotated-context, sparse-unstructured, and null
+  fixtures classify correctly. Next command: map 0.4.0 JBD/dictionary APIs to
+  the E2 metric contract.
+
+- [x] Implement exact budget metering for dense/top-k/fibre/random E3 arms,
+  including frontier-discovery cost, DGC-style error-feedback sparsification,
+  and the proximal settle-versus-raw-BP ablation after E2 disposition.
+
+- [x] Implement v1.1 E4 test-time-information evaluators: FF deployed default,
+  OT, SC, OT+SC, and teacher-clamped diagnostic anchor; remove
+  “amortization-gap” wording from new configs and memos.
+
+- [x] Scope E5 W1/W2 against the actual local MORK API in parallel only after
+  E1 student identity is frozen; E5 does not block E1/E2 interpretation.
+
+## Waiting or blocked
+
+None for the E2 decision gate. E3 may use supplied fibres under branch 5.2,
+but recovered-fibre selection is closed by the E2-B result.
+
+## Someday or exploratory
+
+- [ ] Continue remaining H1--H6 claims only through the E1--E5 branch logic;
+  supplied fibres remain diagnostics if emergence fails.
+
+## Done recently
+
+Move durable conclusions into `PROJECT.md`, `DECISIONS.md`, or experiment results rather than relying on this list.
+
+- [x] 2026-07-23: Installed causal-fibres 0.4.0 in the project venv; doctor,
+  smoke test, and all 54 released tests passed.
+- [x] 2026-07-23: Completed the H0 CPU toy gate. The best combined-layer MLP
+  achieved `Gamma_L=0.99143` (95% CI `[0.99070,0.99220]`) and
+  `Gamma_A=1.0` (CI `[1,1]`); all five `Gamma_j` values were
+  `0.81971`--`0.86188`. Evidence:
+  `experiments/20260723T181654Z-h0-frozen-interface-cpu-final/RUN.md`.
+- [x] 2026-07-23: Prepared but did not run
+  `configs/h1_stage0b_toy_prepared.json`.
+- [x] 2026-07-23: Preserved and audited Ben's revised E1--E5 programme at
+  `../../library/revised-epc-experimental-programme-2026/SOURCE.md`; adopted
+  Phase 1 with a calibration/confirmation correction and explicit compute
+  metering.
+- [x] 2026-07-24: Froze E2 criteria 1.2.0 from constructed fixtures, ran
+  disjoint 3/5-seed calibration/confirmation, and classified settled-error and
+  adjoint tracks E2-B. Prediction 2 and M0 fail; no recovered fibres advance.
+- [x] 2026-07-24: Ran mandatory C2 SAE baseline on identical five-seed fields.
+  It passes frozen M3/M4 on observable settled block 6 and all adjoint blocks,
+  narrowing E2-B to a JBD-specific failure while leaving E3 on supplied fibres.
+- [x] 2026-07-24: Implemented and calibrated reduced E3/E4 plus eligible E5
+  W1/W2 kernels. E3 quality is ceiling-inconclusive, E4 SC is below material
+  headroom, and MORK linalg parity passes while in-store integration is open.

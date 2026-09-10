@@ -1,0 +1,1 @@
+59df0da868be3eb511c7bd04d917761275407c2ddf7c32c6d09483bf8fc97963  dist/bridgelearn-0.3.0-py3-none-any.whl

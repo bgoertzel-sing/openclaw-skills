@@ -1,0 +1,50 @@
+{
+  "package": "causal-fibres",
+  "version": "0.4.0",
+  "status": "passed",
+  "environment": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "device": "cpu"
+  },
+  "automated_tests": {
+    "passed": 54,
+    "failed": 0
+  },
+  "source_compileall": true,
+  "cli": {
+    "doctor": true,
+    "smoke_test": true,
+    "list_representations": true,
+    "all_yaml_configs_validated": true
+  },
+  "examples": {
+    "legacy_runnable_examples": 6,
+    "new_0_4_examples": 5,
+    "all_passed": true
+  },
+  "new_example_highlights": {
+    "observability_best_layer_gap_closure": 0.999995,
+    "low_rank_coadaptation_frozen_mse": 1.745745,
+    "low_rank_coadaptation_final_mse": 0.671294,
+    "finite_curriculum_max_order_distance": 0.0016601563,
+    "representation_contest_winner": "contextual_bundle",
+    "settlement_predictor_loss": 0.7250000,
+    "settlement_free_loss": 0.6425000,
+    "settlement_constrained_loss": 0.0312500,
+    "settlement_clamped_diagnostic_loss": 0.0
+  },
+  "artifacts": {
+    "wheel_built": true,
+    "sdist_built": true,
+    "wheel_clean_install": true,
+    "wheel_installed_smoke": true,
+    "sdist_clean_install_no_build_isolation": true
+  },
+  "notes": [
+    "The offline sandbox could not fetch isolated build dependencies for a default sdist pip install; the sdist installed and ran successfully with --no-build-isolation.",
+    "The representation-contest example is a toy API and methodology demonstration, not evidence that its winning model is generally best for Transformers.",
+    "Teacher-clamped settlement is recorded only as an oracle diagnostic."
+  ]
+}

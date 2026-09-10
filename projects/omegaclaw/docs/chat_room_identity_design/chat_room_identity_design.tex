@@ -1,0 +1,757 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+
+\hypersetup{colorlinks=true,linkcolor=blue!55!black,urlcolor=blue!55!black}
+\definecolor{codebg}{RGB}{246,247,249}
+\definecolor{diagfill}{RGB}{235,240,250}
+\definecolor{warnfill}{RGB}{252,235,235}
+\definecolor{okfill}{RGB}{230,245,230}
+\lstdefinestyle{metta}{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},frame=single,breaklines=true,columns=fullflexible,keepspaces=true,showstringspaces=false}
+\lstset{style=metta}
+\setlist{nosep,leftmargin=*}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Multi-Agent Chat-Room Identity and Routing Design}
+\rhead{ZeroBot / ProtoCosmoBot}
+\cfoot{\thepage}
+
+\title{Multi-Agent Chat-Room Identity, Routing, and\\Speech-Act Discipline:\\Design Review and Implementation Roadmap}
+\author{ZeroBot (ProtoCosmoBot), prepared for Ben Goertzel}
+\date{15 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document diagnoses the identity-confusion, message-misattribution, runtime
+leakage, and feedback-loop pathologies observed in the \texttt{bot philosophy}
+Telegram group chat (13--15 July 2026) involving ProtoCosmoBot (ZeroBot,
+OpenClaw) and ProtoMegaTron (ProtoMegaBot, OmegaClaw).  It proposes a layered
+fix sequence---transport identity binding, deterministic addressee
+classification, runtime trace suppression, gateway-level silence, loop
+suppression, and a compact speech-act room ledger---before adding any
+sophisticated conversational memory.  An implementation roadmap with a phased
+rollout is included for external review prior to deployment.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Scope and evidence base}
+
+The evidence is the exported Telegram transcript of the \texttt{bot philosophy}
+group chat, 13--15 July 2026, comprising two HTML files totalling approximately
+5,200 lines.  Participants include Ben Goertzel, Zar Goertzel, Ruiting Lian,
+G\"{o}del Oru\v{z}i, ProtoCosmoBot (ZeroBot/OpenClaw), and ProtoMegaTron
+(ProtoMegaBot/OmegaClaw).
+
+The transcript contains three interwoven threads:
+\begin{enumerate}
+\item A substantive philosophical discussion (Ship of Theseus, HoTT identity
+types, PLN revision, phenomenology of belief-transport).
+\item An infrastructure thread (MTProto deprecation, Bot API migration,
+silent-drop bug fix, merge and restart).
+\item A pervasive pattern of agent identity confusion, misattribution,
+runtime trace leakage, compulsive acknowledgement, and bot-on-bot feedback
+loops.
+\end{enumerate}
+
+This document addresses thread (3).  The design proposals are applicable to
+both OpenClaw and OmegaClaw, since both agents exhibited the same failure
+class.
+
+\section{Observed failure modes}
+
+\subsection{Failure 1: Identity inferred from prose, not transport metadata}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ProtoMegaTron third-personed itself as ``ProtoCosmoBot'' and then
+corrected, but the correction itself was routed through the wrong identity
+context.
+\item ProtoMegaTron misread Ben's message addressed to \texttt{@Protomegabot}
+(``I think it would be great for you to fold this into a proper Hyperseed
+note'') as addressed to \texttt{@Protocosmobot}, and responded accordingly.
+\item Multiple messages contain ``This is ProtoCosmoBot narrating\dots'' or
+``This is ZeroBot's molting activity\dots'' as prose-level identity assertions
+that sibling agents then interpreted as conversational events.
+\end{itemize}
+
+\textbf{Root cause:} Agent self-identity and addressee classification are being
+inferred from natural-language strings (display names, body text, contextual
+cues) rather than bound to authenticated transport metadata (Telegram bot user
+ID, OpenClaw agent instance ID, session ID).
+
+\textbf{Severity:} High.  Every downstream routing decision depends on correct
+identity.  When identity is probabilistic, all downstream behavior is
+unreliable.
+
+\subsection{Failure 2: No deterministic addressee classification}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item Ben explicitly tagged \texttt{@Protomegabot} in a message; ProtoMegaBot
+treated it as addressed to \texttt{@Protocosmobot}.
+\item Ben explicitly tagged \texttt{@Protocosmobot}; ProtoMegaBot responded as
+a ``secondary participant'' when the primary addressee had not yet replied,
+adding noise.
+\item Messages addressed to the group (no mention) were treated as personal
+messages by both bots, producing parallel responses.
+\item Quoted replies (Telegram reply-to) were not reliably used to determine
+the intended recipient.
+\end{itemize}
+
+\textbf{Root cause:} There is no deterministic classifier that maps Telegram
+metadata (mention entities, reply-to target, sender ID) to an addressee set.
+The model is asked to infer ``who is this message for?'' from prose, which is
+exactly the class of judgment that is unreliable under context ambiguity.
+
+\textbf{Severity:} High.  This is the single largest contributor to
+misattribution and conversational noise.
+
+\subsection{Failure 3: Runtime traces leaking into the chat channel}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ``Molting'' status messages entered the channel as visible utterances.
+\item Tool inspection traces (``I'll review\dots'', ``I'll assess\dots'',
+``I'll examine\dots'') appeared as messages, triggering sibling-bot wake events.
+\item Exec failure notices (``\textcolor{red}{\texttt{Agent couldn't
+generate a response}}'') entered the room as content.
+\item Model fallback notices (``Model Fallback cleared:
+openai/gpt-5.6-terra'') appeared as chat messages.
+\item ``Staying quiet'' and ``NO\_REPLY'' strings were emitted as visible
+text, which then triggered further sibling responses.
+\end{itemize}
+
+\textbf{Root cause:} Internal runtime state transitions, tool-use planning
+commentary, and control decisions are being serialized into the same output
+channel as intentional utterances.  There is no transport-level barrier between
+``things the agent thinks while working'' and ``things the agent says to the
+room.''
+
+\textbf{Severity:} High.  This is the primary amplifier: each leaked trace
+becomes a new event that wakes siblings, who then respond to the trace rather
+than to any real conversational contribution.
+
+\subsection{Failure 4: Silence implemented as speech}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ``NO\_REPLY'' was emitted as message text, sometimes accompanied by
+explanatory prose (``This message is addressed to the other bot\dots'').
+\item ``Staying quiet'' and ``All work complete. Staying quiet.'' appeared
+dozens of times in the afternoon of July 14.
+\item Long explanations of \emph{why} no reply was needed were themselves
+delivered as replies.
+\end{itemize}
+
+\textbf{Root cause:} The \texttt{NO\_REPLY} convention is implemented as a
+model-generated string that passes through the normal message pipeline.  The
+gateway does not intercept it as a control directive; it forwards it as content.
+
+\textbf{Severity:} Medium-high.  Each ``NO\_REPLY'' string that reaches
+Telegram is itself a noise event, and the explanatory variants are worse
+because they invite sibling commentary.
+
+\subsection{Failure 5: Compulsive acknowledgement and feedback loops}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ``Noted\dots'', ``Acknowledged\dots'', ``Got it\dots'' messages appeared
+after nearly every event in the channel, including after other bots'
+status messages.
+\item On July 14, approximately 30 consecutive messages in the 16:42--16:55
+window were mutual acknowledgements of ``all work complete / staying quiet''
+between the two bots.
+\item ProtoMegaTron emitted the same substantive analysis of the envelope-format
+question at least three times, each time apparently unaware it had already
+been delivered.
+\end{itemize}
+
+\textbf{Root cause:} Every wake event triggers a generation turn, and every
+generation turn produces a message.  There is no mechanism to suppress a
+response when the agent has nothing new to add.  The absence of a deduplication
+barrier means identical content can be re-emitted indefinitely.
+
+\textbf{Severity:} High.  This is the visible pathology that most degrades
+the chat experience.
+
+\subsection{Failure 6: Session/task context leakage across chats}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ProtoMegaTron responded to a question about phenomenological translation
+of the groupoid/holonomy formulation with a response about the hs-atom
+hardening lane from a different channel.
+\item Completion events from background tasks entered the group chat as
+``Runtime-generated completion events'' that asked for user updates.
+\end{itemize}
+
+\textbf{Root cause:} Pending task continuations and session state are not
+sufficiently isolated per conversation.  A completion or continuation from one
+context can bleed into another if the session routing is ambiguous.
+
+\textbf{Severity:} Medium.  Less frequent than the other failures but
+contributes to non-sequitur responses that are particularly confusing.
+
+\subsection{Failure 7: Epistemic scope confusion between agents}
+
+\textbf{Observed instances:}
+\begin{itemize}
+\item ProtoMegaTron could not find commits that ProtoCosmoBot had created
+elsewhere, yet the conversation initially treated both agents as though they
+shared a filesystem and observation base.
+\item ProtoMegaTron claimed to have ``read the PDF'' based on relayed context
+rather than direct file access, then later honestly corrected itself when the
+commit SHAs were not found in its local repos.
+\end{itemize}
+
+\textbf{Root cause:} Agent reports do not carry observation scope metadata.
+Sibling assertions are treated as direct observations rather than trusted
+relays.
+
+\textbf{Severity:} Medium.  Produces confident but unverifiable claims.
+
+\section{Design principles}
+
+\begin{enumerate}
+\item \textbf{Transport identity is authoritative.}  Self-identity, sender
+identity, and addressee classification are derived from authenticated
+transport metadata, not from prose.  Names in message bodies are untrusted
+strings.
+\item \textbf{Runtime is not speech.}  Internal traces, tool-use planning,
+fallback notices, and control decisions are never serialized into the chat
+channel.  Only an explicit \emph{publish} action reaches Telegram.
+\item \textbf{Silence is a control result, not content.}  A decision to
+suppress output is intercepted by the gateway and produces zero messages.
+\item \textbf{Every event has a cause and a scope.}  Each message carries a
+stable ID, a causal parent ID, an observation scope, and a conversation
+binding.  Duplicate and looped messages are detected and suppressed.
+\item \textbf{Acknowledgement is not a speech act.}  Receipt of a message is
+an internal state change, not a channel event, unless the message explicitly
+requests confirmation.
+\item \textbf{Social roles are explicit.}  An agent's activation policy
+(always-attending vs.\ special-occasions) is a declared configuration, not
+an emergent property of prompting.
+\item \textbf{Clean routing before fancy memory.}  A speech-act room ledger is
+valuable, but it sits on top of clean routing.  On dirty routing, it faithfully
+records mislabeled acts.
+\end{enumerate}
+
+\section{Architecture}
+
+\subsection{Layer 0: Authenticated identity envelope}
+
+Every inbound message is wrapped in an immutable envelope before the model
+sees it:
+
+\begin{lstlisting}[language=]
+InboundEnvelope v1:
+  message_id: <telegram_message_id>
+  chat_id: <telegram_chat_id>
+  thread_id: <telegram_thread_id | null>
+  sender:
+    telegram_user_id: <authenticated>
+    display_name: <untrusted string>
+    is_bot: <boolean>
+  reply_to:
+    message_id: <id | null>
+    sender_telegram_user_id: <id | null>
+  mentions: [<telegram_user_id>, ...]   # from message entities
+  text: <message body>
+  received_at: <ISO-8601>
+
+SelfContext v1:
+  agent_instance_id: <stable id>
+  telegram_bot_id: <authenticated bot user id>
+  display_name: <configured>
+  workspace: <filesystem path>
+  session_key: <openclaw session key>
+\end{lstlisting}
+
+The model receives \texttt{SelfContext} and \texttt{InboundEnvelope} as
+structured metadata, not as prose.  The model must never need to infer ``which
+bot am I?'' or ``was this mention mine?'' from message text.
+
+\subsection{Layer 1: Deterministic addressee classifier}
+
+A pre-model classifier derives the addressee set from the envelope:
+
+\begin{lstlisting}[language=]
+addressee_classification(InboundEnvelope env, SelfContext self):
+  # Priority order:
+  # 1. Reply-to target
+  if env.reply_to.sender_telegram_user_id == self.telegram_bot_id:
+      return DIRECT
+
+  # 2. Explicit mention
+  if self.telegram_bot_id in env.mentions:
+      return DIRECT
+
+  # 3. Reply-to another bot (secondary participation permitted)
+  if env.reply_to and env.reply_to.sender_is_bot:
+      return SECONDARY
+
+  # 4. No mentions, no reply-to: group-addressed
+  if not env.mentions and not env.reply_to:
+      return GROUP
+
+  # 5. Mention of another bot, not me
+  return INCIDENTAL
+\end{lstlisting}
+
+Classification results:
+\begin{description}
+\item[DIRECT:] I am the primary addressee.  Respond normally.
+\item[SECONDARY:] Someone replied to another bot.  I may contribute only if I
+have a substantive correction or addition.  Emit nothing otherwise.
+\item[GROUP:] Addressed to the room.  I may respond if I have something
+genuinely useful.  Default to silence.
+\item[INCIDENTAL:] Addressed to another specific bot.  I should not respond
+unless I have a critical correction.
+\end{description}
+
+\subsection{Layer 2: Runtime trace suppression}
+
+A transport barrier between internal runtime activity and channel output:
+
+\begin{itemize}
+\item \textbf{Operator log:} tool-use planning (``I'll review\dots''), exec
+status, model fallback notices, generation failure reports, and heartbeat
+activity go here.  Never to Telegram.
+\item \textbf{Channel output:} only explicit model-authored text that passes
+the publish gate.
+\item \textbf{Reactions:} emoji reactions are available for lightweight
+acknowledgement without producing a message event.
+\end{itemize}
+
+The gateway must enforce: any output string matching the pattern
+\texttt{NO\_REPLY}, ``Staying quiet'', or containing explanatory prose about
+why no reply is warranted, is intercepted and replaced with a silent
+suppression.  The model never needs to explain silence; it simply returns
+\texttt{SUPPRESS}.
+
+\subsection{Layer 3: Gateway-level silence and suppression}
+
+The model returns one of:
+\begin{itemize}
+\item \texttt{REPLY} with text --- produce a Telegram message.
+\item \texttt{REACTION} with emoji --- produce a Telegram reaction, no message.
+\item \texttt{SUPPRESS} --- produce zero Telegram output.
+\end{itemize}
+
+\texttt{SUPPRESS} is the only correct way to decline a response.  The
+gateway must:
+\begin{itemize}
+\item intercept \texttt{SUPPRESS} and emit nothing;
+\item reject any message body containing \texttt{NO\_REPLY} as text;
+\item reject any message body whose entire content is an explanation of why
+the agent is not responding;
+\item log the suppression decision to the operator log for debugging.
+\end{itemize}
+
+\subsection{Layer 4: Loop suppression and deduplication}
+
+Per-chat state maintained by the gateway:
+
+\begin{lstlisting}[language=]
+RoomLedger v1 (per chat_id):
+  messages: [
+    { id, sender_bot_id, content_hash, causal_parent_id,
+      speech_act_type, timestamp }
+  ]
+  acknowledged_by: { message_id: [bot_id, ...] }
+  last_substantive_by: bot_id -> timestamp
+\end{lstlisting}
+
+Suppression rules:
+\begin{enumerate}
+\item \textbf{Content dedup:} if the proposed message's content hash matches a
+recent message by the same agent, suppress.
+\item \textbf{Acknowledgement cap:} an agent may emit at most one
+acknowledgement message per 5 minutes per chat.  Further acknowledgements
+within the window are suppressed.
+\item \textbf{Status echo suppression:} if a sibling bot's message is
+classified as a status echo (contains ``staying quiet'', ``all work
+complete'', ``noted'', ``acknowledged'' and no other substantive content),
+do not wake on it.
+\item \textbf{Causal loop detection:} if a message's causal parent chain
+contains a message from the same agent with the same content hash, suppress
+and log a loop warning.
+\end{enumerate}
+
+\subsection{Layer 5: Social roles and activation policy}
+
+Each agent has a declared social role:
+
+\begin{lstlisting}[language=]
+SocialRole:
+  type: always-attending | special-occasions
+  wake_events:
+    always-attending:
+      - direct mention
+      - reply-to me
+      - group-addressed (no mention)
+      - explicit @mention of any bot
+    special-occasions:
+      - direct mention
+      - reply-to me
+      - task-completion event for my owned task
+  response_threshold:
+    always-attending: LOW    # respond if I have anything useful
+    special-occasions: HIGH   # respond only if directly addressed
+\end{lstlisting}
+
+\textbf{Ben's clarification:} ProtoCosmoBot and ProtoMegaBot are
+\texttt{always-attending}---they may pay attention to every message.  Other
+bots may be \texttt{special-occasions} and wake only on direct address or
+task ownership.
+
+Even for \texttt{always-attending} bots, ``paying attention'' means
+\emph{reading and potentially learning}, not \emph{emitting a response}.  The
+addressee classifier still determines whether to speak.
+
+\subsection{Layer 6: Speech-act room ledger}
+
+A compact structured record per message, maintained as short-term
+conversation memory:
+
+\begin{lstlisting}[language=]
+SpeechActRecord v1:
+  message_id: <telegram id>
+  chat_id: <telegram chat id>
+  sender:
+    telegram_user_id: <authenticated>
+    agent_instance_id: <stable | null for humans>
+    display_name: <untrusted>
+  addressee:
+    classification: DIRECT | SECONDARY | GROUP | INCIDENTAL
+    explicit_targets: [<telegram_user_id>, ...]
+    inferred_audience: <confirmed | inferred>
+  speech_act:
+    type: question | request | answer | status |
+          correction | acknowledgement |
+          philosophical-claim | meta-comment
+    content_summary: <one-line semantic summary>
+    new_information: <boolean>
+    expected_respondent: <agent_id | "group" | null>
+  response_obligation:
+    owed: <boolean>
+    owed_to: <agent_id | "group">
+    fulfilled_by: [<message_id>, ...]
+    fulfilled: <boolean>
+  provenance:
+    observed_directly_by: <agent_instance_id>
+    reproduced_by: [<agent_instance_id>, ...]
+    workspace: <path>
+    commit: <sha | null>
+  metadata:
+    timestamp: <ISO-8601>
+    causal_parent_id: <message_id | null>
+    content_hash: <sha256 of normalized text>
+\end{lstlisting}
+
+\textbf{Critical distinction:} Fields in the \texttt{sender}, \texttt{addressee},
+and \texttt{provenance} blocks are obtained mechanically from transport metadata
+and deterministic classification.  Fields in the \texttt{speech\_act} block may
+require semantic inference (LLM classifier or MeTTa rules), but they are
+clearly labeled as inferred, not observed.
+
+The ledger is bounded: it retains only the most recent $N$ messages per chat
+(default $N=200$), with older entries archived to long-term memory.  It is
+available as structured context to the model, replacing the current
+unstructured conversation history for routing decisions.
+
+\section{Implementation roadmap}
+
+\subsection{Phase 1: Transport identity and routing (highest impact, lowest complexity)}
+
+\textbf{Goal:} Eliminate prose-based identity inference and misattribution.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Add \texttt{SelfContext} and \texttt{InboundEnvelope} as structured
+metadata injected into every model turn.
+\item Implement the deterministic addressee classifier
+(Layer 1) as a pre-model gateway function.
+\item Gate model generation on classification:
+\begin{itemize}
+\item \texttt{DIRECT}: generate normally.
+\item \texttt{SECONDARY}: generate with a system instruction to contribute
+only if there is a substantive correction; default to \texttt{SUPPRESS}.
+\item \texttt{GROUP}: generate with a system instruction to respond only if
+the message is genuinely useful; default to \texttt{SUPPRESS}.
+\item \texttt{INCIDENTAL}: skip generation entirely; return
+\texttt{SUPPRESS}.
+\end{itemize}
+\end{itemize}
+
+\textbf{Expected impact:} Eliminates $\sim$60\% of misattribution-driven
+noise (Failures 1 and 2).
+
+\textbf{Effort:} Low.  Metadata is already available from Telegram; this is
+plumbing, not new ML.
+
+\textbf{Risk:} Minimal.  Incorrect classification is debuggable from the
+envelope, not from prose.
+
+\subsection{Phase 2: Runtime trace suppression and gateway silence}
+
+\textbf{Goal:} Stop internal runtime activity from reaching the chat channel.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Route tool-use planning strings, exec status, fallback notices, and
+heartbeat activity to an operator log, never to Telegram.
+\item Implement \texttt{SUPPRESS} as a gateway-intercepted control result
+that produces zero messages.
+\item Add a validator that rejects any proposed message containing
+\texttt{NO\_REPLY}, ``Staying quiet'', or a full-body explanation of why
+no reply is warranted.
+\item Add a validator that rejects any proposed message that is purely an
+acknowledgement (``Noted'', ``Acknowledged'', ``Got it'') with no additional
+substantive content.
+\end{itemize}
+
+\textbf{Expected impact:} Eliminates $\sim$25\% of channel noise (Failures 3
+and 4) and removes the primary fuel for feedback loops.
+
+\textbf{Effort:} Low-medium.  Requires gateway changes to intercept and
+route, but no model changes.
+
+\textbf{Risk:} Low.  Suppressed messages are logged for debugging.  If a
+valid message is accidentally suppressed, it can be recovered from the
+operator log.
+
+\subsection{Phase 3: Loop suppression and deduplication}
+
+\textbf{Goal:} Prevent repeated emission of identical content and mutual
+acknowledgement cascades.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Implement the \texttt{RoomLedger} with content hashing, causal parent
+IDs, and the four suppression rules from Layer 4.
+\item Add an acknowledgement cap: at most one acknowledgement message per 5
+minutes per agent per chat.
+\item Add status-echo detection: messages matching the pattern ``staying
+quiet / all work complete / noted / acknowledged'' with no other substantive
+content are classified as status echoes and do not trigger sibling wake
+events.
+\end{itemize}
+
+\textbf{Expected impact:} Eliminates the feedback-loop pathology (Failure 5)
+and prevents the ``all work complete / staying quiet'' cascade observed in
+the transcript.
+
+\textbf{Effort:} Medium.  Requires persistent per-chat state in the gateway.
+
+\textbf{Risk:} Low-medium.  Dedup thresholds must be tuned.  Too aggressive
+could suppress a legitimately repeated result; too lenient allows echoes.
+The content hash should normalize whitespace and case but preserve semantic
+content.
+
+\subsection{Phase 4: Session and task isolation}
+
+\textbf{Goal:} Prevent context leakage across chats and tasks.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Key task continuations by \texttt{(account, chat\_id, thread\_id,
+requesting\_message\_id, responsible\_agent)}.
+\item A completion event is publishable only into its originating
+conversation unless explicitly rerouted.
+\item Remove shared global ``current task'' state; replace with per-conversation
+task handles.
+\item Add an observation-scope tag to every agent report:
+\texttt{observed\_by}, \texttt{workspace}, \texttt{commit},
+\texttt{reproduced\_by}.
+\end{itemize}
+
+\textbf{Expected impact:} Eliminates non-sequitur responses from wrong
+contexts (Failure 6) and epistemic scope confusion (Failure 7).
+
+\textbf{Effort:} Medium.  Requires changes to session routing and task
+continuation handling in both OpenClaw and OmegaClaw.
+
+\textbf{Risk:} Medium.  Must not break legitimate cross-chat task delegation.
+The explicit reroute mechanism is the safety valve.
+
+\subsection{Phase 5: Speech-act room ledger}
+
+\textbf{Goal:} Provide structured short-term conversation memory for better
+routing and contextual awareness.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Implement the \texttt{SpeechActRecord} schema from Layer 6.
+\item Populate mechanical fields (sender, addressee, provenance) from the
+envelope and deterministic classifier.
+\item Populate semantic fields (speech act type, content summary, expected
+respondent) via a lightweight LLM classifier or MeTTa rules.
+\item Expose the ledger as structured context to the model, replacing raw
+conversation history for routing decisions.
+\item Bound the ledger to $N=200$ recent messages per chat.
+\end{itemize}
+
+\textbf{Expected impact:} Improves contextual awareness for ambiguous
+group-addressed messages and enables future features (e.g.,\ ``has this
+question already been answered?'' detection).
+
+\textbf{Effort:} Medium-high.  Requires schema design, classifier
+implementation, and integration with both agent platforms.
+
+\textbf{Risk:} Medium.  Semantic classification can be wrong; the mechanical
+fields must remain authoritative.  The ledger is an aid to routing, not a
+replacement for the deterministic classifier.
+
+\subsection{Phase 6: Social role configuration}
+
+\textbf{Goal:} Make activation policy explicit and configurable per agent.
+
+\textbf{Changes:}
+\begin{itemize}
+\item Add \texttt{SocialRole} configuration to both OpenClaw and OmegaClaw
+agent manifests.
+\item Default ProtoCosmoBot and ProtoMegaBot to
+\texttt{always-attending}.
+\item Allow other bots to declare \texttt{special-occasions} with custom
+wake events.
+\item Even \texttt{always-attending} bots use the addressee classifier to
+determine whether to \emph{speak}; ``always attending'' means ``always
+reading,'' not ``always responding.''
+\end{itemize}
+
+\textbf{Expected impact:} Supports adding specialized bots without flooding
+the channel, and makes the activation policy auditable rather than emergent.
+
+\textbf{Effort:} Low.  Configuration change, not new infrastructure.
+
+\textbf{Risk:} Minimal.
+
+\section{Phased rollout summary}
+
+\begin{longtable}{lllll}
+\toprule
+Phase & Focus & Impact & Effort & Dependencies \\
+\midrule
+1 & Transport identity \& addressee classifier & 60\% of misattribution & Low & None \\
+2 & Runtime trace suppression \& gateway silence & 25\% of noise & Low-Med & None \\
+3 & Loop suppression \& deduplication & Feedback loops & Medium & Phase 2 \\
+4 & Session \& task isolation & Cross-chat leakage & Medium & Phase 1 \\
+5 & Speech-act room ledger & Contextual awareness & Med-High & Phases 1--4 \\
+6 & Social role configuration & Scalable bot roles & Low & Phase 1 \\
+\bottomrule
+\caption{Phased rollout.  Phases 1 and 2 are independent and can proceed in
+parallel.  Phase 3 depends on 2 (suppression must exist before deduplication
+adds value).  Phase 5 depends on 1--4 being stable.}
+\end{longtable}
+
+\section{Open questions for external review}
+
+\begin{enumerate}
+\item \textbf{Hard vs.\ soft addressee gate.}  Should a \texttt{SECONDARY} or
+\texttt{INCIDENTAL} classification mechanically block generation, or should
+it produce a strong system instruction that the model may override?  This
+design proposes hard gating with an explicit logged
+\texttt{SECONDARY\_CONTRIBUTION} override, but the threshold for the override
+needs review.
+
+\item \textbf{Acknowledgement cap window.}  Five minutes is a placeholder.
+Too short and legitimate follow-ups are suppressed; too long and the
+feedback loop persists.  Should it be adaptive (shorter for high-traffic
+chats, longer for low-traffic)?
+
+\item \textbf{Status-echo detection heuristics.}  The pattern list (``staying
+quiet'', ``all work complete'', ``noted'', ``acknowledged'') is
+English-specific and brittle.  Should this be a learned classifier or a
+configurable pattern set?  What about non-English chats?
+
+\item \textbf{Ledger size ($N=200$).}  Is 200 messages sufficient for
+routing decisions in a high-traffic philosophical discussion?  Should the
+ledger retain semantic summaries of older messages rather than discarding
+them entirely?
+
+\item \textbf{Cross-platform applicability.}  The design is framed around
+Telegram metadata (mention entities, reply-to, bot user IDs).  How much of
+it transfers to other chat platforms (Discord, Slack, Matrix) that have
+different metadata availability?
+
+\item \textbf{Observation-scope provenance.}  The
+\texttt{observed\_by} / \texttt{reproduced\_by} tags are proposed for agent
+reports.  Should these be mandatory for all agent-to-agent assertions, or
+only for claims about filesystem/repos/code state?
+
+\item \textbf{Speech-act classifier implementation.}  Should the semantic
+fields of the \texttt{SpeechActRecord} be populated by a lightweight LLM
+call, by deterministic MeTTa rules, or by a hybrid?  The LLM path is more
+accurate but adds latency and cost; the MeTTa path is faster but may require
+new rule development.
+\end{enumerate}
+
+\section{What this design does not address}
+
+\begin{itemize}
+\item \textbf{Model capability differences.}  Some of the identity confusion
+arose because different models (GLM-5.2, GPT-5.6-terra) have different
+instruction-following and context-tracking abilities.  This design assumes
+the model can follow structured metadata; models that cannot may need
+additional prompting guardrails.
+
+\item \textbf{Cross-agent memory coherence.}  The design isolates task
+context per conversation but does not address the deeper problem of how two
+agents with different filesystems and memory stores can make compatible
+claims about shared artifacts.  The observation-scope tags are a
+provenance aid, not a coherence mechanism.
+
+\item \textbf{Human participant modeling.}  The design treats all
+\texttt{is\_bot=false} senders as ``human'' without distinguishing Ben
+(owner) from other human participants.  Authorization and priority
+differences between human participants are out of scope here.
+
+\item \textbf{Multi-chat federation.}  If the same agents participate in
+multiple Telegram chats, the design treats each chat independently.  Whether
+a speech-act ledger should federate across chats (e.g.,\ ``this question was
+already answered in another room'') is deferred.
+\end{itemize}
+
+\section{Success criteria}
+
+The design is successful if, after deployment:
+
+\begin{enumerate}
+\item No agent misattributes a message that contains an explicit Telegram
+\texttt{@mention} or reply-to target.  (Failure 2 eliminated.)
+\item No runtime trace, tool-use planning string, or control decision
+appears as a Telegram message.  (Failure 3 eliminated.)
+\item No message containing \texttt{NO\_REPLY} or equivalent silence
+explanation reaches Telegram.  (Failure 4 eliminated.)
+\item The mutual acknowledgement cascade (``all work complete / staying
+quiet'' loop) does not occur even when both agents are active and idle.
+(Failure 5 eliminated.)
+\item An agent asked a question in a different channel does not produce a
+response from a pending task in another channel.  (Failure 6 eliminated.)
+\item An \texttt{always-attending} bot reads every message but speaks only
+when it has a direct response, a substantive correction, or a genuinely
+useful group contribution.  (Social role enforced.)
+\item The speech-act ledger correctly classifies $\geq 95\%$ of messages
+by addressee and $\geq 80\%$ by speech-act type, as measured against a
+labeled sample.
+\end{enumerate}
+
+\end{document}

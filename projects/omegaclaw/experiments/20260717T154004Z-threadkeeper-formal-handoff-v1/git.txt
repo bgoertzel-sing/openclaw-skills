@@ -1,0 +1,20 @@
+# Git State
+Captured UTC: 2026-07-17T15:40:04Z
+Working directory: projects/omegaclaw/worktrees/threadkeeper-persistent-workers
+Commit: e7e997eb89ec21692d43792a4913bacdabc4a822
+Branch: agent/threadkeeper-persistent-workers
+Remote names: fork,origin
+
+## Status
+## agent/threadkeeper-persistent-workers...fork/agent/threadkeeper-persistent-workers [ahead 5]
+ M docs/persistent-workers.md
+ M src/persistent_worker.py
+ M tests/test_persistent_worker_lifecycle.py
+
+## Diff summary
+ docs/persistent-workers.md                | 20 +++++++
+ src/persistent_worker.py                  | 99 +++++++++++++++++++++++++++++++
+ tests/test_persistent_worker_lifecycle.py | 89 +++++++++++++++++++++++++++
+ 3 files changed, 208 insertions(+)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

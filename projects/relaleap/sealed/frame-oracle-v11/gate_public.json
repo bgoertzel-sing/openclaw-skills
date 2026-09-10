@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v11-gate-1",
+  "opened": false,
+  "answer_file_sha256": "7f97f0a7933f0cdf23611e3cb497273d1bc52014989e105bf790be9a250b4d19",
+  "cases": [
+    {"case_id":"v11_direct_capital_fenreach","sentence":"Aurel Gate is the capital of Fenreach.","stratum":"direct"},
+    {"case_id":"v11_direct_author_lantern_index","sentence":"Mira Quell authored 'The Lantern Index'.","stratum":"direct"},
+    {"case_id":"v11_direct_location_cedar_relay","sentence":"The cedar relay is located in Voss Territory.","stratum":"direct"},
+    {"case_id":"v11_direct_state_compressor","sentence":"The midnight compressor is idle.","stratum":"direct"},
+    {"case_id":"v11_negation_capital_orinth","sentence":"Larkspire is not the capital of Orinth.","stratum":"explicit_negation"},
+    {"case_id":"v11_negation_author_brass_horizons","sentence":"Sena Marr did not author 'Brass Horizons'.","stratum":"explicit_negation"},
+    {"case_id":"v11_negation_author_ninth_estuary","sentence":"'The Ninth Estuary' was not written by Pavel Orr.","stratum":"explicit_negation"},
+    {"case_id":"v11_negation_location_glass_depot","sentence":"The glass depot is not located in Harth Valley.","stratum":"explicit_negation"},
+    {"case_id":"v11_negation_location_west_beacon","sentence":"The west beacon does not stand within Rill County.","stratum":"explicit_negation"},
+    {"case_id":"v11_negation_state_actuator","sentence":"The saffron actuator is not stable.","stratum":"explicit_negation"},
+    {"case_id":"v11_possible_capital_norvale","sentence":"Norvale may have Caelun as its capital.","stratum":"possible"},
+    {"case_id":"v11_possible_author_measure_fog","sentence":"'A Measure of Fog' might have been authored by Elia Sorn.","stratum":"possible"},
+    {"case_id":"v11_possible_location_copper_annex","sentence":"The copper annex could be located in Vey District.","stratum":"possible"},
+    {"case_id":"v11_possible_state_gyroscope","sentence":"The inner gyroscope may be active.","stratum":"possible"},
+    {"case_id":"v11_possible_state_lattice","sentence":"The northern lattice might remain dormant.","stratum":"possible"},
+    {"case_id":"v11_paraphrase_capital_doven","sentence":"Ilyra serves as Doven's seat of government.","stratum":"paraphrase"},
+    {"case_id":"v11_abstention_conditional_crane","sentence":"If the eastern crane turns, the lower gate will open.","stratum":"abstention"},
+    {"case_id":"v11_abstention_question_mirror","sentence":"Why did the obsidian mirror crack at dusk?","stratum":"abstention"},
+    {"case_id":"v11_abstention_disjunction_hatches","sentence":"Either the river hatch or the tower hatch is locked.","stratum":"abstention"},
+    {"case_id":"v11_abstention_command_turbine","sentence":"Inspect the orchard turbine after sunrise.","stratum":"abstention"},
+    {"case_id":"v11_world_atlantis_capital","sentence":"The capital of Atlantis is Coral Ward.","stratum":"world_knowledge_trap"},
+    {"case_id":"v11_world_holmes_author","sentence":"Sherlock Holmes was authored by Isaac Newton.","stratum":"world_knowledge_trap"},
+    {"case_id":"v11_world_everest_location","sentence":"Mount Everest is located in the Sapphire Lowlands.","stratum":"world_knowledge_trap"},
+    {"case_id":"v11_world_sun_state","sentence":"The Sun is cold.","stratum":"world_knowledge_trap"}
+  ]
+}

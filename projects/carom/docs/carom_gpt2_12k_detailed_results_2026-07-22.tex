@@ -1,0 +1,256 @@
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=0.70in]{geometry}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{xcolor,hyperref,microtype,enumitem,amsmath,amssymb}
+\definecolor{navy}{HTML}{153A5B}\definecolor{pale}{HTML}{EAF3F8}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=navy}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.35em}\renewcommand{\arraystretch}{1.10}
+\newcommand{\obs}{\textbf{Observed.}\ }
+\newcommand{\inferr}{\textbf{Inference.}\ }
+\newcommand{\hypo}{\textbf{Hypothesis.}\ }
+\title{\textbf{CAROM Frozen-GPT-2 12,000-Update Experiment}\\
+Detailed results, failure analysis, and next-run evidence package}
+\author{CAROM experimental record}\date{22 July 2026}
+\begin{document}\maketitle
+
+\begin{center}\fcolorbox{navy}{pale}{\parbox{0.92\linewidth}{
+\textbf{Bottom line.} Tripling the run to 12,000 updates did not improve
+accuracy. Frozen-corpus L2--4 accuracy peaked at 0.327 at step 3,000 and fell
+to 0.189 by step 12,000, below both the earlier 4,000-step GPT-2 result (0.412)
+and matched TinyLM result (0.709). Itinerary $\tau$ fell from 0.987 to 0.328,
+coverage from 0.728 to 0.470, and the natural-minus-shuffled endpoint gap from
+0.080 to 0.022. Edge prediction remained near 0.70. The collapse begins while
+the stretched OneCycleLR schedule is approaching its $2\times10^{-3}$ peak,
+which occurs around step 3,600. This is strong circumstantial evidence for
+schedule-induced destabilization, not proof: the experiment has one seed and
+changed schedule trajectory as well as duration.}}
+\end{center}
+
+\section{Question, preregistration, and verdict}
+The experiment asked whether giving the same frozen-GPT-2 CAROM architecture
+three times as many optimizer updates would raise in-distribution endpoint
+accuracy while preserving causal trajectory evidence and improving held-out
+length-5 (L5) execution. The primary target was final L2--4 accuracy above
+0.55; the strong target was at least 0.65. Neither target was met. The final
+accuracy was 0.1888 and the best retained checkpoint reached only 0.3268.
+
+This was not a continuation of the successful 4,000-step checkpoint. It was a
+fresh seed-0 training run whose OneCycleLR schedule was redefined over 12,000
+steps. Consequently, it tests a compound change: more examples \emph{and} a
+three-times-stretched learning-rate trajectory.
+
+\section{Task and mechanism}
+Each synthetic example contains six symbols in $\mathbb{Z}_8$ and a program of
+two to five primitive transforms. Natural-language command spans are encoded by
+the final hidden layer of frozen GPT-2-small (124M parameters, width 768). The
+trainable CAROM side predicts command dependencies, compiles them into GLV
+inhibition, routes command representations over reusable neural operators, and
+executes a 72-step recurrent workspace trajectory. Training uses program lengths
+2--4; length 5 is held out as structural extrapolation.
+
+Endpoint slot accuracy, dependency-edge accuracy, repaired itinerary metrics,
+causal trajectory replacements, and an L5 integration-budget sweep are all
+reported. High itinerary $\tau$ is never read alone: an incomplete trajectory
+can preserve pairwise order among the few modes it visits.
+
+\section{Exact protocol and execution history}
+\begin{tabularx}{\linewidth}{>{\bfseries}l X}
+\toprule
+Base encoder & Frozen GPT-2-small, final hidden layer, width 768 \\
+Seed / batch & Seed 0; batch 64; 768,000 generated training examples \\
+Optimizer & AdamW; max LR 0.002; weight decay $10^{-4}$; gradient clip 1.0 \\
+Schedule & PyTorch OneCycleLR over 12,000 steps; default 30\% warm-up \\
+Checkpoints & Step 0 and every 1,000 steps through 12,000 \\
+Frozen evaluation & L2--4: seed 1234, $n=256$; L5: seed 5678, $n=128$ \\
+Interventions & Natural, forced-correct, shuffled, and smeared trajectories \\
+L5 budgets & 72, 100, and 120 recurrent integration steps \\
+Hardware & RunPod Secure Cloud; one A100 SXM4 80GB; USD 1.49/hour \\
+Training time & 10,582 seconds (2h56m22s) \\
+Final pod & \texttt{wsllxvsshf7jf1}; terminated after verified retrieval \\
+\bottomrule
+\end{tabularx}
+
+Two earlier launch attempts were automatically deleted because stale
+``awaiting approval'' prose remained in experiment records. The third launch
+completed. Those failures consumed money but did not alter the final run's
+weights. The automatic post-training evaluator then inherited an older corpus
+unpacking bug (expected seven fields, received five). A previously tested
+repair was uploaded and an intervention-only continuation evaluated all 13
+checkpoints without retraining. The continuation exited zero.
+
+The final archive contains 13 checkpoints, 13 result records, source and logs;
+all 31 files pass the retrieved SHA-256 manifest. Total archive size is about
+152 MiB.
+
+\section{Learning-rate trajectory and online training telemetry}
+OneCycleLR's meaning changes when total steps change. In the 4k run the maximum
+LR occurred near step 1,200 and had fallen to $5.65\times10^{-4}$ by step 3,000.
+In the 12k run, LR was still rising at step 3,000 and peaked near step 3,600.
+
+\begin{longtable}{rrrrr}
+\caption{Training telemetry and reconstructed 12k OneCycleLR. Online metrics
+use the training process's stochastic evaluation stream; frozen results follow.}\\
+\toprule Step & LR & Loss & Online acc & Online $\tau$ \\\midrule\endfirsthead
+\toprule Step & LR & Loss & Online acc & Online $\tau$ \\\midrule\endhead
+1000&.000423&2.177&.222&.997\\
+2000&.001207&1.931&.302&.988\\
+3000&.001872&1.781&.312&.953\\
+4000&.001989&2.394&.190&.816\\
+5000&.001866&3.192&.126&.728\\
+6000&.001623&2.203&.182&.320\\
+7000&.001294&2.159&.195&.263\\
+8000&.000925&2.142&.199&.242\\
+9000&.000566&2.193&.201&.305\\
+10000&.000267&2.228&.174&.297\\
+11000&.000069&2.152&.204&.250\\
+12000&$8\!\times\!10^{-9}$&2.176&.188&.242\\
+\bottomrule
+\end{longtable}
+
+\obs Loss is lowest and accuracy highest at step 3,000. During the next 2,000
+steps, near maximum LR, loss rises to 3.192 and accuracy drops to 0.126. Later
+annealing does not restore the earlier solution.
+
+\newpage
+\section{Frozen checkpoint panel}
+\begin{longtable}{rrrrrrrrr}
+\caption{Fixed-corpus results. Acc = L2--4 endpoint accuracy; gap = natural
+minus shuffled endpoint accuracy.}\\
+\toprule Step&Acc&Edge&$\tau$&Cov.&Exact&Trans. rec.&Gap&L5\\\midrule\endfirsthead
+\toprule Step&Acc&Edge&$\tau$&Cov.&Exact&Trans. rec.&Gap&L5\\\midrule\endhead
+0&.139&.297&.040&.383&.000&.017&.000&.135\\
+1000&.224&.703&.997&.715&.313&.429&.001&.169\\
+2000&.292&.703&.996&.714&.316&.443&.026&.219\\
+3000&.327&.703&.987&.728&.332&.448&.080&.262\\
+4000&.167&.703&.793&.634&.231&.348&.004&.151\\
+5000&.126&.713&.814&.644&.238&.351&-.011&.121\\
+6000&.182&.716&.413&.509&.141&.183&.009&.156\\
+7000&.184&.708&.352&.480&.102&.141&.011&.143\\
+8000&.188&.720&.336&.474&.102&.136&.022&.158\\
+9000&.191&.714&.332&.472&.098&.132&.035&.160\\
+10000&.195&.725&.328&.470&.094&.128&.032&.152\\
+11000&.186&.726&.332&.472&.098&.132&.025&.162\\
+12000&.189&.731&.328&.470&.094&.128&.022&.159\\
+\bottomrule
+\end{longtable}
+
+\obs The best checkpoint is step 3,000 on endpoint accuracy, trajectory
+coverage, exact order, transition recall, causal gap, and L5 accuracy. Edge
+accuracy is almost unchanged through the initial collapse and actually rises
+to 0.731 at the final checkpoint. Thus dependency prediction survived while
+the downstream routing/execution regime degraded.
+
+\section{Trajectory interventions}
+\begin{longtable}{rrrrrr}
+\caption{L2--4 endpoint accuracy under trajectory replacements.}\\
+\toprule Step&Natural&Forced&Shuffled&Smeared&Nat$-$shuf\\\midrule\endfirsthead
+\toprule Step&Natural&Forced&Shuffled&Smeared&Nat$-$shuf\\\midrule\endhead
+0&.139&.139&.139&.139&.000\\1000&.224&.222&.223&.222&.001\\
+2000&.292&.265&.266&.264&.026\\3000&.327&.277&.247&.263&.080\\
+4000&.167&.167&.163&.165&.004\\5000&.126&.136&.137&.137&-.011\\
+6000&.182&.173&.173&.173&.009\\7000&.184&.173&.173&.173&.011\\
+8000&.188&.166&.166&.166&.022\\9000&.191&.156&.156&.156&.035\\
+10000&.195&.163&.163&.163&.032\\11000&.186&.161&.161&.161&.025\\
+12000&.189&.167&.167&.167&.022\\\bottomrule
+\end{longtable}
+
+At step 3,000 the natural trajectory is materially useful: shuffling reduces
+accuracy by 0.080. This evidence nearly disappears at step 4,000, becomes
+slightly negative at step 5,000, and only weakly recovers. Forced-correct is
+not an oracle because it also changes dwell and amplitude statistics. These
+results show causal trajectory dependence, not learned commutation; commutation
+requires the separately controlled nonlinear swap and JVP probes.
+
+\section{Held-out L5 and integration budget}
+\begin{longtable}{rrrr}
+\caption{L5 endpoint accuracy by recurrent integration budget.}\\
+\toprule Step&S=72&S=100&S=120\\\midrule\endfirsthead
+\toprule Step&S=72&S=100&S=120\\\midrule\endhead
+0&.135&.135&.135\\1000&.169&.171&.169\\2000&.219&.227&.220\\
+3000&.262&.262&.253\\4000&.151&.142&.135\\5000&.121&.117&.124\\
+6000&.156&.147&.150\\7000&.143&.146&.141\\8000&.158&.160&.158\\
+9000&.160&.163&.161\\10000&.152&.159&.154\\11000&.162&.169&.160\\
+12000&.159&.171&.167\\\bottomrule
+\end{longtable}
+Longer integration does not rescue the model. At the best checkpoint, S=120 is
+slightly worse than S=72. The failure is therefore not well explained by
+insufficient inference settling alone.
+
+\section{Comparison with prior arms}
+\begin{tabular}{lrrrrrr}
+\toprule Model/checkpoint&L2--4&$\tau$&Coverage&Exact&Nat$-$shuf&L5\\\midrule
+GPT-2 12k, best (3k)&.327&.987&.728&.332&.080&.262\\
+GPT-2 12k, final&.189&.328&.470&.094&.022&.159\\
+GPT-2 4k, final&.412&.904&.710&.297&.115&.214\\
+TinyLM 4k, final&.709&.825&.911&--&.227&.356\\
+\bottomrule
+\end{tabular}
+
+The earlier GPT-2 4k run is better on L2--4 accuracy and causal gap, while the
+12k step-3,000 checkpoint is modestly better on L5 and itinerary completeness.
+Neither GPT-2 arm approaches TinyLM endpoint performance.
+
+\section{Failure analysis}
+\obs Three signatures coincide: endpoint loss worsens immediately after step
+3,000; itinerary structure collapses; and the natural-trajectory advantage
+vanishes. Edge accuracy does not collapse. This localizes the damage downstream
+of, or orthogonal to, edge supervision.
+
+\inferr The most economical explanation is that stretching OneCycleLR exposed
+the model to a long high-LR interval and displaced the useful step-3,000 basin.
+At step 3,000 the 12k run uses LR 0.001872, versus 0.000565 at the same step of
+the 4k schedule. At step 4,000 the 12k run is near maximum LR, whereas the 4k
+run has annealed to effectively zero. The timing is unusually specific.
+
+\hypo Other live explanations are (i) a seed-0 optimization bifurcation not
+reproducible across seeds; (ii) high LR interacting particularly with routing
+or GLV parameters; (iii) loss-term imbalance, since edge performance stays
+high while endpoint behavior fails; and (iv) a training/evaluation mismatch.
+The present single run cannot apportion these effects.
+
+\newpage
+\section{What the next experiment must distinguish}
+This report intentionally does not declare one replacement configuration. The
+independent reviewers are asked to rank designs that separate duration from LR
+schedule, preferably with inexpensive gates:
+\begin{enumerate}
+\item resume the successful 4k checkpoint with a low constant or cosine-decay
+LR, preserving the known basin;
+\item repeat a fresh 12k run with lower peak LR and early stopping on the fixed
+corpus;
+\item use parameter-group LRs or freeze the already-solved edge head;
+\item replicate the leading setting across seeds before mechanistic claims;
+\item add gradient norms, per-loss terms, routing entropy, and repaired
+swap/JVP probes so the next failure is identifiable while it happens.
+\end{enumerate}
+
+Any next run should checkpoint frequently through steps 2,000--5,000, monitor a
+fixed validation panel, and stop when both endpoint accuracy and causal gap
+degrade persistently. Selection must be declared in advance to avoid treating
+the best of many checkpoints as an unbiased final result.
+
+\section{Limitations and epistemic status}
+\begin{itemize}
+\item One seed gives no variance estimate.
+\item Training duration and LR trajectory changed together.
+\item The online and frozen evaluations use different sample streams; only the
+frozen panel is used for checkpoint comparisons.
+\item The forced intervention also changes dwell/amplitude, so it isolates more
+than order.
+\item No repaired v3 commutator, schedule-stability, or decisiveness probe was
+run; no claim of learned commutation is licensed.
+\item TinyLM comparison values are from the matched earlier record, not rerun
+in this experiment.
+\end{itemize}
+
+\section{Reproducibility and evidence}
+The authoritative run record is
+\texttt{projects/carom/experiments/20260722T015200Z-carom-gpt2-12k/}.
+It contains the exact runner, launch command, training and intervention logs,
+all 13 checkpoints, per-checkpoint JSON, summary JSON, and
+\texttt{artifacts.sha256}. Verification confirmed the step set
+$\{0,1000,\ldots,12000\}$, required result schema, checkpoint count, and every
+manifest digest before remote termination.
+
+\end{document}

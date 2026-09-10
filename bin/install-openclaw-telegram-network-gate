@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly SOURCE_DROPIN="/home/openclaw/research-agent/projects/openclaw-smoke/systemd/openclaw-agent.service.d/10-telegram-network-readiness.conf"
+readonly TARGET_DIR="/etc/systemd/system/openclaw-agent.service.d"
+readonly TARGET_DROPIN="${TARGET_DIR}/10-telegram-network-readiness.conf"
+
+if (( EUID != 0 )); then
+    echo "Run this installer with sudo." >&2
+    exit 1
+fi
+
+test -x /home/openclaw/research-agent/bin/openclaw-wait-telegram-ready
+test -r "$SOURCE_DROPIN"
+
+install -d -m 0755 "$TARGET_DIR"
+install -m 0644 "$SOURCE_DROPIN" "$TARGET_DROPIN"
+systemctl daemon-reload
+systemctl restart openclaw-agent.service
+
+echo "Installed ${TARGET_DROPIN} and restarted openclaw-agent.service"

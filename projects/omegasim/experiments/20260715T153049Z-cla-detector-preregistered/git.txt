@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-15T15:30:49Z
+Working directory: /home/openclaw/research-agent/projects/omegasim/repos/omegasim
+Commit: 5a6002bd134ffb60e4f20b6c506a1ff6795e7afa
+Branch: agent/cla-detector-prereg
+Remote names: 
+
+## Status
+## agent/cla-detector-prereg
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

@@ -1,0 +1,30 @@
+{
+  "cases": [
+    {"case_id": "v4_capital_australia_direct", "expected": {"abstain": false, "entity_a": "australia", "entity_b": "canberra", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v4_capital_peru_possessive", "expected": {"abstain": false, "entity_a": "peru", "entity_b": "lima", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v4_capital_portugal_false", "expected": {"abstain": false, "entity_a": "portugal", "entity_b": "porto", "modality": "asserted", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v4_capital_denmark_negated", "expected": {"abstain": false, "entity_a": "denmark", "entity_b": "aarhus", "modality": "asserted", "polarity": "negated", "predicate": "capital_of"}},
+    {"case_id": "v4_author_kindred_active", "expected": {"abstain": false, "entity_a": "kindred", "entity_b": "octavia butler", "modality": "asserted", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v4_author_left_hand_passive", "expected": {"abstain": false, "entity_a": "the left hand of darkness", "entity_b": "ursula k. le guin", "modality": "asserted", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v4_author_hobbit_false", "expected": {"abstain": false, "entity_a": "the hobbit", "entity_b": "virginia woolf", "modality": "asserted", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v4_author_earthsea_negated", "expected": {"abstain": false, "entity_a": "a wizard of earthsea", "entity_b": "ursula k. le guin", "modality": "asserted", "polarity": "negated", "predicate": "authored_by"}},
+    {"case_id": "v4_state_valve_open", "expected": {"abstain": false, "entity_a": "valve", "entity_b": "open", "modality": "asserted", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v4_state_mirror_negated", "expected": {"abstain": false, "entity_a": "mirror", "entity_b": "spotless", "modality": "asserted", "polarity": "negated", "predicate": "state"}},
+    {"case_id": "v4_state_signal_red", "expected": {"abstain": false, "entity_a": "signal", "entity_b": "red", "modality": "asserted", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v4_state_kettle_possible", "expected": {"abstain": false, "entity_a": "kettle", "entity_b": "warm", "modality": "possible", "polarity": "affirmed", "predicate": "state"}},
+    {"case_id": "v4_located_louvre", "expected": {"abstain": false, "entity_a": "louvre", "entity_b": "paris", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v4_located_telescope", "expected": {"abstain": false, "entity_a": "telescope", "entity_b": "dome", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v4_located_eiffel_false", "expected": {"abstain": false, "entity_a": "eiffel tower", "entity_b": "lyon", "modality": "asserted", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v4_located_archive_negated", "expected": {"abstain": false, "entity_a": "archive", "entity_b": "basement", "modality": "asserted", "polarity": "negated", "predicate": "located_in"}},
+    {"case_id": "v4_modal_capital", "expected": {"abstain": false, "entity_a": "australia", "entity_b": "canberra", "modality": "possible", "polarity": "affirmed", "predicate": "capital_of"}},
+    {"case_id": "v4_modal_author", "expected": {"abstain": false, "entity_a": "ashfall", "entity_b": "mira", "modality": "possible", "polarity": "affirmed", "predicate": "authored_by"}},
+    {"case_id": "v4_modal_located", "expected": {"abstain": false, "entity_a": "rover", "entity_b": "crater", "modality": "possible", "polarity": "affirmed", "predicate": "located_in"}},
+    {"case_id": "v4_modal_state_negated", "expected": {"abstain": false, "entity_a": "hatch", "entity_b": "sealed", "modality": "possible", "polarity": "negated", "predicate": "state"}},
+    {"case_id": "v4_unknown_fragment", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v4_unknown_two_propositions", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v4_unknown_out_of_ontology", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}},
+    {"case_id": "v4_unknown_question", "expected": {"abstain": true, "entity_a": "", "entity_b": "", "modality": "unknown", "polarity": "unknown", "predicate": "unknown"}}
+  ],
+  "contract_version": "frame-oracle-v4-gate-1",
+  "created_utc": "2026-08-03T05:10:00Z"
+}

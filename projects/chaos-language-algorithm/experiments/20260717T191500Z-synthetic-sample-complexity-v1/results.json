@@ -1,0 +1,624 @@
+{
+  "limitations": [
+    "Synthetic symbolic sample-complexity validation only; no chaos, attractor, or semantic-grammar evidence.",
+    "Does not revise either Mackey--Glass/Lorenz--96 held-out coding null."
+  ],
+  "manifest": {
+    "config": {
+      "baselines": [
+        "literal",
+        "unigram",
+        "markov-1",
+        "markov-2"
+      ],
+      "checkpoint_repeats": [
+        32,
+        64,
+        128,
+        256
+      ],
+      "learner": {
+        "enable_categories": false,
+        "enable_joint_categories": false,
+        "max_iterations": 8,
+        "max_ngram": 5,
+        "search_objective": "indexed",
+        "seed": 260717
+      },
+      "motif": "abacabadabacabaeabacabadabacaba",
+      "motif_length": 31,
+      "prefix_repeats": 64,
+      "shuffle_seed": 260717,
+      "source": "repeated-zimin-word-order-5"
+    },
+    "fixtures": [
+      {
+        "counts": {
+          "a": 5120,
+          "b": 2560,
+          "c": 1280,
+          "d": 640,
+          "e": 320
+        },
+        "length": 9920,
+        "name": "zimin5-repeated",
+        "prefix_length": 1984,
+        "prefix_sha256": "6f7d06d2fd8b94c605e29da1743e0597895763c02f033e24fdab7d608197f660",
+        "stream_sha256": "54aa642ee6af622565f9ac9bd4c249be2504ff5f5746da434c336a2174ee0dcc",
+        "suffix_length": 7936,
+        "suffix_sha256": "a4933619a678c8251bdc992a83a1f444cd2cc4bb03835aa46a8398e1413cb469"
+      },
+      {
+        "counts": {
+          "a": 5120,
+          "b": 2560,
+          "c": 1280,
+          "d": 640,
+          "e": 320
+        },
+        "length": 9920,
+        "name": "zimin5-shuffled",
+        "prefix_length": 1984,
+        "prefix_sha256": "ef39c12ae10c6f4da39c64f9fa70b4918864b70a7aae44bd97d4b970b6caa006",
+        "stream_sha256": "1f360a84852181ec3c626c26fed1666ce01a55426f8500991524983883b06081",
+        "suffix_length": 7936,
+        "suffix_sha256": "9e8e1027ac0f56fed70b891652ce3eb199211d8e8d0634fa588f1ce9e26ca8e0"
+      }
+    ],
+    "protocol": "synthetic-sample-complexity-preregistration-v1",
+    "schema": "chaoslang.synthetic-sample-complexity",
+    "version": 1
+  },
+  "pass": true,
+  "pass_rule": "all gates; indexed CLA beats strongest baseline on repeated Zimin-5 at frozen 256-repeat horizon and not on shuffled matched null",
+  "results": [
+    {
+      "checkpoints": [
+        {
+          "primary_below_strongest": false,
+          "scores": [
+            {
+              "bits_per_symbol": 3.567826517836792,
+              "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1779.2839056940973,
+              "total_bits": 3539.2839056940975
+            },
+            {
+              "bits_per_symbol": 4.455243894258293,
+              "canonical_hash": "ae1c1f91d61675c7f723ee3f5fb9070b45928507b5b819e86ee510ee933ab707",
+              "method_name": "markov-1",
+              "model_bits": 3456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 963.6019431042256,
+              "total_bits": 4419.601943104226
+            },
+            {
+              "bits_per_symbol": 4.750649048578402,
+              "canonical_hash": "fb176d982d3a3216e6ee74f387bf24e910fc0308bf9c89407d9f6e8a2668bc2f",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 4712.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 0.6438561897747246,
+              "total_bits": 4712.643856189775
+            },
+            {
+              "bits_per_symbol": 5.37750326835992,
+              "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+              "method_name": "markov-2",
+              "model_bits": 4880.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 454.4832422130405,
+              "total_bits": 5334.48324221304
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 39680.0,
+              "total_bits": 39680.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 3.567826517836792,
+            "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 1779.2839056940973,
+            "total_bits": 3539.2839056940975
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 992,
+          "suffix_repeats": 32
+        },
+        {
+          "primary_below_strongest": true,
+          "scores": [
+            {
+              "bits_per_symbol": 2.375649048578402,
+              "canonical_hash": "fb176d982d3a3216e6ee74f387bf24e910fc0308bf9c89407d9f6e8a2668bc2f",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 4712.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1.2877123795494492,
+              "total_bits": 4713.28771237955
+            },
+            {
+              "bits_per_symbol": 2.680729743643245,
+              "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3558.567811388198,
+              "total_bits": 5318.567811388199
+            },
+            {
+              "bits_per_symbol": 2.713308410387323,
+              "canonical_hash": "ae1c1f91d61675c7f723ee3f5fb9070b45928507b5b819e86ee510ee933ab707",
+              "method_name": "markov-1",
+              "model_bits": 3456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1927.2038862084485,
+              "total_bits": 5383.203886208448
+            },
+            {
+              "bits_per_symbol": 2.917825849005082,
+              "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+              "method_name": "markov-2",
+              "model_bits": 4880.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 908.9664844260826,
+              "total_bits": 5788.966484426082
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 79360.0,
+              "total_bits": 79360.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 2.680729743643245,
+            "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 3558.567811388198,
+            "total_bits": 5318.567811388199
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 1984,
+          "suffix_repeats": 64
+        },
+        {
+          "primary_below_strongest": true,
+          "scores": [
+            {
+              "bits_per_symbol": 1.1881490485784019,
+              "canonical_hash": "fb176d982d3a3216e6ee74f387bf24e910fc0308bf9c89407d9f6e8a2668bc2f",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 4712.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 2.575424759098898,
+              "total_bits": 4714.5754247590985
+            },
+            {
+              "bits_per_symbol": 1.6879871393276693,
+              "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+              "method_name": "markov-2",
+              "model_bits": 4880.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1817.9329688521923,
+              "total_bits": 6697.932968852192
+            },
+            {
+              "bits_per_symbol": 1.8423406684518517,
+              "canonical_hash": "ae1c1f91d61675c7f723ee3f5fb9070b45928507b5b819e86ee510ee933ab707",
+              "method_name": "markov-1",
+              "model_bits": 3456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3854.4077724169474,
+              "total_bits": 7310.407772416947
+            },
+            {
+              "bits_per_symbol": 2.2371813565462784,
+              "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 7117.135622775634,
+              "total_bits": 8877.135622775633
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 158720.0,
+              "total_bits": 158720.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 1.6879871393276693,
+            "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+            "method_name": "markov-2",
+            "model_bits": 4880.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 1817.9329688521923,
+            "total_bits": 6697.932968852192
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 3968,
+          "suffix_repeats": 128
+        },
+        {
+          "primary_below_strongest": true,
+          "scores": [
+            {
+              "bits_per_symbol": 0.594399048578402,
+              "canonical_hash": "fb176d982d3a3216e6ee74f387bf24e910fc0308bf9c89407d9f6e8a2668bc2f",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 4712.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 5.150849518197797,
+              "total_bits": 4717.150849518198
+            },
+            {
+              "bits_per_symbol": 1.073067784488964,
+              "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+              "method_name": "markov-2",
+              "model_bits": 4880.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3635.8659377044187,
+              "total_bits": 8515.865937704419
+            },
+            {
+              "bits_per_symbol": 1.4068567974840964,
+              "canonical_hash": "ae1c1f91d61675c7f723ee3f5fb9070b45928507b5b819e86ee510ee933ab707",
+              "method_name": "markov-1",
+              "model_bits": 3456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 7708.815544833789,
+              "total_bits": 11164.81554483379
+            },
+            {
+              "bits_per_symbol": 2.0154071629981476,
+              "canonical_hash": "f8680a3ba3f66661132c97bd65674e51a65015f40314f1b82db6a9906d91d4cf",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 14234.271245553298,
+              "total_bits": 15994.271245553298
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 317440.0,
+              "total_bits": 317440.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 1.073067784488964,
+            "canonical_hash": "9d1f44467ed1d1886ccb898767cb214add66a992d677271574cb9f63c6634386",
+            "method_name": "markov-2",
+            "model_bits": 4880.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 3635.8659377044187,
+            "total_bits": 8515.865937704419
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 7936,
+          "suffix_repeats": 256
+        }
+      ],
+      "first_crossing_repeats": 64,
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "zimin5-repeated",
+      "primary_history": [
+        "chunk N0 -> a b a",
+        "chunk N1 -> chunk:N0 c chunk:N0",
+        "chunk N2 -> chunk:N1 d chunk:N1",
+        "chunk N3 -> chunk:N2 e chunk:N2",
+        "chunk N4 -> chunk:N3 chunk:N3 chunk:N3 chunk:N3",
+        "chunk N5 -> chunk:N4 chunk:N4 chunk:N4 chunk:N4"
+      ]
+    },
+    {
+      "checkpoints": [
+        {
+          "primary_below_strongest": false,
+          "scores": [
+            {
+              "bits_per_symbol": 3.5412818905275625,
+              "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1752.951635403342,
+              "total_bits": 3512.951635403342
+            },
+            {
+              "bits_per_symbol": 6.1200474441753165,
+              "canonical_hash": "ea07952e8a60a9d510b2aa08ce0b69f5422f22ec0e1020b38fe8c7d75c1b0de6",
+              "method_name": "markov-1",
+              "model_bits": 4312.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1759.0870646219132,
+              "total_bits": 6071.087064621914
+            },
+            {
+              "bits_per_symbol": 9.461816085726756,
+              "canonical_hash": "d2cfe9fd60fd0818b757963defdb0a634cbb681b225966c78294dbf3e3170ef4",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 7456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 1930.1215570409422,
+              "total_bits": 9386.121557040942
+            },
+            {
+              "bits_per_symbol": 15.98685071415074,
+              "canonical_hash": "a773105eeca73c9b6bfe1a2a809cb001e5cb02c593f8b95bca65add293d6674e",
+              "method_name": "markov-2",
+              "model_bits": 13592.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 2266.9559084375346,
+              "total_bits": 15858.955908437534
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 39680.0,
+              "total_bits": 39680.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 3.5412818905275625,
+            "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 1752.951635403342,
+            "total_bits": 3512.951635403342
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 992,
+          "suffix_repeats": 32
+        },
+        {
+          "primary_below_strongest": false,
+          "scores": [
+            {
+              "bits_per_symbol": 2.6851795300047057,
+              "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3567.396187529336,
+              "total_bits": 5327.396187529336
+            },
+            {
+              "bits_per_symbol": 3.983795441158341,
+              "canonical_hash": "ea07952e8a60a9d510b2aa08ce0b69f5422f22ec0e1020b38fe8c7d75c1b0de6",
+              "method_name": "markov-1",
+              "model_bits": 4312.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3591.8501552581497,
+              "total_bits": 7903.850155258149
+            },
+            {
+              "bits_per_symbol": 5.712190657505692,
+              "canonical_hash": "d2cfe9fd60fd0818b757963defdb0a634cbb681b225966c78294dbf3e3170ef4",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 7456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 3876.986264491294,
+              "total_bits": 11332.986264491294
+            },
+            {
+              "bits_per_symbol": 9.29393610042438,
+              "canonical_hash": "a773105eeca73c9b6bfe1a2a809cb001e5cb02c593f8b95bca65add293d6674e",
+              "method_name": "markov-2",
+              "model_bits": 13592.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 4847.169223241969,
+              "total_bits": 18439.16922324197
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 79360.0,
+              "total_bits": 79360.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 2.6851795300047057,
+            "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 3567.396187529336,
+            "total_bits": 5327.396187529336
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 1984,
+          "suffix_repeats": 64
+        },
+        {
+          "primary_below_strongest": false,
+          "scores": [
+            {
+              "bits_per_symbol": 2.2269756812173407,
+              "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 7076.639503070408,
+              "total_bits": 8836.639503070408
+            },
+            {
+              "bits_per_symbol": 2.882730866308169,
+              "canonical_hash": "ea07952e8a60a9d510b2aa08ce0b69f5422f22ec0e1020b38fe8c7d75c1b0de6",
+              "method_name": "markov-1",
+              "model_bits": 4312.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 7126.676077510817,
+              "total_bits": 11438.676077510816
+            },
+            {
+              "bits_per_symbol": 3.818815099778439,
+              "canonical_hash": "d2cfe9fd60fd0818b757963defdb0a634cbb681b225966c78294dbf3e3170ef4",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 7456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 7697.058315920846,
+              "total_bits": 15153.058315920847
+            },
+            {
+              "bits_per_symbol": 5.722917038585323,
+              "canonical_hash": "a773105eeca73c9b6bfe1a2a809cb001e5cb02c593f8b95bca65add293d6674e",
+              "method_name": "markov-2",
+              "model_bits": 13592.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 9116.534809106563,
+              "total_bits": 22708.53480910656
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 158720.0,
+              "total_bits": 158720.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 2.2269756812173407,
+            "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 7076.639503070408,
+            "total_bits": 8836.639503070408
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 3968,
+          "suffix_repeats": 128
+        },
+        {
+          "primary_below_strongest": false,
+          "scores": [
+            {
+              "bits_per_symbol": 2.0212028053057183,
+              "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+              "method_name": "unigram",
+              "model_bits": 1760.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 14280.265462906182,
+              "total_bits": 16040.265462906182
+            },
+            {
+              "bits_per_symbol": 2.354550122300201,
+              "canonical_hash": "ea07952e8a60a9d510b2aa08ce0b69f5422f22ec0e1020b38fe8c7d75c1b0de6",
+              "method_name": "markov-1",
+              "model_bits": 4312.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 14373.709770574398,
+              "total_bits": 18685.709770574398
+            },
+            {
+              "bits_per_symbol": 2.902010198695846,
+              "canonical_hash": "d2cfe9fd60fd0818b757963defdb0a634cbb681b225966c78294dbf3e3170ef4",
+              "method_name": "frozen-cla-indexed",
+              "model_bits": 7456.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 15574.352936850235,
+              "total_bits": 23030.352936850235
+            },
+            {
+              "bits_per_symbol": 3.9361969993285415,
+              "canonical_hash": "a773105eeca73c9b6bfe1a2a809cb001e5cb02c593f8b95bca65add293d6674e",
+              "method_name": "markov-2",
+              "model_bits": 13592.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 17645.659386671305,
+              "total_bits": 31237.659386671305
+            },
+            {
+              "bits_per_symbol": 40.0,
+              "canonical_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "method_name": "literal",
+              "model_bits": 0.0,
+              "reconstruction_ok": true,
+              "suffix_bits": 317440.0,
+              "total_bits": 317440.0
+            }
+          ],
+          "strongest_baseline": {
+            "bits_per_symbol": 2.0212028053057183,
+            "canonical_hash": "e5de98e32fc7526315e3832ca3adbb42d740ddeac2a42691ef0563c3db1f55ef",
+            "method_name": "unigram",
+            "model_bits": 1760.0,
+            "reconstruction_ok": true,
+            "suffix_bits": 14280.265462906182,
+            "total_bits": 16040.265462906182
+          },
+          "suffix_exact_reconstruction": true,
+          "suffix_length": 7936,
+          "suffix_repeats": 256
+        }
+      ],
+      "first_crossing_repeats": null,
+      "gate": {
+        "deterministic_refit": true,
+        "edit_replay": true,
+        "fact_roundtrip": true,
+        "indexed_model_byte_stable": true,
+        "indexed_model_decode": true,
+        "passed": true,
+        "prefix_exact_reconstruction": true,
+        "state_roundtrip": true,
+        "suffix_exact_reconstruction": true
+      },
+      "name": "zimin5-shuffled",
+      "primary_history": [
+        "chunk N0 -> a a",
+        "chunk N1 -> a b",
+        "chunk N3 -> chunk:N0 b",
+        "chunk N4 -> a c",
+        "chunk N5 -> chunk:N0 chunk:N0",
+        "chunk N7 -> chunk:N1 b",
+        "chunk N8 -> a d",
+        "chunk N9 -> c b"
+      ]
+    }
+  ]
+}

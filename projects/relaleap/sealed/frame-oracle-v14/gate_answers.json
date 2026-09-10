@@ -1,0 +1,29 @@
+{
+  "contract_version": "frame-oracle-v14-gate-1",
+  "cases": [
+    {"case_id":"v14-direct-01","expected":{"predicate":"capital_of","entity_a":"Lyradon","entity_b":"Vessara","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-direct-02","expected":{"predicate":"authored_by","entity_a":"Glass Meridian","entity_b":"Sera Quin","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-direct-03","expected":{"predicate":"state","entity_a":"beacon array","entity_b":"dormant","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-direct-04","expected":{"predicate":"located_in","entity_a":"Kelm Observatory","entity_b":"Rhyss Highlands","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-01","expected":{"predicate":"capital_of","entity_a":"Terenza","entity_b":"Morvane","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-02","expected":{"predicate":"authored_by","entity_a":"Ember Census","entity_b":"Niko Pell","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-03","expected":{"predicate":"state","entity_a":"relay K-17","entity_b":"synchronized","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-04","expected":{"predicate":"located_in","entity_a":"Darsen Vault","entity_b":"Ulric Basin","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-05","expected":{"predicate":"capital_of","entity_a":"Avenport","entity_b":"Cylora","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-neg-06","expected":{"predicate":"authored_by","entity_a":"Quiet Orbits","entity_b":"Ilya Venn","polarity":"negated","modality":"asserted","abstain":false}},
+    {"case_id":"v14-possible-01","expected":{"predicate":"capital_of","entity_a":"Ruvik","entity_b":"Elsinar","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v14-possible-02","expected":{"predicate":"authored_by","entity_a":"Salt Lantern","entity_b":"Mara Dey","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v14-possible-03","expected":{"predicate":"state","entity_a":"western conduit","entity_b":"unstable","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v14-possible-04","expected":{"predicate":"located_in","entity_a":"Pellin Station","entity_b":"Ostra Reach","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v14-possible-05","expected":{"predicate":"capital_of","entity_a":"Norvale","entity_b":"Jestrin","polarity":"affirmed","modality":"possible","abstain":false}},
+    {"case_id":"v14-paraphrase-01","expected":{"predicate":"located_in","entity_a":"Tovin Laboratory","entity_b":"Rellan March","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-abstain-01","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v14-abstain-02","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v14-abstain-03","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v14-abstain-04","expected":{"predicate":"unknown","entity_a":"","entity_b":"","polarity":"unknown","modality":"unknown","abstain":true}},
+    {"case_id":"v14-trap-01","expected":{"predicate":"capital_of","entity_a":"Moon","entity_b":"France","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-trap-02","expected":{"predicate":"authored_by","entity_a":"Hamlet","entity_b":"Ada Lovelace","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-trap-03","expected":{"predicate":"state","entity_a":"liquid water","entity_b":"crystalline at room temperature","polarity":"affirmed","modality":"asserted","abstain":false}},
+    {"case_id":"v14-trap-04","expected":{"predicate":"located_in","entity_a":"Mount Everest","entity_b":"Sahara Desert","polarity":"affirmed","modality":"asserted","abstain":false}}
+  ]
+}

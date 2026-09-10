@@ -1,0 +1,12 @@
+[
+  {
+    "expect": "HUMAN-MSG:",
+    "answer": "remember REAL_METTA_CHROMA_20260813 = amber otter 4517"
+  },
+  {
+    "expect": "REMEMBER-SUCCESS))",
+    "expect_count": 1,
+    "delay_ms": 10000,
+    "answer": "send REMEMBER_THROUGH_PETTA_OK"
+  }
+]

@@ -1,0 +1,399 @@
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 101,
+  "config": {
+    "train_updates": 40,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ]
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.4952735106150308,
+        "perplexity": 12.125049394822355,
+        "accuracy": 0.1145833358168602,
+        "ece": 0.05207784491358325
+      },
+      "task_b": {
+        "loss": 2.5881210565567017,
+        "perplexity": 13.304749231413624,
+        "accuracy": 0.10546875,
+        "ece": 0.06250526348594576
+      },
+      "task_a_loss_change": -0.1854406992594404,
+      "task_a_retention_loss_increase": -0.041038552920023896,
+      "task_a_midpoint": {
+        "loss": 2.5363120635350547,
+        "perplexity": 12.632995271306704,
+        "accuracy": 0.1041666641831398,
+        "ece": 0.07606974616646767
+      },
+      "mean_effective_precision": 1.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.1441751658916473
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.498084783554077,
+        "perplexity": 12.15918417668356,
+        "accuracy": 0.1171875,
+        "ece": 0.043979753740131855
+      },
+      "task_b": {
+        "loss": 2.576499104499817,
+        "perplexity": 13.151017137605162,
+        "accuracy": 0.1028645858168602,
+        "ece": 0.05820469092577696
+      },
+      "task_a_loss_change": -0.18262942632039403,
+      "task_a_retention_loss_increase": -0.04096706708272313,
+      "task_a_midpoint": {
+        "loss": 2.5390518506368003,
+        "perplexity": 12.667654446507466,
+        "accuracy": 0.1041666641831398,
+        "ece": 0.07249804004095495
+      },
+      "mean_effective_precision": 4.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.337890923023224
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.4952096144358316,
+        "perplexity": 12.124274675244497,
+        "accuracy": 0.1145833358168602,
+        "ece": 0.05099408468231559
+      },
+      "task_b": {
+        "loss": 2.585980176925659,
+        "perplexity": 13.276295833305877,
+        "accuracy": 0.1028645858168602,
+        "ece": 0.06276440829969943
+      },
+      "task_a_loss_change": -0.18550459543863962,
+      "task_a_retention_loss_increase": -0.041135946909586885,
+      "task_a_midpoint": {
+        "loss": 2.5363455613454184,
+        "perplexity": 12.633418456074471,
+        "accuracy": 0.10546875,
+        "ece": 0.0740726375952363
+      },
+      "mean_effective_precision": 1.4356043614447116,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.180846816301346
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.495375871658325,
+        "perplexity": 12.126290591052392,
+        "accuracy": 0.1145833358168602,
+        "ece": 0.049725335149560124
+      },
+      "task_b": {
+        "loss": 2.583356579144796,
+        "perplexity": 13.241509825219781,
+        "accuracy": 0.1028645858168602,
+        "ece": 0.0614588021999225
+      },
+      "task_a_loss_change": -0.18533833821614598,
+      "task_a_retention_loss_increase": -0.041199366251627456,
+      "task_a_midpoint": {
+        "loss": 2.5365752379099527,
+        "perplexity": 12.636320389464075,
+        "accuracy": 0.1041666641831398,
+        "ece": 0.07452583825215697
+      },
+      "mean_effective_precision": 2.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.227908915281296
+    }
+  },
+  "wall_seconds": 3.367599315010011
+}
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 211,
+  "config": {
+    "train_updates": 40,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ]
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.447274088859558,
+        "perplexity": 11.556800930843798,
+        "accuracy": 0.125,
+        "ece": 0.04022864531725645
+      },
+      "task_b": {
+        "loss": 2.574513832728068,
+        "perplexity": 13.124934693448719,
+        "accuracy": 0.0807291641831398,
+        "ece": 0.0836671032011509
+      },
+      "task_a_loss_change": -0.17217930157979344,
+      "task_a_retention_loss_increase": -0.025162021319071304,
+      "task_a_midpoint": {
+        "loss": 2.4724361101786294,
+        "perplexity": 11.851282744202777,
+        "accuracy": 0.1302083283662796,
+        "ece": 0.05007801065221429
+      },
+      "mean_effective_precision": 1.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.1573820769786836
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.451839288075765,
+        "perplexity": 11.609680640761281,
+        "accuracy": 0.1236979141831398,
+        "ece": 0.0367406839504838
+      },
+      "task_b": {
+        "loss": 2.562642494837443,
+        "perplexity": 12.970045349802184,
+        "accuracy": 0.078125,
+        "ece": 0.0814682636409998
+      },
+      "task_a_loss_change": -0.16761410236358643,
+      "task_a_retention_loss_increase": -0.023856321970621597,
+      "task_a_midpoint": {
+        "loss": 2.4756956100463867,
+        "perplexity": 11.889975023222782,
+        "accuracy": 0.1302083283662796,
+        "ece": 0.046655748039484024
+      },
+      "mean_effective_precision": 4.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.3330969274044038
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.4479663372039795,
+        "perplexity": 11.564803876848453,
+        "accuracy": 0.1263020783662796,
+        "ece": 0.03764993604272604
+      },
+      "task_b": {
+        "loss": 2.5713150898615518,
+        "perplexity": 13.083018477563236,
+        "accuracy": 0.0794270858168602,
+        "ece": 0.08369437791407108
+      },
+      "task_a_loss_change": -0.17148705323537206,
+      "task_a_retention_loss_increase": -0.025008201599121094,
+      "task_a_midpoint": {
+        "loss": 2.4729745388031006,
+        "perplexity": 11.857665532252652,
+        "accuracy": 0.1302083283662796,
+        "ece": 0.049158383597387
+      },
+      "mean_effective_precision": 1.583309032768011,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.201178801059723
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.448567350705465,
+        "perplexity": 11.571756569242183,
+        "accuracy": 0.1263020783662796,
+        "ece": 0.03686198964715004
+      },
+      "task_b": {
+        "loss": 2.5693026781082153,
+        "perplexity": 13.05671653145908,
+        "accuracy": 0.078125,
+        "ece": 0.08420848660171032
+      },
+      "task_a_loss_change": -0.17088603973388672,
+      "task_a_retention_loss_increase": -0.02487758795420314,
+      "task_a_midpoint": {
+        "loss": 2.473444938659668,
+        "perplexity": 11.863244688532527,
+        "accuracy": 0.1302083283662796,
+        "ece": 0.04858646646607667
+      },
+      "mean_effective_precision": 2.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.2322949707508086
+    }
+  },
+  "wall_seconds": 2.8947230400517583
+}
+{
+  "schema": "relaleap.cmcp_epc_kd_bridge.v1",
+  "status": "complete",
+  "seed": 307,
+  "config": {
+    "train_updates": 40,
+    "epc_steps": 2,
+    "lambda_distillation": 0.02,
+    "packet_types": [
+      "base",
+      "exact_duplicate",
+      "descendant",
+      "seeded_view"
+    ]
+  },
+  "all_equal_optimizer_updates": true,
+  "all_equal_teacher_packets": true,
+  "final": {
+    "ordinary": {
+      "task_a": {
+        "loss": 2.48701012134552,
+        "perplexity": 12.025268224869599,
+        "accuracy": 0.15234375,
+        "ece": 0.013742517523496645
+      },
+      "task_b": {
+        "loss": 2.560344417889913,
+        "perplexity": 12.940273409782435,
+        "accuracy": 0.0872395858168602,
+        "ece": 0.07705560699105263
+      },
+      "task_a_loss_change": -0.16137218475341797,
+      "task_a_retention_loss_increase": -0.031639258066813,
+      "task_a_midpoint": {
+        "loss": 2.518649379412333,
+        "perplexity": 12.411821675919795,
+        "accuracy": 0.140625,
+        "ece": 0.04011674993671477
+      },
+      "mean_effective_precision": 1.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.134326332807541
+    },
+    "naive": {
+      "task_a": {
+        "loss": 2.4935628175735474,
+        "perplexity": 12.104324888883175,
+        "accuracy": 0.1458333283662796,
+        "ece": 0.013134037493728101
+      },
+      "task_b": {
+        "loss": 2.547692894935608,
+        "perplexity": 12.777590506870819,
+        "accuracy": 0.0833333358168602,
+        "ece": 0.07388851419091225
+      },
+      "task_a_loss_change": -0.15481948852539062,
+      "task_a_retention_loss_increase": -0.028935710589090835,
+      "task_a_midpoint": {
+        "loss": 2.522498528162638,
+        "perplexity": 12.459688688338613,
+        "accuracy": 0.1393229216337204,
+        "ece": 0.03616906300885603
+      },
+      "mean_effective_precision": 4.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.3187645435333253
+    },
+    "cmcp": {
+      "task_a": {
+        "loss": 2.4876761436462402,
+        "perplexity": 12.033279989390264,
+        "accuracy": 0.15234375,
+        "ece": 0.012212765985168517
+      },
+      "task_b": {
+        "loss": 2.557477275530497,
+        "perplexity": 12.903224940744046,
+        "accuracy": 0.0911458358168602,
+        "ece": 0.07160508632659912
+      },
+      "task_a_loss_change": -0.16070616245269775,
+      "task_a_retention_loss_increase": -0.031214555104573716,
+      "task_a_midpoint": {
+        "loss": 2.518890698750814,
+        "perplexity": 12.414817249946404,
+        "accuracy": 0.140625,
+        "ece": 0.03902396251214668
+      },
+      "mean_effective_precision": 1.4721237570047379,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.172182005643845
+    },
+    "oracle": {
+      "task_a": {
+        "loss": 2.4886672099431357,
+        "perplexity": 12.045211679200053,
+        "accuracy": 0.15234375,
+        "ece": 0.010735242220107466
+      },
+      "task_b": {
+        "loss": 2.5546212991078696,
+        "perplexity": 12.866426207707104,
+        "accuracy": 0.0885416641831398,
+        "ece": 0.07272709161043167
+      },
+      "task_a_loss_change": -0.15971509615580226,
+      "task_a_retention_loss_increase": -0.030711650848388672,
+      "task_a_midpoint": {
+        "loss": 2.5193788607915244,
+        "perplexity": 12.420879171949913,
+        "accuracy": 0.1419270783662796,
+        "ece": 0.03663317146128975
+      },
+      "mean_effective_precision": 2.0,
+      "optimizer_updates": 40,
+      "teacher_packet_count": 160,
+      "teacher_calls": 40,
+      "energy_monotone": true,
+      "mean_training_objective": 2.2142136871814726
+    }
+  },
+  "wall_seconds": 3.5005399510264397
+}

@@ -38,7 +38,11 @@ project="$root/projects/$project_slug"
 start_iso="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 run_id="$(date -u +%Y%m%dT%H%M%SZ)-$run_slug"
 run_dir="$project/experiments/$run_id"
-mkdir -p "$run_dir/artifacts"
+if ! mkdir "$run_dir"; then
+  echo "Refusing to reuse experiment directory: $run_dir" >&2
+  exit 1
+fi
+mkdir "$run_dir/artifacts"
 chmod 700 "$run_dir" "$run_dir/artifacts"
 
 {

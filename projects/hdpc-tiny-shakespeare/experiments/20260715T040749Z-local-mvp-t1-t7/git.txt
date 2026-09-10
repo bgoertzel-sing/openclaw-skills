@@ -1,0 +1,189 @@
+# Git State
+Captured UTC: 2026-07-15T04:07:49Z
+Working directory: projects/hdpc-tiny-shakespeare/repos/hdpc-tiny-shakespeare
+Commit: dcbe445025f548e7653ea92c3757bd101234d3a5
+Branch: main
+Remote names: 
+
+## Status
+## main
+ M ../../../../MEMORY.md
+ M ../../../../catalog/KANBAN.md
+ M ../../../../catalog/PROJECTS.md
+ M ../../../../library/chaos-language-algorithm/SOURCE.md
+ M ../../../../memory/2026-07-04.md
+ M ../../../../memory/2026-07-05.md
+ M ../../../../memory/2026-07-06.md
+ M ../../../../memory/2026-07-10.md
+ M ../../../../memory/2026-07-11.md
+ M ../../../../memory/2026-07-12.md
+ M ../../../../memory/2026-07-13.md
+ M ../../../../plugins/intent-model-router/index.js
+ M ../../../../plugins/intent-model-router/index.test.js
+ M ../../../../plugins/intent-model-router/openclaw.plugin.json
+ M ../../../../plugins/intent-model-router/router-core.js
+ M ../../../agent-recovery/PROJECT.md
+ M ../../../agent-recovery/TASKS.md
+ M ../../../agent-recovery/scripts/backup-protomegabot-recovery.sh
+ M ../../../agent-recovery/scripts/backup-zerobot-recovery.sh
+ M ../../../agent-recovery/scripts/push-recovery-repos.sh
+ M ../../../chaos-language-algorithm/DECISIONS.md
+ M ../../../chaos-language-algorithm/PROJECT.md
+ M ../../../chaos-language-algorithm/TASKS.md
+ M ../../../chaos-language-algorithm/docs/cla_expert_review_prompt.md
+ M ../../../hyperseed-formalizations/NOTES.md
+ M ../../../hyperseed-formalizations/TASKS.md
+ M ../../../omegaclaw/DECISIONS.md
+ M ../../../omegaclaw/GGB_CAPACITIES_ROADMAP.md
+ M ../../../omegaclaw/GGB_GATE_RUN_CONTRACT_MAPPING.md
+ M ../../../omegaclaw/GOALCHAINER_INTEGRATION_MAP.md
+ M ../../../omegaclaw/NOTES.md
+ M ../../../omegaclaw/PROJECT.md
+ M ../../../omegaclaw/TASKS.md
+ M ../../../omegasim/DECISIONS.md
+ M ../../../omegasim/PROJECT.md
+ M ../../../omegasim/TASKS.md
+ M ../../../petta-chem/DECISIONS.md
+ M ../../../petta-chem/NOTES.md
+ M ../../../petta-chem/PROJECT.md
+ M ../../../petta-chem/TASKS.md
+ M ../../../petta-memory/DECISIONS.md
+ M ../../../petta-memory/NOTES.md
+ M ../../../petta-memory/PROJECT.md
+ M ../../../petta-memory/TASKS.md
+ M ../../../relaleap/DECISIONS.md
+ M ../../../relaleap/NOTES.md
+ M ../../../relaleap/PROJECT.md
+ M ../../../relaleap/TASKS.md
+ M ../../../specatom-hs/DECISIONS.md
+ M ../../../specatom-hs/NOTES.md
+ M ../../../specatom-hs/PROJECT.md
+ M ../../../specatom-hs/TASKS.md
+?? ../../../../bin/health-check.sh
+?? ../../../../bin/install-kb-search
+?? ../../../../bin/mac-cla-status.sh
+?? ../../../../catalog/AGENT_TOPOLOGY.md
+?? ../../../../catalog/INSTALLATION_KB.md
+?? ../../../../catalog/install-kb/
+?? ../../../../catalog/proto_hive_functionality_inventory_20260707.pdf
+?? ../../../../catalog/proto_hive_functionality_inventory_20260707.tex
+?? ../../../../channels.yaml
+?? ../../../../cla-push/
+?? ../../../../health-reports/
+?? ../../../../library/atlas-indexed-reversible-pipln/
+?? ../../../../library/atlas-reversible-evidence-geodesic-pipln-theory/
+?? ../../../../library/chaos-language-algorithm/cla_hd_embedding_extracted.txt
+?? ../../../../library/omegahive/
+?? ../../../../library/weakness-theory-10/
+?? ../../../../media/
+?? ../../../../memory/2026-07-06-petta-chem-progress.md
+?? ../../../../memory/2026-07-06-petta-memory-progress.md
+?? ../../../../memory/2026-07-06-threadkeeper-hardening-worker-run2.md
+?? ../../../../memory/2026-07-06-threadkeeper-hardening-worker-run3.md
+?? ../../../../memory/2026-07-06-threadkeeper-hardening-worker-run4.md
+?? ../../../../memory/2026-07-06-threadkeeper-hardening-worker-run5.md
+?? ../../../../memory/2026-07-06-threadkeeper-hardening-worker.md
+?? ../../../../memory/2026-07-07-petta-memory-progress.md
+?? ../../../../memory/2026-07-07-threadkeeper-progress.md
+?? ../../../../memory/2026-07-07.md
+?? ../../../../memory/2026-07-08.md
+?? ../../../../memory/2026-07-09.md
+?? ../../../../memory/2026-07-14.md
+?? ../../../DECISIONS.md
+?? ../../../NOTES.md
+?? ../../../TASKS.md
+?? ../../../channel-watchdog/
+?? ../../../chaos-language-algorithm/docs/cla_algorithm_version_used.pdf
+?? ../../../chaos-language-algorithm/docs/cla_algorithm_version_used.tex
+?? ../../../chaos-language-algorithm/docs/cla_experiments_summary.tex
+?? ../../../chaos-language-algorithm/docs/cla_experiments_summary_provenance.md
+?? ../../../chaos-language-algorithm/docs/cla_five_attractor_systems_summary.pdf
+?? ../../../chaos-language-algorithm/docs/cla_five_attractor_systems_summary.tex
+?? ../../../chaos-language-algorithm/docs/cla_standard_attractor_summary.pdf
+?? ../../../chaos-language-algorithm/docs/cla_standard_attractor_summary.tex
+?? ../../../chaos-language-algorithm/docs/cla_testing_summary.pdf
+?? ../../../chaos-language-algorithm/docs/cla_testing_summary.tex
+?? ../../../chaos-language-algorithm/docs/cla_testing_summary.txt
+?? ../../../chaos-language-algorithm/docs/frozen-heldout-mdl-preregistration-v1.md
+?? ../../../chaos-language-algorithm/docs/mcbride_cla_analysis.pdf
+?? ../../../chaos-language-algorithm/docs/mcbride_cla_analysis.tex
+?? ../../../chaos-language-algorithm/experiments/20260709T192728Z-lorenz96-1024-dim20-suffix-trie/
+?? ../../../chaos-language-algorithm/experiments/20260712T200000Z-lorenz63-lift256-phase1/
+?? ../../../chaos-language-algorithm/experiments/20260713T153839Z-lorenz63-rank-conditioned-vamp-tica/
+?? ../../../chaos-language-algorithm/notes/
+?? ../../
+?? ../../../hyperseed-formalizations/threadkeeper-runs/
+?? ../../../hyperseed-formalizations/threadkeeper.config.yaml
+?? ../../../morkql/
+?? ../../../omegaclaw/GGB_NEXT_GATES.md
+?? ../../../omegaclaw/PROTOMEGABOT_REPAIR_PLAN_20260712.md
+?? ../../../omegaclaw/PROTOMEGABOT_WRITEFILE_PARSER_FIX_20260714.md
+?? ../../../omegaclaw/docs/
+?? ../../../omegaclaw/workspace/
+?? ../../../petta-chem/docs/
+?? ../../../petta-chem/experiments/
+?? ../../../petta-memory/docs/patham9_pi_pln_extension_architecture.md
+?? ../../../petta-memory/docs/pettachainer-review/
+?? ../../../relaleap/docs/relaleap_tiny_shakespeare_residual_layers_handoff_20260709.md
+?? ../../../relaleap/docs/relaleap_tiny_shakespeare_residual_layers_handoff_20260709.pdf
+?? ../../../relaleap/docs/slt_tiny_shakespeare_transformer_analysis.pdf
+?? ../../../relaleap/docs/slt_tiny_shakespeare_transformer_analysis.tex
+?? ../../../relaleap/experiments/
+?? ../../../../skills/telegram-channel-registry/
+
+## Diff summary
+ MEMORY.md                                          |   24 +-
+ catalog/KANBAN.md                                  |   64 +-
+ catalog/PROJECTS.md                                |    3 +
+ library/chaos-language-algorithm/SOURCE.md         |   47 +
+ memory/2026-07-04.md                               |   20 +
+ memory/2026-07-05.md                               |  288 +--
+ memory/2026-07-06.md                               |  174 ++
+ memory/2026-07-10.md                               |   59 +
+ memory/2026-07-11.md                               |  313 +++
+ memory/2026-07-12.md                               |  162 ++
+ memory/2026-07-13.md                               |  266 +-
+ plugins/intent-model-router/index.js               |   39 +-
+ plugins/intent-model-router/index.test.js          |   56 +-
+ plugins/intent-model-router/openclaw.plugin.json   |   13 +-
+ plugins/intent-model-router/router-core.js         |   39 +-
+ projects/agent-recovery/PROJECT.md                 |   10 +-
+ projects/agent-recovery/TASKS.md                   |   15 +-
+ .../scripts/backup-protomegabot-recovery.sh        |    5 +-
+ .../scripts/backup-zerobot-recovery.sh             |    3 +-
+ .../agent-recovery/scripts/push-recovery-repos.sh  |   14 +-
+ projects/chaos-language-algorithm/DECISIONS.md     |   42 +
+ projects/chaos-language-algorithm/PROJECT.md       |    2 +-
+ projects/chaos-language-algorithm/TASKS.md         |   10 +-
+ .../docs/cla_expert_review_prompt.md               |    2 +-
+ projects/hyperseed-formalizations/NOTES.md         |   14 +
+ projects/hyperseed-formalizations/TASKS.md         |    5 +-
+ projects/omegaclaw/DECISIONS.md                    |   59 +
+ projects/omegaclaw/GGB_CAPACITIES_ROADMAP.md       |   54 +-
+ .../omegaclaw/GGB_GATE_RUN_CONTRACT_MAPPING.md     |    4 +
+ projects/omegaclaw/GOALCHAINER_INTEGRATION_MAP.md  |   56 +-
+ projects/omegaclaw/NOTES.md                        | 1260 +++++++++-
+ projects/omegaclaw/PROJECT.md                      |   16 +-
+ projects/omegaclaw/TASKS.md                        |  300 ++-
+ projects/omegasim/DECISIONS.md                     |   12 +-
+ projects/omegasim/PROJECT.md                       |    5 +-
+ projects/omegasim/TASKS.md                         |   13 +-
+ projects/petta-chem/DECISIONS.md                   |   36 +
+ projects/petta-chem/NOTES.md                       |  293 ++-
+ projects/petta-chem/PROJECT.md                     |  226 +-
+ projects/petta-chem/TASKS.md                       |  224 +-
+ projects/petta-memory/DECISIONS.md                 |  623 +----
+ projects/petta-memory/NOTES.md                     |  965 +-------
+ projects/petta-memory/PROJECT.md                   |   57 +
+ projects/petta-memory/TASKS.md                     |   77 +
+ projects/relaleap/DECISIONS.md                     |   51 +
+ projects/relaleap/NOTES.md                         |    8 +
+ projects/relaleap/PROJECT.md                       |   26 +-
+ projects/relaleap/TASKS.md                         |   30 +-
+ projects/specatom-hs/DECISIONS.md                  |   23 +
+ projects/specatom-hs/NOTES.md                      | 2533 ++++++++++++++++----
+ projects/specatom-hs/PROJECT.md                    |   55 +-
+ projects/specatom-hs/TASKS.md                      |  153 +-
+ 52 files changed, 6519 insertions(+), 2329 deletions(-)
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

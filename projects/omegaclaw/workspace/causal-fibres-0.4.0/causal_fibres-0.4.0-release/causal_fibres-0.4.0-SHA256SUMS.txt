@@ -1,0 +1,4 @@
+5f8ca0f1d675658f34145b0e665b0f4e8f095c361aae03e785a56d852dc70c6e  causal_fibres-0.4.0-py3-none-any.whl
+0d653728130d6e24f77926bf37a14806bf6160566ee05110ca7d9b3fe9e8d512  causal_fibres-0.4.0.tar.gz
+577cd270a8eb9755d4e2ea34f9ca34e59aabcc2fb41a9e231a221939cb5313be  causal_fibres-0.4.0-source.zip
+1940fd46e4f8ade788603f4de154e61149aac72a84f87cec89181e94cb98c616  causal_fibres-0.4.0-validation-logs.zip

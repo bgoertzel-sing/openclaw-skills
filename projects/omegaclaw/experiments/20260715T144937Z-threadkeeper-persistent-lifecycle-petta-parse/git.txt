@@ -1,0 +1,17 @@
+# Git State
+Captured UTC: 2026-07-15T14:49:37Z
+Working directory: /home/openclaw/research-agent/projects/omegaclaw/worktrees/threadkeeper-persistent-workers
+Commit: a2c62ebf0088d5bc51b14d5a3707979260c832af
+Branch: agent/threadkeeper-persistent-workers
+Remote names: fork,origin
+
+## Status
+## agent/threadkeeper-persistent-workers
+?? docs/persistent-workers.md
+?? src/persistent_worker.py
+?? src/persistent_worker_lifecycle.metta
+?? tests/test_persistent_worker_lifecycle.py
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

@@ -1,0 +1,131 @@
+{
+  "config": {
+    "bins": 8,
+    "checkpoint_lengths": [
+      4096,
+      16384,
+      65536
+    ],
+    "continuity_control": "frozen-cla-indexed-json-v1",
+    "discard": 1536,
+    "external_controls": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2",
+      "lz78-canonical-v1"
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 18071831
+    },
+    "lorenz96": {
+      "F": 8.0,
+      "dimension": 8,
+      "dt": 0.01,
+      "initial": [
+        8.0,
+        8.0,
+        8.0,
+        8.0,
+        7.985,
+        8.0,
+        8.0,
+        8.0
+      ],
+      "integrator": "fixed-step-rk4",
+      "observed_coordinate": 5
+    },
+    "lz78_accounting": "entire self-contained suffix byte stream at eight bits per byte",
+    "mackey_glass": {
+      "beta": 0.2,
+      "dt": 0.1,
+      "gamma": 0.1,
+      "initial": 0.9,
+      "integrator": "fixed-step-euler",
+      "n": 10.0,
+      "tau": 17.0
+    },
+    "prefix_length": 1024,
+    "primary": "frozen-cla-compact-indexed-v1"
+  },
+  "fixtures": [
+    {
+      "kind": "positive",
+      "name": "mackey-glass-initial-0.9-positive",
+      "prefix_samples": 1024,
+      "prefix_sha256": "0e4f9a1a73e2aa5e4eed8506afefc113fdfcfe7ec219ea8d879df34a6fbaf88f",
+      "samples": 66560,
+      "shuffle_seed": null,
+      "suffix_samples": 65536,
+      "suffix_sha256": "cf154ccf355fbcf564bd6f198694806c977b3b9025209dcdf46b0947003bb8bf",
+      "symbol_stream_sha256": "6c56918a03839a083d9fed064c415f9c5a44ef5552c65476c60399deb3d45209",
+      "symbolization": {
+        "bins": 8,
+        "bounds": [
+          [
+            0.5023070576292007,
+            1.2511138499460972
+          ]
+        ],
+        "method": "prefix-fitted-scalar-equal-width-m1",
+        "out_of_bounds": "clamp-to-edge-bin"
+      },
+      "trajectory_sha256": "0e86bfa7a864a3fc7a10aeb602321e3da998fb09997ab12fb4a4fee6b4b03f91"
+    },
+    {
+      "kind": "shuffled",
+      "name": "mackey-glass-initial-0.9-shuffled",
+      "prefix_samples": 1024,
+      "prefix_sha256": "b3ddfbc3e9f214772a9baa086b2592fa6fbdd97d96767c4746ead8e7d130260d",
+      "samples": 66560,
+      "shuffle_seed": 18071832,
+      "source_symbol_stream_sha256": "6c56918a03839a083d9fed064c415f9c5a44ef5552c65476c60399deb3d45209",
+      "suffix_samples": 65536,
+      "suffix_sha256": "b287818259313c08f7ee8a4d82e4ab9997fecf9f63544628e53b0e2d6d6bfb5d",
+      "symbol_stream_sha256": "acfce0e34bf6db0a70816f54122d38801472a8bfea281fdb2790b4b212e94a56"
+    },
+    {
+      "kind": "positive",
+      "name": "lorenz96-x5-perturb-x4-positive",
+      "prefix_samples": 1024,
+      "prefix_sha256": "f334e71f4873627ff4a31b6066e3b57c39dfbd8d528692312b502ca52babc2ac",
+      "samples": 66560,
+      "shuffle_seed": null,
+      "suffix_samples": 65536,
+      "suffix_sha256": "8ec901ba4774debeca69927c962984254ee8ecb4c4a6f447fdb95e92f678c249",
+      "symbol_stream_sha256": "8d609b84c5b77d4e76b8922004289f963db785513dcbf24cc755319d37a584ec",
+      "symbolization": {
+        "bins": 8,
+        "bounds": [
+          [
+            -4.202372856325693,
+            8.587574201813299
+          ]
+        ],
+        "method": "prefix-fitted-scalar-equal-width-m1",
+        "out_of_bounds": "clamp-to-edge-bin"
+      },
+      "trajectory_sha256": "5e6a20a7ed8913005a22f5c0f5131e2f07e96096f78ac7584284d66d8e2c4995"
+    },
+    {
+      "kind": "shuffled",
+      "name": "lorenz96-x5-perturb-x4-shuffled",
+      "prefix_samples": 1024,
+      "prefix_sha256": "29a8ecb4e515be67f194a6a461c5ceee143069e4d43d610548e1514d4cf77265",
+      "samples": 66560,
+      "shuffle_seed": 18071833,
+      "source_symbol_stream_sha256": "8d609b84c5b77d4e76b8922004289f963db785513dcbf24cc755319d37a584ec",
+      "suffix_samples": 65536,
+      "suffix_sha256": "f594a13ce548dd688c4cbdcf64400762541b83346d65f24e896bdfbda73c7136",
+      "symbol_stream_sha256": "e4634199e87b2797c12fa1d7a9fff1bf66d3c3e0448caf2613460cbefe3d31f6"
+    }
+  ],
+  "protocol": "attractor-amortization-preregistration-v1",
+  "schema": "chaoslang.attractor-amortization",
+  "version": 1
+}

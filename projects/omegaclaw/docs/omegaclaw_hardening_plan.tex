@@ -1,0 +1,846 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{booktabs}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+\setlist[itemize]{leftmargin=1.3em}
+\setlist[enumerate]{leftmargin=1.5em}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{0.6em}{}
+
+\title{OmegaClaw Runtime Hardening Plan\\
+\large A proposal for making ProtoMegaBot/OmegaClaw closer to OpenClaw-level operational stability}
+\author{Prepared by ZeroBot for Benjamin Goertzel and the OmegaClaw hardening team}
+\date{2026-07-05}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+OmegaClaw has already demonstrated that its symbolic/MeTTa/Prolog/Python architecture can interact with Telegram, local memory, embeddings, and the OpenClaw Gateway. The stability gap relative to ZeroBot/OpenClaw is not primarily a conceptual weakness of OmegaClaw. It is an operational hardening gap: OmegaClaw currently behaves like a long-running research process, while OpenClaw behaves like a supervised runtime with bounded sessions, structured errors, restartable lanes, explicit tool contracts, and health-aware scheduling.
+
+This document proposes a concrete hardening plan. The plan is based on observed OmegaClaw/ProtoMegaBot failures and mitigations during June-July 2026: SWI/Janus crashes during message handling, Telegram polling and resolver-policy failures, context/history blowups, silent backend failures, stale PID behavior, timeout mismatch, environment inheritance problems, and Gateway restart sensitivity. The recommendation is not to turn OmegaClaw into a less interesting system. It is to put OpenClaw-style reliability scaffolding around the symbolic organism so that crashes become localized, diagnosed, and recoverable rather than whole-bot failures.
+\end{abstract}
+
+\tableofcontents
+
+\section{Executive summary}
+
+The current OmegaClaw process is less robust than the OpenClaw/ZeroBot process because it combines too many failure domains inside one live, stateful loop:
+
+\begin{itemize}
+  \item Telegram polling and attachment ingestion.
+  \item MeTTa/PeTTa evaluation.
+  \item SWI-Prolog runtime state.
+  \item Janus Python interop.
+  \item Python libraries for OpenAI/OpenClaw calls, embeddings, Chroma, and file access.
+  \item Local history/memory growth.
+  \item Long-context LLM calls through OpenClaw Gateway.
+  \item Shell-supervised process lifecycle.
+\end{itemize}
+
+By contrast, OpenClaw already has many production-runtime properties: isolated agent turns, structured tool calls, bounded context/session management, model fallback, cron/scheduler semantics, runtime logs, tool policy, and a Gateway process that can keep serving even when an individual tool call or agent turn fails.
+
+The hardening goal should be:
+
+\begin{quote}
+Make OmegaClaw fail small, fail visibly, and recover automatically, while preserving the symbolic cognitive architecture.
+\end{quote}
+
+The recommended plan has six workstreams:
+
+\begin{enumerate}
+  \item Replace single PID liveness with semantic health checks and restart-on-bad-health.
+  \item Split the monolithic live loop into supervised, bounded subprocesses.
+  \item Make every external call return structured success/error data instead of silent empty values.
+  \item Pin and audit runtime environment, sessions, tokens, model routes, and filesystem policy.
+  \item Add persistent run records, transcript checksums, cost/token accounting, and crash bundles.
+  \item Stage live features through non-live, private, and group smoke gates before enabling them in the main bot.
+\end{enumerate}
+
+\section{Observed OmegaClaw failure modes motivating this plan}
+
+This section lists concrete examples observed during the local ProtoMegaBot/OmegaClaw deployment. The goal is not blame assignment; each incident identifies an engineering seam that should become a hardened boundary.
+
+\subsection{SWI/Janus crash during message handling}
+
+Observed: On 2026-06-27, Ben pinged ProtoMegaBot in the shared Telegram group. The bot received the fresh group message, but SWI/Janus segfaulted during or shortly after constructing the OpenClaw/Python call path before replying. This showed that the main problem was not Telegram delivery alone. The live symbolic/Python call path could crash the process.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{memory/2026-06-27.md}, lines 132--134.
+  \item \texttt{projects/omegaclaw/PROJECT.md}, current state notes on Telegram/OpenClaw integration.
+\end{itemize}
+
+Hardening implication: Janus/Python/LLM calls should not run in the same crash domain as the Telegram receive loop or the long-lived MeTTa state. A bad Python callback, encoding edge case, native-library crash, or large prompt should kill at most a worker subprocess, not the bot supervisor.
+
+\subsection{Prompt/history pollution and large-context crash surface}
+
+Observed: After another fresh ping, ProtoMegaBot received the message and died during the OpenClaw prompt call. The constructed prompt was about 51k characters and included polluted stale history with repeated \texttt{No response from OpenClaw.} content. Mitigation capped runtime memory fields for Telegram mode and rotated the live history into an archive.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{memory/2026-06-27.md}, lines 136--137.
+\end{itemize}
+
+Hardening implication: OmegaClaw needs hard prompt budgets, history compaction, history validity checks, and fail-closed prompt construction. A bad history file should become a diagnostic response and quarantine event, not an unbounded LLM call or process crash.
+
+\subsection{Fixed Gateway session context ballooning}
+
+Observed: On 2026-06-28, deep-call stalls were traced to a fixed OpenClaw Gateway \texttt{user} session for ProtoMegaBot that had grown to roughly \texttt{998k/272k} tokens. Fresh unique-user health checks returned normally. The local fix was to use per-call Gateway sessions because OmegaClaw already supplies its own prompt/history.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{projects/omegaclaw/PROJECT.md}, current state section.
+  \item \texttt{memory/2026-06-28.md}, line 18.
+\end{itemize}
+
+Hardening implication: OmegaClaw should not rely on a shared unbounded backend session for live bot calls. Session identity should be generated per call or per bounded task. If a persistent memory is desired, it should be explicit OmegaClaw memory with quotas and summaries, not accidental Gateway context accumulation.
+
+\subsection{Silent backend failures becoming empty values}
+
+Observed: \texttt{lib\_llm\_ext.py} previously converted backend failures, timeouts, or empty output into silent \texttt{()} values. This made the bot appear alive while losing the real failure cause. Mitigation added user-visible \texttt{(send ...)} diagnostics for backend failure, timeout, and empty output, plus preserved traceback detail.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{projects/omegaclaw/PROJECT.md}, current state section.
+  \item \texttt{memory/2026-06-28.md}, line 18.
+\end{itemize}
+
+Hardening implication: all boundary calls should return structured result objects with status, error class, retryability, elapsed time, model/session id, and bounded diagnostic text. Empty output should not be overloaded as success, no-op, and failure.
+
+\subsection{Supervisor killed by nonzero runner exit and stale PID behavior}
+
+Observed: The Telegram supervisor's \texttt{set -e} behavior let nonzero runner exits kill the supervisor and leave stale process state. A later mitigation changed supervisor behavior so nonzero runner exits no longer killed the supervisor and so the supervisor could relaunch after SWI/Janus crashes.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{memory/2026-06-27.md}, lines 134--136.
+  \item \texttt{memory/2026-06-28.md}, line 18.
+\end{itemize}
+
+Hardening implication: shell scripts should not be the primary reliability layer unless they are deliberately written as supervisors. Liveness should include stale PID cleanup, child exit classification, backoff, crash-loop protection, and log preservation.
+
+\subsection{Timeout mismatches}
+
+Observed: Older 180s/240s HTTP/subprocess timeouts were too short for slow GPT-5.5 calls. The fix aligned OpenClaw HTTP and subprocess timeouts to 900s for deep calls. Separately, \texttt{OMEGACLAW\_TIMEOUT=0} behaved unreliably as infinite in the current wrapper/supervisor; an explicit long timeout such as 86400s was more reliable.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{memory/2026-06-27.md}, lines 132--134.
+  \item \texttt{memory/2026-06-28.md}, line 18.
+\end{itemize}
+
+Hardening implication: every loop and external call needs documented timeout semantics, aligned across layers. \texttt{0 means infinite} should be avoided unless every layer implements it consistently. Prefer finite watchdog budgets plus restartable continuation.
+
+\subsection{Telegram adapter and resolver-policy fragility}
+
+Observed: Early private/direct Telegram tests failed because Telegram polling DNS failed under the local Landlock policy. The root cause was \texttt{/etc/resolv.conf} symlinking into \texttt{/run/systemd/resolve}, which the policy did not permit. The local policy was patched to grant read-only access to the resolver path.
+
+Source pointers:
+\begin{itemize}
+  \item \texttt{projects/omegaclaw/PROJECT.md}, current state and risks.
+  \item \texttt{memory/2026-06-27.md}, lines 1--8.
+\end{itemize}
+
+Hardening implication: runtime policy should have explicit preflight checks for DNS, Telegram API reachability, local path access, temp directories, embedding cache, Chroma DB, and Gateway endpoint access. Policy failures should be detected before entering the live loop.
+
+\subsection{Gateway restart sensitivity and environment inheritance}
+
+Observed: On 2026-07-05, ProtoMegaBot was restarted by watchdog after the OpenClaw Gateway received \texttt{SIGTERM} twice. During the restart window, an embedded agent call failed with \texttt{EACCES: permission denied, mkdir '/home/ben/.openclaw/agents/main/sessions'}, indicating that some path or environment was resolving \texttt{HOME} to \texttt{/home/ben} instead of \texttt{/home/openclaw}. This was not an OpenAI key reauthorization failure; it was process/runtime/environment fragility around Gateway restart.
+
+Source pointers:
+\begin{itemize}
+  \item Telegram discussion with Ben on 2026-07-05.
+  \item Gateway journal excerpts inspected at 2026-07-05 03:13 PDT.
+\end{itemize}
+
+Hardening implication: OmegaClaw should pin \texttt{HOME}, \texttt{OPENCLAW\_HOME} if applicable, session directories, token file paths, and Gateway base URL in a minimal known environment. A Gateway restart should be treated as a retriable backend outage, not as a reason for the Telegram bot process to die.
+
+\section{Stability target}
+
+The team should define an explicit service-level target for ProtoMegaBot. A proposed target:
+
+\begin{enumerate}
+  \item The Telegram receive loop remains available across routine OpenClaw Gateway restarts.
+  \item A failed LLM/backend call returns a user-visible diagnostic within a bounded time.
+  \item A SWI/Janus/native crash is detected and restarted within 60 seconds, with crash evidence preserved.
+  \item The bot never silently drops a human message after acknowledging it, except where Telegram itself fails.
+  \item The bot never accumulates unbounded Gateway context, OmegaClaw history, attachment text, or worker transcripts in the live prompt.
+  \item Each live reply path has a smoke test that can be run without sending a real group message.
+  \item Restarts are rate-limited and escalated if crash loops occur.
+\end{enumerate}
+
+\section{Recommended architecture}
+
+\subsection{Principle: separate the organism from the organs}
+
+OmegaClaw's symbolic loop can remain the cognitive center, but operationally risky services should be separated into supervised organs:
+
+\begin{center}
+\begin{tabular}{p{0.25\linewidth} p{0.30\linewidth} p{0.33\linewidth}}
+\toprule
+Component & Current risk & Proposed boundary \\
+\midrule
+Telegram adapter & Polling/network/DNS/attachment errors can affect live loop & Separate adapter process or thread with durable inbound queue \\
+MeTTa/SWI core & Native crash kills bot & Supervised worker process with crash restart and state checkpoint \\
+Janus/Python calls & Python/native crashes and env leakage & Dedicated bounded subprocess per call or worker pool \\
+OpenClaw/LLM calls & Timeout, context blowup, Gateway restart & Structured RPC client with per-call sessions, retry policy, circuit breaker \\
+Memory/history & Prompt pollution, unbounded files & Versioned bounded memory store with compaction/quarantine \\
+ThreadKeeper/subagents & Long-running child work and queue semantics & Already moving toward bounded queued worker loop; keep separate from live chat path \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Proposed process layout}
+
+A robust near-term layout could be:
+
+\begin{Verbatim}[fontsize=\small]
+omegaclaw-supervisor
+  |
+  +-- telegram-ingress-adapter
+  |     - polls Telegram
+  |     - validates sender/chat/attachments
+  |     - writes inbound event records to inbox queue
+  |
+  +-- omegaclaw-controller
+  |     - reads inbox events
+  |     - manages conversation/task state
+  |     - invokes symbolic worker via RPC/subprocess
+  |     - writes outbound send requests
+  |
+  +-- symbolic-worker(s)
+  |     - runs MeTTa/SWI/PeTTa logic
+  |     - has per-task time/memory/prompt budgets
+  |     - can crash without losing inbox/outbox
+  |
+  +-- llm-client-worker(s)
+  |     - calls OpenClaw Gateway or raw providers
+  |     - per-call session id
+  |     - structured error returns
+  |
+  +-- outbox-sender
+        - sends Telegram replies
+        - records delivery status
+\end{Verbatim}
+
+This does not require a huge rewrite. The first implementation can be a thin file/JSONL queue and subprocess boundary around the current runner.
+
+\section{Hardening workstream 1: semantic health checks}
+
+\subsection{Problem}
+
+The current watchdog checks whether a PID exists. That is necessary but far from sufficient. A process can be alive while unable to poll Telegram, unable to call OpenClaw, wedged in Janus, blocked on a huge prompt, or repeatedly returning empty values.
+
+\subsection{Recommendation}
+
+Add a health checker that reports a compact JSON object, for example:
+
+\begin{Verbatim}[fontsize=\small]
+{
+  "status": "healthy" | "degraded" | "unhealthy",
+  "pid_alive": true,
+  "telegram_poll_age_s": 4.2,
+  "last_inbound_event_age_s": 120.5,
+  "last_successful_reply_age_s": 360.0,
+  "openclaw_probe": "ok",
+  "symbolic_probe": "ok",
+  "janus_probe": "ok",
+  "memory_probe": "ok",
+  "queue_depth": 0,
+  "last_error_class": null,
+  "restart_recommended": false
+}
+\end{Verbatim}
+
+The watchdog should restart when semantic health is bad, not only when the PID is dead.
+
+\subsection{Specific probes}
+
+\begin{enumerate}
+  \item \textbf{Telegram probe:} Can call \texttt{getMe}; polling offset is advancing or idle without error; send is available in dry-run mode.
+  \item \textbf{OpenClaw probe:} A tiny per-call session prompt returns within a small timeout. Use a non-expensive model route if possible.
+  \item \textbf{Symbolic probe:} A minimal MeTTa/SWI expression evaluates.
+  \item \textbf{Janus probe:} A trivial Python call returns expected value.
+  \item \textbf{Memory probe:} History file exists, is below budget, is parseable, and is not dominated by repeated error strings.
+  \item \textbf{Attachment probe:} Temp directory exists and is writable; configured max bytes/chars are sane.
+  \item \textbf{Queue probe:} Inbound/outbound queues have bounded depth and no stale claimed item.
+\end{enumerate}
+
+\subsection{Why this is needed}
+
+The 2026-06-28 issue where the Gateway session had grown to about \texttt{998k/272k} tokens would not necessarily kill the PID, but it made real replies stall. The previous silent \texttt{()} behavior also made the bot appear alive while not usefully responding. PID liveness alone cannot detect these cases.
+
+\section{Hardening workstream 2: crash containment and subprocess boundaries}
+
+\subsection{Problem}
+
+A SWI/Janus crash can kill the entire Telegram bot. Python calls, native embeddings, Chroma, and provider clients should not share a fatal crash domain with the message receiver.
+
+\subsection{Recommendation}
+
+Move risky operations behind subprocess or RPC boundaries:
+
+\begin{itemize}
+  \item Keep the Telegram ingress process small and boring.
+  \item Run each human message through a bounded worker invocation.
+  \item Persist the inbound message before invoking the worker.
+  \item Persist the worker result before sending the outbound message.
+  \item If the worker crashes, mark the event as failed, restart the worker, and optionally send a concise diagnostic.
+\end{itemize}
+
+A minimal first version can use command-line subprocesses and JSON files:
+
+\begin{Verbatim}[fontsize=\small]
+omegaclaw-run-one-event --event inbox/20260705T...json \
+  --result results/20260705T...json \
+  --timeout-s 900
+\end{Verbatim}
+
+\subsection{Crash bundle}
+
+On worker crash, preserve:
+
+\begin{itemize}
+  \item event id and Telegram metadata without secrets;
+  \item bounded prompt digest and prompt size;
+  \item last N log lines;
+  \item process exit code/signal;
+  \item model/session id;
+  \item relevant env hash/allowlisted env dump;
+  \item memory/history file size and checksum;
+  \item core dump pointer if available and safe.
+\end{itemize}
+
+\subsection{Why this is needed}
+
+The 2026-06-27 SWI/Janus segfault during message handling should have produced a preserved crash record and a restarted worker while Telegram polling remained alive. Instead, the whole live path had to be diagnosed after the fact.
+
+\section{Hardening workstream 3: structured error propagation}
+
+\subsection{Problem}
+
+Silent \texttt{()} values erased important distinctions:
+
+\begin{itemize}
+  \item backend timeout;
+  \item backend authentication failure;
+  \item context overflow;
+  \item empty model response;
+  \item parser failure;
+  \item local Python exception;
+  \item Telegram send failure.
+\end{itemize}
+
+\subsection{Recommendation}
+
+Define a standard result envelope for every boundary:
+
+\begin{Verbatim}[fontsize=\small]
+{
+  "ok": false,
+  "stage": "openclaw_call",
+  "error_class": "context_overflow",
+  "retryable": false,
+  "user_visible": true,
+  "summary": "Prompt exceeded model context budget.",
+  "diagnostic_ref": "runs/20260705T.../error.json",
+  "elapsed_ms": 1234,
+  "input_chars": 51234,
+  "output_chars": 0
+}
+\end{Verbatim}
+
+Then map these into MeTTa-level atoms deliberately, for example:
+
+\begin{Verbatim}[fontsize=\small]
+(LLMResult Error context_overflow RetryableFalse DiagnosticRef)
+\end{Verbatim}
+
+Do not use one empty atom/list for every failure.
+
+\subsection{User-visible failure policy}
+
+For live Telegram, a good failure response is short and honest:
+
+\begin{quote}
+I hit a backend context overflow while forming the response. I saved a diagnostic record and will need a shorter/compacted context before retrying.
+\end{quote}
+
+This is much better than silence, repeated \texttt{No response from OpenClaw.}, or a dead bot.
+
+\section{Hardening workstream 4: state and session hygiene}
+
+\subsection{Prompt budget enforcement}
+
+Before every LLM call, compute and record:
+
+\begin{itemize}
+  \item prompt character count;
+  \item approximate token count;
+  \item history contribution;
+  \item memory/RAG contribution;
+  \item attachment contribution;
+  \item tool-result feedback contribution.
+\end{itemize}
+
+If over budget, fail closed into a compaction path:
+
+\begin{enumerate}
+  \item save full raw context to local artifact if safe;
+  \item produce a bounded summary;
+  \item retry only if the summary is below budget;
+  \item record both original and compacted sizes.
+\end{enumerate}
+
+\subsection{History quarantine}
+
+The repeated \texttt{No response from OpenClaw.} pollution suggests a simple invariant:
+
+\begin{quote}
+If recent history is dominated by repeated backend-error text, quarantine it before it enters the next live prompt.
+\end{quote}
+
+Potential checks:
+
+\begin{itemize}
+  \item maximum history bytes;
+  \item maximum repeated line count;
+  \item maximum error-string density;
+  \item parseability of history file;
+  \item checksum and rotation metadata.
+\end{itemize}
+
+\subsection{Per-call Gateway sessions}
+
+Keep the already-applied fix as a permanent design rule:
+
+\begin{quote}
+OmegaClaw supplies its own prompt/history, so Gateway calls should use fresh per-call or per-task sessions unless an explicit bounded Gateway-side memory experiment is being run.
+\end{quote}
+
+The per-call session id should include a stable bot prefix and event/run id, not a human-readable secret.
+
+\section{Hardening workstream 5: environment pinning and preflight}
+
+\subsection{Problem}
+
+The 2026-07-05 \texttt{/home/ben/.openclaw} permission error shows that inherited environment and path resolution can break backend calls. Telegram DNS also previously failed because policy did not permit resolver paths.
+
+\subsection{Recommendation}
+
+Create a single non-secret runtime env manifest and validate it before launch:
+
+\begin{Verbatim}[fontsize=\small]
+HOME=/home/openclaw
+OPENCLAW_GATEWAY_BASE_URL=http://127.0.0.1:18789/v1
+OPENCLAW_MODEL=openclaw/default
+OPENCLAW_SESSION_PER_CALL=true
+OPENCLAW_HTTP_TIMEOUT=900
+OPENCLAW_SUBPROCESS_TIMEOUT=900
+CHROMA_DB_PATH=/home/openclaw/research-agent/projects/omegaclaw/repos/PeTTa/chroma_db
+HF_HOME=/home/openclaw/research-agent/projects/omegaclaw/local/huggingface
+SENTENCE_TRANSFORMERS_HOME=/home/openclaw/research-agent/projects/omegaclaw/local/sentence_transformers
+TMPDIR=/home/openclaw/tmp
+\end{Verbatim}
+
+Secrets should remain in a separate \texttt{0600} env file, never in the manifest.
+
+\subsection{Preflight checks}
+
+Before entering the live loop:
+
+\begin{enumerate}
+  \item Confirm \texttt{HOME} and any OpenClaw state path resolve under \texttt{/home/openclaw}, not \texttt{/home/ben}.
+  \item Confirm the Telegram token file exists, has mode \texttt{0600}, and validates with \texttt{getMe}; do not print the token.
+  \item Confirm Gateway health endpoint or tiny chat completion works.
+  \item Confirm DNS resolution works under the active policy.
+  \item Confirm required SWI libraries and Python imports load.
+  \item Confirm embedding model cache is readable.
+  \item Confirm history and memory files are within configured bounds.
+  \item Confirm log/artifact directories are writable.
+\end{enumerate}
+
+\subsection{Minimal child environment}
+
+For subprocess workers, pass only an allowlisted environment. This mirrors the ThreadKeeper hardening direction already taken: sanitize PATH, pin HOME, avoid inherited API keys, close stdin, bound output, and use argv-only subprocess calls.
+
+\section{Hardening workstream 6: supervision, restart policy, and crash-loop control}
+
+\subsection{Recommended supervisor behavior}
+
+A robust supervisor should:
+
+\begin{itemize}
+  \item preserve logs on restart instead of truncating the only copy;
+  \item rotate logs with timestamps;
+  \item distinguish clean exit, timeout, signal, health-check failure, and crash;
+  \item use exponential backoff after repeated crashes;
+  \item stop restarting and alert a human after a crash-loop threshold;
+  \item write a current status JSON file for external watchdogs;
+  \item support \texttt{start}, \texttt{stop}, \texttt{status}, \texttt{health}, \texttt{log}, and \texttt{diagnose} commands.
+\end{itemize}
+
+\subsection{Specific shell-script corrections}
+
+The current local supervisor has already improved from the original \texttt{set -e} behavior, but further hardening is recommended:
+
+\begin{enumerate}
+  \item Do not truncate \texttt{omegaclaw-telegram-private.log} on every restart without first rotating it. The 2026-07-05 restart log began at the restart, erasing direct evidence from the previous crash.
+  \item Use a lock file to avoid two supervisors starting the same bot.
+  \item Write \texttt{pid}, \texttt{start\_time}, \texttt{env\_manifest\_sha256}, and \texttt{supervisor\_version} into a status file.
+  \item On child exit, preserve exit status and last log lines in an incident record.
+  \item Add \texttt{health} as a separate command returning JSON.
+\end{enumerate}
+
+\section{Hardening workstream 7: queue-based message handling}
+
+\subsection{Why queues matter}
+
+Queues make crashes recoverable. If Telegram receives a message and the worker crashes before replying, the event should still exist as an inbox record with status \texttt{failed} or \texttt{retryable}. Without a queue, a message can disappear into a crashed process.
+
+\subsection{Minimal inbox/outbox design}
+
+Use JSONL or one-file-per-event records:
+
+\begin{Verbatim}[fontsize=\small]
+inbox/pending/<event-id>.json
+inbox/claimed/<event-id>.json
+inbox/done/<event-id>.json
+inbox/failed/<event-id>.json
+outbox/pending/<reply-id>.json
+outbox/sent/<reply-id>.json
+outbox/failed/<reply-id>.json
+\end{Verbatim}
+
+Each event should include:
+
+\begin{itemize}
+  \item source channel and chat id;
+  \item sender id;
+  \item message id;
+  \item received timestamp;
+  \item text and attachment metadata;
+  \item untrusted-content marker;
+  \item checksum of raw event bytes;
+  \item processing attempt count;
+  \item last error class.
+\end{itemize}
+
+\subsection{Connection to ThreadKeeper work}
+
+The ThreadKeeper branch already contains several relevant hardening patterns:
+
+\begin{itemize}
+  \item queue-only dispatch records;
+  \item checksum sidecars;
+  \item atomic claim/done/failed transitions;
+  \item bounded worker loop;
+  \item stop-file handling;
+  \item lock metadata;
+  \item transcript checksums;
+  \item hash-chained compact index records;
+  \item strict schema validation before worker calls;
+  \item retained failed task records.
+\end{itemize}
+
+These patterns should be reused for OmegaClaw's live Telegram event path rather than reinvented ad hoc.
+
+\section{Hardening workstream 8: observability and operator UX}
+
+\subsection{Structured logs}
+
+Add JSONL logs for major events:
+
+\begin{itemize}
+  \item supervisor start/stop/restart;
+  \item inbound Telegram event accepted/ignored;
+  \item prompt built;
+  \item LLM call started/ended;
+  \item backend error;
+  \item memory compaction/quarantine;
+  \item worker crash;
+  \item outbound send success/failure;
+  \item health-check result.
+\end{itemize}
+
+Each log should include a \texttt{run\_id} or \texttt{event\_id} so one message can be traced across the system.
+
+\subsection{Operator commands}
+
+Add or document commands equivalent to:
+
+\begin{Verbatim}[fontsize=\small]
+omegaclaw status --json
+omegaclaw health --json
+omegaclaw diagnose --since 1h
+omegaclaw replay --event inbox/failed/...
+omegaclaw compact-history --dry-run
+omegaclaw rotate-logs
+omegaclaw preflight --telegram --openclaw --policy
+\end{Verbatim}
+
+\subsection{Alerting policy}
+
+Alert Ben or the team only for material conditions:
+
+\begin{itemize}
+  \item crash loop threshold reached;
+  \item paid compute/cost exposure;
+  \item credentials or permission boundary problem;
+  \item repeated message delivery failure;
+  \item data-loss risk;
+  \item semantic health unhealthy after restart.
+\end{itemize}
+
+Avoid alerting for acknowledged known blockers or routine restarts that self-heal.
+
+\section{Hardening workstream 9: staging gates}
+
+Every reliability feature should pass gates before live group operation.
+
+\subsection{Gate 0: static and preflight}
+
+\begin{itemize}
+  \item Python compile.
+  \item Shell syntax.
+  \item MeTTa/SWI minimal import smoke.
+  \item Env manifest validation.
+  \item Policy path validation.
+\end{itemize}
+
+\subsection{Gate 1: non-live local smoke}
+
+No Telegram, no real user message. Use a synthetic inbox event and local mock send.
+
+Expected result: one event moves from pending to done, one outbox message is produced, logs and transcript are written.
+
+\subsection{Gate 2: private/direct Telegram smoke}
+
+Single allowed user, private chat, bounded prompt, cheap model route if possible.
+
+Expected result: fresh ping receives reply; health JSON shows success; no group messages.
+
+\subsection{Gate 3: supervised group smoke}
+
+Allowed group/channel only, no autonomous extended discussion. Fresh ping or controlled command.
+
+Expected result: reply to source chat/thread, no duplicate sends, no stale pending update replay.
+
+\subsection{Gate 4: stress and fault injection}
+
+Inject:
+
+\begin{itemize}
+  \item Gateway unavailable;
+  \item Gateway returns context overflow;
+  \item worker timeout;
+  \item Janus worker crash;
+  \item malformed attachment;
+  \item history over budget;
+  \item wrong HOME in environment;
+  \item Telegram DNS failure;
+  \item duplicate supervisor start.
+\end{itemize}
+
+Expected result: no lost event, bounded diagnostic, preserved incident record, and correct restart/backoff behavior.
+
+\section{Implementation roadmap}
+
+\subsection{Phase 1: immediate hardening, 1--3 days}
+
+\begin{enumerate}
+  \item Add log rotation before supervisor restart; never destroy the only crash log.
+  \item Add \texttt{health --json} to the supervisor using existing probes.
+  \item Add env manifest validation, especially \texttt{HOME=/home/openclaw} and Gateway state paths.
+  \item Add prompt/history budget checks before OpenClaw calls.
+  \item Make backend result envelopes explicit at the Python boundary.
+  \item Add a small non-live \texttt{run-one-event} smoke using a synthetic event.
+\end{enumerate}
+
+Deliverable: a supervisor restart preserves logs and health checks catch bad Gateway/session/history states before Ben notices bot silence.
+
+\subsection{Phase 2: queue and incident records, 3--7 days}
+
+\begin{enumerate}
+  \item Introduce inbox/outbox event records with pending/claimed/done/failed transitions.
+  \item Persist per-message run records with checksum sidecars.
+  \item Add crash bundles for worker exits/signals/timeouts.
+  \item Add retry/backoff policy for retryable backend errors.
+  \item Add operator \texttt{diagnose} and \texttt{replay} commands.
+\end{enumerate}
+
+Deliverable: a crashed worker no longer loses messages, and a failed Telegram turn has enough evidence for reproducible diagnosis.
+
+\subsection{Phase 3: subprocess isolation, 1--2 weeks}
+
+\begin{enumerate}
+  \item Move Janus/Python/OpenClaw calls into a bounded subprocess or worker pool.
+  \item Keep Telegram ingress independent from symbolic worker lifetime.
+  \item Add memory and CPU limits where feasible.
+  \item Add fault-injection tests for worker crash, Gateway restart, and bad history.
+\end{enumerate}
+
+Deliverable: SWI/Janus or Python crashes no longer kill the Telegram receive loop.
+
+\subsection{Phase 4: operational polish, 2--4 weeks}
+
+\begin{enumerate}
+  \item Add structured metrics dashboard or periodic compact report.
+  \item Add circuit breaker for repeated backend/model failures.
+  \item Integrate ThreadKeeper queued worker loop for long-running tasks behind explicit task contracts.
+  \item Add high-stakes adjudication gates for actions beyond ordinary replies.
+  \item Prepare upstreamable patches where useful.
+\end{enumerate}
+
+Deliverable: ProtoMegaBot becomes an inspectable, recoverable service rather than a manually nursed research loop.
+
+\section{Concrete design examples}
+
+\subsection{Example: OpenClaw call wrapper}
+
+Instead of returning raw text or \texttt{()}, the Python/OpenClaw wrapper should return:
+
+\begin{Verbatim}[fontsize=\small]
+{
+  "ok": true,
+  "stage": "openclaw_call",
+  "model": "openclaw/default",
+  "session_user": "protomegabot-event-20260705T102300Z-a1b2",
+  "elapsed_ms": 28450,
+  "input_chars": 18722,
+  "output_chars": 2190,
+  "text": "..."
+}
+\end{Verbatim}
+
+or:
+
+\begin{Verbatim}[fontsize=\small]
+{
+  "ok": false,
+  "stage": "openclaw_call",
+  "error_class": "gateway_unavailable",
+  "retryable": true,
+  "elapsed_ms": 5030,
+  "summary": "OpenClaw Gateway connection failed or restarted.",
+  "diagnostic_ref": "artifacts/incidents/20260705T.../openclaw-error.json"
+}
+\end{Verbatim}
+
+\subsection{Example: history budget guard}
+
+Before building a prompt:
+
+\begin{Verbatim}[fontsize=\small]
+if history_bytes > MAX_HISTORY_BYTES:
+    quarantine(history_file, reason="history_over_budget")
+    summary = summarize_or_seed_context(history_file)
+    if len(summary) > MAX_HISTORY_SUMMARY_BYTES:
+        return structured_error("history_compaction_failed")
+\end{Verbatim}
+
+This directly addresses the polluted history and 51k-character prompt incident.
+
+\subsection{Example: Gateway restart handling}
+
+If OpenClaw returns connection failure or Gateway restart symptoms:
+
+\begin{enumerate}
+  \item Mark the current event attempt as retryable.
+  \item Sleep/backoff within the worker budget.
+  \item Retry at most N times with a fresh per-call session.
+  \item If still failing, send a concise diagnostic and preserve the event for replay.
+\end{enumerate}
+
+Do not let a transient Gateway SIGTERM kill the Telegram loop.
+
+\subsection{Example: supervisor log preservation}
+
+Before restart:
+
+\begin{Verbatim}[fontsize=\small]
+if [ -f "$LOG_FILE" ]; then
+  ts=$(date +%Y%m%dT%H%M%S%z)
+  cp "$LOG_FILE" "$LOG_DIR/omegaclaw-telegram-private.$ts.pre-restart.log"
+fi
+: > "$LOG_FILE"
+\end{Verbatim}
+
+Better: write each run to a new log file and update a \texttt{current.log} symlink.
+
+\section{Risks and tradeoffs}
+
+\subsection{More machinery can obscure the symbolic architecture}
+
+Risk: the team could bury OmegaClaw under operational scaffolding.
+
+Mitigation: keep the symbolic core pure where possible, but make boundaries explicit. The scaffolding should be boring and testable.
+
+\subsection{Too much restart can hide bugs}
+
+Risk: automatic restarts make crashes less visible.
+
+Mitigation: crash-loop thresholds, incident bundles, and alerting. Restart for availability, but preserve evidence for diagnosis.
+
+\subsection{Queues can introduce duplicate replies}
+
+Risk: retrying after uncertain send status can duplicate Telegram messages.
+
+Mitigation: outbox records should store Telegram message ids after send; retry only when send is known not to have completed, or mark uncertain cases for operator review.
+
+\subsection{Per-call sessions can lose useful continuity}
+
+Risk: per-call Gateway sessions avoid context blowup but remove accidental continuity.
+
+Mitigation: continuity should come from OmegaClaw's explicit memory/history, with quotas and summaries, not from unbounded Gateway session state.
+
+\section{Success criteria}
+
+A hardening release should be considered successful when:
+
+\begin{enumerate}
+  \item A forced Gateway restart during an OmegaClaw call produces a retryable structured error or delayed reply, not a dead bot.
+  \item A synthetic Janus worker crash is recorded and recovered without killing Telegram ingress.
+  \item A deliberately overlarge history file is quarantined before an LLM call.
+  \item A wrong \texttt{HOME=/home/ben} environment fails preflight before launch.
+  \item Repeated backend failures do not pollute future prompts with repeated \texttt{No response from OpenClaw.}
+  \item The watchdog can distinguish healthy, degraded, unhealthy, and crash-loop states.
+  \item A failed event can be replayed from an artifact without asking Ben to resend the original message.
+\end{enumerate}
+
+\section{Appendix: minimal checklist for the hardening team}
+
+\begin{longtable}{p{0.08\linewidth} p{0.56\linewidth} p{0.26\linewidth}}
+\toprule
+Priority & Item & Evidence to require \\
+\midrule
+P0 & Preserve logs across restart & Pre-restart log file exists after forced restart \\
+P0 & Env preflight pins \texttt{HOME=/home/openclaw} & Wrong-HOME test fails closed \\
+P0 & Per-call Gateway sessions stay enabled & No fixed session token growth across repeated calls \\
+P0 & Prompt/history budget guard & Over-budget history quarantined before provider call \\
+P0 & Structured OpenClaw errors & Context overflow returns typed error, not \texttt{()} \\
+P1 & Semantic \texttt{health --json} & Bad Gateway, bad memory, bad Janus each detected \\
+P1 & Inbox/outbox event records & Crash leaves replayable failed event \\
+P1 & Worker subprocess boundary & Synthetic Janus crash does not kill Telegram poller \\
+P1 & Crash-loop backoff & Repeated crash stops restart storm and alerts \\
+P2 & Fault-injection suite & Gateway restart, DNS failure, bad attachment, timeout covered \\
+P2 & ThreadKeeper integration & Long tasks go through queued audited worker loop \\
+P2 & Operator diagnostics & \texttt{diagnose --since 1h} links errors to event ids \\
+\bottomrule
+\end{longtable}
+
+\section{Closing note}
+
+OmegaClaw should not be made stable by making it timid. It should be made stable by making its experiments recoverable. The right target is a cognitive system that can still run unusual symbolic/LLM workflows, but where every risky operation has a boundary, every boundary has a typed result, every crash leaves evidence, and every live message is either answered, queued, or explicitly failed with a reason.
+
+\end{document}

@@ -46,11 +46,19 @@ This project covers two separate recovery targets:
 - Local planning scaffold created on 2026-06-28 under `projects/agent-recovery/`.
 - GitHub CLI is authenticated as `bgoertzel-sing`.
 - `/home/openclaw/research-agent` itself is not currently a Git repository.
-- Remote repository creation is blocked pending Benjamin confirmation of owner/name/visibility.
+- Private recovery repositories exist and are active:
+  - `bgoertzel-sing/zerobot-recovery`
+  - `bgoertzel-sing/protomegabot-recovery`
+- Daily OpenClaw cron job `Daily agent recovery GitHub backup` (`5ae59dd5-dfe3-4ace-999d-a08ca153325e`) runs at 03:30 America/Vancouver with no success announcement and failure alerts to the scheduled-updates channel.
+- 2026-07-07 repair: tightened the backup secret scanner so hyphenated internal IDs such as `sk-board-...` no longer false-positive as OpenAI-style keys, added venv exclusion/deletion for Protomegabot local snapshots, added fetch/rebase-before-push handling, and successfully pushed fresh snapshots (`zerobot-recovery` `2ef932d`, `protomegabot-recovery` `25c8b3c`).
+- 2026-07-15 scheduler repair: the backup script and synchronization were healthy,
+  but the isolated cron was marked failed when its agent produced no final
+  response after tool success. The job now pins a valid model and must return
+  `NO_REPLY` after exact clean/divergence checks. A forced run completed `ok`.
 
-## Proposed repository names
+## Repository names
 
-| Recovery target | Proposed repo | Visibility | Notes |
+| Recovery target | Repo | Visibility | Notes |
 |---|---|---|---|
 | ZeroBot/OpenClaw | `bgoertzel-sing/zerobot-recovery` | private | Main OpenClaw research-agent recovery context. |
 | Protomegabot/OmegaClaw | `bgoertzel-sing/protomegabot-recovery` | private | Separate bot/runtime recovery; excludes bot token and provider credentials. |

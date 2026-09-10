@@ -1,0 +1,3 @@
+
+- [x] Completed typed Phase-1 `EvidenceSnapshot`: deterministic packet selection, ACTIVE/context/assumption/ontology closure, duplicate-ID rejection, and an order-invariant fingerprint over packet evidence content/provenance. Focused 20 tests and full 460 tests passed; `git diff --check` passed. No runtime/live/write/promotion path invoked.
+- [x] Reconciled `catalog/KANBAN.md` against authoritative project records (approved and completed 2026-07-27). Acceptance evidence: all 22 project notebooks are named; stale running/blocked claims were removed; source links resolve; current cron state was checked; `git diff --check` passes. Evidence: `catalog/KANBAN.md`, `memory/2026-07-27.md`.

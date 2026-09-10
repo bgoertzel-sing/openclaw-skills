@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "outbound_channels": "disabled",
+  "targets": {
+    "zerobot": {
+      "transport": "openclaw-agent-cli",
+      "backend_model": "openai/gpt-5.6-terra",
+      "session_id": "phase5-zerobot-shadow-20260803"
+    },
+    "protocosmo2": {
+      "transport": "openclaw-agent-cli",
+      "backend_model": "openai/gpt-5.6-terra",
+      "session_id": "phase5-protocosmo2-shadow-20260803",
+      "system_prompt_file": "/home/openclaw/research-agent/projects/omegaclaw/protocosmo2/config/phase5-runtime-prompt.txt"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# Git State
+Captured UTC: 2026-07-24T19:22:00Z
+Working directory: /home/openclaw/research-agent/projects/morkql/repos/MORK
+Commit: 7673b02c220e36cab6395944977c90a75f5a4c29
+Branch: agent/e5-epc-kernel-probe
+Remote names: origin
+
+## Status
+## agent/e5-epc-kernel-probe
+
+## Diff summary
+
+Remote URLs and full diffs are omitted to reduce credential leakage.

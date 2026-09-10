@@ -1,0 +1,31 @@
+{
+  "contract_version": "frame-oracle-v7-gate-1",
+  "opened": false,
+  "answer_file_sha256": "43e04136872ac385b02b23590a46e73de57023ee1a7499ad33ec84c1414c4067",
+  "cases": [
+    {"case_id": "v7_capital_lyrava_plain", "sentence": "Lyrava is the capital of Orsen.", "stratum": "capital"},
+    {"case_id": "v7_capital_merev_plain", "sentence": "Merev is the capital of Darsin.", "stratum": "capital"},
+    {"case_id": "v7_author_amber_ledger_plain", "sentence": "Sela Vorn wrote The Amber Ledger.", "stratum": "authorship"},
+    {"case_id": "v7_author_quiet_meridian_plain", "sentence": "The Quiet Meridian was written by Iven Ro.", "stratum": "authorship"},
+    {"case_id": "v7_location_basalt_archive_plain", "sentence": "The basalt archive is located in Qorin.", "stratum": "location"},
+    {"case_id": "v7_location_silver_gantry_negated", "sentence": "The silver gantry is not located in Pelar.", "stratum": "location"},
+    {"case_id": "v7_state_north_turbine_plain", "sentence": "The north turbine is active.", "stratum": "state"},
+    {"case_id": "v7_negation_zaref_capital", "sentence": "Zaref is not the capital of Monda.", "stratum": "negation"},
+    {"case_id": "v7_negation_clockwork_delta", "sentence": "Nira Pell did not write The Clockwork Delta.", "stratum": "negation"},
+    {"case_id": "v7_negation_cedar_vault", "sentence": "The cedar vault is not in Rusk.", "stratum": "negation"},
+    {"case_id": "v7_negation_east_beacon", "sentence": "The east beacon is not dormant.", "stratum": "negation"},
+    {"case_id": "v7_modality_tavin_capital", "sentence": "Tavin might be the capital of Eshra.", "stratum": "modality"},
+    {"case_id": "v7_modality_green_ratio", "sentence": "Oren Vale could have written The Green Ratio.", "stratum": "modality"},
+    {"case_id": "v7_modality_cloud_depot", "sentence": "The cloud depot may be in Surn.", "stratum": "modality"},
+    {"case_id": "v7_modality_harbor_lamp", "sentence": "The harbor lamp might be stable.", "stratum": "modality"},
+    {"case_id": "v7_modality_negation_lower_pump", "sentence": "The lower pump may not be operational.", "stratum": "modality_negation"},
+    {"case_id": "v7_unknown_question", "sentence": "Why did the third bell ring before dawn?", "stratum": "abstention"},
+    {"case_id": "v7_unknown_fragment", "sentence": "Beyond the violet stairwell.", "stratum": "abstention"},
+    {"case_id": "v7_unknown_outside_ontology", "sentence": "The copper disk weighs seven kilograms.", "stratum": "abstention"},
+    {"case_id": "v7_unknown_two_propositions", "sentence": "Ruva is the capital of Teren, and the west pier is closed.", "stratum": "abstention"},
+    {"case_id": "v7_world_canberra_capital", "sentence": "Canberra is the capital of New Zealand.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v7_world_frankenstein_author", "sentence": "Frankenstein was written by Charles Dickens.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v7_world_sahara_location", "sentence": "The Sahara Desert is located in Brazil.", "stratum": "world_knowledge_trap"},
+    {"case_id": "v7_world_moon_state", "sentence": "The Moon is made of polished glass.", "stratum": "world_knowledge_trap"}
+  ]
+}

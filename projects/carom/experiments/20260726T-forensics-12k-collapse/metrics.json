@@ -1,0 +1,1717 @@
+{
+  "checkpoints": [
+    {
+      "cka_vs_previous": null,
+      "evaluation": {
+        "edges": {
+          "auprc": 0.32361752550486966,
+          "auroc": 0.528484529449611,
+          "exact_graph": 0.0,
+          "pos_recall@.5": 1.0,
+          "predicted_positive_rate": 1.0,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.14062500000000003,
+          "coverage": 0.18619791666666663,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 58.21875,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.140625
+      },
+      "gradients": {
+        "early_to_late": 0.038728101849991294,
+        "edge_loss": 0.16127845644950867,
+        "entry_loss": 0.9859760403633118,
+        "groups": {
+          "L1_query": 0.00010554816754337033,
+          "L2_key": 0.00010172644304390238,
+          "L3_value": 0.0036305991811962685,
+          "L4_transform": 0.10389976278149053,
+          "L5_gate": 0.00046798229435388006,
+          "edge_head": 0.9256495835236491,
+          "embedding": 0.01923915041989538,
+          "entry_head": 0.06630724622755499,
+          "fitness_head": 0.0004235977486111901,
+          "hyper_head": 0.010469547129175222,
+          "task_head": 0.3977592402798044
+        },
+        "loss": 2.431614637374878,
+        "task_loss": 2.073140859603882
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 35.07677808392201,
+          "participation_ratio": 28.548589793516634
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.0422579049565364,
+          "participation_ratio": 1.0108598621973766
+        },
+        "task": {
+          "effective_rank": 4.413198406351962,
+          "participation_ratio": 3.7844067275570232
+        },
+        "trajectory": {
+          "effective_rank": 2.506224036201755,
+          "participation_ratio": 2.087616515899851
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.2968,
+        "legacy_tau": 0.0404,
+        "task_acc": 0.1387
+      },
+      "step": 0,
+      "weight_norm": {
+        "L1_query": 3.987928278942779,
+        "L2_key": 3.9998131718261734,
+        "L3_value": 4.005392865102884,
+        "L4_transform": 5.648878580638337,
+        "L5_gate": 3.9919863600756362,
+        "edge_head": 50.603275018291626,
+        "embedding": 26.75696483492806,
+        "entry_head": 29.93631901578267,
+        "fitness_head": 8.1190742012069,
+        "hyper_head": 32.044723978016876,
+        "task_head": 9.098500589419373
+      },
+      "weight_ratio": {
+        "L1_query": 1.0,
+        "L2_key": 1.0,
+        "L3_value": 1.0,
+        "L4_transform": 1.0,
+        "L5_gate": 1.0,
+        "edge_head": 1.0,
+        "embedding": 1.0,
+        "entry_head": 1.0,
+        "fitness_head": 1.0,
+        "hyper_head": 1.0,
+        "task_head": 1.0
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.15159679271503362,
+        "edge": 0.8178169658930977,
+        "entry": 0.02309639045769756,
+        "fitness": 0.0011013354401216411,
+        "hyper": 0.8200301492111656,
+        "task": 0.03239639222330934,
+        "trajectory": 0.06249012674090547
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.43562377616686004,
+          "auroc": 0.6779990641633035,
+          "exact_graph": 0.0,
+          "pos_recall@.5": 0.0,
+          "predicted_positive_rate": 0.0,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.8844401041666662,
+          "coverage": 0.729166666666667,
+          "exact_order": 0.3671875,
+          "first_visit_tau": 0.9609375,
+          "mean_dwell": 24.46875,
+          "revisits": 0.0,
+          "trans_prec": 0.6015625,
+          "trans_rec": 0.47005208333333337,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.2408854216337204
+      },
+      "gradients": {
+        "early_to_late": 0.28265895973343913,
+        "edge_loss": 0.13843867182731628,
+        "entry_loss": 0.0009992658160626888,
+        "groups": {
+          "L1_query": 0.08190573170269459,
+          "L2_key": 0.12442511860816247,
+          "L3_value": 0.1410767115156444,
+          "L4_transform": 0.38859893409070884,
+          "L5_gate": 0.02857480735750562,
+          "edge_head": 0.15952321867404728,
+          "embedding": 0.023143084240224824,
+          "entry_head": 0.0009915329996653963,
+          "fitness_head": 0.01773180630096111,
+          "hyper_head": 2.7947159792086076,
+          "task_head": 0.3946665581392699
+        },
+        "loss": 2.0144364833831787,
+        "task_loss": 1.8757981061935425
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 3.2062131566230128,
+          "participation_ratio": 2.0658770765204744
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 2.1534742979388057,
+          "participation_ratio": 1.8713791933274757
+        },
+        "task": {
+          "effective_rank": 3.2777831363196253,
+          "participation_ratio": 2.8421317776669106
+        },
+        "trajectory": {
+          "effective_rank": 2.8150574864025324,
+          "participation_ratio": 2.339232851617477
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7032,
+        "legacy_tau": 0.9974,
+        "task_acc": 0.224
+      },
+      "step": 1000,
+      "weight_norm": {
+        "L1_query": 5.495528844655931,
+        "L2_key": 5.577550247181315,
+        "L3_value": 5.3161242371417465,
+        "L4_transform": 6.935291899336937,
+        "L5_gate": 4.468499457372606,
+        "edge_head": 51.918661182519514,
+        "embedding": 26.802311626195802,
+        "entry_head": 36.91620982170061,
+        "fitness_head": 8.38006589139424,
+        "hyper_head": 40.59439066545023,
+        "task_head": 9.191153388480673
+      },
+      "weight_ratio": {
+        "L1_query": 1.3780410429329049,
+        "L2_key": 1.3944526925578382,
+        "L3_value": 1.3272416504904305,
+        "L4_transform": 1.227728973164304,
+        "L5_gate": 1.119367416197269,
+        "edge_head": 1.0259940915632915,
+        "embedding": 1.001694765887966,
+        "entry_head": 1.2331579511241209,
+        "fitness_head": 1.0321454988240586,
+        "hyper_head": 1.2668041919567958,
+        "task_head": 1.0101833041775088
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.47448364311829977,
+        "edge": 0.9930228361537398,
+        "entry": 0.9964500029324904,
+        "fitness": 0.139377839647573,
+        "hyper": 0.8920641228077266,
+        "task": 0.3764165482193798,
+        "trajectory": 0.526542643420435
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.42533861613097623,
+          "auroc": 0.681194069134936,
+          "exact_graph": 0.0,
+          "pos_recall@.5": 0.0,
+          "predicted_positive_rate": 0.0,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.6436631944444444,
+          "coverage": 0.6438802083333334,
+          "exact_order": 0.3671875,
+          "first_visit_tau": 0.65625,
+          "mean_dwell": 28.078125,
+          "revisits": 0.0,
+          "trans_prec": 0.515625,
+          "trans_rec": 0.4375,
+          "unclassified_phases": 1.0078125
+        },
+        "task_acc_repaired_corpus": 0.3046875
+      },
+      "gradients": {
+        "early_to_late": 0.28910996192831284,
+        "edge_loss": 0.13693875074386597,
+        "entry_loss": 0.0001707577466731891,
+        "groups": {
+          "L1_query": 0.15421240545775305,
+          "L2_key": 0.13214790045662986,
+          "L3_value": 0.13354649163566298,
+          "L4_transform": 0.5951295594782254,
+          "L5_gate": 0.081850783402834,
+          "edge_head": 0.058585274344783625,
+          "embedding": 0.03913126317477285,
+          "entry_head": 0.0001513902137735491,
+          "fitness_head": 0.4597485082364852,
+          "hyper_head": 11.815673141876813,
+          "task_head": 0.4488596901575255
+        },
+        "loss": 1.833275556564331,
+        "task_loss": 1.6963027715682983
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 5.186604599996466,
+          "participation_ratio": 3.4156545365031805
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 2.7360321852427254,
+          "participation_ratio": 2.287432643597871
+        },
+        "task": {
+          "effective_rank": 2.291261039742048,
+          "participation_ratio": 1.597773361334653
+        },
+        "trajectory": {
+          "effective_rank": 3.0197932692765854,
+          "participation_ratio": 2.658143848330164
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7032,
+        "legacy_tau": 0.9961,
+        "task_acc": 0.2923
+      },
+      "step": 2000,
+      "weight_norm": {
+        "L1_query": 8.877133749719818,
+        "L2_key": 9.047757520948807,
+        "L3_value": 8.521167591598813,
+        "L4_transform": 10.590952700502148,
+        "L5_gate": 8.12467328290501,
+        "edge_head": 55.61782594372703,
+        "embedding": 26.43741991919606,
+        "entry_head": 38.72988047685102,
+        "fitness_head": 9.039657636092043,
+        "hyper_head": 55.09389208993086,
+        "task_head": 10.137598536864104
+      },
+      "weight_ratio": {
+        "L1_query": 2.226001354285437,
+        "L2_key": 2.2620450336728903,
+        "L3_value": 2.1274236706815364,
+        "L4_transform": 1.8748770307796816,
+        "L5_gate": 2.0352457523805443,
+        "edge_head": 1.099095383127333,
+        "embedding": 0.9880575051130287,
+        "entry_head": 1.2937422418712305,
+        "fitness_head": 1.113385271777452,
+        "hyper_head": 1.719281218578323,
+        "task_head": 1.1142054053008574
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.7806737200407271,
+        "edge": 0.99592310921542,
+        "entry": 0.9990883774363989,
+        "fitness": 0.17349967687683862,
+        "hyper": 0.9001032501861087,
+        "task": 0.6326045143901006,
+        "trajectory": 0.6484656906671548
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.45613512357454883,
+          "auroc": 0.7022101830730537,
+          "exact_graph": 0.0,
+          "pos_recall@.5": 0.0,
+          "predicted_positive_rate": 0.0,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.5820312499999998,
+          "coverage": 0.6354166666666667,
+          "exact_order": 0.2890625,
+          "first_visit_tau": 0.6328125,
+          "mean_dwell": 27.515625000000004,
+          "revisits": 0.078125,
+          "trans_prec": 0.44140625,
+          "trans_rec": 0.41796875,
+          "unclassified_phases": 1.1015625
+        },
+        "task_acc_repaired_corpus": 0.3216145932674408
+      },
+      "gradients": {
+        "early_to_late": 0.4616853586074109,
+        "edge_loss": 0.13527877628803253,
+        "entry_loss": 4.168064333498478e-05,
+        "groups": {
+          "L1_query": 0.16747340262662105,
+          "L2_key": 0.14919183253035617,
+          "L3_value": 0.07633561275635126,
+          "L4_transform": 0.3599905071249666,
+          "L5_gate": 0.07364640720110259,
+          "edge_head": 0.7390264248209402,
+          "embedding": 0.05808435760378654,
+          "entry_head": 4.592953864174007e-05,
+          "fitness_head": 0.29450655052654123,
+          "hyper_head": 1.4216825430284268,
+          "task_head": 0.3780621915132996
+        },
+        "loss": 1.715237021446228,
+        "task_loss": 1.5799498558044434
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 6.762688709629011,
+          "participation_ratio": 4.41297559956523
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 2.1654526339331626,
+          "participation_ratio": 1.626860069460453
+        },
+        "task": {
+          "effective_rank": 2.0865812373839034,
+          "participation_ratio": 1.4831865749745663
+        },
+        "trajectory": {
+          "effective_rank": 3.133120979703988,
+          "participation_ratio": 2.796184881094141
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7032,
+        "legacy_tau": 0.987,
+        "task_acc": 0.3268
+      },
+      "step": 3000,
+      "weight_norm": {
+        "L1_query": 16.594770792237885,
+        "L2_key": 16.830701651414415,
+        "L3_value": 13.319453079367047,
+        "L4_transform": 18.46148673079194,
+        "L5_gate": 12.90572159194772,
+        "edge_head": 62.813426066799764,
+        "embedding": 25.41890547158343,
+        "entry_head": 40.17995026849007,
+        "fitness_head": 9.884578198720984,
+        "hyper_head": 72.25262432237322,
+        "task_head": 11.640143010717262
+      },
+      "weight_ratio": {
+        "L1_query": 4.161251063581627,
+        "L2_key": 4.207871950111638,
+        "L3_value": 3.325379938485739,
+        "L4_transform": 3.2681684456927638,
+        "L5_gate": 3.2329072366127014,
+        "edge_head": 1.2412917156862777,
+        "embedding": 0.9499921096581945,
+        "entry_head": 1.342180721928667,
+        "fitness_head": 1.2174513933191597,
+        "hyper_head": 2.2547432261217017,
+        "task_head": 1.2793473931576769
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.7981841594644314,
+        "edge": 0.9968904950666693,
+        "entry": 0.9993106177270767,
+        "fitness": 0.22640391737351015,
+        "hyper": 0.9447364505465993,
+        "task": 0.19837561881926738,
+        "trajectory": 0.4816694691603686
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.4674453309992514,
+          "auroc": 0.7237088378078025,
+          "exact_graph": 0.0,
+          "pos_recall@.5": 0.0,
+          "predicted_positive_rate": 0.0,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.7588975694444441,
+          "coverage": 0.5032552083333336,
+          "exact_order": 0.15625,
+          "first_visit_tau": 0.3359375,
+          "mean_dwell": 34.78125,
+          "revisits": 0.0,
+          "trans_prec": 0.2421875,
+          "trans_rec": 0.19661458333333331,
+          "unclassified_phases": 0.921875
+        },
+        "task_acc_repaired_corpus": 0.1822916716337204
+      },
+      "gradients": {
+        "early_to_late": 19.47157570967437,
+        "edge_loss": 0.15787051618099213,
+        "entry_loss": 1.630034967092797e-05,
+        "groups": {
+          "L1_query": 4897.584589506828,
+          "L2_key": 4058.501083864158,
+          "L3_value": 88.1171582745009,
+          "L4_transform": 445.26310680225964,
+          "L5_gate": 165.10178096334553,
+          "edge_head": 11.450214268273616,
+          "embedding": 2935.954495106026,
+          "entry_head": 0.0165429194238463,
+          "fitness_head": 1315.5277843790698,
+          "hyper_head": 9465.545384431422,
+          "task_head": 0.37357253108780625
+        },
+        "loss": 2.1027026176452637,
+        "task_loss": 1.9448288679122925
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.344796640832465,
+          "participation_ratio": 6.4729066988553825
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.9266554011747536,
+          "participation_ratio": 1.444752755580616
+        },
+        "task": {
+          "effective_rank": 1.4018642282479323,
+          "participation_ratio": 1.139186696912668
+        },
+        "trajectory": {
+          "effective_rank": 3.049367357477105,
+          "participation_ratio": 2.664334091742805
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7032,
+        "legacy_tau": 0.793,
+        "task_acc": 0.1667
+      },
+      "step": 4000,
+      "weight_norm": {
+        "L1_query": 25.79992699726676,
+        "L2_key": 25.707283387267914,
+        "L3_value": 19.44360454029491,
+        "L4_transform": 26.73936337303225,
+        "L5_gate": 16.004528673463632,
+        "edge_head": 66.97056015403165,
+        "embedding": 24.82234843858081,
+        "entry_head": 41.27821107980761,
+        "fitness_head": 10.812334734603665,
+        "hyper_head": 89.40809058038195,
+        "task_head": 12.7245387528928
+      },
+      "weight_ratio": {
+        "L1_query": 6.469506268078236,
+        "L2_key": 6.4271210386386315,
+        "L3_value": 4.854356412749907,
+        "L4_transform": 4.73357021067545,
+        "L5_gate": 4.009164167875662,
+        "edge_head": 1.3234431986827675,
+        "embedding": 0.9276967171619617,
+        "entry_head": 1.3788672901984178,
+        "fitness_head": 1.3317201526494749,
+        "hyper_head": 2.79010331440886,
+        "task_head": 1.398531398425158
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.6735494782192984,
+        "edge": 0.9896755318938447,
+        "entry": 0.9984380890984498,
+        "fitness": 0.009031633698294362,
+        "hyper": 0.954825162665741,
+        "task": 0.029043490239518445,
+        "trajectory": 0.4857819182203151
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5026082562040867,
+          "auroc": 0.7374831841843599,
+          "exact_graph": 0.2578125,
+          "pos_recall@.5": 0.32926830649375916,
+          "predicted_positive_rate": 0.18453865336658354,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.3715277777777777,
+          "coverage": 0.48242187500000017,
+          "exact_order": 0.1015625,
+          "first_visit_tau": 0.3046875,
+          "mean_dwell": 32.015625,
+          "revisits": 0.0,
+          "trans_prec": 0.1953125,
+          "trans_rec": 0.14583333333333334,
+          "unclassified_phases": 1.0546875
+        },
+        "task_acc_repaired_corpus": 0.1145833358168602
+      },
+      "gradients": {
+        "early_to_late": 6.981251220110598,
+        "edge_loss": 0.12191619724035263,
+        "entry_loss": 6.163888883747859e-06,
+        "groups": {
+          "L1_query": 28258223599.04513,
+          "L2_key": 7264964136.135536,
+          "L3_value": 1004184501.5170002,
+          "L4_transform": 8313735423.983953,
+          "L5_gate": 82699663.10022853,
+          "edge_head": 881056051.5781157,
+          "embedding": 23094434981.93229,
+          "entry_head": 25087.85965779543,
+          "fitness_head": 9227259747.240475,
+          "hyper_head": 101892302.86312877,
+          "task_head": 2.9832872822439866
+        },
+        "loss": 3.204439640045166,
+        "task_loss": 3.08252215385437
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 12.152027732992613,
+          "participation_ratio": 8.353113368950488
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.2786013659034852,
+          "participation_ratio": 1.112876452237302
+        },
+        "task": {
+          "effective_rank": 2.017769804621511,
+          "participation_ratio": 1.4982121807687074
+        },
+        "trajectory": {
+          "effective_rank": 3.0786411575265986,
+          "participation_ratio": 2.7526073484068156
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7134,
+        "legacy_tau": 0.8138,
+        "task_acc": 0.1263
+      },
+      "step": 5000,
+      "weight_norm": {
+        "L1_query": 32.354229536705766,
+        "L2_key": 32.60620642174581,
+        "L3_value": 26.707889216981552,
+        "L4_transform": 38.011590936063676,
+        "L5_gate": 18.91494420327338,
+        "edge_head": 69.792135585357,
+        "embedding": 25.05737721709125,
+        "entry_head": 42.17497653490102,
+        "fitness_head": 11.538550778234482,
+        "hyper_head": 100.76177362404007,
+        "task_head": 13.615302856731159
+      },
+      "weight_ratio": {
+        "L1_query": 8.11304197910075,
+        "L2_key": 8.151932358095358,
+        "L3_value": 6.667982421818071,
+        "L4_transform": 6.729050800693307,
+        "L5_gate": 4.738228665419337,
+        "edge_head": 1.3792019500739656,
+        "embedding": 0.9364805526963882,
+        "entry_head": 1.4088230591298159,
+        "fitness_head": 1.4211658241181337,
+        "hyper_head": 3.1444107208776098,
+        "task_head": 1.4964336950820627
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9089091784423549,
+        "edge": 0.995510817541355,
+        "entry": 0.9996414891974893,
+        "fitness": 0.3882729656890915,
+        "hyper": 0.9995531487478904,
+        "task": 0.11343350426984226,
+        "trajectory": 0.6200638626698018
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5029048784511624,
+          "auroc": 0.7421258115458852,
+          "exact_graph": 0.203125,
+          "pos_recall@.5": 0.23577235639095306,
+          "predicted_positive_rate": 0.13216957605985039,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.08127170138888888,
+          "coverage": 0.20247395833333326,
+          "exact_order": 0.015625,
+          "first_visit_tau": 0.0546875,
+          "mean_dwell": 53.8125,
+          "revisits": 0.0,
+          "trans_prec": 0.046875,
+          "trans_rec": 0.03125,
+          "unclassified_phases": 1.015625
+        },
+        "task_acc_repaired_corpus": 0.1875
+      },
+      "gradients": {
+        "early_to_late": 0.2634379976066557,
+        "edge_loss": 0.12106715142726898,
+        "entry_loss": 2.4089836188068148e-06,
+        "groups": {
+          "L1_query": 0.024354411143606175,
+          "L2_key": 0.02145432243329858,
+          "L3_value": 0.010336860857175594,
+          "L4_transform": 0.051165308391010585,
+          "L5_gate": 0.02480849471593449,
+          "edge_head": 0.41151335373143055,
+          "embedding": 0.02401935865403996,
+          "entry_head": 3.357445578233091e-06,
+          "fitness_head": 0.012801240951860587,
+          "hyper_head": 0.00014243408640377637,
+          "task_head": 0.18909081500181532
+        },
+        "loss": 2.1367075443267822,
+        "task_loss": 2.0156400203704834
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 11.382366155960353,
+          "participation_ratio": 7.825820863824348
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1644658280848175,
+          "participation_ratio": 1.0593375425771507
+        },
+        "task": {
+          "effective_rank": 3.1033448278172258,
+          "participation_ratio": 2.3893821010369267
+        },
+        "trajectory": {
+          "effective_rank": 2.9687683190757577,
+          "participation_ratio": 2.658754712283216
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7157,
+        "legacy_tau": 0.4128,
+        "task_acc": 0.1823
+      },
+      "step": 6000,
+      "weight_norm": {
+        "L1_query": 33.11949059464305,
+        "L2_key": 33.53197710052702,
+        "L3_value": 27.577001997657007,
+        "L4_transform": 38.720281451483075,
+        "L5_gate": 19.145706019010305,
+        "edge_head": 78.31438445225223,
+        "embedding": 25.169525309653142,
+        "entry_head": 43.06573469794388,
+        "fitness_head": 11.835343851080202,
+        "hyper_head": 100.76559357851518,
+        "task_head": 13.176448224301282
+      },
+      "weight_ratio": {
+        "L1_query": 8.30493636746727,
+        "L2_key": 8.38338583829842,
+        "L3_value": 6.884968073399874,
+        "L4_transform": 6.854507651164204,
+        "L5_gate": 4.796034928998994,
+        "edge_head": 1.547614940415296,
+        "embedding": 0.9406719134599788,
+        "entry_head": 1.4385781590328215,
+        "fitness_head": 1.457720862967465,
+        "hyper_head": 3.1445299278483962,
+        "task_head": 1.448199963807679
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9586990917702451,
+        "edge": 0.9884362030951072,
+        "entry": 0.9994631995424061,
+        "fitness": 0.8491111474140847,
+        "hyper": 0.9999884581551466,
+        "task": 0.8500728563093624,
+        "trajectory": 0.8774526924952274
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5123102787670716,
+          "auroc": 0.7504971632450137,
+          "exact_graph": 0.3203125,
+          "pos_recall@.5": 0.44308942556381226,
+          "predicted_positive_rate": 0.2506234413965087,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.0405815972222222,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.19140625
+      },
+      "gradients": {
+        "early_to_late": 0.1766658915832879,
+        "edge_loss": 0.1190568059682846,
+        "entry_loss": 1.1076446071456303e-06,
+        "groups": {
+          "L1_query": 0.011969186109152222,
+          "L2_key": 0.011651475266884804,
+          "L3_value": 0.006676703579119833,
+          "L4_transform": 0.018766216682688002,
+          "L5_gate": 0.018856131730994014,
+          "edge_head": 0.6663913176208852,
+          "embedding": 0.01639334367891757,
+          "entry_head": 1.5892865016495934e-06,
+          "fitness_head": 0.010988191544744296,
+          "hyper_head": 3.3178353849587794e-05,
+          "task_head": 0.18887301351695002
+        },
+        "loss": 2.134963035583496,
+        "task_loss": 2.0159060955047607
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.206561957023885,
+          "participation_ratio": 7.1344746835636625
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1558828515418496,
+          "participation_ratio": 1.0557895564089002
+        },
+        "task": {
+          "effective_rank": 2.74505152595474,
+          "participation_ratio": 2.1750231074559694
+        },
+        "trajectory": {
+          "effective_rank": 3.0397792411294873,
+          "participation_ratio": 2.704925754245565
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7077,
+        "legacy_tau": 0.3516,
+        "task_acc": 0.1842
+      },
+      "step": 7000,
+      "weight_norm": {
+        "L1_query": 33.228659150540366,
+        "L2_key": 33.747156324352304,
+        "L3_value": 27.76876794636626,
+        "L4_transform": 38.96482883660019,
+        "L5_gate": 19.174598204591657,
+        "edge_head": 96.05391380480188,
+        "embedding": 25.153880164810616,
+        "entry_head": 43.75171491422265,
+        "fitness_head": 11.773729465531211,
+        "hyper_head": 100.74548680404443,
+        "task_head": 13.282634473488953
+      },
+      "weight_ratio": {
+        "L1_query": 8.332311121540396,
+        "L2_key": 8.437183156968441,
+        "L3_value": 6.932845012109189,
+        "L4_transform": 6.897798966710498,
+        "L5_gate": 4.803272475166563,
+        "edge_head": 1.898175834866047,
+        "embedding": 0.9400872004725735,
+        "entry_head": 1.4614928071536248,
+        "fitness_head": 1.4501320192123688,
+        "hyper_head": 3.1439024680991863,
+        "task_head": 1.4598707053924138
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9946402112376604,
+        "edge": 0.9799809331103351,
+        "entry": 0.9995775484750462,
+        "fitness": 0.9108851745941604,
+        "hyper": 0.9999999926136766,
+        "task": 0.9426721811706772,
+        "trajectory": 0.9636816741743741
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5324341545332648,
+          "auroc": 0.7611861730128092,
+          "exact_graph": 0.296875,
+          "pos_recall@.5": 0.29674795269966125,
+          "predicted_positive_rate": 0.15336658354114713,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.03700086805555556,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.1875
+      },
+      "gradients": {
+        "early_to_late": 0.1906241840654229,
+        "edge_loss": 0.11595503240823746,
+        "entry_loss": 6.606149440813169e-07,
+        "groups": {
+          "L1_query": 0.013730807873046862,
+          "L2_key": 0.01686048529637612,
+          "L3_value": 0.004910914339198271,
+          "L4_transform": 0.031648310852343195,
+          "L5_gate": 0.01602313345272033,
+          "edge_head": 1.1448208056224447,
+          "embedding": 0.01601350388766751,
+          "entry_head": 1.016961116332308e-06,
+          "fitness_head": 0.00940136565040726,
+          "hyper_head": 3.769292121900122e-05,
+          "task_head": 0.19681378345121928
+        },
+        "loss": 2.125430107116699,
+        "task_loss": 2.009474754333496
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.093966723642923,
+          "participation_ratio": 7.068946689279627
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1561848041923388,
+          "participation_ratio": 1.0559057121113786
+        },
+        "task": {
+          "effective_rank": 2.477622418583874,
+          "participation_ratio": 2.0091223217880576
+        },
+        "trajectory": {
+          "effective_rank": 2.947194006670296,
+          "participation_ratio": 2.615936288579467
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7202,
+        "legacy_tau": 0.3359,
+        "task_acc": 0.1875
+      },
+      "step": 8000,
+      "weight_norm": {
+        "L1_query": 33.24852000752663,
+        "L2_key": 33.75894300558684,
+        "L3_value": 27.797294311052703,
+        "L4_transform": 38.98631900613513,
+        "L5_gate": 19.17947216384721,
+        "edge_head": 126.27281455123037,
+        "embedding": 25.174856194284793,
+        "entry_head": 44.20974944638174,
+        "fitness_head": 11.760436722098625,
+        "hyper_head": 100.73369713599875,
+        "task_head": 13.353500627951863
+      },
+      "weight_ratio": {
+        "L1_query": 8.337291365816887,
+        "L2_key": 8.440129964913762,
+        "L3_value": 6.939967001299057,
+        "L4_transform": 6.901603291627058,
+        "L5_gate": 4.804493411015517,
+        "edge_head": 2.4953486608443107,
+        "embedding": 0.9408711469928005,
+        "entry_head": 1.4767931028218269,
+        "fitness_head": 1.4484947951763314,
+        "hyper_head": 3.1435345551768044,
+        "task_head": 1.4676594782530015
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9966793384181777,
+        "edge": 0.9914156116316694,
+        "entry": 0.9996977268091115,
+        "fitness": 0.9557432240193487,
+        "hyper": 0.999999966812402,
+        "task": 0.9583357600829318,
+        "trajectory": 0.987643185981496
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5544143682301071,
+          "auroc": 0.7701862899923964,
+          "exact_graph": 0.34375,
+          "pos_recall@.5": 0.48373982310295105,
+          "predicted_positive_rate": 0.26807980049875313,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.035373263888888895,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.1861979216337204
+      },
+      "gradients": {
+        "early_to_late": 0.21066669393203272,
+        "edge_loss": 0.11332522332668304,
+        "entry_loss": 4.867694656240928e-07,
+        "groups": {
+          "L1_query": 0.017402598449671357,
+          "L2_key": 0.013381588927360593,
+          "L3_value": 0.005596577257886175,
+          "L4_transform": 0.02666027872667518,
+          "L5_gate": 0.019747697784284327,
+          "edge_head": 1.6766079930855637,
+          "embedding": 0.01913709996459178,
+          "entry_head": 8.207547701749991e-07,
+          "fitness_head": 0.005056194039855822,
+          "hyper_head": 3.710744327366118e-05,
+          "task_head": 0.1905601289349341
+        },
+        "loss": 2.123310089111328,
+        "task_loss": 2.0099849700927734
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.199340463585607,
+          "participation_ratio": 7.131919377238257
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.156108775847419,
+          "participation_ratio": 1.0558714259582958
+        },
+        "task": {
+          "effective_rank": 2.5747653155238988,
+          "participation_ratio": 2.015617088924529
+        },
+        "trajectory": {
+          "effective_rank": 2.9381634269741292,
+          "participation_ratio": 2.585646788132189
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.714,
+        "legacy_tau": 0.332,
+        "task_acc": 0.1914
+      },
+      "step": 9000,
+      "weight_norm": {
+        "L1_query": 33.26092851879024,
+        "L2_key": 33.759448120608674,
+        "L3_value": 27.795335629404885,
+        "L4_transform": 39.00315204302966,
+        "L5_gate": 19.1788884464873,
+        "edge_head": 149.54016821937498,
+        "embedding": 25.15972435842341,
+        "entry_head": 44.45484252284686,
+        "fitness_head": 11.760086097507582,
+        "hyper_head": 100.72443179111667,
+        "task_head": 13.415199839121435
+      },
+      "weight_ratio": {
+        "L1_query": 8.340402883977614,
+        "L2_key": 8.440256249567602,
+        "L3_value": 6.939477990179853,
+        "L4_transform": 6.904583181644914,
+        "L5_gate": 4.804347188732358,
+        "edge_head": 2.955148024813029,
+        "embedding": 0.9403056181312598,
+        "entry_head": 1.4849802508922325,
+        "fitness_head": 1.4484516098842213,
+        "hyper_head": 3.143245417255428,
+        "task_head": 1.4744407286978627
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9956873305051068,
+        "edge": 0.997318364607734,
+        "entry": 0.9997671298435592,
+        "fitness": 0.9723074214726397,
+        "hyper": 0.9999999912301987,
+        "task": 0.947666654277741,
+        "trajectory": 0.9782858751490475
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5712499415158033,
+          "auroc": 0.7773147335789905,
+          "exact_graph": 0.3203125,
+          "pos_recall@.5": 0.35772356390953064,
+          "predicted_positive_rate": 0.17830423940149626,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.03483072916666667,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.19140625
+      },
+      "gradients": {
+        "early_to_late": 0.09219498337189498,
+        "edge_loss": 0.11089715361595154,
+        "entry_loss": 4.1226419966733374e-07,
+        "groups": {
+          "L1_query": 0.005432851318761707,
+          "L2_key": 0.004066210746413384,
+          "L3_value": 0.005139344698839522,
+          "L4_transform": 0.022426482051282302,
+          "L5_gate": 0.024037977813995116,
+          "edge_head": 1.8053090437548198,
+          "embedding": 0.012894730702671605,
+          "entry_head": 6.290875283982882e-07,
+          "fitness_head": 0.0036542111320001527,
+          "hyper_head": 2.393273321390251e-05,
+          "task_head": 0.19643154107562943
+        },
+        "loss": 2.1231558322906494,
+        "task_loss": 2.012258768081665
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.143677341614502,
+          "participation_ratio": 7.108255919873549
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1560368919706014,
+          "participation_ratio": 1.055837167441145
+        },
+        "task": {
+          "effective_rank": 2.738253752237633,
+          "participation_ratio": 2.1610760534835465
+        },
+        "trajectory": {
+          "effective_rank": 2.9426219419890702,
+          "participation_ratio": 2.6039752393607976
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7247,
+        "legacy_tau": 0.3281,
+        "task_acc": 0.1947
+      },
+      "step": 10000,
+      "weight_norm": {
+        "L1_query": 33.26265712464249,
+        "L2_key": 33.76911448915081,
+        "L3_value": 27.785675412219895,
+        "L4_transform": 39.01665086256649,
+        "L5_gate": 19.178122601242155,
+        "edge_head": 167.46352222478936,
+        "embedding": 25.14317570600677,
+        "entry_head": 44.6122914516347,
+        "fitness_head": 11.755591306053468,
+        "hyper_head": 100.71655511966873,
+        "task_head": 13.447145189988825
+      },
+      "weight_ratio": {
+        "L1_query": 8.340836343591564,
+        "L2_key": 8.442672954580281,
+        "L3_value": 6.937066187515212,
+        "L4_transform": 6.906972827544386,
+        "L5_gate": 4.804155343075568,
+        "edge_head": 3.309341582422405,
+        "embedding": 0.9396871379516604,
+        "entry_head": 1.4902397127754663,
+        "fitness_head": 1.4478980010191311,
+        "hyper_head": 3.1429996148121506,
+        "task_head": 1.4779517853333417
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9979966299513314,
+        "edge": 0.9996698076602212,
+        "entry": 0.9997216031175102,
+        "fitness": 0.9855309211949539,
+        "hyper": 0.9999999989375249,
+        "task": 0.9759760438030082,
+        "trajectory": 0.995029412473671
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5829022797341854,
+          "auroc": 0.7807217640521729,
+          "exact_graph": 0.3515625,
+          "pos_recall@.5": 0.44308942556381226,
+          "predicted_positive_rate": 0.23815461346633415,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.03483072916666668,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.1822916716337204
+      },
+      "gradients": {
+        "early_to_late": 0.10052374014878007,
+        "edge_loss": 0.10940688848495483,
+        "entry_loss": 3.774950698698376e-07,
+        "groups": {
+          "L1_query": 0.00604184705230358,
+          "L2_key": 0.006949333387909423,
+          "L3_value": 0.006526294901997395,
+          "L4_transform": 0.031374364676380814,
+          "L5_gate": 0.0270931598359005,
+          "edge_head": 0.6063305165861578,
+          "embedding": 0.013111843606465251,
+          "entry_head": 5.642877495039018e-07,
+          "fitness_head": 0.0033967012057021318,
+          "hyper_head": 2.695063755381798e-05,
+          "task_head": 0.20120271863669523
+        },
+        "loss": 2.1207385063171387,
+        "task_loss": 2.011331558227539
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.144518648711161,
+          "participation_ratio": 7.1102334240598895
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1560401218021812,
+          "participation_ratio": 1.05583601475143
+        },
+        "task": {
+          "effective_rank": 2.623676763255769,
+          "participation_ratio": 2.0625781993350287
+        },
+        "trajectory": {
+          "effective_rank": 2.9614390148132834,
+          "participation_ratio": 2.624132455287168
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.7259,
+        "legacy_tau": 0.332,
+        "task_acc": 0.1855
+      },
+      "step": 11000,
+      "weight_norm": {
+        "L1_query": 33.2644759829989,
+        "L2_key": 33.769385476292356,
+        "L3_value": 27.7846508150981,
+        "L4_transform": 39.02500341039213,
+        "L5_gate": 19.178195422276467,
+        "edge_head": 176.8484211982144,
+        "embedding": 25.140248366586132,
+        "entry_head": 44.689600220660516,
+        "fitness_head": 11.752073105792007,
+        "hyper_head": 100.7163313907224,
+        "task_head": 13.465037862067573
+      },
+      "weight_ratio": {
+        "L1_query": 8.34129243463162,
+        "L2_key": 8.442740704530069,
+        "L3_value": 6.93681038311442,
+        "L4_transform": 6.9084514480717,
+        "L5_gate": 4.804173584879958,
+        "edge_head": 3.494801890476235,
+        "embedding": 0.9395777331877533,
+        "entry_head": 1.4928221534885366,
+        "fitness_head": 1.447464675719439,
+        "hyper_head": 3.1429926330404716,
+        "task_head": 1.4799183370638056
+      }
+    },
+    {
+      "cka_vs_previous": {
+        "core": 0.9997548694241217,
+        "edge": 0.9999892668354164,
+        "entry": 0.9999897531202273,
+        "fitness": 0.9986988610517222,
+        "hyper": 0.9999999978704596,
+        "task": 0.9975325778397935,
+        "trajectory": 0.9997524603382643
+      },
+      "evaluation": {
+        "edges": {
+          "auprc": 0.5853486814855323,
+          "auroc": 0.7816722231970521,
+          "exact_graph": 0.328125,
+          "pos_recall@.5": 0.38211381435394287,
+          "predicted_positive_rate": 0.19451371571072318,
+          "prevalence": 0.30673316708229426
+        },
+        "itinerary": {
+          "classified_fraction": 0.03461371527777779,
+          "coverage": 0.17773437499999994,
+          "exact_order": 0.0,
+          "first_visit_tau": 0.0,
+          "mean_dwell": 54.84375,
+          "revisits": 0.0,
+          "trans_prec": 0.0,
+          "trans_rec": 0.0,
+          "unclassified_phases": 1.0
+        },
+        "task_acc_repaired_corpus": 0.1822916716337204
+      },
+      "gradients": {
+        "early_to_late": 0.09396904640005593,
+        "edge_loss": 0.10934656858444214,
+        "entry_loss": 3.675609434594662e-07,
+        "groups": {
+          "L1_query": 0.005823291917637032,
+          "L2_key": 0.005772475114498696,
+          "L3_value": 0.006656859641072112,
+          "L4_transform": 0.03011382191741034,
+          "L5_gate": 0.030402934264871048,
+          "edge_head": 1.3199046629453715,
+          "embedding": 0.01319916346994561,
+          "entry_head": 5.499375164477409e-07,
+          "fitness_head": 0.005546119024836206,
+          "hyper_head": 2.5358756081781016e-05,
+          "task_head": 0.20334598854028907
+        },
+        "loss": 2.1215145587921143,
+        "task_loss": 2.0121679306030273
+      },
+      "representations": {
+        "core": {
+          "effective_rank": 10.141950070298313,
+          "participation_ratio": 7.1096860987267165
+        },
+        "edge": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "entry": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "fitness": {
+          "effective_rank": 1.0,
+          "participation_ratio": 1.0
+        },
+        "hyper": {
+          "effective_rank": 1.1559638742523772,
+          "participation_ratio": 1.0558031068227502
+        },
+        "task": {
+          "effective_rank": 2.660880322959071,
+          "participation_ratio": 2.086251265891367
+        },
+        "trajectory": {
+          "effective_rank": 2.96473863118678,
+          "participation_ratio": 2.6269277769605943
+        }
+      },
+      "source": {
+        "legacy_edge_acc": 0.731,
+        "legacy_tau": 0.3281,
+        "task_acc": 0.1888
+      },
+      "step": 12000,
+      "weight_norm": {
+        "L1_query": 33.26410195243284,
+        "L2_key": 33.76827254244547,
+        "L3_value": 27.78283476501878,
+        "L4_transform": 39.02728154425298,
+        "L5_gate": 19.178192150726968,
+        "edge_head": 178.6085737770211,
+        "embedding": 25.138079702110662,
+        "entry_head": 44.706256443189595,
+        "fitness_head": 11.754370553544645,
+        "hyper_head": 100.71606745445011,
+        "task_head": 13.466869349956465
+      },
+      "weight_ratio": {
+        "L1_query": 8.341198643936327,
+        "L2_key": 8.442462458072278,
+        "L3_value": 6.936356981877517,
+        "L4_transform": 6.908854737650034,
+        "L5_gate": 4.804172765350731,
+        "edge_head": 3.529585263255377,
+        "embedding": 0.9394966827214971,
+        "entry_head": 1.4933785419516707,
+        "fitness_head": 1.4477476448974145,
+        "hyper_head": 3.142984396543491,
+        "task_head": 1.480119632636729
+      }
+    }
+  ],
+  "correlations": {
+    "edge.auprc": {
+      "coincident_pearson": -0.12085778081295631,
+      "metric_leads_accuracy_one_checkpoint": -0.4118610501333385
+    },
+    "edge.pos_recall@.5": {
+      "coincident_pearson": -0.6141701919437889,
+      "metric_leads_accuracy_one_checkpoint": -0.12295393443341651
+    },
+    "erank.core": {
+      "coincident_pearson": -0.5434537247857504,
+      "metric_leads_accuracy_one_checkpoint": -0.14336075654204128
+    },
+    "erank.edge": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "erank.entry": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "erank.fitness": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "erank.hyper": {
+      "coincident_pearson": 0.7471596022325634,
+      "metric_leads_accuracy_one_checkpoint": 0.5253446095079027
+    },
+    "erank.task": {
+      "coincident_pearson": -0.24492619739626292,
+      "metric_leads_accuracy_one_checkpoint": 0.37767324066311314
+    },
+    "erank.trajectory": {
+      "coincident_pearson": 0.3786066057420481,
+      "metric_leads_accuracy_one_checkpoint": -0.3224185067667804
+    },
+    "gradient.early_to_late": {
+      "coincident_pearson": -0.29094022462019153,
+      "metric_leads_accuracy_one_checkpoint": -0.47857909382192504
+    },
+    "itinerary.classified_fraction": {
+      "coincident_pearson": 0.4327911184414616,
+      "metric_leads_accuracy_one_checkpoint": 0.337949846598655
+    },
+    "itinerary.coverage": {
+      "coincident_pearson": 0.5621442141033985,
+      "metric_leads_accuracy_one_checkpoint": 0.419588457684621
+    },
+    "itinerary.first_visit_tau": {
+      "coincident_pearson": 0.6046182613363271,
+      "metric_leads_accuracy_one_checkpoint": 0.5337538643205922
+    },
+    "participation.core": {
+      "coincident_pearson": -0.5129847042965502,
+      "metric_leads_accuracy_one_checkpoint": -0.09022159721254065
+    },
+    "participation.edge": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "participation.entry": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "participation.fitness": {
+      "coincident_pearson": null,
+      "metric_leads_accuracy_one_checkpoint": null
+    },
+    "participation.hyper": {
+      "coincident_pearson": 0.7227126911115901,
+      "metric_leads_accuracy_one_checkpoint": 0.6774668401906075
+    },
+    "participation.task": {
+      "coincident_pearson": -0.3093898972665209,
+      "metric_leads_accuracy_one_checkpoint": 0.3392537084739992
+    },
+    "participation.trajectory": {
+      "coincident_pearson": 0.31201293793352375,
+      "metric_leads_accuracy_one_checkpoint": -0.38804169686311074
+    },
+    "weight_ratio.L1_query": {
+      "coincident_pearson": -0.3830267383333904,
+      "metric_leads_accuracy_one_checkpoint": -0.6600583978367868
+    },
+    "weight_ratio.L2_key": {
+      "coincident_pearson": -0.3786152871627858,
+      "metric_leads_accuracy_one_checkpoint": -0.6545018606424773
+    },
+    "weight_ratio.L3_value": {
+      "coincident_pearson": -0.3786405697159689,
+      "metric_leads_accuracy_one_checkpoint": -0.6125651590140204
+    },
+    "weight_ratio.L4_transform": {
+      "coincident_pearson": -0.39235972513822803,
+      "metric_leads_accuracy_one_checkpoint": -0.6212027320888833
+    },
+    "weight_ratio.L5_gate": {
+      "coincident_pearson": -0.2939417981417216,
+      "metric_leads_accuracy_one_checkpoint": -0.67748910090224
+    },
+    "weight_ratio.edge_head": {
+      "coincident_pearson": -0.1875169904975045,
+      "metric_leads_accuracy_one_checkpoint": -0.31351338821671837
+    },
+    "weight_ratio.embedding": {
+      "coincident_pearson": 0.2527394207391119,
+      "metric_leads_accuracy_one_checkpoint": 0.8292715534085973
+    },
+    "weight_ratio.entry_head": {
+      "coincident_pearson": -0.031287805184434955,
+      "metric_leads_accuracy_one_checkpoint": -0.446147500723398
+    },
+    "weight_ratio.fitness_head": {
+      "coincident_pearson": -0.3307898060403496,
+      "metric_leads_accuracy_one_checkpoint": -0.6400222532689887
+    },
+    "weight_ratio.hyper_head": {
+      "coincident_pearson": -0.2870699947001074,
+      "metric_leads_accuracy_one_checkpoint": -0.6568719582809491
+    },
+    "weight_ratio.task_head": {
+      "coincident_pearson": -0.3198818590428081,
+      "metric_leads_accuracy_one_checkpoint": -0.7034399054573388
+    }
+  },
+  "inventory": [
+    {
+      "bytes": 12214212,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_0000.pt",
+      "sha256": "04cc481e29b380e2557e46ecb219c0040a5535972a0a8e9225e88f79f675d9e8",
+      "step": 0
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_1000.pt",
+      "sha256": "3174d7bb6c369d4f46fd342137fc38074edb0b8dd06e11f8a63896ec16e9ace9",
+      "step": 1000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_2000.pt",
+      "sha256": "953e6c2ed54c5dc7a50aa0c599432e9f56dce20c0c92e3bf2991dd0416ccb82d",
+      "step": 2000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_3000.pt",
+      "sha256": "423ec1d167f896b095ee4c7a1565914823ebf69ea8156161b01042214c466e05",
+      "step": 3000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_4000.pt",
+      "sha256": "d5834b07267bb9afc5ffc535ab88e717a1d759bf3c9ac3c4fc3bd0a1109a40d6",
+      "step": 4000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_5000.pt",
+      "sha256": "b05063014c70af116771635c668068e78f40192abad492e26563a49907993011",
+      "step": 5000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_6000.pt",
+      "sha256": "eca25c0231214cfe716e9b9df208d185d61c17adceee1d68435ac9c13424fd0b",
+      "step": 6000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_7000.pt",
+      "sha256": "9acad2bb82f3f8673ff0729be6fd9f7a0115079d93303dcc8ef442735267d42d",
+      "step": 7000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_8000.pt",
+      "sha256": "0e861763ab1791080d6ea8b849de7cbe3a6e8880b7268e46347a7d5ff97315b7",
+      "step": 8000
+    },
+    {
+      "bytes": 12214276,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_9000.pt",
+      "sha256": "e28b34267ff1f5ecbb6251c6edf0753240ec6c9c0048c1342e27ae8a551c84ac",
+      "step": 9000
+    },
+    {
+      "bytes": 12214389,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_10000.pt",
+      "sha256": "ee53059dbf3cf76d0013497c3405e2e0e338bbf52475f94b726cd40b702fd5d7",
+      "step": 10000
+    },
+    {
+      "bytes": 12214325,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_11000.pt",
+      "sha256": "5f55aa7ad88471430153adfd02368bbaffea5df54e2e65042000a35b47498144",
+      "step": 11000
+    },
+    {
+      "bytes": 12214389,
+      "path": "../../experiments/20260722T015200Z-carom-gpt2-12k/artifacts/checkpoints/step_12000.pt",
+      "sha256": "a34033698bbf5d2a40e77dd9c437caaa59b9905a9d9e44dc03b873156f65df61",
+      "step": 12000
+    }
+  ],
+  "metadata": {
+    "created_unix": 1785032828.1069102,
+    "device": "cpu",
+    "elapsed_seconds": 34.26249384880066,
+    "gradient_examples": 24,
+    "instrument_commit": "975a4c9",
+    "layer_mapping": {
+      "L1": "core.Wq",
+      "L2": "core.Wk",
+      "L3": "core.Wv",
+      "L4": "core.T1+core.T2",
+      "L5": "core.Wg+core.gb",
+      "LM_head_note": "Frozen GPT-2 and its LM head are absent from checkpoints; task_head is reported."
+    },
+    "probe_examples": 128,
+    "python": "3.10.12",
+    "seed": 8321,
+    "threads": 4,
+    "torch": "2.12.1+cpu"
+  }
+}

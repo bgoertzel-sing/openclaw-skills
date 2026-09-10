@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-08-25T10:00:00+00:00",
+  "episode_id": "03-premature-hardening",
+  "cycle": 10,
+  "pln_layer": {
+    "task_count": 1,
+    "total_relevance": 0.3405
+  },
+  "ecan_layer": {
+    "total_sti": 88.52,
+    "eviction_count": 0,
+    "priority_top3": [
+      {
+        "node_id": "t-hardening-guards",
+        "sti": 44.24,
+        "lti": 44.31,
+        "kind": "task"
+      },
+      {
+        "node_id": "p-research-infra",
+        "sti": 22.61,
+        "lti": 63.31,
+        "kind": "project"
+      },
+      {
+        "node_id": "g-build-omegaclaw",
+        "sti": 21.67,
+        "lti": 71.28,
+        "kind": "goal"
+      }
+    ]
+  },
+  "verdict_layer": {
+    "verdict_counts": {
+      "DEFER": 1
+    }
+  },
+  "recommendations": [
+    {
+      "task_id": "t-hardening-guards",
+      "unified_verdict": "DEFER",
+      "relevance_score": 0.3405,
+      "priority_band": "LOW",
+      "sti": 44.24,
+      "lti": 44.31,
+      "eviction_candidate": false,
+      "staleness_flag": false,
+      "confidence_modifier": 0.0,
+      "signals": [
+        "irreversible_on_early_stage_research",
+        "project_kind=exploratory_research",
+        "stage=E0_exploration"
+      ],
+      "recommended_action": "Defer this task in favor of higher-priority work."
+    }
+  ],
+  "executive_summary": "Pipeline evaluated 1 tasks. | Verdict distribution: DEFER=1 | Top priority: t-hardening-guards (STI=44.2, DEFER, rel=0.341)"
+}

@@ -1,0 +1,330 @@
+{
+  "episode_01_stale_codegen.json": [
+    {
+      "task_id": "t-p2m-codegen",
+      "verdict": "STOP_STALE",
+      "plan_summary": "Abandon t-p2m-codegen, release resources",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "abandon_task",
+          "target": "t-p2m-codegen",
+          "description": "Mark t-p2m-codegen as abandoned - goals terminal",
+          "priority": 1,
+          "depends_on": [],
+          "verification": "t-p2m-codegen status == abandoned",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s2",
+          "action": "notify_stakeholders",
+          "target": "g-initial-demo",
+          "description": "Notify: t-p2m-codegen abandoned, goals ['g-initial-demo'] terminal",
+          "priority": 3,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "Acknowledged",
+          "estimated_effort": "minutes"
+        }
+      ],
+      "rollback_plan": "Reactivate if new goal links to it",
+      "success_criteria": "t-p2m-codegen abandoned, resources released",
+      "risk_notes": "Low risk"
+    }
+  ],
+  "episode_02_chem_blocking.json": [
+    {
+      "task_id": "t-restore-agents",
+      "verdict": "ESCALATE",
+      "plan_summary": "Escalate t-restore-agents: boost, allocate, deadline",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "boost_priority",
+          "target": "t-restore-agents",
+          "description": "Boost t-restore-agents to CRITICAL - blocks 1 goals",
+          "priority": 1,
+          "depends_on": [],
+          "verification": "Priority == CRITICAL",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s2",
+          "action": "allocate_resources",
+          "target": "r-shared-runtime",
+          "description": "Allocate resources for t-restore-agents (STI=39.6)",
+          "priority": 1,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "Resources allocated",
+          "estimated_effort": "minutes"
+        },
+        {
+          "step_id": "s3",
+          "action": "set_deadline",
+          "target": "t-restore-agents",
+          "description": "Set deadline for t-restore-agents",
+          "priority": 2,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Deadline set",
+          "estimated_effort": "minutes"
+        },
+        {
+          "step_id": "s4",
+          "action": "require_evidence",
+          "target": "t-restore-agents",
+          "description": "Require evidence from t-restore-agents at next checkpoint",
+          "priority": 2,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Evidence produced",
+          "estimated_effort": "hours"
+        }
+      ],
+      "rollback_plan": "Revert if evidence produced",
+      "success_criteria": "t-restore-agents produces evidence",
+      "risk_notes": "Medium risk"
+    },
+    {
+      "task_id": "t-petta-chem",
+      "verdict": "PAUSE_RECOVERABLY",
+      "plan_summary": "Pause t-petta-chem, wait for blocker, resume",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "pause_task",
+          "target": "t-petta-chem",
+          "description": "Pause t-petta-chem - resource contention",
+          "priority": 2,
+          "depends_on": [],
+          "verification": "t-petta-chem paused",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s2",
+          "action": "monitor_blocker",
+          "target": "t-restore-agents",
+          "description": "Monitor t-restore-agents",
+          "priority": 2,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "t-restore-agents completed",
+          "estimated_effort": "hours"
+        },
+        {
+          "step_id": "s3",
+          "action": "resume_task",
+          "target": "t-petta-chem",
+          "description": "Resume t-petta-chem after t-restore-agents frees r-shared-runtime",
+          "priority": 2,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "t-petta-chem active",
+          "estimated_effort": "trivial"
+        }
+      ],
+      "rollback_plan": "Resume if false positive",
+      "success_criteria": "t-petta-chem resumed",
+      "risk_notes": "Low risk"
+    }
+  ],
+  "episode_03_premature_hardening.json": [
+    {
+      "task_id": "t-hardening-guards",
+      "verdict": "DEFER",
+      "plan_summary": "Park t-hardening-guards with trigger condition",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "park_task",
+          "target": "t-hardening-guards",
+          "description": "Park t-hardening-guards until project matures past E0_exploration",
+          "priority": 3,
+          "depends_on": [],
+          "verification": "t-hardening-guards parked",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s2",
+          "action": "set_trigger",
+          "target": "t-hardening-guards",
+          "description": "Set trigger: resume when stage leaves E0_exploration",
+          "priority": 3,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "Trigger condition set",
+          "estimated_effort": "minutes"
+        },
+        {
+          "step_id": "s3",
+          "action": "monitor_trigger",
+          "target": "t-hardening-guards",
+          "description": "Monitor project stage for t-hardening-guards",
+          "priority": 4,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Stage changed",
+          "estimated_effort": "days"
+        }
+      ],
+      "rollback_plan": "Resume early if scope changes",
+      "success_criteria": "t-hardening-guards resumed after trigger fires",
+      "risk_notes": "Low risk - task is premature"
+    }
+  ],
+  "episode_04_overengineered_repair.json": [
+    {
+      "task_id": "t-process-inspector",
+      "verdict": "REPLAN",
+      "plan_summary": "Replan t-process-inspector for superseded goal",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "redesign_task",
+          "target": "t-process-inspector",
+          "description": "Redesign t-process-inspector for new goal g-restore-agents-v2",
+          "priority": 2,
+          "depends_on": [],
+          "verification": "New task plan approved",
+          "estimated_effort": "hours"
+        },
+        {
+          "step_id": "s2",
+          "action": "update_goal_link",
+          "target": "t-process-inspector",
+          "description": "Update t-process-inspector goal link: g-restore-agents-original -> g-restore-agents-v2",
+          "priority": 2,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "Edge updated in graph",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s3",
+          "action": "reset_progress",
+          "target": "t-process-inspector",
+          "description": "Reset progress counters for t-process-inspector",
+          "priority": 3,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Progress reset",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s4",
+          "action": "archive_old_approach",
+          "target": "g-restore-agents-original",
+          "description": "Archive old approach targeting g-restore-agents-original",
+          "priority": 4,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Old approach archived",
+          "estimated_effort": "minutes"
+        }
+      ],
+      "rollback_plan": "Restore old goal link if replan fails",
+      "success_criteria": "t-process-inspector linked to g-restore-agents-v2, progress restarted",
+      "risk_notes": "Medium risk - lost progress on old approach"
+    },
+    {
+      "task_id": "t-launch-wrappers",
+      "verdict": "REPLAN",
+      "plan_summary": "Replan t-launch-wrappers for superseded goal",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "redesign_task",
+          "target": "t-launch-wrappers",
+          "description": "Redesign t-launch-wrappers for new goal g-restore-agents-v2",
+          "priority": 2,
+          "depends_on": [],
+          "verification": "New task plan approved",
+          "estimated_effort": "hours"
+        },
+        {
+          "step_id": "s2",
+          "action": "update_goal_link",
+          "target": "t-launch-wrappers",
+          "description": "Update t-launch-wrappers goal link: g-restore-agents-original -> g-restore-agents-v2",
+          "priority": 2,
+          "depends_on": [
+            "s1"
+          ],
+          "verification": "Edge updated in graph",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s3",
+          "action": "reset_progress",
+          "target": "t-launch-wrappers",
+          "description": "Reset progress counters for t-launch-wrappers",
+          "priority": 3,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Progress reset",
+          "estimated_effort": "trivial"
+        },
+        {
+          "step_id": "s4",
+          "action": "archive_old_approach",
+          "target": "g-restore-agents-original",
+          "description": "Archive old approach targeting g-restore-agents-original",
+          "priority": 4,
+          "depends_on": [
+            "s2"
+          ],
+          "verification": "Old approach archived",
+          "estimated_effort": "minutes"
+        }
+      ],
+      "rollback_plan": "Restore old goal link if replan fails",
+      "success_criteria": "t-launch-wrappers linked to g-restore-agents-v2, progress restarted",
+      "risk_notes": "Medium risk - lost progress on old approach"
+    }
+  ],
+  "episode_05_control_justified_long_running.json": [
+    {
+      "task_id": "t-run-benchmark",
+      "verdict": "CONTINUE",
+      "plan_summary": "Continue t-run-benchmark with monitoring",
+      "steps": [
+        {
+          "step_id": "s1",
+          "action": "monitor_task",
+          "target": "t-run-benchmark",
+          "description": "Continue t-run-benchmark - healthy (relevance=0.925)",
+          "priority": 4,
+          "depends_on": [],
+          "verification": "Task still progressing",
+          "estimated_effort": "ongoing"
+        },
+        {
+          "step_id": "s2",
+          "action": "set_checkpoint",
+          "target": "t-run-benchmark",
+          "description": "Set next checkpoint for t-run-benchmark",
+          "priority": 4,
+          "depends_on": [],
+          "verification": "Checkpoint scheduled",
+          "estimated_effort": "trivial"
+        }
+      ],
+      "rollback_plan": "N/A",
+      "success_criteria": "t-run-benchmark reaches checkpoint",
+      "risk_notes": "No action needed"
+    }
+  ]
+}

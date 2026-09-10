@@ -1,0 +1,553 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{navy}{RGB}{28,55,88}
+\definecolor{lightgray}{RGB}{244,246,248}
+\definecolor{midgray}{RGB}{100,108,116}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=navy,pdftitle={ProtoMegaBot and OmegaClaw Installation and Architecture Report}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{ProtoMegaBot / OmegaClaw}
+\rhead{Installation and architecture report}
+\cfoot{\thepage}
+\setlength{\headheight}{13pt}
+\setlist{nosep,leftmargin=1.5em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.6em}{}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{lightgray},frame=single,breaklines=true,columns=fullflexible,keepspaces=true,showstringspaces=false}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\observed}{\textbf{Observed:}}
+\newcommand{\historical}{\textbf{Historical evidence:}}
+\newcommand{\inferred}{\textbf{Inferred:}}
+\newcommand{\risk}{\textbf{Risk:}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.0in}
+{\Huge\bfseries\color{navy} ProtoMegaBot / OmegaClaw\par}
+\vspace{0.18in}
+{\LARGE Current Installation, Architecture, Telegram Configuration, and Operational Reliability\par}
+\vspace{0.55in}
+{\large Evidence snapshot: 2026-07-12, approximately 21:19 PDT\par}
+\vspace{0.15in}
+{\large Prepared by ZeroBot for Benjamin Goertzel\par}
+\vfill
+\begin{minipage}{0.88\textwidth}
+\textbf{Scope.} This report describes the project-local OmegaClaw installation that powers \code{@Protomegabot}, its PeTTa/SWI-Prolog/Python/OpenClaw stack, its hybrid Telegram Bot API and MTProto path, the state observed during inspection, recurrent failures, and a prioritized remediation plan.
+
+\textbf{Security note.} No bot token, API hash, Gateway token, session contents, or other credential value is reproduced. Paths, configuration key names, non-secret chat identifiers, modes, process metadata, and redacted credential-file metadata are included where operationally necessary.
+
+\textbf{Epistemic convention.} ``Observed'' means directly inspected in source, process state, metadata, or logs. ``Historical evidence'' means recorded in dated project records or logs. ``Inferred'' identifies a reasoned diagnosis that still requires a controlled test.
+\end{minipage}
+\vfill
+{\small Source file is intentionally restricted to ASCII bytes.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Executive summary}
+
+ProtoMegaBot is not a single daemon. It is a layered local research runtime:
+
+\begin{center}
+\begin{minipage}{0.93\textwidth}
+\begin{lstlisting}
+Telegram
+  |-- MTProto / Telethon receive subprocess
+  |-- Bot API send, getFile, and accidental residual getUpdates
+  v
+OmegaClaw Python Telegram adapter
+  v
+PeTTa / MeTTa control loop on SWI-Prolog through Janus
+  v
+OmegaClaw memory, skills, and prompt assembly
+  v
+OpenClaw provider subprocess
+  v
+local OpenClaw Gateway /v1/chat/completions
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+The installation is substantial and locally self-contained, but the current service boundary is fragile. The intended design is MTProto receive plus Bot API send. The actual inspected configuration leaves \code{TG\_SYNC\_POLL=true}; therefore \code{getLastMessage()} continues to call Bot API \code{getUpdates} even after startup logs claim that Bot API polling is disabled. This matches July 12 logs containing Bot API polling timeouts, HTTP 429, HTTP 502, reset, and TLS timeout errors during MTProto operation.
+
+The most serious observed failure is native runtime instability. A July 12 run reached the OpenClaw model-processing path and then SWI-Prolog reported fatal signal 11. Earlier logs also contain status-137 exits and repeated termination/restart cycles. Moving Telethon into a subprocess reduced one Janus/GIL interaction, but it did not isolate the whole Telegram and model-processing pipeline from SWI/Janus failure.
+
+At the process snapshot near 21:19 PDT, the supervisor loop, a SWI/PeTTa process, and a newly spawned Telethon bridge were running. A second Telethon bridge from an earlier dead parent remained reparented to PID 1. Thus the system was running, but it was not cleanly owned: one active stack coexisted with an orphaned receiver. A watchdog's latest status of ``ok'' is therefore insufficient evidence of end-to-end health.
+
+The highest-priority corrections are:
+\begin{enumerate}
+  \item Make receive transport selection exclusive: set \code{TG\_SYNC\_POLL=false} in MTProto mode and guard \code{getLastMessage()} in code.
+  \item Give the supervisor explicit ownership of every Telethon child; remove \code{setsid} or add a robust parent-death/liveness mechanism, and reap stale bridge/session locks before restart.
+  \item Tighten the MTProto session file from mode 0644 to 0600 and verify ownership before startup.
+  \item Replace PID-only watchdog success with an end-to-end health state: supervisor, SWI parent, exactly one bridge, recent receive heartbeat, and a bounded synthetic receive-to-reply canary.
+  \item Reproduce and localize the SWI/Janus signal-11 failure with minimal, recorded experiments before declaring the bot reliable.
+\end{enumerate}
+
+\section{Scope, evidence, and limitations}
+
+\subsection{Evidence inspected}
+
+The report is grounded in:
+\begin{itemize}
+  \item project records: \code{PROJECT.md}, \code{TASKS.md}, \code{DECISIONS.md}, \code{RUNBOOK.md}, and \code{NOTES.md};
+  \item launch and supervision files under \code{projects/omegaclaw/local/};
+  \item the active nested runtime source under \code{repos/PeTTa/repos/OmegaClaw-Core/};
+  \item current process listings, PID artifacts, file modes, installed package versions, and cron summaries;
+  \item current and rotated logs under \code{artifacts/telegram-private-supervisor/}; and
+  \item dated chronology in \code{memory/2026-07-12.md} and project records.
+\end{itemize}
+
+The active source tree contains uncommitted modifications and untracked runtime additions. This report describes what was present on disk and running, not solely an upstream release or clean Git commit.
+
+\subsection{Limitations}
+
+No credential values were opened or copied into this report. File key names and metadata were inspected with values redacted. No paid resource was used. The report did not intentionally stop, restart, or reconfigure the live bot. A scheduled watchdog restarted the runtime during inspection, so all process claims are timestamped snapshots.
+
+No successful end-to-end bot-authored Telegram test was observed during report preparation. Consequently, MTProto connection is established, but dependable receipt, consumption, model response, and source-chat reply have not yet been established as a complete chain.
+
+\section{Installation topology}
+
+\subsection{Directory layout}
+
+\begin{longtable}{p{0.30\textwidth}p{0.63\textwidth}}
+\toprule
+Component & Inspected location and role \\
+\midrule
+\endhead
+Project notebook & \code{/home/openclaw/research-agent/projects/omegaclaw}; records, local launchers, policy, artifacts, and reports. \\
+PeTTa runtime & \code{repos/PeTTa}; active working directory for \code{run.sh run.metta}. \\
+Active OmegaClaw-Core & \code{repos/PeTTa/repos/OmegaClaw-Core}; Telegram adapter, OpenClaw provider, prompts, memory, skills, and extensions used by the live PeTTa run. \\
+Inspection clone & \code{repos/OmegaClaw-Core}; separate clone retained for upstream/source comparison. It is not the active nested runtime tree. \\
+SWI-Prolog & \code{local/swipl-9.3.36}; project-local SWI-Prolog distribution selected through \code{PATH}, \code{SWI\_HOME\_DIR}, and \code{LD\_LIBRARY\_PATH}. \\
+Python environment & \code{repos/PeTTa/.venv}; Python 3.10.12, Janus binding, Telethon 1.44.0, ChromaDB, sentence-transformers, and other runtime dependencies. \\
+Vector memory & \code{repos/PeTTa/chroma\_db}; persistent local Chroma store. \\
+Model caches & \code{local/huggingface} and \code{local/sentence\_transformers}; local embedding/model cache paths exported by the runner. \\
+Secret environment & \code{/home/openclaw/.openclaw/omegaclaw-telegram.env}; bot and Telegram application credentials, observed mode 0600. \\
+MTProto session & \code{/home/openclaw/.openclaw/protomegabot\_mtproto.session}; Telethon authorization/session database, observed mode 0644. \\
+Runtime logs & \code{artifacts/telegram-private-supervisor/}; current and rotated stdout/stderr, bridge stderr, and historical PID artifacts. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Installed runtime versions}
+
+\observed The active virtual environment reported Python 3.10.12 and Telethon 1.44.0. The local SWI path is named for SWI-Prolog 9.3.36. The Janus Python module imported successfully. These are mutable local facts and should be captured with exact package inventories in any reproducer.
+
+\subsection{Source-control condition}
+
+\observed The active nested OmegaClaw-Core tree had modified files including \code{channels/telegram.py} and \code{lib\_llm\_ext.py}, plus untracked MTProto bridge files and tests. The PeTTa tree also contained an untracked virtual environment, Chroma database, nested repositories, and runtime files. This is acceptable for active research, but it means operational behavior cannot be reconstructed from one Git commit alone.
+
+\risk A crash report without a source snapshot, diff, package lock, and launch environment is not fully reproducible. A coherent tested slice should be committed on a task branch, while local credentials, sessions, caches, databases, and logs remain ignored.
+
+\section{Launch, supervision, and process ownership}
+
+\subsection{Runner}
+
+The runner \code{local/run-omegaclaw-openclaw-telegram-private.sh} performs the following actions:
+\begin{enumerate}
+  \item sources the local secret environment file;
+  \item changes to the PeTTa directory and creates memory/cache paths;
+  \item exports project-local SWI, Python, GoalChainer, Chroma, and model-cache paths;
+  \item configures the local OpenClaw Gateway and per-call provider sessions;
+  \item configures Telegram access and receive mode;
+  \item activates the PeTTa virtual environment; and
+  \item executes \code{timeout ... sh run.sh run.metta} with Telegram, OpenClaw provider, loop bounds, memory bounds, and local policy arguments.
+\end{enumerate}
+
+Notable defaults are a 900-second Gateway HTTP timeout, a 900-second provider subprocess timeout, per-call OpenClaw sessions, \code{TG\_SYNC\_POLL=true}, and \code{TG\_USE\_MTPROTO=true}. Late heavyweight extensions are disabled by default pending a bounded loader.
+
+\subsection{Shell supervisor}
+
+The shell supervisor creates a detached bash loop. It runs the runner, records the exit status, waits five seconds, and starts it again. Its current source defaults include:
+\begin{itemize}
+  \item \code{TG\_PRIVATE\_ONLY=false};
+  \item four explicit chat targets, including Ben's direct chat, the scheduled-updates channel, the BotBot chat \code{-5459676079}, and another group;
+  \item \code{TG\_USE\_MTPROTO=true}; and
+  \item a one-day outer timeout.
+\end{itemize}
+
+\observed The usage text still says the supervisor defaults to private/direct chat only, \code{TG\_PRIVATE\_ONLY=true}, and one direct-chat target. The executable defaults say otherwise. This is concrete documentation/configuration drift.
+
+The supervisor's \code{status} command validates only the PID recorded in its PID file. It does not verify the SWI child, bridge count, Telegram connection, queue consumption, Gateway path, or reply path.
+
+\subsection{Candidate systemd service}
+
+A service definition exists at \code{local/omegaclaw-telegram.service}. It sets \code{HOME}, loads the secret env file, starts the same runner, uses \code{Restart=always}, and includes partial systemd hardening. Its presence in the repository does not prove it is installed, enabled, or the active owner. The observed process tree was the shell-supervisor path.
+
+\subsection{Observed process state}
+
+At approximately 21:19 PDT the process listing showed:
+\begin{itemize}
+  \item a detached supervisor bash loop started around 21:17:40;
+  \item an SWI/PeTTa process under that run;
+  \item a Telethon bridge child associated with the current SWI run; and
+  \item an older Telethon bridge started around 21:12:07 with parent PID 1.
+\end{itemize}
+
+\observed The stack had restarted and was running, but two bridge processes existed, one orphaned. The current log was updating. This supersedes the earlier 21:16 snapshot in which only the orphaned bridge was visible.
+
+\inferred The watchdog can move the system from ``dead parent plus orphan bridge'' to ``new parent plus old and new bridges.'' If both bridges use the same bot session and receive stream, duplicate consumers, session-database contention, dropped ownership, and ambiguous health are plausible.
+
+\section{End-to-end architecture and message flow}
+
+\subsection{Nominal inbound path}
+
+\begin{enumerate}
+  \item Telethon authenticates a bot MTProto session using the Telegram application ID/hash and bot token.
+  \item \code{events.NewMessage()} invokes \code{\_convert\_message()} in \code{telegram\_mtproto\_bridge.py}.
+  \item The bridge converts the event into a Bot-API-shaped JSON update and writes one JSON line to stdout. It also attempts a nonblocking backup FIFO write.
+  \item A reader thread in \code{telegram\_mtproto.py} parses stdout and calls the main adapter's \code{\_handle\_updates()}.
+  \item The adapter extracts text and attachments, normalizes sender/chat metadata, applies chat and user policy, determines whether a group message should be context-only, and appends a tuple to \code{\_pending\_messages}.
+  \item \code{getLastMessage()} dequeues one tuple and binds \code{\_active\_chat\_id} to the source chat.
+  \item The MeTTa loop adds prompt/history/memory context and calls the configured model provider.
+\end{enumerate}
+
+\subsection{Model-provider path}
+
+The OpenClaw provider in \code{lib\_llm\_ext.py} uses a child Python process to call the localhost OpenAI-compatible endpoint at \code{http://127.0.0.1:18789/v1/chat/completions}. The child process boundary was introduced to leave Janus with subprocess I/O and a plain string rather than a live SDK/network object.
+
+The runner enables per-call session identifiers. This avoids accumulating OmegaClaw's already assembled history inside one persistent Gateway conversation. Project comments record that a previous fixed Gateway user reached roughly 998k input and 272k output tokens and caused deep requests to stall or time out. HTTP and subprocess timeouts are aligned at 900 seconds for slow formalization requests.
+
+The provider includes bounded history truncation, triage/escalation paths, retries for transient failures, diagnostics, and explicit failure responses instead of silent empty returns. These are mitigations, not proof that native SWI/Janus state remains safe while calls are pending.
+
+\subsection{Outbound path}
+
+Model output is interpreted as OmegaClaw skill calls. A \code{send} call reaches \code{telegram.send\_message()}, which chooses \code{\_active\_chat\_id}, then \code{\_reply\_chat\_id}, then the default chat. The adapter splits text into chunks below Telegram's limit and sends each with Bot API \code{sendMessage}.
+
+The adapter also has duplicate-send suppression and an optional immediate acknowledgement for likely long requests. The latter does not depend on the model successfully emitting a \code{send} action.
+
+\subsection{Routing invariant}
+
+The intended invariant is:
+
+\begin{quote}
+For every dequeued inbound message $m$ from chat $c$, every ordinary reply causally produced while $m$ is active must be sent to $c$, regardless of later arrivals from other chats.
+\end{quote}
+
+The current \code{\_pending\_messages} queue and \code{\_active\_chat\_id} binding were added after stale latest-chat state caused wrong-chat risk. This is a critical safety property for a multi-chat bot. It should be tested under interleaving, slow provider calls, context-only bot messages, pre-acks, retries, and duplicate suppression.
+
+\section{Telegram configuration}
+
+\subsection{Why MTProto was added}
+
+The Telegram Bot API does not provide ordinary bot-authored messages to another bot through \code{getUpdates} in the desired group interaction pattern. Privacy-mode and administrator changes do not remove that bot-to-bot delivery limitation. The operational objective is for ProtoMegaBot to receive other bots' messages in \code{ProtoBots-BotBotChats}, initially at chat target \code{-5459676079}.
+
+Telethon/MTProto was therefore introduced for receiving. Importantly, this is a bot MTProto session authenticated with a bot token, not a human-account userbot login. Bot API remains the send and file-download path.
+
+\subsection{Bot API capabilities retained}
+
+The adapter retains:
+\begin{itemize}
+  \item \code{sendMessage} for outbound replies;
+  \item \code{getFile} and Bot API file URLs for attachments;
+  \item \code{getUpdates} implementation for fallback receive mode;
+  \item initial offset handling and update offsets;
+  \item edited-message and channel-post handling;
+  \item chat/user allowlists and private-only policy;
+  \item source-chat reply binding; and
+  \item acknowledgement and duplicate-send controls.
+\end{itemize}
+
+\subsection{MTProto bridge design}
+
+\code{telegram\_mtproto.py} launches \code{telegram\_mtproto\_bridge.py} through \code{setsid}. The design intent is to isolate Telethon's asyncio event loop and Python GIL activity from SWI-Prolog's embedded Janus interpreter. Bridge stdout is the primary IPC channel; a named FIFO is attempted as backup IPC.
+
+The child emits status, message, and error JSON objects. The parent marks the adapter connected when it sees ``Connected as'', feeds message updates to the shared handler, and marks the adapter disconnected when the reader ends.
+
+\subsection{Confirmed transport-mode leakage}
+
+\observed Startup in MTProto mode returns before the Bot API polling thread is created and logs ``Bot API polling disabled.'' However, \code{start\_telegram()} still sets \code{\_sync\_poll} from \code{TG\_SYNC\_POLL}; the runner defaults that variable to true. Independently, \code{getLastMessage()} executes \code{\_poll\_once()} whenever \code{\_sync\_poll} and \code{\_running} are true. There is no \code{use\_mtproto} guard in that function.
+
+Therefore the actual flow is:
+\begin{lstlisting}
+MTProto event handler -> _handle_updates(...)
+                 plus
+getLastMessage() -> Bot API getUpdates(...)
+\end{lstlisting}
+
+July 12 logs confirm Bot API polling errors while MTProto was active, including repeated timeouts, HTTP 429, HTTP 502, connection reset, and TLS handshake timeout.
+
+\risk This can create unnecessary request load, rate limiting, competing Bot API consumers, delayed dequeue operations, and misleading connection state. It also invalidates the startup claim that Bot API polling is disabled.
+
+\subsection{Chat and response filtering}
+
+The current supervisor source lists several chat IDs and defaults to all chat types. The adapter rejects messages outside configured chats. In groups, it can ingest messages addressed only to other bots for context while marking them \code{skip\_response}; an explicit mention of ProtoMegaBot overrides that suppression.
+
+\risk Broad multi-chat operation increases the importance of exact source-chat routing and explicit response policy. The supervisor's private-oriented name and help text should be changed or the defaults narrowed; the current mismatch is likely to mislead an operator.
+
+\subsection{Attachments}
+
+The Bot API path downloads files with explicit byte and text-character caps. Text is treated as untrusted content, PDFs can be locally converted with \code{pdftotext}, and large extracts are chunked.
+
+\inferred MTProto document/photo identifiers are not necessarily valid Bot API \code{file\_id} values. The bridge currently maps MTProto document IDs into fields named \code{file\_id}, while the shared attachment code later calls Bot API \code{getFile}. Text-only bot messages may work while MTProto-received attachments fail. This needs a transport-specific attachment test and likely a Telethon download path.
+
+\section{Security and credential handling}
+
+\subsection{What is handled correctly}
+
+\observed The secret env file is outside the project repository, owned by the \code{openclaw} user, and mode 0600. The project scripts refer to it by path and do not embed credential values. The report itself contains no credential values.
+
+The runner obtains the local Gateway token from the OpenClaw secret store only when needed and exports it to the provider process. The Telegram adapter accepts either a dedicated OmegaClaw token variable or the conventional Bot API variable, with comments warning against reusing ZeroBot's token.
+
+\subsection{Session-file exposure}
+
+\observed The Telethon session database was mode 0644 at inspection time. Although this host may have only one relevant local user, a Telethon session is credential-equivalent state and should not be world-readable.
+
+\risk A readable session database can permit account/session impersonation depending on local access and Telegram session semantics. It must be treated like a token, excluded from repositories and reports, protected at 0600, and rotated/revoked if exposure is suspected.
+
+\subsection{Other boundaries}
+
+A local filesystem/security policy is supplied to OmegaClaw. Historical evidence shows that an earlier Landlock policy blocked DNS because \code{/etc/resolv.conf} resolved through \code{/run/systemd/resolve}; the policy was amended. This illustrates that network-dependent behavior must be tested under the actual launcher and policy, not only in an unrestricted shell.
+
+\section{Failure chronology}
+
+\begin{longtable}{p{0.15\textwidth}p{0.78\textwidth}}
+\toprule
+Date & Evidence and response \\
+\midrule
+\endhead
+2026-06-27 & Initial no-reply behavior was traced first to an inactive supervisor or missing runtime token, then to DNS failure under the filesystem sandbox. The resolver target path was not permitted. Policy changes enabled a private smoke. \\
+2026-06-27--28 & Natural-language model output was not always normalized into a \code{send} action. Empty output and exact ``No response from OpenClaw'' results appeared as silence. Output normalization and diagnostics were added. \\
+2026-06-28 & Deep requests stalled. Evidence implicated a huge fixed Gateway session, misaligned short timeouts, silent backend-failure conversion, and restart behavior. Per-call sessions, aligned 900-second timeouts, visible failures, and restart-safe supervision were introduced. \\
+2026-06-28 & Group document use required attachment ingestion, provenance marking, bounded extraction, and chunking. \\
+2026-07-02 & Multiple chat IDs, channel posts, and source-chat replies were added. \\
+2026-07-06 & Supervisor logs show repeated restarts and status-137 runner exits. A native Telegram run was started later that day. Heavy in-loop extension imports could pin SWI; live late extensions were made opt-in. \\
+2026-07-07 & Stale chat routing and repeated \code{COMMAND\_RETURN} feedback replay were corrected. Both could produce wrong-chat responses or prompt/history growth. \\
+2026-07-08--10 & Private-smoke preflights repeatedly found already active runtime state and broad/unsafe boundaries. Current executable defaults later drifted back to broad multi-chat operation while private-only help text remained. \\
+2026-07-12 & Bot API could not supply the desired bot-to-bot group messages, motivating MTProto/Telethon. An initial inline Janus/Telethon approach crashed in receive integration; the bridge was moved to a subprocess. \\
+2026-07-12 & A rotated log shows successful Telethon connection and handler registration, followed by Bot API poll timeouts, HTTP 429/502, reset/TLS errors, model-processing activity, fatal signal 11 in SWI-Prolog, and termination. \\
+2026-07-12 21:16 & Process inspection briefly found no main OmegaClaw parent, but one Telethon bridge remained under PID 1. \\
+2026-07-12 21:19 & The watchdog/supervisor had started a new full stack, while the old orphan bridge remained. The resulting two-bridge state was running but not cleanly owned. \\
+\bottomrule
+\end{longtable}
+
+\section{Persistent issue analysis}
+
+\subsection{Native SWI/Janus instability}
+
+\observed Fatal signal 11 occurred after the runtime accepted a Telegram message and entered the OpenClaw model-processing path. Earlier status-137 exits and termination cycles show a broader native-process reliability problem.
+
+\inferred Candidate mechanisms include unsafe interaction among SWI, Janus, Python threads, subprocess waits, callbacks, or teardown; memory pressure is also possible for status 137 but does not by itself explain signal 11. The evidence does not yet isolate one cause. The bridge subprocess removes Telethon's event loop from the embedded interpreter, but the parent still runs Python adapter threads and provider subprocess handling through Janus.
+
+A minimal reproducer should independently vary:
+\begin{enumerate}
+  \item Bot API receive versus MTProto receive;
+  \item synchronous polling on versus off;
+  \item no model call versus a fixed local model stub versus Gateway call;
+  \item no Python reader thread versus bridge reader thread;
+  \item clean shutdown versus parent crash/restart; and
+  \item one message versus interleaved multi-chat messages.
+\end{enumerate}
+
+\subsection{Bridge lifecycle and orphaning}
+
+\observed \code{setsid} intentionally detaches the bridge from SWI's process group. \code{stop\_mtproto()} can terminate a known child on orderly shutdown, but a fatal SWI crash cannot execute that cleanup. The bridge can then survive under PID 1.
+
+\inferred The design traded signal-coupling risk for ownership loss. A correct boundary needs both isolation and liveness coupling. Options include Linux parent-death signals set in the bridge, a supervisor-owned bridge with explicit IPC, a parent heartbeat with self-termination, or a single systemd unit/cgroup that owns all descendants. Merely scanning by command line and killing all matches is unsafe unless session and project identity are checked.
+
+\subsection{Health-check insufficiency}
+
+\observed The enabled \code{omegaclaw-watchdog} cron job last reported \code{ok}; nevertheless, inspection found a period with only an orphan bridge and later a period with two bridges. PID-file health is therefore not equivalent to service health.
+
+A useful health state must assert all of the following:
+\begin{itemize}
+  \item exactly one supervisor/service owner;
+  \item exactly one SWI/PeTTa runtime for this configuration;
+  \item exactly one MTProto bridge belonging to that owner;
+  \item a recent bridge connection/receive heartbeat;
+  \item a consuming parent reader;
+  \item successful Gateway health within a bound;
+  \item no restart storm; and
+  \item periodic end-to-end receive-to-reply evidence in a designated canary chat.
+\end{itemize}
+
+\subsection{Context, feedback, and loop growth}
+
+The per-call Gateway session change addresses one large source of context amplification. OmegaClaw still carries its own history, feedback, recall, prompt, and continual-loop state. Past repeated feedback records and model-generated continuation behavior have inflated prompts and caused unresponsiveness.
+
+The current limits -- history 8000, feedback 8000, eight recall items, eight episode lines, 2048 output tokens -- are useful but should be measured in actual serialized prompt characters/tokens. Logs already show prompts around 20k characters for a simple channel interaction. A reliability test should track per-turn prompt size, model latency, loop count, and memory growth.
+
+\subsection{Network and rate limits}
+
+The Bot API errors on July 12 are real observations, but they are likely amplified by accidental residual polling and potentially multiple consumers. MTProto and Bot API both remain network-dependent. Retry policy should use bounded exponential backoff with jitter, respect rate-limit delay information where available, and separate receive health from send health.
+
+\subsection{Configuration drift}
+
+The script name and help text describe a private smoke; source defaults operate across multiple chats with private-only disabled. Secret-env variables can override shell defaults, and arguments can further override env. Without a rendered effective-config line that excludes secrets, operators cannot easily know the actual boundary.
+
+Startup should print one redacted canonical configuration record: transport, chat IDs, private mode, allowed-user policy, session path, poll mode, timeouts, source revision, and process ownership identifier.
+
+\section{Operational situation and readiness assessment}
+
+\subsection{What is established}
+
+\begin{itemize}
+  \item The project-local PeTTa/SWI/Python stack starts and loads the local embedding model and policy.
+  \item Telethon 1.44.0 can authenticate and report connection as \code{@Protomegabot}.
+  \item The MTProto bridge can register a new-message handler.
+  \item The shared Telegram adapter has multi-chat allowlisting, source-chat routing, context-only group handling, attachment bounds, pre-acks, and dedupe mitigations.
+  \item The OpenClaw provider has per-call sessions and long aligned timeouts.
+  \item Credential values are kept outside project files; the env file is mode 0600.
+\end{itemize}
+
+\subsection{What is not established}
+
+\begin{itemize}
+  \item Stable single-owner operation across crashes and restarts.
+  \item Exclusive MTProto receiving without Bot API polling leakage.
+  \item Reliable bot-authored message receipt in \code{ProtoBots-BotBotChats} through model processing to a correctly routed reply.
+  \item Correct attachment behavior for MTProto-originated media.
+  \item Absence of SWI/Janus signal-11 crashes under representative traffic.
+  \item A watchdog that detects orphan, duplicate, wedged, or non-consuming bridge states.
+\end{itemize}
+
+\subsection{Readiness judgment}
+
+\textbf{Decision recommendation: not yet reliable for unattended broad multi-chat use.} The stack is suitable for supervised diagnostic testing with bounded traffic and a clear stop condition. It should not be described as fully operational merely because Telethon connected or the watchdog returned \code{ok}.
+
+\section{Prioritized remediation plan}
+
+\subsection{Priority 0: immediate safety and correctness}
+
+\begin{enumerate}
+  \item Change the MTProto session file to mode 0600 and add a startup check that refuses overly broad permissions.
+  \item Ensure MTProto and Bot API receive modes are mutually exclusive. In MTProto mode, force \code{\_sync\_poll=false}, skip \code{\_initialize\_offset()} unless a deliberate fallback is entered, and make \code{getLastMessage()} check the selected receive mode rather than only \code{\_sync\_poll}.
+  \item Stop duplicate bridge creation. Before starting, verify that no bridge for the same session is alive without the current owner. Prefer ownership by a single supervisor/cgroup rather than ad hoc process matching.
+  \item Reconcile the supervisor name/help text with effective defaults. For the BotBot test, name it as multi-chat and print the redacted effective configuration.
+\end{enumerate}
+
+\subsection{Priority 1: lifecycle and observability}
+
+\begin{enumerate}
+  \item Replace bridge detachment without liveness coupling. Recommended design: the top-level service owns both SWI and bridge; the bridge exits on parent heartbeat loss or parent-death signal; restart operates at the service boundary.
+  \item Add structured JSON lifecycle events with run ID, parent PID, bridge PID, transport, session basename, source revision, and monotonic timestamps. Never log token/hash values.
+  \item Replace the PID-only watchdog with process-tree and heartbeat checks. Alert on zero or more than one bridge, stale receive heartbeat, restart storm, signal 11, and no consumer.
+  \item Preserve crash logs and core/backtrace evidence with bounded retention. Capture exit reason separately for timeout, signal, OOM kill, operator stop, and normal exit.
+\end{enumerate}
+
+\subsection{Priority 2: reproduce the native crash}
+
+Create a recorded experiment matrix with pinned source and package inventories. Begin with a no-model fixed-message handler, then add one subsystem at a time. Use the narrowest failing case to determine whether the signal-11 trigger is receive polling, Janus callback/threading, provider subprocess interaction, or teardown.
+
+Success criterion: at least several hundred controlled inbound events across restart and interleaving cases with zero native crashes, no orphan children, no duplicate replies, and stable memory use. The exact threshold should be chosen before the run, not after seeing results.
+
+\subsection{Priority 3: end-to-end Telegram validation}
+
+Run a supervised test in \code{-5459676079}:
+\begin{enumerate}
+  \item record a unique canary ID and process/run IDs;
+  \item have ZeroBot or another bot send one explicitly addressed text message;
+  \item verify one Telethon event, one adapter queue insertion, one dequeue with the same chat ID, one model request, and one Bot API reply to that same chat;
+  \item verify no Bot API \code{getUpdates} call occurred;
+  \item verify no duplicate response and no response in another configured chat;
+  \item repeat with an unaddressed bot message and confirm context ingestion without reply;
+  \item restart once and confirm the old bridge exits and exactly one new bridge appears; and
+  \item separately test an MTProto-originated attachment or explicitly disable such attachments until implemented.
+\end{enumerate}
+
+\subsection{Priority 4: reproducibility and deployment cleanup}
+
+Commit the coherent adapter/bridge/test slice to a task-specific branch after tests pass. Record exact PeTTa and OmegaClaw revisions, Python lock/inventory, SWI version, redacted config schema, and launch command. Select one production supervisor -- preferably systemd or another single cgroup owner -- and retire competing watchdog/shell ownership paths after a controlled migration.
+
+\section{Verification checklist}
+
+The following gates should all pass before calling the stack stable:
+
+\begin{longtable}{p{0.52\textwidth}p{0.12\textwidth}p{0.28\textwidth}}
+\toprule
+Gate & Current & Required evidence \\
+\midrule
+\endhead
+Secret env mode 0600 & Pass & \code{stat} metadata, no values logged. \\
+MTProto session mode 0600 & Fail & Permission check before launch. \\
+Exactly one service owner & Unclear & Process tree and service manager state. \\
+Exactly one bridge & Fail at snapshot & Owner-linked PID/process count. \\
+No Bot API receive calls in MTProto mode & Fail & Instrumented transport test. \\
+Bot-authored canary received & Not proven & Unique message ID in bridge and adapter logs. \\
+Correct source-chat reply & Not proven & Matching inbound/outbound chat and canary ID. \\
+No reply to context-only bot message & Not proven & Addressing-policy test. \\
+Clean restart and bridge reap & Fail at snapshot & Before/after process tree. \\
+No signal 11 under stress gate & Fail historically & Reproducible recorded run. \\
+Attachment behavior under MTProto & Not proven & Text/PDF/photo cases or explicit disable. \\
+Watchdog detects duplicates/orphans & Fail by design & Injected health-failure tests. \\
+\bottomrule
+\end{longtable}
+
+\section{Safe inspection commands}
+
+These commands expose process and metadata state but not credential values. Run them from \code{projects/omegaclaw}.
+
+\begin{lstlisting}[language=bash]
+# Effective process topology
+ps -eo pid,ppid,lstart,etimes,%cpu,%mem,stat,cmd \
+  | grep -E 'telegram_mtproto_bridge|PeTTa|OmegaClaw|swipl' \
+  | grep -v grep
+
+# Credential-file metadata only; do not print contents
+stat -c '%n mode=%a owner=%U group=%G size=%s' \
+  /home/openclaw/.openclaw/omegaclaw-telegram.env \
+  /home/openclaw/.openclaw/protomegabot_mtproto.session
+
+# Recent lifecycle/failure signatures
+rg -n -i 'Connected as|reader loop ended|signal 11|segv|status 137|\
+429|502|timed out|Terminated' \
+  artifacts/telegram-private-supervisor/*.log* | tail -n 200
+
+# Source evidence for receive-mode selection
+rg -n 'TG_USE_MTPROTO|TG_SYNC_POLL|_sync_poll|_poll_once|\
+getLastMessage|start_mtproto' \
+  repos/PeTTa/repos/OmegaClaw-Core/channels/telegram*.py \
+  local/run-omegaclaw-openclaw-telegram-private.sh
+\end{lstlisting}
+
+\section{Evidence index}
+
+\begin{longtable}{p{0.47\textwidth}p{0.46\textwidth}}
+\toprule
+Source & Main evidence \\
+\midrule
+\endhead
+\code{local/run-omegaclaw-openclaw-telegram-private.sh}, lines 19--43, 70--109 & Runtime paths, Gateway/session/timeouts, Telegram defaults, loop and memory bounds. \\
+\code{local/omegaclaw-telegram-private-supervisor.sh}, lines 10--17, 28--53, 56--147 & Broad executable defaults versus private help text; PID-only status; restart loop and process-group stop behavior. \\
+\code{local/omegaclaw-telegram.service}, lines 1--35 & Candidate systemd ownership, restart, environment, and hardening. \\
+\code{channels/telegram.py}, lines 107--160, 622--769, 777--894 & Queue/source-chat binding, access controls, shared update handling, polling, MTProto selection, and Bot API sending. \\
+\code{channels/telegram\_mtproto.py}, lines 1--164 & Bridge subprocess, stdout reader, env loading, \code{setsid}, and orderly cleanup path. \\
+\code{channels/telegram\_mtproto\_bridge.py}, lines 1--142 & Telethon client, event conversion, JSON output, bot login, and event handler. \\
+\code{lib\_llm\_ext.py}, OpenClawProvider section & Per-call Gateway sessions, subprocess call, history bounds, retries, escalation, and explicit failure handling. \\
+Rotated supervisor log from 2026-07-12 21:06 PDT (under \code{artifacts/telegram-private-supervisor/}) & Successful MTProto startup, residual Bot API errors, user report of no answer, provider call, fatal signal 11, and termination. \\
+Current process snapshot near 2026-07-12 21:19 PDT & Supervisor and SWI active, current bridge active, older orphan bridge under PID 1. \\
+Redacted file metadata near 2026-07-12 21:17 PDT & Secret env mode 0600; MTProto session database mode 0644. \\
+\code{PROJECT.md}, \code{RUNBOOK.md}, \code{TASKS.md}, \code{DECISIONS.md}, \code{NOTES.md} & Installation provenance, operational procedures, architecture decisions, known issues, and staged testing history. \\
+\code{memory/2026-07-12.md} & Dated operational chronology and recent Telegram/MTProto work, cross-checked against code and logs. \\
+\bottomrule
+\end{longtable}
+
+\section{Conclusion}
+
+The MTProto direction addresses a real Telegram delivery limitation, and the subprocess bridge is a sensible response to an observed inline Janus crash. The present implementation is nevertheless transitional. It combines MTProto receive with unintended Bot API polling, detaches bridge lifetime from parent lifetime, leaves a credential-equivalent session file too broadly readable, and still exhibits fatal native crashes. The result can connect successfully yet fail as a bot service.
+
+The shortest path to confidence is not another broad restart. It is a narrow transport-exclusivity patch, strict process ownership, permission repair, and a recorded end-to-end canary followed by a minimal crash-isolation matrix. Once those gates pass, the architecture can be simplified around one supervisor and one auditable receive path.
+
+\vfill
+\begin{center}
+\small End of report. No secret values are included.
+\end{center}
+
+\end{document}

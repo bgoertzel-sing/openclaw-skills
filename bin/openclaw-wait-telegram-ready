@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -u
+
+readonly PROBE_HOST="${OPENCLAW_NETWORK_PROBE_HOST:-api.telegram.org}"
+readonly PROBE_URL="${OPENCLAW_NETWORK_PROBE_URL:-https://api.telegram.org/}"
+readonly TIMEOUT_SECONDS="${OPENCLAW_NETWORK_WAIT_TIMEOUT_SECONDS:-300}"
+readonly INTERVAL_SECONDS="${OPENCLAW_NETWORK_WAIT_INTERVAL_SECONDS:-2}"
+readonly REQUIRED_SUCCESSES="${OPENCLAW_NETWORK_WAIT_REQUIRED_SUCCESSES:-3}"
+
+probe_once() {
+    getent ahostsv4 "$PROBE_HOST" >/dev/null 2>&1 &&
+        curl --ipv4 --silent --show-error --output /dev/null \
+            --connect-timeout 5 --max-time 10 "$PROBE_URL"
+}
+
+if [[ "${1:-}" == "--check-once" ]]; then
+    probe_once
+    exit $?
+fi
+
+start_seconds="$(date +%s)"
+deadline_seconds=$((start_seconds + TIMEOUT_SECONDS))
+consecutive_successes=0
+
+echo "Waiting for stable Telegram DNS and HTTPS connectivity (${REQUIRED_SUCCESSES} consecutive probes)"
+
+while (( "$(date +%s)" < deadline_seconds )); do
+    if probe_once; then
+        consecutive_successes=$((consecutive_successes + 1))
+        if (( consecutive_successes >= REQUIRED_SUCCESSES )); then
+            echo "Telegram endpoint is reachable and stable; starting OpenClaw"
+            exit 0
+        fi
+    else
+        consecutive_successes=0
+    fi
+
+    sleep "$INTERVAL_SECONDS"
+done
+
+echo "Telegram endpoint did not become stably reachable within ${TIMEOUT_SECONDS}s" >&2
+exit 1

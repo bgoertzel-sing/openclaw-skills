@@ -1,0 +1,38 @@
+{
+  "artifacts": {
+    "counterfactual_csv": "dynamic_sharpness_counterfactual.csv",
+    "counterfactual_plot": "dynamic_sharpness_counterfactual.png",
+    "edge_plot": "dynamic_sharpness_edge_utilization.png",
+    "parameter_plot": "dynamic_sharpness_parameters.png",
+    "trace_csv": "dynamic_sharpness_trace.csv",
+    "tracking_plot": "dynamic_sharpness_tracking.png"
+  },
+  "burn_in_for_metrics": 60,
+  "counterfactual": {
+    "candidate_momentum": 0.85,
+    "candidate_step_size": 0.29,
+    "frozen_edge_utilization": 0.967946834575414,
+    "initial_funnel_relative_width": 0.0077509450634682675,
+    "maximum_rollout_relative_width": 0.8131553701607838,
+    "point_forecast_edge_crossing_future_step": 17,
+    "start_step": 150,
+    "true_edge_crossing_future_step": 15,
+    "upper_funnel_edge_crossing_future_step": 4
+  },
+  "estimated_gamma_p": 0.027040723609381298,
+  "estimated_gamma_r": 0.41506012331865794,
+  "experiment": "dynamic_sharpness",
+  "funnel_coverage_against_true": 1.0,
+  "maximum_true_edge_utilization": 1.0787057606364319,
+  "median_funnel_width": 0.27704821225684295,
+  "plant_one_step_rmse_against_measurement": 0.029780152602734283,
+  "plant_one_step_rmse_against_true": 0.022796779053609027,
+  "relative_error_gamma_p": -0.03425987109352509,
+  "relative_error_gamma_r": -0.011761611146052496,
+  "rmse_improvement_over_static": 9.791341405342006,
+  "rolling_static_model_rmse": 0.22321104665603542,
+  "seed": 123,
+  "steps": 420,
+  "true_gamma_p": 0.028,
+  "true_gamma_r": 0.42
+}

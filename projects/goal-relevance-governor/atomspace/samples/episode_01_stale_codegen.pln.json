@@ -1,0 +1,66 @@
+{
+  "format": "PLN-AtomSpace-JSON-v0.1",
+  "atoms": [
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-initial-demo",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 1.0
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "g-ir-translation-v2",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "ConceptNode",
+      "name": "t-p2m-codegen",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": []
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_t-p2m-codegen_to_g-initial-demo",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "t-p2m-codegen",
+        "g-initial-demo"
+      ]
+    },
+    {
+      "atom_type": "EvaluationLink",
+      "name": "contributes_to_g-initial-demo_to_g-build-omegaclaw",
+      "truth": {
+        "strength": 1.0,
+        "confidence": 0.9
+      },
+      "outgoing": [
+        "g-initial-demo",
+        "g-build-omegaclaw"
+      ]
+    }
+  ],
+  "truth_value_type": "SimpleTruthValue"
+}

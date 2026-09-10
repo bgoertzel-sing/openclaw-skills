@@ -39,3 +39,67 @@ projects/*/experiments/*/venv/
 *~
 
 bin/tectonic
+
+# Ephemeral/generated outputs
+projects/*/experiments/
+projects/*/drill-reports/
+projects/channel-watchdog/state/
+projects/chaos-language-algorithm/memory/
+health-reports/
+chroma_db/
+artifacts/
+archive/
+BF/
+published/
+media/
+
+# Binary tools
+bin/*
+!bin/.gitkeep
+
+# Temp chroma dirs
+projects/omegaclaw/.chroma-*
+
+# Backup/pre files
+*.before-*
+*.pre-*
+
+# BF scratch
+BF/
+
+# Repos scratch
+repos/
+
+# Published outputs
+published/
+
+# Misc scratch
+
+# Scratch artifacts
+BF/
+bin/.gitkeep
+
+# Omegaclaw staging/workspaces (ephemeral)
+projects/omegaclaw/staging/
+projects/omegaclaw/upstream-clean/
+projects/omegaclaw/workspace/experiments/
+projects/omegaclaw/protocosmo2/archives/
+
+# Health reports
+health-reports/
+
+# Hugo folio (separate repo)
+projects/omegaclaw/workspace/Hugo_folio/
+
+# Reference code (external)
+library/epc-fast-deep-pc-2505.20137/reference-code/
+
+# Embedded repos (tracked separately)
+projects/omegaclaw/protocosmo2/OmegaClaw-Core/
+projects/omegaclaw/protocosmo2/iter-port/
+projects/omegaclaw/protocosmo2/phase2-checked-baseline/
+
+# Large PDFs/binary artifacts
+*.pdf
+!library/**/*.pdf
+!projects/omegahive-conversation-governor/docs/*.pdf

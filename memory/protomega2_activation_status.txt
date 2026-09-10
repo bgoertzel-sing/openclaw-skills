@@ -1,0 +1,19 @@
+Protomega2 Activation Experiment (2026-09-08)
+=============================================
+Experiment dir: projects/pop-os-vm8-migration/experiments/20260908T1903Z-protomega2-activation/
+
+ACCEPTANCE CRITERIA STATUS:
+1. ✅ Sole receiver — no competing Telegram pollers for bot 8680999952
+2. ✅ Correct identity (bot 8680999952), model, session config
+3. ⬜ Live canary — PENDING (needs Ben-authored Telegram event)
+4. ⬜ Negative canary — PENDING
+5. ✅ Supervisor restart canary — PASS (clean restart, no post-restart 409s)
+6. ✅ Rollback hashes recorded (main: 56d3194, submodule: deea40d)
+
+PROCESS STATE:
+- Old supervisor (PID 3689894) terminated via SIGTERM
+- New supervisor (PID 3703607) running, clean iterations, no 409 conflicts
+- Protomega-outer (PID 3372056) uses different bot token (8716054285) — no conflict
+- Only one process tree holds token 8680999952
+
+REMAINING: Criteria 3 & 4 require Ben to send a message to the Protomega2 chat

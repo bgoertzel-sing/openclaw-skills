@@ -1,0 +1,122 @@
+{
+  "config": {
+    "controls": [
+      "literal",
+      "unigram",
+      "markov-1",
+      "markov-2",
+      "lz78-canonical-v1"
+    ],
+    "learner": {
+      "enable_categories": false,
+      "enable_joint_categories": false,
+      "max_iterations": 8,
+      "max_ngram": 5,
+      "search_objective": "indexed",
+      "seed": 18071701
+    },
+    "lz78_accounting": "entire self-contained suffix byte stream at eight bits per byte",
+    "prefix_length": 1024,
+    "shuffle_seed_base": 18071701,
+    "sources": [
+      {
+        "coding": {
+          "0": "0",
+          "1": "1"
+        },
+        "name": "cantor-ternary",
+        "rule": {
+          "0": "000",
+          "1": "101"
+        },
+        "seed_symbol": "1"
+      },
+      {
+        "coding": {
+          "a": "1",
+          "b": "1",
+          "c": "0",
+          "d": "0"
+        },
+        "name": "regular-paperfolding",
+        "rule": {
+          "a": "ab",
+          "b": "cb",
+          "c": "ad",
+          "d": "cd"
+        },
+        "seed_symbol": "a"
+      }
+    ],
+    "suffix_length": 4096
+  },
+  "fixtures": [
+    {
+      "counts": {
+        "0": 4928,
+        "1": 192
+      },
+      "kind": "positive",
+      "length": 5120,
+      "name": "cantor-ternary-positive",
+      "prefix_length": 1024,
+      "prefix_sha256": "bec33e323a06046063b7cdf307970717c37ea1fe47918f8898061767a32482a6",
+      "shuffle_seed": null,
+      "source": "cantor-ternary",
+      "stream_sha256": "1918c3ef9b75177dc5484259fdb17326f6b88733ed6ed115d8b74fefc170ef42",
+      "suffix_length": 4096,
+      "suffix_sha256": "57a34c9bcb615fc337d2a62650970efae6f34f5afb93da8af97de6324eab1cd8"
+    },
+    {
+      "counts": {
+        "0": 4928,
+        "1": 192
+      },
+      "kind": "shuffled",
+      "length": 5120,
+      "name": "cantor-ternary-shuffled",
+      "prefix_length": 1024,
+      "prefix_sha256": "dcb82966ea937a7fb8ffa9c467181199cd826c8098e107d762f8ac46377e21e7",
+      "shuffle_seed": 18071701,
+      "source": "cantor-ternary",
+      "stream_sha256": "ff29e00f99f678634f9575d8d9e629004368256963dfefb1814f6eb53af13fba",
+      "suffix_length": 4096,
+      "suffix_sha256": "a0c5a8109fff5d989e41fcb03aa65e2de39795eb9a3184fc54021f958df5eefd"
+    },
+    {
+      "counts": {
+        "0": 2558,
+        "1": 2562
+      },
+      "kind": "positive",
+      "length": 5120,
+      "name": "regular-paperfolding-positive",
+      "prefix_length": 1024,
+      "prefix_sha256": "1dd0a4fd202ae1a1a5df02bb487b51711027a2c4c06614cb635836a0bd1dbd40",
+      "shuffle_seed": null,
+      "source": "regular-paperfolding",
+      "stream_sha256": "3a8e0561ed44fc42e7622aaf52cd89aa3b205f710f617628e5dec8a85e4530aa",
+      "suffix_length": 4096,
+      "suffix_sha256": "3de8562e56d3af1802a7a365a269c2236ae2f00f1ab70ee1583175034098ff29"
+    },
+    {
+      "counts": {
+        "0": 2558,
+        "1": 2562
+      },
+      "kind": "shuffled",
+      "length": 5120,
+      "name": "regular-paperfolding-shuffled",
+      "prefix_length": 1024,
+      "prefix_sha256": "cf8626217cdff5dc148ef9846b9c91e9225b74ee736ab21620e5aa215bd8b688",
+      "shuffle_seed": 18071702,
+      "source": "regular-paperfolding",
+      "stream_sha256": "3a3a551eeec5912863ac26a520d88fd70ba510d43ee3f87e837701ed01f0ba1e",
+      "suffix_length": 4096,
+      "suffix_sha256": "70500be8e19f52d5fe2c785ecbe1adbe3869d51d89fd14613450259a17c52c98"
+    }
+  ],
+  "protocol": "synthetic-universal-control-preregistration-v1",
+  "schema": "chaoslang.synthetic-universal-control",
+  "version": 1
+}

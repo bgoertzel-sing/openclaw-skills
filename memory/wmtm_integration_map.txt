@@ -1,0 +1,147 @@
+WMTM INTEGRATION MAPPING — Concrete Codebase Hooks
+Generated 2026-09-05 23:39
+
+Maps each WMTM design component to actual classes/methods in petta-memory.
+
+=== 1. WMTMStore → wraps MediumMemoryStore (store.py) ===
+
+Existing: MediumMemoryStore (store.py:111)
+  - append_cluster(text) → MemoryCluster        # writeback target
+  - clusters() → list[MemoryCluster]            # recall source
+  - query_id(id), query_type(type), query_about(entity)  # recall queries
+  - audit_view(), prompt_view(), pln_view()     # existing views
+
+WMTMStore does NOT subclass MediumMemoryStore. It's a separate in-memory
+structure that READS from the store via recall and WRITES back via append_cluster.
+
+Hook points:
+  - admit(): new method, no existing hook needed
+  - evict(): new method, uses ForgettingPolicy
+  - tick(): calls ECANBridge.run_cycle() for decay
+  - get_active_set(): returns sorted list of WMTMItem
+
+=== 2. WMTMItem → wraps AttentionValue (ecan.py:46) ===
+
+Existing: AttentionValue(sti, lti, vlti) — frozen dataclass
+  - with_sti(), with_lti(), with_av() — functional update
+  - as_tuple() — serialization
+
+WMTMItem extends concept (not class) with:
+  - source_type: 'recalled' | 'derived'
+  - origin_cluster: str (LTM cluster ID, if recalled)
+  - derived_from: list[str] (parent belief IDs, if derived)
+  - age: int (cycles since admission)
+  - utility: float (accumulated usefulness score)
+  - last_used: int (cycle number of last use)
+
+Implementation: WMTMItem is a new @dataclass that CONTAINS an AttentionValue
+plus the extra fields. Does not subclass AttentionValue (it's frozen).
+
+=== 3. RecallBridge → wraps MediumMemoryStore query methods + ECANBridge ===
+
+Existing query methods in MediumMemoryStore:
+  - query_about(entity) → keyword-based recall
+  - query_type(type_name) → type-based recall  
+  - query_id(identifier) → ID-based lookup
+  - prompt_view(topics, statuses) → ranked clusters for prompt injection
+
+Existing ECAN methods:
+  - ECANBridge.get_prioritized_beliefs(limit) → (belief_id, STI) pairs
+  - ECANBridge.get_attentional_focus_beliefs() → high-STI belief IDs
+
+RecallBridge.recall(query_context, top_k=20):
+  1. Extract keywords from query_context
+  2. For each keyword: store.query_about(keyword) → candidate clusters
+  3. Score: keyword_overlap × ECANBridge.get_sti(cluster_id) × recency
+  4. Return top_k scored clusters
+
+RecallBridge.spreading_activation(seed_ids, depth=2):
+  1. Start with seed_ids (already in WMTM)
+  2. Follow EvidenceFor links via ECANBridge.get_evidence_map()
+  3. For each neighbor: bank.get_sti(neighbor) × 0.7^depth
+  4. Collect items above 0.1 threshold
+  5. Limit depth to 2 hops
+
+=== 4. WMTMInferenceEngine → wraps patham9_pln.py ===
+
+Existing PLN infrastructure:
+  - patham9_pln_query_smoke_program(handoff, item_index) — builds MeTTa query
+  - patham9_pln_derivation_smoke_program(handoff, item_index) — derivation
+  - run_patham9_pln_derivation_smoke(...) — executes derivation
+  - ec_projected_stv(...) — EC-based truth value projection
+  - patham9_pln_handoff_sentences(handoff_cache) — extracts sentences
+
+WMTMInferenceEngine.infer(active_set):
+  1. Build handoff dict from active_set (analogous to pettachainer_handoff_cache)
+  2. Call patham9_pln_derivation_smoke_program() to generate derivation
+  3. Parse results for new derived beliefs
+  4. Assign initial STI = parent_avg_sti × 0.5 + confidence × 30 + 10
+  5. Tag with derivation chain
+
+Key insight: The existing PLN smoke programs already build derivation programs
+from handoff caches. WMTM just needs to construct a handoff-like dict from its
+active set and feed it to the existing derivation machinery.
+
+=== 5. UtilityTracker → new, no existing hook ===
+
+Pure new component. Tracks per-item:
+  - use_count: incremented when item contributes to reasoning
+  - last_used_cycle: cycle number of last use
+  - utility_score: use_count × recency_decay - age_penalty
+
+Recency decay: 0.9^(current_cycle - last_used_cycle)
+Age penalty: 0.1 × (current_cycle - admission_cycle)
+
+=== 6. ForgettingPolicy → wraps ECANBridge.get_forget_candidates() ===
+
+Existing: ECANBridge.get_forget_candidates() → list[str]
+  Returns belief IDs below FORGET_THRESHOLD (0.05 in current params)
+
+WMTM ForgettingPolicy extends with:
+  - STI threshold: 5.0 (WMTM-specific, higher than ECAN's 0.05)
+  - Max age: 50 cycles
+  - Source-type asymmetry: derived items get 1.5x eviction penalty
+  - Contradiction resolution: check ClaimState from ECANBridge.get_claim_states()
+
+Hook: ECANBridge.get_forget_candidates() provides the base list.
+ForgettingPolicy filters/further-ranks by WMTM-specific criteria.
+
+=== 7. Writeback → wraps store.append_cluster() ===
+
+Existing: MediumMemoryStore.append_cluster(text) → MemoryCluster
+  Validates and appends a cluster text to the journal.
+
+WMTM writeback:
+  - For promoted derived beliefs: construct MemoryCluster text with
+    DerivedBelief, ClaimState, DerivedFrom, EvidenceFor assertions
+  - For recalled item enrichments: construct EvidenceFor links only
+  - Call store.append_cluster(text) to persist
+
+=== 8. Cycle Driver → wraps live_bridge.py ===
+
+Existing: run_petta_memory_goalchainer_live_bridge() in live_bridge.py
+  This is the current per-turn bridge that injects memory into prompts.
+
+WMTM cycle would be called from within or alongside this function:
+  1. Before prompt injection: wmtm.recall(current_task_context)
+  2. Before prompt injection: wmtm.infer(active_set)
+  3. During prompt construction: wmtm.get_active_set() provides context
+  4. After response: wmtm.use(items_referenced)
+  5. After response: wmtm.tick() (decay + forget + writeback)
+
+=== SUMMARY: New Files Needed ===
+
+src/petta_memory/wmtm.py          — WMTMStore, WMTMItem, ForgettingPolicy
+src/petta_memory/wmtm_recall.py   — RecallBridge (keyword + spreading activation)
+src/petta_memory/wmtm_inference.py — WMTMInferenceEngine (wraps patham9_pln)
+src/petta_memory/wmtm_utility.py  — UtilityTracker
+tests/test_wmtm.py                — Unit tests for WMTMStore
+tests/test_wmtm_recall.py         — Unit tests for RecallBridge
+tests/test_wmtm_inference.py      — Unit tests for inference engine
+tests/test_wmtm_utility.py        — Unit tests for UtilityTracker
+
+=== SUMMARY: Existing Files Modified ===
+
+live_bridge.py — Add WMTM cycle invocation (Phase 5, optional)
+ecan_bridge.py — Expose get_sti/get_lti for individual atoms (may already exist)
+store.py — No changes needed (WMTM reads via existing query API, writes via append_cluster)

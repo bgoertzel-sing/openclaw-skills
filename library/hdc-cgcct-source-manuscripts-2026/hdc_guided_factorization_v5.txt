@@ -1,0 +1,1750 @@
+      Resonator-Factored Hierarchical Hypervector Embeddings
+                 for Compact Structured Memory
+              and Faster Factor-Aligned Computation:
+General Theory and Application to Columnar Causal Networks and Neural-Symbolic Associative Memory
+
+
+                                               Ben Goertzel
+
+                                               June 3, 2026
+
+
+                                                  Abstract
+          We describe a family of resonator-decoded hierarchical hypervector codes for approximately
+     factorized data and learned latent structures. We then show that, when a neural or algorithmic
+     system exposes a bounded-load factor graph for a specified task family, vector-symbolic or
+     hyperdimensional computing (HDC) can provide a compact, compositional, queryable cache of
+     those factors.
+          The dimension required for reliable local queries depends on local crosstalk load, effective
+     codebook size, cleanup margin, query depth, and the number of supported queries, but not
+     directly on the raw number of pixels, frames, tokens, or leaves. We make this precise using
+     ordered roles, finite or factorized level codebooks, query-limited capacity bounds, a task-specific
+     factorization defect, and a conditional resonator margin theorem.
+          Next, we suggest to turn the HDC layer from a passive compression stage into an active
+     guide for representation learning. The HDC capacity law tells the upstream learner what kind
+     of factorization to seek: reusable, role-stable, locally decodable, low-load, high-margin factors
+     with little task-relevant information left in the residual. We formulate HDC-admissibility di-
+     agnostics and losses for effective local load, cleanup margin, confusable codebook size, product
+     recomposition, role consistency, residual predictive information, and intervention locality. This
+     idea applies beyond DNNs to any structured algorithm whose internal variables can be aligned
+     with HDC roles and codebooks.
+          We also show how this same machinery can be combined with Hierarchical Modular Hy-
+     pervectors (HMH) and PRIMUS-style world modeling to yield resonant modular compositional
+     episodic memory. In this variant, an episode is stored not as a monolithic trace but as a typed,
+     role-filler, evidence-anchored factor graph: actors, objects, places, times, goals, affective and so-
+     cial context, causal links, affordance trials, outcomes, skills, and perceptual pointers are bound
+     into ontology-aligned modules. Resonator cleanup then supports partial structured recall, slot
+     completion, counterfactual factor swaps, schema consolidation, and neural judgment over den-
+     sified HMH traces in a way that respects the factorization of the remembered episode.
+          Finally, we instantiate the framework in Hierarchical Bayesian Causal Modular Learning
+     (HBCML) and Columnar Bayesian Causal Coding (ColBaC), a two-level columnar continual-
+     learning architecture. In ColBaC, sparse Bayesian support selection, internal column certificates,
+     hard kernels, adaptable shells, typed microcolumns, and local counterfactual teachers give an
+     especially direct substrate for HDC-guided factorization. ColBaC learns and protects causal
+     columns; the HDC layer makes their reusable contents addressable, compositional, auditable,
+     and capacity-aware.
+
+AI Acknowledgement Lots of help from GPT-5.5-Pro, Claude Opus 4.7 and Gemini Pro
+
+                                                      1
+Contents
+1 Introduction                                                                                          3
+
+2 Vector-symbolic algebra                                                                                5
+
+3 Learned factor graphs                                                                                 7
+  3.1 From raw data to a quantized latent graph . . . . . . . . . . . . . . . . . . . . . . .           7
+  3.2 Supported query model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         8
+
+4 Encoder and query algorithms                                                                      8
+  4.1 Hierarchical code . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+  4.2 Path descent . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  4.3 Resonator factorization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+  4.4 Structured queries . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+5 Theory                                                                                                10
+  5.1 Cleanup capacity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      11
+  5.2 Conditional resonator theorem . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         12
+  5.3 Task preservation for DNN latents . . . . . . . . . . . . . . . . . . . . . . . . . . . .         13
+  5.4 Storage accounting . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      14
+  5.5 Speed and baseline accounting . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         14
+  5.6 Compression-compute accounting . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          14
+
+6 Scalability objections as design criteria                                                             15
+  6.1 Effective rather than enumerative subtree dictionaries . . . . . . . . . . . . . . . . .          15
+  6.2 Binding must be fixed or quasi-isometric . . . . . . . . . . . . . . . . . . . . . . . . .        15
+  6.3 Resonator search cost must be charged . . . . . . . . . . . . . . . . . . . . . . . . . .         16
+  6.4 The factorization defect is a test, not a rescue clause . . . . . . . . . . . . . . . . . .       16
+  6.5 Admissibility checklist . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     16
+
+7 HDC-guided factorization learning                                                                     16
+  7.1 Representation families that can supply factors . . . . . . . . . . . . . . . . . . . . .         17
+  7.2 HDC-admissible factorization . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        17
+  7.3 Measuring factorization error during learning . . . . . . . . . . . . . . . . . . . . . .         18
+  7.4 Local load loss . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     18
+  7.5 Cleanup margin and confusability losses . . . . . . . . . . . . . . . . . . . . . . . . .         18
+  7.6 Product recomposition and resonator identifiability . . . . . . . . . . . . . . . . . . .         19
+  7.7 Role stability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    19
+  7.8 Residual synergy test . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     19
+  7.9 Intervention locality for causal coding . . . . . . . . . . . . . . . . . . . . . . . . . .       19
+  7.10 Total HDC-guided objective . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       20
+  7.11 Live diagnostics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   20
+
+8 Resonant modular compositional episodic memory and world modeling                                     20
+  8.1 Review: HMH and PRIMUS-style world modeling . . . . . . . . . . . . . . . . . . .                 20
+  8.2 A factorized episode model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        21
+  8.3 Resonant partial recall and slot completion . . . . . . . . . . . . . . . . . . . . . . .         22
+  8.4 Factor-aware neural judgment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        22
+
+
+                                                    2
+    8.5   Episodic-semantic consolidation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+    8.6   Capacity criteria for episodic memory . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+    8.7   Operational workflow . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+9 Instantiation in HBCML and ColBaC                                                                     24
+  9.1 HBCML background . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          25
+  9.2 ColBaC background . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         25
+  9.3 Why HDC fits ColBaC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         26
+  9.4 HDC certificates . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      26
+  9.5 HDC-guided shell hygiene . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        26
+  9.6 The bridge microcolumn . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        27
+  9.7 Episodic support memory . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         27
+  9.8 Option memory for RL and agentic systems . . . . . . . . . . . . . . . . . . . . . . .            27
+  9.9 A ColBaC-HDC error decomposition . . . . . . . . . . . . . . . . . . . . . . . . . . .            28
+  9.10 Why this is more general than ColBaC . . . . . . . . . . . . . . . . . . . . . . . . . .         28
+
+10 Experimental program                                                                                 28
+   10.1 Synthetic calibration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   28
+   10.2 DNN latent experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      29
+   10.3 HDC-guided learning experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . .         29
+   10.4 R-HMH episodic memory and world-modeling experiments . . . . . . . . . . . . . .                30
+   10.5 ColBaC-HDC experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        30
+
+11 Application regimes                                                                                  30
+
+12 Discussion                                                                                           31
+
+13 Conclusion                                                                                           32
+
+
+1    Introduction
+Images, video, language, program traces, relational records, and agent memories are high-dimensional
+objects. They are not, in general, losslessly compressible into one fixed-width vector. Yet most
+useful computations over them never require full reconstruction. They require local access to ob-
+ject states, roles, events, spans, mechanisms, retrieved passages, syntax subtrees, options, or other
+reusable latent factors. This paper studies a representation layer for precisely that regime: a
+compact structured memory that one can store cheaply, query locally, and—when the memory’s
+factorization is aligned with the host model’s own factor structure—compute over directly, rather
+than re-deriving it from raw data.
+    The intended pipeline is
+                                    Eθ         Fψ       Enc
+                                 x −−→ z(x) −−→ Gx −−−→ Hx ∈ HD .                                       (1)
+
+Here x is raw data; Eθ is a perceptual, linguistic, causal, or algorithmic encoder; z(x) is its full
+internal state; Fψ extracts a roughly factorized latent graph Gx ; and Hx is a fixed-width vector-
+symbolic code, or hyperdimensional embedding, of that graph. The HDC layer is not asked to solve
+perception or language modeling from scratch. It is asked to store and query a structured latent
+graph that another system has already learned or constructed, in a form whose algebra matches
+the structure of the host computation.
+
+                                                    3
+    The central distinction is between all-information reconstruction and query-faithful represen-
+tation. A code that answered every possible leaf query for an N -leaf object with uniformly high
+probability would permit reconstruction of the whole object, and must pay the usual entropy cost.
+A code that supports a fixed or slowly growing family of local, role-bound, or homomorphic queries
+can be far smaller. The dimension that controls reliability is set by the local interaction load and
+the effective number of confusable states at each cleanup step, not by raw object size alone.
+    This is also where the computational payoff comes from. When the data is factorized in a way
+that matches the factor structure the host model already uses, a query can be answered, and a
+reusable factor retrieved or recombined, by operating on the compact code instead of scanning
+the raw object or re-running the encoder. Two cost regimes matter. First, resonator factorization
+                                                                                               P
+recovers an unknown product of factors by iterated slot-wiseQcleanup at cost proportional to f |Cf |,
+rather than by brute-force search over the product space f |Cf |; this is the exponential-to-linear
+win, conditional on a measurable margin. Second, a local role-bound query touches only the few
+factors on its path, so its cost scales with query depth and local load rather than with object size,
+and it can replace a raw or full-latent scan, dense attention over stored contexts, or energy-intensive
+neural recomputation. We are deliberate about the limits of this claim: a single local HDC lookup
+does not asymptotically beat a well-engineered indexed tree, and when the encoder Eθ must run at
+query time its compute is charged separately from the cached code. The speedups are real, but they
+are regime-specific and live in the memory, query, and reuse layer—and, in columnar architectures,
+in the operation of the columns themselves.
+    The two error sources separate cleanly:
+                          LHDC − Lfull =     Lfact − Lfull + LHDC − Lfact .                        (2)
+                                             |    {z    }    |   {z     }
+                                           factorization defect   HDC coding error
+
+The HDC theory controls the second term through dimension, margin, and local load. It does not
+control the first. If the host system relies on holistic, distributed synergies that no bounded-load
+factor graph can approximate for the chosen task family, the defect term stays large even as D → ∞.
+This is not a loophole; it is the main empirical diagnostic for whether a structured hypervector
+memory is the right tool at all.
+    A second theme is that the HDC layer need not be a passive cache placed after the host model.
+The same capacity law that says when a code is reliable also says which factorizations are cheap
+to store and fast to query: reusable, role-stable, locally decodable, low-load, high-margin factors
+that leave little task-relevant information in the residual. Read in that direction, the capacity
+law becomes a learning objective. The host learner is pressed not merely to compress, but to
+factorize in a way that supports cheap binding, bundling, cleanup, resonator factorization, and
+role-conditioned query. We formulate the corresponding admissibility diagnostics and losses, and
+note that they apply to any structured algorithm—not only deep nets—whose internal variables
+can be aligned with HDC roles and codebooks.
+    This same idea also gives a useful way to reinterpret episodic memory. Episodic traces in agents
+are not merely bags of percepts, and not merely timestamps on raw observations. They typically
+have a semi-factorized organization: who did what to whom, where, when, for what reason, under
+what affordance, social, normative, or causal constraints, with what evidence, and with what
+outcome. Hierarchical Modular Hypervectors (HMH) already provide a typed modular role-filler
+representation for such structures, while PRIMUS-style world modeling uses HMH as a structured
+associative regime between symbolic atoms and dense neural tensors. Adding resonator cleanup to
+this substrate yields what we will call resonant modular compositional episodic memory: an episode
+can be stored as an HMH-like factor graph, retrieved by partial structured cues, completed by slot-
+wise resonator cleanup, densified for neural judgment, and consolidated into semantic schemas,
+
+                                                     4
+affordance templates, social scripts, or reusable skills. This is not a separate application bolted
+onto the paper’s theory; it is a direct case of the general query-limited story, with episodes playing
+the role of structured latent graphs and episodic questions playing the role of supported local
+queries.
+    This perspective is especially natural in columnar causal architectures, where we develop it con-
+cretely. Hierarchical Bayesian Causal Modular Learning (HBCML) decomposes continual learning
+into a sparse top-level controller that selects structurally restricted components and an internal
+probabilistic process that separates reusable causal structure from task-local residue. Columnar
+Bayesian Causal Coding (ColBaC) is a concrete columnar instance with hard kernels, adaptable
+shells, typed microcolumns, internal certificates, and local one-swap teachers. These architectures
+already expose the objects a structured memory needs—supports, columns, shells, motifs, certifi-
+cates, options—so HDC can supply the algebraic language in which their reusable contents become
+addressable, compositional, auditable, and capacity-aware. Here the cache-level speedups and the
+cost of operating the network largely coincide, which is why ColBaC is our principal application
+rather than an afterthought.
+    The paper makes four design commitments. First, descent through a hierarchy uses explicit
+level dictionaries or factored dictionaries of possible child states; a dictionary of all formal subtrees
+is intractably large, so what matters is the effective metric entropy of the task-relevant learned
+states. Second, binding is either a fixed vector-symbolic algebra, such as MAP or phasor HRR, or a
+learned operation carrying an explicit quasi-isometry penalty. Third, resonator decoding is claimed
+only under a measurable margin condition, with all search overheads charged. Fourth, speedup
+is always stated against a named baseline: an HDC local query does not asymptotically beat a
+conventional indexed tree lookup, but it can beat raw scans, full latent scans, dense attention over
+stored contexts, brute-force factor search, or neural recomputation in the appropriate regime.
+
+Contributions. The paper contributes: (i) a query-limited theory of hierarchical resonator HDC
+codes with explicit level codebooks, ordered roles, conditional resonator margins, a task-specific fac-
+torization defect, and honest storage and compute accounting; (ii) a compute model that ties com-
+pression to query speed and identifies the regimes in which factor-aligned hypervector computation
+is genuinely cheaper than scanning, dense attention, brute-force factor search, or recomputation;
+(iii) a set of scalability criteria that turn common objections into measurable quantities; (iv) an
+HDC-guided learning objective that pushes a host DNN or structured algorithm toward capacity-
+favorable factorizations; (v) a resonant HMH construction for episodic memory and PRIMUS-style
+world modeling, showing how factorized episodes can be retrieved, completed, densified, judged,
+and consolidated while preserving their role-filler structure; and (vi) a detailed instantiation in
+ColBaC/HBCML showing how HDC requirements can shape column selection, internal certificates,
+shell hygiene, support memory, and causal modularity.
+
+
+2    Vector-symbolic algebra
+The basic idea of a vector-symbolic architecture is that a single long vector can carry structured,
+symbol-like content, with a small algebra of operations that mirror the operations one would per-
+form on symbols. Atoms play the role of distinct symbols; because they are random and high-
+dimensional, distinct atoms are nearly orthogonal, and this near-orthogonality is what lets many
+of them coexist in one vector without colliding.
+    Let HD be a D-dimensional hypervector space. Examples include bipolar MAP vectors {−1, +1}D
+with elementwise multiplication, complex phasor HRR vectors with elementwise phase multiplica-
+
+
+                                                   5
+tion, or normalized real vectors with an approximately unitary binding operation. We use four
+operations.
+
+   • Binding u ⊗ v composes two vectors; intuitively it forms an association or key–value tag. For
+     atom a, binding by a is approximately an isometry and has an inverse a† satisfying a† ⊗a = 1.
+     The bound vector is dissimilar to both of its inputs, so binding hides content; unbinding by
+     the inverse, a† ⊗ (a ⊗ v) = v, recovers the partner.
+   • Bundling u ⊕ v superposes vectors; intuitively it forms an unordered set or memory trace.
+     In most implementations this is ordinary addition followed by an optional normalization
+     or quantization. Unlike binding, a bundle stays similar to each of its summands, so set
+     membership can be tested by similarity, at the cost of crosstalk that grows with the number
+     of superposed terms.
+   • Permutation ρ or depth-specific roles encode order. We do not rely on commutativity to
+     distinguish paths: applying a permutation (or using a position-specific role atom) makes the
+     contribution of one slot or path nearly independent of the others, so that, for example, (r1 , r2 )
+     and (r2 , r1 ) are not conflated.
+   • Cleanup maps a noisy vector to a nearby codebook element; it is the error-correction step
+     that pulls an approximate estimate back onto a legal symbol.
+
+    A finite codebook is C = {c1 , . . . , cM } ⊂ HD , also viewed as a D × M matrix. Soft and hard
+cleanup are
+                 cleanupC (z) = C softmax(βC > z),          \ C (z) = arg maxhc, zi.
+                                                           cleanup                              (3)
+                                                                           c∈C
+Hard cleanup is nearest-neighbor decoding against the codebook; soft cleanup is its smoothed,
+differentiable relaxation, a softmax-weighted blend of codebook entries that sharpens toward the
+hard rule as β → ∞. Soft cleanup is useful for differentiable or iterative updates; final readout uses
+the hard rule.
+    For soft intermediate states we also need a projection back to the algebraic state space before
+inversion:                    
+                              sign(z), bipolar MAP,
+                              
+                  ProjH (z) = z/|z|,     phasor HRR, componentwise when zi 6= 0,                   (4)
+                              
+                                z/ kzk , unit-sphere real model.
+                              
+
+A soft, softmax-weighted blend of atoms is not itself a legal element of the binding algebra, so
+unbinding it directly is not well defined; the projection snaps the estimate back onto the manifold
+(signs, unit phases, or unit norm) where binding inverses behave properly. Algorithmic inversion
+is therefore applied to ProjH (z), not to an arbitrary convex combination of atoms.
+Assumption 1 (Random atoms and concentration). Atoms are independent normalized random
+hypervectors with kak2 = D, Eha, a0 i = 0 for independent a 6= a0 , and sub-Gaussian normalized
+overlap: for some constant c0 > 0,
+
+                        P |ha, a0 i| ≥ tD ≤ 2 exp(−c0 Dt2 ),
+                                         
+                                                              t ∈ (0, 1].                   (5)
+
+Binding by an independent atom preserves these concentration bounds.
+Assumption 2 (Isometric binding). For every atom a, ha⊗u, a⊗vi = hu, vi, and binding distributes
+over bundling before normalization. This holds exactly in common idealized MAP and Fourier-
+domain HRR models and approximately in many learned VSA layers.
+
+                                                   6
+Ordering convention. A commutative binding algebra cannot by itself distinguish the path
+(r1 , r2 ) from (r2 , r1 ). We therefore use either depth-specific role atoms rt,i or role atoms composed
+with a permutation, e.g. ri ⊗ ρ(Hchild ). The theory below assumes that two distinct ordered paths
+have independent or near-independent role products.
+
+
+3     Learned factor graphs
+3.1   From raw data to a quantized latent graph
+Let x ∈ X be a raw datum: an image, video clip, audio segment, document, program, molecule,
+or relational record. A neural encoder Eθ produces a latent state z(x). A factorizing module Fψ
+maps z(x) to a finite graph or tree
+                                         Gx = (Vx , Ex ),                                    (6)
+with maximum depth L and maximum local branching bt at level t. The graph may be a true
+tree, a tree decomposition of a graph, a scene graph, an object track hierarchy, a parse hierarchy, a
+multiscale patch hierarchy, or a causal state graph unfolded over time. The theory is simplest for
+trees. DAGs can be handled by duplicating shared nodes, using junction trees, or adding explicit
+cross-edge roles and treating those edges as additional local load.
+    Each node ν ∈ Vx has a latent state zν . At level t(ν), a quantizer or dictionary learner assigns
+zν to a finite prototype codebook
+
+                                     Kt = {kt,1 , . . . , kt,Mt } ⊂ HD .                             (7)
+
+The prototype may be an atom, a normalized subtree prototype, or a product of factor atoms
+
+                                uν = cν,1 ⊗ · · · ⊗ cν,Ft ,     cν,f ∈ Ct,f .                        (8)
+
+In DNN applications the codebooks Kt and Ct,f can be produced by VQ layers, product quantization,
+slot prototypes, sparse autoencoder dictionaries, object-state prototypes, or causal-state prototypes.
+The codebook sizes Mt are part of the theorem. If Mt grows exponentially with object size, then
+the HDC dimension must grow as well; the dimension is independent of raw size only when the
+learned latent uses reusable local prototypes.
+
+Definition 1 (Neural factorization defect). Fix a task or query family Q and a loss dq for each
+q ∈ Q. The factorization defect of the learned graph family G = {Gx } relative to the full neural
+state z(x) = Eθ (x) is                                      
+                               δQ = sup Ex dq q(z(x)), q(Gx ) .                               (9)
+                                         q∈Q
+
+The defect includes quantization error, missing nonlocal interactions, and any information in z(x)
+that the factor graph does not preserve for the query family. It is not assumed to be an energy
+ratio and need not be the same for all tasks.
+
+    This definition is deliberately task-specific. A video factor graph may have low defect for object
+tracking and high defect for photorealistic frame reconstruction. A document factor graph may
+have low defect for entity retrieval and high defect for open-ended generation. A language-model
+sparse feature graph may have low defect for a probing task and high defect for full next-token
+prediction.
+
+
+
+
+                                                      7
+3.2   Supported query model
+Let Qsup be the family of queries the code is designed to answer. A query may specify one or more
+root-to-node paths, a set of roles, a factor slot to recover, or a summary readout. Let
+
+                       qmax = |Qsup |,     `max = max depth touched by q.                         (10)
+                                                   q∈Qsup
+
+The local capacity theorem below is for a fixed supported query family. The queries can be chosen
+after seeing the training distribution and codebooks, but not adversarially after seeing the random
+atom draw unless the margin conditions are verified for that draw.
+Remark 1 (Why the query parameter is necessary). If a constant-dimensional code could answer
+every one of N leaf queries with high probability independent of N , then querying all leaves would
+reconstruct the object. Thus any theorem claiming dimension independent of N must be query-
+limited, distributional, approximate, or nonuniform. We make this explicit through qmax and
+through the all-path lower bound in Theorem 2.
+
+
+4     Encoder and query algorithms
+4.1   Hierarchical code
+For a node ν at level t, let uν ∈ Kt be its quantized local state, possibly factored as in Eq. (8). Let
+rt,i be the ordered role for child position i at level t, τt a role for the local node state, and σt an
+optional summary role. The recursive code is
+                                                                                       
+                                                deg(ν)
+                                                 X
+                  Hν = Normalize τt ⊗ uν ⊕            rt,i ⊗ ρ(Hchildi (ν) ) ⊕ σt ⊗ Sν  .        (11)
+                                                i=1
+
+The intuition is that a node’s code is a single superposition of three kinds of tagged content: the
+node’s own local state, tagged by the state role τt ; each child’s recursively encoded subtree, tagged
+both by which child slot it fills (rt,i ) and by a permutation ρ that marks depth and prevents sibling
+paths from colliding; and an optional summary channel for whole-subtree readouts. Because the
+children enter through distinct role tags, a later query can recover any one of them by unbinding
+the corresponding role, while the other children act only as bounded crosstalk. Here Sν is a learned
+or hand-built summary vector for subtree-level readouts. The normalization Normalize specifies
+whether bundles remain real sums, are projected to bipolar signs, are projected to phasors, or are
+otherwise quantized. The same choice must be used in the capacity and storage model.
+    The level codebook used during descent is not implicit. It is the finite set of valid normalized
+child encodings at that level,
+
+                             Ktsub = {possible Hν for nodes at level t},                          (12)
+
+or a learned approximation to that set. In practice this can be a VQ dictionary of subtree states,
+a product-quantized dictionary, a cache of prototypes learned from training latents, or a generated
+dictionary whose seed and architecture are counted in storage. The theoretical bounds use Mtsub =
+|Ktsub |.
+
+
+
+
+                                                  8
+Algorithm 1 Encode a learned factor tree
+ 1: procedure Encode(ν, level t)
+ 2:    uν ← Quantt (zν )                         . prototype in Kt , or product over factor codebooks
+ 3:    H ← τt ⊗ uν
+ 4:    for i = 1 to deg(ν) do
+ 5:       Ci ← Encode(childi (ν), t + 1)
+ 6:       H ← H ⊕ (rt,i ⊗ ρ(Ci ))
+ 7:    end for
+ 8:    Sν ← Summarize(ν)                                              . optional task-preserving digest
+ 9:    H ← H ⊕ (σt ⊗ Sν )
+10:    return Normalize(H)
+11: end procedure
+
+
+Algorithm 2 Descend along a known ordered path
+ 1: procedure Descend(H, path (i1 , . . . , i` ))
+ 2:    h←H
+ 3:    for t = 0 to ` − 1 do
+                      †
+ 4:       h ← ρ−1 (rt,i t+1
+                            ⊗ h)                                    . target child plus sibling crosstalk
+ 5:       h ← cleanup
+                 \ sub (h)
+                        Kt+1                                          . explicit level-codebook cleanup
+ 6:    end for
+ 7:    return h
+ 8: end procedure
+
+
+
+4.2   Path descent
+Descent walks down a known path one level at a time. Each step first unbinds the role of the chosen
+child, which exposes that child’s subtree code superposed with residual crosstalk from its siblings,
+and then cleans the result against the level’s subtree dictionary to discard that crosstalk and recover
+a legal subtree code. Without the cleanup on line 5, crosstalk accumulates from off-path subtrees
+and the effective load can scale with the whole object. With the cleanup and a valid Ktsub , each
+step faces only local load.
+
+4.3   Resonator factorization
+Intuitively, the resonator factors a product by alternating estimation: it holds all but one factor
+fixed at their current guesses, unbinds them from H to isolate the evidence bearing on the remaining
+factor, cleans that evidence up against the corresponding codebook, and cycles through the factors
+until the hard estimates stop changing. The payoff
+                                                 P is that each sweep searches the individual factor
+codebooks
+       Q    separately,  at cost proportional to   f |Cf |, rather than enumerating the full product
+space f |Cf |.
+    The projection step is important: a soft superposition is not generally an invertible atom in
+MAP or HRR. One can strengthen the practical decoder with multi-start initialization, top-K
+beams, damping, temperature annealing, and a recomposition score
+
+                                          hH, x̂1 ⊗ · · · ⊗ x̂F i                                   (13)
+
+to reject spurious fixed points.
+
+
+                                                    9
+Algorithm 3 Margin-safe resonator factorization of H ≈ x1 ⊗ · · · ⊗ xF
+ 1: procedure Factorize(H, codebooks C1 , . . . , CF , iterations I)
+ 2:    for f = 1 to F do               
+                             P
+ 3:       x̂f ← Normalize        c∈Cf  c
+ 4:    end for
+ 5:    for s = 1 to I do
+ 6:       for f = 1 to F do
+ 7:           yg ← ProjH(x̂g ) for all
+                                       g 6= f
+                           N        †
+ 8:           zf ← H ⊗       g6=f yg
+ 9:           x̂f ← cleanupCf (zf )
+10:       end for
+11:       if all hard cleanups are unchanged then
+12:           break
+13:       end if
+14:    end for
+15:               \ C (x̂1 ), . . . , cleanup
+       return (cleanup                  \ C (x̂F ))
+                         1                     F
+16: end procedure
+
+
+
+4.4    Structured queries
+A query can use three access modes.
+
+    1. A local path query runs Descend, then optionally runs Factorize on the returned node
+       state.
+
+    2. A summary query reads a summary channel σt ⊗ Sν .
+
+    3. A homomorphic readout applies a linear or role-equivariant map that has been defined on the
+       encoded representation itself.
+
+   The third case needs care. A generic cosine similarity against a content atom at the root is not
+automatically a count of that content in the underlying tree, because leaf contents are role-bound
+by their paths. Valid global readouts are linear maps trained directly on root codes, summary-
+channel readouts explicitly constructed to preserve the statistic, or role-equivariant maps satisfying
+a known relation such as φ(r ⊗ x) = Ar φ(x).
+
+
+5     Theory
+The theorems we give here are relatively modest, but. may be of significant practical value nonethe-
+less. They show when the local-load story is valid; they do not claim universal lossless compression.
+The argument has four steps. We first bound the failure probability of a single cleanup step. We
+then compose this bound across the few cleanups that a fixed query family actually touches, which
+gives the central dimension law and shows that the requirement scales with local load and supported
+queries rather than with raw object size. We then prove a matching lower bound, confirming that
+some restriction on the supported queries is unavoidable: a code that answered every leaf query
+would have to pay the full entropy cost. Finally we give a conditional margin theorem for recovering
+unknown product factors with the resonator.
+
+
+                                                 10
+Algorithm 4 Structured query
+ 1: procedure StructuredQuery(H, query specification q)
+ 2:    if q is a valid root summary or learned linear readout then
+ 3:        return φq (H)
+ 4:    end if
+ 5:    R←∅
+ 6:    for each path p touched by q do
+ 7:        h ← Descend(H, p)
+ 8:        if q asks for unknown product factors at this node then
+ 9:            h ← Factorize(h, Ct,1 , . . . , Ct,Ft , I)
+10:        end if
+11:        R ← R ∪ {φq (h)}
+12:    end for
+13:    return Aggregate() qR
+14: end procedure
+
+
+5.1   Cleanup capacity
+Definition 2 (Coherence). For a finite set of atoms A, define
+                                                          |ha, bi|
+                                       µ(A) = max                  .                             (14)
+                                                a6=b∈A       D
+Lemma 1 (Deterministic cleanup margin). Let z = a? + η where a? ∈ C, ka? k2 = D, and cleanup
+is against C. Hard cleanup returns a? if
+                                     ha? , zi − max hc, zi > 0.                                  (15)
+                                              c∈C,c6=a?
+
+In particular, if η = k−1
+                     P
+                       j=1 ej and every pairwise normalized overlap among C ∪ {ej } is at most µ,
+then cleanup succeeds whenever
+                                         1 > (2k + 1)µ.                                      (16)
+Proof sketch. The target score is D + ha? , ηi and any distractor score is hc, a? i + hc, ηi. Bounding
+each off-diagonal inner product by µD gives a positive worst-case margin under Eq. (16). The
+constant is not optimized; the useful point is that deterministic success is a margin condition.
+
+Lemma 2 (Random single-step cleanup). Under Assumptions 1–2, suppose an unbinding step
+leaves one target atom plus k − 1 independent crosstalk terms and cleanup is performed against a
+codebook of size M . Then for a constant c > 0 depending only on the atom distribution,
+                                P[cleanup fails] ≤ 2M exp (−cD/k) .                              (17)
+                                                                        √
+Proof sketch. The target score has mean D and fluctuations of order kD. Each distractor score
+is sub-Gaussian with variance proxy O(kD). A union bound over M distractors gives Eq. (17).
+
+    The shape of Eq. (17) is the central scaling law of the paper. Reliability improves exponentially
+in the ratio D/k of dimension to local load, while the codebook size M enters only linearly inside
+the bound (logarithmically once one solves for the required D). So the dimension needed to decode
+reliably grows with the local crosstalk load and only with the logarithm of how many alternatives
+must be distinguished, not with the size of the whole object. Everything below is essentially this
+single-step fact composed over the steps a query touches.
+
+                                                 11
+Theorem 1 (Fixed-family local query capacity). Consider a family of encoded factor trees with
+level subtree codebooks Ktsub of sizes Mt , local unbinding loads kt , and maximum queried depth `max .
+Let Qsup be a fixed set of at most qmax path queries. If
+                                                                        !
+                                                      2qmax `s=1
+                                                            P max
+                                              kt                   Ms
+                                 D ≥ max         log                      ,                       (18)
+                                      t≤`max c                ε
+then all descent cleanups required by all queries in Qsup succeed with probability at least 1 − ε.
+Proof sketch. At level t, Lemma 2 bounds the failure probability by 2Mt exp(−cD/kt ). Union
+bound over at most qmax queried paths and at most `max levels. Rearranging gives Eq. (18).
+Remark 2 (When dimension is independent of raw size). Equation (18) has no direct N term.
+However, N can re-enter through qmax , `max , kt , or Mt . Thus the dimension is independent of
+raw object size only in the structured regime where supported queries are limited, depth grows
+slowly, local branching/load is bounded, and level prototype dictionaries are reusable rather than
+object-specific archives.
+Theorem 2 (All-path lower bound). Suppose a code supports simultaneous reconstruction of all N
+leaf labels drawn from an alphabet of size m with error probability bounded below a fixed constant.
+If each stored component carries at most qbits bits after quantization, then
+                                        Dqbits = Ω(N log2 m).                                        (19)
+Consequently, no fixed-width code can be lossless for arbitrary N -leaf objects.
+Proof sketch. There are mN possible labelings. A quantized D-component code has at most 2Dqbits
+states. Fano/counting arguments imply that faithful reconstruction of all labels requires enough
+states to distinguish an exponential number of labelings, giving the bound.
+
+5.2   Conditional resonator theorem
+Let the target product be
+                                y? = x1,? ⊗ · · · ⊗ xF,? ,       xf,? ∈ Cf ,                         (20)
+and let the observed vector be H = y? + η after any relevant bundling and unbinding.
+Definition 3 (Slot update margin). At a resonator iteration, given projected estimates yg =
+ProjH (x̂g ) for g 6= f , define the slot-f evidence
+                                                            
+                                                       O
+                                            zf = H ⊗    yg†  .                        (21)
+                                                         g6=f
+
+The hard-cleanup margin for slot f is
+                                 ∆f = hxf,? , zf i −       max         hc, zf i.                     (22)
+                                                       c∈Cf ,c6=xf,?
+
+Theorem 3 (Conditional resonator success). Assume that during Algorithm 3, every slot update
+satisfies ∆f ≥ γ > 0. Then hard cleanup at each update selects the true factor. For softmax cleanup
+with inverse temperature β, the probability mass assigned outside the true atom at that update is at
+most
+                                       (|Cf | − 1) exp(−βγ).                                    (23)
+If the margin condition holds for all slots for I iterations, final hard cleanup returns the true factor
+tuple.
+
+                                                    12
+Proof. The hard statement follows directly from the definition of ∆f . For the softmax statement,
+every distractor logit is at least βγ below the true logit, so the total distractor mass is bounded by
+a sum of |Cf | − 1 exponentials. Final hard cleanup is correct once every slot’s true atom has the
+largest score.
+
+Corollary 1 (Random margin sufficient condition). If the effective evidence at each slot update is
+a target atom plus at most kf − 1 independent crosstalk terms and cleanup is against Cf , then the
+margin condition of Theorem 3 holds for all slots and all iterations with probability at least
+                                              F
+                                              X
+                                     1 − 2I          |Cf | exp(−cD/kf ).                            (24)
+                                              f =1
+
+This is a sufficient condition, not a global convergence theorem from arbitrary initialization.
+
+Remark 3. This form is intentionally weaker than saying resonators always converge. It matches
+practical use: train or choose codebooks so that correct factors have margin, use projection before
+inversion, and reject bad fixed points with a recomposition score.
+
+5.3   Task preservation for DNN latents
+Let Aq (z(x)) denote the answer of query q on the full neural state, and let Aq (Hx ) denote the answer
+returned from the hypervector code. Suppose the query loss is bounded by Bq and is Lipschitz
+with respect to the factorized latent answer. Let
+
+                                          Bmax = sup Bq .                                           (25)
+                                                        q∈Qsup
+
+Theorem 4 (DNN latent task preservation). Fix a supported query family Qsup of size qmax .
+Assume the DNN factorization defect is δQsup , level-codebook descent satisfies Theorem 1 with failure
+probability εd , and all resonator calls satisfy Corollary 1 with total failure probability εr . Then
+                                                      
+                        sup Ex dq Aq (z(x)), Aq (Hx ) ≤ δQsup + Bmax (εd + εr ).                     (26)
+                     q∈Qsup
+
+In particular, the recoverable HDC error can be driven down exponentially in D/k while the task-
+specific neural factorization defect remains as an irreducible floor.
+
+Proof sketch. Decompose the event into successful local decoding/factorization and failure. On
+success, the code returns the quantized factor graph answer, whose discrepancy from the full neural
+state is by definition at most δQsup . On failure, the loss is bounded by Bmax . Union bound descent
+and resonator failures.
+
+Remark 4 (Causal coding interpretation). If Eθ is trained by a causal or mechanistic objective,
+the factors in Gx may correspond to stable variables, mechanisms, objects, or interventions. The
+theorem does not assume that such factors are identifiable from passive raw data alone. It assumes
+only that a trained or weakly supervised encoder has produced a low-defect factor graph for the
+chosen query family.
+
+
+
+
+                                                       13
+5.4   Storage accounting
+Let qH be the number of bits per stored hypervector component. For bipolar codes qH = 1 after
+sign quantization. For phasor or real-valued codes qH is the chosen quantization precision. For a
+dataset of n items,
+                         Bcode = nDqH + Broles + Bcodebooks + Bmodels .                      (27)
+If roles and codebooks are pseudorandomly generated from seeds, count the seeds and generator
+descriptions. If subtree prototypes or DNN quantizers are stored explicitly, count them. If the
+DNN encoder is required at query time, count its model storage and compute separately from the
+cached code. The per-item rate is small only when shared dictionaries and models are amortized
+over many items.
+
+5.5   Speed and baseline accounting
+Let CHDC (q) be the cost of running query q on the code. A local query touching p paths of depth
+at most ` has cost                                                  
+                                                            X
+                           CHDC (q) = O p`D max Mt + ID        |Cf |                      (28)
+                                                       t
+                                                                       f
+
+when naive dense cleanup is used. Approximate nearest-neighbor cleanup, structured codebooks,
+binary operations, or hardware parallelism can reduce constants.
+Proposition 1 (Speed baselines). The meaningful speedup depends on the baseline.
+  1. Against an unindexed raw or latent scan costing Θ(N ), a root summary or learned linear
+     readout costing O(D) has scan speedup
+
+                                            Σscan = Θ(N/D).                                     (29)
+
+  2. Against a standard indexed tree path lookup costing O(`), a local HDC path query costing
+     Eq. (28) is not asymptotically faster. Its possible advantages are compression, batched com-
+     putation, noise robustness, learned summaries, or hardware efficiency.
+                                             Q                                               P
+  3. Against brute-force factor search over f |Cf | tuples, the resonator update cost O(ID f |Cf |)
+     is exponential-to-linear in the factor codebook sizes, subject to the margin condition.
+
+5.6   Compression-compute accounting
+For a scan baseline and a single local query of fixed depth `, define an amortized raw latent size of
+N log2 m bits and an HDC item size of DqH bits. The compression ratio is
+                                                 DqH
+                                           ρ=            .                                      (30)
+                                                N log2 m
+Using a local HDC cost proportional to D`Cstep , the scan speedup is
+                                                          
+                                                      N
+                                  Σloc,scan = Θ              ,                                  (31)
+                                                   D`Cstep
+and therefore                                                         
+                                                            qH
+                                 ρ Σloc,scan = Θ                           .                    (32)
+                                                       log2 m `Cstep
+
+                                                   14
+For fixed depth, the product is independent of D and N ; if ` = logb N , it carries the expected
+logarithmic dependence on N . Shrinking D improves both nominal storage and HDC query cost,
+but only down to the fidelity threshold in Eq. (18). The real tradeoff is not compression versus
+speed; it is compression and speed versus distortion.
+
+
+6     Scalability objections as design criteria
+The theory above is useful only if its assumptions can be checked. The scope of potential objections
+to hierarchical HDC , some of which we review here, are therefore best treated not as side issues
+but as measurable design criteria.
+
+6.1   Effective rather than enumerative subtree dictionaries
+A literal dictionary of every possible subtree at level t can be exponentially large. The theory should
+therefore not be interpreted as requiring enumeration of all generative compositions. Instead, the
+relevant quantity is an effective cleanup dictionary for the states that the task family actually
+distinguishes. Let
+                                       Mteff (γ) = N Zt , dHDC , γ
+                                                                   
+                                                                                                   (33)
+be the covering number of observed or task-relevant level-t latent states at cleanup margin scale γ,
+where dHDC is the similarity metric used by cleanup. The local dimension condition can then be
+read as                               h                                i
+                          D & max kt log Mteff (γ) + log(qmax `max /ε) .                       (34)
+                                   t
+
+The method scales when the upstream learner collapses many raw configurations into a moderate
+number of reusable, well-separated latent states. It should fail when every subtree is essentially
+unique for the task.
+   For highly compositional nodes, a better strategy is factored cleanup rather than monolithic
+subtree cleanup:
+                             uν = cν,1 ⊗ · · · ⊗ cν,Ft , cν,f ∈ Ct,f .                       (35)
+The resonator then searches over local factor dictionaries rather than over the explicit product
+dictionary. The practical advantage is not that the product space disappears, but thatPa high-
+            Q can be recovered by iterated slot-wise cleanup with cost proportional to f |Ct,f |
+margin product
+rather than f |Ct,f |.
+
+6.2   Binding must be fixed or quasi-isometric
+The proof of local cleanup assumes that binding and unbinding do not amplify crosstalk. This is
+reliable when binding is a fixed VSA operation such as Hadamard multiplication, XOR, phasor
+multiplication, permutation, or an orthogonal/unitary block map. If binding is learned freely by
+backpropagation, the system should not be expected to remain isometric.
+    A learnable binding family Ba should instead be constrained by a quasi-isometry condition on
+the relevant latent set:
+                                 |hBa u, Ba vi − hu, vi| ≤ ηbind D.                         (36)
+Then every cleanup theorem should be read with an effective margin
+
+                               γeff = γ − Cpath ηbind D − Cscale ηscale D,                        (37)
+
+
+
+                                                   15
+where Cpath depends on the number of binding/unbinding operations in the query. In practical
+systems, the safest design is to let the DNN learn the factors and codebooks while keeping the
+HDC binding algebra fixed or strongly constrained.
+
+6.3   Resonator search cost must be charged
+A conditional margin theorem is honest, but it does not by itself guarantee that retrieval is cheap.
+If practical decoding uses R restarts, beam width K, I iterations, and dense cleanup over factor
+codebooks, then the local product search cost is
+                                                            
+                                                     F
+                                                     X
+                                   Cres = O RKID       |Cf | ,                                (38)
+                                                            f =1
+
+plus any recomposition scoring. The resonator is computationally useful only when this is smaller
+than the avoided baseline: raw scan, dense attention over memory, full DNN recomputation, or
+brute-force enumeration of factor tuples. Approximate nearest-neighbor cleanup, structured code-
+books, binary HDC hardware, and good warm starts can reduce constants, but they should be
+reported rather than hidden.
+
+6.4   The factorization defect is a test, not a rescue clause
+The task-specific defect δQ absorbs quantization error, missing nonlocal interactions, and holistic
+synergies. It should not be used to make the theorem vacuously true. It is the criterion that
+determines whether HDC is relevant to a task. The empirical protocol should always report
+
+                                         ∆fact = Lfact − Lfull ,                                (39)
+                                         ∆HDC = LHDC − Lfact .                                  (40)
+
+If ∆fact is large, the upstream factorization is inadequate. If ∆fact is small but ∆HDC is large, the
+HDC code is under-dimensioned, overloaded, geometrically distorted, or decoded with an insuffi-
+cient search budget.
+
+6.5   Admissibility checklist
+For a target query family Q, a learned or hand-built factorization should be called HDC-admissible
+at dimension D only if the following quantities are small or favorable:
+
+                           δQ ,   kt ,   log Mteff ,    Mconf ,    RKI,   ηbind                 (41)
+
+and the cleanup margin exceeds the predicted crosstalk and binding distortion. This checklist is
+also the bridge to learning: these are quantities the upstream system can be trained to improve.
+
+
+7     HDC-guided factorization learning
+The HDC layer is most plausible as a cache over learned or constructed factors, not as a direct
+replacement for a perception, language, or planning model. Its novel role is stronger than com-
+pression: it gives the upstream learner an operational target. The learner should not merely find a
+small latent. It should find a latent factor graph that is easy to bind, bundle, clean up, resonate,
+and query.
+
+                                                       16
+7.1   Representation families that can supply factors
+Several existing neural representation families naturally supply pieces of the model.
+
+Vector quantized latents. VQ encoders produce discrete latent codes. A multiscale VQ model
+supplies level codebooks Kt and reusable prototypes. The HDC code then bundles, binds, and
+queries these prototypes rather than storing every raw input coordinate.
+
+Object-centric and slot latents. Slot or object-centric encoders produce sets of latent object
+states. HDC roles can bind object identity, position, time, relation, occlusion status, and scale.
+The local load kt becomes the number of objects or relations that compete at a given scale.
+
+Sparse feature dictionaries for language. Sparse autoencoders over language-model activa-
+tions provide overcomplete feature dictionaries. A document, sentence, or activation window can
+be represented as a sparse set of active features bound to token position, syntactic role, discourse
+role, layer, or head. The defect is low only for probes preserved by the dictionary; it is not a
+guarantee for full next-token generation.
+
+Causal or mechanistic latent codes. A causal-coding encoder aims to discover variables cor-
+responding to stable mechanisms, interventions, object states, or transition factors. If such a code
+has bounded local parents and reusable state prototypes, it directly satisfies the local-load assump-
+tions. If the variables are not identifiable or the task depends on nonlocal synergies, this appears
+as a large δQ rather than as an HDC dimension problem.
+
+Structured non-neural algorithms. The same idea applies beyond DNNs. A parser, theo-
+rem prover, program analyzer, database engine, causal-discovery procedure, planner, or symbolic
+reasoning system may already maintain a structured internal state. If that state has roles, local
+operations, reusable prototypes, or bounded-width factorization, the HDC layer can shape and
+cache it in the same way.
+
+7.2   HDC-admissible factorization
+The upstream learner should seek query-factorized sufficiency rather than global disentanglement.
+For a query family Q, the factor graph Gx is useful when
+
+                                   q(Eθ (x)) ≈ q(Gx ),     q ∈ Q,                               (42)
+
+while each query touches only a few role-bound factors. A concise capacity proxy is
+                                          h                            i
+                        CHDC = max kteff log Mtconf + log(qmax `max /ε) .                       (43)
+                                    t
+
+The dimension requirement is roughly D & c−1 CHDC . The HDC layer therefore asks the learner
+to reduce local load, reduce confusable alternatives, and increase cleanup margins while preserving
+task sufficiency.
+
+
+
+
+                                                 17
+7.3    Measuring factorization error during learning
+The basic diagnostic uses three readouts:
+
+                                            z(x) → ŷfull ,                                     (44)
+                                              Gx → ŷfact ,                                     (45)
+                                             Hx → ŷHDC .                                       (46)
+
+Then
+                                   LHDC − Lfull = ∆fact + ∆HDC                                  (47)
+with
+                         ∆fact = Lfact − Lfull ,        ∆HDC = LHDC − Lfact .                   (48)
+This separates representation failure from HDC coding failure.
+
+7.4    Local load loss
+For a query q and example x, let ai (q, x) be the relevance or attention weight assigned to factor i.
+The effective number of factors touched by the query is the participation ratio
+                                                            1
+                                      keff (q, x) = P              2
+                                                                     .                          (49)
+                                                        i ai (q, x)
+
+A load regularizer is
+                            Lload = Ex,q max(0, keff (q, x) − kbudget )2 .
+                                                                       
+                                                                                                (50)
+This encourages the learner to organize information so that supported queries are local in the HDC
+sense.
+
+7.5    Cleanup margin and confusability losses
+For a latent vector zν assigned to prototype c+ , define
+
+                                 ∆(zν ) = hzν , c+ i − max hzν , c− i.                          (51)
+                                                         c− 6=c+
+
+The margin loss is                                                
+                                                           −             +
+                            Lmargin = γ + max hzν , c i − hzν , c i .                           (52)
+                                             c− 6=c+                         +
+The margin target should scale with the predicted crosstalk. In normalized cosine form, a useful
+heuristic is                                    r
+                                                  kt log Mt
+                                      γtcos ≈ C             .                               (53)
+                                                      D
+   The number of dangerous competitors is
+
+                          Mconf (zν ) = # c : hzν , ci ≥ hzν , c+ i − γ ,
+                                            
+                                                                                            (54)
+
+and can be penalized by E log Mconf (zν ). This is a better quantity than nominal codebook size
+when only a few states are actually confusable.
+
+
+
+
+                                                   18
+7.6   Product recomposition and resonator identifiability
+If a node latent is intended to factor as
+
+                                          zν ≈ cν,1 ⊗ · · · ⊗ cν,F ,                              (55)
+
+then train not only for reconstruction but also for recoverability:
+
+                           Lprod = kzν − Normalize(cν,1 ⊗ · · · ⊗ cν,F )k2 ,                      (56)
+
+while periodically measuring
+
+                            pres = P [Factorize(zν ) 6= (cν,1 , . . . , cν,F )] .                 (57)
+
+A product code with low reconstruction error but high resonator failure rate is not HDC-admissible.
+
+7.7   Role stability
+A reusable content factor should remain stable when it appears in different roles. If za ≈ ra ⊗ c
+and zb ≈ rb ⊗ c, then
+                                       ra† ⊗ za ≈ rb† ⊗ zb .                                 (58)
+The role-consistency loss on paired or augmented examples is
+                                                                          2
+                                     Lrole = ra† ⊗ za − rb† ⊗ zb              .                   (59)
+
+For video this is object persistence; for language it is entity or predicate stability across syntactic
+and discourse roles; for causal coding it is mechanism stability across contexts.
+
+7.8   Residual synergy test
+Let hfull = Eθ (x) and let hfact = Gω (Fψ (Eθ (x))) be a reconstruction of the full latent from the
+factor graph. The residual
+                                          r = hfull − hfact                                    (60)
+should not contain task-relevant information. A residual probe r → ŷr estimates whether the
+factorization missed important synergy. If the residual probe performs well conditional on Gx ,
+then δQ is high.
+
+7.9   Intervention locality for causal coding
+When paired examples differ by an intervention on factor j, the desired pattern is
+
+                             ci (x) ≈ ci (x0 )      (i 6= j),      cj (x) 6≈ cj (x0 ).            (61)
+
+A simple intervention locality loss is
+                                          X
+                        Lintervention =          d(ci (x), ci (x0 )) − λd(cj (x), cj (x0 )).      (62)
+                                          i6=j
+
+This is exactly aligned with the HDC requirement that interventions change only a bounded number
+of role-bound factors.
+
+
+                                                         19
+7.10    Total HDC-guided objective
+A representative training objective is
+
+                     L = LHDC
+                          task + λδ ∆fact + λmargin Lmargin + λload Lload                         (63)
+                            + λprod Lprod + λrole Lrole + λcap CHDC + λres Lresidual .            (64)
+
+The point is not that every application must use every term. The point is that HDC supplies
+measurable pressure toward a particular kind of factorization: reusable discrete or nearly discrete
+factors such that each supported query depends on a small number of well-separated role-bound
+factors, with little task-relevant information left in the residual.
+
+7.11    Live diagnostics
+During training one should track
+
+                         Lfull ,   Lfact ,   LHDC ,    keff ,   M eff ,   Mconf ,   ∆,            (65)
+
+plus resonator success rate, resonator iterations, role-consistency error, and residual-probe accuracy.
+The learning process is moving in the HDC-admissible direction when
+
+                                     Lfact ≈ Lfull ,        LHDC ≈ Lfact ,                        (66)
+
+while keff log Mconf decreases, cleanup margins increase, and residual-probe accuracy falls.
+
+
+8      Resonant modular compositional episodic memory and world
+       modeling
+We now spell out a second major application of the general theory: episodic memory and world
+modeling in an architecture that uses modular compositional hypervectors as an intermediate rep-
+resentational regime. The key observation is simple but, in our view, important. If an episode
+itself has a factorized structure, then the episode should not be collapsed into a monolithic dense
+embedding before being stored. It should be compiled into a typed, role-filler, modular hypervector
+structure, and the resonator machinery should be allowed to operate on that structure.
+    This yields what we will call resonant hierarchical modular hypervectors, or R-HMH. The HMH
+side supplies the typed, ontology-aligned, named-slot address space; the resonator side supplies
+factor recovery, cleanup, and a quantitative pressure toward locally decodable low-load factors.
+The resulting memory item is not just a vector similar to an old experience. It is a compact cache
+of a structured episode whose parts can be separately queried, completed, swapped, aggregated,
+and consumed by neural or symbolic downstream systems.
+
+8.1    Review: HMH and PRIMUS-style world modeling
+Hierarchical Modular Hypervectors combine two ideas. First, type-based hierarchical named em-
+beddings assign semantically meaningful slots to ontology types: for instance Demand Subject,
+Demand Object, Effect, Precondition, Location, Time, Value, Social Role, or Evidence. Second,
+modular compositional hypervectors use fixed-length hypervectors, role-filler binding, bundling,
+permutation, unbinding, cleanup, and approximate nearest-neighbor retrieval. The synthesis is
+an embedding whose slices or modules have human-interpretable functional meaning, while the
+
+
+                                                       20
+whole representation remains fixed-dimensional, noise-tolerant, algebraically compositional, and
+queryable by inverse binding [13, 14].
+    In a PRIMUS-style world model, HMH is not merely a compact storage format for episodes. It
+is a third representational regime between explicit symbolic atoms and dense neural tensors [15].
+Symbolic atoms and rules carry crisp or uncertain declarative structure; dense vectors and tensors
+support perceptual prediction, control, and gradient learning; HMH stores structured associative
+keys over episodes, skills, affordances, social scripts, options, and mined templates. A map such as
+
+                                                Dhmh : HD → Rd                                              (67)
+
+then produces dense vectors usable by neural modules, while preserving, as much as possible, both
+the similarity geometry and the algebraic role-filler structure compiled into the HMH code.
+   This is exactly the setting in which resonator-HDC should be useful. A world model must often
+answer questions such as:
+
+      Which prior interaction had the same social role pattern but a different actor? Which
+      affordance trial had the same causal preconditions but a different object? Which episode
+      had the same affective trajectory and repair outcome? Which skill was invoked in
+      contexts with this goal, tool, and failure mode?
+
+These are not whole-episode reconstruction queries. They are local, role-conditioned, factor-aware
+retrieval and completion queries.
+
+8.2   A factorized episode model
+Let an episode E be represented by a small typed factor graph
+
+                                               GE = (SE , CE , AE ),                                        (68)
+
+where SE is a set of slot factors, CE is a set of typed relations among slot factors, and AE is a set of
+anchors to symbolic atoms, perceptual shards, logs, media, or motor traces. Typical slots include
+
+                SE = {actor, object, recipient, action, place, time, goal, plan, norm,
+                        affect, belief, tool, affordance, precondition, cause, outcome,
+                        reward, uncertainty, skill, script, evidence, perceptual trace}.
+
+The relation set CE may include temporal order, causation, enablement, spatial adjacency, own-
+ership, social obligation, repair, conflict, co-reference, part-whole structure, and counterfactual
+alternatives.
+    A basic R-HMH episode code has the form
+
+                                                      X
+         HE = Normalize rschema ⊗ hσ(E) ⊕                    mτ (s) ⊗ rs ⊗ hfs
+                                                     s∈SE
+                                                                                                      !     (69)
+                                     X                                          X
+                              ⊕                rρ ⊗ ri ⊗ rj ⊗ hfi ⊗ hfj ⊕               ranchor(a) ⊗ ha .
+                                  (i,j,ρ)∈CE                                     a∈AE
+
+Here hσ(E) is a schema or event-type code, mτ (s) is a module marker for the ontology type of slot
+s, rs is the role vector for that slot, hfs is the filler code, rρ is a relation-role vector, and ha is
+an anchor code pointing to external evidence or symbolic structure. The same item therefore has
+
+                                                        21
+three linked aspects: a symbolic graph, an HMH key, and optional perceptual or motor payloads.
+The HMH key does not replace the symbolic graph or the evidence store; it makes the episode
+addressable and partially decodable by vector-symbolic operations.
+    For example, a social interaction episode might bind teacher, child, interruption, embarrass-
+ment, repair, classroom, and later-positive-outcome into their named slots, while also binding
+relation factors such as causes( interruption, embarrassment ) and repairs( apology, embarrassment
+). A Minecraft affordance trial might bind candidate tool, construction goal, adjacency pattern,
+redstone-like state, trial action, observed effect, and uncertainty into the same general format.
+
+8.3   Resonant partial recall and slot completion
+Given a cue Q, retrieval proceeds in two stages. An approximate-nearest-neighbor index first
+returns candidate episode codes by coarse similarity. Then role-masked unbinding and resonator
+cleanup recover or complete the factors relevant to the query. A cue such as
+
+               HQ = rsocial role ⊗ hteacher ⊕ raffect ⊗ hembarrassment ⊕ routcome ⊗ hrepair    (70)
+
+should retrieve episodes sharing the social-affective-causal pattern even when specific names, ut-
+terances, or objects differ. Conversely, a cue such as
+
+                   HQ = raffordance context ⊗ hwet adjacent circuit ⊕ rgoal ⊗ hopen door       (71)
+
+should retrieve tool-use or construction episodes with structurally similar causal affordance pat-
+terns.
+    When a retrieved or queried factor is itself a product, resonator cleanup can be used inside the
+episode. Suppose a slot filler is intended to factor as
+
+                            hfs ≈ cs,1 ⊗ cs,2 ⊗ · · · ⊗ cs,Fs ,    cs,j ∈ Cs,j .               (72)
+
+For a partial cue, the decoder iteratively forms evidence for one factor at a time,
+                                                     
+                                    O
+                           h fs ⊗ 
+                    zs,j = e          ProjH (ĉs,g )†  , ĉs,j ← cleanupCs,j (zs,j ),         (73)
+                                   g6=j
+
+
+where ehfs is the slot estimate obtained by unbinding the appropriate role and module markers from
+HE or from a retrieved candidate. This gives a natural mechanism for recovering unknown factors
+such as the likely goal, social role, affordance state, or missing outcome, provided the same margin
+conditions from Section 5 are satisfied.
+    The advantage is not that the memory can hallucinate arbitrary missing details. The advantage
+is that it can complete a bounded family of structured questions by searching factor codebooks
+rather than entire episodes. It can ask, for example, “which outcome factor makes this remembered
+affordance trial coherent with this goal and tool?” or “which social-script factor best completes
+this interaction pattern?”
+
+8.4   Factor-aware neural judgment
+A central motivation for PRIMUS-style use of HMH is that neural systems should be able to
+consume structured memories without losing the structure that made them useful. Let
+
+                                            zE = Dhmh (HE )                                    (74)
+
+                                                     22
+be a dense representation of the episode. In the intended use, zE is “dual-channel”: one part
+preserves similarity geometry for neural matching, while another part preserves enough algebraic
+information to support role-filler sensitivity. A judgment model may then have the form
+
+                 Jφ (E, Q) = Φφ (Dhmh (HE ), Dhmh (HQ ), mslot , mcausal , mtemporal ) ,        (75)
+
+where the masks identify which slots, relations, or temporal windows are relevant to the current
+judgment. This lets a neural policy, critic, dialogue module, or world-model predictor condition
+on retrieved episodes while retaining access to who, what, where, why, with what causal role, and
+with what evidential support.
+   Counterfactual factor swaps are especially useful as training data. In a real-sum hypervector
+implementation one can form, schematically,
+
+                     HE [s := f 0 ] = HE − mτ (s) ⊗ rs ⊗ hfs + mτ (s) ⊗ rs ⊗ hf 0 .             (76)
+
+In sign or phasor systems the same operation is implemented by rebuilding the slot bundle from its
+factor record rather than by literal vector subtraction. The training question is then whether the
+judgment should be invariant or sensitive to the swap. Changing actor identity may be irrelevant
+for some affordance predictions but crucial for a social-trust prediction; changing causal relation
+or outcome should often matter. Thus the memory representation directly supplies counterfactual
+supervision that respects the episode’s factorization.
+
+8.5   Episodic-semantic consolidation
+R-HMH also gives a concrete mechanism for episodic-semantic braiding. Repeated retrieval of
+related episodes exposes common factor patterns:
+                                                                 n
+                                                                               !
+                                                                       aligned
+                                                                 X
+                   {HE1 , . . . , HEn } −→ Htemplate = Normalize   wi HEi        ,     (77)
+                                                                    i=1
+
+where the alignments unbind and rebind corresponding slots so that different actors, objects, or
+contexts can be abstracted into role-level templates. A cluster of tool-use trials can become an
+affordance schema; a cluster of interaction repairs can become a social script; a cluster of repeated
+action sequences can become a skill or option template. The resulting template can be stored back
+as a symbolic rule, as an HMH associative key, and as a densified neural context vector.
+    The same process supplies a useful memory-management criterion. An episode should be re-
+tained when it has high future retrieval value, high evidence value, or high template-forming value.
+It should be consolidated when its idiosyncratic perceptual details are no longer needed for most
+supported queries but its factor pattern recurs. It should be re-encoded or pruned when ontology
+changes, cleanup margins fall, or residual probes show that important task information is no longer
+captured by the stored factors.
+
+8.6   Capacity criteria for episodic memory
+The capacity law from Section 5 now becomes an episodic-memory criterion. For a supported
+family of episodic queries Qepis , define an episodic factorization defect
+                        epis                                           
+                       δQ epis
+                               = sup EE dq q(full episode state), q(GE ) .                      (78)
+                                q∈Qepis
+
+
+
+                                                   23
+The R-HMH memory is useful only if this defect is small for the questions the agent actually asks.
+Its HDC coding error is then governed by effective slot load, relation load, confusable codebook
+size, cleanup margin, query depth, and the number of supported episodic queries.
+    A practical admissibility checklist is:
+
+                                                                   epis
+                    kslot ,   krel ,   log Mconf ,   ∆cleanup ,   δQ epis
+                                                                          ,   RKI,   ηbind         (79)
+
+where kslot is the number of simultaneously active slot factors, krel is the load due to typed relations
+among them, Mconf is the number of dangerous alternatives in the relevant cleanup dictionaries,
+∆cleanup is the measured cleanup margin, RKI is the resonator search budget, and ηbind is binding
+distortion. If every episode requires a large holistic context vector to answer the task’s questions,
+then the defect term is large and R-HMH is not the right representation by itself. If the factor graph
+preserves the supported questions but retrieval fails, then the HDC code is under-dimensioned,
+overloaded, or decoded with insufficient search.
+
+8.7    Operational workflow
+A complete R-HMH episodic-memory loop can be summarized as follows.
+
+    1. Ground and segment. Perception, symbolic grounding, and local world-model inference
+       create an episode graph GE with slots, typed relations, and evidence anchors.
+
+    2. Encode. The graph is compiled into HE by Eq. (69), while raw percepts and motor traces
+       remain in specialized stores.
+
+    3. Retrieve. A symbolic or dense context forms an HMH query. AtomSpace or another sym-
+       bolic store may pre-filter candidates; ANN search retrieves nearby HMH items.
+
+    4. Decode and complete. Role unbinding, module masks, and resonator cleanup recover the
+       slots or product factors needed by the current query.
+
+    5. Densify and judge. Retrieved items are mapped through Dhmh and used by neural policies,
+       predictors, critics, or dialogue modules, with masks that preserve factor relevance.
+
+    6. Consolidate. Repeated high-value retrievals are abstracted into schemas, scripts, affordance
+       templates, skills, or options, which are stored back in symbolic, HMH, and dense forms.
+
+    The result is a memory layer whose unit of storage is not a flat remembered scene, but a
+resonantly decodable factor graph cache. It can support partial recall, analogical retrieval, coun-
+terfactual judgment, evidence-grounded replay, and schema formation, while remaining compatible
+with the query-limited capacity theory developed above.
+
+
+9     Instantiation in HBCML and ColBaC
+The preceding sections are deliberately architecture-agnostic. They apply to any neural or algorith-
+mic system that exposes reusable role-bound factors. The fit is particularly direct for Hierarchical
+Bayesian Causal Modular Learning (HBCML) and Columnar Bayesian Causal Coding (ColBaC),
+because these architectures are already designed around sparse causal modules, internal certificates,
+local teachers, and reusable structure.
+
+
+                                                       24
+9.1     HBCML background
+An HBCML system is a tuple
+                                          H = (N , C, Φ, Ψ, T ).                                  (80)
+Here N = {N1 , . . . , NM } is a family of structurally restricted component learners, C combines the
+outputs of the active components, Φ is the family of internal probabilistic states of the components,
+Ψ is a top-level probabilistic controller that selects supports and decides reuse, diversification, or
+recruitment, and T is a family of local counterfactual teachers. For context t, the controller selects
+a sparse support St ⊂ {1, . . . , M } and the output has the schematic form
+
+                                  ŷt = C ((Nm (xt ; θm , φm ))m∈St ; Ψ) .                        (81)
+
+    The HBCML design decomposes uncertainty across two structural scales. The top level faces a
+sparse combinatorial selection problem: which components should be active in this context? Inside
+each component, a second probabilistic process tracks whether internal material is reusable causal
+structure, semi-general stabilizing structure, task-local residue, or stale material due for recycling.
+The inside of a component emits certificates upward, and the controller uses those certificates to
+improve future selection.
+    The architecture is motivated by continual learning. If each task has an intended sparse support,
+gradients outside that support are small, cross-Hessian blocks between support and complement are
+small, and the combiner is Lipschitz, then the induced task update fields have small commutators.
+Sequential learning then approximates joint learning up to a controlled modularity error. HBCML
+is a constructive architecture designed to make these conditions hold by design, rather than hoping
+that a generic dense network discovers them on its own.
+
+9.2     ColBaC background
+ColBaC is a concrete columnar instance of HBCML. A ColBaC model contains a pool of columns.
+Each example activates a sparse subset of columns, plus any always-on shared columns. Each
+column contains typed microcolumns, typically
+
+K     kernel-center processing,     L lateral local refinement,              B
+                                                                         bridge or cross-scale context.
+                                                                                                   (82)
+Each microcolumn contains a protected hard kernel and adaptable shell tiers. The hard ker-
+nel is non-prunable and carries stable structure. Inner shells carry reusable abstraction, middle
+shells carry semi-general stabilizing material, and outer shells carry task-local exploratory residue.
+Promotion from outer to inner shells reflects consolidation; demotion outward reflects controlled
+forgetting.
+    The top-level controller can be trained in a teacher-first regime. At small scale, exact or
+exhaustive support search is possible. During learning, a local one-swap teacher can evaluate
+supports differing by one column and apply a swap only if the audited objective improves. A
+second teacher can audit internal shell swaps. This provides conservative local supervision for later
+heuristic or learned support-selection policies.
+    Internal certificates are central. A column can report shared-abstraction mass, specificity load,
+saturation pressure, demotion pressure, similarity signatures, probe influence, or other estimates of
+reuse utility. In Bayesian terms, conditioning the support controller on informative certificates can
+only improve the optimal mean-squared estimate of latent reuse utility. In engineering terms, the
+certificates tell the controller which columns are reusable, overloaded, stale, or close to the current
+context.
+
+                                                    25
+9.3     Why HDC fits ColBaC
+ColBaC supplies the factorization that HDC needs: sparse supports, typed microcolumns, shell
+tiers, reusable motifs, and local teachers. HDC supplies what ColBaC needs: an algebraic repre-
+sentation of column identity, motif content, shell hygiene, support context, and certificates. The
+natural synthesis is
+
+ColBaC learns causal columns; HDC makes their reusable contents addressable, compositional, and auditable.
+                                                                                         (83)
+   For column m, define a column hypervector
+                                                                                  
+                                 X        X       X
+          Hm (x) = Normalize                           ru ⊗ rs ⊗ ra ⊗ cm,u,s,a (x) .   (84)
+                                     u∈{K,L,B} s∈{0,1,2,3} a∈Am (x)
+
+Here u is the microcolumn type, s = 0 may denote the hard kernel and s = 1, 2, 3 the shells, a is a
+patch/time/context role, and cm,u,s,a is a cleaned-up motif atom or factored local product. In words,
+a column’s code is the superposition of all its active motifs, with each motif triple-tagged by its
+microcolumn type, its shell tier, and its local role; this is exactly the hierarchical encoder of Eq. (11)
+specialized to the column’s internal structure, so the same unbinding-and-cleanup machinery can
+read any tagged piece back out. The active support code is
+                                                                          !
+                                                       X
+                             HSt (x) = Normalize             rm ⊗ Hm (x) .                            (85)
+                                                           m∈St
+
+This code can be used for support retrieval, context memory, certificate matching, and auditing.
+
+9.4     HDC certificates
+A scalar certificate vector can be replaced or augmented by a structured certificate hypervector
+
+                Zm = rshared ⊗ zshared,m ⊕ rspecific ⊗ zspecific,m ⊕ rsaturation ⊗ zsaturation,m     (86)
+                       ⊕ rdemotion ⊗ zdemotion,m ⊕ rsignature ⊗ Hm .                                 (87)
+
+The controller can then query structured certificate content by unbinding roles or by similarity
+against a context query vector. For example, it can ask for columns with high shared abstraction,
+low saturation, and a signature close to the current context.
+   A simple HDC support score is
+
+      score(m | x) = hQ(x), Pm i + λZ hQZ (x), Zm i − λsat saturation(m) − λchurn 1[m ∈
+                                                                                      / St−1 ],      (88)
+
+where Q(x) is a context hypervector, Pm is the learned column prototype, and Zm is the current
+certificate. The one-swap teacher audits the top retrieved supports and updates the prototypes
+and score model from the audit outcome.
+
+9.5     HDC-guided shell hygiene
+The HDC layer gives a precise rule for promotion and demotion. A motif should move inward when
+it is reused across contexts, has high cleanup margin, is stable under role unbinding, improves task
+loss through the factorized/HDC readout, and is not confusable with many other motifs. A motif
+
+
+                                                      26
+should move outward or be recycled when reuse falls, margin falls, confusability rises, specificity
+load rises, or a residual probe shows that it no longer captures the intended task-relevant structure.
+   Thus shell dynamics can use HDC quantities:
+
+                promote(c) ⇐ reuse(c) ↑,            ∆(c) ↑,     Mconf (c) ↓,      ∆fact ↓,             (89)
+                 demote(c) ⇐ reuse(c) ↓,            ∆(c) ↓,     Mconf (c) ↑,      specificity(c) ↑ .   (90)
+
+The hard kernel should use fixed or nearly fixed HDC atoms. Inner shells should use high-margin
+cleanup. Middle shells can use soft cleanup or mixture codes. Outer shells should receive weak
+HDC regularization at first, to avoid premature discretization of exploratory material.
+
+9.6   The bridge microcolumn
+The B microcolumn is both powerful and dangerous. It carries cross-region, cross-scale, or cross-
+time context. In HDC terms, it is the channel for nonlocal bindings. If B becomes dense global
+attention, the local-load theorem no longer applies. The design rule is to force bridge content
+through sparse typed relations:
+                                            kB
+                                            X
+                               HB,m =             rrel,j ⊗ rsrc,j ⊗ rtgt,j ⊗ crel,j .                  (91)
+                                            j=1
+
+The bridge budget kB should be measured and regularized just like any other local load.
+
+9.7   Episodic support memory
+A ColBaC-HDC memory item for context t can store the task, support, certificates, outcome, and
+audit result:
+                                           X
+              Mt = rtask ⊗ ct ⊕ rsupport ⊗   rm ⊗ Hm                                      (92)
+                                                      m∈St
+                                            X
+                         ⊕ rcertificate ⊗          rm ⊗ Zm ⊕ routcome ⊗ yt ⊕ raudit ⊗ at .             (93)
+                                            m∈St
+
+Future contexts can retrieve similar memories by HDC similarity, warm-start the support controller,
+propose one-swap candidates, avoid overused columns, or suggest shell promotions and demotions.
+
+9.8   Option memory for RL and agentic systems
+In reinforcement learning, a column may encode a reusable option, skill, or world-model fragment
+rather than a perceptual motif. HDC gives a role-filler format for option memory:
+
+         Hoption = rpre ⊗ Hpre ⊕ ract ⊗ Hact ⊕ reff ⊗ Heff ⊕ rvalue ⊗ HV ⊕ runcertainty ⊗ HU .         (94)
+
+The controller can query by current-state preconditions or desired effects to retrieve candidate
+options. This is a natural extension of HDC-guided factorization from perceptual memory to
+agentic action memory.
+
+
+
+
+                                                          27
+9.9    A ColBaC-HDC error decomposition
+Let LColBaC be the task loss of the full ColBaC model, Lfact the loss when each active column is
+replaced by its factorized column graph, and LHDC−ColBaC the loss after HDC encoding, retrieval,
+and cleanup. Under HBCML adequacy errors (ηapp , ηg , ηh ), HDC factorization defect δQ , binding
+distortion ηbind , and local cleanup loads km , a schematic bound is
+                                                      X
+              LHDC−ColBaC ≤ LColBaC + C1 δQ + C2          Mm exp(−cD/km ) + C3 ηbind .       (95)
+                                                    m∈St
+
+Similarly, the effective forgetting or update-commutator bound receives an additive representation
+term:                                                                               
+            k[X     ej ]k ≤ CH (ηh Gmax + ηg Hmax + ηapp ) + CHDC δQ + e−cD/k + ηbind .
+               ei , X                                                                         (96)
+
+The constants and norms depend on the task model. The conceptual point is the three-way sepa-
+ration:
+
+ continual-learning error = HBCML modularity error + factorization defect + HDC coding error.
+                                                                                          (97)
+
+9.10   Why this is more general than ColBaC
+ColBaC makes the HDC-guided idea especially direct because columns, shells, certificates, and
+one-swap teachers already provide the right hooks. But the principle is broader. Any algorithm
+with internal structure aligned to the data and tasks can use HDC requirements as a pressure on
+its own state: keep local interaction order small, keep role-bound factors stable, make codebooks
+well-separated, expose certificates, and ensure that task-relevant residuals are small.
+
+
+10     Experimental program
+10.1   Synthetic calibration
+E1: single-step capacity. Bundle k random atoms, unbind a target, clean up against a codebook
+of size M , and fit the boundary k ≈ αD/ log M .
+
+E2: descent with explicit subtree dictionaries. Generate bounded-branching trees with
+known Ktsub . Vary N by increasing depth while keeping Mt and kt fixed. For a fixed query family,
+measure the D required to maintain a target error. The predicted curve is flat except for the
+explicit depth factor.
+
+E3: all-path negative control. At the same D, query every leaf. Global reconstruction should
+fail as N grows unless DqH = Ω(N log m). This experiment verifies that the method is not secretly
+violating the entropy bound.
+
+E4: resonator margin. Measure convergence as a function of factor codebook sizes, local load,
+initialization, damping, projection, and margin. Report recomposition scores for successes and
+spurious fixed points.
+
+
+
+
+                                               28
+E5: ablations. Remove cleanup, remove ordered roles, remove level codebooks, replace struc-
+tured latents by random nonfactorized latents, and run a nondecomposable task such as global
+parity. Each ablation should destroy the corresponding theorem condition.
+
+10.2    DNN latent experiments
+Video. Use a pretrained or trained video encoder that yields object slots, VQ tokens, or latent
+events. Build a factor graph over object identity, position, velocity, relations, and time. Test object
+tracking, event retrieval, action classification, and anomaly detection. Plot task accuracy versus
+D, cleanup failure versus local load, and the full-DNN-minus-HDC accuracy gap as an empirical
+estimate of δQ .
+
+Images. Use multiscale VQ tokens, patches, scene graphs, or slots. Test object/property queries,
+localized retrieval, and scene classification. Include a texture-heavy or global-style task as a high-
+defect control.
+
+Language. Use token/span hierarchies, parse roles, retrieval chunks, or sparse-autoencoder fea-
+tures from a language model. Test entity retrieval, document routing, attribution, syntax/semantic
+probes, and structured QA over cached features. Do not claim faithful open-ended generation unless
+the defect is measured for that task.
+
+Baselines. Compare against the full DNN latent readout, a compressed latent baseline such as
+PCA or product quantization, an indexed tree or ANN index, a raw latent scan, a nonhierarchical
+HDC bundle, and a no-cleanup HDC bundle. The HDC method should win only where local load
+is bounded and the query family matches the factorized structure.
+
+10.3    HDC-guided learning experiments
+Train an encoder with and without the HDC-guided losses of Section 7. Compare the curves for
+∆fact , ∆HDC , keff , Mconf , cleanup margin, resonator success, and residual-probe accuracy. The
+prediction is not merely that HDC-guided training improves final accuracy. The sharper prediction
+is that it moves these intermediate diagnostics in the capacity-favorable direction.
+    A useful ablation sequence is:
+
+  1. train the full DNN task model;
+
+  2. add factorization but no HDC losses;
+
+  3. add margin and load losses;
+
+  4. add role-consistency and product-recomposition losses;
+
+  5. add the actual HDC encode/decode path in the task loop.
+
+This separates whether failures come from the factor graph, the HDC geometry, or the task head.
+
+
+
+
+                                                  29
+10.4    R-HMH episodic memory and world-modeling experiments
+A direct experiment for Section 8 is to compare flat episodic embeddings, ordinary HMH episodic
+keys, and R-HMH episodic keys with resonator cleanup. Useful task families include partial cue
+completion, factor-specific retrieval, counterfactual factor swaps, affordance-trial recall, social-script
+retrieval, and schema consolidation. Report whole-episode ANN accuracy separately from slot
+recovery accuracy, because a system can retrieve a roughly similar episode while still failing to
+recover the causal or social factor that matters for the query.
+    A minimal benchmark should track
+
+                      ∆epis
+                       fact ,   ∆epis
+                                 HDC ,      kslot ,   krel ,   Mconf ,     ∆cleanup ,    pres ,      (98)
+
+plus downstream judgment accuracy for neural models trained on raw dense embeddings versus
+Dhmh (HE ). The expected win is not perfect replay of all perceptual detail, but improved factor-
+aware recall and better downstream judgment when the task depends on the structure of the
+episode.
+
+10.5    ColBaC-HDC experiments
+For ColBaC/HBCML, compare four systems:
+
+A: ColBaC baseline,     B: ColBaC + HDC certificates,     C: ColBaC + HDC factorization losses, D: ColBaC +
+                                                                                                (99)
+The most likely early win is not raw benchmark accuracy but improved selector geometry: lower se-
+lector regret, better one-swap warm starts, less support churn, better prediction of audited support
+quality, and more stable shell promotion. Report
+
+                           Lfull ColBaC ,    Lfactorized ColBaC ,        LHDC−ColBaC ,              (100)
+
+plus support rank, one-swap recovery, support entropy, support churn, promotion precision, cross-
+column HDC overlap, certificate-predicted audit gain, and forgetting. If HDC certificates are useful,
+they should improve retrieval of good support neighborhoods before the one-swap teacher acts.
+
+
+11     Application regimes
+Video is arguably the strongest first DNN target because object persistence and time-local dynamics
+naturally induce bounded local structure. Language is also interesting, especially for retrieval and
+mechanistic features, but it requires careful task restriction. Static images are a useful intermediate
+case when the encoder provides multiscale VQ tokens, slots, or scene graphs. Columnar causal
+continual-learning systems are a particularly strong architectural target because their supports,
+columns, shells, and certificates already mirror HDC roles, codebooks, and local-load budgets.
+
+
+
+
+                                                        30
+ Domain                   Learned factors                        Good queries                      Main risk
+ Video                    objects, time, pose, velocity, rela-   tracking, event retrieval, ac-    occlusion and global
+                          tions, events                          tion, anomaly                     context
+ Images                   patches, VQ tokens, slots, scene       object/property        lookup,    texture/style defect
+                          graph nodes                            scene classification, localized
+                                                                 retrieval
+ Language                 tokens, spans, entities, syntax        retrieval, probes, structured     long-range pragmatics
+                          roles, sparse LM features              QA, routing                       and generation defect
+ Causal latents           mechanisms, interventions, par-        counterfactual lookup, plan-      identifiability assump-
+                          ents, state transitions                ning features, invariant pre-     tions
+                                                                 diction
+ ColBaC/HBCML             columns, shells, microcolumns,         support retrieval, shell hy-      premature discretiza-
+                          certificates, supports                 giene, continual reuse, option    tion and dense bridge
+                                                                 memory                            load
+ Episodic         world   actors, roles, goals, affect, affor-   partial recall, slot comple-      holistic context defect
+ models                   dances, evidence anchors, causal       tion, counterfactual judg-        and unbounded rela-
+                          and temporal links                     ment, schema consolidation        tion load
+ Relational data          schema roles, records, keys,           lookup, aggregation, com-         cross-edge load
+                          foreign-key trees                      pression
+
+Table 1: Natural regimes for learned factor graph HDC codes. The method is best viewed as a
+task-preserving cache of structured latents.
+
+
+12       Discussion
+What the theory says. The dimension needed for local query fidelity is controlled by local
+load, effective codebook size, cleanup margin, binding distortion, depth, supported query count,
+and search budget. It is not controlled by raw data size except through those quantities. This is
+the clean version of the intuition that hierarchical factorization prevents every query from paying
+for every leaf.
+
+What the theory does not say. It does not say that one vector losslessly stores arbitrary
+images, videos, documents, or agent states. It does not say that resonators converge from any
+initialization. It does not say that arbitrary root cosine similarity computes arbitrary tree statistics.
+It does not say that HDC local lookup beats a well-engineered indexed tree asymptotically. It says
+that fixed-width HDC can be an efficient task-preserving cache when the upstream representation
+has low defect, low local load, good margins, and reusable state dictionaries.
+
+The HDC layer as a learning guide. The most interesting idea in this paper is that the HDC
+layer is not merely a post-hoc compressor. Its requirements can be fed back into learning. It tells the
+upstream system which factorizations are useful: those that make each supported query depend on a
+small number of well-separated role-bound factors, with little task-relevant information left outside
+the factor graph. This is a different objective from generic disentanglement or reconstruction. It is
+capacity-aware, query-relative, and operational.
+
+R-HMH as episodic memory. The episodic-memory extension makes the same point in cog-
+nitive terms. Episodes are useful to the extent that the agent can recall and recombine their roles,
+causes, affordances, outcomes, and evidence anchors. R-HMH stores an episode as a factorized
+modular hypervector graph rather than as a flat trace, and resonator cleanup supplies a mechanism
+for partial completion of missing roles or product factors. The price is the same as elsewhere: if
+
+
+                                                            31
+the supported episodic queries require holistic context not captured by bounded-load factors, the
+factorization defect dominates.
+
+ColBaC as a natural host. ColBaC already contains sparse support selection, typed columns,
+reusable shells, internal certificates, and local teachers. HDC adds an algebraic memory and query
+language for these components. In this setting, HDC can regularize column contents, enrich cer-
+tificates, warm-start support selection, guide shell promotion, detect bridge overload, and store
+episodic support memories. The architecture therefore provides a concrete testbed for HDC-guided
+factorization, not just an application domain.
+
+Relation to rate-distortion-compute. The code lies on a rate-distortion-compute surface.
+Smaller D reduces storage and nominal HDC compute, but increases cleanup and factorization error.
+Once D exceeds the local capacity threshold, the remaining loss is the task-specific factorization
+defect. The decisive empirical plot is task accuracy versus D, with the saturation floor compared
+to the full neural or algorithmic state.
+
+Best near-term claim. A conservative and useful thesis is:
+
+      Structured learners expose or learn reusable local factors; resonator-HDC codes provide
+      a compact, compositional, queryable cache of those factors; and the HDC capacity law
+      can guide the learner toward factorizations that are cheaper to store, retrieve, audit,
+      and reuse.
+
+This claim applies to DNNs, ColBaC-style causal columns, symbolic algorithms, program analyzers,
+database engines, and agentic option memories whenever their internal structure is aligned with
+the dataset and task structure.
+
+
+13     Conclusion
+We presented a query-limited theory of resonator-factored hierarchical hypervector codes for ap-
+proximately factorized learned structures. The framework uses explicit or factored level dictionar-
+ies, ordered roles, task-specific factorization defect, conditional resonator margins, quasi-isometric
+binding requirements, and honest storage and compute accounting. These restrictions are not inci-
+dental. They are the conditions under which an HDC code can be a compact and efficient surrogate
+for a structured latent graph without violating entropy bounds or hiding search costs.
+    The paper’s main conceptual move is to make the HDC layer bidirectional. It is not only a
+cache placed after a DNN or structured algorithm. It is also a source of pressure on the upstream
+learner. The HDC capacity law says what kind of factorization is valuable: low-load, role-stable,
+high-margin, low-confusability, product-recoverable, intervention-local factors that preserve the
+supported queries and leave little task-relevant information in the residual. These requirements
+can be turned into losses, audits, and live diagnostics.
+    The same bidirectional move applies to episodic memory and world modeling. By combining
+resonator-HDC with HMH, an episode can be represented as a resonantly decodable modular factor
+graph rather than as a monolithic remembered vector. Actors, objects, actions, goals, places, times,
+affective states, affordance contexts, causal links, outcomes, evidence anchors, and invoked skills can
+be stored in named ontology-aligned slots. Partial cues can then retrieve episodes, resonator cleanup
+can complete missing factors, counterfactual factor swaps can train neural judgment models, and
+
+
+                                                  32
+repeated retrieval can consolidate experiences into semantic schemas, affordance templates, social
+scripts, and options.
+    The ColBaC/HBCML instantiation makes this especially concrete. HBCML supplies a two-
+level modular learning substrate with sparse supports, internal probabilistic states, certificates,
+and local teachers. ColBaC supplies columns, typed microcolumns, hard kernels, adaptable shells,
+and support audits. HDC turns these into addressable role-filler structures: column codes, certifi-
+cate hypervectors, support memories, option memories, R-HMH episodic traces, and shell-hygiene
+criteria. The result is a plausible synthesis: ColBaC learns and protects causal modules, while HDC
+makes their reusable contents compact, compositional, queryable, auditable, and capacity-aware.
+    The decisive empirical question is therefore not whether natural data is exactly factorized. It
+is whether a learner can expose a low-defect, bounded-load factor graph for the tasks one wants to
+answer, and whether HDC-guided learning makes that factor graph easier to store, query, reuse,
+and protect over time.
+
+
+References
+ [1] P. Kanerva. Hyperdimensional computing: An introduction to computing in distributed rep-
+     resentation with high-dimensional random vectors. Cognitive Computation, 1:139–159, 2009.
+
+ [2] T. A. Plate. Holographic reduced representations. IEEE Transactions on Neural Networks,
+     6(3):623–641, 1995.
+
+ [3] D. Kleyko, M. Davies, E. P. Frady, P. Kanerva, S. J. Kent, B. A. Olshausen, E. Osipov, J. M.
+     Rabaey, D. A. Rachkovskij, A. Rahimi, and F. T. Sommer. Vector symbolic architectures as
+     a computing framework for emerging hardware. Proceedings of the IEEE, 2022.
+
+ [4] E. P. Frady, S. J. Kent, B. A. Olshausen, and F. T. Sommer. Resonator networks for factoring
+     distributed representations of data structures. Neural Computation, 32(12):2311–2331, 2020.
+
+ [5] Y. Bengio, A. Courville, and P. Vincent. Representation learning: A review and new per-
+     spectives. IEEE Transactions on Pattern Analysis and Machine Intelligence, 35(8):1798–1828,
+     2013.
+
+ [6] A. van den Oord, O. Vinyals, and K. Kavukcuoglu. Neural discrete representation learning.
+     Advances in Neural Information Processing Systems, 2017.
+
+ [7] A. Razavi, A. van den Oord, and O. Vinyals. Generating diverse high-fidelity images with
+     VQ-VAE-2. Advances in Neural Information Processing Systems, 2019.
+
+ [8] F. Locatello, D. Weissenborn, T. Unterthiner, A. Mahendran, G. Heigold, J. Uszkoreit, A.
+     Dosovitskiy, and T. Kipf. Object-centric learning with slot attention. Advances in Neural
+     Information Processing Systems, 2020.
+
+ [9] F. Locatello, S. Bauer, M. Lucic, G. Raetsch, S. Gelly, B. Schoelkopf, and O. Bachem. Chal-
+     lenging common assumptions in the unsupervised learning of disentangled representations.
+     International Conference on Machine Learning, 2019.
+
+[10] J. Brehmer, P. de Haan, P. Lippe, and T. Cohen. Weakly supervised causal representation
+     learning. Advances in Neural Information Processing Systems, 2022.
+
+
+
+                                                33
+[11] H. Cunningham, A. Ewart, L. Riggs, R. Huben, and L. Sharkey. Sparse autoencoders find
+     highly interpretable features in language models. arXiv:2309.08600, 2023.
+
+[12] T. Bricken, A. Templeton, J. Batson, B. Chen, A. Jermyn, T. Conerly, N. Turner, C. Anil,
+     C. Denison, A. Askell, R. Lasenby, Y. Wu, S. Kravec, N. Schiefer, T. Maxwell, N. Joseph,
+     Z. Hatfield-Dodds, A. Tamkin, K. Nguyen, B. McLean, J. E. Burke, T. Hume, S. Carter,
+     T. Henighan, and C. Olah. Towards monosemanticity: Decomposing language models with
+     dictionary learning. Transformer Circuits Thread, 2023.
+
+[13] J. Snaider and S. Franklin.    Modular composite representation.     Cognitive Computation,
+     6(3):510–527, 2014.
+
+[14] B. Goertzel. Hierarchical Modular Hypervectors: Baking type-based hierarchical embeddings
+     into modular compositional hypervectors. Manuscript, 2025.
+
+[15] B. Goertzel. PRIMUS world modeling with symbolic, HMH, and dense neural representations.
+     Manuscript, 2026.
+
+[16] B. Goertzel. Causal coding and the general causal-continual-learning theorem. Manuscript,
+     2025.
+
+[17] B. Goertzel. Toward a general theory of hierarchical Bayesian causal modular learning.
+     Manuscript, 2026.
+
+[18] B. Goertzel. Columnar Bayesian causal coding networks: A two-level architecture for causal
+     modularity, continual learning, universality, and wavelet-transformer integration. Manuscript,
+     2026.
+
+[19] B. Goertzel. Teacher-first columnar control for continual learning: A two-level architecture
+     with exact support search. Manuscript, 2026.
+
+[20] R. A. Jacobs, M. I. Jordan, S. J. Nowlan, and G. E. Hinton. Adaptive mixtures of local
+     experts. Neural Computation, 3(1):79–87, 1991.
+
+[21] N. Shazeer, A. Mirhoseini, K. Maziarz, A. Davis, Q. Le, G. Hinton, and J. Dean. Outrageously
+     large neural networks: The sparsely-gated mixture-of-experts layer. ICLR, 2017.
+
+[22] J. Kirkpatrick, R. Pascanu, N. Rabinowitz, J. Veness, G. Desjardins, A. A. Rusu, K. Milan,
+     J. Quan, T. Ramalho, A. Grabska-Barwinska, D. Hassabis, C. Clopath, D. Kumaran, and R.
+     Hadsell. Overcoming catastrophic forgetting in neural networks. Proceedings of the National
+     Academy of Sciences, 114(13):3521–3526, 2017.
+
+[23] A. A. Rusu, N. C. Rabinowitz, G. Desjardins, H. Soyer, J. Kirkpatrick, K. Kavukcuoglu, R.
+     Pascanu, and R. Hadsell. Progressive neural networks. arXiv:1606.04671, 2016.
+
+
+
+
+                                                34
+
